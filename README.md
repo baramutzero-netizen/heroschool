@@ -32,6 +32,7 @@
 | `game.html` | **원본 소스.** 게임 로직 전체가 여기 있습니다. `<!doctype>`·`<html>`·`<body>` 가 없는 조각 파일입니다 |
 | `heroschool.html` | `wrap.py` 가 만든 단독 실행 파일 |
 | `site/index.html` | `wrap_site.py` 가 만든 배포용 파일 (메타 태그·파비콘·OG 이미지 포함) |
+| `index.html` | 저장소 루트에서 `site/` 로 넘겨주는 페이지 (GitHub Pages 용) |
 | `site/og.png` | 링크 미리보기 이미지 |
 | `site/README.md` | Netlify / GitHub Pages / Vercel 배포 안내 |
 | `wrap.py` | `game.html` → `heroschool.html` |
@@ -39,6 +40,7 @@
 | `test.py` | Playwright 3년 회귀 테스트 (모든 화면 렌더 + 대회·원정·졸업까지 자동 진행) |
 | `sprites/src/*.png` | 손으로 그린 직업별 스프라이트 시트 (128×128 · 6열 · 모션 5행) |
 | `sprites/pack.py` | 시트들을 아틀라스 한 장으로 묶고 `game.html` 에 박을 JS 조각 생성 |
+| `sprites/fx.py` | 전투 이펙트 시트 생성기 — 형태 6종을 도트로 찍는다 (`fx_*.png`) |
 | `sprites/runtime.js` | 스프라이트 런타임 원본 (애니메이션 · 머리색 팔레트 치환) |
 | `sprites/SPRITE_SPEC.md` | 스프라이트 시트 규격서 — 새 직업을 그릴 때 참고 |
 | `og.html` | OG 이미지를 만들 때 쓴 페이지 |
@@ -72,6 +74,10 @@ python test.py
 3. `sprites.js` 내용을 `game.html` 의 `const SPR_CELL=...` 로 시작하는 블록과 교체
 4. `python wrap.py && python wrap_site.py`
 
+전투 이펙트는 `python sprites/fx.py` 로 다시 찍습니다. 형태 6종(참격·관통·타격·폭발·오라·회복)만
+기준 색 하나로 그려두고, 게임에서 원소별로 색상·채도·명도를 돌려 씁니다. 스킬마다 `fx`·`el` 태그가
+붙어 있어서 이펙트를 바꾸려면 그 태그만 고치면 됩니다.
+
 머리색은 자동으로 검출됩니다 — 캐릭터 상단 42% 안에 몰려 있으면서 색상이 서로 가까운
 색들만 머리로 잡고, 학생 ID 해시로 색상 24단 × 진하기 3단 중 하나를 골라 치환합니다.
 
@@ -79,8 +85,11 @@ python test.py
 
 ## 배포
 
-`site/` 폴더를 정적 호스팅에 그대로 올리면 됩니다. 자세한 절차는
-[`site/README.md`](site/README.md) 에 정리해 뒀습니다.
+저장소를 GitHub Pages 로 켜면 (Settings → Pages → Deploy from a branch → `main` / `/ (root)`)
+루트의 `index.html` 이 `site/` 로 넘겨주므로 `https://<아이디>.github.io/heroschool/` 에서 바로 열립니다.
+
+Netlify·Vercel 등 다른 호스팅은 `site/` 폴더를 그대로 올리면 됩니다.
+자세한 절차는 [`site/README.md`](site/README.md) 에 정리해 뒀습니다.
 
 ---
 
