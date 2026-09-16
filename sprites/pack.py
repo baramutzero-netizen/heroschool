@@ -52,11 +52,17 @@ HAIR_TOP  = .25     # 그 색의 픽셀 중 머리 쪽에 있어야 하는 최�
 HAIR_MIN  = 2       # 이보다 적으면 그 직업은 머리색 변형을 끈다
 # 자동 검출이 빗나가는 직업은 여기서 직접 지정한다.
 # 빈 배열이면 "변형 없음" — 머리와 피부가 같은 색을 쓰는 그림이 그렇다.
+# 여러 시트가 공유하는 살색 램프 — 머리색으로 잘못 잡히면 얼굴·손까지 물든다.
+# 검출 결과에서 무조건 빼낸다.
+SKIN = {"ffd7b9", "eab89c", "d29c80", "b17a67", "6f4b43", "513e35", "815737",
+        "ffdfc4", "eabda3", "c9a28d", "a47878", "594034"}
+
 HAIR_FIX = {
     # 머리색이 옷·피부와 같은 색을 공유해서 자동 검출이 옷까지 물들이는 직업들 —
     # 빈 목록이면 색 변화를 끈다 (모두 원본 색 그대로).
     "paladin":   [],
     "priest":    [],
+    "sword":     [],   # 머리의 중간·어두운 톤이 살색 램프와 같아, 일부만 칠해져 얼룩진다
     "druid":     [],
     "ninja":     [],
     "forcemage": [],
@@ -152,6 +158,10 @@ def main():
         if job != raw_job: print(f"  ({raw_job}.png → 직업 id '{job}')")
         im, cell, cols, counts = read_sheet(f)
         hair, base = hair_colors(im, cell)
+        cut = [h for h in hair if h.lower() in SKIN]
+        if cut:
+            hair = [h for h in hair if h.lower() not in SKIN]
+            print("  (%s: 살색 %d개를 머리색에서 제외)" % (job, len(cut)))
         if job in HAIR_FIX:
             hair = list(HAIR_FIX[job])
             print("  (%s: 머리색을 직접 지정 — %d색)" % (job, len(hair)))
