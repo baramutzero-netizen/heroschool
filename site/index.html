@@ -5370,8 +5370,40 @@ function leagueRR(n){
    그 시점의 팀 명단을 통째로 얼리고 시드를 같이 박아 서버에 올린다.
    이후엔 누가 언제 열어봐도 같은 입력 → 같은 전투 → 같은 순위표가 나온다.
    라운드는 실제 시간으로 SEASON_STEP 마다 하나씩 열린다. */
-const SEASON_STEP = 5 * 60 * 1000;   // 라운드 하나가 열리는 간격
-const SEASON_MIN  = 4;               // 시즌을 열 수 있는 최소 팀 수
+const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
+const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
+const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
+/* 시즌 번호와 시작 시각은 시계에서 바로 뽑는다 —
+   그래야 서로 상의하지 않아도 모두가 같은 번호, 같은 시작 시각을 말하게 된다. */
+/* ── 서버 시계 ──
+   라운드가 열리는 때를 각자 PC 시계로 재면, 시계가 어긋난 사람은 남과 다른 라운드를 본다.
+   그래서 서버에 시각을 한 번 찍어 받아 오고, 그 차이만큼 보정한 시각을 쓴다.
+   서버에 닿지 못하면 보정값 0 — 그냥 내 시계를 쓴다. */
+let LEAGUE_SKEW = 0, LEAGUE_SYNCED = 0;
+const LEAGUE_SKEW_TTL = 10 * 60 * 1000;
+function leagueNow(){ return Date.now() + LEAGUE_SKEW; }
+async function leagueClockSync(force){
+  if(!leagueOn()) return;
+  if(!force && LEAGUE_SYNCED && Date.now() - LEAGUE_SYNCED < LEAGUE_SKEW_TTL) return;
+  const t0 = Date.now();
+  let v;
+  try{ v = await leagueReq("clock", "PUT", {".sv":"timestamp"}); }
+  catch(e){ return; }                                   // 규칙에 clock 이 없으면 그냥 넘어간다
+  if(typeof v !== "number"){                            // 응답이 값을 안 주면 한 번 더 읽는다
+    try{ v = await leagueReq("clock"); }catch(e){ return; }
+  }
+  if(typeof v !== "number" || !isFinite(v)) return;
+  const mid = t0 + Math.round((Date.now() - t0) / 2);   // 왕복의 절반 지점을 서버가 찍은 순간으로 본다
+  LEAGUE_SKEW = v - mid;
+  LEAGUE_SYNCED = Date.now();
+}
+function seasonDue(){ return Math.floor(leagueNow() / SEASON_EVERY); }
+/* 안에서 쓰는 번호는 시계에서 나온 큰 수다. 화면에는 1부터 세어 보여준다. */
+const SEASON_BASE = Math.floor(Date.UTC(2026, 8, 1) / (3 * 60 * 60 * 1000));
+function seasonNo(n){ return n - SEASON_BASE + 1; }
+function seasonStartOf(n){ return n * SEASON_EVERY; }
+function seasonSeedOf(n){ return "season-" + n; }   // 시드도 번호에서 뽑는다 (마음에 들 때까지 다시 뽑기 방지)
+function seasonNextSeasonAt(){ return seasonStartOf(seasonDue() + 1); }
 
 /* 서버에서 온 시즌 문서는 믿지 않는다 — 통째로 검사해서 다시 짓는다 */
 function seasonSane(d){
@@ -5379,6 +5411,8 @@ function seasonSane(d){
   const n = d.n|0, start = +d.start||0, step = clamp(+d.step||SEASON_STEP, 10000, 7*24*3600*1000);
   const seed = String(d.seed||"").slice(0, 40);
   if(n < 1 || !start || !seed) return null;
+  if(n !== Math.floor(start / SEASON_EVERY)) return null;   // 번호와 시작 시각이 어긋난 문서는 버린다
+  if(start > leagueNow() + 60000) return null;              // 아직 오지 않은 시즌도 버린다
   const t = {};
   Object.keys(d.t||{}).forEach(k=>{ const T = leagueSane(d.t[k], k); if(T) t[k] = T; });
   const g = (Array.isArray(d.g) ? d.g : [])
@@ -5391,7 +5425,7 @@ function seasonGroupIdx(SE, tid){ return SE.g.findIndex(g => g.indexOf(tid) >= 0
 function seasonRounds(SE, gi){ return leagueRR(SE.g[gi].length).length; }
 /* 지금까지 열린 라운드 수 */
 function seasonOpen(SE, gi){
-  return clamp(Math.floor((Date.now() - SE.start) / SE.step) + 1, 0, seasonRounds(SE, gi));
+  return clamp(Math.floor((leagueNow() - SE.start) / SE.step) + 1, 0, seasonRounds(SE, gi));
 }
 /* 다음 라운드가 열리는 시각 (다 열렸으면 0) */
 function seasonNextAt(SE, gi){
@@ -5453,10 +5487,10 @@ function seasonSettle(SE, gi, C){
   L.lastSeason = SE.n;
   L.lp = Math.max(0, L.lp + me.lp);
   L.w += me.w; L.l += me.l; L.n += 1;
-  L.hist.unshift({ts:Date.now(), season:SE.n, rank:me.rank, size:C.table.length,
+  L.hist.unshift({ts:Date.now(), season:seasonNo(SE.n), rank:me.rank, size:C.table.length,
                   lp:me.lp, now:L.lp, w:me.w, l:me.l});
   if(L.hist.length > 20) L.hist.length = 20;
-  logE(`졸업생 리그 시즌 ${SE.n} — <b>${me.rank}위</b> / ${C.table.length}팀 (${me.w}승 ${me.l}패) · 리그 포인트 <b style="color:var(--brass)">${me.lp>=0?"+":""}${me.lp}</b> → ${L.lp}`,
+  logE(`졸업생 리그 시즌 ${seasonNo(SE.n)} — <b>${me.rank}위</b> / ${C.table.length}팀 (${me.w}승 ${me.l}패) · 리그 포인트 <b style="color:var(--brass)">${me.lp>=0?"+":""}${me.lp}</b> → ${L.lp}`,
        me.rank <= Math.ceil(C.table.length/3) ? "good" : "");
   save(); leagueSync();
   return true;
@@ -5467,84 +5501,115 @@ async function seasonLoad(quiet){
   if(!leagueOn()) return;
   const U = UI.league = UI.league || {};
   U.loading = true; if(!quiet) render();
+  await leagueClockSync();
   let raw = null, err = null;
   try{ raw = await leagueReq("season"); }catch(e){ err = String(e.message||e); }
   U.loading = false;
   U.err = err;
   U.SE = err ? null : seasonSane(raw);
+  if(!err && (!U.SE || U.SE.n < seasonDue()) && !U.making){   // 이번 시즌이 아직 없다 — 대신 연다
+    seasonAuto(U.SE);
+    return;
+  }
   seasonRefresh();
 }
 /* 열린 라운드가 늘었으면 다시 계산한다 */
 function seasonRefresh(){
   const U = UI.league; if(!U) return;
   const SE = U.SE;
-  if(!SE){ U.gi = -1; U.C = null; render(); return; }
+  if(!SE){ U.gi = -1; U.vg = 0; U.C = null; render(); return; }
   U.gi = seasonGroupIdx(SE, leagueId());
-  if(U.gi < 0){ U.C = null; U.upto = 0; render(); return; }
-  const o = seasonOpen(SE, U.gi);
-  if(U.C && U.upto === o){ render(); return; }
-  U.upto = o;
-  U.C = seasonCompute(SE, U.gi, o);
-  if(o >= seasonRounds(SE, U.gi)) seasonSettle(SE, U.gi, U.C);
+  /* 보고 있는 조 — 내가 낀 조가 기본이고, 참가하지 않았으면 1조(리그 포인트 상위)를 본다 */
+  if(!(U.vg >= 0 && U.vg < SE.g.length)) U.vg = U.gi >= 0 ? U.gi : 0;
+  const o = seasonOpen(SE, U.vg);
+  if(!(U.C && U.upto === o && U.cg === U.vg)){
+    U.upto = o; U.cg = U.vg;
+    U.C = seasonCompute(SE, U.vg, o);
+  }
+  /* 정산은 어느 조를 보고 있든 내 조 기준으로 한다 */
+  if(U.gi >= 0 && seasonOpen(SE, U.gi) >= seasonRounds(SE, U.gi)){
+    const mineC = U.vg === U.gi ? U.C : seasonCompute(SE, U.gi, seasonRounds(SE, U.gi));
+    seasonSettle(SE, U.gi, mineC);
+  }
   render();
 }
-/* 시즌 만들기 — 등록된 팀을 리그 포인트 순으로 조를 나눠 통째로 얼린다 */
-async function seasonMake(){
+/* 다른 조로 옮겨 본다 */
+function seasonSeeGroup(gi){
+  const U = UI.league; if(!U || !U.SE) return;
+  U.vg = clamp(gi|0, 0, U.SE.g.length - 1);
+  seasonRefresh();
+}
+/* 시즌 자동 개막 —
+   3시간마다 한 번, 서버에 아직 그 시즌이 없으면 먼저 본 사람이 대신 올린다.
+   번호·시작 시각·시드가 전부 시계에서 나오므로 누가 올리든 같은 시즌이 된다.
+   그 순간 등록돼 있던 팀들이 리그 포인트 순으로 조에 배정되어 통째로 얼어붙는다. */
+async function seasonAuto(prev){
   const U = UI.league = UI.league || {};
-  if(!leagueOn()) return;
-  U.making = true; render();
-  const fail = (m)=>{ U.making = false; toast(m); render(); };
-  let all, cur;
-  try{ all = await leagueReq("teams"); }catch(e){ return fail("서버에 닿지 못했다 — " + (e.message||e)); }
-  try{ cur = await leagueReq("season"); }catch(e){ cur = null; }
-  const prev = seasonSane(cur);
-  if(prev){                                   // 가장 긴 조가 끝나야 다음 시즌을 연다
-    let gi = 0;
-    prev.g.forEach((g,i)=>{ if(g.length > prev.g[gi].length) gi = i; });
-    if(seasonOpen(prev, gi) < seasonRounds(prev, gi))
-      return fail(`시즌 ${prev.n} 이 아직 진행 중이다.`);
-  }
+  if(!leagueOn() || U.making) return seasonRefresh();
+  const n = seasonDue();
+  /* 이미 올라와 있거나, 이번 시즌은 벌써 한 번 시도해 봤다 —
+     어느 쪽이든 그냥 지금 서버에 있는 시즌을 펼친다.
+     (규칙이 거부했거나 내 시계가 앞서 있어도 화면이 멈추지 않게 한다) */
+  if((prev && prev.n >= n) || U.tried === n) return seasonRefresh();
+  U.tried = n;
+  U.making = true;
+  let all;
+  try{ all = await leagueReq("teams"); }
+  catch(e){ U.making = false; return seasonRefresh(); }
   const pool = Object.keys(all||{}).map(k => leagueSane(all[k], k)).filter(Boolean);
-  if(pool.length < SEASON_MIN) return fail(`학원이 ${pool.length}곳뿐이다. ${SEASON_MIN}곳은 모여야 시즌을 연다.`);
+  if(pool.length < SEASON_MIN){                   // 팀이 모자라면 이번 시즌은 그냥 건너뛴다
+    U.making = false; U.few = true; U.fewN = pool.length; return seasonRefresh();
+  }
+  U.few = false;
   pool.sort((a,b)=> b.lp - a.lp || (a.tid < b.tid ? -1 : 1));
   const gn = Math.ceil(pool.length / LEAGUE_N);
   const g = Array.from({length:gn}, ()=> []);
   pool.forEach((t,i)=> g[Math.min(gn-1, Math.floor(i * gn / pool.length))].push(t.tid));
-  const doc = {n: (prev ? prev.n : 0) + 1, start: Date.now(), step: SEASON_STEP,
-               seed: RNG().toString(36).slice(2,10) + Date.now().toString(36),
-               g, t: {}};
+  const doc = {n, start: seasonStartOf(n), step: SEASON_STEP, seed: seasonSeedOf(n), g, t: {}};
   pool.forEach(t =>{ doc.t[t.tid] = all[t.tid]; });   // 서버에 올라온 원본을 그대로 얼린다
   try{ await leagueReq("season", "PUT", doc); }
-  catch(e){ return fail("시즌을 올리지 못했다 — " + (e.message||e)); }
+  catch(e){ /* 남이 먼저 올렸다 — 그 쪽을 따르면 된다 */ }
   U.making = false;
-  toast(`시즌 ${doc.n} 을 열었다.`);
   await seasonLoad(true);
 }
+
 /* 내 경기 다시 보기 — 집계에 쓴 것과 같은 시드로 같은 전투를 돌린다 */
-function seasonWatch(r){
-  const U = UI.league; if(!U || !U.SE || U.gi < 0 || !U.C) return;
+function seasonWatch(r, i){
+  const U = UI.league; if(!U || !U.SE || !U.C) return;
   const rr = U.C.rr;
   if(!rr[r]) return;
-  const mine = leagueId();
-  const i = rr[r].findIndex(pr => U.C.order[pr[0]] === mine || U.C.order[pr[1]] === mine);
-  if(i < 0){ toast("이 라운드는 부전승이다."); return; }
-  const m = seasonBattle(U.SE, U.gi, U.C.order, r, i);
+  if(r >= (U.upto|0)){ toast("아직 열리지 않은 경기다."); return; }
+  if(i == null || i < 0){
+    const mine = leagueId();
+    i = rr[r].findIndex(pr => U.C.order[pr[0]] === mine || U.C.order[pr[1]] === mine);
+    if(i < 0){ toast("이 라운드는 부전승이다."); return; }
+  }
+  const m = seasonBattle(U.SE, U.vg, U.C.order, r, i);
   if(!m){ toast("경기를 불러오지 못했다."); return; }
   openBattle(m.b, {titleA:m.A.acad, titleB:m.B.acad,
-    head:`시즌 ${U.SE.n} · ${r+1}라운드 — ${m.A.acad} 대 ${m.B.acad}`, doneLabel:"닫는다"}, ()=> render());
+    head:`시즌 ${seasonNo(U.SE.n)} · ${r+1}라운드 — ${m.A.acad} 대 ${m.B.acad}`, doneLabel:"닫는다"}, ()=> render());
 }
 /* 화면에 떠 있는 동안 남은 시간을 센다 */
+function hhmmss(ms){
+  const t = Math.floor(ms/1000), h = Math.floor(t/3600), m = Math.floor(t/60)%60, sec = t%60;
+  return (h? h + ":" + String(m).padStart(2,"0") : String(m)) + ":" + String(sec).padStart(2,"0");
+}
 let LG_T = 0;
 function lgClockStop(){ if(LG_T){ clearInterval(LG_T); LG_T = 0; } }
 function lgClockStart(){
   lgClockStop();
   LG_T = setInterval(()=>{
     const U = UI.league;
-    if(UI.view !== "league" || !U || !U.SE || U.gi < 0){ lgClockStop(); return; }
-    const at = seasonNextAt(U.SE, U.gi);
+    if(UI.view !== "league" || !U || !U.SE || !U.C){ lgClockStop(); return; }
     const el = $("#lgClock");
-    if(!at){ if(el) el.textContent = "모든 라운드가 끝났다"; lgClockStop(); return; }
-    const left = Math.max(0, at - Date.now());
+    const at = seasonNextAt(U.SE, U.vg);
+    if(!at){
+      const left = Math.max(0, seasonNextSeasonAt() - leagueNow());
+      if(el) el.textContent = "다음 시즌까지 " + hhmmss(left);
+      if(left <= 0) seasonLoad(true);
+      return;
+    }
+    const left = Math.max(0, at - leagueNow());
     if(el) el.textContent = `다음 라운드까지 ${Math.floor(left/60000)}:${String(Math.floor(left/1000)%60).padStart(2,"0")}`;
     if(left <= 0) seasonRefresh();
   }, 1000);
@@ -5620,23 +5685,39 @@ function viewLeague(){
 }
 /* 시즌 판 — 서버에 얼려 둔 대진을 그대로 펼쳐 보여준다 */
 function lgSeasonView(U, L){
-  const head = (right)=> `<div class="panel-h"><h2>졸업생 리그</h2>
-    <span class="hint" id="lgClock">모두가 같은 순위표를 본다</span>
-    <span class="btnpair">${right||""}
-      <button class="btn sm" id="lgLoad" ${U.loading?"disabled":""}>${U.loading?"불러오는 중…":"새로고침"}</button></span></div>`;
-  const mkBtn = `<button class="btn sm" id="lgMake" ${U.making?"disabled":""}>${U.making?"여는 중…":"시즌 열기"}</button>`;
-  if(U.loading && !U.SE) return `<section class="panel">${head("")}<div class="empty">시즌을 불러오는 중…</div></section>`;
-  if(U.err) return `<section class="panel">${head("")}
+  const head = ()=> `<div class="panel-h"><h2>졸업생 리그</h2>
+    <span class="hint" id="lgClock">${U.making? "시즌을 여는 중…" : "모두가 같은 순위표를 본다"}</span>
+    <span class="btnpair">
+      <button class="btn sm" id="lgLoad" ${U.loading||U.making?"disabled":""}>${U.loading?"불러오는 중…":"새로고침"}</button></span></div>`;
+  const cycle = `시즌은 <b>${Math.round(SEASON_EVERY/3600000)}시간마다</b> 저절로 열린다`
+    + (Math.abs(LEAGUE_SKEW) > 60000
+       ? ` <span style="color:var(--warn)">· 이 컴퓨터 시계가 ${Math.round(Math.abs(LEAGUE_SKEW)/60000)}분 ${LEAGUE_SKEW>0?"느려":"빨라"} 서버 시각으로 맞춰 두었다</span>`
+       : "");
+  if((U.loading || U.making) && !U.SE) return `<section class="panel">${head()}
+    <div class="empty">시즌을 불러오는 중…</div></section>`;
+  if(U.err) return `<section class="panel">${head()}
     <div class="empty">서버에 닿지 못했다 — ${esc(U.err)}</div></section>`;
-  if(!U.SE) return `<section class="panel">${head(mkBtn)}
-    <div class="empty">아직 열린 시즌이 없다. ${SEASON_MIN}곳 이상 등록되면 누구든 시즌을 열 수 있다.</div></section>`;
-  const SE = U.SE, total = U.gi>=0 ? seasonRounds(SE, U.gi) : 0;
-  if(U.gi < 0) return `<section class="panel">${head(mkBtn)}
-    <div class="empty">시즌 ${SE.n} 이 진행 중이다. 이번 시즌 명단에는 우리 학원이 없다 —
-      <b>등록 · 갱신</b>을 해 두면 다음 시즌부터 들어간다.</div></section>`;
-  const C = U.C, o = U.upto|0, done = o >= total;
-  const mine = leagueId();
-  const myRows = C.rr.map((pairs, r)=>{
+  if(U.few && !U.SE) return `<section class="panel">${head()}
+    <div class="empty">등록된 학원이 ${U.fewN|0}곳뿐이라 이번 시즌은 열리지 않았다.
+      ${SEASON_MIN}곳이 모이면 다음 시각에 저절로 열린다.</div>
+    <p class="opthint">${cycle}. 다음 시즌 ${new Date(seasonNextSeasonAt()).toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"})}.</p></section>`;
+  if(!U.SE) return `<section class="panel">${head()}
+    <div class="empty">아직 열린 시즌이 없다.</div>
+    <p class="opthint">${cycle}. 다음 시즌 ${new Date(seasonNextSeasonAt()).toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"})}.</p></section>`;
+  const SE = U.SE;
+  const vg = U.vg|0, out = U.gi < 0;
+  const total = seasonRounds(SE, vg), C = U.C, o = U.upto|0, done = o >= total, mine = leagueId();
+  if(!C) return `<section class="panel">${head()}<div class="empty">대진을 펼치는 중…</div></section>`;
+  /* 조가 여럿이면 골라서 볼 수 있다. 1조가 리그 포인트 상위 조다. */
+  const picker = SE.g.length > 1 ? `<div class="btnrow" style="margin-bottom:10px">
+      <span style="font-size:12px;color:var(--muted)">조</span>
+      ${SE.g.map((g,i)=>`<button class="btn sm ${i===vg?"primary":""}" data-lgg="${i}">${i+1}조${
+        i===0? " (상위)":""}${i===U.gi? " · 우리":""}</button>`).join("")}</div>` : "";
+  const banner = out ? `<div class="empty" style="margin-bottom:10px">이번 시즌 명단에 우리 학원이 없다 —
+      <b>등록 · 갱신</b>을 해 두면 다음 시즌에 자동으로 들어간다. 그동안은 ${vg+1}조${
+      vg===0? "(리그 포인트 상위)":""} 경기를 구경할 수 있다.</div>` : "";
+  const acad = tid => SE.t[tid] ? SE.t[tid].acad : "?";
+  const myRows = (vg !== U.gi) ? [] : C.rr.map((pairs, r)=>{
     const i = pairs.findIndex(pr => C.order[pr[0]]===mine || C.order[pr[1]]===mine);
     if(i < 0) return {r, bye:true};
     const res = C.results.find(x => x.r===r && x.i===i);
@@ -5646,19 +5727,24 @@ function lgSeasonView(U, L){
       const n = res.score.split("-");
       sc = res.at===mine ? `${n[0]}-${n[1]}` : `${n[1]}-${n[0]}`;
     }
-    return {r, foe:SE.t[foeTid] ? SE.t[foeTid].acad : "?", res, sc,
+    return {r, i, foe:acad(foeTid), res, sc,
             win: res ? ((res.at===mine) === res.aw) : null, open:r < o};
   });
+  const myRank = vg === U.gi ? (C.table.find(x=>x.tid===mine)||{}).rank : 0;
   return `<section class="panel">
-    ${head(done? mkBtn : "")}
+    ${head()}
     <div class="lgbar">
-      <div class="lgstat"><span>시즌</span><b class="num">${SE.n}</b></div>
+      <div class="lgstat"><span>시즌</span><b class="num">${seasonNo(SE.n)}</b></div>
       <div class="lgstat"><span>진행</span><b class="num">${o} / ${total} 라운드</b></div>
-      <div class="lgstat"><span>우리 조</span><b class="num">${SE.g.length>1? `${U.gi+1}조 · ` : ""}${C.table.length}팀</b></div>
-      <div class="lgstat"><span>현재 순위</span><b class="num" style="color:var(--${(C.table.find(x=>x.tid===mine)||{}).rank<=3?"ok":"muted"})">${(C.table.find(x=>x.tid===mine)||{}).rank||"-"}위</b></div>
+      <div class="lgstat"><span>${out||vg!==U.gi? "보는 조" : "우리 조"}</span><b class="num">${
+        SE.g.length>1? `${vg+1}조 · ` : ""}${C.table.length}팀</b></div>
+      <div class="lgstat"><span>${out? "1위" : "현재 순위"}</span><b class="num" style="color:var(--${!out&&myRank<=3?"ok":"muted"})">${
+        out? esc(C.table[0] ? C.table[0].acad : "-") : (myRank||"-") + "위"}</b></div>
     </div>
-    ${done? `<p class="opthint">시즌 ${SE.n} 이 끝났다. 순위에 따른 리그 포인트가 반영됐다 — <b>시즌 열기</b>로 다음 판을 시작할 수 있다.</p>`
-          : `<p class="opthint">라운드는 ${Math.round(SE.step/60000)}분마다 하나씩 열린다. 모두가 같은 시드로 계산하니 순위표는 어디서 봐도 같다.</p>`}
+    ${banner}${picker}
+    <p class="opthint">${done
+      ? `시즌 ${seasonNo(SE.n)} 이 끝났다. 순위에 따른 리그 포인트가 반영됐다. ${cycle} — 다음 시즌 ${new Date(seasonNextSeasonAt()).toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"})}.`
+      : `라운드는 ${Math.round(SE.step/60000)}분마다 하나씩 열린다. 모두가 같은 시드로 계산하니 순위표는 어디서 봐도 같다. ${cycle}.`}</p>
     <table class="tb"><thead><tr><th>순위</th><th>학원</th><th>승점</th><th>승</th><th>패</th><th>생존</th><th>LP</th></tr></thead><tbody>
       ${C.table.map(x=>`<tr${x.tid===mine?' style="background:var(--brass-soft)"':""}>
         <td class="num">${x.rank}</td>
@@ -5667,18 +5753,20 @@ function lgSeasonView(U, L){
         <td class="num" style="color:var(--dim)">${x.gf}:${x.ga}</td>
         <td class="num" style="color:var(--${x.lp>=0?"brass":"bad"})">${x.lp>=0?"+":""}${x.lp}</td></tr>`).join("")}
     </tbody></table>
-    <div class="rule"></div><div class="eyebrow" style="margin-bottom:6px">우리 경기</div>
+    ${vg !== U.gi ? "" : `<div class="rule"></div><div class="eyebrow" style="margin-bottom:6px">우리 경기</div>
     <div class="condbox">${myRows.map(m=>`<div class="condrow">
       <span class="cn">${m.r+1}라운드</span>
       <span class="cv">${m.bye? "부전승" : esc(m.foe)}</span>
       <span class="ce" style="color:var(--${m.bye?"dim":!m.open?"dim":m.win?"ok":"bad"})">${
         m.bye? "-" : !m.open? "아직" : (m.win? "승" : "패") + " " + m.sc}</span>
-      <span class="cf">${m.bye||!m.open? "" : `<button class="btn sm" data-lgw="${m.r}">관전</button>`}</span></div>`).join("")}</div>
-    ${C.results.length? `<div class="rule"></div><div class="eyebrow" style="margin-bottom:6px">전체 경기</div>
+      <span class="cf">${m.bye||!m.open? "" : `<button class="btn sm" data-lgw="${m.r}:${m.i}">관전</button>`}</span></div>`).join("")}</div>`}
+    ${C.results.length? `<div class="rule"></div>
+      <div class="eyebrow" style="margin-bottom:6px">${vg+1}조 전체 경기 <span style="color:var(--dim)">— 지금까지 치러진 경기는 모두 볼 수 있다</span></div>
       <div class="condbox">${C.results.slice().reverse().map(r=>`<div class="condrow">
         <span class="cn" style="color:var(--${r.at===mine||r.bt===mine?"text":"dim"})">${r.r+1}R · ${esc(r.a)} 대 ${esc(r.b)}</span>
         <span class="ce">${r.aw? esc(r.a) : esc(r.b)} 승</span>
-        <span class="cf num">${r.score}</span></div>`).join("")}</div>`:""}
+        <span class="cv num" style="color:var(--dim)">${r.score}</span>
+        <span class="cf"><button class="btn sm" data-lgw="${r.r}:${r.i}">관전</button></span></div>`).join("")}</div>`:""}
   </section>`;
 }
 
@@ -6964,9 +7052,12 @@ function bindView(){
       const ok = await leagueSync();
       render(); if(ok) toast("리그에 등록했다.");
     };
-    const ll = $("#lgLoad");   if(ll) ll.onclick = ()=> seasonLoad();
-    const lm = $("#lgMake");   if(lm) lm.onclick = ()=> seasonMake();
-    v.querySelectorAll("[data-lgw]").forEach(b=> b.onclick = ()=> seasonWatch(b.dataset.lgw|0));
+    const ll = $("#lgLoad");   if(ll) ll.onclick = ()=>{ if(UI.league) UI.league.tried = null; seasonLoad(); };
+    v.querySelectorAll("[data-lgg]").forEach(b=> b.onclick = ()=> seasonSeeGroup(b.dataset.lgg|0));
+    v.querySelectorAll("[data-lgw]").forEach(b=> b.onclick = ()=>{
+      const a = String(b.dataset.lgw).split(":");
+      seasonWatch(a[0]|0, a.length>1 ? a[1]|0 : null);
+    });
     if(UI.view === "league"){
       if(!UI.league || (UI.league.SE === undefined && !UI.league.loading)) seasonLoad(true);
       lgClockStart();
