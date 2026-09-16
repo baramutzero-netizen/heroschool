@@ -810,9 +810,31 @@ sprStart();
    ============================================================ */
 
 const $ = (s,r)=> (r||document).querySelector(s);
-const rnd = (a,b)=> a + Math.random()*(b-a);
+/* ── 난수 ──
+   평소에는 Math.random 을 쓰지만, 리그 전투는 시드를 박아 돌린다.
+   같은 시드 + 같은 팀이면 누가 어느 브라우저에서 돌려도 같은 전투가 나와야 한다. */
+let RNG = Math.random;
+function seedRNG(str){                       // 문자열 → 32비트 시드 (FNV-1a)
+  let h = 2166136261 >>> 0;
+  const t = String(str);
+  for(let i=0;i<t.length;i++){ h ^= t.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+  let a = h;
+  return function(){                          // mulberry32
+    a = (a + 0x6D2B79F5) >>> 0;
+    let x = Math.imul(a ^ (a >>> 15), 1 | a);
+    x = (x + Math.imul(x ^ (x >>> 7), 61 | x)) ^ x;
+    return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+  };
+}
+/* fn 을 시드 난수로 돌린다. 끝나면 반드시 원래 난수로 되돌린다. */
+function withSeed(str, fn){
+  const prev = RNG;
+  RNG = seedRNG(str);
+  try{ return fn(); } finally{ RNG = prev; }
+}
+const rnd = (a,b)=> a + RNG()*(b-a);
 const ri  = (a,b)=> Math.floor(rnd(a,b+1));
-const pick= a => a[Math.floor(Math.random()*a.length)];
+const pick= a => a[Math.floor(RNG()*a.length)];
 const clamp=(v,a,b)=> v<a?a:v>b?b:v;
 const fmt = n => Math.round(n).toLocaleString('ko-KR');
 const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -843,7 +865,7 @@ function eulr(w){ return jo(w,"을","를"); }
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=ri(0,i);[a[i],a[j]]=[a[j],a[i]];}return a;}
 function wchoose(map){ // {key:weight}
   let t=0; for(const k in map) t+=map[k];
-  let r=Math.random()*t;
+  let r=RNG()*t;
   for(const k in map){ r-=map[k]; if(r<=0) return k; }
   return Object.keys(map)[0];
 }
@@ -1121,7 +1143,7 @@ function genMonster(dg, sec){
   const key = dg.mon, J = JOBS[key];
   const lv = dg.lv + (sec-1);
   const st = {
-    id:"m"+Math.random().toString(36).slice(2,8), name:J.name, job:key, year:1, grade:"A",
+    id:"m"+RNG().toString(36).slice(2,8), name:J.name, job:key, year:1, grade:"A",
     level:lv, exp:0, cond:100, fame:0, eval:0, focus:"free", relics:[], skMod:{}, sp:0, hist:[],
     ment:{team:50, aggr:72, calm:72, will:85, stam:62, genius:58, pot:55}
   };
@@ -1362,7 +1384,7 @@ function makeRelic(grade){
     if(a.int) v = Math.max(1,Math.round(v)); else v = Math.round(v*1000)/1000;
     return {k:a.k,n:a.n,v};
   });
-  return {id:"r"+Math.random().toString(36).slice(2,9), grade, name:pick(RELIC_ADJ[grade])+" "+pick(RELIC_NOUN), aff};
+  return {id:"r"+RNG().toString(36).slice(2,9), grade, name:pick(RELIC_ADJ[grade])+" "+pick(RELIC_NOUN), aff};
 }
 
 /* ============================================================
@@ -1826,7 +1848,7 @@ function gradCanFight(g){ return !!(g && g.ment && g.job && JOBS[g.job]); }
 function gradUnit(g){
   if(!gradCanFight(g)) return null;
   const st = newStudent(3, g.grade || "C", g.job);
-  st.id = "g" + (g.sid || Math.random().toString(36).slice(2,9));
+  st.id = "g" + (g.sid || RNG().toString(36).slice(2,9));
   st.name = g.raw || g.name || st.name;
   st.epithet = g.epithet || null;
   st.pers = g.pers || "plain";
@@ -1835,7 +1857,7 @@ function gradUnit(g){
   st.karma = g.karma|0; st.trust = 0; st.rival = null; st.bro = null;
   MENTAL.forEach(m=>{ if(g.ment[m.k] != null) st.ment[m.k] = g.ment[m.k]; });
   st.skMod = JSON.parse(JSON.stringify(g.skMod || {}));
-  st.relics = (g.relics||[]).map(r=>({id:"r"+Math.random().toString(36).slice(2,9),
+  st.relics = (g.relics||[]).map(r=>({id:"r"+RNG().toString(36).slice(2,9),
     grade:r.grade, name:r.name, aff:(r.aff||[]).map(a=>({k:a.k,n:a.n,v:a.v}))}));
   return st;
 }
@@ -1850,7 +1872,7 @@ function newStudent(year, grade, job){
     m[x.k] = Math.round(clamp(rnd(8,20) + g*rnd(3.5,6.5),5,95));
   });
   const st = {
-    id:"s"+Math.random().toString(36).slice(2,9),
+    id:"s"+RNG().toString(36).slice(2,9),
     name: pick(SUR)+pick(GIV), job, year, grade,
     level:1, exp:0, cond:ri(78,96), fame:0, eval:0,
     ment:m, focus:"free", relics:[], skMod:{}, sp:0, hist:[], injured:0, karma:0, trust:0, epithet:null,
@@ -2099,12 +2121,12 @@ function epiWeight(s, score){
 function tryEpithet(kind, pool, ctx){
   const cand = (pool||[]).filter(Boolean);   // 이미 이명이 있어도 대상 — 새 이명이 덮어쓴다
   if(!cand.length) return null;
-  if(Math.random() >= (EPI_CHANCE[kind] != null ? EPI_CHANCE[kind] : .3)) return null;
+  if(RNG() >= (EPI_CHANCE[kind] != null ? EPI_CHANCE[kind] : .3)) return null;
   const score = ctx.score || (s=> 1 + power(s)/1200);
   const ws = cand.map(s=> epiWeight(s, score));
   const tot = ws.reduce((a,b)=>a+b, 0);
   if(tot <= 0) return grantEpithet(kind, pick(cand), ctx);
-  let r = Math.random()*tot, chosen = cand[cand.length-1];
+  let r = RNG()*tot, chosen = cand[cand.length-1];
   for(let i=0;i<cand.length;i++){ r -= ws[i]; if(r <= 0){ chosen = cand[i]; break; } }
   return grantEpithet(kind, chosen, ctx);
 }
@@ -2234,7 +2256,7 @@ function freshFirst(pool, actor, sk){
 }
 function pickTarget(actor, foes, allies, sk){
   const calmP = clamp(.3 + actor.ment.calm/100*.65, .3, .95);
-  const smart = Math.random() < calmP;
+  const smart = RNG() < calmP;
   const t = sk.target;
   if(t==="self") return [actor];
   if(t.startsWith("ally")){
@@ -2277,7 +2299,7 @@ function autoSkMod(st, level){
   while(n-- > 0){
     const m = modOf(st, pick(ids));
     m.pow += .12; m.up++;
-    if(Math.random() < .16) m.grade = Math.min(4, m.grade+1);
+    if(RNG() < .16) m.grade = Math.min(4, m.grade+1);
   }
 }
 function ownerJobOf(skillId){
@@ -2446,15 +2468,15 @@ function runBattle(teamA, teamB, opt){
     const isUlt = false;
     {
       // 스킬 출현 판정 — 천재성
-      const proc = acts.filter(s=> Math.random() < skProc(u, s, u.ment.genius));
+      const proc = acts.filter(s=> RNG() < skProc(u, s, u.ment.genius));
       if(proc.length){
-        if(proc.length>1 && Math.random() < u.ment.aggr/100){
+        if(proc.length>1 && RNG() < u.ment.aggr/100){
           // 적극성: 상황에 맞는 쪽을 고른다
           proc.sort((a,b)=> actValue(b,u,foes,allies) - actValue(a,u,foes,allies));
           chosen = proc[0];
         } else chosen = pick(proc);
         // 적극성 — 이미 유지 중인 효과를 다시 걸지 않는다
-        if(chosen !== basic && actValue(chosen,u,foes,allies) < .2 && Math.random() < u.ment.aggr/100){
+        if(chosen !== basic && actValue(chosen,u,foes,allies) < .2 && RNG() < u.ment.aggr/100){
           push(`<b>${epiH(u.name)}</b> — ${chosen.name}${eunn(chosen.name)} 아직 유지 중, 다시 걸지 않는다`,"",u.uid);
           chosen = basic;
         }
@@ -2462,7 +2484,7 @@ function runBattle(teamA, teamB, opt){
         if(chosen !== basic){
           const tgt0 = pickTarget(u,foes,allies,chosen);
           const res = tgt0.length && chosen.target.startsWith("enemy") ? eff(tgt0[0],"skRes") : 0;
-          if(Math.random() > clamp(eff(u,"skAcc") - res, .25, 1)){
+          if(RNG() > clamp(eff(u,"skAcc") - res, .25, 1)){
             push(`<b>${epiH(u.name)}</b>의 ${chosen.name} — 시전 실패`,"",u.uid);
             chosen = basic;
           }
@@ -2517,7 +2539,7 @@ function runBattle(teamA, teamB, opt){
   function dealDamage(src, tgt, mult, o){
     o=o||{};
     const hitP = clamp(eff(src,"acc") - eff(tgt,"eva"), .35, .99);
-    if(Math.random()>hitP){ push(`<b>${epiH(tgt.name)}</b> 회피`,"",src.uid); return 0; }
+    if(RNG()>hitP){ push(`<b>${epiH(tgt.name)}</b> 회피`,"",src.uid); return 0; }
     const pierce = o.pierce||0;
     const d = eff(tgt,"def")*(1-pierce);
     let dmg = eff(src,"atk") * mult * (1 - d/(d+DEF_K)) * rnd(.93,1.07) * fatigue() * DMG_K * passiveDmgMul(src,tgt,o);
@@ -2528,7 +2550,7 @@ function runBattle(teamA, teamB, opt){
       const allies = tgt.side==="A"? A : B;
       if(allies.some(a=> a.alive && a.row==="front")) dmg *= (1 + tgt.fGuard);
     }
-    let crit = o.forceCrit || Math.random() < eff(src,"crit");
+    let crit = o.forceCrit || RNG() < eff(src,"crit");
     if(crit){
       const cd = eff(src,"critDmg");
       const cr = clamp(eff(tgt,"critRes")||0, 0, .8);   // 정신력 — 받는 크리 피해 감소
@@ -2547,7 +2569,7 @@ function runBattle(teamA, teamB, opt){
     if(tgt.hp<=0){ tgt.alive=false; tgt.fx=[]; push(`<b>${epiH(tgt.name)}</b> 전투 불능`,"die",src.uid); return dmg; }
     if(dmg>0){
       const cs = consOf(tgt);
-      if(cs.ko>0 && Math.random()<cs.ko){
+      if(cs.ko>0 && RNG()<cs.ko){
         tgt.alive=false; tgt.fx=[]; tgt.hp = Math.max(1, tgt.hp);
         push(`<b>${epiH(tgt.name)}</b> 의식을 잃고 쓰러졌다`,"die",src.uid);
       }
@@ -2777,7 +2799,7 @@ function trainSuccessP(st, resting){
   if(st.cond >= COND_HI) return 1;             // 컨디션 70 이상은 항상 성공
   return clamp(st.cond*.01 + st.ment.team/300, 0, 1);
 }
-function trainSuccess(st, resting){ return Math.random() < trainSuccessP(st, resting); }
+function trainSuccess(st, resting){ return RNG() < trainSuccessP(st, resting); }
 /* 훈련 실패 시 부상 확률 — (80 - 컨디션)% */
 function injureChance(st){ return clamp(80 - st.cond, 0, 100); }
 function injSeverity(st){ return (70 - st.cond) + ri(1,100) + (isInjured(st)? INJ_REPEAT_SEV : 0); }
@@ -2790,7 +2812,7 @@ function injWeeksOf(sev){
 /* 훈련 실패 후 부상 판정. 부상하면 주수를 돌려준다 */
 /* 한 주에 훈련 판정이 다섯 번 돌아가므로 부상 확률은 하루치로 나눈다 */
 function tryInjure(st, mul){
-  if(Math.random()*100 >= injureChance(st) * (mul===undefined ? DAY_MUL : mul)) return 0;
+  if(RNG()*100 >= injureChance(st) * (mul===undefined ? DAY_MUL : mul)) return 0;
   const again = isInjured(st);
   const sev = injSeverity(st);
   const w = injWeeksOf(sev);
@@ -3302,7 +3324,7 @@ function expedApply(E, b, mon){
   res.reached = E.sec;
   res.exp += E.dg.exp*(1+E.sec*.14)*EXPED_EXP_MUL;
   const retire = clamp((.02 + E.sec*.015) * (1 - E.avgWill/120), 0, .35);
-  if(E.sec < E.dg.secs && Math.random()<retire){ res.stopped = `${E.sec}구간 의식에서 정신이 꺾여 리타이어`; return false; }
+  if(E.sec < E.dg.secs && RNG()<retire){ res.stopped = `${E.sec}구간 의식에서 정신이 꺾여 리타이어`; return false; }
   E.sec++;
   if(E.sec > E.maxSec && E.sec <= E.dg.secs){ res.stopped = `지구력 한계 — ${E.sec-1}구간에서 철수`; return false; }
   return E.sec <= E.dg.secs;
@@ -3313,7 +3335,7 @@ function expedFinish(E){
   {
     const per = clamp((dg.relicP||.2) * charm, 0, 1);
     for(let i=0;i<res.reached;i++){
-      if(Math.random() < per) res.relics.push(makeRelic(wchoose(dg.relic)));
+      if(RNG() < per) res.relics.push(makeRelic(wchoose(dg.relic)));
     }
   }
   const ups=[];
@@ -3514,12 +3536,12 @@ function springTable(t){
     if(r.win){ v.l++; } else { v.w++; v.pts+=3; } });
   for(let i=0;i<R.length;i++) for(let j=i+1;j<R.length;j++){
     const p = R[i].str/(R[i].str+R[j].str);
-    if(Math.random()<p){ R[i].pts+=3; R[i].w++; R[j].l++; } else { R[j].pts+=3; R[j].w++; R[i].l++; }
+    if(RNG()<p){ R[i].pts+=3; R[i].w++; R[j].l++; } else { R[j].pts+=3; R[j].w++; R[i].l++; }
   }
   const wins = t.results.filter(r=>r.win).length;
   const me = {name:S.acadName, pts:wins*3, w:wins, l:t.results.length-wins, me:true};
   const table = R.map(r=>({name:r.name, pts:r.pts, w:r.w, l:r.l})).concat([me]);
-  table.sort((a,b)=> b.pts-a.pts || b.w-a.w || (b.me?-1:0)-(a.me?-1:0) || Math.random()-.5);
+  table.sort((a,b)=> b.pts-a.pts || b.w-a.w || (b.me?-1:0)-(a.me?-1:0) || RNG()-.5);
   t.standings = table;
   t.rank = table.findIndex(x=>x.me)+1;
   t.champ = t.rank===1;
@@ -3676,8 +3698,8 @@ function ladderAcademy(step, round, name){
         lv    = clamp(spec.lv + ri(-FOE_LV_VAR, FOE_LV_VAR), 1, 30);
         y     = lv >= 11 ? 3 : 2;
       } else {
-        const rare = Math.random() < rareP;
-        y = rare ? 3 : (Math.random()<.5 ? 3 : 2);
+        const rare = RNG() < rareP;
+        y = rare ? 3 : (RNG()<.5 ? 3 : 2);
         const prof = y===3 ? P.y3 : P.y2;
         grade = rare ? P.rare.g : prof.g;
         lv = clamp(rare ? ri(prof.lv+2, P.rare.lv) : prof.lv + ri(-1,1), 1, 30);
@@ -3811,11 +3833,11 @@ function ladderLeagueTable(t){
   const R = t.rivals;
   for(let i=0;i<R.length;i++) for(let j=i+1;j<R.length;j++){
     const p = R[i].str/(R[i].str+R[j].str);
-    if(Math.random()<p){ R[i].pts+=3; R[i].w++; R[j].l++; } else { R[j].pts+=3; R[j].w++; R[i].l++; }
+    if(RNG()<p){ R[i].pts+=3; R[i].w++; R[j].l++; } else { R[j].pts+=3; R[j].w++; R[i].l++; }
   }
   const me = {name:S.acadName, pts:t.w*3, w:t.w, l:t.l, me:true};
   const table = R.map(r=>({name:r.name, pts:r.pts, w:r.w, l:r.l})).concat([me]);
-  table.sort((a,b)=> b.pts-a.pts || (b.me?-1:0) - (a.me?-1:0) || Math.random()-.5);
+  table.sort((a,b)=> b.pts-a.pts || (b.me?-1:0) - (a.me?-1:0) || RNG()-.5);
   t.standings = table;
   t.rank = table.findIndex(x=>x.me)+1;
   t.advanced = t.rank<=2;
@@ -4023,7 +4045,7 @@ function counselOf(id){ return COUNSEL.find(c=>c.id===id) || null; }
 function tryCounsel(){
   const C = counselState();
   if(C.queue.length >= CSL_QUEUE_MAX) return;
-  if(Math.random() >= .30) return;
+  if(RNG() >= .30) return;
   const qS = C.queue.map(q=>q.sid), qC = C.queue.map(q=>q.cid);
   const cand = S.students.filter(s=> cslCount(C, s.id) < CSL_PER_STUDENT && !qS.includes(s.id));
   if(!cand.length) return;
@@ -4031,7 +4053,7 @@ function tryCounsel(){
   if(!pool.length) return;
   const st = pick(cand), c = pick(pool);
   C.queue.push({sid:st.id, cid:c.id, order: shuffled([0,1,2]),
-    reveal: Math.random() < cslInfoP(), phase:S.phase, week:S.week+1});
+    reveal: RNG() < cslInfoP(), phase:S.phase, week:S.week+1});
   const n = C.queue.length;
   logE(`상담 요청 — <b>${dnH(st)}</b>${iga(st.name)} 할 말이 있다고 찾아왔다. <b style="color:var(--brass)">상담</b> 탭에서 들어줄 수 있다.${n>1? ` (대기 ${n}건)`:""}`,"big");
 }
@@ -4046,7 +4068,7 @@ function answerCounsel(qi, oi){
   const o = c.o[oi];
   const fit = (o.f||[]).includes(st.pers||"plain");
   // 지도력 — 성격에 맞지 않아도 설득해낸다
-  const byLead = !fit && (Math.random() < cslLeadP());
+  const byLead = !fit && (RNG() < cslLeadP());
   const byTrust = !fit && !byLead && trustFull(st);   // 운명 단계는 무슨 말이든 닿는다
   const ok = fit || byLead || byTrust;
   let gain = null, dbl = false;
@@ -4056,7 +4078,7 @@ function answerCounsel(qi, oi){
       const m = pick(ks);
       let d = ri(2,4);
       // 호소력 — 상승폭 2배
-      if(Math.random() < cslNetP()){ d *= 2; dbl = true; }
+      if(RNG() < cslNetP()){ d *= 2; dbl = true; }
       const before = st.ment[m.k];
       st.ment[m.k] = clamp(before + d, 1, 99);
       gain = {k:m.k, n:m.n, d: +(st.ment[m.k]-before).toFixed(2)};
@@ -4533,7 +4555,7 @@ function graduateAll(){
       id:sk.id, name:sk.name, m:modOf(st, sk.id)}));
     const Pg = passiveOf(passiveJobOf(st));
     if(Pg) abil.push({cat:"passive", id:"passive", name:Pg.n, m:modOf(st,"passive")});
-    abil.sort((a,b)=> (b.m.up||0)-(a.m.up||0) || Math.random()-.5);
+    abil.sort((a,b)=> (b.m.up||0)-(a.m.up||0) || RNG()-.5);
     const bestA = abil[0];
     cer.gifts.push({name:bestA.name, cat:bestA.cat,
       job: bestA.cat==="passive" ? passiveJobOf(st) : (ownerJobOf(bestA.id)||st.job),
@@ -4597,7 +4619,7 @@ function tryScout(i){
   if((S.scoutTries||0) <= 0){ toast("남은 스카우트 시도가 없다."); return; }
   S.scoutTries--;
   c.tried = (c.tried||0)+1;
-  if(Math.random() < c.rate){
+  if(RNG() < c.rate){
     c.state="got"; S.incoming.push(c.st);
     logE(`스카우트 성공 — <b>${dnH(c.st)}</b> (${c.st.grade}급 ${JOBS[c.st.job].name}) 입학 예정.${
       scoutFull()? ` <b style="color:var(--ok)">${enrollCap()}명을 모두 확보해 스카우트를 마친다</b> (남은 시도 ${S.scoutTries}회는 소멸)`
@@ -5248,7 +5270,7 @@ function leagueId(){
   let v = null;
   try{ v = localStorage.getItem(LEAGUE_KEY); }catch(e){}
   if(!v){
-    v = "t" + Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+    v = "t" + Date.now().toString(36) + RNG().toString(36).slice(2,8);
     try{ localStorage.setItem(LEAGUE_KEY, v); }catch(e){}
   }
   return v;
@@ -5284,7 +5306,7 @@ function leagueSane(e, tid){
     if(!u || !JOBS[u.j]) return null;
     const m = {};
     MENTAL.forEach(x=>{ m[x.k] = clamp(Math.round(+(u.m&&u.m[x.k])||10), 1, 99); });
-    return {sid:tid+"_"+Math.random().toString(36).slice(2,6), raw:String(u.n||"무명").slice(0,12),
+    return {sid:tid+"_"+RNG().toString(36).slice(2,6), raw:String(u.n||"무명").slice(0,12),
             name:String(u.n||"무명").slice(0,12), epithet:u.e? String(u.e).slice(0,20):null,
             job:u.j, grade:["D","C","B","A","S"].indexOf(u.g)>=0? u.g : "C",
             lv:clamp(u.lv|0, 1, 30), pers:PERSONA[u.p]? u.p : "plain", karma:clamp(u.k|0,0,999),
@@ -5306,7 +5328,7 @@ function leagueTeamUnits(T){ return T.units.map(gradUnit).filter(Boolean); }
 
 /* ---- 상태 ---- */
 function leagueState(){
-  S.league = S.league || {sids:[], form:"wedge", lp:LEAGUE_LP0, w:0, l:0, n:0, hist:[], up:0};
+  S.league = S.league || {sids:[], form:"wedge", lp:LEAGUE_LP0, w:0, l:0, n:0, hist:[], up:0, lastSeason:0};
   if(!Array.isArray(S.league.sids)) S.league.sids = [];
   if(!Array.isArray(S.league.hist)) S.league.hist = [];
   return S.league;
@@ -5320,109 +5342,205 @@ function gradPool(){ return (S.graduates||[]).filter(gradCanFight); }
 
 /* ---- 리그 편성 · 진행 ---- */
 function leagueRR(n){
-  /* 원형 로테이션 — n팀 라운드로빈 대진 (n은 짝수) */
-  const idx = Array.from({length:n},(_,i)=>i), out = [];
-  for(let r=0;r<n-1;r++){
+  /* 원형 로테이션 — n팀 라운드로빈 대진. 홀수면 부전승 자리를 하나 끼워 넣는다. */
+  const m = (n % 2) ? n + 1 : n;
+  const idx = Array.from({length:m},(_,i)=>i), out = [];
+  for(let r=0;r<m-1;r++){
     const pair = [];
-    for(let i=0;i<n/2;i++) pair.push([idx[i], idx[n-1-i]]);
+    for(let i=0;i<m/2;i++){
+      const a = idx[i], b = idx[m-1-i];
+      if(a < n && b < n) pair.push([a, b]);
+    }
     out.push(pair);
     idx.splice(1, 0, idx.pop());
   }
   return out;
 }
-async function leagueOpen(){
-  const L = leagueState();
-  if(!leagueOn()){ toast("리그 서버가 설정되지 않았다."); return; }
-  if(!leagueReady()){ toast("졸업생 3명을 먼저 뽑아야 한다."); return; }
-  UI.league = {stage:"loading"}; render();
-  let all;
-  try{ all = await leagueReq("teams"); }
-  catch(e){ UI.league = {stage:"error", msg:String(e.message||e)}; render(); return; }
-  const mine = leagueId();
-  const pool = Object.keys(all||{}).filter(k=>k!==mine)
-    .map(k=> leagueSane(all[k], k)).filter(Boolean);
-  if(pool.length < LEAGUE_N-1){
-    UI.league = {stage:"few", have:pool.length, need:LEAGUE_N-1}; render(); return;
+/* ══════ 시즌 ══════
+   리그를 각자 따로 돌리면 사람마다 결과가 달라진다. 그래서 시즌을 하나 만들어
+   그 시점의 팀 명단을 통째로 얼리고 시드를 같이 박아 서버에 올린다.
+   이후엔 누가 언제 열어봐도 같은 입력 → 같은 전투 → 같은 순위표가 나온다.
+   라운드는 실제 시간으로 SEASON_STEP 마다 하나씩 열린다. */
+const SEASON_STEP = 5 * 60 * 1000;   // 라운드 하나가 열리는 간격
+const SEASON_MIN  = 4;               // 시즌을 열 수 있는 최소 팀 수
+
+/* 서버에서 온 시즌 문서는 믿지 않는다 — 통째로 검사해서 다시 짓는다 */
+function seasonSane(d){
+  if(!d || typeof d !== "object") return null;
+  const n = d.n|0, start = +d.start||0, step = clamp(+d.step||SEASON_STEP, 10000, 7*24*3600*1000);
+  const seed = String(d.seed||"").slice(0, 40);
+  if(n < 1 || !start || !seed) return null;
+  const t = {};
+  Object.keys(d.t||{}).forEach(k=>{ const T = leagueSane(d.t[k], k); if(T) t[k] = T; });
+  const g = (Array.isArray(d.g) ? d.g : [])
+    .map(x => (Array.isArray(x) ? x : []).map(String))
+    .filter(x => x.length >= 2 && x.length <= LEAGUE_N && x.every(id => t[id]));
+  if(!g.length) return null;
+  return {n, seed, start, step, t, g};
+}
+function seasonGroupIdx(SE, tid){ return SE.g.findIndex(g => g.indexOf(tid) >= 0); }
+function seasonRounds(SE, gi){ return leagueRR(SE.g[gi].length).length; }
+/* 지금까지 열린 라운드 수 */
+function seasonOpen(SE, gi){
+  return clamp(Math.floor((Date.now() - SE.start) / SE.step) + 1, 0, seasonRounds(SE, gi));
+}
+/* 다음 라운드가 열리는 시각 (다 열렸으면 0) */
+function seasonNextAt(SE, gi){
+  const o = seasonOpen(SE, gi);
+  return o >= seasonRounds(SE, gi) ? 0 : SE.start + o * SE.step;
+}
+/* 순위에 따른 리그 포인트 — 조 크기가 달라도 1위와 꼴찌가 같은 폭을 받게 늘린다 */
+function seasonLP(rank, size){
+  if(size < 2) return 0;
+  const i = Math.round((rank - 1) / (size - 1) * (LEAGUE_LP.length - 1));
+  return LEAGUE_LP[clamp(i, 0, LEAGUE_LP.length - 1)] || 0;
+}
+/* 조 안의 대진 순서 — 시드로 섞는다. 리그 포인트 순서가 대진표에 그대로 드러나지 않게. */
+function seasonOrder(SE, gi){
+  const g = SE.g[gi].slice();
+  return withSeed(SE.seed + ":order:" + gi, ()=> shuffle(g));
+}
+/* 한 경기 — 시드가 같으면 누가 어느 브라우저에서 돌려도 같은 전투가 나온다 */
+function seasonBattle(SE, gi, order, r, i){
+  const rr = leagueRR(order.length);
+  if(!rr[r] || !rr[r][i]) return null;
+  const A = SE.t[order[rr[r][i][0]]], B = SE.t[order[rr[r][i][1]]];
+  if(!A || !B) return null;
+  return withSeed(SE.seed + ":" + SE.n + ":" + gi + ":" + r + ":" + i, ()=>{
+    const ua = assignFoeForm(leagueTeamUnits(A), A.form);
+    const ub = assignFoeForm(leagueTeamUnits(B), B.form);
+    if(!ua.length || !ub.length) return null;
+    const b = runBattle(ua, ub, Object.assign({titleA:A.acad, titleB:B.acad},
+      {formA:ua.form, rowsA:ua.rows}, foeBattleOpt(ub)));
+    return {b, A, B};
+  });
+}
+/* 열린 라운드까지 전부 계산한다 — 바깥 상태를 건드리지 않는 순수 계산 */
+function seasonCompute(SE, gi, upto){
+  const order = seasonOrder(SE, gi), rr = leagueRR(order.length), row = {};
+  order.forEach(tid =>{ row[tid] = {tid, acad:SE.t[tid].acad, pts:0, w:0, l:0, gf:0, ga:0}; });
+  const results = [];
+  for(let r=0; r<upto && r<rr.length; r++) for(let i=0; i<rr[r].length; i++){
+    const m = seasonBattle(SE, gi, order, r, i);
+    if(!m) continue;
+    const aw = m.b.winner === "A";
+    const alive = [m.b.A.filter(u=>u.alive).length, m.b.B.filter(u=>u.alive).length];
+    const la = row[m.A.tid], lb = row[m.B.tid];
+    if(aw){ la.pts += 3; la.w++; lb.l++; } else { lb.pts += 3; lb.w++; la.l++; }
+    la.gf += alive[0]; la.ga += alive[1]; lb.gf += alive[1]; lb.ga += alive[0];
+    results.push({r, i, a:m.A.acad, b:m.B.acad, at:m.A.tid, bt:m.B.tid, aw, score:alive.join("-")});
   }
-  // 리그 포인트가 가까운 순으로 일곱 팀
-  pool.sort((x,y)=> Math.abs(x.lp-L.lp) - Math.abs(y.lp-L.lp) || y.ts-x.ts);
-  const foes = pool.slice(0, LEAGUE_N-1);
-  // 우리 팀도 상대와 똑같이 "졸업생 기록" 상태로 담는다 — 전투 유닛은 leagueTeamUnits 에서 한 번만 만든다
-  const me = {tid:mine, acad:S.acadName, form:L.form, lp:L.lp, w:L.w, l:L.l, n:L.n, me:true,
-              units: L.sids.map(id => (S.graduates||[]).find(g=>g.sid===id)).filter(gradCanFight)};
-  const teams = shuffle([me].concat(foes));
-  UI.league = {stage:"prep", teams, rounds:leagueRR(LEAGUE_N), r:0, results:[], mine:mine,
-               table: teams.map(t=>({tid:t.tid, acad:t.acad, me:!!t.me, pts:0, w:0, l:0, gf:0, ga:0}))};
+  const table = order.map(t => row[t]).sort((a,b)=>
+    b.pts - a.pts || (b.gf-b.ga) - (a.gf-a.ga) || b.gf - a.gf || (a.tid < b.tid ? -1 : 1));
+  table.forEach((x,i)=>{ x.rank = i+1; x.lp = seasonLP(i+1, table.length); });
+  return {order, rr, table, results};
+}
+/* 시즌이 끝났으면 리그 포인트를 한 번만 반영한다 */
+function seasonSettle(SE, gi, C){
+  const L = leagueState();
+  if(L.lastSeason === SE.n) return false;
+  const me = C.table.find(x => x.tid === leagueId());
+  if(!me) return false;
+  L.lastSeason = SE.n;
+  L.lp = Math.max(0, L.lp + me.lp);
+  L.w += me.w; L.l += me.l; L.n += 1;
+  L.hist.unshift({ts:Date.now(), season:SE.n, rank:me.rank, size:C.table.length,
+                  lp:me.lp, now:L.lp, w:me.w, l:me.l});
+  if(L.hist.length > 20) L.hist.length = 20;
+  logE(`졸업생 리그 시즌 ${SE.n} — <b>${me.rank}위</b> / ${C.table.length}팀 (${me.w}승 ${me.l}패) · 리그 포인트 <b style="color:var(--brass)">${me.lp>=0?"+":""}${me.lp}</b> → ${L.lp}`,
+       me.rank <= Math.ceil(C.table.length/3) ? "good" : "");
+  save(); leagueSync();
+  return true;
+}
+
+/* ---- 서버 주고받기 ---- */
+async function seasonLoad(quiet){
+  if(!leagueOn()) return;
+  const U = UI.league = UI.league || {};
+  U.loading = true; if(!quiet) render();
+  let raw = null, err = null;
+  try{ raw = await leagueReq("season"); }catch(e){ err = String(e.message||e); }
+  U.loading = false;
+  U.err = err;
+  U.SE = err ? null : seasonSane(raw);
+  seasonRefresh();
+}
+/* 열린 라운드가 늘었으면 다시 계산한다 */
+function seasonRefresh(){
+  const U = UI.league; if(!U) return;
+  const SE = U.SE;
+  if(!SE){ U.gi = -1; U.C = null; render(); return; }
+  U.gi = seasonGroupIdx(SE, leagueId());
+  if(U.gi < 0){ U.C = null; U.upto = 0; render(); return; }
+  const o = seasonOpen(SE, U.gi);
+  if(U.C && U.upto === o){ render(); return; }
+  U.upto = o;
+  U.C = seasonCompute(SE, U.gi, o);
+  if(o >= seasonRounds(SE, U.gi)) seasonSettle(SE, U.gi, U.C);
   render();
 }
-function leagueRow(U, tid){ return U.table.find(x=>x.tid===tid); }
-function leagueFight(U, ai, bi, watch, done){
-  const A = U.teams[ai], B = U.teams[bi];
-  const ua = assignFoeForm(leagueTeamUnits(A), A.form);
-  const ub = assignFoeForm(leagueTeamUnits(B), B.form);
-  if(!ua.length || !ub.length){ done && done(); return; }
-  const b = runBattle(ua, ub, Object.assign({titleA:A.acad, titleB:B.acad},
-    {formA:ua.form, rowsA:ua.rows}, foeBattleOpt(ub)));
-  const rec = ()=>{
-    const aw = b.winner==="A";
-    const la = leagueRow(U, A.tid), lb = leagueRow(U, B.tid);
-    const alive = [b.A.filter(u=>u.alive).length, b.B.filter(u=>u.alive).length];
-    if(aw){ la.pts+=3; la.w++; lb.l++; } else { lb.pts+=3; lb.w++; la.l++; }
-    la.gf+=alive[0]; la.ga+=alive[1]; lb.gf+=alive[1]; lb.ga+=alive[0];
-    U.results.push({a:A.acad, b:B.acad, aw, score:alive.join("-"),
-                    mine:(A.me||B.me), myWin:(A.me&&aw)||(B.me&&!aw)});
-    done && done();
-  };
-  if(watch) openBattle(b, {titleA:A.acad, titleB:B.acad,
-      head:`${U.r+1}라운드 — ${A.acad} 대 ${B.acad}`, doneLabel:"계속"}, rec);
-  else rec();
-}
-/* 한 라운드 — 내 경기는 보여주고 나머지는 즉시 처리 */
-function leagueRound(watch){
-  const U = UI.league;
-  if(!U || U.stage!=="prep" && U.stage!=="run") return;
-  U.stage = "run";
-  const pairs = U.rounds[U.r];
-  const rest = pairs.filter(([x,y])=> !U.teams[x].me && !U.teams[y].me);
-  const mineP = pairs.find(([x,y])=> U.teams[x].me || U.teams[y].me);
-  const after = ()=>{
-    rest.forEach(([x,y])=> leagueFight(U, x, y, false));
-    U.r++;
-    if(U.r >= U.rounds.length) leagueFinish();
-    else render();
-  };
-  if(mineP) leagueFight(U, mineP[0], mineP[1], watch, after);
-  else after();
-}
-function leagueRunAll(){
-  const U = UI.league; if(!U) return;
-  U.stage = "run";
-  while(U.r < U.rounds.length){
-    U.rounds[U.r].forEach(([x,y])=> leagueFight(U, x, y, false));
-    U.r++;
+/* 시즌 만들기 — 등록된 팀을 리그 포인트 순으로 조를 나눠 통째로 얼린다 */
+async function seasonMake(){
+  const U = UI.league = UI.league || {};
+  if(!leagueOn()) return;
+  U.making = true; render();
+  const fail = (m)=>{ U.making = false; toast(m); render(); };
+  let all, cur;
+  try{ all = await leagueReq("teams"); }catch(e){ return fail("서버에 닿지 못했다 — " + (e.message||e)); }
+  try{ cur = await leagueReq("season"); }catch(e){ cur = null; }
+  const prev = seasonSane(cur);
+  if(prev){                                   // 가장 긴 조가 끝나야 다음 시즌을 연다
+    let gi = 0;
+    prev.g.forEach((g,i)=>{ if(g.length > prev.g[gi].length) gi = i; });
+    if(seasonOpen(prev, gi) < seasonRounds(prev, gi))
+      return fail(`시즌 ${prev.n} 이 아직 진행 중이다.`);
   }
-  leagueFinish();
+  const pool = Object.keys(all||{}).map(k => leagueSane(all[k], k)).filter(Boolean);
+  if(pool.length < SEASON_MIN) return fail(`학원이 ${pool.length}곳뿐이다. ${SEASON_MIN}곳은 모여야 시즌을 연다.`);
+  pool.sort((a,b)=> b.lp - a.lp || (a.tid < b.tid ? -1 : 1));
+  const gn = Math.ceil(pool.length / LEAGUE_N);
+  const g = Array.from({length:gn}, ()=> []);
+  pool.forEach((t,i)=> g[Math.min(gn-1, Math.floor(i * gn / pool.length))].push(t.tid));
+  const doc = {n: (prev ? prev.n : 0) + 1, start: Date.now(), step: SEASON_STEP,
+               seed: RNG().toString(36).slice(2,10) + Date.now().toString(36),
+               g, t: {}};
+  pool.forEach(t =>{ doc.t[t.tid] = all[t.tid]; });   // 서버에 올라온 원본을 그대로 얼린다
+  try{ await leagueReq("season", "PUT", doc); }
+  catch(e){ return fail("시즌을 올리지 못했다 — " + (e.message||e)); }
+  U.making = false;
+  toast(`시즌 ${doc.n} 을 열었다.`);
+  await seasonLoad(true);
 }
-function leagueFinish(){
-  const U = UI.league; if(!U) return;
-  U.table.sort((a,b)=> b.pts-a.pts || (b.gf-b.ga)-(a.gf-a.ga) || b.gf-a.gf);
-  U.table.forEach((x,i)=>{ x.rank = i+1; x.lp = LEAGUE_LP[i] || 0; });
-  const mineRow = U.table.find(x=>x.me);
-  const L = leagueState();
-  U.gain = mineRow ? mineRow.lp : 0;
-  U.rank = mineRow ? mineRow.rank : 0;
-  L.lp = Math.max(0, L.lp + U.gain);
-  L.w += mineRow? mineRow.w : 0;
-  L.l += mineRow? mineRow.l : 0;
-  L.n += 1;
-  L.hist.unshift({ts:Date.now(), rank:U.rank, lp:U.gain, now:L.lp,
-                  w:mineRow?mineRow.w:0, l:mineRow?mineRow.l:0});
-  if(L.hist.length > 20) L.hist.length = 20;
-  U.stage = "done";
-  logE(`졸업생 리그 — <b>${U.rank}위</b> (${mineRow?mineRow.w:0}승 ${mineRow?mineRow.l:0}패) · 리그 포인트 <b style="color:var(--brass)">${U.gain>=0?"+":""}${U.gain}</b> → ${L.lp}`, U.rank<=3?"good":"");
-  save(); render();
-  leagueSync();
+/* 내 경기 다시 보기 — 집계에 쓴 것과 같은 시드로 같은 전투를 돌린다 */
+function seasonWatch(r){
+  const U = UI.league; if(!U || !U.SE || U.gi < 0 || !U.C) return;
+  const rr = U.C.rr;
+  if(!rr[r]) return;
+  const mine = leagueId();
+  const i = rr[r].findIndex(pr => U.C.order[pr[0]] === mine || U.C.order[pr[1]] === mine);
+  if(i < 0){ toast("이 라운드는 부전승이다."); return; }
+  const m = seasonBattle(U.SE, U.gi, U.C.order, r, i);
+  if(!m){ toast("경기를 불러오지 못했다."); return; }
+  openBattle(m.b, {titleA:m.A.acad, titleB:m.B.acad,
+    head:`시즌 ${U.SE.n} · ${r+1}라운드 — ${m.A.acad} 대 ${m.B.acad}`, doneLabel:"닫는다"}, ()=> render());
 }
+/* 화면에 떠 있는 동안 남은 시간을 센다 */
+let LG_T = 0;
+function lgClockStop(){ if(LG_T){ clearInterval(LG_T); LG_T = 0; } }
+function lgClockStart(){
+  lgClockStop();
+  LG_T = setInterval(()=>{
+    const U = UI.league;
+    if(UI.view !== "league" || !U || !U.SE || U.gi < 0){ lgClockStop(); return; }
+    const at = seasonNextAt(U.SE, U.gi);
+    const el = $("#lgClock");
+    if(!at){ if(el) el.textContent = "모든 라운드가 끝났다"; lgClockStop(); return; }
+    const left = Math.max(0, at - Date.now());
+    if(el) el.textContent = `다음 라운드까지 ${Math.floor(left/60000)}:${String(Math.floor(left/1000)%60).padStart(2,"0")}`;
+    if(left <= 0) seasonRefresh();
+  }, 1000);
+}
+
 /* 내 자리만 갱신한다 — 남의 기록은 건드리지 않는다 */
 async function leagueSync(){
   if(!leagueOn() || !leagueReady()) return false;
@@ -5446,27 +5564,24 @@ function lgUnitCard(g, sel, pick){
   </${pick?"button":"div"}>`;
 }
 function viewLeague(){
-  const L = leagueState(), pool = gradPool(), U = UI.league;
+  const L = leagueState(), pool = gradPool(), U = UI.league || {};
   if(!leagueOn()) return `<section class="panel">
     <div class="panel-h"><h2>졸업생 리그</h2><span class="hint">아직 서버가 연결되지 않았다</span></div>
     <div class="empty">리그 서버 주소가 설정되지 않아 다른 학원과 겨룰 수 없다.</div></section>`;
-  if(U) return lgRunView(U, L);
   const old = (S.graduates||[]).length - pool.length;
-  return `<section class="panel">
-    <div class="panel-h"><h2>졸업생 리그</h2>
-      <span class="hint">졸업생 ${LEAGUE_TEAM}명으로 팀을 짜 다른 학원의 졸업생들과 겨룬다 · 전투는 각자 브라우저에서 계산된다</span>
+  return lgSeasonView(U, L) + `<section class="panel">
+    <div class="panel-h"><h2>출전 등록</h2>
+      <span class="hint">졸업생 ${LEAGUE_TEAM}명으로 팀을 짠다 · 등록해 둔 명단이 다음 시즌에 그대로 나간다</span>
       <span class="btnpair">
-        <button class="btn sm" id="lgSync" ${leagueReady()?"":"disabled"}>등록 · 갱신</button>
-        <button class="btn primary sm" id="lgOpen" ${leagueReady()?"":"disabled"}>리그 열기</button></span></div>
+        <button class="btn primary sm" id="lgSync" ${leagueReady()?"":"disabled"}>등록 · 갱신</button></span></div>
     <div class="lgbar">
       <div class="lgstat"><span>리그 포인트</span><b class="num">${fmt(L.lp)}</b></div>
-      <div class="lgstat"><span>참가</span><b class="num">${L.n}회</b></div>
+      <div class="lgstat"><span>참가</span><b class="num">${L.n}시즌</b></div>
       <div class="lgstat"><span>통산</span><b class="num">${L.w}승 ${L.l}패</b></div>
       <div class="lgstat"><span>마지막 등록</span><b>${L.up? new Date(L.up).toLocaleDateString("ko-KR") : "아직 없음"}</b></div>
     </div>
-    <p class="opthint">${LEAGUE_N}팀 리그를 한 번 돌 때마다 순위에 따라 리그 포인트를 받는다
-      (1위 ${LEAGUE_LP[0]>0?"+":""}${LEAGUE_LP[0]} … ${LEAGUE_N}위 ${LEAGUE_LP[LEAGUE_N-1]}).
-      상대는 <b>리그 포인트가 가까운 학원</b>부터 뽑힌다. <b>등록 · 갱신</b>을 눌러야 내 팀이 남의 리그에 상대로 나간다.</p>
+    <p class="opthint">시즌이 열리는 순간의 명단이 <b>통째로 얼어붙는다</b>. 시즌 중에 명단을 바꿔도 다음 시즌부터 반영된다.
+      전투는 시드가 박혀 있어 <b>누가 어느 브라우저에서 열어도 같은 결과</b>가 나온다.</p>
     <div class="rule"></div>
     <div class="eyebrow" style="margin-bottom:6px">출전 명단 ${L.sids.length}/${LEAGUE_TEAM}</div>
     <div class="grid2" style="margin-bottom:10px">
@@ -5486,49 +5601,73 @@ function viewLeague(){
     <div class="eyebrow" style="margin-bottom:6px">졸업생 명부 ${pool.length}명${old? ` <span style="color:var(--dim)">(옛 기록 ${old}명은 전투 정보가 없어 출전 불가)</span>`:""}</div>
     ${pool.length? `<div class="grid2">${pool.map(g=> lgUnitCard(g, L.sids.includes(g.sid), true)).join("")}</div>`
       : `<div class="empty">아직 졸업생이 없다. 3학년이 졸업하면 여기에 쌓인다.</div>`}
-    ${L.hist.length? `<div class="rule"></div><div class="eyebrow" style="margin-bottom:6px">지난 리그</div>
+    ${L.hist.length? `<div class="rule"></div><div class="eyebrow" style="margin-bottom:6px">지난 시즌</div>
       <div class="condbox">${L.hist.map(h=>`<div class="condrow">
-        <span class="cn">${new Date(h.ts).toLocaleDateString("ko-KR")}</span>
-        <span class="cv num" style="color:var(--${h.rank<=3?"ok":h.rank>=6?"bad":"muted"})">${h.rank}위</span>
+        <span class="cn">${h.season? `시즌 ${h.season}` : new Date(h.ts).toLocaleDateString("ko-KR")}</span>
+        <span class="cv num" style="color:var(--${h.rank<=3?"ok":"muted"})">${h.rank}위${h.size? ` / ${h.size}팀`:""}</span>
         <span class="ce">${h.w}승 ${h.l}패</span>
         <span class="cf num" style="color:var(--${h.lp>=0?"brass":"bad"})">${h.lp>=0?"+":""}${h.lp} → ${fmt(h.now)}</span></div>`).join("")}</div>`:""}
   </section>`;
 }
-function lgRunView(U, L){
-  if(U.stage==="loading") return `<section class="panel"><div class="panel-h"><h2>졸업생 리그</h2></div>
-    <div class="empty">상대 학원을 불러오는 중…</div></section>`;
-  if(U.stage==="error") return `<section class="panel"><div class="panel-h"><h2>졸업생 리그</h2></div>
-    <div class="empty">서버에 닿지 못했다 — ${esc(U.msg||"")}</div>
-    <div class="btnrow"><button class="btn" id="lgBack">돌아가기</button></div></section>`;
-  if(U.stage==="few") return `<section class="panel"><div class="panel-h"><h2>졸업생 리그</h2></div>
-    <div class="empty">등록된 학원이 ${U.have}곳뿐이다. ${U.need}곳은 모여야 리그가 열린다.</div>
-    <div class="btnrow"><button class="btn" id="lgBack">돌아가기</button></div></section>`;
-  const done = U.stage==="done";
-  const tb = done? U.table : U.table.slice().sort((a,b)=> b.pts-a.pts || (b.gf-b.ga)-(a.gf-a.ga));
+/* 시즌 판 — 서버에 얼려 둔 대진을 그대로 펼쳐 보여준다 */
+function lgSeasonView(U, L){
+  const head = (right)=> `<div class="panel-h"><h2>졸업생 리그</h2>
+    <span class="hint" id="lgClock">모두가 같은 순위표를 본다</span>
+    <span class="btnpair">${right||""}
+      <button class="btn sm" id="lgLoad" ${U.loading?"disabled":""}>${U.loading?"불러오는 중…":"새로고침"}</button></span></div>`;
+  const mkBtn = `<button class="btn sm" id="lgMake" ${U.making?"disabled":""}>${U.making?"여는 중…":"시즌 열기"}</button>`;
+  if(U.loading && !U.SE) return `<section class="panel">${head("")}<div class="empty">시즌을 불러오는 중…</div></section>`;
+  if(U.err) return `<section class="panel">${head("")}
+    <div class="empty">서버에 닿지 못했다 — ${esc(U.err)}</div></section>`;
+  if(!U.SE) return `<section class="panel">${head(mkBtn)}
+    <div class="empty">아직 열린 시즌이 없다. ${SEASON_MIN}곳 이상 등록되면 누구든 시즌을 열 수 있다.</div></section>`;
+  const SE = U.SE, total = U.gi>=0 ? seasonRounds(SE, U.gi) : 0;
+  if(U.gi < 0) return `<section class="panel">${head(mkBtn)}
+    <div class="empty">시즌 ${SE.n} 이 진행 중이다. 이번 시즌 명단에는 우리 학원이 없다 —
+      <b>등록 · 갱신</b>을 해 두면 다음 시즌부터 들어간다.</div></section>`;
+  const C = U.C, o = U.upto|0, done = o >= total;
+  const mine = leagueId();
+  const myRows = C.rr.map((pairs, r)=>{
+    const i = pairs.findIndex(pr => C.order[pr[0]]===mine || C.order[pr[1]]===mine);
+    if(i < 0) return {r, bye:true};
+    const res = C.results.find(x => x.r===r && x.i===i);
+    const foeTid = C.order[pairs[i][0]]===mine ? C.order[pairs[i][1]] : C.order[pairs[i][0]];
+    let sc = "";
+    if(res){                                   // 생존 수는 늘 우리 쪽을 앞에 적는다
+      const n = res.score.split("-");
+      sc = res.at===mine ? `${n[0]}-${n[1]}` : `${n[1]}-${n[0]}`;
+    }
+    return {r, foe:SE.t[foeTid] ? SE.t[foeTid].acad : "?", res, sc,
+            win: res ? ((res.at===mine) === res.aw) : null, open:r < o};
+  });
   return `<section class="panel">
-    <div class="panel-h"><h2>졸업생 리그 — ${done? "최종 결과" : `${U.r+1} / ${U.rounds.length} 라운드`}</h2>
-      <span class="hint">${LEAGUE_N}팀 라운드로빈 · 승 3점</span>
-      <span class="btnpair">${done
-        ? `<button class="btn primary sm" id="lgBack">마친다</button>`
-        : `<button class="btn primary sm" id="lgNext">내 경기 보기</button>
-           <button class="btn sm" id="lgQuick">이번 라운드 빠르게</button>
-           <button class="btn sm" id="lgAll">끝까지 빠르게</button>`}</span></div>
-    ${done? `<div class="lgbar">
-      <div class="lgstat"><span>최종 순위</span><b class="num" style="color:var(--${U.rank<=3?"ok":"muted"})">${U.rank}위</b></div>
-      <div class="lgstat"><span>리그 포인트</span><b class="num" style="color:var(--${U.gain>=0?"brass":"bad"})">${U.gain>=0?"+":""}${U.gain}</b></div>
-      <div class="lgstat"><span>현재</span><b class="num">${fmt(L.lp)}</b></div>
-    </div>`:""}
-    <table class="tb"><thead><tr><th>순위</th><th>학원</th><th>승점</th><th>승</th><th>패</th><th>생존</th>${done?"<th>LP</th>":""}</tr></thead><tbody>
-      ${tb.map((x,i)=>`<tr${x.me?' style="background:var(--brass-soft)"':""}>
-        <td class="num">${done? x.rank : i+1}</td>
-        <td>${esc(x.acad)}${x.me? ' <span class="tag" style="color:var(--brass);border-color:var(--brass)">우리</span>':""}</td>
+    ${head(done? mkBtn : "")}
+    <div class="lgbar">
+      <div class="lgstat"><span>시즌</span><b class="num">${SE.n}</b></div>
+      <div class="lgstat"><span>진행</span><b class="num">${o} / ${total} 라운드</b></div>
+      <div class="lgstat"><span>우리 조</span><b class="num">${SE.g.length>1? `${U.gi+1}조 · ` : ""}${C.table.length}팀</b></div>
+      <div class="lgstat"><span>현재 순위</span><b class="num" style="color:var(--${(C.table.find(x=>x.tid===mine)||{}).rank<=3?"ok":"muted"})">${(C.table.find(x=>x.tid===mine)||{}).rank||"-"}위</b></div>
+    </div>
+    ${done? `<p class="opthint">시즌 ${SE.n} 이 끝났다. 순위에 따른 리그 포인트가 반영됐다 — <b>시즌 열기</b>로 다음 판을 시작할 수 있다.</p>`
+          : `<p class="opthint">라운드는 ${Math.round(SE.step/60000)}분마다 하나씩 열린다. 모두가 같은 시드로 계산하니 순위표는 어디서 봐도 같다.</p>`}
+    <table class="tb"><thead><tr><th>순위</th><th>학원</th><th>승점</th><th>승</th><th>패</th><th>생존</th><th>LP</th></tr></thead><tbody>
+      ${C.table.map(x=>`<tr${x.tid===mine?' style="background:var(--brass-soft)"':""}>
+        <td class="num">${x.rank}</td>
+        <td>${esc(x.acad)}${x.tid===mine? ' <span class="tag" style="color:var(--brass);border-color:var(--brass)">우리</span>':""}</td>
         <td class="num"><b>${x.pts}</b></td><td class="num">${x.w}</td><td class="num">${x.l}</td>
         <td class="num" style="color:var(--dim)">${x.gf}:${x.ga}</td>
-        ${done? `<td class="num" style="color:var(--${x.lp>=0?"brass":"bad"})">${x.lp>=0?"+":""}${x.lp}</td>`:""}</tr>`).join("")}
+        <td class="num" style="color:var(--${x.lp>=0?"brass":"bad"})">${x.lp>=0?"+":""}${x.lp}</td></tr>`).join("")}
     </tbody></table>
-    ${U.results.length? `<div class="rule"></div><div class="eyebrow" style="margin-bottom:6px">경기 기록</div>
-      <div class="condbox">${U.results.slice().reverse().slice(0,24).map(r=>`<div class="condrow">
-        <span class="cn" style="color:var(--${r.mine?"text":"dim"})">${esc(r.a)} 대 ${esc(r.b)}</span>
+    <div class="rule"></div><div class="eyebrow" style="margin-bottom:6px">우리 경기</div>
+    <div class="condbox">${myRows.map(m=>`<div class="condrow">
+      <span class="cn">${m.r+1}라운드</span>
+      <span class="cv">${m.bye? "부전승" : esc(m.foe)}</span>
+      <span class="ce" style="color:var(--${m.bye?"dim":!m.open?"dim":m.win?"ok":"bad"})">${
+        m.bye? "-" : !m.open? "아직" : (m.win? "승" : "패") + " " + m.sc}</span>
+      <span class="cf">${m.bye||!m.open? "" : `<button class="btn sm" data-lgw="${m.r}">관전</button>`}</span></div>`).join("")}</div>
+    ${C.results.length? `<div class="rule"></div><div class="eyebrow" style="margin-bottom:6px">전체 경기</div>
+      <div class="condbox">${C.results.slice().reverse().map(r=>`<div class="condrow">
+        <span class="cn" style="color:var(--${r.at===mine||r.bt===mine?"text":"dim"})">${r.r+1}R · ${esc(r.a)} 대 ${esc(r.b)}</span>
         <span class="ce">${r.aw? esc(r.a) : esc(r.b)} 승</span>
         <span class="cf num">${r.score}</span></div>`).join("")}</div>`:""}
   </section>`;
@@ -6169,12 +6308,12 @@ function friendlyTeam(ti){
       return st;
     }));
   }
-  const strong = T.up && Math.random()<.45;
+  const strong = T.up && RNG()<.45;
   const P = LADDER_FOE[strong ? T.up : T.foe];
   const span = T.span||0;
   return assignFoeForm(comp.map(job=>{
-    const rare = Math.random() < (T.rare||0);
-    const y = rare ? 3 : (Math.random()<.5 ? 3 : 2);
+    const rare = RNG() < (T.rare||0);
+    const y = rare ? 3 : (RNG()<.5 ? 3 : 2);
     const prof = y===3 ? P.y3 : P.y2;
     const grade = rare ? P.rare.g : prof.g;
     const lv = clamp((rare? P.rare.lv : prof.lv) + (T.lvOff||0) + ri(-1, span? span-1 : 1), 1, 30);
@@ -6318,7 +6457,7 @@ function focusPick(st, mode){
     if(!best){ best = {k, v}; return; }
     if(mode==="weak" ? v < best.v : v > best.v) best = {k, v};
     // 동률이면 무작위로 하나
-    else if(v === best.v && Math.random()<.5) best = {k, v};
+    else if(v === best.v && RNG()<.5) best = {k, v};
   });
   return best;
 }
@@ -6816,11 +6955,13 @@ function bindView(){
       const ok = await leagueSync();
       render(); if(ok) toast("리그에 등록했다.");
     };
-    const lo = $("#lgOpen");   if(lo) lo.onclick = ()=> leagueOpen();
-    const lb = $("#lgBack");   if(lb) lb.onclick = ()=>{ UI.league = null; render(); };
-    const ln = $("#lgNext");   if(ln) ln.onclick = ()=> leagueRound(true);
-    const lq = $("#lgQuick");  if(lq) lq.onclick = ()=> leagueRound(false);
-    const la = $("#lgAll");    if(la) la.onclick = ()=> leagueRunAll();
+    const ll = $("#lgLoad");   if(ll) ll.onclick = ()=> seasonLoad();
+    const lm = $("#lgMake");   if(lm) lm.onclick = ()=> seasonMake();
+    v.querySelectorAll("[data-lgw]").forEach(b=> b.onclick = ()=> seasonWatch(b.dataset.lgw|0));
+    if(UI.view === "league"){
+      if(!UI.league || (UI.league.SE === undefined && !UI.league.loading)) seasonLoad(true);
+      lgClockStart();
+    } else lgClockStop();
   }
   const bd = $("#btnDonate"); if(bd) bd.onclick = ()=> doDonate();
   const bhw = $("#btnWater");   if(bhw) bhw.onclick = ()=> buyHolyWater();
@@ -7077,7 +7218,7 @@ function genSkillOptions(st){
     if(isSkill && !t.sk.kind) w.proc = 25;
     if(isSkill && skDur(st, t.sk) > 0) w.dur = 15;
     const aspect = wchoose(w);
-    out.push({t, aspect, evo: Math.random() < evoP});
+    out.push({t, aspect, evo: RNG() < evoP});
   }
   return out;
 }
@@ -7111,7 +7252,7 @@ function autoSpendSp(st){
     const w = {pow:60};
     if(t.kind==="skill" && !t.sk.kind) w.proc = 25;
     if(t.kind==="skill" && skDur(st, t.sk) > 0) w.dur = 15;
-    applySkillUp(st, {t, aspect: wchoose(w), evo: Math.random() < evoChance(st)}, true);
+    applySkillUp(st, {t, aspect: wchoose(w), evo: RNG() < evoChance(st)}, true);
   }
   st.skOpts = null;
 }
@@ -7513,7 +7654,7 @@ function lockerState(t, key, my, foe, foeTier){
     const mood = {};
     (my||[]).forEach(s=> mood[s.id] = baseMood(s, myP, foeP));
     const tier = clamp(foeTier||0, 0, 4);
-    t.locker = {key, myP, foeP, tier, seen: Math.random() < foePowerSeenP(tier),
+    t.locker = {key, myP, foeP, tier, seen: RNG() < foePowerSeenP(tier),
                 base:Object.assign({}, mood), mood,
                 offers:makeSpeechOffers(), said:null, res:{}, conv:{}};
   }
@@ -7536,7 +7677,7 @@ function lockerSpeak(t, L, idx, my){
     else                       ok = (o.fit||[]).indexOf(st.pers||"plain") >= 0;
     let conv = false, byTrust = false;
     if(!ok && trustFull(st)){ ok = true; byTrust = true; }        // 운명 단계는 언제나 통한다
-    else if(!ok && Math.random() < netP){ ok = true; conv = true; }
+    else if(!ok && RNG() < netP){ ok = true; conv = true; }
     if(ok) addTrust(st, o.type==="motive" ? 2 : 1);   // 동기부여는 신뢰가 두 배로 쌓인다
     L.res[st.id] = ok; L.conv[st.id] = conv; L.byTrust = L.byTrust||{}; L.byTrust[st.id] = byTrust;
     L.mood[st.id] = Math.round(clamp(L.mood[st.id] + (ok? MOOD_SPEECH : -MOOD_SPEECH), 0, 100));
