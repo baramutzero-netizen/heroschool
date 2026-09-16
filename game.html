@@ -195,6 +195,30 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 .lgstat b{font-size:17px;color:var(--text)}
 .opt.sel{border-color:var(--brass);box-shadow:0 0 0 1px var(--brass) inset;background:var(--brass-soft)}
 
+/* ---------- 순위표 ---------- */
+.rktable{margin-top:4px}
+.rkrow{display:flex;align-items:center;gap:14px;padding:11px 8px;border-top:1px solid var(--line-soft);flex-wrap:wrap}
+.rkrow.me{background:var(--brass-soft);border-radius:4px}
+.rkno{width:40px;flex:none;text-align:right;font-size:19px;font-weight:700;color:var(--dim)}
+.rkrow:nth-child(1) .rkno{color:var(--brass)}
+.rkacad{flex:1;min-width:150px}
+.rkan{font-size:14px;font-weight:700}
+.rkad{font-size:11.5px;color:var(--dim);margin-top:2px}
+.rklp{flex:none;font-size:19px;font-weight:700;color:var(--brass);text-align:right;min-width:74px}
+.rklp span{font-size:10.5px;color:var(--dim);margin-left:3px;font-weight:500}
+.rkmem{flex:none;display:flex;gap:8px}
+.rku{width:92px;text-align:center}
+.rkusp{height:64px;display:flex;align-items:flex-end;justify-content:center}
+.rkusp .spr{image-rendering:pixelated}
+.rkuno{display:inline-block;font-size:11px;color:var(--muted);border:1px dashed var(--line);border-radius:4px;
+  padding:13px 7px;line-height:1;white-space:nowrap}
+.rkun{font-size:11.5px;font-weight:600;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rkul{font-size:10.5px;color:var(--dim);font-family:"IBM Plex Mono",ui-monospace,monospace;white-space:nowrap}
+@media (max-width:760px){
+  .rkmem{width:100%;justify-content:flex-start;padding-left:54px}
+  .rklp{min-width:0}
+}
+
 /* ---------- 설정 ---------- */
 .optrow{display:flex;gap:20px;align-items:center;flex-wrap:wrap;
   border:1px solid var(--line-soft);border-radius:4px;background:var(--bg);padding:14px 16px}
@@ -4695,6 +4719,7 @@ const VIEWS = [
   {id:"relic", n:"유물 · 스킬"},
   {id:"record", n:"기록"},
   {id:"league", n:"리그"},
+  {id:"rank", n:"순위표"},
   {id:"opt", n:"설정"}
 ];
 function ultName(job){
@@ -4779,6 +4804,7 @@ function render(){
   else if(UI.view==="counsel") v.innerHTML = viewCounsel();
   else if(UI.view==="record") v.innerHTML = viewRecord();
   else if(UI.view==="league") v.innerHTML = viewLeague();
+  else if(UI.view==="rank") v.innerHTML = viewRank();
   else if(UI.view==="opt") v.innerHTML = viewOpt();
   else if(UI.view==="scout") v.innerHTML = viewScout();
   else v.innerHTML = viewHome();
@@ -5296,11 +5322,11 @@ function leagueSane(e, tid){
   if(!e || typeof e !== "object") return null;
   const t = Array.isArray(e.t) ? e.t : [];
   if(t.length !== LEAGUE_TEAM) return null;
-  const units = t.map(u=>{
+  const units = t.map((u, ui)=>{
     if(!u || !JOBS[u.j]) return null;
     const m = {};
     MENTAL.forEach(x=>{ m[x.k] = clamp(Math.round(+(u.m&&u.m[x.k])||10), 1, 99); });
-    return {sid:tid+"_"+RNG().toString(36).slice(2,6), raw:String(u.n||"무명").slice(0,12),
+    return {sid:tid+"_"+ui, raw:String(u.n||"무명").slice(0,12),
             name:String(u.n||"무명").slice(0,12), epithet:u.e? String(u.e).slice(0,20):null,
             job:u.j, grade:["D","C","B","A","S"].indexOf(u.g)>=0? u.g : "C",
             lv:clamp(u.lv|0, 1, 30), pers:PERSONA[u.p]? u.p : "plain", karma:clamp(u.k|0,0,999),
@@ -5752,6 +5778,63 @@ function lgSeasonView(U, L){
         <span class="ce">${r.aw? esc(r.a) : esc(r.b)} 승</span>
         <span class="cv num" style="color:var(--dim)">${r.score}</span>
         <span class="cf"><button class="btn sm" data-lgw="${r.r}:${r.i}">관전</button></span></div>`).join("")}</div>`:""}
+  </section>`;
+}
+
+/* ══════ 순위표 ══════
+   서버에 등록된 학원을 리그 포인트 순으로 줄 세운다.
+   각 학원이 마지막으로 등록해 둔 명단을 그대로 보여준다. */
+const RANK_TOP = 50;
+async function rankLoad(){
+  const R = UI.rank = UI.rank || {};
+  if(R.loading) return;
+  R.loading = true; R.err = null; render();
+  let all = null;
+  try{ all = await leagueReq("teams"); }
+  catch(e){ R.loading = false; R.err = String(e.message||e); render(); return; }
+  const list = Object.keys(all||{}).map(k => leagueSane(all[k], k)).filter(Boolean);
+  list.sort((a,b)=> b.lp - a.lp || b.w - a.w || (a.tid < b.tid ? -1 : 1));
+  R.all = list.length;
+  R.list = list.slice(0, RANK_TOP);
+  R.at = Date.now();
+  R.loading = false;
+  render();
+}
+function rankUnitCell(u){
+  const st = gradUnit(u);
+  return `<div class="rku">
+    <div class="rkusp">${sprHas(u.job)
+      ? sprHTML(u.job, "idle", .5, {p:sprPalOf(u)})
+      : `<span class="rkuno">${esc(JOBS[u.job] ? JOBS[u.job].name : "?")}</span>`}</div>
+    <div class="rkun">${esc(u.raw||u.name||"무명")}</div>
+    <div class="rkul">Lv.${u.lv|0}${st? ` · ${fmt(power(st))}` : ""}</div>
+  </div>`;
+}
+function viewRank(){
+  const R = UI.rank || {}, mine = leagueId();
+  if(!leagueOn()) return `<section class="panel">
+    <div class="panel-h"><h2>순위표</h2></div>
+    <div class="empty">리그 서버 주소가 설정되지 않았다.</div></section>`;
+  const head = `<div class="panel-h"><h2>순위표</h2>
+    <span class="hint">${R.list? `등록된 학원 ${R.all}곳${R.all>RANK_TOP? ` · 상위 ${RANK_TOP}곳` : ""}` : "리그 포인트 순"}</span>
+    <span class="btnpair"><button class="btn sm" id="rkLoad" ${R.loading?"disabled":""}>${R.loading?"불러오는 중…":"새로고침"}</button></span></div>`;
+  if(R.err) return `<section class="panel">${head}<div class="empty">서버에 닿지 못했다 — ${esc(R.err)}</div></section>`;
+  if(!R.list) return `<section class="panel">${head}<div class="empty">불러오는 중…</div></section>`;
+  if(!R.list.length) return `<section class="panel">${head}
+    <div class="empty">아직 등록된 학원이 없다. 리그 탭에서 <b>등록 · 갱신</b>을 누르면 여기에 올라온다.</div></section>`;
+  return `<section class="panel">${head}
+    <p class="opthint">각 학원이 마지막으로 등록해 둔 졸업생 명단이다. 시즌은 이 순위를 기준으로 조를 나눈다.</p>
+    <div class="rktable">
+      ${R.list.map((t,i)=>`<div class="rkrow${t.tid===mine?" me":""}">
+        <div class="rkno num">${i+1}</div>
+        <div class="rkacad">
+          <div class="rkan">${esc(t.acad)}${t.tid===mine? ' <span class="tag" style="color:var(--brass);border-color:var(--brass)">우리</span>':""}</div>
+          <div class="rkad">${t.n? `${t.n}시즌 · ${t.w}승 ${t.l}패` : "아직 시즌 기록 없음"} · ${FORMS[t.form]? FORMS[t.form].n : "진형 미정"}</div>
+        </div>
+        <div class="rklp num">${fmt(t.lp)}<span>LP</span></div>
+        <div class="rkmem">${t.units.map(rankUnitCell).join("")}</div>
+      </div>`).join("")}
+    </div>
   </section>`;
 }
 
@@ -7038,6 +7121,8 @@ function bindView(){
       render(); if(ok) toast("리그에 등록했다.");
     };
     const ll = $("#lgLoad");   if(ll) ll.onclick = ()=>{ if(UI.league) UI.league.tried = null; seasonLoad(); };
+    const rl = $("#rkLoad");   if(rl) rl.onclick = ()=> rankLoad();
+    if(UI.view === "rank" && (!UI.rank || (!UI.rank.list && !UI.rank.loading && !UI.rank.err))) rankLoad();
     v.querySelectorAll("[data-lgg]").forEach(b=> b.onclick = ()=> seasonSeeGroup(b.dataset.lgg|0));
     v.querySelectorAll("[data-lgw]").forEach(b=> b.onclick = ()=>{
       const a = String(b.dataset.lgw).split(":");
