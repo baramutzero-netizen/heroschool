@@ -496,10 +496,6 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 .opt .on{font-weight:600;display:flex;gap:6px;align-items:center}
 .opt .od{font-size:11.5px;color:var(--muted);margin-top:3px}
 .opt .price{margin-left:auto;color:var(--brass);font-weight:600;font-size:12px}
-.faccell{display:flex;flex-direction:column;gap:4px}
-.faccell .opt{flex:1 1 auto}
-.facbulk{display:flex;gap:4px}
-.facbulk .btn{flex:1 1 0;min-width:0}
 table.tb{width:100%;border-collapse:collapse;font-size:12.5px}
 table.tb th{text-align:left;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:600;padding:4px 6px;border-bottom:1px solid var(--line)}
 table.tb td{padding:5px 6px;border-bottom:1px solid var(--line-soft)}
@@ -6739,13 +6735,6 @@ function facDesc(k){
 }
 function facCostAt(k, lv){ return Math.round(FACILITIES[k].base * Math.pow(Math.max(1, lv - facStart(k) + 1), facPw(k))); }
 function facCost(k){ return facCostAt(k, S.facil[k]||0); }
-/* 지금 등급에서 n 단계 올리는 값 */
-function facCostN(k, n){
-  const lv0 = S.facil[k]||0, mx = facMax(k);
-  let sum = 0;
-  for(let i=0; i<n && lv0+i < mx; i++) sum += facCostAt(k, lv0+i);
-  return sum;
-}
 function viewFacil(){
   return `<section class="panel">
     <div class="panel-h"><h2>시설</h2><span class="hint">한 단계마다 해당 훈련 효율 +2% · 최대 Lv.70 에서 ×2.4</span></div>
@@ -6755,20 +6744,10 @@ function viewFacil(){
         const eff = k==="counsel"
           ? (()=>{ const b=cslFacBonus(); return `현재 지도력 +${b.lead} · 정보력 +${b.info} · 호소력 +${b.net}`; })()
           : k==="infirm" ? `현재 매주 +${lv-1}` : `현재 효율 ×${facEff(k).toFixed(2)}`;
-        /* 단계가 잘게 나뉜 시설만 한 번에 올릴 수 있게 한다 */
-        const rem = mx - lv, many = (mx - facStart(k)) > 10;
-        const steps = (!full && many) ? (rem > 10 ? [10, rem] : [rem]) : [];
-        const bulk = steps.length ? `<div class="facbulk">
-          ${steps.map(n=>{ const q = facCostN(k, n);
-            return `<button class="btn sm" data-facn="${k}" data-facq="${n}" ${S.gold<q?"disabled":""}
-              >+${n}${n===rem&&rem>10? " (최대)":""} · ${fmt(q)} G</button>`; }).join("")}
-        </div>` : "";
-        return `<div class="faccell">
-          <button class="opt" data-fac="${k}" ${S.gold<c||full?"disabled":""}>
-            <div class="on">${f.n} <span class="tag">Lv.${lv} / ${mx}</span><span class="price">${full?"최대":fmt(c)+" G"}</span></div>
-            <div class="od">${facDesc(k)} · ${eff}</div>
-          </button>${bulk}
-        </div>`;
+        return `<button class="opt" data-fac="${k}" ${S.gold<c||full?"disabled":""}>
+          <div class="on">${f.n} <span class="tag">Lv.${lv} / ${mx}</span><span class="price">${full?"최대":fmt(c)+" G"}</span></div>
+          <div class="od">${facDesc(k)} · ${eff}</div>
+        </button>`;
       }).join("")}
     </div>
   </section>
@@ -7899,21 +7878,12 @@ function bindView(){
   const brI = $("#btnRestInj"); if(brI) brI.onclick = ()=> setRestInjured();
   const bw = $("#btnWeek"); if(bw) bw.onclick=()=> runWithReport();
   const br = $("#btnRest"); if(br) br.onclick=()=> runWeeks(halfLeft());
-  const facBuy = (k, n)=>{
-    const mx = facMax(k), lv0 = S.facil[k]||0;
-    let got = 0;
-    for(let i=0; i<n; i++){
-      const c = facCost(k);
-      if(S.gold < c || (S.facil[k]||0) >= mx) break;
-      S.gold -= c; S.facil[k] = (S.facil[k]||0) + 1; got++;
-    }
-    if(!got) return;
-    logE(`<b>${FACILITIES[k].n}</b> 확장 — Lv.${lv0} → <b>Lv.${S.facil[k]}</b>${
-      got>1? ` (${got}단계)`:""}`,"good");
-    save(); render();
-  };
-  v.querySelectorAll("[data-fac]").forEach(b=> b.onclick=()=> facBuy(b.dataset.fac, 1));
-  v.querySelectorAll("[data-facn]").forEach(b=> b.onclick=()=> facBuy(b.dataset.facn, +b.dataset.facq||1));
+  v.querySelectorAll("[data-fac]").forEach(b=> b.onclick=()=>{
+    const k=b.dataset.fac, c=facCost(k);
+    if(S.gold<c || (S.facil[k]||0) >= facMax(k)) return;
+    S.gold-=c; S.facil[k] = (S.facil[k]||0) + 1;
+    logE(`<b>${FACILITIES[k].n}</b> 확장 — Lv.${S.facil[k]}`,"good"); save(); render();
+  });
   {
     const sl = $("#fxA");
     if(sl){
