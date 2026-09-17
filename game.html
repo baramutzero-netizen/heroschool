@@ -1852,10 +1852,10 @@ function chainOf(list, i){
    ============================================================ */
 const DUNGEONS = [
   {id:"d1",n:"학원 지하 수련장", tier:1, secs:3, lv:1,  mon:"mon_dummy",    monK:1.08, evalCap:46, relicP:.15, needFame:0,    fameClear:5,  exp:130, karma:0, relic:{C:.62,B:.12}, d:"입학생도 버틸 만한 곳"},
-  {id:"d2",n:"안개 낀 옛 성터",  tier:1, secs:4, lv:6,  mon:"mon_wraith",   monK:0.52, evalCap:58, relicP:.162, needFame:0,    fameClear:10, exp:230, karma:1, relic:{C:.5,B:.26,A:.05}, d:"구 단위 학원의 단골 원정지"},
-  {id:"d3",n:"무너진 종탑",      tier:2, secs:5, lv:10, mon:"mon_gargoyle", monK:0.58, evalCap:70, relicP:.166, needFame:400,  fameClear:15, exp:390, karma:2, relic:{C:.34,B:.36,A:.13}, d:"이름이 알려진 학원부터 문이 열린다"},
-  {id:"d4",n:"소금 바다의 균열", tier:2, secs:6, lv:14, mon:"mon_brine",    monK:0.27, evalCap:82, relicP:.17, needFame:900,  fameClear:20, exp:620, karma:3, relic:{C:.2,B:.38,A:.24,S:.03}, d:"의식 구간이 길어 지구력을 요구"},
-  {id:"d5",n:"용사의 무덤",      tier:3, secs:7, lv:18, mon:"mon_guardian", monK:0.27, evalCap:96, relicP:.172, needFame:2600, fameClear:30, exp:950, karma:4, relic:{B:.3,A:.36,S:.1}, d:"대륙에 이름난 학원만이 문을 연다"}
+  {id:"d2",n:"안개 낀 옛 성터",  tier:1, secs:4, lv:6,  mon:"mon_wraith",   monK:0.52, evalCap:58, relicP:.162, needFame:0,    fameClear:10, exp:230, karma:5, relic:{C:.5,B:.26,A:.05}, d:"구 단위 학원의 단골 원정지"},
+  {id:"d3",n:"무너진 종탑",      tier:2, secs:5, lv:10, mon:"mon_gargoyle", monK:0.58, evalCap:70, relicP:.166, needFame:400,  fameClear:15, exp:390, karma:10, relic:{C:.34,B:.36,A:.13}, d:"이름이 알려진 학원부터 문이 열린다"},
+  {id:"d4",n:"소금 바다의 균열", tier:2, secs:6, lv:14, mon:"mon_brine",    monK:0.27, evalCap:82, relicP:.17, needFame:900,  fameClear:20, exp:620, karma:15, relic:{C:.2,B:.38,A:.24,S:.03}, d:"의식 구간이 길어 지구력을 요구"},
+  {id:"d5",n:"용사의 무덤",      tier:3, secs:7, lv:18, mon:"mon_guardian", monK:0.27, evalCap:96, relicP:.172, needFame:2600, fameClear:30, exp:950, karma:20, relic:{B:.3,A:.36,S:.1}, d:"대륙에 이름난 학원만이 문을 연다"}
 ];
 
 /* ============================================================
@@ -7620,7 +7620,7 @@ function viewRecord(){
     <tbody>${CAREERS.filter(c=>c.id!=="none").map(c=>`<tr><td>${c.n}</td><td class="num">${c.min}</td><td class="num">+${c.fame}</td><td class="num">${fmt(c.gold)}</td><td style="color:var(--muted)">${c.d}</td></tr>`).join("")}</tbody></table></div>
     <div class="rule"></div>
     <div class="panel-h" style="margin-bottom:8px"><h2 style="font-size:13px">업보 진로</h2><span class="hint">업보가 쌓이면 평가와 무관하게 이쪽으로 갈린다</span></div>
-    <p style="font-size:12.5px;color:var(--muted);margin:0 0 10px">업보는 <b style="color:var(--text)">안개 낀 옛 성터 이상의 원정</b>에서 구간마다 쌓인다 (성터 ${DUNGEONS[1].karma} · 종탑 ${DUNGEONS[2].karma} · 균열 ${DUNGEONS[3].karma} · 무덤 ${DUNGEONS[4].karma}).
+    <p style="font-size:12.5px;color:var(--muted);margin:0 0 10px">업보는 <b style="color:var(--text)">안개 낀 옛 성터 이상의 원정</b>에서 구간마다 쌓인다 (성터 ${dgKarma(DUNGEONS[1])} · 종탑 ${dgKarma(DUNGEONS[2])} · 균열 ${dgKarma(DUNGEONS[3])} · 무덤 ${dgKarma(DUNGEONS[4])}).
       교회에 <b style="color:var(--text)">${fmt(CHURCH_DONATE)} G</b>를 기부하면 전 학생의 업보가 ${CHURCH_KARMA} 씻긴다 (반기당 1회).</p>
     <div class="scroll-x"><table class="tb"><thead><tr><th>진로</th><th>필요 업보</th><th>필요 평가</th><th>학원 명성</th><th>후원금</th><th>설명</th></tr></thead>
     <tbody>${DARK_CAREERS.slice().reverse().map(c=>`<tr><td style="color:var(--bad)">${c.n}</td><td class="num">${c.karma}</td><td class="num">${c.min>0?c.min:"—"}</td>
