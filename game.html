@@ -429,11 +429,11 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
   .bwrap>.bstats{order:2}
   .bwrap>.blogwrap{order:3;width:100%;height:188px;min-height:0;align-self:auto}
 }
-@media (max-width:620px){ .bstats{flex-direction:column} }
+
 .side.foe{background:color-mix(in srgb,var(--bad) 7%,var(--surface))}
 .side h4{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-family:"IBM Plex Sans KR",sans-serif;font-weight:600;margin-bottom:8px}
 .units{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-@media (max-width:620px){.units{grid-template-columns:1fr}}
+
 .side h4{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .fmtag{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;letter-spacing:0;text-transform:none;
   color:var(--brass);border:1px solid var(--brass);border-radius:2px;padding:2px 6px;font-weight:600}
@@ -448,7 +448,7 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 .brow{display:grid;grid-template-columns:34px 1fr;gap:8px;align-items:start}
 .brow + .brow{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)}
 .browlab{font-size:10px;letter-spacing:.1em;color:var(--dim);padding-top:10px;text-align:center}
-@media (max-width:620px){.brow{grid-template-columns:1fr} .browlab{text-align:left;padding-top:0}}
+
 .unit{border:1px solid var(--line-soft);border-radius:3px;padding:8px;background:var(--bg);font-size:12px}
 .unit.act{border-color:var(--brass);box-shadow:0 0 0 1px var(--brass) inset}
 .unit .un{font-weight:600;font-size:13px;display:flex;gap:5px;align-items:center}
@@ -673,6 +673,68 @@ table.tb tr:hover td{background:var(--surface2)}
 .unit.dead .sprwrap{opacity:1}
 @media (prefers-reduced-motion:reduce){.spr{animation:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ==========================================================
+   휴대폰 (가로 640px 이하) — 좁은 화면에서만 덮어쓰는 규칙.
+   데스크톱 폭에서는 이 블록이 통째로 꺼져 기존 화면 그대로다.
+   ========================================================== */
+@media (max-width:640px){
+  /* ── ① 전투 — 3열을 유지한 축소판. 한 화면에 양 팀 여섯이 다 들어온다 ── */
+  .brow{grid-template-columns:1fr;gap:2px}
+  .browlab{text-align:left;padding-top:0;font-size:10px}
+  .units{grid-template-columns:repeat(3,1fr);gap:5px}
+  .units.solo{grid-template-columns:1fr}
+  .side{padding:7px 6px}
+  .side h4{font-size:11px;margin-bottom:5px}
+  .unit{padding:5px 4px;font-size:10px}
+  .unit .sprwrap{height:54px;margin:-2px 0 0}
+  .unit .un + div{display:none}                /* Lv·열 표시 — 줄 라벨로 알 수 있다 */
+  .unit .fx{display:none}                      /* 버프 칩은 로그로 확인 */
+  .unit .sprwrap .spr{transform:scale(.55);transform-origin:bottom center}
+  .unit .sprwrap.mon{min-height:150px}
+  .unit .sprwrap.mon .monspr{transform:scale(.6);transform-origin:bottom center}
+  .unit .un{font-size:10.5px;gap:3px;line-height:1.25;flex-wrap:wrap}
+  .unit .un .tag{display:none}          /* 직업은 스프라이트로 알아본다 */
+  .unit .hpb{height:5px;margin-top:3px}
+  .unit .atbb,.unit .ultb{height:4px}
+  .unit .glab{display:none}                    /* 게이지는 막대로 읽는다 */
+  .unit .ultb{height:5px;margin-top:2px}
+  .unit .atbb{height:4px;margin-top:2px}
+  .unit .hpb{height:5px;margin-top:2px}
+  .side h4{font-size:10.5px;margin-bottom:3px}
+  .brow{gap:1px}
+  .unit .glab span:first-child{display:none}   /* "행동 게이지" 라벨은 생략, 숫자만 */
+  .unit .fx{gap:2px}
+  .unit .fxi{font-size:8.5px;padding:0 3px}
+  /* 피해량 표는 기본으로 접는다 — 아래 버튼으로 펼친다 */
+  .modal.btm .bstats,.bwrap>.bstats{display:none}
+  .bwrap>.bstats.on{display:flex;flex-direction:column}
+  .bwrap>.blogwrap{height:146px}
+  .btbar{gap:5px}
+  .btbar .btn{padding:7px 9px;font-size:12px}
+  .btbar .btn.sm{padding:7px 8px}
+
+  /* ── ② 스케줄 — 요일 다섯 칸과 손패를 가로 스크롤 한 줄로 ── */
+  .dayrow,.handrow{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;
+    scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+  .dayrow>*,.handrow>*{flex:0 0 132px;scroll-snap-align:start}
+  .handrow{gap:6px}
+  .handrow>*{flex:0 0 116px}
+  .panel{padding:12px}
+  .panel-h{gap:6px}
+  .panel-h > *{min-width:0}
+  .panel-h .hint{margin-left:0;flex-basis:100%}
+  .panel-h .btnpair{margin-left:0;flex-wrap:wrap;flex-basis:100%}
+  .btnpair{flex-wrap:wrap}
+
+  /* ── ③ 상단 타일 · 터치 타깃 ── */
+  .meters{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;width:100%;margin-left:0;margin-top:8px}
+  .meter{min-width:0;padding:4px 8px}
+  .meter .v{font-size:14px}
+  .btn{min-height:40px}
+  .btn.sm{min-height:36px;padding:7px 10px}
+  .btnrow{gap:7px}
+}
 </style>
 
 <div id="app">
