@@ -1869,12 +1869,14 @@ const DUNGEONS = [
 /* ============================================================
    학원 등급 · 시즌
    ============================================================ */
+/* 학원 유명도 — 스카우트 시도·신입생 정원·후보 등급 분포를 정한다.
+   문턱은 학원 등급(TIERS)과 맞춰 두었다. 400 · 900 · 2600 에서 둘이 함께 오른다. */
 const FAME_TITLES = [
-  {min:0,    n:"무명",   d:"이름을 아는 사람이 거의 없다"},
-  {min:200,  n:"유명",   d:"근방에서는 이름이 오르내린다"},
-  {min:600,  n:"강호",   d:"어느 대회에서도 무시받지 않는다"},
-  {min:1200, n:"명문",   d:"지망생이 먼저 문을 두드린다"},
-  {min:2400, n:"초명문", d:"대륙이 이 학원의 졸업생을 기다린다"}
+  {min:0,     n:"무명",   d:"이름을 아는 사람이 거의 없다"},
+  {min:400,   n:"유명",   d:"근방에서는 이름이 오르내린다"},
+  {min:900,   n:"강호",   d:"어느 대회에서도 무시받지 않는다"},
+  {min:2600,  n:"명문",   d:"지망생이 먼저 문을 두드린다"},
+  {min:10000, n:"초명문", d:"대륙이 이 학원의 졸업생을 기다린다"}
 ];
 function fameTitle(f){
   let t = FAME_TITLES[0];
@@ -5104,9 +5106,12 @@ function fameTitleIdx(f){ return FAME_TITLES.reduce((a,x,i)=> f>=x.min? i : a, 0
 function scoutTriesMax(){ return SCOUT_TRIES + fameTitleIdx(S.fame); }
 function scoutFull(){ return ((S.incoming||[]).length) >= enrollCap(); }
 function scoutOpen(){ return !scoutFull() && (S.scoutTries||0) > 0; }
+/* 유명도 단계별 영입 성공률 보정 — 무명 0 · 유명 +5 · 강호 +10 · 명문 +15 · 초명문 +20%p */
+const SCOUT_FAME_BONUS = [0, .05, .10, .15, .20];
+function scoutFameBonus(){ return SCOUT_FAME_BONUS[clamp(fameTitleIdx(S.fame), 0, 4)] || 0; }
 function scoutRate(g){
   const base = {D:.66,C:.54,B:.40,A:.25,S:.13}[g];
-  return clamp(base + S.master.net*.05 + S.fame/12000 + (S.tier-1)*.04, .08, .95);
+  return clamp(base + S.master.net*.05 + scoutFameBonus() + (S.tier-1)*.04, .08, .95);
 }
 function genScouts(){
   const ti = fameTitleIdx(S.fame);
