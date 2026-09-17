@@ -1651,19 +1651,56 @@ function makeRelic(grade){
 /* ============================================================
    시설 · 아이템 · 트레이닝
    ============================================================ */
-const FACIL_VER = 3;          // 시설 등급 체계 판번호 (옛 세이브 환산용)
+const FACIL_VER = 4;          // 시설 등급 체계 판번호 (옛 세이브 환산용)
 /* 훈련 시설 — Lv.0 에서 시작해 70 까지, 한 단계마다 효율 +2% (만렙 ×2.4)
    base 는 첫 한 단계의 값이고 이후 단계^pw 로 늘어난다. 만렙 총액은 장서고 약 8만 · 나머지 약 6.5만 */
 const FAC_TRAIN = {start:0, max:70, step:.02, pw:.6};
+/* 학원 증축 — 등급이 오를 때마다 부지를 넓힌다.
+   ex 는 그 시설·물품을 들이는 데 필요한 증축 단계다. */
+const EXPAND_COST = [1000, 3000, 5000];   // Lv.0→1 · 1→2 · 2→3
+const EXPAND_TIER = [2, 3, 4];            // 각 단계에 필요한 학원 등급
 const FACILITIES = {
-  gym:    Object.assign({n:"단련장",   d:"지구력 단련",               base:115},  FAC_TRAIN),
-  hall:   Object.assign({n:"수련관",   d:"적극성 · 팀워크 실습",      base:115},  FAC_TRAIN),
-  chapel: Object.assign({n:"묵상실",   d:"정신력 수양",               base:115},  FAC_TRAIN),
-  infirm: {n:"의무실",   d:"매주 컨디션 자연 회복 (단계당 +1)",   base:1000, start:0, max:7},
-  library:Object.assign({n:"장서고",   d:"침착성 연구 · 천재성 성장 보정", base:140}, FAC_TRAIN),
-  arena:  Object.assign({n:"대련장",   d:"실전 형식 훈련",            base:115},  FAC_TRAIN),
-  counsel:{n:"상담실",   d:"상담에서 지도력·정보력·호소력 보정", base:1000, start:0, max:6}
+  expand: {n:"학원 증축", d:"부지를 넓혀 새 시설과 물품을 들인다",
+           start:0, max:3, step:0, costs:EXPAND_COST, tierNeed:EXPAND_TIER},
+  library:Object.assign({n:"장서고",   d:"침착성 연구 · 천재성 성장 보정", base:140, ex:0}, FAC_TRAIN),
+  chapel: Object.assign({n:"묵상실",   d:"정신력 수양",               base:115, ex:1},  FAC_TRAIN),
+  infirm: {n:"의무실",   d:"매주 컨디션 자연 회복 (단계당 +1)",   base:1000, start:0, max:7, ex:1},
+  gym:    Object.assign({n:"단련장",   d:"지구력 단련",               base:115, ex:0},  FAC_TRAIN),
+  hall:   Object.assign({n:"수련관",   d:"적극성 · 팀워크 실습",      base:115, ex:2},  FAC_TRAIN),
+  arena:  Object.assign({n:"대련장",   d:"실전 형식 훈련",            base:115, ex:0},  FAC_TRAIN),
+  counsel:{n:"상담실",   d:"상담에서 지도력·정보력·호소력 보정", base:1000, start:0, max:6, ex:3}
 };
+function expandLv(){ return clamp((S.facil && S.facil.expand)|0, 0, 3); }
+/* 이 단계에서 열리는 시설·물품 (표에서 그대로 읽는다) */
+function expandUnlocks(lv){
+  return Object.keys(FACILITIES).filter(k=> FACILITIES[k].ex === lv).map(k=> FACILITIES[k].n)
+    .concat(Object.keys(ITEMS).filter(k=> ITEMS[k].ex === lv).map(k=> ITEMS[k].n));
+}
+/* 잠겨 있으면 그 이유를, 아니면 null */
+function facLock(k){
+  const f = FACILITIES[k];
+  if(!f) return null;
+  if(f.tierNeed){
+    const need = f.tierNeed[(S.facil[k]|0)];
+    return (need && S.tier < need) ? `${TIERS[need-1].n} 필요` : null;
+  }
+  return (f.ex && expandLv() < f.ex) ? `학원 증축 Lv.${f.ex} 필요` : null;
+}
+/* 화면 정렬 — 학원 증축이 맨 앞, 나머지는 필요 증축 단계 순 (같으면 표에 적힌 순서) */
+function facOrder(){
+  const ks = Object.keys(FACILITIES);
+  return ks.slice().sort((a,b)=>
+    (a==="expand"? -1 : b==="expand"? 1 : 0) ||
+    (FACILITIES[a].ex|0) - (FACILITIES[b].ex|0) || ks.indexOf(a) - ks.indexOf(b));
+}
+function itemOrder(){
+  const ks = Object.keys(ITEMS);
+  return ks.slice().sort((a,b)=> (ITEMS[a].ex|0) - (ITEMS[b].ex|0) || ks.indexOf(a) - ks.indexOf(b));
+}
+function itemLock(k){
+  const it = ITEMS[k];
+  return (it && it.ex && expandLv() < it.ex) ? `학원 증축 Lv.${it.ex} 필요` : null;
+}
 function facStart(k){ const f=FACILITIES[k]; return f && f.start!==undefined ? f.start : 1; }
 function facMax(k){   const f=FACILITIES[k]; return f && f.max!==undefined ? f.max : 8; }
 function facStep(k){  const f=FACILITIES[k]; return f && f.step!==undefined ? f.step : .2; }
@@ -1677,15 +1714,15 @@ function cslFacBonus(){
   return {lead: Math.floor((n+2)/3), info: Math.floor((n+1)/3), net: Math.floor(n/3)};
 }
 const ITEMS = {
-  weight:  {n:"중량 조끼", d:"고강도 체력 훈련 해금",     price:900},
-  dummy:   {n:"강철 목인", d:"실전 타격 훈련 해금",       price:1100},
-  stone:   {n:"명상석",    d:"심층 명상 해금",            price:1000},
-  board:   {n:"전술판",    d:"모의전 해금",               price:1400},
-  flag:    {n:"진형 깃발",  d:"진형 훈련 해금",            price:1200},
-  tonic:   {n:"회복 강장제",d:"휴식 주간·휴식 집중 회복량 +25%", price:2500},
-  charm:   {n:"행운의 부적",d:"원정 유물 획득률 1.35배",  price:1600},
-  scope:   {n:"관측경",    d:"대회 정찰 정보 1단계 상승", price:1800},
-  banner:  {n:"학원기",    d:"대회 승리 명성 +25%",       price:2200}
+  weight:  {n:"중량 조끼", d:"고강도 체력 훈련 해금",     price:900, ex:0},
+  dummy:   {n:"강철 목인", d:"실전 타격 훈련 해금",       price:1100, ex:0},
+  stone:   {n:"명상석",    d:"심층 명상 해금",            price:1000, ex:1},
+  board:   {n:"전술판",    d:"모의전 해금",               price:1400, ex:3},
+  flag:    {n:"진형 깃발",  d:"진형 훈련 해금",            price:1200, ex:2},
+  tonic:   {n:"회복 강장제",d:"휴식 주간·휴식 집중 회복량 +25%", price:2500, ex:1},
+  charm:   {n:"행운의 부적",d:"유물을 얻을 때마다 25% 확률로 하나 더", price:1600, ex:0},
+  scope:   {n:"관측경",    d:"대회 정찰 정보 1단계 상승", price:1800, ex:1},
+  banner:  {n:"학원기",    d:"대회 승리 명성 +25%",       price:2200, ex:2}
 };
 // 트레이닝: gains = 멘탈리티 스탯별 가중치, cost = 컨디션 소모
 /* fx = 카드에 찍히는 효과 표시 [이름, + 개수, 나쁜 것이면 1] */
@@ -3078,7 +3115,7 @@ function newGame(name){
     tier:1, fame:0, gold:3000, sp:0,
     year:1, phase:"spring", week:0,
     students:[], graduates:[], log:[],
-    facil:{gym:0,hall:0,chapel:0,infirm:0,library:0,arena:0,counsel:0}, facilV:FACIL_VER,
+    facil:{expand:0,gym:0,hall:0,chapel:0,infirm:0,library:0,arena:0,counsel:0}, facilV:FACIL_VER,
     items:{}, church:{}, epiUsed:[], epiLog:[], focusPrev:null, focusHist:[], books:0, scouts:null, incoming:[], history:[], opts:{report:true, fxA:FX_A_DEFAULT}, mission:newMission(), relicPool:[], skillPool:[],
     lastTour:null
   };
@@ -3149,7 +3186,29 @@ function checkTier(){
   }
   return false;
 }
-function addFame(n){ S.fame = Math.max(0, S.fame + Math.round(n)); checkTier(); }
+/* 한 번 넘어선 명성 구간 아래로는 떨어지지 않는다 */
+const FAME_MARKS = [
+  {f:400,   t:"백작 인가",
+   m:"학원이 대중의 입에 오르내리고 백작에게 정식으로 인가를 받았다."},
+  {f:900,   t:"공국 인가",
+   m:"학원의 이름이 전역에 퍼지며 진동한다. 공작에게 인가를 받아 강호 학원들의 한 축으로 거듭났다."},
+  {f:2600,  t:"왕국 인가",
+   m:"학원의 이름은 이미 왕국을 넘어 모르는 나라가 없을 정도로 유명해졌다. 왕국 공인 학원으로 거듭났다."},
+  {f:10000, t:"초명문",
+   m:"인간계를 넘어 마계와 천계에서 주시하기 시작한다..."}
+];
+function fameFloor(){ return S.fameFloor|0; }
+function addFame(n){
+  S.fame = Math.max(0, S.fame + Math.round(n));
+  FAME_MARKS.forEach(M=>{
+    if(S.fame >= M.f && fameFloor() < M.f){
+      S.fameFloor = M.f;
+      queueCeremony({type:"fame", year:S.year, mark:M});
+    }
+  });
+  S.fame = Math.max(S.fame, fameFloor());
+  checkTier();
+}
 
 /* ============================================================
    주간 진행
@@ -3758,6 +3817,7 @@ function monsterName(){ return pick(MON); }
 
 /* 원정은 구간마다 전투 팝업을 띄울 수 있도록 단계로 쪼개 둔다 */
 const EXPED_GOLD = 8, EXPED_GOLD_TIER = 12;   // 구간당 자금
+const CHARM_EXTRA_P = .25;                    // 행운의 부적 — 유물 하나당 추가 획득 확률
 const EXPED_EXP_MUL = .12;                    // 구간당 경험치 배율 (0.2 에서 60% 로 하향)
 const EXPED_RWD_MUL = .2;                     // 업보·명성·진로 평가 배율
 const EXPED_COND = 1;                         // 전투 한 판당 컨디션 소모
@@ -3798,16 +3858,21 @@ function expedApply(E, b, mon){
 }
 function expedFinish(E){
   const dg = E.dg, team = E.team, res = E.res, hpLeft = E.hpLeft;
-  const charm = S.items.charm ? 1.35 : 1;
   {
-    const per = clamp((dg.relicP||.2) * charm, 0, 1);
-    for(let i=0;i<res.reached;i++){
-      if(RNG() < per) res.relics.push(makeRelic(wchoose(dg.relic)));
-    }
+    /* 유물 하나를 얻을 때마다, 행운의 부적이 있으면 그 자리에서 한 개를 더 굴린다 */
+    const drop = ()=>{
+      res.relics.push(makeRelic(wchoose(dg.relic)));
+      if(S.items.charm && RNG() < CHARM_EXTRA_P){
+        res.relics.push(makeRelic(wchoose(dg.relic)));
+        res.charmN = (res.charmN||0) + 1;
+      }
+    };
+    const per = clamp(dg.relicP||.2, 0, 1);
+    for(let i=0;i<res.reached;i++){ if(RNG() < per) drop(); }
     /* 완주했는데 한 개도 안 나오면 빈손으로 돌려보내지 않는다 —
        그 원정지에서 나올 수 있는 등급 중 하나로 한 개를 보장한다 */
     if(res.reached >= dg.secs && !res.relics.length){
-      res.relics.push(makeRelic(wchoose(dg.relic)));
+      drop();
       res.relicSafe = true;
     }
   }
@@ -3839,7 +3904,7 @@ function expedFinish(E){
   }
   res.relics.forEach(r=> addRelicToPool(r));
   levelReport(ups);
-  logE(`원정 — <b>${dg.n}</b> ${res.reached}/${dg.secs}구간 도달. 경험 ${fmt(res.exp)} · 자금 +${fmt(res.gold)}${res.fameGain? ` · <b>완주</b> 학원 명성 +${res.fameGain}`:""} · 유물 ${res.relics.length}개${res.relicSafe? " <span style=\"color:var(--brass)\">(완주 보장)</span>":""}${res.karma? ` · <b style="color:var(--bad)">업보 +${res.karma.toFixed(1)}</b>`:""}${(res.evalGain&&res.evalGain.length)? ` · 진로 평가 ${res.evalGain.join(", ")}`:""}${res.stopped? ` (${res.stopped})`:""}`, res.reached>=dg.secs?"good":(res.stopped?"bad":""));
+  logE(`원정 — <b>${dg.n}</b> ${res.reached}/${dg.secs}구간 도달. 경험 ${fmt(res.exp)} · 자금 +${fmt(res.gold)}${res.fameGain? ` · <b>완주</b> 학원 명성 +${res.fameGain}`:""} · 유물 ${res.relics.length}개${res.charmN? ` <span style="color:var(--brass)">(부적 +${res.charmN})</span>`:""}${res.relicSafe? " <span style=\"color:var(--brass)\">(완주 보장)</span>":""}${res.karma? ` · <b style="color:var(--bad)">업보 +${res.karma.toFixed(1)}</b>`:""}${(res.evalGain&&res.evalGain.length)? ` · 진로 평가 ${res.evalGain.join(", ")}`:""}${res.stopped? ` (${res.stopped})`:""}`, res.reached>=dg.secs?"good":(res.stopped?"bad":""));
   return res;
 }
 function expedLoop(E, quick, done){
@@ -3871,7 +3936,7 @@ function expedDone(R, bonus, res, TM){
   const ok = res.reached >= res.dg.secs;
   dlog(`${D}요일은 ${res.team.map(n=>esc(n)).join(", ")}${iga(res.team[res.team.length-1]||"")} <b>${esc(res.dg.n)}</b>로 원정을 떠나 <b>${res.reached}/${res.dg.secs}구간</b>까지 나아가 ${ok? `<b style="color:var(--ok)">완주했다!</b>` : `<b style="color:var(--bad)">돌아왔다.</b>`}${chainTag(bonus)}`, "head");
   if(res.stopped) dlog(`<span style="color:var(--dim)">${esc(res.stopped)}</span>`, "sub");
-  dlog(`경험 <b>${fmt(Math.round(res.exp))}</b> · 자금 <b style="color:var(--brass)">+${fmt(res.gold)}</b>${res.fameGain? ` · 명성 <b style="color:var(--ok)">+${fmt(res.fameGain)}</b>`:""} · 유물 <b>${res.relics.length}</b>개${res.relicSafe? ` <span style="color:var(--brass)">(완주 보장)</span>`:""}${res.karma? ` · <span style="color:var(--bad)">업보 +${res.karma.toFixed(1)}</span>`:""}`, "sub");
+  dlog(`경험 <b>${fmt(Math.round(res.exp))}</b> · 자금 <b style="color:var(--brass)">+${fmt(res.gold)}</b>${res.fameGain? ` · 명성 <b style="color:var(--ok)">+${fmt(res.fameGain)}</b>`:""} · 유물 <b>${res.relics.length}</b>개${res.charmN? ` <span style="color:var(--brass)">(부적 +${res.charmN})</span>`:""}${res.relicSafe? ` <span style="color:var(--brass)">(완주 보장)</span>`:""}${res.karma? ` · <span style="color:var(--bad)">업보 +${res.karma.toFixed(1)}</span>`:""}`, "sub");
   RUN.expeds.push(res);
   UI.lastExped = res;
   const skip = new Set(res.ids);
@@ -5984,7 +6049,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0917-1936";
+const BUILD = "0917-2001";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -6684,7 +6749,8 @@ const CHURCH_DONATE = 100;    // 기부 비용
 const CHURCH_KARMA  = 10;     // 기부 시 전원 업보 감소
 const CHURCH_HEAL   = 1000;   // 부상 치료 비용
 /* 성물 — 각 계절의 상반기·하반기마다 하나씩만 산다 */
-const HOLY_WATER_G  = 500, HOLY_WATER_COND = 15;   // 신비한 성수 — 즉시 전원 컨디션 회복
+const HOLY_WATER_PER = 100, HOLY_WATER_COND = 15;   // 신비한 성수 — 학생 한 명당 값 · 즉시 전원 컨디션 회복
+function holyWaterCost(){ return Math.max(HOLY_WATER_PER, (S.students||[]).length * HOLY_WATER_PER); }
 /* 예지의 서 — 사뒀다가 스케줄 탭에서 손패를 갈아엎는다.
    한 권 살 때마다 100 G 씩 오르고 1,000 G 에서 멈춘다. */
 const FORESIGHT_G = 200, FORESIGHT_STEP = 100, FORESIGHT_MAX = 1000;
@@ -6695,11 +6761,12 @@ function churchMark(k){ const c=churchState(); c.buy = c.buy||{}; c.buy[k] = chu
 function bookCount(){ return S.books|0; }
 function buyHolyWater(){
   if(churchBought("water")){ toast("이번 반기에는 이미 받아 갔다."); return; }
-  if(S.gold < HOLY_WATER_G){ toast("자금이 모자란다."); return; }
-  S.gold -= HOLY_WATER_G; churchMark("water");
+  const cost = holyWaterCost();
+  if(S.gold < cost){ toast("자금이 모자란다."); return; }
+  S.gold -= cost; churchMark("water");
   let n = 0;
   S.students.forEach(s=>{ const b=s.cond; setCond(s, s.cond + HOLY_WATER_COND); if(s.cond>b) n++; });
-  logE(`<b>신비한 성수</b> — ${fmt(HOLY_WATER_G)} G. 전 학생의 컨디션이 <b style="color:var(--ok)">${HOLY_WATER_COND}</b> 회복됐다${n<S.students.length? ` (${n}명 적용)`:""}.`,"good");
+  logE(`<b>신비한 성수</b> — ${fmt(cost)} G. 전 학생의 컨디션이 <b style="color:var(--ok)">${HOLY_WATER_COND}</b> 회복됐다${n<S.students.length? ` (${n}명 적용)`:""}.`,"good");
   save(); render(); toast(`전원 컨디션 +${HOLY_WATER_COND}`);
 }
 function buyForesight(){
@@ -6769,8 +6836,8 @@ function viewChurch(){
         <div class="od">부상을 즉시 낫게 하고 컨디션을 <b style="color:var(--ok)">100</b>까지 올린다.</div>
         <div class="od" style="color:var(--dim)">${hurt.length? `치료 대상 ${hurt.length}명` : "지금은 다친 학생이 없다"}</div>
       </div>
-      <button class="opt ${churchBought("water")?"locked":""}" id="btnWater" ${churchBought("water")||S.gold<HOLY_WATER_G?"disabled":""}>
-        <div class="on">신비한 성수<span class="price">${churchBought("water")? "이번 반기 완료" : fmt(HOLY_WATER_G)+" G"}</span></div>
+      <button class="opt ${churchBought("water")?"locked":""}" id="btnWater" ${churchBought("water")||S.gold<holyWaterCost()?"disabled":""}>
+        <div class="on">신비한 성수<span class="price">${churchBought("water")? "이번 반기 완료" : fmt(holyWaterCost())+" G"}</span></div>
         <div class="od">전 학생의 컨디션이 그 자리에서 <b style="color:var(--ok)">${HOLY_WATER_COND}</b> 회복된다.</div>
         <div class="od" style="color:var(--dim)">각 계절의 상반기·하반기마다 1회 · 현재 ${S.year}년 ${PHASES[S.phase].n} ${halfLabel(S.week)}</div>
       </button>
@@ -6807,19 +6874,27 @@ function facDesc(k){
       ? `<span style="color:var(--dim)" title="${esc(ITEMS[t.need].n)} 필요">${esc(t.n)}</span>`
       : esc(t.n)).join(" · ") + "의 효율";
 }
-function facCostAt(k, lv){ return Math.round(FACILITIES[k].base * Math.pow(Math.max(1, lv - facStart(k) + 1), facPw(k))); }
+function facCostAt(k, lv){
+  const f = FACILITIES[k];
+  if(f.costs) return f.costs[clamp(lv - facStart(k), 0, f.costs.length-1)];
+  return Math.round(f.base * Math.pow(Math.max(1, lv - facStart(k) + 1), facPw(k)));
+}
 function facCost(k){ return facCostAt(k, S.facil[k]||0); }
 function viewFacil(){
   return `<section class="panel">
     <div class="panel-h"><h2>시설</h2><span class="hint">한 단계마다 해당 훈련 효율 +2% · 최대 Lv.70 에서 ×2.4</span></div>
     <div class="grid2">
-      ${Object.keys(FACILITIES).map(k=>{
+      ${facOrder().map(k=>{
         const f=FACILITIES[k], c=facCost(k), lv=S.facil[k]||0, mx=facMax(k), full=lv>=mx;
+        const lock = full ? null : facLock(k);
         const eff = k==="counsel"
           ? (()=>{ const b=cslFacBonus(); return `현재 지도력 +${b.lead} · 정보력 +${b.info} · 호소력 +${b.net}`; })()
+          : k==="expand"
+          ? (full ? "더 넓힐 곳이 없다" : `다음 단계 — ${expandUnlocks(lv+1).join(" · ")}`)
           : k==="infirm" ? `현재 매주 +${lv}` : `현재 효율 ×${facEff(k).toFixed(2)}`;
-        return `<button class="opt" data-fac="${k}" ${S.gold<c||full?"disabled":""}>
-          <div class="on">${f.n} <span class="tag">Lv.${lv} / ${mx}</span><span class="price">${full?"최대":fmt(c)+" G"}</span></div>
+        return `<button class="opt ${lock?"locked":""}" data-fac="${k}" ${lock||S.gold<c||full?"disabled":""}>
+          <div class="on">${f.n} <span class="tag">Lv.${lv} / ${mx}</span><span class="price" style="${
+            lock?"color:var(--bad)":""}">${full?"최대":lock||fmt(c)+" G"}</span></div>
           <div class="od">${facDesc(k)} · ${eff}</div>
         </button>`;
       }).join("")}
@@ -6828,10 +6903,11 @@ function viewFacil(){
   <section class="panel">
     <div class="panel-h"><h2>구매</h2><span class="hint">한 번 구비하면 영구히 유지된다</span></div>
     <div class="grid2">
-      ${Object.keys(ITEMS).map(k=>{
-        const it=ITEMS[k], has=!!S.items[k];
-        return `<button class="opt ${has?"locked":""}" data-item="${k}" ${has||S.gold<it.price?"disabled":""}>
-          <div class="on">${it.n}<span class="price">${has?"보유 중":fmt(it.price)+" G"}</span></div>
+      ${itemOrder().map(k=>{
+        const it=ITEMS[k], has=!!S.items[k], lock = has? null : itemLock(k);
+        return `<button class="opt ${has||lock?"locked":""}" data-item="${k}" ${has||lock||S.gold<it.price?"disabled":""}>
+          <div class="on">${it.n}<span class="price" style="${lock?"color:var(--bad)":""}">${
+            has?"보유 중":lock||fmt(it.price)+" G"}</span></div>
           <div class="od">${it.d}</div>
         </button>`;
       }).join("")}
@@ -7941,9 +8017,11 @@ function bindView(){
   const br = $("#btnRest"); if(br) br.onclick=()=> runWeeks(halfLeft());
   v.querySelectorAll("[data-fac]").forEach(b=> b.onclick=()=>{
     const k=b.dataset.fac, c=facCost(k);
-    if(S.gold<c || (S.facil[k]||0) >= facMax(k)) return;
+    if(facLock(k) || S.gold<c || (S.facil[k]||0) >= facMax(k)) return;
     S.gold-=c; S.facil[k] = (S.facil[k]||0) + 1;
-    logE(`<b>${FACILITIES[k].n}</b> 확장 — Lv.${S.facil[k]}`,"good"); save(); render();
+    logE(k==="expand"
+      ? `<b>학원 증축</b> Lv.${S.facil[k]} — ${expandUnlocks(S.facil[k]).join(" · ")}${eulr(expandUnlocks(S.facil[k]).slice(-1)[0]||"")} 들일 수 있게 됐다.`
+      : `<b>${FACILITIES[k].n}</b> 확장 — Lv.${S.facil[k]}`, "good"); save(); render();
   });
   {
     const sl = $("#fxA");
@@ -8005,7 +8083,7 @@ function bindView(){
   v.querySelectorAll("[data-heal]").forEach(b=> b.onclick=()=> doHeal(b.dataset.heal));
   v.querySelectorAll("[data-item]").forEach(b=> b.onclick=()=>{
     const k=b.dataset.item, it=ITEMS[k];
-    if(S.items[k]||S.gold<it.price) return;
+    if(S.items[k] || itemLock(k) || S.gold<it.price) return;
     S.gold-=it.price; S.items[k]=1;
     logE(`<b>${it.n}</b> 구비 — ${it.d}`,"good"); save(); render();
   });
@@ -8119,6 +8197,7 @@ function showCeremony(){
     : c.type==="unlock" ? unlockCeremony(c)
     : c.type==="insight" ? insightCeremony(c)
     : c.type==="scout" ? scoutCeremony(c)
+    : c.type==="fame" ? fameCeremony(c)
     : enrollCeremony(c);
   showModal(html, ()=>{
     if(c.type==="friendly"){
@@ -8203,6 +8282,29 @@ function gradCeremony(c){
       </div>`).join("")}
     </div>
     <div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">졸업생을 보낸다</button></div>`;
+}
+/* 명성 구간 돌파 — 그 자리에서 무엇이 열렸는지 함께 알린다 */
+function fameCeremony(c){
+  const M = c.mark, f = M.f;
+  const open = [];
+  const ti = TIERS.find(t=> t.fame === f);          if(ti) open.push({n:"학원 등급", v:ti.n, d:ti.d});
+  const fm = FAME_TITLES.find(t=> t.min === f);     if(fm) open.push({n:"학원 유명도", v:fm.n, d:fm.d});
+  DUNGEONS.filter(d=> d.needFame === f).forEach(d=> open.push({n:"원정지", v:d.n, d:d.d}));
+  const exi = ti ? EXPAND_TIER.indexOf(ti.id) : -1;
+  if(exi >= 0) open.push({n:`학원 증축 Lv.${exi+1}`, v:`${fmt(EXPAND_COST[exi])} G`,
+    d:`${expandUnlocks(exi+1).join(" · ")}${eulr(expandUnlocks(exi+1).slice(-1)[0]||"")} 들일 수 있게 된다`});
+  return `<div class="cerhead">
+      <div class="eyebrow">${c.year}년 · 학원 명성 ${fmt(f)}</div>
+      <h2 style="font-size:26px;margin-top:2px">${esc(M.t)}</h2>
+      <p style="color:var(--muted);font-size:13px;margin-top:6px">${esc(M.m)}</p>
+    </div>
+    ${open.length? `<div class="grid2" style="margin-top:14px">${open.map(o=>`<div class="opt" style="cursor:default">
+      <div class="on">${esc(o.n)}<span class="price">${esc(o.v)}</span></div>
+      <div class="od">${esc(o.d)}</div></div>`).join("")}</div>` : ""}
+    <div class="opt" style="cursor:default;margin-top:10px">
+      <div class="od">학원 명성은 이제 <b style="color:var(--text)">${fmt(f)}</b> 아래로 떨어지지 않는다.</div>
+    </div>
+    <div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">확인</button></div>`;
 }
 function scoutCeremony(c){
   return `<div class="cerhead">
@@ -9474,6 +9576,13 @@ function boot(){
   /* 의무실도 1~8 에서 0~7 로 번호만 옮겼다 — 회복량(Lv.8 = +7)은 그대로다 */
   if((S.facilV|0) < 3 && typeof S.facil.infirm === "number"){
     S.facil.infirm = clamp(S.facil.infirm - 1, 0, 7);
+  }
+  /* 학원 증축이 생기기 전 세이브는 이미 지은 시설이 있다 —
+     지금 등급으로 살 수 있는 단계까지는 그냥 인정한다 */
+  if((S.facilV|0) < 4){
+    let lv = 0;
+    while(lv < 3 && (S.tier|0) >= EXPAND_TIER[lv]) lv++;
+    S.facil.expand = Math.max(S.facil.expand|0, lv);
   }
   if((S.facilV|0) < FACIL_VER) S.facilV = FACIL_VER;
   Object.keys(FACILITIES).forEach(k=>{ if(typeof S.facil[k]!=="number") S.facil[k] = facStart(k); });
