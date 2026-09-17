@@ -500,6 +500,10 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 .opt .on{font-weight:600;display:flex;gap:6px;align-items:center}
 .opt .od{font-size:11.5px;color:var(--muted);margin-top:3px}
 .opt .price{margin-left:auto;color:var(--brass);font-weight:600;font-size:12px}
+.faccell{display:flex;flex-direction:column;gap:4px}
+.faccell .opt{flex:1 1 auto}
+.facbulk{display:flex;gap:4px}
+.facbulk .btn{flex:1 1 0;min-width:0}
 table.tb{width:100%;border-collapse:collapse;font-size:12.5px}
 table.tb th{text-align:left;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:600;padding:4px 6px;border-bottom:1px solid var(--line)}
 table.tb td{padding:5px 6px;border-bottom:1px solid var(--line-soft)}
@@ -1642,17 +1646,25 @@ function makeRelic(grade){
 /* ============================================================
    시설 · 아이템 · 트레이닝
    ============================================================ */
+const FACIL_VER = 2;          // 시설 등급 체계 판번호 (옛 세이브 환산용)
+/* 훈련 시설 — Lv.0 에서 시작해 70 까지, 한 단계마다 효율 +2% (만렙 ×2.4)
+   base 는 첫 한 단계의 값이고 이후 단계^pw 로 늘어난다. 만렙 총액은 장서고 약 8만 · 나머지 약 6.5만 */
+const FAC_TRAIN = {start:0, max:70, step:.02, pw:.6};
 const FACILITIES = {
-  gym:    {n:"단련장",   d:"지구력 단련",               base:1200},
-  hall:   {n:"수련관",   d:"적극성 · 팀워크 실습",      base:1200},
-  chapel: {n:"묵상실",   d:"정신력 수양",               base:1100},
+  gym:    Object.assign({n:"단련장",   d:"지구력 단련",               base:115},  FAC_TRAIN),
+  hall:   Object.assign({n:"수련관",   d:"적극성 · 팀워크 실습",      base:115},  FAC_TRAIN),
+  chapel: Object.assign({n:"묵상실",   d:"정신력 수양",               base:115},  FAC_TRAIN),
   infirm: {n:"의무실",   d:"매주 컨디션 자연 회복 (등급당 +1)",   base:1000},
-  library:{n:"장서고",   d:"침착성 연구 · 천재성 성장 보정", base:1500},
-  arena:  {n:"대련장",   d:"실전 형식 훈련",            base:1300},
+  library:Object.assign({n:"장서고",   d:"침착성 연구 · 천재성 성장 보정", base:140}, FAC_TRAIN),
+  arena:  Object.assign({n:"대련장",   d:"실전 형식 훈련",            base:115},  FAC_TRAIN),
   counsel:{n:"상담실",   d:"상담에서 지도력·정보력·호소력 보정", base:1000, start:0, max:6}
 };
 function facStart(k){ const f=FACILITIES[k]; return f && f.start!==undefined ? f.start : 1; }
 function facMax(k){   const f=FACILITIES[k]; return f && f.max!==undefined ? f.max : 8; }
+function facStep(k){  const f=FACILITIES[k]; return f && f.step!==undefined ? f.step : .2; }
+function facPw(k){    const f=FACILITIES[k]; return f && f.pw!==undefined ? f.pw : 1.42; }
+/* 지금 효율 배율 — 시작 등급이 ×1.0 이고 한 단계마다 step 만큼 붙는다 */
+function facEff(k){ return 1 + Math.max(0, (S.facil[k]||0) - facStart(k)) * facStep(k); }
 // 상담실 — 레벨마다 지도력 → 정보력 → 호소력 순으로 1씩
 function cslFacLv(){ return clamp(S.facil && S.facil.counsel || 0, 0, facMax("counsel")); }
 function cslFacBonus(){
@@ -3053,7 +3065,7 @@ function newGame(name){
     tier:1, fame:0, gold:3000, sp:0,
     year:1, phase:"spring", week:0,
     students:[], graduates:[], log:[],
-    facil:{gym:1,hall:1,chapel:1,infirm:1,library:1,arena:1,counsel:0},
+    facil:{gym:0,hall:0,chapel:0,infirm:1,library:0,arena:0,counsel:0}, facilV:FACIL_VER,
     items:{}, church:{}, epiUsed:[], epiLog:[], focusPrev:null, focusHist:[], books:0, scouts:null, incoming:[], history:[], opts:{report:true, fxA:FX_A_DEFAULT}, mission:newMission(), relicPool:[], skillPool:[],
     lastTour:null
   };
@@ -3219,7 +3231,7 @@ function tickInjury(){
     }
   });
 }
-function facMul(fk){ return fk ? 1 + (S.facil[fk]-1)*.2 : 1; }
+function facMul(fk){ return fk ? facEff(fk) : 1; }
 /* 집중 훈련이 보는 시설 — 그 분야의 주력 카드를 맡은 시설과 맞춘다
    (지구력 단련장 · 적극성 수련관 · 침착성/천재성 장서고 · 정신력 묵상실 · 팀워크 대련장) */
 const FOCUS_FAC = {team:"arena",aggr:"hall",calm:"library",will:"chapel",stam:"gym",genius:"library"};
@@ -5908,7 +5920,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0917-1629";
+const BUILD = "0917-1640";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -6731,20 +6743,38 @@ function facDesc(k){
       ? `<span style="color:var(--dim)" title="${esc(ITEMS[t.need].n)} 필요">${esc(t.n)}</span>`
       : esc(t.n)).join(" · ") + "의 효율";
 }
-function facCost(k){ return Math.round(FACILITIES[k].base * Math.pow(Math.max(1, (S.facil[k]||0) - facStart(k) + 1), 1.42)); }
+function facCostAt(k, lv){ return Math.round(FACILITIES[k].base * Math.pow(Math.max(1, lv - facStart(k) + 1), facPw(k))); }
+function facCost(k){ return facCostAt(k, S.facil[k]||0); }
+/* 지금 등급에서 n 단계 올리는 값 */
+function facCostN(k, n){
+  const lv0 = S.facil[k]||0, mx = facMax(k);
+  let sum = 0;
+  for(let i=0; i<n && lv0+i < mx; i++) sum += facCostAt(k, lv0+i);
+  return sum;
+}
 function viewFacil(){
   return `<section class="panel">
-    <div class="panel-h"><h2>시설</h2><span class="hint">등급당 해당 계열 훈련 효율 +20%</span></div>
+    <div class="panel-h"><h2>시설</h2><span class="hint">한 단계마다 해당 훈련 효율 +2% · 최대 Lv.70 에서 ×2.4</span></div>
     <div class="grid2">
       ${Object.keys(FACILITIES).map(k=>{
         const f=FACILITIES[k], c=facCost(k), lv=S.facil[k]||0, mx=facMax(k), full=lv>=mx;
         const eff = k==="counsel"
           ? (()=>{ const b=cslFacBonus(); return `현재 지도력 +${b.lead} · 정보력 +${b.info} · 호소력 +${b.net}`; })()
-          : k==="infirm" ? `현재 매주 +${lv-1}` : `현재 효율 ×${(1+(lv-1)*.2).toFixed(1)}`;
-        return `<button class="opt" data-fac="${k}" ${S.gold<c||full?"disabled":""}>
-          <div class="on">${f.n} <span class="tag">Lv.${lv}${mx!==8?` / ${mx}`:""}</span><span class="price">${full?"최대":fmt(c)+" G"}</span></div>
-          <div class="od">${facDesc(k)} · ${eff}</div>
-        </button>`;
+          : k==="infirm" ? `현재 매주 +${lv-1}` : `현재 효율 ×${facEff(k).toFixed(2)}`;
+        /* 단계가 잘게 나뉜 시설만 한 번에 올릴 수 있게 한다 */
+        const rem = mx - lv, many = (mx - facStart(k)) > 10;
+        const steps = (!full && many) ? (rem > 10 ? [10, rem] : [rem]) : [];
+        const bulk = steps.length ? `<div class="facbulk">
+          ${steps.map(n=>{ const q = facCostN(k, n);
+            return `<button class="btn sm" data-facn="${k}" data-facq="${n}" ${S.gold<q?"disabled":""}
+              >+${n}${n===rem&&rem>10? " (최대)":""} · ${fmt(q)} G</button>`; }).join("")}
+        </div>` : "";
+        return `<div class="faccell">
+          <button class="opt" data-fac="${k}" ${S.gold<c||full?"disabled":""}>
+            <div class="on">${f.n} <span class="tag">Lv.${lv} / ${mx}</span><span class="price">${full?"최대":fmt(c)+" G"}</span></div>
+            <div class="od">${facDesc(k)} · ${eff}</div>
+          </button>${bulk}
+        </div>`;
       }).join("")}
     </div>
   </section>
@@ -7875,12 +7905,21 @@ function bindView(){
   const brI = $("#btnRestInj"); if(brI) brI.onclick = ()=> setRestInjured();
   const bw = $("#btnWeek"); if(bw) bw.onclick=()=> runWithReport();
   const br = $("#btnRest"); if(br) br.onclick=()=> runWeeks(halfLeft());
-  v.querySelectorAll("[data-fac]").forEach(b=> b.onclick=()=>{
-    const k=b.dataset.fac, c=facCost(k);
-    if(S.gold<c || (S.facil[k]||0) >= facMax(k)) return;
-    S.gold-=c; S.facil[k] = (S.facil[k]||0) + 1;
-    logE(`<b>${FACILITIES[k].n}</b> 확장 — Lv.${S.facil[k]}`,"good"); save(); render();
-  });
+  const facBuy = (k, n)=>{
+    const mx = facMax(k), lv0 = S.facil[k]||0;
+    let got = 0;
+    for(let i=0; i<n; i++){
+      const c = facCost(k);
+      if(S.gold < c || (S.facil[k]||0) >= mx) break;
+      S.gold -= c; S.facil[k] = (S.facil[k]||0) + 1; got++;
+    }
+    if(!got) return;
+    logE(`<b>${FACILITIES[k].n}</b> 확장 — Lv.${lv0} → <b>Lv.${S.facil[k]}</b>${
+      got>1? ` (${got}단계)`:""}`,"good");
+    save(); render();
+  };
+  v.querySelectorAll("[data-fac]").forEach(b=> b.onclick=()=> facBuy(b.dataset.fac, 1));
+  v.querySelectorAll("[data-facn]").forEach(b=> b.onclick=()=> facBuy(b.dataset.facn, +b.dataset.facq||1));
   {
     const sl = $("#fxA");
     if(sl){
@@ -9396,6 +9435,16 @@ function boot(){
   S.church = S.church||{};
   S.epiUsed = S.epiUsed||[]; S.epiLog = S.epiLog||[];
   S.facil = S.facil||{};
+  /* 훈련 시설이 1~8 (등급당 20%) 에서 0~70 (단계당 2%) 로 바뀌었다 —
+     같은 효율이 나오도록 (등급-1)×10 으로 환산한다. Lv.8 ×2.4 → Lv.70 ×2.4 */
+  if((S.facilV|0) < FACIL_VER){
+    Object.keys(FACILITIES).forEach(k=>{
+      if(facMax(k) !== 70) return;
+      const old = S.facil[k];
+      if(typeof old === "number") S.facil[k] = clamp(Math.round((old - 1) * 10), 0, 70);
+    });
+    S.facilV = FACIL_VER;
+  }
   Object.keys(FACILITIES).forEach(k=>{ if(typeof S.facil[k]!=="number") S.facil[k] = facStart(k); });
   teamsOf(); cleanTeams(); cleanBonds();
   if(S.plan) delete S.plan;   // 주 단위 스케줄은 카드 덱으로 대체됐다
