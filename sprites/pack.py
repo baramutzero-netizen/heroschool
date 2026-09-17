@@ -66,6 +66,7 @@ HAIR_FIX = {
     "druid":     [],
     "ninja":     [],
     "forcemage": [],
+    "rogue":     [],   # 새 원화 — 금발이 살색 램프와 같은 색을 써서 일부만 칠해진다
     "monk":      ["442d36", "352832", "503838", "725045"],    # 짙은 갈색 머리
 }
 
@@ -110,6 +111,66 @@ def hair_colors(im, cell):
            and (c not in cnt or ratio(c) >= HAIR_TOP)]
     out.sort(key=lambda c: -allc[c])
     return ["%02x%02x%02x" % c for c in out], base
+
+# ── 복장 색 검출 ──
+# 머리색 변형을 못 쓰는 직업(머리와 피부가 같은 램프)은 대신 옷의 주된 색을 바꾼다.
+CLOTH_DH   = .07    # 같은 옷감으로 볼 색상(hue) 차이
+CLOTH_LOW  = .45    # 그 색 픽셀 중 몸통 쪽(허리 아래 포함)에 있어야 하는 최소 비율
+CLOTH_SAT  = .22    # 씨앗 색의 최소 채도 — 무채색 옷은 색을 돌려도 안 변한다
+CLOTH_VAL  = .14    # 너무 어두우면 색을 돌려도 티가 안 난다
+CLOTH_MIN  = 2
+CLOTH_FIX  = {      # 자동 검출이 빗나가면 여기서 직접 지정 (빈 배열이면 변형 없음)
+    # 프리스트 — 흰 로브는 그대로 두고 지팡이만 바꾼다
+    "priest": ["e2ad42", "967751", "f5d2b1"],
+}
+
+def cloth_colors(im, cell):
+    """옷 주요 색 자동 검출 — 머리 검출의 거울상.
+       idle bbox 의 위 42% 를 '머리 쪽'으로 보고, 그 아래에 몰려 있으면서
+       채도가 있는 색 하나를 씨앗으로 잡아 같은 색상 계열을 모은다.
+       피부 램프는 무조건 제외한다."""
+    W, H = im.size
+    reg = im.crop((0, 0, W, cell))
+    bb = reg.getbbox()
+    if not bb: return [], 0
+    x0, y0, x1, y1 = bb
+    band = y0 + (y1 - y0) * HAIR_BAND
+    px = im.load()
+    cnt, low = Counter(), Counter()
+    for y in range(y0, y1):
+        for x in range(x0, x1):
+            c = px[x, y]
+            if c[3] == 0: continue
+            cnt[c[:3]] += 1
+            if y >= band: low[c[:3]] += 1
+    if not cnt: return [], 0
+    hsv = lambda c: colorsys.rgb_to_hsv(c[0]/255, c[1]/255, c[2]/255)
+    hexs = lambda c: "%02x%02x%02x" % c
+    ratio = lambda c: low[c] / cnt[c]
+    seedable = [c for c in cnt
+                if hexs(c) not in SKIN and hsv(c)[1] >= CLOTH_SAT
+                and hsv(c)[2] >= CLOTH_VAL and ratio(c) >= CLOTH_LOW]
+    if not seedable: return [], 0
+    # 넓이뿐 아니라 '색을 돌렸을 때 눈에 띄는 정도'(채도x밝기)도 같이 본다 —
+    # 어두운 그림자색이 가장 넓다고 씨앗이 되면 색을 돌려도 티가 안 난다
+    def seedScore(c):
+        s, v = hsv(c)[1], hsv(c)[2]
+        return cnt[c] * ratio(c) * s * v
+    seed = max(seedable, key=seedScore)
+    base = hsv(seed)[0]
+    def dh(h):
+        d = abs(h - base); return min(d, 1 - d)
+    allc = Counter()
+    ap = im.load()
+    for y in range(H):
+        for x in range(W):
+            c = ap[x, y]
+            if c[3]: allc[c[:3]] += 1
+    out = [c for c in allc
+           if hexs(c) not in SKIN and hsv(c)[1] >= .14 and dh(hsv(c)[0]) <= CLOTH_DH
+           and (c not in cnt or ratio(c) >= .30)]
+    out.sort(key=lambda c: -allc[c])
+    return [hexs(c) for c in out], base
 
 FX_ORDER = ["slash","pierce","blunt","burst","aura","heal"]
 def pack_fx():
@@ -169,6 +230,17 @@ def main():
         elif len(hair) < HAIR_MIN:
             print("  (%s: 쓸 만한 머리색을 못 찾아 변형을 끕니다)" % job)
             hair = []
+        if len(hair) < HAIR_MIN:                      # 머리를 못 쓰면 옷으로
+            if job in CLOTH_FIX:
+                hair = list(CLOTH_FIX[job])
+                print("  (%s: 복장 색을 직접 지정 — %d색)" % (job, len(hair)))
+            else:
+                cl, cb = cloth_colors(im, cell)
+                if len(cl) >= CLOTH_MIN:
+                    hair = cl
+                    print("  (%s: 머리 대신 복장 %d색을 바꿉니다 — 기준 %.0f°)" % (job, len(cl), cb*360))
+                else:
+                    print("  (%s: 복장 색도 못 찾아 변형 없음)" % job)
         sheets.append(dict(job=job, im=im, cell=cell, cols=cols, counts=counts, hair=hair))
         print(f"{job:12s} cell={cell} cols={cols} frames={counts} 머리 {len(hair)}색 (기준 {base*360:.0f}°)")
     CELL = max(s["cell"] for s in sheets)
