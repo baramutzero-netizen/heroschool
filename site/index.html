@@ -3229,7 +3229,9 @@ function tickInjury(){
   });
 }
 function facMul(fk){ return fk ? 1 + (S.facil[fk]-1)*.2 : 1; }
-const FOCUS_FAC = {team:"arena",aggr:"arena",calm:"hall",will:"chapel",stam:"gym",genius:"library"};
+/* 집중 훈련이 보는 시설 — 그 분야의 주력 카드를 맡은 시설과 맞춘다
+   (지구력 단련장 · 적극성 수련관 · 침착성/천재성 장서고 · 정신력 묵상실 · 팀워크 대련장) */
+const FOCUS_FAC = {team:"arena",aggr:"hall",calm:"library",will:"chapel",stam:"gym",genius:"library"};
 const FOCUS_REST = "rest";
 const FOCUS_REST_GAIN = 18;    // 휴식 집중 — 주당 컨디션 회복 (강장제 ×1.4 · 의무실 +등급)
 function restFocusGain(){
@@ -5915,7 +5917,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0917-1620";
+const BUILD = "0917-1629";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
