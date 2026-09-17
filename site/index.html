@@ -1652,12 +1652,12 @@ function makeRelic(grade){
    시설 · 아이템 · 트레이닝
    ============================================================ */
 const FACILITIES = {
-  gym:    {n:"단련장",   d:"체력·근력 계열 훈련 효율",  base:1200},
-  hall:   {n:"수련관",   d:"기술·전술 계열 훈련 효율",  base:1200},
-  chapel: {n:"묵상실",   d:"정신 계열 훈련 효율",       base:1100},
+  gym:    {n:"단련장",   d:"지구력 단련",               base:1200},
+  hall:   {n:"수련관",   d:"적극성 · 팀워크 실습",      base:1200},
+  chapel: {n:"묵상실",   d:"정신력 수양",               base:1100},
   infirm: {n:"의무실",   d:"매주 컨디션 자연 회복 (등급당 +1)",   base:1000},
-  library:{n:"장서고",   d:"천재성·잠재력 성장 보정",   base:1500},
-  arena:  {n:"대련장",   d:"합동 훈련·팀워크 효율",     base:1300},
+  library:{n:"장서고",   d:"침착성 연구 · 천재성 성장 보정", base:1500},
+  arena:  {n:"대련장",   d:"실전 형식 훈련",            base:1300},
   counsel:{n:"상담실",   d:"상담에서 지도력·정보력·호소력 보정", base:1000, start:0, max:6}
 };
 function facStart(k){ const f=FACILITIES[k]; return f && f.start!==undefined ? f.start : 1; }
@@ -1687,20 +1687,20 @@ const TRAININGS = [
     fx:[["지구력",3],["정신력",1]]},
   {id:"spar",  n:"대련",       fac:"arena",  cond:5,  gains:{aggr:.9,team:.5,calm:.3}, d:"나무 무기로 싸운다",
     fx:[["적극성",2],["팀워크",1],["침착성",1]]},
-  {id:"form",  n:"진형 훈련",  fac:"arena",  cond:10, gains:{team:1.5,genius:.5}, need:"flag", d:"3인 전술을 연구한다",
+  {id:"form",  n:"진형 훈련",  fac:"hall",     cond:10, gains:{team:1.5,genius:.5}, need:"flag", d:"3인 전술을 연구한다",
     fx:[["팀워크",3],["천재성",2]]},
   {id:"medit", n:"명상",       fac:"chapel", cond:6,  gains:{will:1.0,calm:.5}, d:"눈을 감아본다",
     fx:[["정신력",3],["침착성",1]]},
   {id:"study", n:"이론 강의",  fac:"library",cond:7,  gains:{genius:.85,calm:.55}, d:"책상 앞에 앉힌다",
     fx:[["천재성",3],["침착성",2]]},
-  {id:"tact",  n:"전술 연구",  fac:"hall",   cond:5,  gains:{calm:1.0,genius:.35}, d:"효율적인 전투를 연구한다",
+  {id:"tact",  n:"전술 연구",  fac:"library",cond:5,  gains:{calm:1.0,genius:.35}, d:"효율적인 전투를 연구한다",
     fx:[["침착성",3],["천재성",1]]},
-  {id:"free",  n:"자율 훈련",  fac:"hall",   cond:8,  gains:{team:.3,aggr:.3,calm:.3,will:.3,stam:.3,genius:.3}, d:"학생에게 맡긴다",
+  {id:"free",  n:"자율 훈련",  fac:"library",cond:8,  gains:{team:.3,aggr:.3,calm:.3,will:.3,stam:.3,genius:.3}, d:"학생에게 맡긴다",
     fx:[["멘탈리티",1]]},
   // 아이템 해금
   {id:"heavy", n:"고강도 단련", fac:"gym",   cond:10, gains:{stam:1.5,will:.6}, need:"weight", d:"숨 넘어갈 정도로 단련한다",
     fx:[["지구력",4],["정신력",2]]},
-  {id:"strike",n:"실전 타격",   fac:"gym",   cond:10, gains:{aggr:1.4,calm:.5}, need:"dummy", d:"장비들을 시험해본다",
+  {id:"strike",n:"실전 타격",   fac:"hall",   cond:10, gains:{aggr:1.4,calm:.5}, need:"dummy", d:"장비들을 시험해본다",
     fx:[["적극성",4],["침착성",2]]},
   {id:"deep",  n:"심층 명상",   fac:"chapel",cond:11, gains:{will:1.5,genius:.5}, need:"stone", d:"내면 깊이 들어간다",
     fx:[["정신력",4],["천재성",2]]},
@@ -3261,13 +3261,12 @@ function trainStudent(st, tr, success, opt){
   const leadM = 1 + S.master.lead*.035;
   const fM = facMul(tr.fac);
   const partM = success ? 1 : TRAIN_FAIL_MUL;
-  const libM = 1 + (S.facil.library-1)*.06;
   let notable = null;
   for(const k in gains){
     const cap = 45 + st.ment.pot*.679;    // 잠재력 81 → 상한 100
     const cur = st.ment[k];
     const room = clamp(1 - (cur-10)/Math.max(20,cap), .09, 1);
-    let d = 2.4*gains[k]*potM*condM*leadM*fM*partM*room*rnd(.7,1.35)*(k==="genius"||k==="pot"?libM:1)*(opt.mul||1);
+    let d = 2.4*gains[k]*potM*condM*leadM*fM*partM*room*rnd(.7,1.35)*(opt.mul||1);
     st.ment[k] = clamp(st.ment[k] + d, 1, 99);
     if(d>.9 && (!notable || d>notable.d)) notable={k,d};
   }
@@ -5916,7 +5915,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0917-1540";
+const BUILD = "0917-1620";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -6726,6 +6725,19 @@ function viewChurch(){
 }
 
 /* ---------- 시설 · 상점 ---------- */
+/* 이 시설의 효율을 받는 훈련 — 덱에 실제로 나오는 것만 */
+function facTrainings(k){
+  const deck = DECK_BASE.concat(DECK_ITEM);
+  return TRAININGS.filter(t=> t.fac===k && deck.indexOf(t.id)>=0 && !t.rest);
+}
+/* 시설 설명 — 어느 훈련의 효율을 올려주는지 그대로 적는다 */
+function facDesc(k){
+  const a = facTrainings(k);
+  if(!a.length) return FACILITIES[k].d;
+  return a.map(t=> (t.need && !(S.items && S.items[t.need]))
+      ? `<span style="color:var(--dim)" title="${esc(ITEMS[t.need].n)} 필요">${esc(t.n)}</span>`
+      : esc(t.n)).join(" · ") + "의 효율";
+}
 function facCost(k){ return Math.round(FACILITIES[k].base * Math.pow(Math.max(1, (S.facil[k]||0) - facStart(k) + 1), 1.42)); }
 function viewFacil(){
   return `<section class="panel">
@@ -6738,7 +6750,7 @@ function viewFacil(){
           : k==="infirm" ? `현재 매주 +${lv-1}` : `현재 효율 ×${(1+(lv-1)*.2).toFixed(1)}`;
         return `<button class="opt" data-fac="${k}" ${S.gold<c||full?"disabled":""}>
           <div class="on">${f.n} <span class="tag">Lv.${lv}${mx!==8?` / ${mx}`:""}</span><span class="price">${full?"최대":fmt(c)+" G"}</span></div>
-          <div class="od">${f.d} · ${eff}</div>
+          <div class="od">${facDesc(k)} · ${eff}</div>
         </button>`;
       }).join("")}
     </div>
