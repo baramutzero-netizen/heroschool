@@ -4092,6 +4092,8 @@ function ladderNext(step){
   if(!nx) return null;
   return ladderLocked(nx) ? null : nx;
 }
+/* 네 대회 모두 LADDER_ROUND 에 라운드별로 못박아 두었다 —
+   아래 값은 그 표가 없는 단계를 위한 예비값으로만 남는다. */
 const LADDER_FOE = {
   city:  {y3:{g:"B",lv:13}, y2:{g:"A",lv:11}, rare:{g:"A",lv:16}},
   region:{y3:{g:"A",lv:14}, y2:{g:"A",lv:12}, rare:{g:"A",lv:18}},
@@ -4103,8 +4105,13 @@ const LADDER_FOE = {
 const GRADE_SEQ = ["D","C","B","A","S"];
 const FOE_GRADE_VAR = 1;    // 등급 오차 ±1
 const FOE_LV_VAR    = 2;    // 레벨 오차 ±2
+/* 라운드별 상대 — g 하나면 ±FOE_GRADE_VAR, g~g2 를 적으면 그 범위에서 고르게 뽑는다.
+   레벨은 적힌 값 ±FOE_LV_VAR. lv2 를 적으면 그 사이에서 고르게 뽑는다. */
 const LADDER_ROUND = {
-  city: [ {g:"D", lv:8}, {g:"D", lv:10}, {g:"C", lv:11}, {g:"B", lv:13} ]   // 16강 · 8강 · 4강 · 결승
+  city:   [ {g:"D",        lv:8},  {g:"D",        lv:10}, {g:"C",        lv:11}, {g:"B",        lv:13} ],
+  region: [ {g:"C",g2:"A", lv:13}, {g:"C",g2:"A", lv:14}, {g:"B",g2:"A", lv:15}, {g:"B",g2:"A", lv:16} ],
+  qual:   [ {g:"A",g2:"S", lv:16} ],                       // 1~7차전 동일
+  final:  [ {g:"S",g2:"S", lv:17}, {g:"S",g2:"S", lv:18}, {g:"S",g2:"S", lv:19}, {g:"S",g2:"S", lv:20} ]
 };
 function foeRoundSpec(step, round){
   const a = LADDER_ROUND[step];
@@ -4115,6 +4122,28 @@ function foeGradeNear(g, spread){
   const i = GRADE_SEQ.indexOf(g);
   if(i < 0) return g;
   return GRADE_SEQ[clamp(i + ri(-spread, spread), 0, GRADE_SEQ.length-1)];
+}
+/* 라운드 명세에서 등급을 뽑는다 — g2 가 있으면 g~g2 범위, 없으면 g 에서 ±1 */
+function foeGradeOf(spec){
+  if(!spec) return "C";
+  if(spec.g2){
+    const a = GRADE_SEQ.indexOf(spec.g), b = GRADE_SEQ.indexOf(spec.g2);
+    return GRADE_SEQ[clamp(ri(Math.min(a,b), Math.max(a,b)), 0, GRADE_SEQ.length-1)];
+  }
+  return foeGradeNear(spec.g, FOE_GRADE_VAR);
+}
+/* 라운드 명세에서 레벨을 뽑는다 — lv2 가 있으면 lv~lv2, 없으면 lv ±FOE_LV_VAR */
+function foeLvOf(spec){
+  if(!spec) return 1;
+  return spec.lv2 != null ? clamp(ri(spec.lv, spec.lv2), 1, 30)
+                          : clamp(spec.lv + ri(-FOE_LV_VAR, FOE_LV_VAR), 1, 30);
+}
+/* 명세를 사람 말로 — 화면과 실제가 어긋나지 않게 한 곳에서 만든다 */
+function foeSpecText(spec){
+  const g = spec.g2 && spec.g2 !== spec.g ? `${spec.g}~${spec.g2}급` : `${spec.g}급`;
+  const lo = spec.lv2 != null ? spec.lv : spec.lv - FOE_LV_VAR;
+  const hi = spec.lv2 != null ? spec.lv2 : spec.lv + FOE_LV_VAR;
+  return `${g} Lv.${lo}~${hi}`;
 }
 const FOE_COMPS = [
   ["paladin","archer","priest"],["sword","rogue","priest"],["monk","archer","timemage"],
@@ -4129,9 +4158,9 @@ const FOE_COMPS = [
 function foeProfileText(step){
   const a = LADDER_ROUND[step];
   if(a){
+    if(a.length === 1) return `전 경기 ${foeSpecText(a[0])}`;
     const nm = CUP_ROUND_NAME.slice(-a.length);
-    return a.map((x,i)=> `${nm[i]||(i+1)+"라운드"} ${x.g}급 Lv.${x.lv}`).join(" · ")
-      + ` (등급 ±${FOE_GRADE_VAR} · 레벨 ±${FOE_LV_VAR})`;
+    return a.map((x,i)=> `${nm[i]||(i+1)+"라운드"} ${foeSpecText(x)}`).join(" · ");
   }
   const P = LADDER_FOE[step];
   return `평균 3학년 ${P.y3.g}급 Lv.${P.y3.lv} · 2학년 ${P.y2.g}급 Lv.${P.y2.lv} · 드물게 3학년 ${P.rare.g}급 Lv.${P.rare.lv}까지`;
@@ -4150,8 +4179,8 @@ function ladderAcademy(step, round, name){
     teams.push(assignFoeForm(pick(FOE_COMPS).map(job=>{
       let y, grade, lv;
       if(spec){
-        grade = foeGradeNear(spec.g, FOE_GRADE_VAR);
-        lv    = clamp(spec.lv + ri(-FOE_LV_VAR, FOE_LV_VAR), 1, 30);
+        grade = foeGradeOf(spec);
+        lv    = foeLvOf(spec);
         y     = lv >= 11 ? 3 : 2;
       } else {
         const rare = RNG() < rareP;
@@ -7201,12 +7230,13 @@ function friendlySlotName(ph, w){
 }
 function friendlySlotLabel(ph, i){ const s = friendlySlots(ph); return friendlySlotName(ph, s[i]!=null? s[i] : halfWeeks(ph)+i); }
 /* 유명도 등급별 상대 전력 — 대회 프로필을 빌려 쓴다 */
+/* 친선전 상대 — 사다리와 같은 명세를 쓴다 (g~g2 등급 · lv~lv2 레벨) */
 const FRIENDLY_TIER = [
-  {n:"무명",   d:"이제 막 간판을 올린 학원", raw:{g:"D", lv:7},            rare:0},
-  {n:"유명",   d:"시내 대회 16강 언저리",     foe:"city",  lvOff:-1, rare:.05},
-  {n:"강호",   d:"시내 대회 우승권",          foe:"city",  lvOff:1,  rare:.20},
-  {n:"명문",   d:"광역 진출 ~ 광역 우승권",   foe:"region",lvOff:1,  rare:.22, span:3},
-  {n:"초명문", d:"예선 진출 ~ 본선 우승권",   foe:"qual",  lvOff:1,  rare:.28, span:3, up:"final"}
+  {n:"무명",   d:"이제 막 간판을 올린 학원", g:"D",g2:"D", lv:7,  lv2:7,  weak:true},
+  {n:"유명",   d:"시내 대회 상위권",         g:"D",g2:"B", lv:9,  lv2:13},
+  {n:"강호",   d:"광역 대회 상위권",         g:"B",g2:"A", lv:13, lv2:17},
+  {n:"명문",   d:"본선 진출 학원",           g:"S",        g2:"S", lv:15, lv2:19},
+  {n:"초명문", d:"왕국 대회 우승 학원",      g:"S",        g2:"S", lv:18, lv2:24}
 ];
 const FRIENDLY_PHASES = {
   spring:{teams:1, n:"가을 대회 대비", d:"가을을 대비해 세 학원이 연습 경기를 청해왔다."},
@@ -7237,26 +7267,12 @@ function friendlyFame(diff, win){
 function friendlyTeam(ti){
   const T = FRIENDLY_TIER[clamp(ti,0,4)];
   const comp = pick(FOE_COMPS);
-  if(T.raw){
-    return assignFoeForm(comp.map(job=>{
-      const st = newStudent(2, T.raw.g, job);
-      st.level = T.raw.lv; st.exp = 0; st.relics = []; st.cond = 92;
-      MENTAL.forEach(m=>{ if(m.k!=="pot") st.ment[m.k] = ri(10,20); });
-      autoSkMod(st, st.level);
-      return st;
-    }));
-  }
-  const strong = T.up && RNG()<.45;
-  const P = LADDER_FOE[strong ? T.up : T.foe];
-  const span = T.span||0;
   return assignFoeForm(comp.map(job=>{
-    const rare = RNG() < (T.rare||0);
-    const y = rare ? 3 : (RNG()<.5 ? 3 : 2);
-    const prof = y===3 ? P.y3 : P.y2;
-    const grade = rare ? P.rare.g : prof.g;
-    const lv = clamp((rare? P.rare.lv : prof.lv) + (T.lvOff||0) + ri(-1, span? span-1 : 1), 1, 30);
-    const st = newStudent(y, grade, job);
+    const grade = foeGradeOf(T);
+    const lv    = foeLvOf(T);
+    const st = newStudent(lv >= 11 ? 3 : 2, grade, job);
     st.level = lv; st.exp = 0; st.relics = []; st.cond = 92;
+    if(T.weak) MENTAL.forEach(m=>{ if(m.k!=="pot") st.ment[m.k] = ri(10,20); });
     autoSkMod(st, lv);
     return st;
   }));
