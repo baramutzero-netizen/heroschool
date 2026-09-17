@@ -3802,6 +3802,12 @@ function expedFinish(E){
     for(let i=0;i<res.reached;i++){
       if(RNG() < per) res.relics.push(makeRelic(wchoose(dg.relic)));
     }
+    /* 완주했는데 한 개도 안 나오면 빈손으로 돌려보내지 않는다 —
+       그 원정지에서 나올 수 있는 등급 중 하나로 한 개를 보장한다 */
+    if(res.reached >= dg.secs && !res.relics.length){
+      res.relics.push(makeRelic(wchoose(dg.relic)));
+      res.relicSafe = true;
+    }
   }
   const ups=[];
   if(res.reached>0){
@@ -3831,7 +3837,7 @@ function expedFinish(E){
   }
   res.relics.forEach(r=> addRelicToPool(r));
   levelReport(ups);
-  logE(`원정 — <b>${dg.n}</b> ${res.reached}/${dg.secs}구간 도달. 경험 ${fmt(res.exp)} · 자금 +${fmt(res.gold)}${res.fameGain? ` · <b>완주</b> 학원 명성 +${res.fameGain}`:""} · 유물 ${res.relics.length}개${res.karma? ` · <b style="color:var(--bad)">업보 +${res.karma.toFixed(1)}</b>`:""}${(res.evalGain&&res.evalGain.length)? ` · 진로 평가 ${res.evalGain.join(", ")}`:""}${res.stopped? ` (${res.stopped})`:""}`, res.reached>=dg.secs?"good":(res.stopped?"bad":""));
+  logE(`원정 — <b>${dg.n}</b> ${res.reached}/${dg.secs}구간 도달. 경험 ${fmt(res.exp)} · 자금 +${fmt(res.gold)}${res.fameGain? ` · <b>완주</b> 학원 명성 +${res.fameGain}`:""} · 유물 ${res.relics.length}개${res.relicSafe? " <span style=\"color:var(--brass)\">(완주 보장)</span>":""}${res.karma? ` · <b style="color:var(--bad)">업보 +${res.karma.toFixed(1)}</b>`:""}${(res.evalGain&&res.evalGain.length)? ` · 진로 평가 ${res.evalGain.join(", ")}`:""}${res.stopped? ` (${res.stopped})`:""}`, res.reached>=dg.secs?"good":(res.stopped?"bad":""));
   return res;
 }
 function expedLoop(E, quick, done){
@@ -3863,7 +3869,7 @@ function expedDone(R, bonus, res, TM){
   const ok = res.reached >= res.dg.secs;
   dlog(`${D}요일은 ${res.team.map(n=>esc(n)).join(", ")}${iga(res.team[res.team.length-1]||"")} <b>${esc(res.dg.n)}</b>로 원정을 떠나 <b>${res.reached}/${res.dg.secs}구간</b>까지 나아가 ${ok? `<b style="color:var(--ok)">완주했다!</b>` : `<b style="color:var(--bad)">돌아왔다.</b>`}${chainTag(bonus)}`, "head");
   if(res.stopped) dlog(`<span style="color:var(--dim)">${esc(res.stopped)}</span>`, "sub");
-  dlog(`경험 <b>${fmt(Math.round(res.exp))}</b> · 자금 <b style="color:var(--brass)">+${fmt(res.gold)}</b>${res.fameGain? ` · 명성 <b style="color:var(--ok)">+${fmt(res.fameGain)}</b>`:""} · 유물 <b>${res.relics.length}</b>개${res.karma? ` · <span style="color:var(--bad)">업보 +${res.karma.toFixed(1)}</span>`:""}`, "sub");
+  dlog(`경험 <b>${fmt(Math.round(res.exp))}</b> · 자금 <b style="color:var(--brass)">+${fmt(res.gold)}</b>${res.fameGain? ` · 명성 <b style="color:var(--ok)">+${fmt(res.fameGain)}</b>`:""} · 유물 <b>${res.relics.length}</b>개${res.relicSafe? ` <span style="color:var(--brass)">(완주 보장)</span>`:""}${res.karma? ` · <span style="color:var(--bad)">업보 +${res.karma.toFixed(1)}</span>`:""}`, "sub");
   RUN.expeds.push(res);
   UI.lastExped = res;
   const skip = new Set(res.ids);
@@ -5973,7 +5979,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0917-1840";
+const BUILD = "0917-1849";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -7250,8 +7256,8 @@ const FRIENDLY_TIER = [
   {n:"무명",   d:"이제 막 간판을 올린 학원", g:"D",g2:"D", lv:7,  lv2:7,  weak:true},
   {n:"유명",   d:"시내 대회 상위권",         g:"D",g2:"B", lv:9,  lv2:13},
   {n:"강호",   d:"광역 대회 상위권",         g:"B",g2:"A", lv:13, lv2:17},
-  {n:"명문",   d:"본선 진출 학원",           g:"S",        g2:"S", lv:15, lv2:19},
-  {n:"초명문", d:"왕국 대회 우승 학원",      g:"S",        g2:"S", lv:18, lv2:24}
+  {n:"명문",   d:"왕국 대회 우승 후보 학원",  g:"S",        g2:"S", lv:15, lv2:19},
+  {n:"초명문", d:"믿기지 않을 업적을 이룬 학원", g:"S",     g2:"S", lv:18, lv2:24}
 ];
 const FRIENDLY_PHASES = {
   spring:{teams:1, n:"가을 대회 대비", d:"가을을 대비해 세 학원이 연습 경기를 청해왔다."},
