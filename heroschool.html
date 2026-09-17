@@ -1681,7 +1681,7 @@ const ITEMS = {
 // 트레이닝: gains = 멘탈리티 스탯별 가중치, cost = 컨디션 소모
 /* fx = 카드에 찍히는 효과 표시 [이름, + 개수, 나쁜 것이면 1] */
 const TRAININGS = [
-  {id:"rest",  n:"휴식",       fac:"infirm", cond:-18, gains:{}, rest:true, d:"컨디션을 회복한다", fx:[]},
+  {id:"rest",  n:"휴식",       fac:"infirm", cond:-20, gains:{}, rest:true, d:"컨디션을 회복한다", fx:[]},
   {id:"basic", n:"기초 체력",  fac:"gym",    cond:5,  gains:{stam:1.0,will:.35}, d:"달리고 본다",
     fx:[["지구력",3],["정신력",1]]},
   {id:"spar",  n:"대련",       fac:"arena",  cond:5,  gains:{aggr:.9,team:.5,calm:.3}, d:"나무 무기로 싸운다",
@@ -3232,10 +3232,13 @@ function facMul(fk){ return fk ? facEff(fk) : 1; }
    (지구력 단련장 · 적극성 수련관 · 침착성/천재성 장서고 · 정신력 묵상실 · 팀워크 대련장) */
 const FOCUS_FAC = {team:"arena",aggr:"hall",calm:"library",will:"chapel",stam:"gym",genius:"library"};
 const FOCUS_REST = "rest";
-const FOCUS_REST_GAIN = 18;    // 휴식 집중 — 주당 컨디션 회복 (강장제 ×1.4 · 의무실 +등급)
+const FOCUS_REST_GAIN = 20;    // 휴식 집중 — 주당 컨디션 회복 (강장제 ×1.4 · 의무실 +단계)
 function restFocusGain(){
   return Math.round(FOCUS_REST_GAIN * (S.items && S.items.tonic ? 1.4 : 1)) + (S.facil.infirm|0);
 }
+/* 회복은 하루 단위로 붙고 컨디션은 정수라 하루치가 반올림된다 —
+   화면에 적는 주당 값도 같은 계산을 거쳐야 실제와 어긋나지 않는다 */
+function restFocusWeek(){ return WEEK_DAYS * Math.round(restFocusGain() * DAY_MUL); }
 function isRestFocus(st){ return st && st.focus===FOCUS_REST; }
 function focusOf(st){
   if(isRestFocus(st)) return null;          // 휴식 집중은 성장 훈련이 아니다
@@ -5533,11 +5536,11 @@ function studentDetail(s){
           <div class="eyebrow" style="margin-bottom:4px">집중 트레이닝 분야</div>
           <select id="focusSel" style="width:100%;background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:5px">
             <option value="free" ${s.focus==="free"?"selected":""}>지정 없음 (개인 훈련 안 함)</option>
-            <option value="rest" ${s.focus==="rest"?"selected":""}>휴식 집중 — 스케줄 불참, 컨디션 +${restFocusGain()}</option>
+            <option value="rest" ${s.focus==="rest"?"selected":""}>휴식 집중 — 스케줄 불참, 컨디션 +${restFocusWeek()}</option>
             ${MENTAL.filter(m=>!m.fixed).map(m=>`<option value="${m.k}" ${s.focus===m.k?"selected":""}>${m.n} — ${m.d}</option>`).join("")}
           </select>
           <div style="font-size:11.5px;color:var(--dim);margin-top:4px">학원 스케줄과 <b>별개로</b> 매주 혼자 이 분야를 단련한다. 컨디션을 6 더 소모하며, 휴식 주간·원정에 나간 주·컨디션 25 미만일 때는 쉰다.
-            ${isRestFocus(s)? `<b style="color:var(--ok)">휴식 집중 중 — 학원 스케줄에 참여하지 않고 매주 컨디션을 ${restFocusGain()} 회복한다.</b>`
+            ${isRestFocus(s)? `<b style="color:var(--ok)">휴식 집중 중 — 학원 스케줄에 참여하지 않고 매주 컨디션을 ${restFocusWeek()} 회복한다.</b>`
               : s.focus!=="free"? `현재 <b style="color:var(--brass)">${FACILITIES[FOCUS_FAC[s.focus]].n}</b>(Lv.${S.facil[FOCUS_FAC[s.focus]]})의 효율을 받는다.`:""}</div>
         </div>
       </div>
@@ -5725,7 +5728,7 @@ function viewPlan(){
         <div class="od" style="color:var(--dim)">부상 중에는 잠재력을 제외한 멘탈리티가 <b style="color:var(--bad)">50%</b>로 계산되고, <b>휴식을 제외한 훈련은 100% 실패</b>한다.
           ${bad.length? `<b style="color:var(--bad)">훈련을 계속하면 다시 다칠 수 있다 — ${bad.length}명을 휴식 집중으로 돌리는 것이 좋다.</b>` : "휴식 집중으로 회복을 기다리는 중이다."}</div></div>`; })()}
     ${SHOW_FOCUSHELP? `<p style="font-size:11.5px;color:var(--dim);margin:-4px 0 10px">약점은 가장 낮은 멘탈리티를, 강점은 가장 높은 멘탈리티를 전 학생에게 일괄 지정한다 (잠재력 제외). <b>전부 지정 없음</b>은 휴식 집중을 포함한 모든 집중 지정을 해제한다. <b>변경 취소하기</b>는 지금 손댄 것을 무르고 <b>지난주</b> 배치로, <b>지난주 변경 취소</b>는 지난주에 바꾼 것을 무르고 <b>지지난주</b> 배치로 되돌린다.
-      휴식 전환은 해당 컨디션 이하인 학생을 <b style="color:var(--ok)">휴식 집중</b>으로 돌린다 — 학원 스케줄에 참여하지 않고 매주 컨디션만 <b style="color:var(--ok)">${restFocusGain()}</b> 회복한다. 개별 변경은 학생 탭에서 한다.</p>` : ""}
+      휴식 전환은 해당 컨디션 이하인 학생을 <b style="color:var(--ok)">휴식 집중</b>으로 돌린다 — 학원 스케줄에 참여하지 않고 매주 컨디션만 <b style="color:var(--ok)">${restFocusWeek()}</b> 회복한다. 개별 변경은 학생 탭에서 한다.</p>` : ""}
     <div class="grid2">
       ${MENTAL.filter(m=>!m.fixed).map(m=>{
         const who = S.students.filter(s=>s.focus===m.k);
@@ -5738,7 +5741,7 @@ function viewPlan(){
         return `<div class="opt" style="cursor:default;border-color:var(--ok)">
           <div class="on" style="color:var(--ok)">휴식 집중<span class="price">${who.length}명</span></div>
           <div class="od">${who.map(s=>`${dnH(s)} ${Math.round(s.cond)}`).join(" · ")}</div>
-          <div class="od" style="color:var(--dim)">스케줄 불참 · 매주 컨디션 +${restFocusGain()}
+          <div class="od" style="color:var(--dim)">스케줄 불참 · 매주 컨디션 +${restFocusWeek()}
             <span style="color:var(--dim)">(기본 ${FOCUS_REST_GAIN}${S.items&&S.items.tonic?" · 강장제 ×1.4":""}${S.facil.infirm>0?` · 의무실 +${S.facil.infirm|0}`:""})</span></div></div>`; })()}
       ${S.students.filter(s=>s.focus==="free").length? `<div class="opt locked" style="cursor:default">
         <div class="on" style="color:var(--dim)">미지정<span class="price">${S.students.filter(s=>s.focus==="free").length}명</span></div>
@@ -5916,7 +5919,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0917-1657";
+const BUILD = "0917-1708";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -7418,7 +7421,7 @@ function setRestFocus(thr){
   save(); render();
   showModal(`<div class="cerhead"><div class="eyebrow">개인 집중 훈련 · 휴식 전환</div>
       <h2 style="font-size:22px;margin-top:2px">${cap} ${who.length}명</h2>
-      <p style="color:var(--muted);font-size:13px;margin-top:6px">이 학생들은 학원 스케줄에 참여하지 않고 매주 컨디션을 <b style="color:var(--ok)">${restFocusGain()}</b> 회복한다. 회복되면 학생 탭이나 아래 버튼으로 다시 훈련에 돌린다.</p></div>
+      <p style="color:var(--muted);font-size:13px;margin-top:6px">이 학생들은 학원 스케줄에 참여하지 않고 매주 컨디션을 <b style="color:var(--ok)">${restFocusWeek()}</b> 회복한다. 회복되면 학생 탭이나 아래 버튼으로 다시 훈련에 돌린다.</p></div>
     <div class="scroll-x" style="max-height:300px;overflow-y:auto;margin-top:12px">
       <table class="tb"><thead><tr><th>학생</th><th>컨디션</th><th>훈련 효율</th><th>이전 집중 분야</th></tr></thead><tbody>
       ${who.slice().sort((a,b)=>a.cond-b.cond).map(s=>{ const e=condEff(s.cond);
