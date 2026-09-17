@@ -4695,13 +4695,15 @@ function advancePhase(){
     const drop = (S.hand||[]).filter(c=> c && c.t==="exped").length;
     S.hand = (S.hand||[]).filter(c=> !(c && c.t==="exped"));
     handRefill();
+    queueCeremony({type:"camp", year:S.year, weeks:phaseWeeks("summer"), drop:drop});
     logE(`여름 방학 — ${phaseWeeks("summer")}주 내내 합숙이다. 훈련 효과와 컨디션 소모가 모두 ×${CAMP_GAIN}, 휴식 회복도 ×${CAMP_COND}다.${
       drop? ` 손패의 <b>원정 파견 ${drop}장</b>은 버렸다 —` : ` `} 합숙 기간에는 원정을 나가지 않는다.`,"big");
   }
   if(S.phase==="winter"){ genScouts();
     logE(`겨울 방학 — ${phaseWeeks("winter")}주 내내 스카우트 기간 (시도 ${scoutTriesMax()}회 · <b>${fameTitle(S.fame).n}</b> 등급${fameTitleIdx(S.fame)? ` 보정 +${fameTitleIdx(S.fame)}`:""}).`,"big");
     queueCeremony({type:"scout", year:S.year, tries:scoutTriesMax(), cap:enrollCap(),
-                   title:fameTitle(S.fame).n, idx:fameTitleIdx(S.fame), n:(S.scouts||[]).length}); }
+                   title:fameTitle(S.fame).n, idx:fameTitleIdx(S.fame), n:(S.scouts||[]).length,
+                   grad:((S.pendingGrad && S.pendingGrad.list)? S.pendingGrad.list.length : 0)}); }
   if(S.phase==="spring"){ logE(`${S.year}년 신학기가 시작되었다. 신입생이 학원에 합류했다.`,"big"); }
   save();
 }
@@ -8263,6 +8265,7 @@ function showCeremony(){
     : c.type==="epithet" ? epithetCeremony(c)
     : c.type==="unlock" ? unlockCeremony(c)
     : c.type==="insight" ? insightCeremony(c)
+    : c.type==="camp" ? campCeremony(c)
     : c.type==="scout" ? scoutCeremony(c)
     : c.type==="fame" ? fameCeremony(c)
     : enrollCeremony(c);
@@ -8314,6 +8317,7 @@ function showCeremony(){
     if(!cok) modalEscape();                 // 확인 버튼이 없는 팝업 — 빠져나갈 길은 남긴다
     if(cok) cok.onclick = ()=>{
       if(c.type==="scout" && S.phase==="winter" && S.scouts) UI.view = "scout";
+      if(c.type==="camp" && S.phase==="summer") UI.view = "plan";
       if(c.type==="friendly"){
         const F = friendlyState(c.phase||"spring"); F.answered=true; UI.fsel=null;
         const n = F.slots.filter(x=>x!=null).length;
@@ -8373,10 +8377,34 @@ function fameCeremony(c){
     </div>
     <div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">확인</button></div>`;
 }
+function campCeremony(c){
+  const wk = c.weeks || phaseWeeks("summer");
+  return `<div class="cerhead">
+      <div class="eyebrow">${c.year}년 여름 · 1주차</div>
+      <h2 style="font-size:26px;margin-top:2px">여름</h2>
+      <p style="color:var(--muted);font-size:13px;margin-top:6px">${wk}주간의 지옥 합숙이 시작된다.</p>
+    </div>
+    <div class="grid2" style="margin-top:14px">
+      <div class="opt" style="cursor:default">
+        <div class="on">훈련 효과<span class="price num" style="color:var(--brass)">×${CAMP_GAIN}</span></div>
+        <div class="od">${wk}주 내내 모든 훈련 효과가 ${CAMP_GAIN}배로 들어온다</div>
+      </div>
+      <div class="opt" style="cursor:default">
+        <div class="on">컨디션 소모<span class="price num" style="color:var(--bad)">×${CAMP_COND}</span></div>
+        <div class="od">소모도 ${CAMP_COND}배 · <b style="color:var(--text)">휴식 회복도 ×${CAMP_COND}</b></div>
+      </div>
+    </div>
+    <div class="opt" style="cursor:default;margin-top:10px">
+      <div class="od">합숙 도중에는 도망치지 못한다 — <b style="color:var(--text)">원정도 가지 못한다</b>.${
+        c.drop? ` 손패의 원정 파견 <b style="color:var(--text)">${c.drop}장</b>은 버렸다.`:""}</div>
+    </div>
+    <div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">진행</button></div>`;
+}
 function scoutCeremony(c){
+  const gradN = (c.grad!=null) ? (c.grad|0) : ((S.pendingGrad && S.pendingGrad.list)? S.pendingGrad.list.length : 0);
   return `<div class="cerhead">
       <div class="eyebrow">${c.year}년 겨울 · 1주차</div>
-      <h2 style="font-size:26px;margin-top:2px">스카우팅의 계절이 돌아왔다</h2>
+      <h2 style="font-size:26px;margin-top:2px">겨울</h2>
       <p style="color:var(--muted);font-size:13px;margin-top:6px">겨울 ${phaseWeeks("winter")}주 내내 후보들이 학원 문을 두드린다. 시즌이 끝나기 전에 마음을 정해야 한다.</p>
     </div>
     <div class="grid2" style="margin-top:14px">
@@ -8393,6 +8421,11 @@ function scoutCeremony(c){
       <div class="od">유명도가 높을수록 상위 등급 후보가 나타난다. 잠재력은 등급으로 정해지니, 오래 키울 학생일수록 등급을 봐야 한다.
         겨울 ${friendlyOfferWeek("winter")+2}주차에는 <b style="color:var(--text)">친선전</b> 요청도 도착한다.</div>
     </div>
+    ${gradN? `<div class="opt" style="cursor:default;margin-top:10px">
+      <div class="od" style="line-height:1.7">3학년 학생들은 이제부터 진로 준비를 하기 시작한다.<br>
+        그들의 미래는 스스로 결정하겠지만,<br>
+        <b style="color:var(--text)">당신과 함께한 시간은 그들이 낯선 길 앞에서도 한 걸음 내디딜 수 있는 용기가 될 것이다.</b></div>
+    </div>`:""}
     <div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">스카우트로 이동</button></div>`;
 }
 function unlockCeremony(c){
