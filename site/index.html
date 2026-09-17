@@ -886,9 +886,10 @@ const FX_ELK = Object.keys(FX_EL);
 const FX_BASE = new Image();
 let FX_READY = false;
 const FX_CACHE = new Map(), FX_CAP = 32;   // 한 전투에서 최대 15종까지 나온다 — 캐시가 밀리면 매 프레임 다시 칠한다
-/* 투명도 — 0 이면 그대로, 100 이면 아예 안 나온다 */
+/* 투명도 — 0 이면 그대로, 100 이면 아예 안 나온다. 기본값은 반투명. */
+const FX_A_DEFAULT = 50;
 function fxAlpha(){
-  const v = (S && S.opts && typeof S.opts.fxA === "number") ? S.opts.fxA : 0;
+  const v = (S && S.opts && typeof S.opts.fxA === "number") ? S.opts.fxA : FX_A_DEFAULT;
   return clamp(1 - v/100, 0, 1);
 }
 function fxSheet(fi, el){
@@ -2866,7 +2867,7 @@ function newGame(name){
     year:1, phase:"spring", week:0,
     students:[], graduates:[], log:[],
     facil:{gym:1,hall:1,chapel:1,infirm:1,library:1,arena:1,counsel:0},
-    items:{}, church:{}, epiUsed:[], epiLog:[], focusPrev:null, focusHist:[], books:0, scouts:null, incoming:[], history:[], opts:{report:true}, mission:newMission(), relicPool:[], skillPool:[],
+    items:{}, church:{}, epiUsed:[], epiLog:[], focusPrev:null, focusHist:[], books:0, scouts:null, incoming:[], history:[], opts:{report:true, fxA:FX_A_DEFAULT}, mission:newMission(), relicPool:[], skillPool:[],
     lastTour:null
   };
   const jobs = shuffle(JOB_KEYS.slice());
@@ -4393,7 +4394,13 @@ function insightCeremony(c){
    신뢰도 — 마스터와 학생 사이. 0에서 시작해 최대 9
    ============================================================ */
 const TRUST_MAX = 9;
-const TRUST_GRAD_GOLD = .20;   // 1단계당 졸업 후원금 +20%
+const TRUST_GRAD_GOLD = .20;   // 신뢰 1단계당 졸업 후원금 +20%
+/* 개인 명성 — 대회와 원정에서 쌓은 이름값이 데려가는 쪽의 지갑을 연다.
+   100 당 +8%, 최대 +80%. 명성 1000 이면 후원금이 거의 두 배가 된다. */
+const FAME_GRAD_GOLD = .0008, FAME_GRAD_MAX = .80;
+function fameGoldBonus(st){
+  return Math.min(FAME_GRAD_MAX, Math.max(0, (st && st.fame) || 0) * FAME_GRAD_GOLD);
+}
 const TRUST_BANDS = [
   {min:9, step:"운명", rel:"내 인생에 대체 불가능한 존재"},
   {min:7, step:"유대", rel:"감정을 공유하는 비밀 없는 사이"},
@@ -4771,9 +4778,10 @@ function graduateAll(){
     const reason = trustFull(st)
       ? pickUnique(TRUST_FAREWELL, (usedReason._trust = usedReason._trust || []))
       : pickUnique(CAREER_REASON[c.id]||CAREER_REASON.none, usedReason[c.id]);
-    const gold = Math.round(c.gold * (1 + tr*TRUST_GRAD_GOLD));   // 신뢰 1단계당 후원금 +20%
+    const fb = fameGoldBonus(st);                                  // 개인 명성 보정
+    const gold = Math.round(c.gold * (1 + tr*TRUST_GRAD_GOLD + fb));
     const rec = {sid:st.id, name:dn(st), job:st.job, year:S.year, career:c.n, epithet:st.epithet||null, careerId:c.id, dark:!!c.dark,
-      karma:karmaOf(st), trust:tr, score:sc, lv:st.level, fame, gold, reason, farewell:trustFull(st), pw:power(st),
+      karma:karmaOf(st), trust:tr, score:sc, lv:st.level, fame, gold, pfame:Math.round(st.fame||0), reason, farewell:trustFull(st), pw:power(st),
       // 대전용 — 이 기록만으로 전투 유닛을 다시 세울 수 있어야 한다
       grade:st.grade, pers:st.pers||"plain", raw:st.name,
       ment:Object.assign({}, st.ment), skMod:JSON.parse(JSON.stringify(st.skMod||{})),
@@ -5331,7 +5339,8 @@ function studentDetail(s){
           return `<div class="kv"><span class="k">신뢰 단계</span><span class="v" style="color:var(--brass)">${tb.step}${tv>=TRUST_MAX? ` <span class="tag" style="color:var(--brass);border-color:var(--brass)">최대</span>`:""}</span></div>
           <div class="kv"><span class="k">관계 상태</span><span class="v">${tb.rel}</span></div>
           <div class="trustsay">&ldquo;${esc(trustLine(s))}&rdquo;</div>`; })()}
-        <div class="kv"><span class="k">개인 명성</span><span class="v num">${fmt(s.fame)}</span></div>
+        <div class="kv" title="대회·원정에서 쌓인다. 졸업할 때 후원금이 이만큼 더 붙는다"><span class="k">개인 명성</span><span class="v num">${fmt(s.fame)}${
+          fameGoldBonus(s)>0? ` <span style="color:var(--brass);font-size:11px">후원금 +${Math.round(fameGoldBonus(s)*100)}%</span>`:""}</span></div>
         <div class="kv"><span class="k">업보</span><span class="v num" style="color:var(--${karmaOf(s)>=KARMA_MIN?"bad":karmaOf(s)?"warn":"dim"})">${fmt(karmaOf(s))}${(()=>{ const n=nextDark(s); return n? ` <span style="color:var(--dim)">· ${n.n}까지 ${n.karma-karmaOf(s)}</span>`:""; })()}</span></div>
         <div class="kv"><span class="k">진로 평가</span><span class="v num" style="color:var(--brass)">${sc}</span></div>
         <div class="kv"><span class="k">현재 진로 전망</span><span class="v" style="color:var(--${darkCareerFor(s)?"bad":"brass"})">${career.n}${darkCareerFor(s)? ` <span class="tag inj">업보</span>`:""}</span></div>
@@ -6196,7 +6205,7 @@ function viewRank(){
 }
 
 /* ---------- 설정 ---------- */
-function optFxA(){ const v = (S.opts && typeof S.opts.fxA==="number") ? S.opts.fxA : 0; return clamp(v|0, 0, 100); }
+function optFxA(){ const v = (S.opts && typeof S.opts.fxA==="number") ? S.opts.fxA : FX_A_DEFAULT; return clamp(v|0, 0, 100); }
 function setFxA(v){
   S.opts = S.opts || {};
   S.opts.fxA = clamp(v|0, 0, 100);
@@ -7714,7 +7723,7 @@ function gradCeremony(c){
         <div class="cerwhy" style="${g.farewell?"color:var(--brass)":""}">${esc(g.reason)}</div>
         ${g.gift? `<div class="od" style="color:var(--brass);margin-top:6px">전수 — ${esc(g.gift)}</div>`:""}
         </div></div>
-        <div class="cerfoot"><span>진로 평가 ${g.score}</span>${g.trust? `<span style="color:var(--brass)">신뢰 ${trustBand(g.trust).step}</span>`:""}${g.karma? `<span style="color:var(--bad)">업보 ${fmt(g.karma)}</span>`:""}<span>전투력 ${fmt(g.pw)}</span><span style="color:var(--${g.fame<0?"bad":"brass"})">명성 ${g.fame<0?"":"+"}${fmt(g.fame)}</span></div>
+        <div class="cerfoot"><span>진로 평가 ${g.score}</span>${g.trust? `<span style="color:var(--brass)">신뢰 ${trustBand(g.trust).step}</span>`:""}${g.karma? `<span style="color:var(--bad)">업보 ${fmt(g.karma)}</span>`:""}<span>전투력 ${fmt(g.pw)}</span>${g.pfame? `<span title="개인 명성이 높을수록 후원금이 오른다">명성 ${fmt(g.pfame)}</span>`:""}<span style="color:var(--${g.fame<0?"bad":"brass"})">명성 ${g.fame<0?"":"+"}${fmt(g.fame)}</span></div>
       </div>`).join("")}
     </div>
     <div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">졸업생을 보낸다</button></div>`;
