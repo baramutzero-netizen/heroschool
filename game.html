@@ -1446,10 +1446,10 @@ function teamOfStudent(id){
 const MENTAL = [
   {k:"team",  n:"팀워크", d:"진형 전체 능력치 · 훈련 참여율"},
   {k:"aggr",  n:"적극성", d:"행동 선택 효율 · 공격력 · 속도"},
-  {k:"calm",  n:"침착성", d:"대상 선택 효율 · 명중 · 회피 · 스킬 성공률"},
-  {k:"will",  n:"정신력", d:"의식 저하 경감 · 스킬 저항률 · 받는 크리 피해 감소"},
-  {k:"stam",  n:"지구력", d:"의식 유지선 확장 · 체력"},
-  {k:"genius",n:"천재성", d:"스킬 출현 확률 · 크리 확률 · 필살 게이지"},
+  {k:"calm",  n:"침착성", d:"대상 선택 효율 · 방어력 · 명중 · 회피 · 스킬 성공률"},
+  {k:"will",  n:"정신력", d:"의식 저하 경감 · 공격력 · 스킬 저항률 · 받는 크리 피해 감소"},
+  {k:"stam",  n:"지구력", d:"의식 유지선 확장 · 체력 · 방어력"},
+  {k:"genius",n:"천재성", d:"스킬 출현 확률 · 크리 확률 · 크리 피해 · 필살 게이지"},
   {k:"pot",   n:"잠재력", d:"성장 폭과 한계 — 입학 등급으로 고정된다", fixed:true}
 ];
 const PERSONA = {
@@ -1594,7 +1594,7 @@ const WEEK_DAYS = 5;
 const DAY_N     = ["월","화","수","목","금"];
 const HAND_SIZE = 9;
 const DAY_MUL   = .2;      // 1주를 5칸으로 나눴으니 훈련·휴식 증가치는 20%
-const CHAIN_STEP= .10;     // 전날과 같은 색이 이어질 때마다 +10% (최대 +40%)
+const CHAIN_STEP= .25;     // 전날과 같은 색이 이어질 때마다 +25% (최대 +100%)
 const CHAIN_MAX = 4;
 const CARD_COLOR = {
   red  : {n:"적",   c:"#e0616a", s:"rgba(224,97,106,.14)"},
@@ -1602,7 +1602,7 @@ const CARD_COLOR = {
   blue : {n:"청",   c:"#5b87dd", s:"rgba(91,135,221,.14)"},
   sky  : {n:"하늘", c:"#48c3d8", s:"rgba(72,195,216,.14)"},
   gold : {n:"황",   c:"#d9a63c", s:"rgba(217,166,60,.14)"},
-  pink : {n:"홍",   c:"#e37fb0", s:"rgba(227,127,176,.14)"}
+  none : {n:"무",   c:"#8a8f98", s:"rgba(138,143,152,.10)"}
 };
 const CARD_COL = {
   mock:"red",  spar:"red",
@@ -1610,17 +1610,26 @@ const CARD_COL = {
   tact:"blue", form:"blue",
   medit:"sky", deep:"sky",
   free:"gold", strike:"gold",
-  rest:"pink", exped:"pink"
+  rest:null,          // 뽑을 때 다섯 색 중 하나를 달고 들어온다
+  exped:"none"        // 무색 — 체인에 끼지 않는다
 };
+const REST_COLORS = ["green","red","blue","sky","gold"];
+/* 카드 한 장의 실제 색 — 휴식은 카드마다 다르다 */
+function colOf(c){
+  if(!c) return null;
+  if(typeof c === "string") return CARD_COL[c] || "none";
+  return c.c || CARD_COL[c.t] || "none";
+}
 const DECK_BASE = ["rest","basic","spar","tact","medit","free","exped"];
 const DECK_ITEM = ["form","heavy","strike","deep","mock"];
-function cardColor(t){ return CARD_COLOR[CARD_COL[t]] || CARD_COLOR.gold; }
+function cardColor(t){ return CARD_COLOR[colOf(t)] || CARD_COLOR.none; }
 /* 지금 뽑힐 수 있는 카드 — 아이템을 사면 그 훈련이 덱에 들어온다 */
 function deckPool(){
   const a = DECK_BASE.slice();
   DECK_ITEM.forEach(id=>{ const t=TR[id]; if(t && t.need && S.items && S.items[t.need]) a.push(id); });
-  return a;
+  return campNoExped() ? a.filter(id=> id!=="exped") : a;   // 합숙 중에는 원정을 나가지 않는다
 }
+function campNoExped(){ return typeof isCampWeek==="function" && isCampWeek(); }
 /* ── 카드 표식 ──
    낮은 확률로 카드가 표식을 달고 들어온다. 그 카드를 쓴 날에만 효과가 붙는다. */
 const CARD_MARK_P = .10;                 // 표식이 붙을 확률
@@ -1635,6 +1644,7 @@ function markOf(c){ return (c && c.m && CARD_MARK[c.m]) ? CARD_MARK[c.m] : null;
 function newCard(){
   S.cardSeq = (S.cardSeq||0)+1;
   const c = {u:S.cardSeq, t:pick(deckPool())};
+  if(CARD_COL[c.t] === null) c.c = pick(REST_COLORS);
   if(RNG() < CARD_MARK_P) c.m = wchoose(CARD_MARK_W);
   return c;
 }
@@ -1676,15 +1686,15 @@ function autoFillSlots(){
   const avg = S.students.length ? S.students.reduce((a,s)=>a+s.cond,0)/S.students.length : 100;
   const pri = c=> c.t==="exped" ? 0 : c.t==="rest" ? (avg<55 ? 3 : 1) : 2;
   const cnt = {};
-  S.hand.forEach(c=>{ const k=CARD_COL[c.t]; cnt[k]=(cnt[k]||0)+1; });
+  S.hand.forEach(c=>{ const k=colOf(c); cnt[k]=(cnt[k]||0)+1; });
   const picked = S.hand.slice().sort((a,b)=>{
     const pa=pri(a), pb=pri(b);
     if(pa!==pb) return pb-pa;
-    const ka=CARD_COL[a.t], kb=CARD_COL[b.t];
+    const ka=colOf(a), kb=colOf(b);
     if(cnt[ka]!==cnt[kb]) return cnt[kb]-cnt[ka];
     return ka<kb? -1 : ka>kb? 1 : 0;
   }).slice(0, need);
-  picked.sort((a,b)=>{ const ka=CARD_COL[a.t], kb=CARD_COL[b.t]; return ka<kb?-1:ka>kb?1:0; });
+  picked.sort((a,b)=>{ const ka=colOf(a), kb=colOf(b); return ka<kb?-1:ka>kb?1:0; });
   for(let d=0; d<WEEK_DAYS && picked.length; d++){
     if(S.slots[d]) continue;
     const c = picked.shift();
@@ -1701,9 +1711,10 @@ function autoFillSlots(){
 /* 전날부터 거슬러 올라가 같은 색이 몇 장 이어졌는지 — 10%씩, 최대 40% */
 function chainOf(list, i){
   if(!list || !list[i]) return 0;
-  const c = CARD_COL[list[i].t];
+  const c = colOf(list[i]);
+  if(!c || c === "none") return 0;          // 무색 카드는 체인을 받지도 잇지도 않는다
   let n = 0;
-  for(let k=i-1; k>=0; k--){ if(list[k] && CARD_COL[list[k].t]===c) n++; else break; }
+  for(let k=i-1; k>=0; k--){ if(list[k] && colOf(list[k])===c) n++; else break; }
   return Math.min(n, CHAIN_MAX) * CHAIN_STEP;
 }
 
@@ -1975,18 +1986,21 @@ function missionProgress(step){
    상태
    ============================================================ */
 const PHASE_WEEKS = 12;
-const HALF_WEEKS = 6;          // 상반기 / 하반기 경계
+const VAC_WEEKS   = 6;         // 방학 계절 (여름 · 겨울) — 절반 길이
+const HALF_WEEKS = 6;          // 상반기 / 하반기 경계 (12주 계절 기준)
 const PHASES = {
   spring:{n:"봄",  weeks:PHASE_WEEKS, d:"신학기 · 상반기 입학과 라이벌, 하반기 일반 훈련"},
-  summer:{n:"여름",weeks:PHASE_WEEKS, d:"상반기 일반 훈련, 하반기 합숙"},
+  summer:{n:"여름",weeks:VAC_WEEKS,   d:"여름 방학 · 6주 내내 합숙"},
   fall:  {n:"가을",weeks:PHASE_WEEKS, d:"결전기 · 3/6/9/12주차 대회"},
-  winter:{n:"겨울",weeks:PHASE_WEEKS, d:"상반기 스카우트, 시즌 말 봄 신인전"}
+  winter:{n:"겨울",weeks:VAC_WEEKS,   d:"겨울 방학 · 6주 내내 스카우트, 시즌 말 봄 신인전"}
 };
 /* 주차(0-based)가 하반기인가 */
-function isLateHalf(w){ return (w|0) >= HALF_WEEKS; }
+function phaseWeeks(ph){ return ((PHASES[ph||S.phase]||{}).weeks) || PHASE_WEEKS; }
+function halfWeeks(ph){ return Math.floor(phaseWeeks(ph)/2); }
+function isLateHalf(w, ph){ return (w|0) >= halfWeeks(ph); }
 function halfLabel(w){ return isLateHalf(w) ? "하반기" : "상반기"; }
-function halfStart(w){ return isLateHalf(w) ? HALF_WEEKS : 0; }
-function halfEnd(w){ return isLateHalf(w) ? PHASE_WEEKS : HALF_WEEKS; }
+function halfStart(w){ return isLateHalf(w) ? halfWeeks() : 0; }
+function halfEnd(w){ return isLateHalf(w) ? phaseWeeks() : halfWeeks(); }
 function halfLeft(){ return Math.max(0, halfEnd(S.week) - S.week); }
 const PHASE_ORDER = ["spring","summer","fall","winter"];
 let S = null;
@@ -2003,7 +2017,7 @@ function gradUnit(g){
   st.epithet = g.epithet || null;
   st.pers = g.pers || "plain";
   st.level = Math.max(1, g.lv|0);
-  st.exp = 0; st.injured = 0; st.focus = "free"; st.cond = 100;
+  st.exp = 0; st.injured = 0; st.focus = "free"; st.cond = 100; delete st._injFocus;
   st.karma = g.karma|0; st.trust = 0; st.rival = null; st.bro = null;
   MENTAL.forEach(m=>{ if(g.ment[m.k] != null) st.ment[m.k] = g.ment[m.k]; });
   st.skMod = JSON.parse(JSON.stringify(g.skMod || {}));
@@ -2226,13 +2240,16 @@ function epiScene(kind, st, ctx){
     : `${ctx.foeAcad}의 ${ctx.foe}${eulr(ctx.foe)} 상대로`;
   return `${S.acadName}의 ${nm}${eunn(nm)} ${where} ${ctx.deed}`;
 }
+const EPI_FAME = 50;   // 이명을 얻으면 개인 명성이 이만큼 오른다
 function grantEpithet(kind, st, ctx){
   const prev  = st.epithet || null;
   const title = pickEpiTitle(st);
   const deed  = pick(epiPool(st.job, "d"));
   const c = Object.assign({}, ctx, {deed});
+  st.fame = Math.round((st.fame||0) + EPI_FAME);
   const rec = {kind, sid:st.id, name:st.name, job:st.job, title, prev,
     scene: epiScene(kind, st, c), crowd: EPI_CROWD[kind] || "사람들",
+    fame: EPI_FAME, fameNow: Math.round(st.fame),
     event: ctx.event||"", year:S.year, phase:S.phase, week:S.week+1};
   st.epithet = title;
   S.epiUsed = (S.epiUsed||[]).concat([title]);
@@ -2240,6 +2257,7 @@ function grantEpithet(kind, st, ctx){
   logE(prev
     ? `이명 — <b>${esc(st.name)}</b>의 이름이 <span style="color:var(--dim)">&ldquo;${esc(prev)}&rdquo;</span>에서 <b style="color:var(--brass)">&ldquo;${esc(title)}&rdquo;</b>${ro(title)} 바뀌었다. (${esc(rec.event)})`
     : `이명 — <b>${esc(st.name)}</b>에게 <b style="color:var(--brass)">&ldquo;${esc(title)}&rdquo;</b>${jo(title,"이라는","라는")} 이름이 붙었다. (${esc(rec.event)})`,"big");
+  logE(`<b>${esc(st.name)}</b>의 개인 명성 <b style="color:var(--brass)">+${EPI_FAME}</b> → ${fmt(st.fame)}`,"good");
   queueCeremony({type:"epithet", rec});
   return rec;
 }
@@ -2298,6 +2316,8 @@ function epithetCeremony(c){
     ${st? `<div class="opt" style="cursor:default;margin-top:10px">
       <div class="on">${dnH(st)} ${persTag(st)}${gradeTag(st.grade)}${roleTag(st.job)}<span class="price">${st.year}학년</span></div>
       <div class="od">Lv.${st.level} · 전투력 ${fmt(power(st))} · 진로 평가 ${Math.round(st.eval||0)}</div>
+      <div class="od">개인 명성 <b style="color:var(--brass)">+${r.fame||EPI_FAME}</b> → <b style="color:var(--text)">${fmt(r.fameNow!=null? r.fameNow : (st.fame||0))}</b>
+        <span style="color:var(--dim)">· 졸업 후원금이 오른다</span></div>
       <div class="od" style="color:var(--dim)">${r.prev? "이전 이명은 더 이상 불리지 않는다." : "이제 어디서든 이름 앞에 이명이 함께 불린다."}</div>
     </div>`:""}
     <div class="btnrow" style="margin-top:14px"><button class="btn primary" id="cerOk">확인</button></div>`;
@@ -2305,19 +2325,46 @@ function epithetCeremony(c){
 
 /* 전투 스탯 산출: 직업 기본 + 레벨 성장(잠재력 연동) + 유물 */
 /* 멘탈리티가 전투 능력치에 주는 보정 (수치 100 기준) */
+const MLERP = (v, lo, hi)=> lo + clamp(v||0, 0, 99)/99*(hi-lo);
+/* 멘탈리티 0 → 99 구간의 전투 능력치 보정폭 */
+const MENT_RANGE = {
+  atk    : [-.10, .30],   // 적극성 — 공격력
+  spd    : [-.20, .40],   // 적극성 — 속도
+  hp     : [-.10, .50],   // 지구력 — 체력
+  def    : [-.10, .30],   // 지구력 — 방어력
+  ult    : [-.10, .40],   // 천재성 — 필살 게이지 획득
+  crit   : [-.05, .30],   // 천재성 — 크리 확률
+  cdmg   : [-.10, .50],   // 천재성 — 크리 피해
+  proc   : [-.05, .40],   // 천재성 — 스킬 출현 확률
+  cDef   : [ .00, .25],   // 침착성 — 방어력
+  skAcc  : [-.10, .40],   // 침착성 — 스킬 성공률
+  acc    : [-.10, .20],   // 침착성 — 피해 명중
+  eva    : [-.10, .40],   // 침착성 — 피해 회피
+  wAtk   : [ .00, .20],   // 정신력 — 공격력
+  critRes: [ .00, .40],   // 정신력 — 받는 크리 피해 감소
+  skRes  : [ .00, .60],   // 정신력 — 스킬 저항률
+  teamAtk: [ .00, .15],   // 팀워크 — 공격력
+  teamDef: [ .00, .25],   // 팀워크 — 방어력
+  teamHp : [ .00, .25],   // 팀워크 — 체력
+  teamSpd: [ .00, .25]    // 팀워크 — 속도
+};
+function MR(k, v){ const r = MENT_RANGE[k]; return MLERP(v, r[0], r[1]); }
 function MENT_BONUS(m){
   m = m||{};
   return {
-    atkM: 1 + (m.aggr||0)/100*.16,      // 적극성 — 공격력
-    spdM: 1 + (m.aggr||0)/100*.13,      // 적극성 — 속도
-    hpM:  1 + (m.stam||0)/100*.26,      // 지구력 — 체력
-    ultM: 1 + (m.genius||0)/100*.30,    // 천재성 — 필살 게이지
-    acc:  (m.calm||0)/100*.05,          // 침착성 — 피해 명중
-    eva:  (m.calm||0)/100*.18,          // 침착성 — 피해 회피
-    skAcc:(m.calm||0)/100*.20,          // 침착성 — 스킬 성공률
-    skRes:(m.will||0)/100*.30,          // 정신력 — 스킬 저항률
-    critRes:(m.will||0)/100*.42,        // 정신력 — 받는 크리 피해 감소
-    crit: (m.genius||0)/100*.15         // 천재성 — 크리 확률
+    atkM: 1 + MR("atk", m.aggr) + MR("wAtk", m.will),   // 적극성 + 정신력
+    spdM: 1 + MR("spd", m.aggr),
+    hpM:  1 + MR("hp",  m.stam),
+    defM: 1 + MR("def", m.stam) + MR("cDef", m.calm),   // 지구력 + 침착성
+    ultM: 1 + MR("ult", m.genius),
+    crit:     MR("crit", m.genius),
+    critDmg:  MR("cdmg", m.genius),
+    procM:1 + MR("proc", m.genius),
+    acc:      MR("acc",   m.calm),
+    eva:      MR("eva",   m.calm),
+    skAcc:    MR("skAcc", m.calm),
+    skRes:    MR("skRes", m.will),
+    critRes:  MR("critRes", m.will)
   };
 }
 function battleStats(st){
@@ -2336,8 +2383,9 @@ function battleStats(st){
   };
   // 멘탈리티 → 전투 능력치 보정
   const M = MENT_BONUS(ME);
-  s.atk *= M.atkM; s.spd *= M.spdM; s.hp *= M.hpM; s.ultGain *= M.ultM;
+  s.atk *= M.atkM; s.spd *= M.spdM; s.hp *= M.hpM; s.def *= M.defM; s.ultGain *= M.ultM;
   s.acc += M.acc; s.eva += M.eva; s.skAcc += M.skAcc; s.skRes += M.skRes; s.crit += M.crit;
+  s.critDmg += M.critDmg||0;
   s.critRes += M.critRes||0;
   (st.relics||[]).forEach(r=>{ if(!r) return; r.aff.forEach(a=> s[a.k] = (s[a.k]||0)+a.v); });
   if(st.mul) for(const k in st.mul) s[k] = (s[k]||0)*st.mul[k];
@@ -2347,7 +2395,25 @@ function battleStats(st){
   return s;
 }
 function corePower(st){ const c=st.cond; st.cond=100; const v=power(st); st.cond=c; return v; }
-function power(st){ const s=battleStats(st); return Math.round(s.hp*.06 + s.atk*2.2 + s.def*1.8 + s.spd*1.4 + s.crit*180 + s.ultGain*40); }
+/* 표시 전투력 — 방어력 감쇠·회피·받는 크리 감소·스킬 저항을 실효 내구로,
+   크리·명중·스킬 성공률을 실효 공격으로 환산해 더한다. */
+var PW_K = 1.13;
+function powerParts(st){
+  const s = battleStats(st);
+  const take = 1 - s.def/(s.def + DEF_K), takeRef = 1 - 150/(150 + DEF_K);
+  const hitIn = clamp(.95 - (s.eva||0), .35, .99);                  // 적이 나를 맞힐 확률
+  const critIn = 1 + .088*(1 - clamp(s.critRes||0, 0, .8));         // 받는 크리 기대 배율
+  const skIn = 1 - clamp(s.skRes||0, 0, .8)*.12;                    // 스킬 저항
+  const durM = Math.pow((takeRef/take) * (.90/hitIn) * (1.088/critIn) * (1/skIn), .8);
+  const offM = Math.pow((1 + (s.crit||0)*((s.critDmg||1.5) - 1))/1.035
+                        * (1 + ((s.acc||.95) - .95)*.9)
+                        * (1 + ((s.skAcc||.88) - .88)*.45), .8);
+  return {s, durM, offM};
+}
+function power(st){
+  const q = powerParts(st), s = q.s;
+  return Math.round((s.hp*.05*q.durM + s.atk*1.8*q.offM + s.spd*1.4 + s.ultGain*80) * PW_K);
+}
 function mentAvg(st){ return Math.round(MENTAL.reduce((a,x)=>a+st.ment[x.k],0)/MENTAL.length); }
 
 /* ============================================================
@@ -2461,7 +2527,7 @@ function skLevel(o, id){ return 1 + (((o.skMod&&o.skMod[id])||{}).up||0); }
 function skPow(o, sk){ return sk.power * (1 + (modOf(o,sk.id).pow||0)); }
 function skDur(o, sk){ return (sk.dur||0) + (modOf(o,sk.id).dur||0); }
 function skProc(o, sk, genius){
-  return clamp(sk.proc * (1 + (modOf(o,sk.id).proc||0)) * (1 + (genius||0)/100*.55), 0, .85);
+  return clamp(sk.proc * (1 + (modOf(o,sk.id).proc||0)) * (1 + MR("proc", genius)), 0, .85);
 }
 function passiveFor(o){
   const P = passiveOf(passiveJobOf(o));
@@ -2500,14 +2566,15 @@ function runBattle(teamA, teamB, opt){
   const infoM = infoBattleMul();
   [[A,teamA,opt.hpA,"A"],[B,teamB,opt.hpB,"B"]].forEach(([U,T,ratio,side])=>{
     const tw = T.reduce((a,s)=>a+mentEff(s).team,0)/T.length;
-    const m = tw/100*.13;
+    const m = MR("teamAtk", tw);
+    const mS = {atk: m, def: MR("teamDef", tw), hp: MR("teamHp", tw), spd: MR("teamSpd", tw)};
     const im = side==="A" ? infoM : 1;
     const mood = side==="A" ? (opt.moodA||null) : (opt.moodB||null);
     U.forEach(u=>{
       const stu = T[u.idx];
       const mm = (mood && stu) ? moodStatMul(mood[stu.id]) : 1;
       u.moodMul = mm;
-      ["atk","def","hp"].forEach(k=> u.base[k]*=(1+m)*im*mm);
+      ["atk","def","hp","spd"].forEach(k=> u.base[k]*=(1+mS[k])*im*mm);
       u.maxHp=Math.round(u.base.hp); u.hp=u.maxHp; u.formBonus=m;
       if(ratio && ratio[u.ref]!=null) u.hp = Math.max(1, Math.round(u.maxHp*clamp(ratio[u.ref],.05,1)));
     });
@@ -2982,8 +3049,25 @@ function tryInjure(st, mul){
   st.injured = Math.max(st.injured|0, w);      // 재부상은 긴 쪽으로 갱신
   st._injNew = 1;
   setCond(st, st.cond - ri(1, INJ_COND_DROP)); // 부상 시 컨디션 추가 하락
-  logE(`<b>${dnH(st)}</b>${eunn(st.name)} 훈련 중 ${again?"부상이 덧났다":"부상을 입었다"} — <b style="color:var(--bad)">회복까지 ${st.injured}주</b> (심각도 ${Math.round(sev)})`, "bad");
+  const turned = injToRest(st);                // 다친 그 순간부터 스케줄에서 빠진다
+  logE(`<b>${dnH(st)}</b>${eunn(st.name)} 훈련 중 ${again?"부상이 덧났다":"부상을 입었다"} — <b style="color:var(--bad)">회복까지 ${st.injured}주</b> (심각도 ${Math.round(sev)})${
+    turned? ` · <b style="color:var(--ok)">휴식 집중으로 전환</b>` : ""}`, "bad");
   return w;
+}
+/* 부상 → 휴식 집중 자동 전환 · 회복하면 원래 집중으로 되돌린다 */
+function injToRest(st){
+  if(!st || st.focus === FOCUS_REST) return false;
+  st._injFocus = st.focus || "free";
+  st.focus = FOCUS_REST;
+  return true;
+}
+function injFromRest(st){
+  if(!st || st._injFocus == null) return null;
+  const back = st._injFocus;
+  delete st._injFocus;
+  if(st.focus !== FOCUS_REST) return null;   // 그새 직접 바꿨다면 그대로 둔다
+  st.focus = back;
+  return back;
 }
 /* 주말 처리 — 이번 주에 새로 다친 학생은 건너뛰고, 나머지는 1주 소진 */
 function tickInjury(){
@@ -2993,7 +3077,9 @@ function tickInjury(){
       s.injured = (s.injured|0) - 1;
       if(s.injured <= 0){
         s.injured = 0;
-        logE(`<b>${dnH(s)}</b>${iga(s.name)} 부상에서 회복했다.`, "good");
+        const back = injFromRest(s);
+        logE(`<b>${dnH(s)}</b>${iga(s.name)} 부상에서 회복했다.${
+          back? ` 집중 분야를 <b>${back==="free"? "지정 없음" : (MENTAL.find(m=>m.k===back)||{n:back}).n}</b>${back==="free"?"으로":"(으)로"} 되돌렸다.` : ""}`, "good");
       }
     }
   });
@@ -3012,14 +3098,14 @@ function focusOf(st){
   const g = {}; g[st.focus] = .8;
   return {id:"focus", n:"집중 훈련", fac:FOCUS_FAC[st.focus], cond:6, gains:g};
 }
-function doFocus(st, dayMul){
+function doFocus(st, dayMul, condMul){
   const f = focusOf(st);
   if(!f) return false;
   if(st.cond < 25) return false;   // 지쳐 있으면 개인 훈련은 거른다
   if(isInjured(st)) return false;  // 부상 중에는 개인 집중 훈련도 불가
-  const m = dayMul || 1;
+  const m = dayMul || 1, cm = (condMul==null ? m : condMul);
   const g = {}; for(const k in f.gains) g[k] = f.gains[k]*m;
-  trainStudent(st, Object.assign({}, f, {gains:g, cond:f.cond*m}), true,
+  trainStudent(st, Object.assign({}, f, {gains:g, cond:f.cond*cm}), true,
     {noExp:true, noRecover:true, mul: rivalFocusMul(st)});
   return true;
 }
@@ -3034,9 +3120,9 @@ function trainStudent(st, tr, success, opt){
   const libM = 1 + (S.facil.library-1)*.06;
   let notable = null;
   for(const k in gains){
-    const cap = 45 + st.ment.pot*.78;
+    const cap = 45 + st.ment.pot*.679;    // 잠재력 81 → 상한 100
     const cur = st.ment[k];
-    const room = clamp(1 - (cur-10)/Math.max(20,cap), .18, 1);
+    const room = clamp(1 - (cur-10)/Math.max(20,cap), .09, 1);
     let d = 2.4*gains[k]*potM*condM*leadM*fM*partM*room*rnd(.7,1.35)*(k==="genius"||k==="pot"?libM:1)*(opt.mul||1);
     st.ment[k] = clamp(st.ment[k] + d, 1, 99);
     if(d>.9 && (!notable || d>notable.d)) notable={k,d};
@@ -3058,8 +3144,8 @@ function activeStudents(){ return S.students; }
 /* ============================================================
    주간 실행 — 월~금 다섯 칸을 순서대로 치른다
    ============================================================ */
-const CAMP_GAIN = 1.8, CAMP_COND = 1.5;   // 여름 하반기 합숙 보정
-function isCampWeek(){ return S.phase==="summer" && isLateHalf(S.week); }
+const CAMP_GAIN = 3, CAMP_COND = 3;   // 여름 합숙 — 효과 ×3 · 컨디션 소모 ×3 (휴식 회복도 ×3)
+function isCampWeek(){ return S.phase==="summer"; }   // 여름 방학 — 6주 내내 합숙
 /* 휴식 계열 스케줄의 회복량 (이미 요일 배율이 반영된 훈련을 받는다) */
 function restWeekGain(tr){
   if(!tr || !tr.rest) return 0;
@@ -3077,7 +3163,7 @@ function dayTrOf(tr, bonus, mark){
   for(const k in (tr.gains||{})) g[k] = tr.gains[k] * DAY_MUL * (1+bonus) * cg * mm;
   return Object.assign({}, tr, {
     gains: g,
-    cond: tr.cond * DAY_MUL * (tr.rest ? (1+bonus) : cc),
+    cond: tr.cond * DAY_MUL * (tr.rest ? (1+bonus)*cc : cc),   // 합숙 중에는 휴식 회복도 ×CAMP_COND
     _xpMul: DAY_MUL * (1+bonus) * cg * mm
   });
 }
@@ -3178,7 +3264,8 @@ function dayRun(tr0, bonus, day, opt){
     S.students.forEach(s=>{
       if(skip && skip.has(s.id)) return;
       if(isRestFocus(s)) return;
-      if(doFocus(s, DAY_MUL)){ foc++; focWho.push(s); }
+      const cmp = isCampWeek();
+      if(doFocus(s, DAY_MUL*(cmp?CAMP_GAIN:1), DAY_MUL*(cmp?CAMP_COND:1))){ foc++; focWho.push(s); }
     });
     if(foc){
       dlog(`오후에는 각자 개인적으로 집중 분야를 단련했다!`, "head2");
@@ -4331,9 +4418,15 @@ function advancePhase(){
     logE(`가을 시즌 — 3주차 시내 대회를 시작으로 사다리가 열린다. 상반기 3·6주차, 하반기 9·12주차에 대회가 있다.`,"big");
     grantMasterPts();   // 여름 합숙에서 얻은 깨달음
   }
-  if(S.phase==="summer"){ logE(`여름 시작 — 상반기 ${HALF_WEEKS}주는 평소대로, 하반기 ${HALF_WEEKS}주는 합숙이다. 합숙은 전 분야가 함께 오르지만 컨디션 소모가 크다.`,"big"); }
+  if(S.phase==="summer"){
+    const drop = (S.hand||[]).filter(c=> c && c.t==="exped").length;
+    S.hand = (S.hand||[]).filter(c=> !(c && c.t==="exped"));
+    handRefill();
+    logE(`여름 방학 — ${phaseWeeks("summer")}주 내내 합숙이다. 훈련 효과와 컨디션 소모가 모두 ×${CAMP_GAIN}, 휴식 회복도 ×${CAMP_COND}다.${
+      drop? ` 손패의 <b>원정 파견 ${drop}장</b>은 버렸다 —` : ` `} 합숙 기간에는 원정을 나가지 않는다.`,"big");
+  }
   if(S.phase==="winter"){ genScouts();
-    logE(`겨울 — 스카우트 기간 (시도 ${scoutTriesMax()}회 · <b>${fameTitle(S.fame).n}</b> 등급${fameTitleIdx(S.fame)? ` 보정 +${fameTitleIdx(S.fame)}`:""}).`,"big"); }
+    logE(`겨울 방학 — ${phaseWeeks("winter")}주 내내 스카우트 기간 (시도 ${scoutTriesMax()}회 · <b>${fameTitle(S.fame).n}</b> 등급${fameTitleIdx(S.fame)? ` 보정 +${fameTitleIdx(S.fame)}`:""}).`,"big"); }
   if(S.phase==="spring"){ logE(`${S.year}년 신학기가 시작되었다. 신입생이 학원에 합류했다.`,"big"); }
   save();
 }
@@ -5110,7 +5203,6 @@ function viewHome(){
     return `${c.n} (${c.week}주차)`;
   })();
   const nextEvent = S.phase==="spring"? "여름 (하반기 합숙)" : S.phase==="summer"? "가을 시내 대회 (3주차)" : S.phase==="fall"? fallNext : "봄 신인전 → 신입생 입학 · 진급";
-  const nt = TIERS.find(t=>t.id===S.tier+1);
   const byYear = [1,2,3].map(y=>S.students.filter(s=>s.year===y).length);
   const top = S.students.slice().sort((a,b)=>power(b)-power(a)).slice(0,3);
   return `
@@ -5122,7 +5214,6 @@ function viewHome(){
         <div class="kv"><span class="k">시즌 잔여</span><span class="v num">${remain}주</span></div>
         <div class="kv"><span class="k">다음 행사</span><span class="v">${nextEvent}</span></div>
         <div class="kv"><span class="k">학년 구성</span><span class="v num">1학년 ${byYear[0]} / 2학년 ${byYear[1]} / 3학년 ${byYear[2]}</span></div>
-        <div class="kv"><span class="k">승급까지</span><span class="v num">${nt? fmt(Math.max(0,nt.fame-S.fame))+" 명성" : "최상위 달성"}</span></div>
         <div class="kv" title="${esc(fameTitle(S.fame).d)}"><span class="k">학원 유명도</span><span class="v" style="color:var(--brass)">${fameTitle(S.fame).n}</span></div>
         <div class="kv"><span class="k">다음 유명도</span><span class="v num">${fameNext(S.fame)? `${fameNext(S.fame).n}까지 ${fmt(fameNext(S.fame).min-S.fame)}` : "최고 단계"}</span></div>
         <div class="kv" title="유명도가 한 등급 오를 때마다 겨울 스카우트 시도가 1회 늘어난다"><span class="k">겨울 스카우트 시도</span><span class="v num">${scoutTriesMax()}회${fameNext(S.fame)? ` <span style="color:var(--dim)">→ ${scoutTriesMax()+1}회</span>`:""}</span></div>
@@ -5157,7 +5248,9 @@ function viewHome(){
     <div class="rule"></div>
     <div style="font-size:12.5px;color:var(--muted)">전투는 3인 1팀 ATB — 속도만큼 행동 게이지가 차고, 행동할 때마다 <b style="color:var(--text)">천재성</b>에 따라 스킬이 출현한다.
       <b style="color:var(--text)">적극성</b>은 어떤 행동을 고를지, <b style="color:var(--text)">침착성</b>은 누구를 노릴지를 정확하게 만든다.
-      멘탈리티는 전투 능력치에도 직접 얹힌다 — 적극성은 공격력·속도, 침착성은 명중·회피·스킬 성공률, 정신력은 스킬 저항, 지구력은 체력, 천재성은 크리 확률과 필살 게이지를 올린다.
+      멘탈리티는 전투 능력치에도 직접 얹힌다 — 적극성은 공격력·속도, 지구력은 체력·방어력, 침착성은 방어력·명중·회피·스킬 성공률,
+      정신력은 공격력·스킬 저항·받는 크리 피해 감소, 천재성은 크리 확률·크리 피해·필살 게이지를 올린다. 팀워크는 팀 평균으로 공격력·방어력·체력·속도를 모두 올린다.
+      수치가 낮으면 오히려 깎이는 항목도 있으니, 한쪽만 키우면 반대쪽에서 손해를 본다.
       필살 게이지가 가득 차면 필살기가 먼저 나간다.</div>
     <div class="rule"></div>
     <div style="font-size:12.5px;color:var(--muted)"><b style="color:var(--text)">의식</b> — 체력이 <b style="color:var(--text)">의식 유지선</b> 아래로 떨어지면 스킬 효율이 깎이고, 맞을 때마다 그대로 쓰러질 위험이 생긴다.
@@ -5388,7 +5481,7 @@ function fxHtml(tr){
   return (tr.fx||[]).map(f=>`<div class="fxl${f[2]?" bad":""}">${esc(f[0])}<b>${"+".repeat(f[1])}</b></div>`).join("");
 }
 function cardHtml(c){
-  const tr = TR[c.t] || TR.free, col = cardColor(c.t), mk = markOf(c);
+  const tr = TR[c.t] || TR.free, col = cardColor(c), mk = markOf(c);
   return `<div class="card${mk?" marked":""}" draggable="true" data-card="${c.u}" style="--cc:${col.c};--cs:${col.s}${
       mk? `;--mk:${mk.c}`:""}" title="${esc(tr.d)}${mk? ` — ${mk.i} ${mk.n}: ${mk.d}`:""}">
     ${mk? `<span class="cmark" title="${esc(mk.n)} — ${esc(mk.d)}">${mk.i}</span>`:""}
@@ -5412,7 +5505,7 @@ function viewPlan(){
       <span class="btnpair"><button class="btn sm" id="btnAuto">자동 배치</button><button class="btn sm" id="btnClearSlots">전부 비우기</button></span></div>
     <p style="font-size:11.5px;color:var(--dim);margin:-4px 0 12px">한 주는 <b>월요일부터 금요일까지 다섯 칸</b>이다. 손패 <b>${HAND_SIZE}장</b> 중 다섯 장을 끌어다 놓고 진행하면 월요일부터 순서대로 치러진다.
       전날과 <b>같은 색</b>이 이어질 때마다 그 훈련의 효과가 <b style="color:var(--brass)">+${Math.round(CHAIN_STEP*100)}%</b>씩 오른다 (최대 +${Math.round(CHAIN_STEP*CHAIN_MAX*100)}%). 쓴 다섯 장은 버려지고 다음 주에 새로 다섯 장을 받는다.
-      ${camp? `<b style="color:var(--brass)">합숙 기간 — 이번 주는 훈련 효과 ×${CAMP_GAIN}, 컨디션 소모 ×${CAMP_COND}.</b>`:""}</p>
+      ${camp? `<b style="color:var(--brass)">합숙 기간 — 훈련·집중 훈련 효과 ×${CAMP_GAIN}, 컨디션 소모 ×${CAMP_COND}, 휴식 회복도 ×${CAMP_COND}. 원정 카드는 나오지 않는다.</b>`:""}</p>
     <div class="dayrow">
       ${DAY_N.map((d,i)=>{
         const c = slots[i];
@@ -5433,10 +5526,12 @@ function viewPlan(){
     <div class="cardlegend">
       ${Object.keys(CARD_COLOR).map(k=>{
         const ids = Object.keys(CARD_COL).filter(id=>CARD_COL[id]===k);
-        return `<span><i style="background:${CARD_COLOR[k].c}"></i>${ids.map(id=>{
+        if(k==="none") return `<span><i style="background:${CARD_COLOR[k].c}"></i>원정 파견 — 무색, 체인 없음</span>`;
+        const names = ids.map(id=>{
           const t = TR[id], lock = t.need && !S.items[t.need];
           return lock? `<span style="color:var(--dim)">${t.n}(${ITEMS[t.need].n})</span>` : t.n;
-        }).join(" · ")}</span>`;
+        }).concat(`<span style="color:var(--dim)">휴식?</span>`);
+        return `<span><i style="background:${CARD_COLOR[k].c}"></i>${names.join(" · ")}</span>`;
       }).join("")}
     </div>
     <div class="marklegend">가끔 카드에 <b>표식</b>이 붙어 들어온다 —
@@ -5504,9 +5599,11 @@ function viewPlan(){
     <div class="panel-h"><h2>카드 목록</h2><span class="hint">같은 색 두 장이 한 쌍 · 아이템을 사면 그 짝이 덱에 들어온다 · 시설 등급이 오르면 효율이 오른다</span></div>
     <div class="grid2">
       ${DECK_BASE.concat(DECK_ITEM).map(id=>{
-        const t = TR[id], locked = t.need && !S.items[t.need], col = cardColor(id);
+        const t = TR[id], locked = (t.need && !S.items[t.need]) || (id==="exped" && campNoExped()), col = cardColor(id);
+        const varies = CARD_COL[id] === null;
+        const campOff = (id==="exped" && campNoExped());
         return `<div class="opt ${locked?"locked":""}" style="cursor:default;border-left:3px solid ${col.c}">
-          <div class="on">${t.n}${locked?` <span class="tag">${ITEMS[t.need].n} 필요</span>`:` <span class="tag" style="color:${col.c};border-color:${col.c}">${col.n}</span>`}
+          <div class="on">${t.n}${campOff? ` <span class="tag">합숙 중 제외</span>` : locked?` <span class="tag">${ITEMS[t.need].n} 필요</span>`: varies? ` <span class="tag" style="color:var(--dim)">색 무작위</span>` : ` <span class="tag" style="color:${col.c};border-color:${col.c}">${col.n}</span>`}
             <span class="price">${t.fac? FACILITIES[t.fac].n+" Lv."+S.facil[t.fac] : ""}</span></div>
           <div class="od">${t.d}</div>
           <div class="od" style="display:flex;flex-wrap:wrap;gap:3px 10px;margin-top:4px">
@@ -5913,6 +6010,7 @@ async function leagueSync(){
   try{
     await leagueReq("teams/" + leagueId(), "PUT", body);
     L.up = Date.now(); save();
+    if(UI.rank) UI.rank.at = 0;        // 순위표를 다음 렌더에서 다시 읽는다
     return true;
   }catch(e){ toast("리그 서버에 올리지 못했다 — " + (e.message||e)); return false; }
 }
@@ -6136,13 +6234,31 @@ function viewSpShop(){
    서버에 등록된 학원을 리그 포인트 순으로 줄 세운다.
    각 학원이 마지막으로 등록해 둔 명단을 그대로 보여준다. */
 const RANK_TOP = 50;
+const RANK_TTL = 45 * 1000;      // 순위표는 45초마다 다시 읽는다
+let RANK_TIMER = null;
+/* 순위표 탭에 머무는 동안 주기적으로 다시 읽는다 */
+function rankTick(){
+  clearTimeout(RANK_TIMER); RANK_TIMER = null;
+  if(UI.view !== "rank" || !leagueOn()) return;
+  const R = UI.rank;
+  if(R && R.loading) return;                       // 끝나면 render 가 다시 부른다
+  const wait = (R && R.at) ? RANK_TTL - (Date.now() - R.at) : 0;
+  if(wait <= 0){ rankLoad(); return; }
+  RANK_TIMER = setTimeout(rankTick, Math.max(1000, wait));
+}
+function rankAge(){
+  const R = UI.rank;
+  if(!R || !R.at) return "";
+  const s = Math.max(0, Math.round((Date.now() - R.at)/1000));
+  return s < 5 ? "방금 기준" : `${s}초 전 기준`;
+}
 async function rankLoad(){
   const R = UI.rank = UI.rank || {};
   if(R.loading) return;
   R.loading = true; R.err = null; render();
   let all = null;
   try{ all = await leagueReq("teams"); }
-  catch(e){ R.loading = false; R.err = String(e.message||e); render(); return; }
+  catch(e){ R.loading = false; R.err = String(e.message||e); R.at = Date.now(); render(); return; }
   const list = Object.keys(all||{}).map(k => leagueSane(all[k], k)).filter(Boolean);
   list.sort((a,b)=> b.lp - a.lp || b.w - a.w || (a.tid < b.tid ? -1 : 1));
   R.all = list.length;
@@ -6167,7 +6283,7 @@ function viewRank(){
     <div class="panel-h"><h2>순위표</h2></div>
     <div class="empty">리그 서버 주소가 설정되지 않았다.</div></section>`;
   const head = `<div class="panel-h"><h2>순위표</h2>
-    <span class="hint">${R.list? `등록된 학원 ${R.all}곳${R.all>RANK_TOP? ` · 상위 ${RANK_TOP}곳` : ""}` : "리그 포인트 순"}</span>
+    <span class="hint">${R.list? `등록된 학원 ${R.all}곳${R.all>RANK_TOP? ` · 상위 ${RANK_TOP}곳` : ""}${rankAge()? ` · ${rankAge()}`:""}` : "리그 포인트 순"}</span>
     <span class="btnpair"><button class="btn sm" id="rkLoad" ${R.loading?"disabled":""}>${R.loading?"불러오는 중…":"새로고침"}</button></span></div>`;
   if(R.err) return `<section class="panel">${head}<div class="empty">서버에 닿지 못했다 — ${esc(R.err)}</div></section>`;
   if(!R.list) return `<section class="panel">${head}<div class="empty">불러오는 중…</div></section>`;
@@ -6320,8 +6436,10 @@ function doHeal(sid){
   S.gold -= CHURCH_HEAL;
   const w = injWeeks(st);
   st.injured = 0; delete st._injNew;
+  const back = injFromRest(st);
   setCond(st, 100);
-  logE(`교회 치유 — <b>${dnH(st)}</b>의 부상(${w}주)이 나았다. 컨디션이 <b style="color:var(--ok)">100</b>으로 회복됐다. (${fmt(CHURCH_HEAL)} G)`,"good");
+  logE(`교회 치유 — <b>${dnH(st)}</b>의 부상(${w}주)이 나았다. 컨디션이 <b style="color:var(--ok)">100</b>으로 회복됐다.${
+    back? ` 집중 분야도 <b>${back==="free"? "지정 없음" : (MENTAL.find(m=>m.k===back)||{n:back}).n}</b>${back==="free"?"으로":"(으)로"} 되돌렸다.` : ""} (${fmt(CHURCH_HEAL)} G)`,"good");
   save(); render();
   toast(`${dn(st)}${iga(st.name)} 완전히 회복했다.`);
 }
@@ -6723,7 +6841,7 @@ function friendlyCeremony(c){
         return `<button class="opt drg ${sel===oi?"sel-entry":""}" data-fof="${oi}"
             style="text-align:left;border-color:${sel===oi?"var(--brass)":at>=0?"var(--ok)":"var(--line-soft)"}">
           <div class="on">${esc(o.name)} <span class="tag" style="color:var(--brass);border-color:var(--brass)">${FRIENDLY_TIER[o.tier].n}</span>
-            <span class="price" style="color:${at>=0?"var(--ok)":"var(--dim)"}">${at>=0? FRIENDLY_SLOT_N[at] : (sel===oi? "자리를 고른다" : "대기")}</span></div>
+            <span class="price" style="color:${at>=0?"var(--ok)":"var(--dim)"}">${at>=0? friendlySlotLabel(ph, at) : (sel===oi? "자리를 고른다" : "대기")}</span></div>
           <div class="od">${esc(FRIENDLY_TIER[o.tier].d)}</div>
           <div class="od" style="color:var(--dim)">${o.teams.map((tm,k)=>`${o.teams.length>1?"ABC"[k]+"팀 ":""}${lvText(tm)}`).join(" · ")}</div>
           <div class="od">경기당 <span style="color:var(--ok)">승 +${fmt(friendlyFame(o.tier-me,true))}</span> · <span style="color:var(--bad)">패 ${fmt(friendlyFame(o.tier-me,false))}</span></div>
@@ -6733,11 +6851,11 @@ function friendlyCeremony(c){
 
     <div class="eyebrow" style="margin:14px 0 6px">${PHASES[ph].n} 하반기 일정</div>
     <div class="fslots">
-      ${FRIENDLY_SLOTS.map((w,i)=>{
+      ${friendlySlots(ph).map((w,i)=>{
         const oi = F.slots[i];
         const o = oi!=null? offers[oi] : null;
         return `<button class="fslot drg ${o?"on":""}" data-fslot="${i}">
-          <div class="fs-k">${FRIENDLY_SLOT_N[i]}</div>
+          <div class="fs-k">${friendlySlotName(ph, w)}</div>
           <div class="fs-v">${o? esc(o.name) : "비어 있음"}</div>
           <div class="fs-d">${o? FRIENDLY_TIER[o.tier].n : (sel!=null? "여기에 배치" : "학원을 먼저 고른다")}</div>
         </button>`;
@@ -6781,7 +6899,7 @@ function tryBonds(){
   if(S.phase==="summer" && S.year>=2){
     if(!S.broYear) S.broYear = {};
     if(S.broYear.y !== S.year){
-      S.broYear = {y:S.year, wk: (S.year<=1 ? 1 : ri(1, HALF_WEEKS)), done:false};
+      S.broYear = {y:S.year, wk: (S.year<=1 ? 1 : ri(1, phaseWeeks("summer"))), done:false};
     }
     if(!S.broYear.done && wk === S.broYear.wk){
       S.broYear.done = true;
@@ -6795,8 +6913,13 @@ function tryBonds(){
 /* ============================================================
    친선전 — 봄 상반기 종료 시 제안, 하반기 2·4·6주차 후 진행
    ============================================================ */
-const FRIENDLY_SLOTS = [7, 9, 11];        // 주차 인덱스 (하반기 2·4·6주차)
-const FRIENDLY_SLOT_N = ["하반기 2주차 후", "하반기 4주차 후", "하반기 6주차 후"];
+/* 12주 계절이면 하반기 2·4·6주차 후, 6주 계절이면 하반기 1·2·3주차 후 */
+function friendlySlots(ph){
+  const h = halfWeeks(ph);
+  return phaseWeeks(ph) >= 12 ? [h+1, h+3, h+5] : [h, h+1, h+2];
+}
+function friendlySlotName(ph, w){ return `하반기 ${w - halfWeeks(ph) + 1}주차 후`; }
+function friendlySlotLabel(ph, i){ const s = friendlySlots(ph); return friendlySlotName(ph, s[i]!=null? s[i] : halfWeeks(ph)+i); }
 /* 유명도 등급별 상대 전력 — 대회 프로필을 빌려 쓴다 */
 const FRIENDLY_TIER = [
   {n:"무명",   d:"이제 막 간판을 올린 학원", raw:{g:"D", lv:7},            rare:0},
@@ -6867,7 +6990,7 @@ function genFriendlyOffers(){
   });
 }
 function tryFriendly(){
-  if(!FRIENDLY_PHASES[S.phase] || S.week !== HALF_WEEKS-1) return;
+  if(!FRIENDLY_PHASES[S.phase] || S.week !== halfWeeks(S.phase)-1) return;
   const F = friendlyState(S.phase);
   if(F.offers) return;
   F.offers = genFriendlyOffers();
@@ -6884,7 +7007,7 @@ function friendlySwap(F, a, b){ const t = F.slots[a]; F.slots[a] = F.slots[b]; F
 function friendlySlotAt(w){
   if(!FRIENDLY_PHASES[S.phase]) return null;
   const F = friendlyState(S.phase);
-  const i = FRIENDLY_SLOTS.indexOf(w);
+  const i = friendlySlots(S.phase).indexOf(w);
   if(i<0) return null;
   const oi = F.slots[i];
   if(oi==null || !F.offers || !F.offers[oi]) return null;
@@ -7500,7 +7623,7 @@ function bindView(){
       const eb = document.getElementById("errbar"); if(eb) eb.style.display="none";
       render();
     };
-    if(UI.view === "rank" && (!UI.rank || (!UI.rank.list && !UI.rank.loading && !UI.rank.err))) rankLoad();
+    rankTick();   // 순위표 탭이면 읽고, 아니면 타이머를 끈다
     v.querySelectorAll("[data-lgg]").forEach(b=> b.onclick = ()=> seasonSeeGroup(b.dataset.lgg|0));
     v.querySelectorAll("[data-lgw]").forEach(b=> b.onclick = ()=>{
       const a = String(b.dataset.lgw).split(":");
@@ -7680,7 +7803,7 @@ function showCeremony(){
       if(c.type==="friendly"){
         const F = friendlyState(c.phase||"spring"); F.answered=true; UI.fsel=null;
         const n = F.slots.filter(x=>x!=null).length;
-        logE(n? `친선전 회신 — ${F.slots.map((oi,i)=> oi==null? null : `${FRIENDLY_SLOT_N[i]} ${esc(F.offers[oi].name)}`).filter(Boolean).join(" · ")}`
+        logE(n? `친선전 회신 — ${F.slots.map((oi,i)=> oi==null? null : `${friendlySlotLabel(c.phase||"spring", i)} ${esc(F.offers[oi].name)}`).filter(Boolean).join(" · ")}`
               : `친선전 — 요청을 받아들이지 않았다.`, n?"good":"");
         save();
       }
@@ -8443,7 +8566,7 @@ function renderFriendly(){
     t.entryTeams = (t.entryTeams||[]).filter(n=> teamFull(teamByName(n)));
     const ok = t.entryTeams.length===t.need;
     const diff = t.foe.tier - t.myTier;
-    showModal(`<div class="cerhead"><div class="eyebrow">${PHASES[t.ph||"spring"].n} ${FRIENDLY_SLOT_N[t.slot]}</div>
+    showModal(`<div class="cerhead"><div class="eyebrow">${PHASES[t.ph||"spring"].n} ${friendlySlotLabel(t.ph||"spring", t.slot)}</div>
         <h2 style="font-size:24px;margin-top:2px">${esc(t.title)}</h2>
         <p style="color:var(--muted);font-size:13px;margin-top:6px">${esc(FRIENDLY_TIER[t.foe.tier].d)} · ${t.need===1? "한 팀이 한 경기를 치른다." : `${t.need}팀이 순서대로 ${t.need}경기를 모두 치른다.`}
           경기당 <b style="color:var(--ok)">승 +${fmt(friendlyFame(diff,true))}</b> · <b style="color:var(--bad)">패 ${fmt(friendlyFame(diff,false))}</b></p></div>
@@ -8533,7 +8656,7 @@ function renderPrepStage(t){
   const isLadder = t.kind==="ladder", isFr = t.kind==="friendly";
   const need = tourNeedTeams(t), ready = tourReadyTeams(), can = ready >= need;
   const eyebrow = isLadder ? `가을 ${t.cfg.week}주차 — 대회 준비`
-    : isFr ? `${PHASES[t.ph||"spring"].n} ${FRIENDLY_SLOT_N[t.slot]} — 친선전` : "겨울이 끝났다 — 대회 준비";
+    : isFr ? `${PHASES[t.ph||"spring"].n} ${friendlySlotLabel(t.ph||"spring", t.slot)} — 친선전` : "겨울이 끝났다 — 대회 준비";
   const sub = isLadder ? t.cfg.d
     : isFr ? `${t.foe.name}(${FRIENDLY_TIER[t.foe.tier].n})과의 연습 경기. ${t.need===1?"한 팀이 한 경기":`${t.need}팀이 ${t.need}경기`}를 치른다. 경기당 승 +${fmt(friendlyFame(t.foe.tier-t.myTier,true))} · 패 ${fmt(friendlyFame(t.foe.tier-t.myTier,false))} 명성이 걸린다.`
     : "졸업생이 빠진 1·2학년 중 3명을 뽑아 리그 4경기를 치른다. 대회가 끝나면 신입생이 입학하고 학년이 오른다.";
@@ -8942,9 +9065,10 @@ function boot(){
   if(!Array.isArray(S.hand) || !Array.isArray(S.slots)) handInit();
   if(S.slots.length !== WEEK_DAYS){ S.slots = Array(WEEK_DAYS).fill(null); }
   S.hand = S.hand.filter(c=> c && TR[c.t]);
+  [S.hand, S.slots].forEach(L=> (L||[]).forEach(c=>{ if(c && CARD_COL[c.t]===null && !c.c) c.c = pick(REST_COLORS); }));
   S.slots = S.slots.map(c=> (c && TR[c.t]) ? c : null);
   handRefill();
-  if(S.broYear && S.broYear.wk > HALF_WEEKS) S.broYear.wk = ri(1, HALF_WEEKS);
+  if(S.broYear && S.broYear.wk > phaseWeeks("summer")) S.broYear.wk = ri(1, phaseWeeks("summer"));
   S.students.forEach(x=>{
     if(/[A-Za-z]/.test(x.name)) x.name = x.name.charAt(0) + pick(GIV);
     if(typeof x.eval !== "number") x.eval = x.year>=3? 46 : x.year===2? 20 : 0;
