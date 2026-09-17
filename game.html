@@ -5920,8 +5920,48 @@ function seasonRefresh(){
     const mineC = U.vg === U.gi ? U.C : seasonCompute(SE, U.gi, seasonRounds(SE, U.gi));
     seasonSettle(SE, U.gi, mineC);
   }
+  seasonSettleOthers(SE);
   render();
 }
+/* 시즌이 끝나면 클라이언트가 없는 팀(더미 등)의 성적도 대신 올린다.
+   시즌 문서가 얼어 있어 계산이 결정적이므로, 누가 올리든 같은 값이 나온다.
+   서버의 ls(마지막 정산 시즌)로 중복 반영을 막는다. */
+async function seasonSettleOthers(SE){
+  if(!leagueOn() || !SE || !Array.isArray(SE.g)) return;
+  const U = UI.league = UI.league || {};
+  if(U.setAll === SE.n || U.setting) return;
+  for(let gi=0; gi<SE.g.length; gi++){                 // 아직 안 끝난 조가 있으면 기다린다
+    if(seasonOpen(SE, gi) < seasonRounds(SE, gi)) return;
+  }
+  U.setting = true;
+  let all = null;
+  try{ all = await leagueReq("teams"); }
+  catch(e){ U.setting = false; return; }
+  const mine = leagueId();
+  let n = 0;
+  for(let gi=0; gi<SE.g.length; gi++){
+    const C = seasonCompute(SE, gi, seasonRounds(SE, gi));
+    for(const x of C.table){
+      if(x.tid === mine) continue;                     // 내 자리는 내가 올린다
+      const cur = all && all[x.tid];
+      if(!cur || (cur.ls|0) >= SE.n) continue;         // 없는 팀 · 이미 반영된 팀
+      try{
+        await leagueReq("teams/" + x.tid, "PATCH", {
+          lp: clamp(Math.round(+cur.lp||LEAGUE_LP0) + x.lp, 0, 99999),
+          w:  Math.max(0, cur.w|0) + x.w,
+          l:  Math.max(0, cur.l|0) + x.l,
+          n:  Math.max(0, cur.n|0) + 1,
+          ls: SE.n
+        });
+        n++;
+      }catch(e){}
+    }
+  }
+  U.setAll = SE.n; U.setting = false;
+  if(n && UI.rank) UI.rank.at = 0;                     // 순위표를 다시 읽게 한다
+  if(n) render();
+}
+
 /* 다른 조로 옮겨 본다 */
 function seasonSeeGroup(gi){
   const U = UI.league; if(!U || !U.SE) return;
@@ -6006,9 +6046,21 @@ function lgClockStart(){
 
 /* 내 자리만 갱신한다 — 남의 기록은 건드리지 않는다 */
 async function leagueSync(){
-  if(!leagueOn() || !leagueReady()) return false;
+  if(!leagueOn()) return false;
   const L = leagueState();
-  const body = Object.assign(leagueMyPack(L.sids, L.form), {lp:L.lp, w:L.w, l:L.l, n:L.n});
+  /* 명단이 조건을 못 채워도 이미 등록해 둔 자리라면 점수만은 남긴다 —
+     이게 없으면 시즌 결과가 내 저장에만 쌓이고 서버 순위표에는 안 올라간다 */
+  if(!leagueReady()){
+    if(!L.up) return false;
+    try{
+      await leagueReq("teams/" + leagueId(), "PATCH",
+        {lp:L.lp, w:L.w, l:L.l, n:L.n, ls:L.lastSeason|0});
+      L.up = Date.now(); save();
+      if(UI.rank) UI.rank.at = 0;
+      return true;
+    }catch(e){ return false; }
+  }
+  const body = Object.assign(leagueMyPack(L.sids, L.form), {lp:L.lp, w:L.w, l:L.l, n:L.n, ls:L.lastSeason|0});
   try{
     await leagueReq("teams/" + leagueId(), "PUT", body);
     L.up = Date.now(); save();
