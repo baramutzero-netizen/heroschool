@@ -1688,22 +1688,22 @@ const TRAININGS = [
     fx:[["적극성",2],["팀워크",1],["침착성",1]]},
   {id:"form",  n:"진형 훈련",  fac:"hall",     cond:10, gains:{team:1.5,genius:.5}, need:"flag", d:"3인 전술을 연구한다",
     fx:[["팀워크",3],["천재성",2]]},
-  {id:"medit", n:"명상",       fac:"chapel", cond:6,  gains:{will:1.0,calm:.5}, d:"눈을 감아본다",
+  {id:"medit", n:"명상",       fac:"chapel", cond:5,  gains:{will:1.0,calm:.5}, d:"눈을 감아본다",
     fx:[["정신력",3],["침착성",1]]},
   {id:"study", n:"이론 강의",  fac:"library",cond:7,  gains:{genius:.85,calm:.55}, d:"책상 앞에 앉힌다",
     fx:[["천재성",3],["침착성",2]]},
   {id:"tact",  n:"전술 연구",  fac:"library",cond:5,  gains:{calm:1.0,genius:.35}, d:"효율적인 전투를 연구한다",
     fx:[["침착성",3],["천재성",1]]},
-  {id:"free",  n:"자율 훈련",  fac:"library",cond:8,  gains:{team:.3,aggr:.3,calm:.3,will:.3,stam:.3,genius:.3}, d:"학생에게 맡긴다",
+  {id:"free",  n:"자율 훈련",  fac:"library",cond:10,  gains:{team:.3,aggr:.3,calm:.3,will:.3,stam:.3,genius:.3}, d:"학생에게 맡긴다",
     fx:[["멘탈리티",1]]},
   // 아이템 해금
   {id:"heavy", n:"고강도 단련", fac:"gym",   cond:10, gains:{stam:1.5,will:.6}, need:"weight", d:"숨 넘어갈 정도로 단련한다",
     fx:[["지구력",4],["정신력",2]]},
   {id:"strike",n:"실전 타격",   fac:"hall",   cond:10, gains:{aggr:1.4,calm:.5}, need:"dummy", d:"장비들을 시험해본다",
     fx:[["적극성",4],["침착성",2]]},
-  {id:"deep",  n:"심층 명상",   fac:"chapel",cond:11, gains:{will:1.5,genius:.5}, need:"stone", d:"내면 깊이 들어간다",
+  {id:"deep",  n:"심층 명상",   fac:"chapel",cond:10, gains:{will:1.5,genius:.5}, need:"stone", d:"내면 깊이 들어간다",
     fx:[["정신력",4],["천재성",2]]},
-  {id:"mock",  n:"모의전",      fac:"arena", cond:16, gains:{team:1.1,calm:1.1,genius:.6}, need:"board", d:"실전처럼 팀을 나눠 진행한다",
+  {id:"mock",  n:"모의전",      fac:"arena", cond:15, gains:{team:1.1,calm:1.1,genius:.6}, need:"board", d:"실전처럼 팀을 나눠 진행한다",
     fx:[["팀워크",3],["침착성",3],["천재성",2]]},
   // 특수
   {id:"exped", n:"원정 파견",   fac:null,    cond:0,  gains:{}, special:"exped", d:"3인 팀을 던전으로 보낸다",
@@ -5919,7 +5919,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0917-1708";
+const BUILD = "0917-1721";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
