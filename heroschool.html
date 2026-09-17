@@ -4432,7 +4432,9 @@ function advancePhase(){
       drop? ` 손패의 <b>원정 파견 ${drop}장</b>은 버렸다 —` : ` `} 합숙 기간에는 원정을 나가지 않는다.`,"big");
   }
   if(S.phase==="winter"){ genScouts();
-    logE(`겨울 방학 — ${phaseWeeks("winter")}주 내내 스카우트 기간 (시도 ${scoutTriesMax()}회 · <b>${fameTitle(S.fame).n}</b> 등급${fameTitleIdx(S.fame)? ` 보정 +${fameTitleIdx(S.fame)}`:""}).`,"big"); }
+    logE(`겨울 방학 — ${phaseWeeks("winter")}주 내내 스카우트 기간 (시도 ${scoutTriesMax()}회 · <b>${fameTitle(S.fame).n}</b> 등급${fameTitleIdx(S.fame)? ` 보정 +${fameTitleIdx(S.fame)}`:""}).`,"big");
+    queueCeremony({type:"scout", year:S.year, tries:scoutTriesMax(), cap:enrollCap(),
+                   title:fameTitle(S.fame).n, idx:fameTitleIdx(S.fame), n:(S.scouts||[]).length}); }
   if(S.phase==="spring"){ logE(`${S.year}년 신학기가 시작되었다. 신입생이 학원에 합류했다.`,"big"); }
   save();
 }
@@ -5208,7 +5210,7 @@ function viewHome(){
     const c = LADDER[S.fallRun.step];
     return `${c.n} (${c.week}주차)`;
   })();
-  const nextEvent = S.phase==="spring"? "여름 (하반기 합숙)" : S.phase==="summer"? "가을 시내 대회 (3주차)" : S.phase==="fall"? fallNext : "봄 신인전 → 신입생 입학 · 진급";
+  const nextEvent = S.phase==="spring"? `여름 방학 (${phaseWeeks("summer")}주 합숙)` : S.phase==="summer"? "가을 시내 대회 (3주차)" : S.phase==="fall"? fallNext : "봄 신인전 → 신입생 입학 · 진급";
   const byYear = [1,2,3].map(y=>S.students.filter(s=>s.year===y).length);
   const top = S.students.slice().sort((a,b)=>power(b)-power(a)).slice(0,3);
   return `
@@ -5243,11 +5245,11 @@ function viewHome(){
     <div class="panel-h"><h2>연간 흐름</h2><span class="hint">한 학생은 최대 3년, 3년 뒤 반드시 졸업한다</span></div>
     <ol style="margin:0;padding-left:18px;display:grid;gap:6px;font-size:12.5px;color:var(--muted)">
       <li><b style="color:var(--text)">봄 · 12주</b> — 상반기 6주에 신입생이 합류하고 <b style="color:var(--text)">2주차에 라이벌</b>이 생긴다. 상반기가 끝나면 세 학원이 <b style="color:var(--text)">친선전</b>을 요청해오고, 받아들인 경기는 하반기 2·4·6주차 뒤에 <b style="color:var(--text)">한 팀이 한 경기씩</b> 치른다.</li>
-      <li><b style="color:var(--text)">여름 · 12주</b> — 상반기 6주 중 한 주에 <b style="color:var(--text)">소울메이트</b>가 맺어진다(2년차부터). 하반기 6주는 합숙으로, 전 분야가 함께 오르지만 컨디션 소모가 크다.</li>
+      <li><b style="color:var(--text)">여름 · ${phaseWeeks("summer")}주</b> — <b style="color:var(--text)">여름 방학</b>. ${phaseWeeks("summer")}주 내내 합숙이라 주간 훈련과 개인 집중 훈련 효과가 모두 <b style="color:var(--brass)">×${CAMP_GAIN}</b>, 컨디션 소모와 휴식 회복도 <b style="color:var(--brass)">×${CAMP_COND}</b>가 된다. 합숙 중에는 <b style="color:var(--text)">원정 카드가 나오지 않는다</b>. 이 기간 중 한 주에 <b style="color:var(--text)">소울메이트</b>가 맺어진다(2년차부터).</li>
       <li><b style="color:var(--text)">가을 · 12주</b> — 3주마다 대회가 열리는 사다리. <b style="color:var(--text)">3주차 시내 대회</b>(<b>1팀</b> 단판 4라운드, 진출 명성 +100) → 우승 시 <b style="color:var(--text)">6주차 광역 대회</b>(<b>2팀</b>, 1:1이면 이긴 팀끼리 결정전) → 우승 시 <b style="color:var(--text)">9주차 예선 리그</b>(<b>3팀</b>, 7차전, 조 1·2위 통과, 진출 명성 +150) → 통과 시 <b style="color:var(--text)">12주차 본선</b>(<b>3팀</b> 3선 2승, 진출 명성 +300, 우승 명성 +3,000). 한 번 지면 그 해 사다리는 끝난다.
         <b style="color:var(--brass)">광역과 학원제는 처음에 잠겨 있다</b> — 지침을 달성하면 이듬해 입학식에 초대장이 온다.</li>
-      <li><b style="color:var(--text)">겨울 · 12주</b> — 가을 본선이 끝나면 3학년이 졸업하고(진로가 학원 명성이 된다), 상반기에 스카우트 후보가 찾아온다. 학원 유명도가 높을수록 상위 등급 신입생이 나타나고, 한 등급 오를 때마다 스카우트 시도가 1회씩 늘어난다 (기본 ${SCOUT_TRIES}회).</li>
-      <li><b style="color:var(--text)">겨울 하반기</b> — 상반기가 끝나면 다시 <b style="color:var(--text)">친선전</b> 요청이 온다. 봄 신인전을 준비하는 실전이 된다.</li>
+      <li><b style="color:var(--text)">겨울 · ${phaseWeeks("winter")}주</b> — <b style="color:var(--text)">겨울 방학</b>. 가을 본선이 끝나면 3학년이 졸업하고(진로가 학원 명성이 된다), ${phaseWeeks("winter")}주 내내 스카우트 후보가 찾아온다. 학원 유명도가 높을수록 상위 등급 신입생이 나타나고, 한 등급 오를 때마다 스카우트 시도가 1회씩 늘어난다 (기본 ${SCOUT_TRIES}회).</li>
+      <li><b style="color:var(--text)">겨울 하반기</b> — ${halfWeeks("winter")}주차가 끝나면 다시 <b style="color:var(--text)">친선전</b> 요청이 온다. 받아들인 경기는 하반기 1·2·3주차 뒤에 치른다. 봄 신인전을 준비하는 실전이 된다.</li>
       <li><b style="color:var(--text)">겨울 종료</b> — <b style="color:var(--text)">봄 신인전</b>(1·2학년 3인 1팀, 5개 학원 리그전)을 치른 뒤 신입생이 입학하고 학년이 오른다. 조 1위가 우승이다.</li>
       <li><b style="color:var(--text)">인원과 팀</b> — 개교 시 1학년 <b style="color:var(--text)">3명</b>. 신입생 정원은 유명도를 따른다(무명·유명 3 · 강호·명문 4 · 초명문 5). 학생이 3명 늘 때마다 팀을 하나씩 더 짤 수 있고(최대 5팀), <b style="color:var(--text)">한 번 늘어난 팀 수는 인원이 줄어도 그대로다</b>.</li>
     </ol>
@@ -6855,7 +6857,7 @@ function friendlyCeremony(c){
       }).join("")}
     </div>
 
-    <div class="eyebrow" style="margin:14px 0 6px">${PHASES[ph].n} 하반기 일정</div>
+    <div class="eyebrow" style="margin:14px 0 6px">${PHASES[ph].n} 친선전 일정</div>
     <div class="fslots">
       ${friendlySlots(ph).map((w,i)=>{
         const oi = F.slots[i];
@@ -6919,12 +6921,24 @@ function tryBonds(){
 /* ============================================================
    친선전 — 봄 상반기 종료 시 제안, 하반기 2·4·6주차 후 진행
    ============================================================ */
-/* 12주 계절이면 하반기 2·4·6주차 후, 6주 계절이면 하반기 1·2·3주차 후 */
+/* 계절마다 따로 정해둔 일정이 있으면 그것을, 없으면 하반기 기준으로 잡는다 */
+function friendlyCfg(ph){ return FRIENDLY_PHASES[ph||S.phase] || FRIENDLY_PHASES.spring; }
 function friendlySlots(ph){
+  const C = friendlyCfg(ph);
+  if(Array.isArray(C.slots)) return C.slots;
   const h = halfWeeks(ph);
   return phaseWeeks(ph) >= 12 ? [h+1, h+3, h+5] : [h, h+1, h+2];
 }
-function friendlySlotName(ph, w){ return `하반기 ${w - halfWeeks(ph) + 1}주차 후`; }
+/* 요청이 도착하는 주차 인덱스 — 그 주를 마치면 제안이 온다 */
+function friendlyOfferWeek(ph){
+  const C = friendlyCfg(ph);
+  return (typeof C.offer === "number") ? C.offer : halfWeeks(ph) - 1;
+}
+function friendlySlotName(ph, w){
+  return Array.isArray(friendlyCfg(ph).slots)
+    ? `${w + 1}주차 후`
+    : `하반기 ${w - halfWeeks(ph) + 1}주차 후`;
+}
 function friendlySlotLabel(ph, i){ const s = friendlySlots(ph); return friendlySlotName(ph, s[i]!=null? s[i] : halfWeeks(ph)+i); }
 /* 유명도 등급별 상대 전력 — 대회 프로필을 빌려 쓴다 */
 const FRIENDLY_TIER = [
@@ -6936,7 +6950,9 @@ const FRIENDLY_TIER = [
 ];
 const FRIENDLY_PHASES = {
   spring:{teams:1, n:"가을 대회 대비", d:"가을을 대비해 세 학원이 연습 경기를 청해왔다."},
-  winter:{teams:1, n:"봄 신인전 대비", d:"신인전을 앞두고 세 학원이 연습 경기를 청해왔다."}
+  /* 겨울 — 1주차를 마치면(=2주차 시작) 요청이 오고, 3·4·5주차를 마칠 때마다 한 경기씩 */
+  winter:{teams:1, n:"봄 신인전 대비", d:"신인전을 앞두고 세 학원이 연습 경기를 청해왔다.",
+          offer:0, slots:[2,3,4]}
 };
 function friendlyState(ph){
   ph = ph || (FRIENDLY_PHASES[S.phase] ? S.phase : "spring");
@@ -6996,7 +7012,7 @@ function genFriendlyOffers(){
   });
 }
 function tryFriendly(){
-  if(!FRIENDLY_PHASES[S.phase] || S.week !== halfWeeks(S.phase)-1) return;
+  if(!FRIENDLY_PHASES[S.phase] || S.week !== friendlyOfferWeek(S.phase)) return;
   const F = friendlyState(S.phase);
   if(F.offers) return;
   F.offers = genFriendlyOffers();
@@ -7760,6 +7776,7 @@ function showCeremony(){
     : c.type==="epithet" ? epithetCeremony(c)
     : c.type==="unlock" ? unlockCeremony(c)
     : c.type==="insight" ? insightCeremony(c)
+    : c.type==="scout" ? scoutCeremony(c)
     : enrollCeremony(c);
   showModal(html, ()=>{
     if(c.type==="friendly"){
@@ -7841,6 +7858,27 @@ function gradCeremony(c){
       </div>`).join("")}
     </div>
     <div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">졸업생을 보낸다</button></div>`;
+}
+function scoutCeremony(c){
+  return `<div class="cerhead">
+      <div class="eyebrow">${c.year}년 겨울 · 1주차</div>
+      <h2 style="font-size:26px;margin-top:2px">스카우팅의 계절이 돌아왔다</h2>
+      <p style="color:var(--muted);font-size:13px;margin-top:6px">겨울 ${phaseWeeks("winter")}주 내내 후보들이 학원 문을 두드린다. 시즌이 끝나기 전에 마음을 정해야 한다.</p>
+    </div>
+    <div class="grid2" style="margin-top:14px">
+      <div class="opt" style="cursor:default">
+        <div class="on">스카우트 시도<span class="price num" style="color:var(--brass)">${c.tries}회</span></div>
+        <div class="od">기본 ${SCOUT_TRIES}회${c.idx? ` · <b style="color:var(--brass)">${esc(c.title)}</b> 등급 보정 +${c.idx}` : ` · 유명도가 오르면 한 등급마다 1회씩 늘어난다`}</div>
+      </div>
+      <div class="opt" style="cursor:default">
+        <div class="on">신입생 정원<span class="price num">${c.cap}명</span></div>
+        <div class="od">찾아온 후보 <b style="color:var(--text)">${c.n}명</b> 중에서 고른다 · 정원을 채우면 더 데려올 수 없다</div>
+      </div>
+    </div>
+    <div class="opt" style="cursor:default;margin-top:10px">
+      <div class="od">유명도가 높을수록 상위 등급 후보가 나타난다. 잠재력은 등급으로 정해지니, 오래 키울 학생일수록 등급을 봐야 한다.
+        겨울 ${friendlyOfferWeek("winter")+2}주차에는 <b style="color:var(--text)">친선전</b> 요청도 도착한다.</div>
+    </div>`;
 }
 function unlockCeremony(c){
   const U = UNLOCKS[c.kind] || UNLOCKS.region;
