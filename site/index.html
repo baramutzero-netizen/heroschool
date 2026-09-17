@@ -509,6 +509,14 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 .opt .on{font-weight:600;display:flex;gap:6px;align-items:center}
 .opt .od{font-size:11.5px;color:var(--muted);margin-top:3px}
 .opt .price{margin-left:auto;color:var(--brass);font-weight:600;font-size:12px}
+.opt.cxjob{display:flex;gap:8px;align-items:flex-start}
+.grid2.gx2{grid-template-columns:repeat(auto-fill,minmax(360px,1fr))}
+.cxjob .cxspr{flex:none;width:118px;height:118px;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  border:1px solid var(--line-soft);border-radius:3px;background:var(--surface2)}
+.cxjob .cxbody{flex:1 1 auto;min-width:0}
+.jgrow{display:flex;flex-wrap:wrap;gap:2px 12px;margin-top:5px;color:var(--muted)}
+.jgrow .jgs{white-space:nowrap}
+.jgrow .jgs b{margin-left:2px;font-family:"IBM Plex Mono",ui-monospace,monospace}
 table.tb{width:100%;border-collapse:collapse;font-size:12.5px}
 table.tb th{text-align:left;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);font-weight:600;padding:4px 6px;border-bottom:1px solid var(--line)}
 table.tb td{padding:5px 6px;border-bottom:1px solid var(--line-soft)}
@@ -1720,7 +1728,7 @@ const ITEMS = {
   board:   {n:"전술판",    d:"모의전 해금",               price:1400, ex:3},
   flag:    {n:"진형 깃발",  d:"진형 훈련 해금",            price:1200, ex:2},
   tonic:   {n:"회복 강장제",d:"휴식 주간·휴식 집중 회복량 +25%", price:2500, ex:1},
-  charm:   {n:"행운의 부적",d:"유물을 얻을 때마다 25% 확률로 하나 더", price:1600, ex:0},
+  charm:   {n:"행운의 부적",d:"유물을 얻을 때 25% 확률로 한 개 더 획득", price:1600, ex:0},
   scope:   {n:"관측경",    d:"대회 정찰 정보 1단계 상승", price:1800, ex:1},
   banner:  {n:"학원기",    d:"대회 승리 명성 +25%",       price:2200, ex:2}
 };
@@ -2186,10 +2194,10 @@ const PHASE_WEEKS = 12;
 const VAC_WEEKS   = 6;         // 방학 계절 (여름 · 겨울) — 절반 길이
 const HALF_WEEKS = 6;          // 상반기 / 하반기 경계 (12주 계절 기준)
 const PHASES = {
-  spring:{n:"봄",  weeks:PHASE_WEEKS, d:"신학기 · 상반기 입학과 라이벌, 하반기 일반 훈련"},
-  summer:{n:"여름",weeks:VAC_WEEKS,   d:"여름 방학 · 6주 내내 합숙"},
-  fall:  {n:"가을",weeks:PHASE_WEEKS, d:"결전기 · 3/6/9/12주차 대회"},
-  winter:{n:"겨울",weeks:VAC_WEEKS,   d:"겨울 방학 · 6주 내내 스카우트, 시즌 말 봄 신인전"}
+  spring:{n:"봄",  weeks:PHASE_WEEKS, d:"신학기 · 친선전"},
+  summer:{n:"여름",weeks:VAC_WEEKS,   d:"여름 합숙"},
+  fall:  {n:"가을",weeks:PHASE_WEEKS, d:"시내 대회, 광역 대회, 학원제"},
+  winter:{n:"겨울",weeks:VAC_WEEKS,   d:"스카우트, 친선전, 신인전"}
 };
 /* 주차(0-based)가 하반기인가 */
 function phaseWeeks(ph){ return ((PHASES[ph||S.phase]||{}).weeks) || PHASE_WEEKS; }
@@ -5338,13 +5346,14 @@ const VIEWS = [
   {id:"home", n:"학원"},
   {id:"roster", n:"학생"},
   {id:"team", n:"팀 편성"},
-  {id:"plan", n:"스케줄", hot:true},
+  {id:"plan", n:"진행", hot:true},
   {id:"facil", n:"시설 · 상점"},
   {id:"relic", n:"유물 · 스킬"},
   {id:"record", n:"기록"},
   {id:"league", n:"리그"},
   {id:"rank", n:"순위표"},
   {id:"spshop", n:"SP 상점"},
+  {id:"codex",  n:"도감"},
   {id:"opt", n:"설정"}
 ];
 function ultName(job){
@@ -5428,6 +5437,7 @@ function render(){
   else if(UI.view==="relic") v.innerHTML = viewRelic();
   else if(UI.view==="team") v.innerHTML = viewTeam();
   else if(UI.view==="counsel") v.innerHTML = viewCounsel();
+  else if(UI.view==="codex") v.innerHTML = viewCodex();
   else if(UI.view==="record") v.innerHTML = viewRecord();
   else if(UI.view==="league") v.innerHTML = viewLeague();
   else if(UI.view==="rank") v.innerHTML = viewRank();
@@ -5798,10 +5808,10 @@ function viewPlan(){
   const fld = fieldOf(S.phase);
   return `<section class="panel${fld?" fldp":""}"${fld?` style="--fld:url('${fld}')"`:""}>
     <div class="panel-h"><h2>${S.year}년 ${ph.n} ${Math.min(S.week+1, ph.weeks)}주 스케줄</h2>
-      <span class="hint">한 계절 ${ph.weeks}주 · ${ph.d}</span>
+      <span class="hint">${ph.weeks}주 · ${ph.d}</span>
       <span class="btnpair"><button class="btn sm" id="btnAuto">자동 배치</button><button class="btn sm" id="btnClearSlots">전부 비우기</button></span></div>
-    <p style="font-size:11.5px;color:var(--dim);margin:-4px 0 12px">한 주는 <b>월요일부터 금요일까지 다섯 칸</b>이다. 손패 <b>${HAND_SIZE}장</b> 중 다섯 장을 끌어다 놓고 진행하면 월요일부터 순서대로 치러진다.
-      전날과 <b>같은 색</b>이 이어질 때마다 그 훈련의 효과가 <b style="color:var(--brass)">+${Math.round(CHAIN_STEP*100)}%</b>씩 오른다 (최대 +${Math.round(CHAIN_STEP*CHAIN_MAX*100)}%). 쓴 다섯 장은 버려지고 다음 주에 새로 다섯 장을 받는다.
+    <p style="font-size:11.5px;color:var(--dim);margin:-4px 0 12px"><b>월요일부터 금요일까지 다섯 칸</b>에 손패 <b>${HAND_SIZE}장</b> 중 다섯 장을 끌어다 놓고 진행하면 월요일부터 순서대로 치러진다.
+      전날과 <b>같은 색</b>이 이어질 때마다 그 훈련의 효과가 <b style="color:var(--brass)">+${Math.round(CHAIN_STEP*100)}%</b>씩 오른다 (최대 +${Math.round(CHAIN_STEP*CHAIN_MAX*100)}%). 사용된 카드는 버려지며 새로운 주가 시작되면 손패가 <b>${HAND_SIZE}장</b>까지 충전된다.
       ${camp? `<b style="color:var(--brass)">합숙 기간 — 훈련·집중 훈련 효과 ×${CAMP_GAIN}, 컨디션 소모 ×${CAMP_COND}, 휴식 회복도 ×${CAMP_COND}. 원정 카드는 나오지 않는다.</b>`:""}</p>
     <div class="dayrow">
       ${DAY_N.map((d,i)=>{
@@ -5816,20 +5826,21 @@ function viewPlan(){
     <div class="eyebrow" style="margin:18px 0 0;display:flex;align-items:center;gap:10px">손패 ${hand.length}장
       <button class="btn sm" id="btnBookUse" ${bookCount()>0 && hand.length? "" : "disabled"}
         title="손패를 통째로 새로 뽑는다 — 월~금에 올려둔 카드는 그대로 둔다">예지의 서 (손패 교체)${bookCount()>0? ` ×${bookCount()}`:""}</button>
-      ${bookCount()<=0? `<span class="hint" style="font-size:11px;color:var(--dim)">교회에서 ${fmt(foresightPrice())} G에 산다</span>`:""}</div>
+      ${bookCount()<=0? `<span class="hint" style="font-size:11px;color:var(--dim)">교회에서 구입 가능</span>`:""}</div>
     <div class="handrow handzone" data-handzone="1">
       ${hand.length? hand.map(c=> cardHtml(c)).join("") : `<div class="empty" style="grid-column:1/-1">손패가 비었다.</div>`}
     </div>
     <div class="cardlegend">
       ${Object.keys(CARD_COLOR).map(k=>{
         const ids = Object.keys(CARD_COL).filter(id=>CARD_COL[id]===k);
-        if(k==="none") return `<span><i style="background:${CARD_COLOR[k].c}"></i>원정 파견 — 무색, 체인 없음</span>`;
+        if(k==="none") return `<span><i style="background:${CARD_COLOR[k].c}"></i>원정 파견 — 무색, 체인 불가</span>`;
         const names = ids.map(id=>{
           const t = TR[id], lock = t.need && !S.items[t.need];
           return lock? `<span style="color:var(--dim)">${t.n}(${ITEMS[t.need].n})</span>` : t.n;
-        }).concat(`<span style="color:var(--dim)">휴식?</span>`);
+        });
         return `<span><i style="background:${CARD_COLOR[k].c}"></i>${names.join(" · ")}</span>`;
       }).join("")}
+      <span style="color:var(--dim)">* 휴식 — 랜덤</span>
     </div>
     <div class="marklegend">가끔 카드에 <b>표식</b>이 붙어 들어온다 —
       ${Object.keys(CARD_MARK).map(k=>{ const m=CARD_MARK[k];
@@ -5892,43 +5903,7 @@ function viewPlan(){
       }).join("")}
     </div>
   </section>
-  <section class="panel">
-    <div class="panel-h"><h2>카드 목록</h2><span class="hint">같은 색 두 장이 한 쌍 · 아이템을 사면 그 짝이 덱에 들어온다 · 시설 등급이 오르면 효율이 오른다</span></div>
-    <div class="grid2">
-      ${DECK_BASE.concat(DECK_ITEM).map(id=>{
-        const t = TR[id], locked = (t.need && !S.items[t.need]) || (id==="exped" && campNoExped()), col = cardColor(id);
-        const varies = CARD_COL[id] === null;
-        const campOff = (id==="exped" && campNoExped());
-        return `<div class="opt ${locked?"locked":""}" style="cursor:default;border-left:3px solid ${col.c}">
-          <div class="on">${t.n}${campOff? ` <span class="tag">합숙 중 제외</span>` : locked?` <span class="tag">${ITEMS[t.need].n} 필요</span>`: varies? ` <span class="tag" style="color:var(--dim)">색 무작위</span>` : ` <span class="tag" style="color:${col.c};border-color:${col.c}">${col.n}</span>`}
-            <span class="price">${t.fac? FACILITIES[t.fac].n+" Lv."+S.facil[t.fac] : ""}</span></div>
-          <div class="od">${t.d}</div>
-          <div class="od" style="display:flex;flex-wrap:wrap;gap:3px 10px;margin-top:4px">
-            ${(t.fx||[]).map(f=>`<span style="color:var(--${f[2]?"bad":"ok"})">${esc(f[0])}<b>${"+".repeat(f[1])}</b></span>`).join("")
-              || `<span style="color:var(--dim)">—</span>`}
-            <span style="color:var(--dim);margin-left:auto">${cardEffLine(t)}</span></div>
-        </div>`;
-      }).join("")}
-    </div>
-  </section>
-  <section class="panel">
-    <div class="panel-h"><h2>원정지</h2><span class="hint">각 원정지의 주인 1체와 연전한다 · 구간 사이 체력은 일부만 회복된다</span></div>
-    <div class="grid2">
-      ${DUNGEONS.map(d=>{
-        const lock = S.fame < d.needFame;
-        return `<div class="opt ${lock?"locked":""}" style="cursor:default">
-          <div class="on">${d.n}<span class="price">${d.secs}구간</span></div>
-          <div class="od">${d.d} · 권장 Lv.${d.lv} · ${esc(JOBS[d.mon].name)} 연전 ${d.secs}회</div>
-          <div class="od">구간당 경험 ${fmt(dgExp(d))} · 자금 ${fmt(dgGold(d))}${dgKarma(d)? ` · 업보 ${dgKarma(d).toFixed(1)}`:""} · 완주 시 학원 명성 +${dgFame(d)} · 전투 한 판마다 컨디션 ${EXPED_COND} 소모</div>
-          <div class="od" style="color:var(--brass)">진로 평가 상한 ${d.evalCap} · 완주할수록 상한까지 빠르게 오른다</div>
-          ${(()=>{ const tot=Object.values(d.relic).reduce((a,b)=>a+b,0);
-            return `<div class="od">유물 — 구간 승리마다 ${Math.round(d.relicP*100)}% (완주 시 평균 ${(d.relicP*d.secs).toFixed(2)}개) · 등급 ${Object.keys(d.relic).map(g=>`${g} ${Math.round(d.relic[g]/tot*100)}%`).join(" / ")}</div>`; })()}
-          ${lock? `<div class="od" style="color:var(--bad)">학원 명성 부족 — <b>${fmt(d.needFame-S.fame)}</b> 더 필요 (현재 ${fmt(S.fame)} / ${fmt(d.needFame)})</div>`
-                : `<div class="od" style="color:var(--ok)">개방됨 — 필요 명성 ${fmt(d.needFame)}</div>`}
-        </div>`;
-      }).join("")}
-    </div>
-  </section>`;
+`;
 }
 
 /* ============================================================
@@ -6049,7 +6024,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0917-2001";
+const BUILD = "0917-2110";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -6751,7 +6726,7 @@ const CHURCH_HEAL   = 1000;   // 부상 치료 비용
 /* 성물 — 각 계절의 상반기·하반기마다 하나씩만 산다 */
 const HOLY_WATER_PER = 100, HOLY_WATER_COND = 15;   // 신비한 성수 — 학생 한 명당 값 · 즉시 전원 컨디션 회복
 function holyWaterCost(){ return Math.max(HOLY_WATER_PER, (S.students||[]).length * HOLY_WATER_PER); }
-/* 예지의 서 — 사뒀다가 스케줄 탭에서 손패를 갈아엎는다.
+/* 예지의 서 — 사뒀다가 진행 탭에서 손패를 갈아엎는다.
    한 권 살 때마다 100 G 씩 오르고 1,000 G 에서 멈춘다. */
 const FORESIGHT_G = 200, FORESIGHT_STEP = 100, FORESIGHT_MAX = 1000;
 function foresightBought(){ return churchState().bookN|0; }
@@ -6777,7 +6752,7 @@ function buyForesight(){
   const c = churchState(); c.bookN = foresightBought() + 1;
   S.books = bookCount() + 1;
   const nx = foresightPrice();
-  logE(`<b>예지의 서</b>를 한 권 들였다 (${fmt(price)} G). 스케줄 탭에서 손패를 통째로 바꿀 수 있다.${
+  logE(`<b>예지의 서</b>를 한 권 들였다 (${fmt(price)} G). 진행 탭에서 손패를 통째로 바꿀 수 있다.${
     nx>price? ` 다음 권부터는 <b>${fmt(nx)} G</b>를 부른다.` : ` 값은 <b>${fmt(FORESIGHT_MAX)} G</b>에서 더 오르지 않는다.`}`,"good");
   save(); render(); toast(`예지의 서 ${bookCount()}권`);
 }
@@ -6844,7 +6819,7 @@ function viewChurch(){
       ${(()=>{ const pr = foresightPrice(), done = churchBought("book"), nx = Math.min(pr+FORESIGHT_STEP, FORESIGHT_MAX);
         return `<button class="opt ${done?"locked":""}" id="btnBook" ${done||S.gold<pr?"disabled":""}>
         <div class="on">예지의 서<span class="price">${done? "이번 반기 완료" : fmt(pr)+" G"}</span></div>
-        <div class="od">스케줄 탭에서 펼치면 <b>손패를 통째로</b> 새로 뽑는다. 월~금에 올려둔 카드는 그대로 둔다.</div>
+        <div class="od">진행 탭에서 펼치면 <b>손패를 통째로</b> 새로 뽑는다. 월~금에 올려둔 카드는 그대로 둔다.</div>
         <div class="od" style="color:var(--dim)">각 계절의 상반기·하반기마다 1회 · 지금 가진 책 <b style="color:var(--brass)">${bookCount()}권</b>
           · 지금까지 ${foresightBought()}권 구매 ${pr>=FORESIGHT_MAX? `· <b>${fmt(FORESIGHT_MAX)} G</b>에서 값이 멈췄다`
             : `· 다음 권 <b>${fmt(nx)} G</b>`}</div>
@@ -7746,8 +7721,109 @@ function viewCounsel(){
         ${d.gain? `<div class="od" style="color:var(--brass)">${d.gain.n} +${d.gain.d}${d.dbl? ` <span style="color:var(--ok)">— 호소력으로 상승폭 2배</span>`:""}</div>`:""}
       </div>`;
     }).join("")}</div>` : `<div class="empty">아직 올해 상담 기록이 없다.</div>`}
-  </section>
-  <section class="panel">
+  </section>`;
+}
+
+/* ---------- 도감 ---------- */
+/* 직업 능력치 등급 — 같은 레벨에서 직업끼리 견준 상대값이다.
+   실제 수치는 학생의 잠재력·멘탈리티·유물로 또 갈리니, 절대치가 아니라 직업의 성향으로 읽는다. */
+const JOB_GRADE_LV  = 20;                                     // 견주는 기준 레벨 (3학년 주력대)
+/* 등급은 능력치마다 따로 잰다 — 그 능력치의 중앙값이 B, 1위가 S+.
+   능력치별로 폭이 달라서(방어는 중앙값의 1.85배까지, 속도는 1.34배까지) 한 자로 재면
+   폭이 좁은 쪽에는 S+ 가 영영 안 나온다. */
+const JOB_GRADE_SEQ = ["D","D+","C","C+","B","B+","A","A+","S","S+"];
+const JOB_STATS = [["hp","체력"],["atk","공격"],["def","방어"],["spd","속도"]];
+function jobStatAt(job, k, lv){
+  const J = JOBS[job]; if(!J) return 0;
+  return J.base[k] + (J.grow[k]||0) * ((lv||JOB_GRADE_LV) - 1);
+}
+let JOB_GRADE_RANGE = null;
+function jobStatRange(k){
+  if(!JOB_GRADE_RANGE){
+    JOB_GRADE_RANGE = {};
+    JOB_STATS.forEach(([s])=>{
+      const a = JOB_KEYS.map(j=> jobStatAt(j, s)).sort((x,y)=> x-y), h = a.length>>1;
+      JOB_GRADE_RANGE[s] = {lo: a[0], hi: a[a.length-1],
+                            med: (a.length % 2) ? a[h] : (a[h-1] + a[h]) / 2};
+    });
+  }
+  return JOB_GRADE_RANGE[k];
+}
+function jobStatGrade(job, k){
+  const R = jobStatRange(k), n = JOB_GRADE_SEQ.length;
+  const up = R.hi - R.med;
+  if(up <= 0) return JOB_GRADE_SEQ[(n-1)>>1];
+  /* 중앙값이 0, 1위가 +1. 아래쪽도 같은 눈금으로 재서 -1 에서 자른다 */
+  const z = clamp((jobStatAt(job, k) - R.med) / up, -1, 1);
+  return JOB_GRADE_SEQ[clamp(Math.floor((z + 1) / 2 * n), 0, n-1)];
+}
+function jobGradeRow(job){
+  return JOB_STATS.map(([k,n])=>{ const g = jobStatGrade(job, k);
+    return `<span class="jgs" title="Lv.1 ${fmt(Math.round(JOBS[job].base[k]))} · 레벨당 +${JOBS[job].grow[k]}">${n} <b style="color:${
+      GRADE_COLOR[g.charAt(0)]}">${g}</b></span>`; }).join("");
+}
+function codexJobs(){
+  const byRole = {tank:[], dps:[], heal:[], supp:[]};
+  JOB_KEYS.forEach(k=>{ (byRole[JOBS[k].role] = byRole[JOBS[k].role] || []).push(k); });
+  const mine = k => S.students.filter(x=> x.job===k).length;
+  return `  <section class="panel">
+    <div class="panel-h"><h2>직업</h2><span class="hint">입학 시 정해지며 특정 조건을 달성하면 그랜드 칭호가 붙는다</span></div>
+    ${Object.keys(byRole).filter(r=> byRole[r].length).map(r=>`
+      <div class="eyebrow" style="margin:10px 0 6px">${ROLE_LABEL[r]}</div>
+      <div class="grid2 gx2">${byRole[r].map(k=>{ const J=JOBS[k], n=mine(k);
+        const ult = (J.skills||[]).find(x=>x.kind==="ult");
+        return `<div class="opt cxjob" style="cursor:default">
+          ${sprHas(k)? `<span class="cxspr">${sprHTML(k,"idle",.92)}</span>`:""}
+          <div class="cxbody">
+            <div class="on">${J.name}<span class="tag role-${J.tone}">${ROLE_LABEL[r]}</span>${
+              n? `<span class="price">${n}명 재학</span>`:""}</div>
+            <div class="od">${J.sub? `<b style="color:var(--text)">${esc(J.sub)}</b> · `:""}${esc(J.desc)}</div>
+            <div class="od jgrow">${jobGradeRow(k)}</div>
+            ${ult? `<div class="od" style="color:var(--brass)">필살 — ${esc(ult.name)} · ${esc(ult.txt)}</div>`:""}
+          </div>
+        </div>`; }).join("")}</div>`).join("")}
+  </section>`;
+}
+function viewCodex(){
+  return codexJobs()
+    + `  <section class="panel">
+    <div class="panel-h"><h2>카드 목록</h2><span class="hint">같은 색 두 장이 한 쌍 · 아이템을 사면 그 짝이 덱에 들어온다 · 시설 등급이 오르면 효율이 오른다</span></div>
+    <div class="grid2">
+      ${DECK_BASE.concat(DECK_ITEM).map(id=>{
+        const t = TR[id], locked = (t.need && !S.items[t.need]) || (id==="exped" && campNoExped()), col = cardColor(id);
+        const varies = CARD_COL[id] === null;
+        const campOff = (id==="exped" && campNoExped());
+        return `<div class="opt ${locked?"locked":""}" style="cursor:default;border-left:3px solid ${col.c}">
+          <div class="on">${t.n}${campOff? ` <span class="tag">합숙 중 제외</span>` : locked?` <span class="tag">${ITEMS[t.need].n} 필요</span>`: varies? ` <span class="tag" style="color:var(--dim)">색 무작위</span>` : ` <span class="tag" style="color:${col.c};border-color:${col.c}">${col.n}</span>`}
+            <span class="price">${t.fac? FACILITIES[t.fac].n+" Lv."+S.facil[t.fac] : ""}</span></div>
+          <div class="od">${t.d}</div>
+          <div class="od" style="display:flex;flex-wrap:wrap;gap:3px 10px;margin-top:4px">
+            ${(t.fx||[]).map(f=>`<span style="color:var(--${f[2]?"bad":"ok"})">${esc(f[0])}<b>${"+".repeat(f[1])}</b></span>`).join("")
+              || `<span style="color:var(--dim)">—</span>`}
+            <span style="color:var(--dim);margin-left:auto">${cardEffLine(t)}</span></div>
+        </div>`;
+      }).join("")}
+    </div>
+  </section>`
+    + `  <section class="panel">
+    <div class="panel-h"><h2>원정지</h2><span class="hint">각 원정지의 주인 1체와 연전한다 · 구간 사이 체력은 일부만 회복된다</span></div>
+    <div class="grid2">
+      ${DUNGEONS.map(d=>{
+        const lock = S.fame < d.needFame;
+        return `<div class="opt ${lock?"locked":""}" style="cursor:default">
+          <div class="on">${d.n}<span class="price">${d.secs}구간</span></div>
+          <div class="od">${d.d} · 권장 Lv.${d.lv} · ${esc(JOBS[d.mon].name)} 연전 ${d.secs}회</div>
+          <div class="od">구간당 경험 ${fmt(dgExp(d))} · 자금 ${fmt(dgGold(d))}${dgKarma(d)? ` · 업보 ${dgKarma(d).toFixed(1)}`:""} · 완주 시 학원 명성 +${dgFame(d)} · 전투 한 판마다 컨디션 ${EXPED_COND} 소모</div>
+          <div class="od" style="color:var(--brass)">진로 평가 상한 ${d.evalCap} · 완주할수록 상한까지 빠르게 오른다</div>
+          ${(()=>{ const tot=Object.values(d.relic).reduce((a,b)=>a+b,0);
+            return `<div class="od">유물 — 구간 승리마다 ${Math.round(d.relicP*100)}% (완주 시 평균 ${(d.relicP*d.secs).toFixed(2)}개) · 등급 ${Object.keys(d.relic).map(g=>`${g} ${Math.round(d.relic[g]/tot*100)}%`).join(" / ")}</div>`; })()}
+          ${lock? `<div class="od" style="color:var(--bad)">학원 명성 부족 — <b>${fmt(d.needFame-S.fame)}</b> 더 필요 (현재 ${fmt(S.fame)} / ${fmt(d.needFame)})</div>`
+                : `<div class="od" style="color:var(--ok)">개방됨 — 필요 명성 ${fmt(d.needFame)}</div>`}
+        </div>`;
+      }).join("")}
+    </div>
+  </section>`
+    + `  <section class="panel">
     <div class="panel-h"><h2>성격</h2><span class="hint">입학 시 정해지며 바뀌지 않는다</span></div>
     <p style="font-size:12.5px;color:var(--muted);margin:0 0 10px">성격은 입학할 때 멘탈리티에 한 번 반영되고, 상담에서 어떤 말이 통하는지를 결정한다.</p>
     <div class="scroll-x"><table class="tb"><thead><tr><th>성격</th><th>멘탈리티 보정</th><th>재학생</th><th>설명</th></tr></thead><tbody>
@@ -7757,6 +7833,19 @@ function viewCounsel(){
           <td style="font-size:12px;color:var(--muted)">${esc(PERSONA[k].d)}</td></tr>`;
       }).join("")}
     </tbody></table></div>
+  </section>`
+    + `  <section class="panel">
+    <div class="panel-h"><h2>진로 기준</h2><span class="hint">진로 평가는 대회 성적과 원정 성과로만 쌓인다</span></div>
+    <p style="font-size:12.5px;color:var(--muted);margin:0 0 10px">신입생은 평가 0에서 시작한다. 원정은 원정지마다 정해진 상한까지만 올려주고, 그 위는 대회에서만 넘길 수 있다. 대회에 나가 1승도 못 하면 평가가 깎인다.</p>
+    <div class="scroll-x"><table class="tb"><thead><tr><th>진로</th><th>필요 평가</th><th>학원 명성</th><th>후원금</th><th>설명</th></tr></thead>
+    <tbody>${CAREERS.filter(c=>c.id!=="none").map(c=>`<tr><td>${c.n}</td><td class="num">${c.min}</td><td class="num">+${c.fame}</td><td class="num">${fmt(c.gold)}</td><td style="color:var(--muted)">${c.d}</td></tr>`).join("")}</tbody></table></div>
+    <div class="rule"></div>
+    <div class="panel-h" style="margin-bottom:8px"><h2 style="font-size:13px">업보 진로</h2><span class="hint">업보가 쌓이면 평가와 무관하게 이쪽으로 갈린다</span></div>
+    <p style="font-size:12.5px;color:var(--muted);margin:0 0 10px">업보는 <b style="color:var(--text)">안개 낀 옛 성터 이상의 원정</b>에서 구간마다 쌓인다 (성터 ${dgKarma(DUNGEONS[1])} · 종탑 ${dgKarma(DUNGEONS[2])} · 균열 ${dgKarma(DUNGEONS[3])} · 무덤 ${dgKarma(DUNGEONS[4])}).
+      교회에 <b style="color:var(--text)">${fmt(CHURCH_DONATE)} G</b>를 기부하면 전 학생의 업보가 ${CHURCH_KARMA} 씻긴다 (반기당 1회).</p>
+    <div class="scroll-x"><table class="tb"><thead><tr><th>진로</th><th>필요 업보</th><th>필요 평가</th><th>학원 명성</th><th>후원금</th><th>설명</th></tr></thead>
+    <tbody>${DARK_CAREERS.slice().reverse().map(c=>`<tr><td style="color:var(--bad)">${c.n}</td><td class="num">${c.karma}</td><td class="num">${c.min>0?c.min:"—"}</td>
+      <td class="num" style="color:var(--${c.fame>=0?"ok":"bad"})">${c.fame>=0?"+":""}${fmt(c.fame)}</td><td class="num">${fmt(c.gold)}</td><td style="color:var(--muted)">${c.d}</td></tr>`).join("")}</tbody></table></div>
   </section>`;
 }
 
@@ -7772,19 +7861,6 @@ function viewRecord(){
         <div class="cerfoot"><span>평가 ${x.score}</span>${x.trust? `<span style="color:var(--brass)">신뢰 ${trustBand(x.trust).step}</span>`:""}${x.karma? `<span style="color:var(--bad)">업보 ${fmt(x.karma)}</span>`:""}${x.pw?`<span>전투력 ${fmt(x.pw)}</span>`:""}<span style="color:var(--${x.fame<0?"bad":"brass"})">명성 ${x.fame<0?"":"+"}${fmt(x.fame)}</span></div>
       </div>`).join("")}</div>`
     : `<div class="empty">아직 졸업생이 없다. 3학년은 가을 대회가 끝나면 졸업한다.</div>`}
-  </section>
-  <section class="panel">
-    <div class="panel-h"><h2>진로 기준</h2><span class="hint">진로 평가는 대회 성적과 원정 성과로만 쌓인다</span></div>
-    <p style="font-size:12.5px;color:var(--muted);margin:0 0 10px">신입생은 평가 0에서 시작한다. 원정은 원정지마다 정해진 상한까지만 올려주고, 그 위는 대회에서만 넘길 수 있다. 대회에 나가 1승도 못 하면 평가가 깎인다.</p>
-    <div class="scroll-x"><table class="tb"><thead><tr><th>진로</th><th>필요 평가</th><th>학원 명성</th><th>후원금</th><th>설명</th></tr></thead>
-    <tbody>${CAREERS.filter(c=>c.id!=="none").map(c=>`<tr><td>${c.n}</td><td class="num">${c.min}</td><td class="num">+${c.fame}</td><td class="num">${fmt(c.gold)}</td><td style="color:var(--muted)">${c.d}</td></tr>`).join("")}</tbody></table></div>
-    <div class="rule"></div>
-    <div class="panel-h" style="margin-bottom:8px"><h2 style="font-size:13px">업보 진로</h2><span class="hint">업보가 쌓이면 평가와 무관하게 이쪽으로 갈린다</span></div>
-    <p style="font-size:12.5px;color:var(--muted);margin:0 0 10px">업보는 <b style="color:var(--text)">안개 낀 옛 성터 이상의 원정</b>에서 구간마다 쌓인다 (성터 ${dgKarma(DUNGEONS[1])} · 종탑 ${dgKarma(DUNGEONS[2])} · 균열 ${dgKarma(DUNGEONS[3])} · 무덤 ${dgKarma(DUNGEONS[4])}).
-      교회에 <b style="color:var(--text)">${fmt(CHURCH_DONATE)} G</b>를 기부하면 전 학생의 업보가 ${CHURCH_KARMA} 씻긴다 (반기당 1회).</p>
-    <div class="scroll-x"><table class="tb"><thead><tr><th>진로</th><th>필요 업보</th><th>필요 평가</th><th>학원 명성</th><th>후원금</th><th>설명</th></tr></thead>
-    <tbody>${DARK_CAREERS.slice().reverse().map(c=>`<tr><td style="color:var(--bad)">${c.n}</td><td class="num">${c.karma}</td><td class="num">${c.min>0?c.min:"—"}</td>
-      <td class="num" style="color:var(--${c.fame>=0?"ok":"bad"})">${c.fame>=0?"+":""}${fmt(c.fame)}</td><td class="num">${fmt(c.gold)}</td><td style="color:var(--muted)">${c.d}</td></tr>`).join("")}</tbody></table></div>
   </section>`;
 }
 
