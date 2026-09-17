@@ -1667,7 +1667,7 @@ const ITEMS = {
   stone:   {n:"명상석",    d:"심층 명상 해금",            price:1000},
   board:   {n:"전술판",    d:"모의전 해금",               price:1400},
   flag:    {n:"진형 깃발",  d:"진형 훈련 해금",            price:1200},
-  tonic:   {n:"회복 강장제",d:"휴식 주간·휴식 집중 회복량 +40%", price:5000},
+  tonic:   {n:"회복 강장제",d:"휴식 주간·휴식 집중 회복량 +25%", price:2500},
   charm:   {n:"행운의 부적",d:"원정 유물 획득률 1.35배",  price:1600},
   scope:   {n:"관측경",    d:"대회 정찰 정보 1단계 상승", price:1800},
   banner:  {n:"학원기",    d:"대회 승리 명성 +25%",       price:2200}
@@ -1883,11 +1883,17 @@ function fameTitle(f){
 }
 function fameNext(f){ return FAME_TITLES.find(x=> x.min>f) || null; }
 
+/* 학원 등급 — 명성이 오르면 더 높은 곳에서 학원을 인가한다.
+   m 은 대회 보상(명성·자금) 배율. 문턱은 원정지 개방 명성과 맞춰 두었다. */
 const TIERS = [
-  {id:1,n:"구(區) 학원제", fame:0,   d:"구 단위 대회에만 출전한다"},
-  {id:2,n:"지방 학원제",   fame:900, d:"지방 대회와 2티어 던전이 열린다"},
-  {id:3,n:"전국 학원제",   fame:2600,d:"전국 대회와 최상위 원정이 열린다"}
+  {id:1,n:"남작 인가", fame:0,    m:1,   sl:0, d:"영지 한 귀퉁이가 인정한 학원이다"},
+  {id:2,n:"백작 인가", fame:400,  m:1.5, sl:1, d:"근방에 이름이 서고 무너진 종탑의 문이 열린다"},
+  {id:3,n:"공국 인가", fame:900,  m:2,   sl:2, d:"지방을 대표하는 학원이 되고 소금 바다의 균열이 열린다"},
+  {id:4,n:"왕국 인가", fame:2600, m:2.5, sl:4, d:"왕국이 직접 인가한다. 용사의 무덤까지 문이 열린다"}
 ];
+function tierMul(){ return (TIERS[S.tier-1] || TIERS[0]).m; }
+/* 봄 신인전 상대 레벨 보정 — 등급이 넷이 돼도 최대치는 +4 로 둔다 */
+function tierSpringLv(){ return (TIERS[S.tier-1] || TIERS[0]).sl || 0; }
 const CAREERS = [
   {id:"grand", n:"대용사",        min:200, fame:420, gold:5000, d:"이름이 대륙에 남는다"},
   {id:"hero",  n:"용사",          min:140, fame:260, gold:3000, d:"학원의 간판이 된다"},
@@ -3072,7 +3078,7 @@ function newGame(name){
   autoFillAllTeams();
   logE(`<b>${S.acadName}</b> 개교 — 1학년 <b>3명</b>이 입학했다. 전원 컨디션 100으로 첫 학기를 연다.`,"big");
   logE(`남은 학생이 셋뿐이라 팀은 <b>하나</b>다. 학생이 셋 늘 때마다 팀을 하나씩 더 짤 수 있다.`,"");
-  logE(`구(區) 학원제 소속. 가을 시내 대회와 봄 신인전이 첫 무대가 된다.`,"");
+  logE(`<b>${TIERS[0].n}</b> 학원이다. 가을 시내 대회와 봄 신인전이 첫 무대가 된다.`,"");
 }
 const MASTER_MAX = 10;
 const MASTER_INFO = {
@@ -3120,7 +3126,7 @@ function checkTier(){
   for(let i=TIERS.length-1;i>=0;i--){
     if(S.fame>=TIERS[i].fame && S.tier<TIERS[i].id){
       S.tier = TIERS[i].id;
-      logE(`학원 승급 — <b>${TIERS[i].n}</b>으로 인정받았다. ${TIERS[i].d}`,"big");
+      logE(`학원 승급 — <b>${TIERS[i].n}</b>${ro(TIERS[i].n)} 인정받았다. ${TIERS[i].d}`,"big");
       return true;
     }
   }
@@ -3227,8 +3233,10 @@ function facMul(fk){ return fk ? facEff(fk) : 1; }
 const FOCUS_FAC = {team:"arena",aggr:"hall",calm:"library",will:"chapel",stam:"gym",genius:"library"};
 const FOCUS_REST = "rest";
 const FOCUS_REST_GAIN = 20;    // 휴식 집중 — 주당 컨디션 회복 (강장제 ×1.4 · 의무실 +단계)
+const TONIC_MUL = 1.25;      // 회복 강장제 — 휴식 회복 배율
+function tonicMul(){ return (S.items && S.items.tonic) ? TONIC_MUL : 1; }
 function restFocusGain(){
-  return Math.round(FOCUS_REST_GAIN * (S.items && S.items.tonic ? 1.4 : 1)) + (S.facil.infirm|0);
+  return Math.round(FOCUS_REST_GAIN * tonicMul()) + (S.facil.infirm|0);
 }
 /* 회복은 하루 단위로 붙고 컨디션은 정수라 하루치가 반올림된다 —
    화면에 적는 주당 값도 같은 계산을 거쳐야 실제와 어긋나지 않는다 */
@@ -3275,7 +3283,7 @@ function trainStudent(st, tr, success, opt){
     } else st._up = 0;
   }
   let c = tr.cond * (success?1:.5);
-  if(tr.rest && S.items.tonic) c *= 1.4;
+  if(tr.rest) c *= tonicMul();
   setCond(st, st.cond - c);
   if(!opt.noRecover) setCond(st, st.cond + (S.facil.infirm|0)*(opt.recMul||1));
   return notable;
@@ -3290,7 +3298,7 @@ function isCampWeek(){ return S.phase==="summer"; }   // 여름 방학 — 6주 
 /* 휴식 계열 스케줄의 회복량 (이미 요일 배율이 반영된 훈련을 받는다) */
 function restWeekGain(tr){
   if(!tr || !tr.rest) return 0;
-  return -tr.cond * (S.items && S.items.tonic ? 1.4 : 1) + (S.facil.infirm|0)*DAY_MUL;
+  return -tr.cond * tonicMul() + (S.facil.infirm|0)*DAY_MUL;
 }
 function doRestFocus(s, tr){
   setCond(s, s.cond + Math.max(restFocusGain()*DAY_MUL, restWeekGain(tr)));
@@ -3936,7 +3944,8 @@ function addRelicToPool(r){
 /* ============================================================
    대회
    ============================================================ */
-function scoutLevel(){ return clamp(Math.floor(S.master.info/3) + (S.items.scope?1:0), 0, 3); }
+const SCOUT_INFO_PER = 5;    // 마스터 정보력 이만큼마다 정찰 1단계
+function scoutLevel(){ return clamp(Math.floor(S.master.info/SCOUT_INFO_PER) + (S.items.scope?1:0), 0, 3); }
 function rivalAcademy(strength, teams, prof, name){
   name = name || (pick(ACAD)+" 학원");
   const T=[];
@@ -3965,7 +3974,7 @@ function startSpringTour(){
     myTeams:[[]], entryTeams:[], round:0, maxRound:1, results:[], matchIdx:0,
     opps: (()=>{ const nm = acadNames(4);
       return Array.from({length:4},(_,i)=> Object.assign(
-        rivalAcademy(ourAvgLevel(pool) + SPRING_LV_OFF + (S.tier-1)*2 + i*1.0, 1, "rival", nm[i]), {tier:0})); })(),
+        rivalAcademy(ourAvgLevel(pool) + SPRING_LV_OFF + tierSpringLv() + i*1.0, 1, "rival", nm[i]), {tier:0})); })(),
     pool
   };
   UI.tour.rivals = UI.tour.opps.map((o,i)=> ({name:o.name, str: 1 + i*.12 + rnd(-.25,.35), pts:0, w:0, l:0}));
@@ -3991,10 +4000,13 @@ function springTable(t){
 }
 function tourMatchStudents(ids){ return ids.map(id=>S.students.find(s=>s.id===id)).filter(Boolean); }
 
+const BANNER_MUL = 1.25;
+/* 학원기 — 대회에서 얻는 학원 명성을 올린다 */
+function bannerFame(v){ return (S.items && S.items.banner) ? v * BANNER_MUL : v; }
 function finishTournament(t){
   const wins = t.results.filter(r=>r.win).length;
   const total = t.results.length;
-  const tierM = [1,1.7,2.7][S.tier-1];
+  const tierM = tierMul();
   let fame=0, gold=0, msg="";
   if(t.kind==="spring"){
     if(!t.standings) springTable(t);
@@ -4007,7 +4019,7 @@ function finishTournament(t){
     gold = t.roundWins*620*tierM + (champ?1500*tierM:0);
     msg = champ? `가을 대회 우승!` : `가을 대회 ${t.roundWins}라운드 진출`;
   }
-  if(S.items.banner){ fame*=1.25; }
+  fame = bannerFame(fame);
   addFame(fame); addGold(gold);
   // 출전 학생 개인 명성
   const ups=[], rows=[];
@@ -4064,7 +4076,7 @@ function finishTournament(t){
 const LADDER = {
   city:  {id:"city",  n:"시내 대회",   kind:"cup",    rounds:4, teams:16, use:1, week:3, enterFame:100, gold:250,  next:"region", lvOff:0,
           d:"시내 16개 학원 토너먼트 · 한 팀이 단판으로 올라간다"},
-  region:{id:"region",n:"광역 대회",   kind:"cup",    rounds:4, teams:16, use:2, week:6, enterFame:0,   gold:450,  next:"qual",   lvOff:3,
+  region:{id:"region",n:"광역 대회",   kind:"cup",    rounds:4, teams:16, use:2, week:6, enterFame:150, gold:450,  next:"qual",   lvOff:3,
           d:"광역 16개 학원 토너먼트 · 두 팀이 나서고 1:1이면 이긴 팀끼리 한 판 더"},
   qual:  {id:"qual",  n:"예선 리그",   kind:"league", matches:7, use:3,    week:9, enterFame:150, gold:300,  next:"final",  lvOff:6,
           d:"64개 학원이 8개 조로 나뉜 리그 · 조 1·2위 본선행"},
@@ -4124,7 +4136,9 @@ function foeProfileText(step){
   const P = LADDER_FOE[step];
   return `평균 3학년 ${P.y3.g}급 Lv.${P.y3.lv} · 2학년 ${P.y2.g}급 Lv.${P.y2.lv} · 드물게 3학년 ${P.rare.g}급 Lv.${P.rare.lv}까지`;
 }
-const LADDER_TIER = {city:0, region:1, qual:2, final:3};   // 대회 단계별 상대 유명도
+/* 대회 단계별 상대 유명도 — 라커룸에서 상대 전력을 읽는 난이도를 정한다.
+   단계 자체가 곧 상대의 격이므로 우리 학원 등급은 섞지 않는다. */
+const LADDER_TIER = {city:0, region:1, qual:2, final:3};
 function ladderAcademy(step, round, name){
   const P = LADDER_FOE[step];
   const spec = foeRoundSpec(step, round);          // 라운드 난이도를 못박아 둔 대회
@@ -4152,7 +4166,7 @@ function ladderAcademy(step, round, name){
       return st;
     }), fms[t]));
   }
-  return {name: name || (pick(ACAD)+" 학원"), teams, tier: clamp((LADDER_TIER[step]||0) + (S.tier-1), 0, 4)};
+  return {name: name || (pick(ACAD)+" 학원"), teams, tier: clamp(LADDER_TIER[step]||0, 0, 4)};
 }
 function ladderTitle(step){
   const c = LADDER[step];
@@ -4182,7 +4196,8 @@ function startLadder(step){
   }
   // 진출 보상
   if(!S.fallRun.pending || S.fallRun.pending!==step){
-    if(cfg.enterFame){ addFame(cfg.enterFame); logE(`<b>${ladderTitle(step)}</b> 진출 — 학원 명성 +${cfg.enterFame}`,"big"); }
+    if(cfg.enterFame){ const ef = Math.round(bannerFame(cfg.enterFame));
+      addFame(ef); logE(`<b>${ladderTitle(step)}</b> 진출 — 학원 명성 +${ef}`,"big"); }
   }
   S.fallRun.pending = step;
   UI.tour = t; UI.pendingTour = true;
@@ -4291,6 +4306,7 @@ function finishLadder(t){
   if(champ && cfg.champFame){ fame += cfg.champFame; gold += cfg.champGold||0; }
   if(champ) missionProgress(t.step);
   if(champ && t.step==="city") missionProgress("debut");   // 우승은 4강을 포함한다
+  fame = Math.round(bannerFame(fame));
   if(fame) addFame(fame);
   if(gold) addGold(gold);
   // 출전 학생 — 진로 평가 · 경험 · 개인 명성
@@ -5736,7 +5752,7 @@ function viewPlan(){
           <div class="on" style="color:var(--ok)">휴식 집중<span class="price">${who.length}명</span></div>
           <div class="od">${who.map(s=>`${dnH(s)} ${Math.round(s.cond)}`).join(" · ")}</div>
           <div class="od" style="color:var(--dim)">스케줄 불참 · 매주 컨디션 +${restFocusWeek()}
-            <span style="color:var(--dim)">(기본 ${FOCUS_REST_GAIN}${S.items&&S.items.tonic?" · 강장제 ×1.4":""}${S.facil.infirm>0?` · 의무실 +${S.facil.infirm|0}`:""})</span></div></div>`; })()}
+            <span style="color:var(--dim)">(기본 ${FOCUS_REST_GAIN}${S.items&&S.items.tonic?` · 강장제 ×${TONIC_MUL}`:""}${S.facil.infirm>0?` · 의무실 +${S.facil.infirm|0}`:""})</span></div></div>`; })()}
       ${S.students.filter(s=>s.focus==="free").length? `<div class="opt locked" style="cursor:default">
         <div class="on" style="color:var(--dim)">미지정<span class="price">${S.students.filter(s=>s.focus==="free").length}명</span></div>
         <div class="od">${S.students.filter(s=>s.focus==="free").map(s=>dnH(s)).join(" · ")}</div></div>`:""}
@@ -9055,7 +9071,7 @@ function renderLadder(){
     showModal(`<div class="cerhead"><div class="eyebrow">가을 ${cfg.week}주차</div>
         <h2 style="font-size:24px;margin-top:2px">${esc(t.title)}</h2>
         <p style="color:var(--muted);font-size:13px;margin-top:6px">${esc(cfg.d)} · ${cfg.kind==="cup"?`${cfg.rounds}라운드 · 라운드마다 3선 2승제`:`${cfg.matches}차전 리그 · 경기당 1팀`}
-          ${cfg.enterFame?` · 진출 보상 명성 +${cfg.enterFame}`:""}</p></div>
+          ${cfg.enterFame?` · 진출 보상 명성 +${Math.round(bannerFame(cfg.enterFame))}`:""}</p></div>
       <div style="margin:10px 0">${ladderPath(t.step)}</div>
       <p style="font-size:12.5px;color:var(--brass);margin-bottom:6px">예상 상대 — ${foeProfileText(t.step)}</p>
       <p style="color:var(--muted);font-size:12.5px;margin-bottom:10px">편성해둔 팀 중 <b style="color:var(--text)">${U}팀</b>을 고른다. 고른 순서가 출전 순서가 되고, 진형 보정도 그대로 따라간다.
@@ -9402,6 +9418,8 @@ function boot(){
   S.church = S.church||{};
   S.epiUsed = S.epiUsed||[]; S.epiLog = S.epiLog||[];
   S.facil = S.facil||{};
+  /* 학원 등급은 명성만 보고 정해진다 — 문턱이 바뀌어도 세이브가 어긋나지 않게 다시 센다 */
+  S.tier = TIERS.reduce((a,t)=> (S.fame|0) >= t.fame ? t.id : a, 1);
   /* 훈련 시설이 1~8 (등급당 20%) 에서 0~70 (단계당 2%) 로 바뀌었다 —
      같은 효율이 나오도록 (등급-1)×10 으로 환산한다. Lv.8 ×2.4 → Lv.70 ×2.4 */
   if((S.facilV|0) < 2){
@@ -9446,8 +9464,8 @@ function boot(){
   S.pendingUnlock = S.pendingUnlock || [];
   {
     const done = (S.mission.done||[]).map(d=>d.id);
-    if(done.includes("m1") || done.includes("m2") || S.tier>=2) S.unlock.region = true;
-    if(done.includes("m2") || done.includes("m3") || S.tier>=3) S.unlock.fest = true;
+    if(done.includes("m1") || done.includes("m2") || S.fame>=900)  S.unlock.region = true;
+    if(done.includes("m2") || done.includes("m3") || S.fame>=2600) S.unlock.fest = true;
     if(S.fallRun && ["region","qual","final"].includes(S.fallRun.step)) S.unlock.region = true;
     if(S.fallRun && ["qual","final"].includes(S.fallRun.step)) S.unlock.fest = true;
   }
