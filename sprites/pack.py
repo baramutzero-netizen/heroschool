@@ -147,9 +147,10 @@ def pack_fx():
             json.dumps([s[0] for s in sheets], separators=(",",":")), CELL, FRN, b64)
 
 def main():
-    # fx_*.png 는 전투 이펙트 시트(1행 8프레임)라 여기서 다루지 않는다
+    # fx_*.png 는 전투 이펙트 시트(1행 8프레임),
+    # mon_*.png 는 원정지 주인의 정지 그림 한 장 — 둘 다 여기서 다루지 않는다
     files = [f for f in sorted(glob.glob(os.path.join(SRC,"*.png")))
-             if not os.path.basename(f).startswith("fx_")]
+             if not os.path.basename(f).startswith(("fx_","mon_"))]
     if not files: raise SystemExit("src/ 에 png 가 없다")
     sheets = []
     for f in files:
