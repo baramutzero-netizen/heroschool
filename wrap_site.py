@@ -1,4 +1,7 @@
+import datetime, re
 src=open('game.html',encoding='utf-8').read()
+STAMP=datetime.datetime.now().strftime('%m%d-%H%M')
+src=re.sub(r'const BUILD = "[^"]*";', 'const BUILD = "%s";' % STAMP, src, count=1)
 i=src.index('<div id="app">')
 head=src[:i]; body=src[i:]
 favicon=("data:image/svg+xml,"
@@ -24,4 +27,4 @@ out=f'''<!doctype html>
 {body}
 </body></html>'''
 open('site/index.html','w',encoding='utf-8').write(out)
-print('site/index.html', len(out))
+print('site/index.html', len(out), 'build', STAMP)

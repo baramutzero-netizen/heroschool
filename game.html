@@ -1852,10 +1852,10 @@ function chainOf(list, i){
    ============================================================ */
 const DUNGEONS = [
   {id:"d1",n:"학원 지하 수련장", tier:1, secs:3, lv:1,  mon:"mon_dummy",    monK:1.08, evalCap:46, relicP:.15, needFame:0,    fameClear:5,  exp:130, karma:0, relic:{C:.62,B:.12}, d:"입학생도 버틸 만한 곳"},
-  {id:"d2",n:"안개 낀 옛 성터",  tier:1, secs:4, lv:6,  mon:"mon_wraith",   monK:0.52, evalCap:58, relicP:.162, needFame:0,    fameClear:10, exp:230, karma:3, relic:{C:.5,B:.26,A:.05}, d:"구 단위 학원의 단골 원정지"},
-  {id:"d3",n:"무너진 종탑",      tier:2, secs:5, lv:10, mon:"mon_gargoyle", monK:0.58, evalCap:70, relicP:.166, needFame:400,  fameClear:15, exp:390, karma:5, relic:{C:.34,B:.36,A:.13}, d:"이름이 알려진 학원부터 문이 열린다"},
-  {id:"d4",n:"소금 바다의 균열", tier:2, secs:6, lv:14, mon:"mon_brine",    monK:0.27, evalCap:82, relicP:.17, needFame:900,  fameClear:20, exp:620, karma:7, relic:{C:.2,B:.38,A:.24,S:.03}, d:"의식 구간이 길어 지구력을 요구"},
-  {id:"d5",n:"용사의 무덤",      tier:3, secs:7, lv:18, mon:"mon_guardian", monK:0.27, evalCap:96, relicP:.172, needFame:2600, fameClear:30, exp:950, karma:10, relic:{B:.3,A:.36,S:.1}, d:"대륙에 이름난 학원만이 문을 연다"}
+  {id:"d2",n:"안개 낀 옛 성터",  tier:1, secs:4, lv:6,  mon:"mon_wraith",   monK:0.52, evalCap:58, relicP:.162, needFame:0,    fameClear:10, exp:230, karma:1, relic:{C:.5,B:.26,A:.05}, d:"구 단위 학원의 단골 원정지"},
+  {id:"d3",n:"무너진 종탑",      tier:2, secs:5, lv:10, mon:"mon_gargoyle", monK:0.58, evalCap:70, relicP:.166, needFame:400,  fameClear:15, exp:390, karma:2, relic:{C:.34,B:.36,A:.13}, d:"이름이 알려진 학원부터 문이 열린다"},
+  {id:"d4",n:"소금 바다의 균열", tier:2, secs:6, lv:14, mon:"mon_brine",    monK:0.27, evalCap:82, relicP:.17, needFame:900,  fameClear:20, exp:620, karma:3, relic:{C:.2,B:.38,A:.24,S:.03}, d:"의식 구간이 길어 지구력을 요구"},
+  {id:"d5",n:"용사의 무덤",      tier:3, secs:7, lv:18, mon:"mon_guardian", monK:0.27, evalCap:96, relicP:.172, needFame:2600, fameClear:30, exp:950, karma:4, relic:{B:.3,A:.36,S:.1}, d:"대륙에 이름난 학원만이 문을 연다"}
 ];
 
 /* ============================================================
@@ -1881,10 +1881,10 @@ const TIERS = [
   {id:3,n:"전국 학원제",   fame:2600,d:"전국 대회와 최상위 원정이 열린다"}
 ];
 const CAREERS = [
-  {id:"grand", n:"대용사",        min:118, fame:420, gold:2400, d:"이름이 대륙에 남는다"},
-  {id:"hero",  n:"용사",          min:96,  fame:260, gold:1500, d:"학원의 간판이 된다"},
-  {id:"knight",n:"기사단장",      min:82,  fame:170, gold:1100, d:"왕국 기사단을 지휘한다"},
-  {id:"guard", n:"근위 기사",     min:70,  fame:110, gold:800,  d:"왕성의 신임을 얻는다"},
+  {id:"grand", n:"대용사",        min:200, fame:420, gold:5000, d:"이름이 대륙에 남는다"},
+  {id:"hero",  n:"용사",          min:140, fame:260, gold:3000, d:"학원의 간판이 된다"},
+  {id:"knight",n:"기사단장",      min:100, fame:170, gold:1500, d:"왕국 기사단을 지휘한다"},
+  {id:"guard", n:"근위 기사",     min:80,  fame:110, gold:1000,  d:"왕성의 신임을 얻는다"},
   {id:"adv",   n:"일급 모험가",   min:58,  fame:76,  gold:620,  d:"길드의 중핵이 된다"},
   {id:"tutor", n:"학원 교관",     min:46,  fame:54,  gold:400,  d:"모교에 남아 후배를 가르친다"},
   {id:"escort",n:"상단 호위",     min:34,  fame:30,  gold:300,  d:"교역로를 지킨다"},
@@ -1893,7 +1893,7 @@ const CAREERS = [
 ];
 /* 업보가 쌓인 학생은 평가와 무관하게 이쪽으로 빠진다 (위에서부터 먼저 걸린다) */
 const DARK_CAREERS = [
-  {id:"lord",  n:"마왕 탄생",    karma:1000, min:150, fame:1000, gold:20000, dark:true, d:"학원이 대륙의 재앙을 길러냈다 — 그래도 이름만은 영원히 남는다"},
+  {id:"lord",  n:"마왕 탄생",    karma:1000, min:300, fame:1000, gold:20000, dark:true, d:"학원이 대륙의 재앙을 길러냈다 — 그래도 이름만은 영원히 남는다"},
   {id:"demon", n:"마왕군 합류",  karma:500,  min:-99, fame:-300, gold:0,     dark:true, d:"마왕군의 부름에 응했다"},
   {id:"boss",  n:"암흑가 보스",  karma:300,  min:-99, fame:-150, gold:5000,  dark:true, d:"뒷골목의 왕좌에 앉았다"},
   {id:"thug",  n:"불량배",       karma:150,  min:-99, fame:-30,  gold:1000,  dark:true, d:"배운 검을 엉뚱한 곳에 썼다"}
@@ -5900,7 +5900,14 @@ function leagueRR(n){
    라운드는 실제 시간으로 SEASON_STEP 마다 하나씩 열린다. */
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
+/* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
+const BUILD = "dev";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
+/* 전투 규칙 판번호 —
+   시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
+   그러니 전투 계산이 한 줄이라도 달라지면 같은 시즌인데 순위표가 갈린다.
+   전투에 닿는 수치를 고칠 때마다 이 번호를 올린다. 번호가 어긋난 시즌은 정산하지 않는다. */
+const RULES_VER = 2;
 /* 시즌 번호와 시작 시각은 시계에서 바로 뽑는다 —
    그래야 서로 상의하지 않아도 모두가 같은 번호, 같은 시작 시각을 말하게 된다. */
 /* ── 서버 시계 ──
@@ -5947,7 +5954,13 @@ function seasonSane(d){
     .map(x => (Array.isArray(x) ? x : []).map(String))
     .filter(x => x.length >= 2 && x.length <= LEAGUE_N && x.every(id => t[id]));
   if(!g.length) return null;
-  return {n, seed, start, step, t, g};
+  return {n, seed, start, step, t, g, v: Math.max(0, d.v|0)};
+}
+/* 0 = 맞다 · 1 = 내 게임이 낡았다 · -1 = 시즌이 낡은 판으로 열렸다 */
+function seasonVerGap(SE){
+  if(!SE) return 0;
+  const v = Math.max(0, SE.v|0);
+  return v === RULES_VER ? 0 : (v > RULES_VER ? 1 : -1);
 }
 function seasonGroupIdx(SE, tid){ return SE.g.findIndex(g => g.indexOf(tid) >= 0); }
 function seasonRounds(SE, gi){ return leagueRR(SE.g[gi].length).length; }
@@ -6062,6 +6075,8 @@ function seasonRefresh(){
     U.upto = o; U.cg = U.vg;
     U.C = seasonCompute(SE, U.vg, o);
   }
+  /* 판번호가 어긋나면 이 시즌의 순위표는 사람마다 다르게 나온다 — 점수는 건드리지 않는다 */
+  if(seasonVerGap(SE)){ render(); return; }
   /* 정산은 어느 조를 보고 있든 내 조 기준으로 한다 */
   if(U.gi >= 0 && seasonOpen(SE, U.gi) >= seasonRounds(SE, U.gi)){
     const mineC = U.vg === U.gi ? U.C : seasonCompute(SE, U.gi, seasonRounds(SE, U.gi));
@@ -6075,6 +6090,7 @@ function seasonRefresh(){
    서버의 ls(마지막 정산 시즌)로 중복 반영을 막는다. */
 async function seasonSettleOthers(SE){
   if(!leagueOn() || !SE || !Array.isArray(SE.g)) return;
+  if(seasonVerGap(SE)) return;
   const U = UI.league = UI.league || {};
   if(U.setAll === SE.n || U.setting) return;
   for(let gi=0; gi<SE.g.length; gi++){                 // 아직 안 끝난 조가 있으면 기다린다
@@ -6141,7 +6157,7 @@ async function seasonAuto(prev){
   const gn = Math.ceil(pool.length / LEAGUE_N);
   const g = Array.from({length:gn}, ()=> []);
   pool.forEach((t,i)=> g[Math.min(gn-1, Math.floor(i * gn / pool.length))].push(t.tid));
-  const doc = {n, start: seasonStartOf(n), step: SEASON_STEP, seed: seasonSeedOf(n), g, t: {}};
+  const doc = {n, start: seasonStartOf(n), step: SEASON_STEP, seed: seasonSeedOf(n), g, t: {}, v: RULES_VER};
   pool.forEach(t =>{ doc.t[t.tid] = all[t.tid]; });   // 서버에 올라온 원본을 그대로 얼린다
   try{ await leagueReq("season", "PUT", doc); }
   catch(e){ /* 남이 먼저 올렸다 — 그 쪽을 따르면 된다 */ }
@@ -6303,6 +6319,14 @@ function lgSeasonView(U, L){
       <span style="font-size:12px;color:var(--muted)">조</span>
       ${SE.g.map((g,i)=>`<button class="btn sm ${i===vg?"primary":""}" data-lgg="${i}">${i+1}조${
         i===0? " (상위)":""}${i===U.gi? " · 우리":""}</button>`).join("")}</div>` : "";
+  const gap = seasonVerGap(SE);
+  const verBan = !gap ? "" : gap > 0
+    ? `<div class="empty" style="margin-bottom:10px">게임이 새 판으로 올라갔다 —
+        <b>새로고침</b>을 해야 이 시즌의 경기를 제대로 볼 수 있다.
+        그때까지 아래 순위표는 참고용이고 리그 포인트도 들어오지 않는다.</div>`
+    : `<div class="empty" style="margin-bottom:10px">이 시즌은 예전 판으로 열렸다 —
+        사람마다 순위표가 다르게 나올 수 있어 리그 포인트를 반영하지 않는다.
+        다음 시즌부터는 정상으로 돌아온다.</div>`;
   const banner = out ? `<div class="empty" style="margin-bottom:10px">이번 시즌 명단에 우리 학원이 없다 —
       <b>등록 · 갱신</b>을 해 두면 다음 시즌에 자동으로 들어간다. 그동안은 ${vg+1}조${
       vg===0? "(리그 포인트 상위)":""} 경기를 구경할 수 있다.</div>` : "";
@@ -6323,6 +6347,7 @@ function lgSeasonView(U, L){
   const myRank = vg === U.gi ? (C.table.find(x=>x.tid===mine)||{}).rank : 0;
   return `<section class="panel">
     ${head()}
+    ${verBan}
     <div class="lgbar">
       <div class="lgstat"><span>시즌</span><b class="num">${seasonNo(SE.n)}</b></div>
       <div class="lgstat"><span>진행</span><b class="num">${o} / ${total} 라운드</b></div>
@@ -6528,13 +6553,13 @@ function errPanel(){
     <div class="errbox">${ERRLOG.slice().reverse().map(e=>`<div class="errrow">
       <div class="errmeta">${esc(e.t)} · ${esc(e.where)}</div>
       <div class="errmsg">${esc(e.msg)}</div></div>`).join("")}</div>
-    <p class="opthint">이 내용을 복사해서 보내 주시면 원인을 찾을 수 있습니다.</p>
+    <p class="opthint">이 내용을 복사해서 보내 주시면 원인을 찾을 수 있습니다. (빌드 ${esc(BUILD)})</p>
   </section>`;
 }
 function viewOpt(){
   const a = optFxA();
   return errPanel() + `<section class="panel">
-    <div class="panel-h"><h2>설정</h2><span class="hint">전투 연출과 화면 표시를 조절한다 · 설정은 이 브라우저에 저장된다</span></div>
+    <div class="panel-h"><h2>설정</h2><span class="hint">빌드 ${esc(BUILD)} · 규칙 ${RULES_VER} · 전투 연출과 화면 표시를 조절한다</span></div>
     <div class="optrow">
       <div class="optlab">
         <b>스킬 효과 투명도</b>
@@ -8055,7 +8080,10 @@ function showCeremony(){
         logE(`친선전 — 세 학원의 요청을 모두 거절했다.`,"");
         save(); closeModal(); showCeremony(); };
     }
-    $("#cerOk").onclick = ()=>{
+    const cok = $("#cerOk");
+    if(!cok) modalEscape();                 // 확인 버튼이 없는 팝업 — 빠져나갈 길은 남긴다
+    if(cok) cok.onclick = ()=>{
+      if(c.type==="scout" && S.phase==="winter" && S.scouts) UI.view = "scout";
       if(c.type==="friendly"){
         const F = friendlyState(c.phase||"spring"); F.answered=true; UI.fsel=null;
         const n = F.slots.filter(x=>x!=null).length;
@@ -8111,7 +8139,8 @@ function scoutCeremony(c){
     <div class="opt" style="cursor:default;margin-top:10px">
       <div class="od">유명도가 높을수록 상위 등급 후보가 나타난다. 잠재력은 등급으로 정해지니, 오래 키울 학생일수록 등급을 봐야 한다.
         겨울 ${friendlyOfferWeek("winter")+2}주차에는 <b style="color:var(--text)">친선전</b> 요청도 도착한다.</div>
-    </div>`;
+    </div>
+    <div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">스카우트로 이동</button></div>`;
 }
 function unlockCeremony(c){
   const U = UNLOCKS[c.kind] || UNLOCKS.region;

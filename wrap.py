@@ -1,4 +1,7 @@
+import datetime, re
 src=open('game.html',encoding='utf-8').read()
+STAMP=datetime.datetime.now().strftime('%m%d-%H%M')
+src=re.sub(r'const BUILD = "[^"]*";', 'const BUILD = "%s";' % STAMP, src, count=1)
 i=src.index('<div id="app">')
 head=src[:i]; body=src[i:]
 out=f'''<!doctype html>
@@ -10,4 +13,4 @@ out=f'''<!doctype html>
 {body}
 </body></html>'''
 open('heroschool.html','w',encoding='utf-8').write(out)
-print('wrapped', len(out))
+print('wrapped', len(out), 'build', STAMP)
