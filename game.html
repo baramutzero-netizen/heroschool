@@ -1753,9 +1753,26 @@ const CARD_MARK = {
 };
 const CARD_MARK_W = Object.keys(CARD_MARK).reduce((a,k)=>{ a[k]=CARD_MARK[k].w; return a; }, {});
 function markOf(c){ return (c && c.m && CARD_MARK[c.m]) ? CARD_MARK[c.m] : null; }
+/* 휴식과 원정은 덱이 늘어나도 각각 1/7 로 고정하고,
+   남은 몫(아이템을 다 사면 5/7)을 훈련 카드가 똑같이 나눠 갖는다.
+   합숙 기간처럼 원정이 덱에서 빠지면 그 몫도 훈련 카드로 돌아간다. */
+const CARD_FIXED_P = 1/7;
+const CARD_FIXED = ["rest", "exped"];
+function cardWeights(){
+  const pool = deckPool();
+  const fixed = CARD_FIXED.filter(id=> pool.indexOf(id) >= 0);
+  const train = pool.filter(id=> CARD_FIXED.indexOf(id) < 0);
+  const w = {};
+  if(!train.length){ pool.forEach(id=> w[id] = 1); return w; }
+  fixed.forEach(id=> w[id] = CARD_FIXED_P);
+  const share = Math.max(0, 1 - CARD_FIXED_P*fixed.length) / train.length;
+  train.forEach(id=> w[id] = share);
+  return w;
+}
+function drawCardType(){ return wchoose(cardWeights()); }
 function newCard(){
   S.cardSeq = (S.cardSeq||0)+1;
-  const c = {u:S.cardSeq, t:pick(deckPool())};
+  const c = {u:S.cardSeq, t:drawCardType()};
   if(CARD_COL[c.t] === null) c.c = pick(REST_COLORS);
   if(RNG() < CARD_MARK_P) c.m = wchoose(CARD_MARK_W);
   return c;
@@ -7315,6 +7332,19 @@ function focusPick(st, mode){
   });
   return best;
 }
+/* 라이벌 한 쌍 — 둘의 멘탈리티를 더해서 가장 낮은(또는 높은) 분야를 함께 고른다 */
+function focusPickPair(a, b, mode){
+  const ks = focusKeys().filter(k=> FOCUS_FAC[k]);
+  if(!ks.length) return null;
+  let best = null;
+  ks.forEach(k=>{
+    const v = (a.ment[k]||0) + (b.ment[k]||0);
+    if(!best){ best = {k, v}; return; }
+    if(mode==="weak" ? v < best.v : v > best.v) best = {k, v};
+    else if(v === best.v && RNG()<.5) best = {k, v};
+  });
+  return best;
+}
 /* 부상자 휴식 집중 전환 */
 function setRestInjured(){
   const who = S.students.filter(s=> isInjured(s) && !isRestFocus(s));
@@ -7419,14 +7449,24 @@ function clearFocusAll(){
   toast(`${who.length}명의 집중 지정을 해제했다.`);
 }
 function setFocusAll(mode){
-  const rows = [];
-  S.students.forEach(st=>{
-    const b = focusPick(st, mode);
-    if(!b) return;
+  const rows = [], done = new Set();
+  const put = (st, k, v, pair)=>{
     const before = st.focus;
     delete st._prevFocus;
-    st.focus = b.k;
-    rows.push({st, k:b.k, v:Math.round(b.v), changed: before!==b.k});
+    st.focus = k;
+    rows.push({st, k, v:Math.round(v), changed: before!==k, pair:!!pair});
+    done.add(st.id);
+  };
+  S.students.forEach(st=>{
+    if(done.has(st.id)) return;
+    if(isInjured(st)) return;                 // 부상자는 휴식 집중 그대로 둔다
+    const rv = rivalOf(st);
+    if(rv && !done.has(rv.id) && !isInjured(rv)){
+      const bp = focusPickPair(st, rv, mode);
+      if(bp){ put(st, bp.k, bp.v/2, true); put(rv, bp.k, bp.v/2, true); return; }
+    }
+    const b = focusPick(st, mode);
+    if(b) put(st, b.k, b.v, false);
   });
   if(!rows.length){ toast("지정할 학생이 없다."); return; }
   const label = mode==="weak" ? "약점" : "강점";
@@ -7437,11 +7477,13 @@ function setFocusAll(mode){
   save(); render();
   showModal(`<div class="cerhead"><div class="eyebrow">개인 집중 훈련 · 임의 설정</div>
       <h2 style="font-size:22px;margin-top:2px">${label} 기준 일괄 지정</h2>
-      <p style="color:var(--muted);font-size:13px;margin-top:6px">${rows.length}명의 집중 분야를 각자 가장 ${mode==="weak"?"낮은":"높은"} 멘탈리티로 맞췄다. ${esc(sum)}</p></div>
+      <p style="color:var(--muted);font-size:13px;margin-top:6px">${rows.length}명의 집중 분야를 각자 가장 ${mode==="weak"?"낮은":"높은"} 멘탈리티로 맞췄다.${
+        rows.some(r=>r.pair)? ` <b style="color:var(--bad)">라이벌</b>은 둘의 합을 기준으로 같은 분야에 함께 붙였다.`:""}${
+        S.students.some(isInjured)? ` 부상자는 휴식 집중 그대로 두었다.`:""} ${esc(sum)}</p></div>
     <div class="scroll-x" style="max-height:340px;overflow-y:auto;margin-top:12px">
       <table class="tb"><thead><tr><th>학생</th><th>학년</th><th>집중 분야</th><th>현재 수치</th><th>시설</th></tr></thead><tbody>
       ${rows.slice().sort((a,b)=> a.v-b.v || a.st.name.localeCompare(b.st.name)).map(r=>`<tr>
-        <td>${dnH(r.st)}${r.changed?"":' <span style="color:var(--dim);font-size:11px">변경 없음</span>'}</td>
+        <td>${dnH(r.st)}${r.pair? ' <span class="tag" style="color:var(--bad);border-color:var(--bad)">라이벌</span>':""}${r.changed?"":' <span style="color:var(--dim);font-size:11px">변경 없음</span>'}</td>
         <td class="num">${r.st.year}</td>
         <td><b style="color:var(--brass)">${MENTAL.find(m=>m.k===r.k).n}</b></td>
         <td class="num">${r.v}</td>
