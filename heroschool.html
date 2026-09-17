@@ -1642,7 +1642,7 @@ function makeRelic(grade){
 /* ============================================================
    시설 · 아이템 · 트레이닝
    ============================================================ */
-const FACIL_VER = 2;          // 시설 등급 체계 판번호 (옛 세이브 환산용)
+const FACIL_VER = 3;          // 시설 등급 체계 판번호 (옛 세이브 환산용)
 /* 훈련 시설 — Lv.0 에서 시작해 70 까지, 한 단계마다 효율 +2% (만렙 ×2.4)
    base 는 첫 한 단계의 값이고 이후 단계^pw 로 늘어난다. 만렙 총액은 장서고 약 8만 · 나머지 약 6.5만 */
 const FAC_TRAIN = {start:0, max:70, step:.02, pw:.6};
@@ -1650,7 +1650,7 @@ const FACILITIES = {
   gym:    Object.assign({n:"단련장",   d:"지구력 단련",               base:115},  FAC_TRAIN),
   hall:   Object.assign({n:"수련관",   d:"적극성 · 팀워크 실습",      base:115},  FAC_TRAIN),
   chapel: Object.assign({n:"묵상실",   d:"정신력 수양",               base:115},  FAC_TRAIN),
-  infirm: {n:"의무실",   d:"매주 컨디션 자연 회복 (등급당 +1)",   base:1000},
+  infirm: {n:"의무실",   d:"매주 컨디션 자연 회복 (단계당 +1)",   base:1000, start:0, max:7},
   library:Object.assign({n:"장서고",   d:"침착성 연구 · 천재성 성장 보정", base:140}, FAC_TRAIN),
   arena:  Object.assign({n:"대련장",   d:"실전 형식 훈련",            base:115},  FAC_TRAIN),
   counsel:{n:"상담실",   d:"상담에서 지도력·정보력·호소력 보정", base:1000, start:0, max:6}
@@ -3061,7 +3061,7 @@ function newGame(name){
     tier:1, fame:0, gold:3000, sp:0,
     year:1, phase:"spring", week:0,
     students:[], graduates:[], log:[],
-    facil:{gym:0,hall:0,chapel:0,infirm:1,library:0,arena:0,counsel:0}, facilV:FACIL_VER,
+    facil:{gym:0,hall:0,chapel:0,infirm:0,library:0,arena:0,counsel:0}, facilV:FACIL_VER,
     items:{}, church:{}, epiUsed:[], epiLog:[], focusPrev:null, focusHist:[], books:0, scouts:null, incoming:[], history:[], opts:{report:true, fxA:FX_A_DEFAULT}, mission:newMission(), relicPool:[], skillPool:[],
     lastTour:null
   };
@@ -3234,7 +3234,7 @@ const FOCUS_FAC = {team:"arena",aggr:"hall",calm:"library",will:"chapel",stam:"g
 const FOCUS_REST = "rest";
 const FOCUS_REST_GAIN = 18;    // 휴식 집중 — 주당 컨디션 회복 (강장제 ×1.4 · 의무실 +등급)
 function restFocusGain(){
-  return Math.round(FOCUS_REST_GAIN * (S.items && S.items.tonic ? 1.4 : 1)) + (S.facil.infirm-1);
+  return Math.round(FOCUS_REST_GAIN * (S.items && S.items.tonic ? 1.4 : 1)) + (S.facil.infirm|0);
 }
 function isRestFocus(st){ return st && st.focus===FOCUS_REST; }
 function focusOf(st){
@@ -3280,7 +3280,7 @@ function trainStudent(st, tr, success, opt){
   let c = tr.cond * (success?1:.5);
   if(tr.rest && S.items.tonic) c *= 1.4;
   setCond(st, st.cond - c);
-  if(!opt.noRecover) setCond(st, st.cond + (S.facil.infirm-1)*(opt.recMul||1));
+  if(!opt.noRecover) setCond(st, st.cond + (S.facil.infirm|0)*(opt.recMul||1));
   return notable;
 }
 function activeStudents(){ return S.students; }
@@ -3293,7 +3293,7 @@ function isCampWeek(){ return S.phase==="summer"; }   // 여름 방학 — 6주 
 /* 휴식 계열 스케줄의 회복량 (이미 요일 배율이 반영된 훈련을 받는다) */
 function restWeekGain(tr){
   if(!tr || !tr.rest) return 0;
-  return -tr.cond * (S.items && S.items.tonic ? 1.4 : 1) + (S.facil.infirm-1)*DAY_MUL;
+  return -tr.cond * (S.items && S.items.tonic ? 1.4 : 1) + (S.facil.infirm|0)*DAY_MUL;
 }
 function doRestFocus(s, tr){
   setCond(s, s.cond + Math.max(restFocusGain()*DAY_MUL, restWeekGain(tr)));
@@ -5739,7 +5739,7 @@ function viewPlan(){
           <div class="on" style="color:var(--ok)">휴식 집중<span class="price">${who.length}명</span></div>
           <div class="od">${who.map(s=>`${dnH(s)} ${Math.round(s.cond)}`).join(" · ")}</div>
           <div class="od" style="color:var(--dim)">스케줄 불참 · 매주 컨디션 +${restFocusGain()}
-            <span style="color:var(--dim)">(기본 ${FOCUS_REST_GAIN}${S.items&&S.items.tonic?" · 강장제 ×1.4":""}${S.facil.infirm>1?` · 의무실 +${S.facil.infirm-1}`:""})</span></div></div>`; })()}
+            <span style="color:var(--dim)">(기본 ${FOCUS_REST_GAIN}${S.items&&S.items.tonic?" · 강장제 ×1.4":""}${S.facil.infirm>0?` · 의무실 +${S.facil.infirm|0}`:""})</span></div></div>`; })()}
       ${S.students.filter(s=>s.focus==="free").length? `<div class="opt locked" style="cursor:default">
         <div class="on" style="color:var(--dim)">미지정<span class="price">${S.students.filter(s=>s.focus==="free").length}명</span></div>
         <div class="od">${S.students.filter(s=>s.focus==="free").map(s=>dnH(s)).join(" · ")}</div></div>`:""}
@@ -5916,7 +5916,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0917-1647";
+const BUILD = "0917-1657";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -6749,7 +6749,7 @@ function viewFacil(){
         const f=FACILITIES[k], c=facCost(k), lv=S.facil[k]||0, mx=facMax(k), full=lv>=mx;
         const eff = k==="counsel"
           ? (()=>{ const b=cslFacBonus(); return `현재 지도력 +${b.lead} · 정보력 +${b.info} · 호소력 +${b.net}`; })()
-          : k==="infirm" ? `현재 매주 +${lv-1}` : `현재 효율 ×${facEff(k).toFixed(2)}`;
+          : k==="infirm" ? `현재 매주 +${lv}` : `현재 효율 ×${facEff(k).toFixed(2)}`;
         return `<button class="opt" data-fac="${k}" ${S.gold<c||full?"disabled":""}>
           <div class="on">${f.n} <span class="tag">Lv.${lv} / ${mx}</span><span class="price">${full?"최대":fmt(c)+" G"}</span></div>
           <div class="od">${facDesc(k)} · ${eff}</div>
@@ -9407,14 +9407,18 @@ function boot(){
   S.facil = S.facil||{};
   /* 훈련 시설이 1~8 (등급당 20%) 에서 0~70 (단계당 2%) 로 바뀌었다 —
      같은 효율이 나오도록 (등급-1)×10 으로 환산한다. Lv.8 ×2.4 → Lv.70 ×2.4 */
-  if((S.facilV|0) < FACIL_VER){
+  if((S.facilV|0) < 2){
     Object.keys(FACILITIES).forEach(k=>{
       if(facMax(k) !== 70) return;
       const old = S.facil[k];
       if(typeof old === "number") S.facil[k] = clamp(Math.round((old - 1) * 10), 0, 70);
     });
-    S.facilV = FACIL_VER;
   }
+  /* 의무실도 1~8 에서 0~7 로 번호만 옮겼다 — 회복량(Lv.8 = +7)은 그대로다 */
+  if((S.facilV|0) < 3 && typeof S.facil.infirm === "number"){
+    S.facil.infirm = clamp(S.facil.infirm - 1, 0, 7);
+  }
+  if((S.facilV|0) < FACIL_VER) S.facilV = FACIL_VER;
   Object.keys(FACILITIES).forEach(k=>{ if(typeof S.facil[k]!=="number") S.facil[k] = facStart(k); });
   teamsOf(); cleanTeams(); cleanBonds();
   if(S.plan) delete S.plan;   // 주 단위 스케줄은 카드 덱으로 대체됐다
