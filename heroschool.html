@@ -3205,6 +3205,36 @@ function dayRun(tr0, bonus, day, opt){
 }
 
 /* ---------- 주간 실행기 ---------- */
+/* 컨디션이 이미 충분한데 휴식 집중으로 묶여 있는 학생 —
+   그대로 진행하면 한 주 내내 훈련을 못 받는다. 한 번 물어본다. */
+function restWasteList(){
+  return (S.students||[]).filter(s=> isRestFocus(s) && !isInjured(s) && s.cond >= COND_HI);
+}
+function restWasteModal(){
+  const list = restWasteList();
+  showModal(`<h2 style="font-size:19px">휴식 집중인 학생이 있다</h2>
+    <p style="color:var(--muted);font-size:13px;margin:8px 0 12px">
+      아래 ${list.length}명은 컨디션이 <b style="color:var(--ok)">${COND_HI}</b> 이상인데도 <b>휴식 집중</b>이라
+      이번 주 훈련을 받지 않는다. 원정에도 나가지 않는다.</p>
+    <div class="condbox">${list.map(s=>`<div class="condrow">
+      <span class="cn">${dnH(s)}</span>
+      <span class="cv">${JOBS[s.job].name} · ${s.year}학년</span>
+      <span class="cf num" style="color:var(--ok);white-space:nowrap">컨디션 ${Math.round(s.cond)}</span></div>`).join("")}</div>
+    <div class="btnrow" style="margin-top:14px">
+      <button class="btn primary" id="rwFix">자율 훈련으로 바꾸고 진행</button>
+      <button class="btn" id="rwGo">그대로 진행</button>
+      <button class="btn ghost" data-close>돌아가기</button>
+    </div>
+    <p style="font-size:11.5px;color:var(--dim);margin:8px 0 0">집중은 <b>학생</b> 탭에서 개별로도 바꿀 수 있다.</p>`, ()=>{
+    $("#rwFix").onclick = ()=>{
+      const n = restWasteList();
+      n.forEach(s=> s.focus = "free");
+      logE(`휴식 집중 해제 — ${n.map(x=>dnH(x)).join(", ")} (컨디션 회복 완료)`, "good");
+      UI.skipRestWarn = true; save(); closeModal(); render(); runWithReport();
+    };
+    $("#rwGo").onclick = ()=>{ UI.skipRestWarn = true; closeModal(); render(); runWithReport(); };
+  });
+}
 function weekRunGo(quick){
   const ph = PHASES[S.phase];
   if(S.week >= ph.weeks){
@@ -3218,6 +3248,7 @@ function weekRunGo(quick){
     else { toast("월요일부터 금요일까지 다섯 칸을 모두 채워야 한다."); return; }
   }
   if(!quick && S.master.pts>0 && !UI.skipPtWarn){ masterPointModal(1); return; }
+  if(!quick && !UI.skipRestWarn && restWasteList().length){ restWasteModal(); return; }
   DAYLOG = []; RUN = {expeds:[]};
   S.students.forEach(x=>{ x._att=0; x._miss=0; x._exp=0; x._up=0; });
   focusHistPush();
@@ -3253,6 +3284,7 @@ function weekRunStepGo(){
 function weekRunEnd(){
   const R = UI.wrun; if(!R) return;
   UI.wrun = null;
+  UI.skipRestWarn = false;        // 다음 주에는 다시 물어본다
   // 쓴 카드는 버리고 새로 다섯 장
   S.slots = Array(WEEK_DAYS).fill(null);
   tickInjury();
@@ -6717,8 +6749,9 @@ function friendlyCeremony(c){
 }
 function bondCeremony(c){
   const isRv = c.type==="rival";
+  /* 이 자리에서는 이명을 붙이지 않는다 — 둘의 관계가 주인공이지 칭호가 아니다 */
   const card = st=>`<div class="opt" style="cursor:default">
-    <div class="on">${dnH(st)} ${persTag(st)}${gradeTag(st.grade)}${roleTag(st.job)}<span class="price">${st.year}학년</span></div>
+    <div class="on">${esc(st.name)} ${persTag(st)}${gradeTag(st.grade)}${roleTag(st.job)}<span class="price">${st.year}학년</span></div>
     <div class="od">Lv.${st.level} · 전투력 ${fmt(power(st))}${isRv? ` · 집중 ${st.focus==="free"?"지정 없음":MENTAL.find(m=>m.k===st.focus).n}`:""}</div>
   </div>`;
   return `<div class="cerhead">
