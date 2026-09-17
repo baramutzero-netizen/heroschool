@@ -14,7 +14,7 @@ out=f'''<!doctype html>
 <meta name="theme-color" content="#13141b">
 <link rel="icon" href="{favicon}">
 <meta property="og:type" content="website">
-<meta property="og:title" content="용사 학원 운영기">
+<meta property="og:title" content="학원이 망했다">
 <meta property="og:description" content="{desc}">
 <meta property="og:image" content="og.png">
 <meta name="twitter:card" content="summary_large_image">
