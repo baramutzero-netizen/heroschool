@@ -192,12 +192,14 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
   line-height:1.35;word-break:keep-all}
 .card .fxl b{font-family:"IBM Plex Mono",ui-monospace,monospace;letter-spacing:-.5px;font-weight:700}
 .card .fxl.bad{color:var(--bad)}
-.card .ceff{font-size:10px;color:var(--dim);font-family:"IBM Plex Mono",ui-monospace,monospace;flex:none;
+.card .ceff{font-size:11.5px;color:var(--muted);font-family:"IBM Plex Mono",ui-monospace,monospace;flex:none;
   border-top:1px solid var(--line-soft);padding-top:4px}
 .dslot .card{border-radius:0 0 4px 4px;border:none;border-top:1px solid var(--cc);min-height:0;flex:1;
   box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--cc) 35%,transparent)}
 .dslot .card:hover{transform:none;box-shadow:inset 0 0 0 1px var(--cc)}
 .handzone.over{outline:2px dashed var(--brass);outline-offset:6px;border-radius:5px}
+/* 카드 위에서 시작한 손짓은 전부 드래그로 쓴다 (줄이 스크롤되지 않으므로) */
+.card{touch-action:none}
 .cardlegend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11px;color:var(--dim);margin-top:10px}
 .cardlegend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:-1px}
 .marklegend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11px;color:var(--dim);margin-top:5px;align-items:center}
@@ -680,19 +682,26 @@ table.tb tr:hover td{background:var(--surface2)}
    ========================================================== */
 @media (max-width:640px){
   /* ── ① 전투 — 3열을 유지한 축소판. 한 화면에 양 팀 여섯이 다 들어온다 ── */
-  .brow{grid-template-columns:1fr;gap:2px}
-  .browlab{text-align:left;padding-top:0;font-size:10px}
+  /* 전열·후열 라벨을 왼쪽에 세워 줄 하나를 아낀다 */
+  .brow{grid-template-columns:22px 1fr;gap:3px;align-items:stretch}
+  .browlab{font-size:9.5px;padding-top:0;writing-mode:vertical-rl;text-orientation:upright;
+    letter-spacing:-1px;justify-content:center;align-items:center;opacity:.75}
   .units{grid-template-columns:repeat(3,1fr);gap:5px}
   .units.solo{grid-template-columns:1fr}
   .side{padding:7px 6px}
   .side h4{font-size:11px;margin-bottom:5px}
   .unit{padding:5px 4px;font-size:10px}
-  .unit .sprwrap{height:54px;margin:-2px 0 0}
+  .unit .sprwrap{height:46px;margin:-3px 0 0}
   .unit .un + div{display:none}                /* Lv·열 표시 — 줄 라벨로 알 수 있다 */
   .unit .fx{display:none}                      /* 버프 칩은 로그로 확인 */
-  .unit .sprwrap .spr{transform:scale(.55);transform-origin:bottom center}
-  .unit .sprwrap.mon{min-height:150px}
-  .unit .sprwrap.mon .monspr{transform:scale(.6);transform-origin:bottom center}
+  .unit .sprwrap .spr{transform:scale(.48);transform-origin:bottom center}
+  /* 대형 몬스터 — 이미지와 이펙트를 같은 비율로 줄여야 타격 위치가 맞는다 */
+  .unit .sprwrap.mon{min-height:124px;margin:1px 0 3px}
+  .unit .sprwrap.mon .monspr{width:auto !important;height:124px !important;transform:none}
+  .unit .fxspr{width:62px !important;height:62px !important;top:0}
+  .unit:has(.sprwrap.mon) .fxspr{width:124px !important;height:124px !important;top:2px}
+  .unit .popwrap{top:4px}
+  .unit .pop{font-size:13px}
   .unit .un{font-size:10.5px;gap:3px;line-height:1.25;flex-wrap:wrap}
   .unit .un .tag{display:none}          /* 직업은 스프라이트로 알아본다 */
   .unit .hpb{height:5px;margin-top:3px}
@@ -709,17 +718,34 @@ table.tb tr:hover td{background:var(--surface2)}
   /* 피해량 표는 기본으로 접는다 — 아래 버튼으로 펼친다 */
   .modal.btm .bstats,.bwrap>.bstats{display:none}
   .bwrap>.bstats.on{display:flex;flex-direction:column}
-  .bwrap>.blogwrap{height:146px}
+  .bwrap>.blogwrap{height:92px;min-height:0}
+  .blog{padding:6px 8px;font-size:11px;gap:2px;line-height:1.4}
   .btbar{gap:5px}
   .btbar .btn{padding:7px 9px;font-size:12px}
   .btbar .btn.sm{padding:7px 8px}
 
-  /* ── ② 스케줄 — 요일 다섯 칸과 손패를 가로 스크롤 한 줄로 ── */
-  .dayrow,.handrow{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;
-    scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
-  .dayrow>*,.handrow>*{flex:0 0 132px;scroll-snap-align:start}
-  .handrow{gap:6px}
-  .handrow>*{flex:0 0 116px}
+  /* ── ② 스케줄 — 카드를 절반 크기로 줄여 한 화면에 다 넣는다.
+        요일 다섯 칸은 한 줄, 손패 아홉 장은 다섯 칸 격자로 두 줄이 된다. ── */
+  .dayrow{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+  .handrow{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:12px}
+  .dslot{min-height:0;border-radius:4px}
+  .dslot > .dh{font-size:10px;padding:3px 0 2px;letter-spacing:0}
+  .dslot .dempty{font-size:10px;line-height:1.3;padding:6px 2px}
+  .card{min-height:0;padding:4px 4px 3px;gap:2px}
+  .card .ctop{font-size:9px;gap:3px}
+  .card .cdot{width:6px;height:6px}
+  .card .cname{font-size:11px;line-height:1.25;letter-spacing:-.3px;word-break:keep-all}
+  .card .cdesc{display:none}                 /* 설명은 눌러서 툴팁으로 */
+  .card .cfx{margin-top:3px;gap:0}
+  .card .fxl{font-size:9px;line-height:1.3}
+  .card .ceff{font-size:10px;padding-top:3px}
+  .card .cmark{width:15px;height:15px;font-size:9px}
+  .dchain{font-size:9px;padding:0 5px}
+  /* 손패 머리줄 · 안내 문단은 폰에서 자리를 덜 차지하게 */
+  .eyebrow{font-size:10.5px;gap:6px !important;flex-wrap:wrap}
+  .eyebrow .btn.sm{padding:5px 8px;min-height:30px;font-size:11px}
+  .eyebrow .hint{flex-basis:100%;margin:0}
+  .opthint,.panel > p{font-size:11px;line-height:1.55}
   .panel{padding:12px}
   .panel-h{gap:6px}
   .panel-h > *{min-width:0}
@@ -7609,7 +7635,22 @@ function bindView(){
     UI.slot=null; save(); render();
   });
   // 드래그 배치 — 명부 카드 · 배치 자리
-  dragCfg(v, UI.view!=="team" ? null : {
+  /* 스케줄 카드 — HTML5 드래그는 터치에서 동작하지 않으므로 포인터 드래그로 따로 연결한다 */
+  const PLAN_DRAG = {
+    from: "[data-card]",
+    to:   "[data-slot],[data-handzone]",
+    payload: el=>{ const u = +el.dataset.card; return u ? {u} : null; },
+    drop: (pl, tg)=>{
+      if(!tg || !pl) return;
+      if(tg.dataset.handzone){                   // 손패로 끌어내면 칸을 비운다
+        const j = (S.slots||[]).findIndex(c=> c && c.u===pl.u);
+        if(j>=0){ slotClear(j); save(); render(); }
+        return;
+      }
+      slotPut(pl.u, +tg.dataset.slot); save(); render();
+    }
+  };
+  dragCfg(v, UI.view==="plan" ? PLAN_DRAG : UI.view!=="team" ? null : {
     from: "[data-assign2],[data-slot]",
     to:   "[data-slot],.roster",
     payload: el=>{
@@ -8426,7 +8467,11 @@ function dragBind(root){
     if(!st) return;
     const c = cfg(); if(!c){ clear(); return; }
     if(!st.started){
-      if(Math.abs(e.clientX-st.x) + Math.abs(e.clientY-st.y) < TH) return;
+      const dx = Math.abs(e.clientX-st.x), dy = Math.abs(e.clientY-st.y);
+      if(dx + dy < TH) return;
+      /* axis:"v" — 가로 스크롤되는 줄에서는 세로로 끌 때만 카드를 집는다.
+         가로로 끌면 손을 떼어 브라우저가 줄을 스크롤하게 둔다. */
+      if(c.axis === "v" && dx > dy){ st = null; return; }
       st.started = true;
       const r = st.el.getBoundingClientRect();
       const g = st.el.cloneNode(true);
