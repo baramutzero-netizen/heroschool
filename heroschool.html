@@ -154,7 +154,8 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 .st .k{color:var(--muted)}
 .st .v{margin-left:auto;font-weight:600}
 .st .up{color:var(--ok);font-size:11px}
-.mentbar{height:4px;flex:1;background:var(--surface2);border-radius:2px;overflow:hidden;max-width:54px}
+.mentbar{height:4px;flex:1;background:var(--surface2);border-radius:2px;overflow:hidden;max-width:54px;position:relative}
+.mentbar.full > i{background:var(--brass)}
 .mentbar > i{display:block;height:100%;background:var(--indigo)}
 .mentbar.over > i{background:var(--brass)}
 .mentv.over{color:var(--brass)}
@@ -2308,12 +2309,24 @@ function gradUnit(g){
     grade:r.grade, name:r.name, aff:(r.aff||[]).map(a=>({k:a.k,n:a.n,v:a.v}))}));
   return st;
 }
+/* 등급별 잠재력 구간 — 넓힌 뒤에도 옛 기록을 옮길 수 있게 이전 구간을 함께 둔다 */
+const POT_RANGE = {D:[25,39], C:[40,54], B:[55,69], A:[70,84], S:[85,99]};
+const POT_RANGE_OLD = {D:[10,20], C:[21,40], B:[41,60], A:[61,80], S:[81,99]};
+const POT_VER = 1;
+/* 등급 안에서의 상대 위치를 지키며 새 구간으로 옮긴다 */
+function potMigrate(o){
+  if(!o || !o.ment || typeof o.ment.pot !== "number") return;
+  const a = POT_RANGE_OLD[o.grade] || POT_RANGE_OLD.C;
+  const b = POT_RANGE[o.grade] || POT_RANGE.C;
+  const t = (a[1] > a[0]) ? clamp((o.ment.pot - a[0]) / (a[1] - a[0]), 0, 1) : .5;
+  o.ment.pot = clamp(Math.round(b[0] + t*(b[1]-b[0])), 1, 99);
+  if(o.cap) delete o.cap;          // 한계는 새 잠재력으로 다시 정해진다
+}
 function newStudent(year, grade, job){
   grade = grade || wchoose({D:30,C:40,B:22,A:7,S:1});
   job = job || pick(JOB_KEYS);
   const g = {D:0,C:1,B:2,A:3,S:4}[grade];
   const m = {};
-  const POT_RANGE = {D:[10,20], C:[21,40], B:[41,60], A:[61,80], S:[81,99]};
   MENTAL.forEach(x=>{
     if(x.k==="pot"){ const r = POT_RANGE[grade]||POT_RANGE.D; m.pot = ri(r[0], r[1]); return; }
     m[x.k] = Math.round(clamp(rnd(8,20) + g*rnd(3.5,6.5),5,95));
@@ -2326,12 +2339,13 @@ function newStudent(year, grade, job){
     pers: wchoose(PERSONA_KEYS.reduce((a,k)=>{ a[k]=PERSONA[k].w; return a; }, {}))
   };
   applyPersona(st);
+  rollMentCaps(st);                 // 항목별 한계는 입학할 때 정해진다
 
   // 상급생은 이미 어느 정도 성장해 있다
   const preLv = year===1?0 : year===2? ri(4,7) : ri(9,14);
   for(let i=0;i<preLv;i++) levelUp(st,true);
   if(year>1){
-    MENTAL.forEach(x=>{ if(x.k!=="pot") st.ment[x.k]=Math.round(clamp(st.ment[x.k]+ (year-1)*rnd(6,15),5,mentMaxOf(st))); });
+    MENTAL.forEach(x=>{ if(x.k!=="pot") st.ment[x.k]=Math.round(clamp(st.ment[x.k]+ (year-1)*rnd(6,15),5,mentCapOf(st, x.k))); });
     st.fame = Math.round((year-1)*rnd(10,45));
   }
   const slots = relicSlots(st);
@@ -2624,17 +2638,45 @@ function epithetCeremony(c){
 
 /* 전투 스탯 산출: 직업 기본 + 레벨 성장(잠재력 연동) + 유물 */
 /* 멘탈리티 상한 — 99를 넘길 수 있지만 잠재력이 받쳐줘야 하고, 넘은 몫은 절반만 힘이 된다 */
-const MENT_MAX    = 150;   // 절대 상한
+const MENT_MAX    = 129;   // 절대 상한
 const MENT_SOFT   = 99;    // 여기까지가 본래 구간
 const MENT_OVER_K = .5;    // 초과분 효율
 const MENT_OVER_G = .35;   // 99를 넘어선 뒤의 성장 속도
-/* 성장 곡선의 기준선 — 이 값을 넘어서면 상승이 눈에 띄게 느려진다 */
-function mentGrowCap(st){ return 45 + ((st && st.ment && st.ment.pot)||0)*.679; }
-/* 이 학생이 실제로 닿을 수 있는 천장 */
-function mentMaxOf(st){
-  const pot = (st && st.ment && st.ment.pot)||0;
-  return clamp(Math.round(mentGrowCap(st) + pot/99*38), 60, MENT_MAX);
+/* 항목별 한계 — 잠재력에 성격 보정에 따른 폭을 얹어 입학할 때 정해진다 */
+const MENT_CAP_BAND = {"5":[21,30], "0":[11,20], "-5":[1,10], "-10":[0,0]};
+function mentCapBand(mod){
+  const b = MENT_CAP_BAND[String(mod|0)];
+  if(b) return b;
+  if(mod >= 5)  return MENT_CAP_BAND["5"];
+  if(mod <= -10) return MENT_CAP_BAND["-10"];
+  if(mod < 0)   return MENT_CAP_BAND["-5"];
+  return MENT_CAP_BAND["0"];
 }
+function mentCapRoll(st, k){
+  const mod = ((personaOf(st).m)||{})[k] || 0;
+  const b = mentCapBand(mod);
+  const pot = (st && st.ment && st.ment.pot)||0;
+  return clamp(Math.round(pot + ri(b[0], b[1])), 1, MENT_MAX);
+}
+/* 한계는 학생마다 한 번만 굴린다 — 옛 기록은 처음 열릴 때 그 자리에서 정해 준다 */
+function rollMentCaps(st, only){
+  if(!st) return;
+  st.cap = st.cap || {};
+  MENTAL.forEach(m=>{
+    if(m.fixed) return;
+    if(only && only.indexOf(m.k) < 0) return;
+    const v = mentCapRoll(st, m.k);
+    st.cap[m.k] = Math.max(v, Math.round((st.ment && st.ment[m.k]) || 0));   // 이미 넘어선 값은 깎지 않는다
+  });
+  return st.cap;
+}
+function mentCapOf(st, k){
+  if(!st || !k || k==="pot") return MENT_MAX;
+  if(!st.cap || st.cap[k]==null) rollMentCaps(st, [k]);
+  return clamp((st.cap && st.cap[k])|0, 1, MENT_MAX);
+}
+/* 성장 곡선의 기준선 — 한계에 가까워질수록 상승이 느려진다 */
+function mentGrowCap(st, k){ return Math.max(20, mentCapOf(st, k) - 10); }
 /* 전투에 실제로 먹히는 값 — 99 위는 절반으로 친다 */
 function mentEffVal(v){
   v = clamp(v||0, 0, MENT_MAX);
@@ -3466,12 +3508,12 @@ function trainStudent(st, tr, success, opt){
   const partM = success ? 1 : TRAIN_FAIL_MUL;
   let notable = null;
   for(const k in gains){
-    const cap = mentGrowCap(st);          // 잠재력 81 → 기준선 100
+    const top = mentCapOf(st, k);         // 이 학생의 이 항목 한계
     const cur = st.ment[k];
-    const room = cur >= mentMaxOf(st) ? 0 : clamp(1 - (cur-10)/Math.max(20,cap), .09, 1);
+    const room = cur >= top ? 0 : clamp(1 - (cur-10)/mentGrowCap(st, k), .09, 1);
     let d = 2.4*gains[k]*potM*condM*leadM*fM*partM*room*rnd(.7,1.35)*(opt.mul||1);
     if(cur >= MENT_SOFT) d *= MENT_OVER_G;   // 한계를 넘어선 구간은 더디다
-    st.ment[k] = clamp(st.ment[k] + d, 1, mentMaxOf(st));
+    st.ment[k] = clamp(st.ment[k] + d, 1, top);
     if(d>.9 && (!notable || d>notable.d)) notable={k,d};
   }
   if(!opt.noExp){
@@ -4788,14 +4830,14 @@ function answerCounsel(qi, oi){
   const ok = fit || byLead || byTrust;
   let gain = null, dbl = false;
   if(ok){
-    const ks = MENTAL.filter(m=>!m.fixed && st.ment[m.k] < mentMaxOf(st));
+    const ks = MENTAL.filter(m=>!m.fixed && st.ment[m.k] < mentCapOf(st, m.k));
     if(ks.length){
       const m = pick(ks);
       let d = ri(2,4);
       // 호소력 — 상승폭 2배
       if(RNG() < cslNetP()){ d *= 2; dbl = true; }
       const before = st.ment[m.k];
-      st.ment[m.k] = clamp(before + d, 1, mentMaxOf(st));
+      st.ment[m.k] = clamp(before + d, 1, mentCapOf(st, m.k));
       gain = {k:m.k, n:m.n, d: +(st.ment[m.k]-before).toFixed(2)};
     }
   }
@@ -5813,10 +5855,13 @@ function studentDetail(s){
           <div class="on"${(s.pers||"plain")==="genius"?' style="color:var(--brass)"':""}>${personaOf(s).n}<span class="price">${esc(personaText(s.pers||"plain"))}</span></div>
           <div class="od">${esc(personaOf(s).d)}</div>
         </div>
-        <div class="eyebrow" style="margin-bottom:6px">멘탈리티 · 성장 <span style="color:var(--dim)">— 잠재력이 허락하는 한계 ${mentMaxOf(s)}</span></div>
-        ${MENTAL.map(m=>`<div class="st"><span class="k">${m.n}</span>
-          <span class="mentbar${s.ment[m.k]>MENT_SOFT?" over":""}"><i style="width:${Math.min(100, s.ment[m.k])}%"></i></span>
-          <span class="v num mentv${s.ment[m.k]>MENT_SOFT?" over":""}">${Math.round(s.ment[m.k])}</span></div>`).join("")}
+        <div class="eyebrow" style="margin-bottom:6px">멘탈리티 · 성장 <span style="color:var(--dim)">— 항목마다 한계가 다르다 (잠재력 + 성격)</span></div>
+        ${MENTAL.map(m=>{
+          const v = s.ment[m.k], top = m.fixed? 0 : mentCapOf(s, m.k), full = !m.fixed && v >= top;
+          return `<div class="st"${full? ` title="한계 ${top} — 더 오르지 않는다"`:""}><span class="k">${m.n}</span>
+          <span class="mentbar${v>MENT_SOFT?" over":""}${full?" full":""}"><i style="width:${Math.min(100, v)}%"></i></span>
+          <span class="v num mentv${(v>MENT_SOFT||full)?" over":""}">${Math.round(v)}</span></div>`;
+        }).join("")}
         <div style="margin-top:10px">
           <div class="eyebrow" style="margin-bottom:4px">집중 트레이닝 분야</div>
           <select id="focusSel" style="width:100%;background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:5px">
@@ -6354,7 +6399,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0918-1937";
+const BUILD = "0918-2022";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -6873,10 +6918,13 @@ const SAGE_COST = 50, SAGE_PERS = "genius";
 function setPersona(st, key){
   const nw = PERSONA[key]; if(!st || !nw) return false;
   const old = PERSONA[st.pers||"plain"] || PERSONA.plain;
-  const cap = mentMaxOf(st);
-  Object.keys(old.m||{}).forEach(k=>{ st.ment[k] = clamp(st.ment[k] - old.m[k], 1, cap); });
-  Object.keys(nw.m||{}).forEach(k=>{ st.ment[k] = clamp(st.ment[k] + nw.m[k], 1, cap); });
+  Object.keys(old.m||{}).forEach(k=>{ st.ment[k] = clamp(st.ment[k] - old.m[k], 1, mentCapOf(st, k)); });
+  Object.keys(nw.m||{}).forEach(k=>{ st.ment[k] = clamp(st.ment[k] + nw.m[k], 1, MENT_MAX); });
+  /* 보정이 달라진 항목만 한계를 다시 굴린다 */
+  const moved = MENTAL.filter(m=> !m.fixed && (((old.m||{})[m.k]||0) !== ((nw.m||{})[m.k]||0))).map(m=>m.k);
   st.pers = key;
+  if(moved.length) rollMentCaps(st, moved);
+  MENTAL.forEach(m=>{ if(!m.fixed) st.ment[m.k] = clamp(st.ment[m.k], 1, mentCapOf(st, m.k)); });
   return true;
 }
 function sageTargets(){ return (S.students||[]).filter(x=> (x.pers||"plain") !== SAGE_PERS); }
@@ -10329,6 +10377,13 @@ function boot(){
     S.facil.expand = Math.max(S.facil.expand|0, lv);
   }
   if((S.facilV|0) < FACIL_VER) S.facilV = FACIL_VER;
+  /* 잠재력 구간이 넓어졌다 — 재학생·신입 예정자·졸업생을 모두 옮긴다 */
+  if((S.potV|0) < POT_VER){
+    (S.students||[]).forEach(potMigrate);
+    (S.incoming||[]).forEach(potMigrate);
+    (S.graduates||[]).forEach(potMigrate);
+    S.potV = POT_VER;
+  }
   Object.keys(FACILITIES).forEach(k=>{ if(typeof S.facil[k]!=="number") S.facil[k] = facStart(k); });
   teamsOf(); cleanTeams(); cleanBonds();
   if(S.plan) delete S.plan;   // 주 단위 스케줄은 카드 덱으로 대체됐다
