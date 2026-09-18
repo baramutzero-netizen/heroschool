@@ -5942,6 +5942,115 @@ async function leagueReq(path, method, body){
   if(!r.ok) throw new Error("서버 응답 " + r.status);
   return await r.json();
 }
+/* ============================================================
+   이어하기 코드 — 세이브를 짧은 코드 하나로 다른 기기에 옮긴다
+   ============================================================ */
+const XFER_ALPHA = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";  // 헷갈리는 0·1·I·O 는 빼둔다
+const XFER_LEN   = 10;
+const XFER_DAYS  = 30;        // 발급하고 이만큼 지난 코드는 받지 않는다
+const XFER_MAX   = 400000;    // 올릴 수 있는 최대 길이
+function xferOn(){ return !!LEAGUE_URL; }
+function xferNew(){
+  let out = "";
+  for(let i=0;i<XFER_LEN;i++) out += XFER_ALPHA[Math.floor(RNG()*XFER_ALPHA.length)];
+  return out;
+}
+function xferFmt(c){ return String(c||"").replace(/(.{5})(?=.)/g, "$1-"); }
+function xferNorm(c){
+  return String(c||"").toUpperCase().split("").filter(ch=> XFER_ALPHA.indexOf(ch)>=0).join("");
+}
+function xferB64(u8){
+  let bin = "", CH = 0x8000;
+  for(let i=0;i<u8.length;i+=CH) bin += String.fromCharCode.apply(null, u8.subarray(i, i+CH));
+  return btoa(bin);
+}
+function xferBytes(b64){
+  const bin = atob(b64), u = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) u[i] = bin.charCodeAt(i);
+  return u;
+}
+function xferBody(){
+  save();
+  let lg = null;
+  try{ lg = localStorage.getItem(LEAGUE_KEY) || null; }catch(e){}
+  return {s:S, lg:lg};
+}
+async function xferPack(obj){
+  const bytes = new TextEncoder().encode(JSON.stringify(obj));
+  if(typeof CompressionStream === "function"){
+    try{
+      const cs = new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream("gzip")));
+      return {z:"gz", d: xferB64(new Uint8Array(await cs.arrayBuffer()))};
+    }catch(e){}
+  }
+  return {z:"raw", d: xferB64(bytes)};
+}
+async function xferUnpack(rec){
+  let bytes = xferBytes(rec.d);
+  if(rec.z === "gz"){
+    const ds = new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip")));
+    bytes = new Uint8Array(await ds.arrayBuffer());
+  }
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+function xferMeta(){
+  return {acad:String(S.acadName||"이름 없는 학원").slice(0,24), y:S.year|0, ph:S.phase,
+          wk:(S.week|0)+1, fame:S.fame|0, gold:S.gold|0, n:(S.students||[]).length,
+          build:String(BUILD), rv:RULES_VER};
+}
+function xferMetaLine(m, noName){
+  if(!m) return "내용을 확인할 수 없는 기록";
+  const ph = (PHASES[m.ph]||{}).n || "";
+  return `${noName? "" : m.acad+" · "}${m.y}년 ${ph} ${m.wk}주 · 명성 ${fmt(m.fame|0)} · 자금 ${fmt(m.gold|0)} G · 학생 ${m.n|0}명`;
+}
+/* 코드 발급 — 한 번 쓴 코드에는 덮어쓰지 않는다 */
+async function xferIssue(){
+  if(!xferOn()) throw new Error("서버 주소가 없다");
+  const packed = await xferPack(xferBody());
+  if(packed.d.length > XFER_MAX) throw new Error("기록이 너무 커서 올릴 수 없다");
+  const rec = {z:packed.z, d:packed.d, ts:Date.now(), m:xferMeta(), v:1};
+  for(let i=0;i<5;i++){
+    const code = xferNew();
+    const cur = await leagueReq(`save/${code}`, "GET");
+    if(cur) continue;
+    await leagueReq(`save/${code}`, "PUT", rec);
+    return {code, bytes:packed.d.length};
+  }
+  throw new Error("코드를 만들지 못했다");
+}
+function xferErr(e){
+  const m = (e && e.message) ? String(e.message) : "";
+  if(!m || /fetch|network|load failed|failed to/i.test(m)) return "서버에 닿지 못했다";
+  return m;
+}
+async function xferGet(code){
+  if(!xferOn()) throw new Error("서버 주소가 없다");
+  const rec = await leagueReq(`save/${code}`, "GET");
+  if(!rec || !rec.d) return null;
+  rec.expired = !!(XFER_DAYS && rec.ts && (Date.now()-rec.ts) > XFER_DAYS*864e5);
+  return rec;
+}
+/* 실제로 덮어쓴다 — 확인을 받은 뒤에만 부른다 */
+async function xferApply(rec){
+  const p = await xferUnpack(rec);
+  const st = (p && p.s) ? p.s : p;
+  if(!st || !Array.isArray(st.students)) throw new Error("기록을 읽지 못했다");
+  localStorage.setItem(SAVE_KEY, JSON.stringify(st));
+  if(p && p.lg){ try{ localStorage.setItem(LEAGUE_KEY, p.lg); }catch(e){} }
+  location.reload();
+}
+/* 파일로 내보내고 들이는 길 — 서버가 막혀 있을 때의 우회로 */
+function xferFileOut(){
+  const body = xferBody();
+  const blob = new Blob([JSON.stringify({s:body.s, lg:body.lg, m:xferMeta(), ts:Date.now(), v:1})],
+                        {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `heroschool_${S.year}년${(PHASES[S.phase]||{}).n||""}_${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=> URL.revokeObjectURL(a.href), 5000);
+}
+
 /* ---- 보내는 쪽 ---- */
 function leaguePackUnit(g){
   return {n:(g.raw||g.name||"").slice(0,12), e:g.epithet? String(g.epithet).slice(0,20):null,
@@ -6032,7 +6141,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0917-2325";
+const BUILD = "0918-0145";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -6687,9 +6796,79 @@ function errPanel(){
     <p class="opthint">이 내용을 복사해서 보내 주시면 원인을 찾을 수 있습니다. (빌드 ${esc(BUILD)})</p>
   </section>`;
 }
+function xferPanel(){
+  const INP = "width:100%;background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:9px 10px;font-family:'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase";
+  return `<section class="panel">
+    <div class="panel-h"><h2>이어하기</h2><span class="hint">기록은 이 브라우저에만 남는다 · 코드로 다른 기기에 옮긴다</span></div>
+    <div class="grid2" style="margin-top:2px">
+      <div class="opt" style="cursor:default">
+        <div class="on">코드 발급<span class="price">${XFER_LEN}자리</span></div>
+        <div class="od">지금 기록을 올리고 코드를 받는다. 다른 기기에서 그 코드를 넣으면 이어서 할 수 있다.
+          코드는 발급한 순간의 사본이라 이쪽에서 더 진행해도 바뀌지 않는다 · ${XFER_DAYS}일 뒤 만료.</div>
+        <div class="btnrow" style="margin-top:10px"><button class="btn primary sm" id="xfMake"${xferOn()?"":" disabled"}>코드 발급</button></div>
+      </div>
+      <div class="opt" style="cursor:default">
+        <div class="on">코드로 불러오기<span class="price" style="color:var(--bad)">덮어쓴다</span></div>
+        <div class="od">받은 코드를 넣으면 지금 기록을 <b style="color:var(--bad)">지우고</b> 그 기록으로 바꾼다. 바꾸기 전에 내용을 먼저 보여준다.</div>
+        <input id="xfCode" placeholder="XXXXX-XXXXX" maxlength="13" style="${INP};margin-top:10px">
+        <div class="btnrow" style="margin-top:8px"><button class="btn sm" id="xfLoad"${xferOn()?"":" disabled"}>불러오기</button></div>
+      </div>
+    </div>
+    <div class="opt" style="cursor:default;margin-top:10px">
+      <div class="od">서버를 쓰지 않고 파일로 옮길 수도 있다 — 내려받은 파일을 다른 기기에서 들이면 똑같이 이어진다.</div>
+      <div class="btnrow" style="margin-top:8px">
+        <button class="btn sm" id="xfFileOut">파일로 내보내기</button>
+        <button class="btn sm" id="xfFileIn">파일에서 불러오기</button>
+      </div>
+      <input type="file" id="xfFile" accept="application/json,.json" style="display:none">
+    </div>
+  </section>`;
+}
+function xferCodeModal(code, bytes){
+  showModal(`<div class="cerhead"><div class="eyebrow">이어하기</div>
+      <h2 style="font-size:24px;margin-top:2px">코드가 나왔다</h2>
+      <p style="color:var(--muted);font-size:13px;margin-top:6px">다른 기기의 <b>설정 · 이어하기</b>에 이 코드를 넣으면 지금 이 기록에서 이어서 할 수 있다.</p></div>
+    <div class="opt" style="cursor:default;margin-top:14px;border-color:var(--brass);text-align:center;padding:18px">
+      <div class="num" style="font-size:28px;letter-spacing:.18em;font-family:'IBM Plex Mono',ui-monospace,monospace">${esc(xferFmt(code))}</div>
+      <div class="od" style="margin-top:8px">${esc(xferMetaLine(xferMeta()))}</div>
+    </div>
+    <div class="opt" style="cursor:default;margin-top:10px">
+      <div class="od">${XFER_DAYS}일이 지나면 쓸 수 없다. 이 코드는 방금 올린 사본을 가리키므로, 여기서 더 진행한 뒤에는 코드를 다시 발급해야 한다.</div>
+    </div>
+    <div class="btnrow" style="margin-top:16px">
+      <button class="btn primary" id="xfCopy">코드 복사</button>
+      <button class="btn" data-close>닫기</button>
+    </div>`, ()=>{
+    const c = $("#xfCopy");
+    if(c) c.onclick = ()=>{
+      const t = xferFmt(code);
+      if(navigator.clipboard) navigator.clipboard.writeText(t).then(()=>toast("복사했다."), ()=>toast("복사하지 못했다."));
+      else toast("복사하지 못했다.");
+    };
+  });
+}
+function xferConfirmModal(rec, onOk){
+  const m = rec.m || null;
+  const when = rec.ts ? new Date(rec.ts).toLocaleString("ko-KR") : "-";
+  showModal(`<div class="cerhead"><div class="eyebrow">이어하기</div>
+      <h2 style="font-size:24px;margin-top:2px">이 기록으로 바꿀까?</h2>
+      <p style="color:var(--muted);font-size:13px;margin-top:6px">지금 이 기기의 기록은 사라지고 되돌릴 수 없다.</p></div>
+    <div class="opt" style="cursor:default;margin-top:14px;border-color:var(--brass)">
+      <div class="on">${esc((m&&m.acad)||"이름 없는 학원")}<span class="price">${esc(when)}</span></div>
+      <div class="od">${esc(xferMetaLine(m, true))}</div>
+      ${m&&m.build? `<div class="od" style="color:var(--dim)">빌드 ${esc(m.build)}${m.rv!=null? ` · 규칙 ${m.rv|0}`:""}${(m.rv!=null && (m.rv|0)!==RULES_VER)? ` <b style="color:var(--bad)">— 지금 판(${RULES_VER})과 다르다</b>`:""}</div>`:""}
+    </div>
+    <div class="btnrow" style="margin-top:16px">
+      <button class="btn primary" id="xfGo">덮어쓰고 이어하기</button>
+      <button class="btn" data-close>취소</button>
+    </div>`, ()=>{
+    const g = $("#xfGo");
+    if(g) g.onclick = ()=>{ g.disabled = true; g.textContent = "불러오는 중…"; onOk(); };
+  });
+}
 function viewOpt(){
   const a = optFxA();
-  return errPanel() + `<section class="panel">
+  return errPanel() + xferPanel() + `<section class="panel">
     <div class="panel-h"><h2>설정</h2><span class="hint">빌드 ${esc(BUILD)} · 규칙 ${RULES_VER} · 전투 연출과 화면 표시를 조절한다</span></div>
     <div class="optrow">
       <div class="optlab">
@@ -8107,6 +8286,61 @@ function bindView(){
       ? `<b>학원 증축</b> Lv.${S.facil[k]} — ${expandUnlocks(S.facil[k]).join(" · ")}${eulr(expandUnlocks(S.facil[k]).slice(-1)[0]||"")} 들일 수 있게 됐다.`
       : `<b>${FACILITIES[k].n}</b> 확장 — Lv.${S.facil[k]}`, "good"); save(); render();
   });
+  {
+    const mk = $("#xfMake");
+    if(mk) mk.onclick = async ()=>{
+      mk.disabled = true; mk.textContent = "올리는 중…";
+      try{
+        const r = await xferIssue();
+        xferCodeModal(r.code, r.bytes);
+      }catch(e){
+        toast("코드를 만들지 못했다 — " + xferErr(e));
+      }
+      mk.disabled = false; mk.textContent = "코드 발급";
+    };
+    const lo = $("#xfLoad");
+    if(lo) lo.onclick = async ()=>{
+      const code = xferNorm(($("#xfCode")||{}).value);
+      if(code.length !== XFER_LEN){ toast(`코드는 ${XFER_LEN}자리다. 다시 확인해줘.`); return; }
+      lo.disabled = true; lo.textContent = "찾는 중…";
+      try{
+        const rec = await xferGet(code);
+        if(!rec) toast("그런 코드가 없다.");
+        else if(rec.expired) toast(`${XFER_DAYS}일이 지난 코드다.`);
+        else xferConfirmModal(rec, async ()=>{
+          try{ await xferApply(rec); }
+          catch(e){ closeModal(); toast("기록을 읽지 못했다 — " + xferErr(e)); }
+        });
+      }catch(e){
+        toast("불러오지 못했다 — " + xferErr(e));
+      }
+      lo.disabled = false; lo.textContent = "불러오기";
+    };
+    const fo = $("#xfFileOut"); if(fo) fo.onclick = ()=>{ xferFileOut(); toast("파일을 내려받았다."); };
+    const fi = $("#xfFileIn");  if(fi) fi.onclick = ()=>{ const f=$("#xfFile"); if(f) f.click(); };
+    const ff = $("#xfFile");
+    if(ff) ff.onchange = ()=>{
+      const file = ff.files && ff.files[0]; if(!file) return;
+      const fr = new FileReader();
+      fr.onload = ()=>{
+        let p = null;
+        try{ p = JSON.parse(String(fr.result||"")); }catch(e){}
+        const st = (p && p.s) ? p.s : p;
+        if(!st || !Array.isArray(st.students)){ toast("이 파일에는 기록이 없다."); ff.value=""; return; }
+        xferConfirmModal({m:(p&&p.m)||null, ts:(p&&p.ts)||file.lastModified}, ()=>{
+          try{
+            localStorage.setItem(SAVE_KEY, JSON.stringify(st));
+            if(p && p.lg){ try{ localStorage.setItem(LEAGUE_KEY, p.lg); }catch(e){} }
+            location.reload();
+          }catch(e){ closeModal(); toast("저장하지 못했다."); }
+        });
+        ff.value = "";
+      };
+      fr.readAsText(file);
+    };
+    const ci = $("#xfCode");
+    if(ci) ci.oninput = ()=>{ const v = xferNorm(ci.value); ci.value = xferFmt(v.slice(0, XFER_LEN)); };
+  }
   {
     const sl = $("#fxA");
     if(sl){
