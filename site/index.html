@@ -1231,9 +1231,9 @@ const JOBS = {
     grow:{hp:76,atk:5.0,def:5.8,spd:1.8},
     skills:[
       {id:"sw_b",fx:"slash",el:"phys",kind:"basic",name:"베기",type:"dmg",target:"enemy_front",power:1.02,proc:1,dur:0,txt:"기본에 충실한 종베기"},
-      {id:"sw_1",fx:"aura",el:"debuff",name:"도발",type:"debuff",target:"enemy_all",power:.16,proc:.2,dur:2,stat:"acc",txt:"적 전체의 명중을 떨어뜨린다"},
-      {id:"sw_2",fx:"aura",el:"buff",name:"철벽 자세",type:"buff",target:"self",power:.42,proc:.2,dur:3,stat:"def",txt:"자신의 방어력을 크게 올린다"},
-      {id:"sw_u",fx:"slash",el:"phys",kind:"ult",name:"대지 가르기",type:"ult_aoe",target:"enemy_all",power:1.7,proc:1,dur:2,txt:"땅을 가르며 전체 피해와 방어 저하"}
+      {id:"sw_1",fx:"aura",el:"debuff",name:"도발",type:"taunt",target:"enemy_rand",power:.15,proc:.2,dur:2,noDur:true,txt:"한 명을 걸고 넘어져 시선을 끈다 — 침착성 저하"},
+      {id:"sw_2",fx:"aura",el:"buff",name:"철벽 자세",type:"buff",target:"self",power:.42,pow2:.21,stat2:"atk",proc:.2,dur:2,stat:"def",txt:"자세를 굳혀 방어와 공격을 함께 올린다"},
+      {id:"sw_u",fx:"slash",el:"phys",kind:"ult",name:"대지 가르기",type:"ult_aoe",target:"enemy_all",power:1.7,proc:1,dur:2,shieldSelf:1,txt:"땅을 가르며 전체 피해와 방어 저하 · 입힌 만큼 자신에게 보호막"}
     ]},
   monk:{ name:"몽크", role:"tank", sub:"서브 딜러", tone:"tank",
     desc:"맨몸으로 받아내고 되돌려주는 수도자. 흡혈과 연타가 특기.",
@@ -1292,7 +1292,7 @@ const JOBS = {
     skills:[
       {id:"wz_b",fx:"burst",el:"arcane",kind:"basic",name:"마력탄",type:"dmg",target:"enemy_rand",power:.98,proc:1,dur:0,txt:"응축한 마력을 쏘아 보낸다"},
       {id:"wz_1",fx:"burst",el:"fire",name:"화염 폭발",type:"dmg_aoe",target:"enemy_all",power:.9,proc:.22,dur:0,txt:"적 전체를 불길로 덮는다"},
-      {id:"wz_2",fx:"aura",el:"frost",name:"서리 결계",type:"debuff",target:"enemy_all",power:.2,proc:.18,dur:2,stat:"spd",txt:"적 전체의 속도를 떨어뜨린다"},
+      {id:"wz_2",fx:"aura",el:"frost",name:"서리 결계",type:"debuff",target:"enemy_all",power:.25,proc:.18,dur:2,stat:"spd",txt:"적 전체의 속도를 25% 떨어뜨린다"},
       {id:"wz_u",fx:"burst",el:"fire",kind:"ult",name:"유성 강림",type:"ult_aoe",target:"enemy_all",power:2.2,proc:1,dur:2,txt:"하늘에서 별을 떨어뜨린다"}
     ]},
   druid:{ name:"드루이드", role:"tank", sub:"서브 딜러 · 서브 힐러", tone:"tank",
@@ -1330,10 +1330,10 @@ const JOBS = {
     base:{hp:960,atk:104,def:60,spd:98,crit:.1,critDmg:1.6,acc:.95,eva:.07,skAcc:.96,skRes:.2,ultGain:1.1,leech:.1},
     grow:{hp:50,atk:5.8,def:3.2,spd:2.4},
     skills:[
-      {id:"dp_b",fx:"burst",el:"dark",kind:"basic",name:"어둠의 손길",type:"dmg",target:"enemy_rand",power:.86,proc:1,dur:0,txt:"생기를 훑어 간다"},
-      {id:"dp_1",fx:"heal",el:"dark",name:"흡혈 의식",type:"drain",target:"enemy_low",power:1.15,proc:.24,dur:0,drain:.75,txt:"뺏은 만큼 위험한 아군을 회복시킨다"},
-      {id:"dp_2",fx:"aura",el:"dark",name:"저주",type:"dot",target:"enemy_rand",power:.32,proc:.2,dur:3,txt:"서서히 갉아먹는 저주를 새긴다"},
-      {id:"dp_u",fx:"burst",el:"dark",kind:"ult",name:"어둠의 성찬",type:"ult_drain",target:"enemy_all",power:1.5,proc:1,dur:0,drain:.35,txt:"적 전체에서 빨아낸 생기를 아군에게 돌린다"}
+      {id:"dp_b",fx:"burst",el:"dark",kind:"basic",name:"어둠의 손길",type:"dmg",target:"enemy_rand",power:1.0,proc:1,dur:0,txt:"생기를 훑어 간다"},
+      {id:"dp_1",fx:"heal",el:"dark",name:"흡혈 의식",type:"drain",target:"enemy_low",power:1.15,proc:.24,dur:0,drain:1.0,txt:"뺏은 만큼 위험한 아군을 회복시킨다"},
+      {id:"dp_2",fx:"aura",el:"dark",name:"저주",type:"dot",target:"enemy_all",power:.32,proc:.2,dur:3,drainDot:true,txt:"적 전체를 갉아먹고, 갉아낸 만큼 아군 전체를 회복시킨다"},
+      {id:"dp_u",fx:"burst",el:"dark",kind:"ult",name:"어둠의 성찬",type:"ult_drain",target:"enemy_all",power:1.5,proc:1,dur:0,drain:.5,txt:"적 전체에서 빨아낸 생기를 아군에게 돌린다"}
     ]},
   bard:{ name:"바드", role:"supp", sub:"합주 · 사기", tone:"supp",
     desc:"노래로 대열의 호흡을 맞추는 연주자. 오래 버틸수록 합이 살아난다.",
@@ -1383,7 +1383,7 @@ const JOB_KEYS = Object.keys(JOBS);
    ============================================================ */
 const PASSIVES = {
   paladin:   {n:"수호 서약",  d:"전투 시작 시 아군 전체에 최대 체력 8%의 보호막을 두른다", onStart:"shieldAll"},
-  sword:     {n:"불굴",       d:"의식 유지선 아래로 떨어지면 받는 피해가 15% 줄어든다", takeLow:.15},
+  sword:     {n:"반격 자세",   d:"단일 공격의 대상이 되면 그만큼 되받아친다 (피해 0.2 · 필살 게이지는 오르지 않는다)", counter:.2},
   monk:      {n:"연공",       d:"일반 공격으로 얻는 필살 게이지가 50% 늘어난다", ultBasic:.5},
   archer:    {n:"저격 자세",  d:"후열의 적에게 주는 피해가 12% 늘어난다", vsBack:.12},
   rogue:     {n:"약점 간파",  d:"체력 50% 이하인 적에게 주는 피해가 15% 늘어난다", vsLow:.15},
@@ -1393,7 +1393,7 @@ const PASSIVES = {
   druid:     {n:"자연 회복",  d:"자기 차례마다 최대 체력의 3%를 회복한다", regen:.03},
   forcemage: {n:"마력 육체",  d:"받는 피해가 항상 10% 줄어든다", take:.10},
   enchanter: {n:"상시 각인",  d:"전투 시작 시 아군 전체의 스킬 성공률이 5%p 오른다", onStart:"skAccAll"},
-  darkpriest:{n:"암흑 계약",  d:"피흡이 6%p 오른다", leech:.06},
+  darkpriest:{n:"암흑 계약", d:"팀 전원의 피흡이 6%p 오른다", leechAll:.06},
   bard:      {n:"합주",       d:"전투 시작 시 아군 전체의 행동 게이지가 15% 차 있다", onStart:"atbAll"},
   spellsword:{n:"검격 잔향",  d:"체력 50% 이상인 적에게 주는 피해가 10% 늘어난다", vsHigh:.10},
   gunner:    {n:"조준선 확보", d:"전열의 적에게 주는 피해가 14% 늘어난다", vsFront:.14},
@@ -2805,10 +2805,12 @@ function mkUnit(st, side, idx, row){
     dDealt:0, dHeal:0, dTaken:0
   };
 }
+/* 0~1 척도로 다루는 항목 — 보정을 가산으로 얹는다 */
+const RATE_STAT = ["crit","acc","eva","skAcc","skRes","leech","critDmg","ultGain","critRes"];
 function eff(u, key){
   let v = u.base[key]||0, add=0, mul=0;
   u.fx.forEach(f=>{ if(f.stat===key){ if(f.mode==="mul") mul+=f.val; else add+=f.val; } });
-  if(["crit","acc","eva","skAcc","skRes","leech","critDmg","ultGain","critRes"].includes(key)) return Math.max(0, v+add+ v*mul);
+  if(RATE_STAT.includes(key)) return Math.max(0, v+add+ v*mul);
   return Math.max(1, (v+add)*(1+mul));
 }
 function consThr(stam){
@@ -2837,8 +2839,30 @@ function freshFirst(pool, actor, sk){
   const fresh = pool.filter(t=> !hasFx(t, sk));
   return fresh.length ? fresh : pool;
 }
+/* 전체 대상 — 침착성 판정에 실패하면 무작위로 한 명을 흘린다.
+   남은 대상이 둘 이상일 때만 빠지고, 최소 한 명은 반드시 맞는다. */
+function dropOne(pool, smart){
+  if(smart || !pool || pool.length < 2) return pool;
+  const i = ri(0, pool.length-1);
+  return pool.filter((_,k)=> k !== i);
+}
+/* 도발에 걸리면 침착성이 흐려진다 */
+function calmOf(u){
+  let mul = 0;
+  (u && u.fx || []).forEach(f=>{ if(f.stat==="calm" && f.mode==="mul") mul += f.val; });
+  return Math.max(0, ((u && u.ment && u.ment.calm)||0) * (1 + mul));
+}
+/* 도발한 상대가 살아 있으면 그쪽을 먼저 본다 */
+function tauntTarget(actor, pool){
+  const f = (actor && actor.fx || []).filter(x=> x.taunt);
+  for(let i=f.length-1; i>=0; i--){
+    const t = pool.find(u=> u.uid === f[i].taunt && u.alive);
+    if(t) return t;
+  }
+  return null;
+}
 function pickTarget(actor, foes, allies, sk){
-  const calmP = clamp(.3 + actor.ment.calm/100*.65, .3, .95);
+  const calmP = clamp(.3 + calmOf(actor)/100*.65, .3, .95);
   const smart = RNG() < calmP;
   const t = sk.target;
   if(t==="self") return [actor];
@@ -2846,14 +2870,15 @@ function pickTarget(actor, foes, allies, sk){
     let pool = aliveOf(allies);
     if(t==="ally_other" && pool.length>1) pool = pool.filter(u=>u.uid!==actor.uid);
     if(!pool.length) return [];
-    if(t==="ally_all") return pool;
+    if(t==="ally_all") return dropOne(pool, smart);
     if(smart) pool = freshFirst(pool, actor, sk);
     if(smart){ return [pool.slice().sort((a,b)=> a.hp/a.maxHp - b.hp/b.maxHp)[0]]; }
     return [pick(pool)];
   }
   let pool = aliveOf(foes);
   if(!pool.length) return [];
-  if(t==="enemy_all") return pool;
+  if(t==="enemy_all") return dropOne(pool, smart);
+  { const tn = tauntTarget(actor, pool); if(tn) return [tn]; }
   if(smart){
     pool = freshFirst(pool, actor, sk);
     if(t==="enemy_front"){ const f=pool.filter(u=>u.row==="front"); if(f.length) pool=f; }
@@ -2901,7 +2926,7 @@ function passiveFor(o){
   if(!P) return null;
   const k = 1 + (((o.skMod&&o.skMod.passive)||{}).pow||0);
   const out = Object.assign({}, P);
-  ["takeLow","ultBasic","vsBack","vsFront","vsLow","vsHigh","healMul","aoe","regen","take","leech","evaSelf"].forEach(x=>{ if(out[x]) out[x] = out[x]*k; });
+  ["takeLow","ultBasic","vsBack","vsFront","vsLow","vsHigh","healMul","aoe","regen","take","leech","leechAll","evaSelf","counter"].forEach(x=>{ if(out[x]) out[x] = out[x]*k; });
   out.k = k;
   return out;
 }
@@ -2962,6 +2987,7 @@ function runBattle(teamA, teamB, opt){
   [A,B].forEach(U=> U.forEach(u=>{
     const P = passiveFor(u); u.pas = P; if(!P) return;
     if(P.leech) u.base.leech = (u.base.leech||0) + P.leech;
+    if(P.leechAll) U.forEach(a=> a.base.leech = (a.base.leech||0) + P.leechAll);
     if(P.evaSelf) u.base.eva = (u.base.eva||0) + P.evaSelf;
   }));
   // 패시브 — 전투 개시
@@ -3023,15 +3049,33 @@ function runBattle(teamA, teamB, opt){
     u.acted++; totalActs++;
     if(totalActs===61 && !fatigueNoted){ fatigueNoted=true; push(`장기전 — 양측 모두 지쳐 주고받는 피해가 커진다`,"sec"); }
     // 지속 효과 정리
-    let dotDmg = 0;
+    let dotDmg = 0; const dotHeal = [];
     u.fx = u.fx.filter(f=>{
-      if(f.kind==="dot"){ dotDmg += f.val; }
+      if(f.kind==="dot"){ dotDmg += f.val; if(f.heal && f.src!=null) dotHeal.push([f.src, f.val]); }
       f.turns--; return f.turns>0;
     });
     if(dotDmg>0){
+      const hpBefore = u.hp;
       u.hp = Math.max(0, u.hp - Math.round(dotDmg));
       u.dTaken += Math.round(dotDmg);
       push(`<b>${epiH(u.name)}</b> 지속 피해 ${fmt(dotDmg)}`,"", u.uid);
+      /* 저주 — 갉아낸 만큼 시전자 쪽 아군 전체가 회복한다 */
+      const real = hpBefore - u.hp;
+      if(real > 0 && dotHeal.length){
+        const sum = dotHeal.reduce((a,x)=>a+x[1], 0);
+        dotHeal.forEach(([sid, val])=>{
+          const sv = all.find(x=> x.uid === sid);
+          if(!sv) return;
+          const h = Math.round(real * (val/sum));
+          if(h <= 0) return;
+          const pp = [];
+          aliveOf(sv.side==="A"? A : B).forEach(a=>{
+            const h0 = a.hp; a.hp = Math.min(a.maxHp, a.hp + h); recHeal(sv, a.hp - h0);
+            if(a.hp > h0) pp.push({u:a.uid, v:a.hp-h0, k:"heal"});
+          });
+          if(pp.length) push(`저주가 갉아낸 만큼 아군 전체 ${fmt(h)} 회복`,"heal",sv.uid,null,pp);
+        });
+      }
       if(u.hp<=0){ u.alive=false; push(`<b>${epiH(u.name)}</b> 전투 불능`,"die",u.uid); }
     }
     if(!u.alive){ if(checkEnd()) break; continue; }
@@ -3151,7 +3195,7 @@ function runBattle(teamA, teamB, opt){
     const lee = eff(src,"leech");
     let leeched = 0;
     if(lee>0 && dmg>0){ const hb=src.hp; src.hp = Math.min(src.maxHp, src.hp + Math.round(dmg*lee)); leeched = src.hp-hb; recHeal(src, leeched); }
-    tgt.ult = clamp(tgt.ult + 7*eff(tgt,"ultGain"),0,100);
+    if(!o.noUlt) tgt.ult = clamp(tgt.ult + 7*eff(tgt,"ultGain"),0,100);
     const pop = [];
     if(absorbed) pop.push({u:tgt.uid, v:absorbed, k:"absorb"});
     if(dmg>0 || !absorbed) pop.push({u:tgt.uid, v:dmg, k:crit?"crit":"dmg"});
@@ -3165,7 +3209,22 @@ function runBattle(teamA, teamB, opt){
         push(`<b>${epiH(tgt.name)}</b> 의식을 잃고 쓰러졌다`,"die",src.uid,null,[{u:tgt.uid,k:"die"}]);
       }
     }
+    /* 반격 자세 — 단일 공격을 받으면 그만큼 되받아친다 */
+    if(dmg>0 && tgt.alive && src.alive && !o.counter && singleHit(o)){
+      const Pc = tgt.pas;
+      if(Pc && Pc.counter){
+        push(`<b>${epiH(tgt.name)}</b> 반격`,"",tgt.uid);
+        dealDamage(tgt, src, Pc.counter, {counter:true, noUlt:true, type:"dmg"});
+      }
+    }
     return dmg;
+  }
+  /* 여럿을 한꺼번에 치는 공격인가 */
+  function singleHit(o){
+    if(!o) return true;
+    if(o.type==="dmg_aoe" || o.type==="ult_aoe" || o.type==="ult_drain") return false;
+    if(o.target==="enemy_all") return false;
+    return true;
   }
   function addFx(tgt, o){ 
     const ex = tgt.fx.find(f=>f.name===o.name);
@@ -3184,11 +3243,16 @@ function runBattle(teamA, teamB, opt){
       case "dmg": dealDamage(u,tg[0],p,sk); break;
       case "dmg_multi": for(let i=0;i<(sk.hits||2);i++){ const t=aliveOf(foes); if(!t.length)break; dealDamage(u, tg[0].alive?tg[0]:pick(t), p, sk); } break;
       case "dmg_aoe": tg.forEach(t=> t.alive && dealDamage(u,t,p,sk)); break;
-      case "dot":
-        dealDamage(u,tg[0],p*.8,sk);
-        if(tg[0].alive){ addFx(tg[0],{name:sk.name,kind:"dot",turns:dur+1,val:eff(u,"atk")*p*.55,stat:null});
-          push(`<b>${epiH(tg[0].name)}</b> 중독 (${dur}턴)`,"",u.uid); }
-        break;
+      case "dot": {
+        const hit = [];
+        tg.forEach(t=>{
+          if(!t.alive) return;
+          dealDamage(u,t,p*.8,sk);
+          if(t.alive){ addFx(t,{name:sk.name,kind:"dot",turns:dur+1,val:eff(u,"atk")*p*.55,stat:null,
+            heal:!!sk.drainDot, src:u.uid}); hit.push(t); }
+        });
+        if(hit.length) push(`${hit.length>1? `적 ${hit.length}인` : `<b>${epiH(hit[0].name)}</b>`} 중독 (${dur}턴)`,"",u.uid);
+        break; }
       case "heal": {
         const h = Math.round(eff(u,"atk")*p*2.0*healMulOf(u));
         tg.forEach(t=>{ const b=Math.min(t.maxHp-t.hp,h); t.hp+=b; recHeal(u, b); push(`<b>${epiH(t.name)}</b> 회복 ${fmt(b)}`,"heal",u.uid,null,[{u:t.uid,v:b,k:"heal"}]); });
@@ -3203,11 +3267,18 @@ function runBattle(teamA, teamB, opt){
           addFx(t,{name:sk.name,kind:"b",turns:dur+1,stat:sk.stat,mode:sk.stat==="crit"?"add":"mul",val:sk.stat==="crit"?p*.5:p});
           if(sk.leech) addFx(t,{name:sk.name+"·피흡",kind:"b",turns:dur+1,stat:"leech",mode:"add",val:sk.leech});
           if(sk.eva) addFx(t,{name:sk.name+"·회피",kind:"b",turns:dur+1,stat:"eva",mode:"add",val:sk.eva});
+          if(sk.stat2 && sk.pow2) addFx(t,{name:sk.name+"·"+sk.stat2,kind:"b",turns:dur+1,stat:sk.stat2,mode:"mul",val:p*(sk.pow2/sk.power)});
         });
         push(`${tg.length>1?`아군 ${tg.length}인`:`<b>${epiH(tg[0].name)}</b>`} 강화 (${dur}턴)`,"heal",u.uid);
         break; }
+      case "taunt": {
+        const t0 = tg[0];
+        addFx(t0,{name:sk.name,kind:"d",turns:dur+1,stat:"calm",mode:"mul",val:-p,taunt:u.uid});
+        push(`<b>${epiH(t0.name)}</b> 도발 — 침착성 ${Math.round(p*100)}% 저하 · <b>${epiH(u.name)}</b>에게 시선이 쏠린다 (${dur}턴)`,"",u.uid);
+        break; }
       case "debuff": {
-        tg.forEach(t=> addFx(t,{name:sk.name,kind:"d",turns:dur+1,stat:sk.stat,mode:"add",val:-p}));
+        const dm = RATE_STAT.includes(sk.stat) ? "add" : "mul";   // 명중·저항 등은 가산, 공격·속도 등은 곱연산
+        tg.forEach(t=> addFx(t,{name:sk.name,kind:"d",turns:dur+1,stat:sk.stat,mode:dm,val:-p}));
         push(`적 ${tg.length}인 약화 (${dur}턴)`,"",u.uid);
         break; }
       case "haste": {
@@ -3219,10 +3290,16 @@ function runBattle(teamA, teamB, opt){
         push(`<b>${epiH(tg[0].name)}</b> 행동 게이지 -${Math.round(p*100)}%`,"",u.uid);
         break; }
       case "ult_single": dealDamage(u,tg[0],p,sk); if(sk.heal){ const h=Math.round(u.maxHp*sk.heal*.35); const h0=u.hp; u.hp=Math.min(u.maxHp,u.hp+h); recHeal(u, u.hp-h0); push(`<b>${epiH(u.name)}</b> 회복 ${fmt(h)}`,"heal",u.uid,null,[{u:u.uid,v:u.hp-h0,k:"heal"}]);} break;
-      case "ult_aoe": tg.forEach(t=> t.alive && dealDamage(u,t,p,sk));
+      case "ult_aoe": { let tot = 0;
+        tg.forEach(t=>{ if(t.alive) tot += dealDamage(u,t,p,sk); });
         tg.forEach(t=> t.alive && addFx(t,{name:"방어 붕괴",kind:"d",turns:dur+1,stat:"def",mode:"mul",val:-.25}));
+        if(sk.shieldSelf && tot>0){
+          const sh = Math.round(tot*sk.shieldSelf);
+          u.shield += sh; u.shBy = u.uid;
+          push(`<b>${epiH(u.name)}</b> 보호막 ${fmt(sh)} — 가른 만큼 몸을 두른다`,"heal",u.uid,null,[{u:u.uid,v:sh,k:"shield"}]);
+        }
         if(sk.heal){ const h=Math.round(u.maxHp*sk.heal*.3); const h0=u.hp; u.hp=Math.min(u.maxHp,u.hp+h); recHeal(u, u.hp-h0); push(`<b>${epiH(u.name)}</b> 회복 ${fmt(h)}`,"heal",u.uid,null,[{u:u.uid,v:u.hp-h0,k:"heal"}]); }
-        break;
+        break; }
       case "drain": {
         const d = dealDamage(u,tg[0],p,sk);
         if(d>0){
@@ -4837,9 +4914,10 @@ function answerCounsel(qi, oi){
   const byLead = !fit && (RNG() < cslLeadP());
   const byTrust = !fit && !byLead && trustFull(st);   // 운명 단계는 무슨 말이든 닿는다
   const ok = fit || byLead || byTrust;
-  let gain = null, dbl = false;
+  let gain = null, dbl = false, capped = false;
   if(ok){
     const ks = MENTAL.filter(m=>!m.fixed && st.ment[m.k] < mentCapOf(st, m.k));
+    capped = !ks.length;
     if(ks.length){
       const m = pick(ks);
       let d = ri(2,4);
@@ -4853,13 +4931,13 @@ function answerCounsel(qi, oi){
   const tUp = ok ? (addTrust(st, 1), true) : false;
   C.queue.splice(qi,1);
   C.usedC.push(c.id); C.usedS.push(st.id);
-  C.done.push({sid:st.id, name:dn(st), pers:st.pers, cid:c.id, oi, fit:ok, byLead, dbl, gain,
+  C.done.push({sid:st.id, name:dn(st), pers:st.pers, cid:c.id, oi, fit:ok, byLead, dbl, gain, capped,
     phase:q.phase||S.phase, week:q.week||(S.week+1)});
   logE(ok
-    ? `상담 — <b>${dnH(st)}</b>(${personaOf(st).n})의 마음에 닿았다.${byLead? ` <span style="color:var(--brass)">지도력으로 설득</span>`:""}${byTrust? ` <span style="color:var(--brass)">운명 단계 — 무엇을 말해도 닿는다</span>`:""}${gain? ` <b style="color:var(--ok)">${gain.n} +${gain.d}</b>${dbl? ` <span style="color:var(--brass)">(호소력 2배)</span>`:""}`:""} · <span style="color:var(--brass)">신뢰 ${trustGainWord(1)}</span>`
+    ? `상담 — <b>${dnH(st)}</b>(${personaOf(st).n})의 마음에 닿았다.${byLead? ` <span style="color:var(--brass)">지도력으로 설득</span>`:""}${byTrust? ` <span style="color:var(--brass)">운명 단계 — 무엇을 말해도 닿는다</span>`:""}${gain? ` <b style="color:var(--ok)">${gain.n} +${gain.d}</b>${dbl? ` <span style="color:var(--brass)">(호소력 2배)</span>`:""}`:""}${capped? ` <span style="color:var(--dim)">더 오를 항목이 없다 — 멘탈리티가 모두 한계다</span>`:""} · <span style="color:var(--brass)">신뢰 ${trustGainWord(1)}</span>`
     : `상담 — <b>${dnH(st)}</b>(${personaOf(st).n})${eunn(personaOf(st).n)} 아직 납득하지 못한 표정이다.`, ok?"good":"");
   save(); render();
-  toast(ok? (gain? `${dn(st)} — ${gain.n} +${gain.d}${dbl?" (2배)":""}` : `${dn(st)}의 마음에 닿았다`) : `${dn(st)}${eunn(st.name)} 납득하지 못했다`);
+  toast(ok? (gain? `${dn(st)} — ${gain.n} +${gain.d}${dbl?" (2배)":""}` : capped? `${dn(st)} — 멘탈리티가 모두 한계다. 신뢰만 깊어졌다` : `${dn(st)}의 마음에 닿았다`) : `${dn(st)}${eunn(st.name)} 납득하지 못했다`);
 }
 
 /* ============================================================
@@ -5867,7 +5945,7 @@ function studentDetail(s){
         <div class="eyebrow" style="margin-bottom:6px">멘탈리티 · 성장 <span style="color:var(--dim)">— 항목마다 한계가 다르다 (잠재력 + 성격)</span></div>
         ${MENTAL.map(m=>{
           const v = s.ment[m.k], top = m.fixed? 0 : mentCapOf(s, m.k), full = !m.fixed && v >= top;
-          return `<div class="st"${full? ` title="한계 ${top} — 더 오르지 않는다"`:""}><span class="k">${m.n}</span>
+          return `<div class="st"${full? ` title="한계 도달 — 더 오르지 않는다"`:""}><span class="k">${m.n}</span>
           <span class="mentbar${v>MENT_SOFT?" over":""}${full?" full":""}"><i style="width:${Math.min(100, v)}%"></i></span>
           <span class="v num mentv${(v>MENT_SOFT||full)?" over":""}">${Math.round(v)}</span></div>`;
         }).join("")}
@@ -6408,7 +6486,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0918-2022";
+const BUILD = "0918-2152";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -8301,6 +8379,7 @@ function viewCounsel(){
         <div class="od" style="color:var(--${d.fit?"ok":"dim"})">${d.fit? esc(c.o[d.oi].r) : "표정이 풀리지 않았다. 다른 말이 필요했던 모양이다."}</div>
         ${d.byLead? `<div class="od" style="color:var(--brass)">성격에 맞는 말은 아니었지만, 지도력으로 설득했다</div>`:""}
         ${d.gain? `<div class="od" style="color:var(--brass)">${d.gain.n} +${d.gain.d}${d.dbl? ` <span style="color:var(--ok)">— 호소력으로 상승폭 2배</span>`:""}</div>`:""}
+        ${d.capped? `<div class="od" style="color:var(--dim)">더 오를 항목이 없다 — 멘탈리티가 모두 한계다. 신뢰만 깊어졌다</div>`:""}
       </div>`;
     }).join("")}</div>` : `<div class="empty">아직 올해 상담 기록이 없다.</div>`}
   </section>`;
@@ -9164,7 +9243,7 @@ function genSkillOptions(st){
     const isSkill = t.kind==="skill";
     const w = {pow:60};
     if(isSkill && !t.sk.kind) w.proc = 25;
-    if(isSkill && skDur(st, t.sk) > 0) w.dur = 15;
+    if(isSkill && skDur(st, t.sk) > 0 && !t.sk.noDur) w.dur = 15;
     const aspect = wchoose(w);
     out.push({t, aspect, evo: RNG() < evoP});
   }
