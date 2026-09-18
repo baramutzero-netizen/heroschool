@@ -6136,10 +6136,12 @@ function xferBytes(b64){
   for(let i=0;i<bin.length;i++) u[i] = bin.charCodeAt(i);
   return u;
 }
-function xferBody(){
+function xferBody(opt){
   save();
   let lg = null;
-  try{ lg = localStorage.getItem(LEAGUE_KEY) || null; }catch(e){}
+  /* 피드백에 실어 보내는 사본에는 리그 자리를 담지 않는다 —
+     받은 쪽이 그대로 열면 보낸 사람의 리그 자리를 빼앗게 된다 */
+  if(!(opt && opt.noLeague)){ try{ lg = localStorage.getItem(LEAGUE_KEY) || null; }catch(e){} }
   return {s:S, lg:lg};
 }
 async function xferPack(obj){
@@ -6171,9 +6173,9 @@ function xferMetaLine(m, noName){
   return `${noName? "" : m.acad+" · "}${m.y}년 ${ph} ${m.wk}주 · 명성 ${fmt(m.fame|0)} · 자금 ${fmt(m.gold|0)} G · 학생 ${m.n|0}명`;
 }
 /* 코드 발급 — 한 번 쓴 코드에는 덮어쓰지 않는다 */
-async function xferIssue(){
+async function xferIssue(opt){
   if(!xferOn()) throw new Error("서버 주소가 없다");
-  const packed = await xferPack(xferBody());
+  const packed = await xferPack(xferBody(opt));
   if(packed.d.length > XFER_MAX) throw new Error("기록이 너무 커서 올릴 수 없다");
   const rec = {z:packed.z, d:packed.d, ts:Date.now(), m:xferMeta(), v:1};
   for(let i=0;i<5;i++){
@@ -7137,7 +7139,7 @@ function feedBind(){
     fg.disabled = true; fg.textContent = "보내는 중…";
     try{
       let code = null;
-      if(withSave){ try{ code = (await xferIssue()).code; }catch(e){ code = null; } }
+      if(withSave){ try{ code = (await xferIssue({noLeague:true})).code; }catch(e){ code = null; } }
       await feedSend({k:String(UI.feedKind||FEED_KINDS[0].k), t:txt.slice(0,FEED_MAX),
                       nm:String(nick).slice(0,16), ts:Date.now(),
                       code:code, ctx:feedCtx(), err:feedErrs()});
