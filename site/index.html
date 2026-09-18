@@ -228,6 +228,9 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 
 
 /* ---------- 리그 ---------- */
+.lgpick{display:flex;flex-direction:column;gap:4px}
+.lgpick > .opt{flex:1}
+.lgtr{display:flex;justify-content:flex-end;align-items:center;font-size:11.5px;min-height:26px}
 .lgbar{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
 .lgstat{flex:1;min-width:120px;border:1px solid var(--line-soft);border-radius:4px;background:var(--bg);padding:9px 12px}
 .lgstat span{display:block;font-size:10.5px;letter-spacing:.08em;color:var(--dim);margin-bottom:3px}
@@ -6299,7 +6302,42 @@ function leagueReady(){
   return L.sids.length === LEAGUE_TEAM &&
     L.sids.every(id => gradCanFight((S.graduates||[]).find(g=>g.sid===id)));
 }
-function gradPool(){ return (S.graduates||[]).filter(gradCanFight); }
+function gradPool(){ return (S.graduates||[]).filter(g=> gradCanFight(g) && !g.tr); }
+/* 이적 — 리그 명부에서만 빼고 기록의 졸업생 명부에는 남긴다 */
+const TRANSFER_PER = 1000;      // 전투력 이만큼마다 1 SP
+function gradPower(g){ const u = gradUnit(g); return Math.round(u? power(u) : (g.pw||0)); }
+function gradFee(g){ return Math.max(1, Math.floor(gradPower(g)/TRANSFER_PER)); }
+function gradTransfer(sid){
+  const g = (S.graduates||[]).find(x=>x.sid===sid);
+  if(!g || g.tr) return;
+  const L = leagueState();
+  if(L.sids.includes(sid)){ toast("출전 명단에 있는 졸업생은 이적시킬 수 없다."); return; }
+  const fee = gradFee(g);
+  g.tr = Date.now(); g.trFee = fee;
+  spAdd(fee);
+  logE(`이적 — <b>${epiH(g.name)}</b>(${JOBS[g.job]? JOBS[g.job].name : "?"})${eunn(g.name)} 다른 학원으로 떠났다. 이적료 <b style="color:var(--indigo)">SP +${fee}</b> (보유 ${fmt(spOf())})`, "good");
+  toast(`${g.name} 이적 — SP +${fee}`);
+  save(); render();
+}
+function gradTransferModal(sid){
+  const g = (S.graduates||[]).find(x=>x.sid===sid);
+  if(!g) return;
+  const fee = gradFee(g);
+  showModal(`<div class="cerhead"><div class="eyebrow">졸업생 이적</div>
+      <h2 style="font-size:23px;margin-top:2px">${epiH(g.name)}${eulr(g.name)} 보낼까?</h2>
+      <p style="color:var(--muted);font-size:13px;margin-top:6px">리그 졸업생 명부에서 사라지고 다시 부를 수 없다. 기록 탭의 졸업생 명부에는 그대로 남는다.</p></div>
+    <div class="opt" style="cursor:default;margin-top:14px;border-color:var(--brass)">
+      <div class="on">${esc(g.career||"진로 미정")}<span class="price">${g.year}년 졸업 · Lv.${g.lv}</span></div>
+      <div class="od">전투력 <b style="color:var(--text)">${fmt(gradPower(g))}</b> · 이적료 <b style="color:var(--indigo)">SP +${fee}</b>
+        <span style="color:var(--dim)">(전투력 ${fmt(TRANSFER_PER)}당 1, 최소 1)</span></div>
+    </div>
+    <div class="btnrow" style="margin-top:16px">
+      <button class="btn primary" id="trOkBtn">보낸다 · SP +${fee}</button>
+      <button class="btn" data-close>취소</button>
+    </div>`, ()=>{
+    const b = $("#trOkBtn"); if(b) b.onclick = ()=>{ closeModal(); gradTransfer(sid); };
+  });
+}
 
 /* ---- 리그 편성 · 진행 ---- */
 function leagueRR(n){
@@ -6325,7 +6363,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0918-1926";
+const BUILD = "0918-1937";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -6659,12 +6697,18 @@ async function leagueSync(){
 /* ---------- 리그 화면 ---------- */
 function lgUnitCard(g, sel, pick){
   const u = gradUnit(g);
-  return `<${pick?"button":"div"} class="opt ${sel?"sel":""}" ${pick?`data-lgp="${g.sid}"`:'style="cursor:default"'}>
+  const card = `<${pick?"button":"div"} class="opt ${sel?"sel":""}" ${pick?`data-lgp="${g.sid}"`:'style="cursor:default"'}>
     <div class="on">${epiH(g.raw||g.name)} ${roleTag(g.job)}<span class="price">Lv.${g.lv}</span></div>
     <div class="od">${esc(g.career||"진로 미정")} · ${g.year}년 졸업 · ${gradeTag(g.grade||"C")}</div>
     <div class="od">전투력 <b style="color:var(--text)">${fmt(u? power(u) : g.pw||0)}</b>${
       (g.relics||[]).length? ` · 유물 ${g.relics.length}개`:""}${g.karma? ` · <span style="color:var(--bad)">업보 ${g.karma}</span>`:""}</div>
   </${pick?"button":"div"}>`;
+  if(!pick) return card;
+  return `<div class="lgpick">${card}
+    <div class="lgtr">${sel
+      ? `<span style="color:var(--dim)">출전 중 — 이적 불가</span>`
+      : `<button class="btn sm" data-lgtr="${g.sid}">이적 · <b style="color:var(--indigo)">SP +${gradFee(g)}</b></button>`}</div>
+  </div>`;
 }
 function viewLeague(){
   const L = leagueState(), pool = gradPool(), U = UI.league || {};
@@ -6702,7 +6746,8 @@ function viewLeague(){
       <button class="btn sm" id="lgClear">명단 비우기</button>
     </div>
     <div class="rule"></div>
-    <div class="eyebrow" style="margin-bottom:6px">졸업생 명부 ${pool.length}명${old? ` <span style="color:var(--dim)">(옛 기록 ${old}명은 전투 정보가 없어 출전 불가)</span>`:""}</div>
+    <div class="eyebrow" style="margin-bottom:6px">졸업생 명부 ${pool.length}명${old? ` <span style="color:var(--dim)">(옛 기록 ${old}명은 전투 정보가 없어 출전 불가)</span>`:""}
+      <span class="hint" style="text-transform:none;letter-spacing:0">출전 중이 아닌 졸업생은 <b style="color:var(--text)">이적</b>으로 내보낼 수 있다 — 전투력 ${fmt(TRANSFER_PER)}당 <b style="color:var(--indigo)">SP 1</b>(최소 1)이 들어오고, 기록 탭 명부에는 남는다</span></div>
     ${pool.length? `<div class="grid2">${pool.map(g=> lgUnitCard(g, L.sids.includes(g.sid), true)).join("")}</div>`
       : `<div class="empty">아직 졸업생이 없다. 3학년이 졸업하면 여기에 쌓인다.</div>`}
     ${L.hist.length? `<div class="rule"></div><div class="eyebrow" style="margin-bottom:6px">지난 시즌</div>
@@ -8344,10 +8389,10 @@ function viewRecord(){
   return `<section class="panel">
     <div class="panel-h"><h2>졸업생 명부</h2><span class="hint">진로가 학원 명성으로 돌아온다</span></div>
     ${g.length? `<div class="grid2">${g.map(x=>`<div class="cercard">
-        <div class="on">${epiH(x.name)} ${roleTag(x.job)}<span class="price">${x.year}년 졸업 · Lv.${x.lv}</span></div>
+        <div class="on">${epiH(x.name)} ${roleTag(x.job)}${x.tr? ` <span class="tag" style="color:var(--dim);border-color:var(--line)">이적</span>`:""}<span class="price">${x.year}년 졸업 · Lv.${x.lv}</span></div>
         <div class="cerrole" style="${x.dark?"color:var(--bad)":""}">${esc(x.career)}</div>
         ${x.reason? `<div class="cerwhy">${esc(x.reason)}</div>`:""}
-        <div class="cerfoot"><span>평가 ${x.score}</span>${x.trust? `<span style="color:var(--brass)">신뢰 ${trustBand(x.trust).step}</span>`:""}${x.karma? `<span style="color:var(--bad)">업보 ${fmt(x.karma)}</span>`:""}${x.pw?`<span>전투력 ${fmt(x.pw)}</span>`:""}<span style="color:var(--${x.fame<0?"bad":"brass"})">명성 ${x.fame<0?"":"+"}${fmt(x.fame)}</span></div>
+        <div class="cerfoot"><span>평가 ${x.score}</span>${x.trust? `<span style="color:var(--brass)">신뢰 ${trustBand(x.trust).step}</span>`:""}${x.karma? `<span style="color:var(--bad)">업보 ${fmt(x.karma)}</span>`:""}${x.pw?`<span>전투력 ${fmt(x.pw)}</span>`:""}<span style="color:var(--${x.fame<0?"bad":"brass"})">명성 ${x.fame<0?"":"+"}${fmt(x.fame)}</span>${x.tr? `<span style="color:var(--indigo)">이적료 SP +${x.trFee|0}</span>`:""}</div>
       </div>`).join("")}</div>`
     : `<div class="empty">아직 졸업생이 없다. 3학년은 가을 대회가 끝나면 졸업한다.</div>`}
   </section>`;
@@ -8659,6 +8704,7 @@ function bindView(){
   }
   {
     const L = leagueState();
+    v.querySelectorAll("[data-lgtr]").forEach(b=> b.onclick=()=> gradTransferModal(b.dataset.lgtr));
     v.querySelectorAll("[data-lgp]").forEach(b=> b.onclick=()=>{
       const id = b.dataset.lgp, i = L.sids.indexOf(id);
       if(i>=0) L.sids.splice(i,1);
