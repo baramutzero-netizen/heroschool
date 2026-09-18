@@ -25,7 +25,7 @@ def bake(path, w, q):
 
 def main():
     prol={}; tut={}; icon=None; tot=0
-    for i in (1,2,3):
+    for i in range(1, 10):
         p = os.path.join(SRC, f"prologue{i}.png")
         if os.path.exists(p):
             prol[str(i)], sz, n = bake(p, PROL_W, PROL_Q); tot += n
