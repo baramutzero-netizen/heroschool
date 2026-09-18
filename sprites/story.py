@@ -13,6 +13,7 @@ GAME = os.path.join(os.path.dirname(HERE), "game.html")
 PROL_W, PROL_Q = 820,  74    # 프롤로그 — 장면 그림
 TUT_W,  TUT_Q  = 1100, 78    # 튜토리얼 — 글씨가 많아 크게 굽는다
 ICON_W, ICON_Q = 200,  92    # 튜토리얼 아이콘
+FB_W,   FB_Q   = 260,  90    # 피드백 아이콘
 
 def bake(path, w, q):
     im = Image.open(path).convert("RGB")
@@ -37,10 +38,15 @@ def main():
     if os.path.exists(p):
         icon, sz, n = bake(p, ICON_W, ICON_Q); tot += n
         print(f"아이콘    {sz[0]}x{sz[1]} · {n/1024:.0f}KB")
-    js = ("const PROL_IMG=%s;\nconst TUT_IMG=%s;\nconst TUT_ICON=%s;\n" % (
+    fb = None
+    p = os.path.join(SRC, "feedback.png")
+    if os.path.exists(p):
+        fb, sz, n = bake(p, FB_W, FB_Q); tot += n
+        print(f"피드백    {sz[0]}x{sz[1]} · {n/1024:.0f}KB")
+    js = ("const PROL_IMG=%s;\nconst TUT_IMG=%s;\nconst TUT_ICON=%s;\nconst FB_ICON=%s;\n" % (
         json.dumps(prol, separators=(",",":")),
         json.dumps(tut, separators=(",",":")),
-        json.dumps(icon)))
+        json.dumps(icon), json.dumps(fb)))
     io.open(OUTJS,"w",encoding="utf-8").write(js)
     src = io.open(GAME,encoding="utf-8").read()
     for line in js.strip().split("\n"):
