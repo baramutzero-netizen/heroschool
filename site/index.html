@@ -1355,15 +1355,15 @@ const JOBS = {
       {id:"ss_2",fx:"aura",el:"arcane",name:"마검 각성",type:"buff",target:"self",power:.3,proc:.3,dur:3,stat:"atk",atbSelf:.3,txt:"칼날의 주문을 끌어올린다 · 자신의 행동 게이지 30% 회복"},
       {id:"ss_u",fx:"slash",el:"arcane",kind:"ult",name:"천검 난무",type:"ult_aoe",target:"enemy_all",power:1.6,proc:1,dur:0,txt:"검기를 흩뿌려 전장을 가른다"}
     ]},
-  gunner:{ name:"거너", role:"dps", sub:"연사 · 관통", tone:"dps",
+  gunner:{ name:"거너", role:"dps", sub:"연주 · 관통", tone:"dps",
     desc:"화약과 강철을 다루는 사수. 멀리서 가장 약한 곳을 쏜다.",
     base:{hp:880,atk:126,def:50,spd:108,crit:.16,critDmg:1.7,acc:.97,eva:.09,skAcc:.94,skRes:.14,ultGain:1.15,leech:0},
     grow:{hp:42,atk:8.2,def:2.4,spd:3.0},
     skills:[
-      {id:"gn_b",fx:"pierce",el:"phys",kind:"basic",name:"속사",type:"dmg",target:"enemy_low",power:.96,proc:1,dur:0,txt:"약해진 쪽부터 쏜다"},
-      {id:"gn_1",fx:"pierce",el:"phys",name:"연사",type:"dmg_multi",target:"enemy_rand",power:.55,proc:.26,dur:0,hits:4,txt:"방아쇠를 연달아 당긴다"},
-      {id:"gn_2",fx:"pierce",el:"phys",name:"철갑탄",type:"dmg",target:"enemy_front",power:1.5,proc:.18,dur:0,pierce:.45,txt:"방어를 뚫는 무거운 한 발"},
-      {id:"gn_u",fx:"pierce",el:"fire",kind:"ult",name:"일제 사격",type:"ult_aoe",target:"enemy_all",power:1.4,proc:1,dur:0,txt:"탄창을 비워 전열을 쓸어버린다"}
+      {id:"gn_b",fx:"pierce",el:"phys",kind:"basic",name:"가벼운 인사",type:"dmg",target:"enemy_low",power:.96,proc:1,dur:0,txt:"가장 지쳐 보이는 쪽에게 먼저 인사한다"},
+      {id:"gn_1",fx:"pierce",el:"phys",name:"속사 왈츠",type:"dmg_multi",target:"enemy_rand",power:.55,proc:.3,dur:0,hits:4,txt:"네 박자에 맞춰 방아쇠를 당긴다"},
+      {id:"gn_2",fx:"pierce",el:"phys",name:"무례한 노크",type:"dmg",target:"enemy_front",power:1.5,proc:.2,dur:0,pierce:.45,txt:"문을 부수고 들어가는 무거운 한 발"},
+      {id:"gn_u",fx:"pierce",el:"fire",kind:"ult",name:"그랜드 피날레",type:"ult_aoe",target:"enemy_all",power:2.0,proc:1,dur:0,pierce:.3,noBreak:true,txt:"탄창을 비워 무대를 닫는다"}
     ]},
   ninja:{ name:"닌자", role:"dps", sub:"교란 · 저주", tone:"dps",
     desc:"그림자에서 판을 흔드는 밀정. 상대를 느리고 무디게 만든다.",
@@ -1396,7 +1396,7 @@ const PASSIVES = {
   darkpriest:{n:"암흑 계약", d:"팀 전원의 피흡이 6%p 오른다", leechAll:.06},
   bard:      {n:"합주",       d:"전투 시작 시 아군 전체의 행동 게이지가 15% 차 있다", onStart:"atbAll"},
   spellsword:{n:"검격 잔향",  d:"체력 40% 이상인 적에게 주는 피해가 10% 늘어난다", vsHigh:.10},
-  gunner:    {n:"조준선 확보", d:"전열의 적에게 주는 피해가 14% 늘어난다", vsFront:.14},
+  gunner:    {n:"앙코르는 기본이죠", d:"기본기나 스킬을 쓸 때 14% 확률로 같은 것을 한 번 더 쓴다 (필살기 제외)", encore:.14},
   ninja:     {n:"그림자 밟기", d:"피해 회피가 8%p 오른다", evaSelf:.08}
 };
 function passiveOf(job){ return PASSIVES[job] || null; }
@@ -2931,7 +2931,7 @@ function passiveFor(o){
   if(!P) return null;
   const k = 1 + (((o.skMod&&o.skMod.passive)||{}).pow||0);
   const out = Object.assign({}, P);
-  ["takeLow","ultBasic","vsBack","vsFront","vsLow","vsHigh","healMul","aoe","regen","take","leech","leechAll","evaSelf","counter","atbOnDebuff"].forEach(x=>{ if(out[x]) out[x] = out[x]*k; });
+  ["takeLow","ultBasic","vsBack","vsFront","vsLow","vsHigh","healMul","aoe","regen","take","leech","leechAll","evaSelf","counter","atbOnDebuff","encore"].forEach(x=>{ if(out[x]) out[x] = out[x]*k; });
   out.k = k;
   return out;
 }
@@ -3127,6 +3127,14 @@ function runBattle(teamA, teamB, opt){
       } else chosen = basic;
     }
     resolve(u, chosen, foes, allies, isUlt);
+    /* 앙코르 — 같은 기본기·스킬을 한 번 더 (필살기 제외) */
+    {
+      const Pe = u.pas;
+      if(Pe && Pe.encore && u.alive && aliveOf(foes).length && RNG() < Pe.encore){
+        push(`<b>${epiH(u.name)}</b> — 앙코르! <b>${chosen.name}</b> 한 번 더`,"good",u.uid);
+        resolve(u, chosen, foes, allies, isUlt);
+      }
+    }
     {
       const Pm = u.pas;
       const bb = (Pm && Pm.ultBasic && chosen && chosen.kind==="basic") ? 1+Pm.ultBasic : 1;
@@ -3306,7 +3314,7 @@ function runBattle(teamA, teamB, opt){
       case "ult_single": dealDamage(u,tg[0],p,sk); if(sk.heal){ const h=Math.round(u.maxHp*sk.heal*.35); const h0=u.hp; u.hp=Math.min(u.maxHp,u.hp+h); recHeal(u, u.hp-h0); push(`<b>${epiH(u.name)}</b> 회복 ${fmt(h)}`,"heal",u.uid,null,[{u:u.uid,v:u.hp-h0,k:"heal"}]);} break;
       case "ult_aoe": { let tot = 0;
         tg.forEach(t=>{ if(t.alive) tot += dealDamage(u,t,p,sk); });
-        tg.forEach(t=> t.alive && addFx(t,{name:"방어 붕괴",kind:"d",turns:dur+1,stat:"def",mode:"mul",val:-.25}));
+        if(!sk.noBreak) tg.forEach(t=> t.alive && addFx(t,{name:"방어 붕괴",kind:"d",turns:dur+1,stat:"def",mode:"mul",val:-.25}));
         if(sk.shieldSelf && tot>0){
           const sh = Math.round(tot*sk.shieldSelf);
           u.shield += sh; u.shBy = u.uid;
@@ -6506,7 +6514,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0918-2333";
+const BUILD = "0918-2348";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
