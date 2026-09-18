@@ -147,6 +147,8 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 .st .up{color:var(--ok);font-size:11px}
 .mentbar{height:4px;flex:1;background:var(--surface2);border-radius:2px;overflow:hidden;max-width:54px}
 .mentbar > i{display:block;height:100%;background:var(--indigo)}
+.mentbar.over > i{background:var(--brass)}
+.mentv.over{color:var(--brass)}
 
 /* ---------- schedule ---------- */
 .weeks{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:8px}
@@ -1623,7 +1625,7 @@ function personaText(k){
 }
 function applyPersona(st){
   const P = personaOf(st);
-  Object.keys(P.m||{}).forEach(k=>{ st.ment[k] = clamp(st.ment[k] + P.m[k], 1, 99); });
+  Object.keys(P.m||{}).forEach(k=>{ st.ment[k] = clamp(st.ment[k] + P.m[k], 1, MENT_MAX); });
 }
 const BATTLE = [
   {k:"hp",n:"체력"},{k:"atk",n:"공격력"},{k:"def",n:"방어력"},{k:"spd",n:"속도"},
@@ -2260,7 +2262,7 @@ function newStudent(year, grade, job){
   const preLv = year===1?0 : year===2? ri(4,7) : ri(9,14);
   for(let i=0;i<preLv;i++) levelUp(st,true);
   if(year>1){
-    MENTAL.forEach(x=>{ if(x.k!=="pot") st.ment[x.k]=Math.round(clamp(st.ment[x.k]+ (year-1)*rnd(6,15),5,99)); });
+    MENTAL.forEach(x=>{ if(x.k!=="pot") st.ment[x.k]=Math.round(clamp(st.ment[x.k]+ (year-1)*rnd(6,15),5,mentMaxOf(st))); });
     st.fame = Math.round((year-1)*rnd(10,45));
   }
   const slots = relicSlots(st);
@@ -2536,8 +2538,25 @@ function epithetCeremony(c){
 }
 
 /* 전투 스탯 산출: 직업 기본 + 레벨 성장(잠재력 연동) + 유물 */
+/* 멘탈리티 상한 — 99를 넘길 수 있지만 잠재력이 받쳐줘야 하고, 넘은 몫은 절반만 힘이 된다 */
+const MENT_MAX    = 150;   // 절대 상한
+const MENT_SOFT   = 99;    // 여기까지가 본래 구간
+const MENT_OVER_K = .5;    // 초과분 효율
+const MENT_OVER_G = .35;   // 99를 넘어선 뒤의 성장 속도
+/* 성장 곡선의 기준선 — 이 값을 넘어서면 상승이 눈에 띄게 느려진다 */
+function mentGrowCap(st){ return 45 + ((st && st.ment && st.ment.pot)||0)*.679; }
+/* 이 학생이 실제로 닿을 수 있는 천장 */
+function mentMaxOf(st){
+  const pot = (st && st.ment && st.ment.pot)||0;
+  return clamp(Math.round(mentGrowCap(st) + pot/99*38), 60, MENT_MAX);
+}
+/* 전투에 실제로 먹히는 값 — 99 위는 절반으로 친다 */
+function mentEffVal(v){
+  v = clamp(v||0, 0, MENT_MAX);
+  return v <= MENT_SOFT ? v : MENT_SOFT + (v-MENT_SOFT)*MENT_OVER_K;
+}
 /* 멘탈리티가 전투 능력치에 주는 보정 (수치 100 기준) */
-const MLERP = (v, lo, hi)=> lo + clamp(v||0, 0, 99)/99*(hi-lo);
+const MLERP = (v, lo, hi)=> lo + mentEffVal(v)/MENT_SOFT*(hi-lo);
 /* 멘탈리티 0 → 99 구간의 전투 능력치 보정폭 */
 const MENT_RANGE = {
   atk    : [-.10, .30],   // 적극성 — 공격력
@@ -2657,7 +2676,7 @@ function eff(u, key){
   return Math.max(1, (v+add)*(1+mul));
 }
 function consThr(stam){
-  stam = clamp(stam||1, 1, 99);
+  stam = clamp(mentEffVal(stam||1), 1, MENT_MAX);
   return stam<=30 ? 85 - (stam-1)*(15/29) : 70 - (stam-30)*(30/69);
 }
 function consOf(u){
@@ -3360,11 +3379,12 @@ function trainStudent(st, tr, success, opt){
   const partM = success ? 1 : TRAIN_FAIL_MUL;
   let notable = null;
   for(const k in gains){
-    const cap = 45 + st.ment.pot*.679;    // 잠재력 81 → 상한 100
+    const cap = mentGrowCap(st);          // 잠재력 81 → 기준선 100
     const cur = st.ment[k];
-    const room = clamp(1 - (cur-10)/Math.max(20,cap), .09, 1);
+    const room = cur >= mentMaxOf(st) ? 0 : clamp(1 - (cur-10)/Math.max(20,cap), .09, 1);
     let d = 2.4*gains[k]*potM*condM*leadM*fM*partM*room*rnd(.7,1.35)*(opt.mul||1);
-    st.ment[k] = clamp(st.ment[k] + d, 1, 99);
+    if(cur >= MENT_SOFT) d *= MENT_OVER_G;   // 한계를 넘어선 구간은 더디다
+    st.ment[k] = clamp(st.ment[k] + d, 1, mentMaxOf(st));
     if(d>.9 && (!notable || d>notable.d)) notable={k,d};
   }
   if(!opt.noExp){
@@ -4676,14 +4696,14 @@ function answerCounsel(qi, oi){
   const ok = fit || byLead || byTrust;
   let gain = null, dbl = false;
   if(ok){
-    const ks = MENTAL.filter(m=>!m.fixed && st.ment[m.k] < 99);
+    const ks = MENTAL.filter(m=>!m.fixed && st.ment[m.k] < mentMaxOf(st));
     if(ks.length){
       const m = pick(ks);
       let d = ri(2,4);
       // 호소력 — 상승폭 2배
       if(RNG() < cslNetP()){ d *= 2; dbl = true; }
       const before = st.ment[m.k];
-      st.ment[m.k] = clamp(before + d, 1, 99);
+      st.ment[m.k] = clamp(before + d, 1, mentMaxOf(st));
       gain = {k:m.k, n:m.n, d: +(st.ment[m.k]-before).toFixed(2)};
     }
   }
@@ -5691,10 +5711,10 @@ function studentDetail(s){
           <div class="on"${(s.pers||"plain")==="genius"?' style="color:var(--brass)"':""}>${personaOf(s).n}<span class="price">${esc(personaText(s.pers||"plain"))}</span></div>
           <div class="od">${esc(personaOf(s).d)}</div>
         </div>
-        <div class="eyebrow" style="margin-bottom:6px">멘탈리티 · 성장</div>
+        <div class="eyebrow" style="margin-bottom:6px">멘탈리티 · 성장 <span style="color:var(--dim)">— 잠재력이 허락하는 한계 ${mentMaxOf(s)}</span></div>
         ${MENTAL.map(m=>`<div class="st"><span class="k">${m.n}</span>
-          <span class="mentbar"><i style="width:${s.ment[m.k]}%"></i></span>
-          <span class="v num">${Math.round(s.ment[m.k])}</span></div>`).join("")}
+          <span class="mentbar${s.ment[m.k]>MENT_SOFT?" over":""}"><i style="width:${Math.min(100, s.ment[m.k])}%"></i></span>
+          <span class="v num mentv${s.ment[m.k]>MENT_SOFT?" over":""}">${Math.round(s.ment[m.k])}</span></div>`).join("")}
         <div style="margin-top:10px">
           <div class="eyebrow" style="margin-bottom:4px">집중 트레이닝 분야</div>
           <select id="focusSel" style="width:100%;background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:5px">
@@ -6097,7 +6117,7 @@ function leagueSane(e, tid){
   const units = t.map((u, ui)=>{
     if(!u || !JOBS[u.j]) return null;
     const m = {};
-    MENTAL.forEach(x=>{ m[x.k] = clamp(Math.round(+(u.m&&u.m[x.k])||10), 1, 99); });
+    MENTAL.forEach(x=>{ m[x.k] = clamp(Math.round(+(u.m&&u.m[x.k])||10), 1, MENT_MAX); });
     return {sid:tid+"_"+ui, raw:String(u.n||"무명").slice(0,12),
             name:String(u.n||"무명").slice(0,12), epithet:u.e? String(u.e).slice(0,20):null,
             job:u.j, grade:["D","C","B","A","S"].indexOf(u.g)>=0? u.g : "C",
@@ -6657,6 +6677,32 @@ const SP_SHOP = [
   {id:"kaleidoscope", n:"칼레이도스코프", cost:100, d:"만화경 — 빗나가는 법을 잊게 한다",
    aff:[["spd",20],["acc",.50],["skAcc",.50],["ultGain",.50]]}
 ];
+/* 현자의 돌 — 성격을 천재적으로 바꾼다. 몇 번이든 살 수 있다 */
+const SAGE_COST = 50, SAGE_PERS = "genius";
+/* 성격을 갈아 끼운다 — 이전 성격의 보정은 걷어내고 새 성격 보정을 얹는다 */
+function setPersona(st, key){
+  const nw = PERSONA[key]; if(!st || !nw) return false;
+  const old = PERSONA[st.pers||"plain"] || PERSONA.plain;
+  const cap = mentMaxOf(st);
+  Object.keys(old.m||{}).forEach(k=>{ st.ment[k] = clamp(st.ment[k] - old.m[k], 1, cap); });
+  Object.keys(nw.m||{}).forEach(k=>{ st.ment[k] = clamp(st.ment[k] + nw.m[k], 1, cap); });
+  st.pers = key;
+  return true;
+}
+function sageTargets(){ return (S.students||[]).filter(x=> (x.pers||"plain") !== SAGE_PERS); }
+function sageUse(sid){
+  const st = (S.students||[]).find(x=>x.id===sid);
+  if(!st){ toast("대상 학생을 고르지 않았다."); return; }
+  if((st.pers||"plain") === SAGE_PERS){ toast(`${dn(st)}${eunn(dn(st))} 이미 천재적이다.`); return; }
+  if(spOf() < SAGE_COST){ toast(`SP 가 ${SAGE_COST - spOf()} 모자란다.`); return; }
+  const before = PERSONA[st.pers||"plain"] || PERSONA.plain;
+  S.sp = spOf() - SAGE_COST;
+  setPersona(st, SAGE_PERS);
+  logE(`<b style="color:var(--ex)">현자의 돌</b> — <b>${dnH(st)}</b>의 성격이 <b>${esc(before.n)}</b>에서 <b style="color:var(--brass)">${esc(PERSONA[SAGE_PERS].n)}</b>으로 바뀌었다 (SP ${SAGE_COST} 소모 · 남은 SP ${fmt(spOf())})`, "big");
+  toast(`${dn(st)} — 천재적으로 바뀌었다.`);
+  UI.sageSel = null;
+  save(); render();
+}
 /* EX 는 학원마다 하나씩만 살 수 있고, 학생 한 명이 둘 이상 찰 수 없다 */
 const EX_PER_STUDENT = 1;
 function spOwned(){ S.spBought = S.spBought || {}; return S.spBought; }
@@ -6707,6 +6753,32 @@ function viewSpShop(){
           </div>
         </div>`;
       }).join("")}
+    </div>
+  </section>
+  ${viewSagePanel()}`;
+}
+function viewSagePanel(){
+  const have = spOf(), list = sageTargets();
+  const sel = (UI.sageSel && list.some(x=>x.id===UI.sageSel)) ? UI.sageSel : (list[0]? list[0].id : "");
+  const ok = !!sel && have >= SAGE_COST;
+  const P = PERSONA[SAGE_PERS];
+  return `<section class="panel">
+    <div class="panel-h"><h2>현자의 돌</h2>
+      <span class="hint">횟수 제한 없이 살 수 있다 · 고른 학생의 성격을 바꾼다</span>
+      <span class="btnpair"><span class="pill">보유 SP <b style="color:var(--indigo)">${fmt(have)}</b></span></span></div>
+    <div class="opt exitem" style="cursor:default">
+      <div class="on" style="color:var(--ex)">현자의 돌
+        <span class="price" style="color:${ok?"var(--indigo)":"var(--dim)"}">${SAGE_COST} SP</span></div>
+      <div class="od" style="font-style:italic">오래 갈린 돌 하나가 사람의 그릇을 다시 빚는다</div>
+      <div class="od">고른 학생의 성격이 <b style="color:var(--brass)">${esc(P.n)}</b>(${esc(P.d)})으로 바뀐다 —
+        이전 성격의 멘탈리티 보정은 걷히고 <b>${esc(personaText(SAGE_PERS))}</b>가 붙는다.</div>
+      ${list.length? `<div class="btnrow" style="margin-top:10px;align-items:center">
+        <select id="sageSel" style="flex:1;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:6px">
+          ${list.map(x=>`<option value="${x.id}" ${x.id===sel?"selected":""}>${esc(dn(x))} — ${esc(JOBS[x.job].name)} · ${x.year}학년 · ${esc(personaOf(x).n)}</option>`).join("")}
+        </select>
+        <button class="btn sm ${ok?"primary":""}" id="sageBuy" ${ok?"":"disabled"}>${ok? "사용" : `SP ${Math.max(0,SAGE_COST-have)} 부족`}</button>
+      </div>`
+      : `<div class="od" style="color:var(--dim);margin-top:8px">재학생이 모두 천재적이다.</div>`}
     </div>
   </section>`;
 }
@@ -8389,6 +8461,11 @@ function bindView(){
     const ll = $("#lgLoad");   if(ll) ll.onclick = ()=>{ if(UI.league) UI.league.tried = null; seasonLoad(); };
     const rl = $("#rkLoad");   if(rl) rl.onclick = ()=> rankLoad();
     v.querySelectorAll("[data-spbuy]").forEach(b=> b.onclick = ()=> spBuy(b.dataset.spbuy));
+    { const ss = $("#sageSel"); if(ss) ss.onchange = ()=>{ UI.sageSel = ss.value; render(); };
+      const sb = $("#sageBuy"); if(sb) sb.onclick = ()=>{
+        const cur = $("#sageSel");
+        sageUse(cur? cur.value : UI.sageSel);
+      }; }
     const ec = $("#errCopy2"); if(ec) ec.onclick = ()=>{
       if(navigator.clipboard) navigator.clipboard.writeText(errText()).then(()=>toast("복사했다."), ()=>toast("복사하지 못했다."));
       else toast("복사하지 못했다.");
