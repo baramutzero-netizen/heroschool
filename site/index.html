@@ -6245,7 +6245,7 @@ function viewPlan(){
         <div class="od">${hurt.map(s=>`${dnH(s)} <b style="color:var(--bad)">${injWeeks(s)}주</b>${isRestFocus(s)?' <span style="color:var(--ok)">휴식 중</span>':""}`).join(" · ")}</div>
         <div class="od" style="color:var(--dim)">부상 중에는 잠재력을 제외한 멘탈리티가 <b style="color:var(--bad)">50%</b>로 계산되고, <b>휴식을 제외한 훈련은 100% 실패</b>한다.
           ${bad.length? `<b style="color:var(--bad)">훈련을 계속하면 다시 다칠 수 있다 — ${bad.length}명을 휴식 집중으로 돌리는 것이 좋다.</b>` : "휴식 집중으로 회복을 기다리는 중이다."}</div></div>`; })()}
-    ${SHOW_FOCUSHELP? `<p style="font-size:11.5px;color:var(--dim);margin:-4px 0 10px">약점은 가장 낮은 멘탈리티를, 강점은 가장 높은 멘탈리티를 전 학생에게 일괄 지정한다 (잠재력 제외). <b>전부 지정 없음</b>은 휴식 집중을 포함한 모든 집중 지정을 해제한다. <b>변경 취소하기</b>는 지금 손댄 것을 무르고 <b>지난주</b> 배치로, <b>지난주 변경 취소</b>는 지난주에 바꾼 것을 무르고 <b>지지난주</b> 배치로 되돌린다.
+    ${SHOW_FOCUSHELP? `<p style="font-size:11.5px;color:var(--dim);margin:-4px 0 10px">약점은 가장 낮은 멘탈리티를, 강점은 가장 높은 멘탈리티를 전 학생에게 일괄 지정한다 (잠재력 제외). <b>이미 상한에 닿은 분야는 고르지 않고</b>, 더 올릴 분야가 하나도 없으면 지정 없음으로 둔다. <b>전부 지정 없음</b>은 휴식 집중을 포함한 모든 집중 지정을 해제한다. <b>변경 취소하기</b>는 지금 손댄 것을 무르고 <b>지난주</b> 배치로, <b>지난주 변경 취소</b>는 지난주에 바꾼 것을 무르고 <b>지지난주</b> 배치로 되돌린다.
       휴식 전환은 해당 컨디션 이하인 학생을 <b style="color:var(--ok)">휴식 집중</b>으로 돌린다 — 학원 스케줄에 참여하지 않고 매주 컨디션만 <b style="color:var(--ok)">${restFocusWeek()}</b> 회복한다. 개별 변경은 학생 탭에서 한다.</p>` : ""}
     <div class="grid2">
       ${MENTAL.filter(m=>!m.fixed).map(m=>{
@@ -6586,7 +6586,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0919-0240";
+const BUILD = "0919-0257";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -7481,9 +7481,13 @@ function fxDemoStart(){
 
 /* ---------- 교회 ---------- */
 const CHURCH_DONATE = 100;    // 기부 비용
-const CHURCH_KARMA  = 10;     // 기부 시 전원 업보 감소
+const CHURCH_KARMA  = 20;     // 기부 시 전원 업보 감소
+const CHURCH_BIG    = 1000;   // 거액 기부 비용
+const CHURCH_BIG_KARMA = 40;  // 거액 기부 시 전원 업보 감소
 const CHURCH_HEAL   = 1000;   // 부상 치료 비용
-/* 성물 — 각 계절의 상반기·하반기마다 하나씩만 산다 */
+/* 교회 — 계절마다 정해진 횟수만큼 쓸 수 있다 */
+const CHURCH_LIMIT = {don:1, big:1, water:2, book:2};
+/* 성물 */
 const HOLY_WATER_PER = 100, HOLY_WATER_COND = 15;   // 신비한 성수 — 학생 한 명당 값 · 즉시 전원 컨디션 회복
 function holyWaterCost(){ return Math.max(HOLY_WATER_PER, (S.students||[]).length * HOLY_WATER_PER); }
 /* 예지의 서 — 사뒀다가 진행 탭에서 손패를 갈아엎는다.
@@ -7491,11 +7495,11 @@ function holyWaterCost(){ return Math.max(HOLY_WATER_PER, (S.students||[]).lengt
 const FORESIGHT_G = 200, FORESIGHT_STEP = 100, FORESIGHT_MAX = 1000;
 function foresightBought(){ return churchState().bookN|0; }
 function foresightPrice(){ return Math.min(FORESIGHT_G + foresightBought()*FORESIGHT_STEP, FORESIGHT_MAX); }
-function churchBought(k){ return (churchState().buy||{})[k] === churchHalfKey(); }
-function churchMark(k){ const c=churchState(); c.buy = c.buy||{}; c.buy[k] = churchHalfKey(); }
+function churchBought(k){ return churchLeft(k) <= 0; }
+function churchMark(k){ churchTake(k); }
 function bookCount(){ return S.books|0; }
 function buyHolyWater(){
-  if(churchBought("water")){ toast("이번 반기에는 이미 받아 갔다."); return; }
+  if(churchBought("water")){ toast("이번 계절에는 더 받아 갈 수 없다."); return; }
   const cost = holyWaterCost();
   if(S.gold < cost){ toast("자금이 모자란다."); return; }
   S.gold -= cost; churchMark("water");
@@ -7505,7 +7509,7 @@ function buyHolyWater(){
   save(); render(); toast(`전원 컨디션 +${HOLY_WATER_COND}`);
 }
 function buyForesight(){
-  if(churchBought("book")){ toast("이번 반기에는 이미 받아 갔다."); return; }
+  if(churchBought("book")){ toast("이번 계절에는 더 받아 갈 수 없다."); return; }
   const price = foresightPrice();
   if(S.gold < price){ toast("자금이 모자란다."); return; }
   S.gold -= price; churchMark("book");
@@ -7527,18 +7531,37 @@ function useForesight(){
   save(); render(); toast(`손패 ${n}장 교체`);
 }
 function churchState(){ S.church = S.church || {}; return S.church; }
-function churchHalfKey(){ return `${S.year}-${S.phase}-${isLateHalf(S.week)?1:0}`; }
-function churchDonated(){ return churchState().don === churchHalfKey(); }
+function churchSeasonKey(){ return `${S.year}-${S.phase}`; }
+/* 계절이 바뀌면 사용 횟수를 통째로 비운다 */
+function churchUse(){ const c = churchState();
+  if(c.key !== churchSeasonKey()){ c.key = churchSeasonKey(); c.use = {}; }
+  c.use = c.use || {}; return c.use; }
+function churchLeft(k){ return Math.max(0, (CHURCH_LIMIT[k]|0) - (churchUse()[k]|0)); }
+function churchTake(k){ const u = churchUse(); u[k] = (u[k]|0) + 1; }
+function churchLeftLabel(k){ const l = churchLeft(k), m = CHURCH_LIMIT[k]|0;
+  return l>0 ? `이번 계절 ${l}/${m}회 남음` : "이번 계절 소진"; }
+function churchDonated(){ return churchLeft("don") <= 0; }
 function doDonate(){
-  if(churchDonated()){ toast("이번 반기에는 이미 기부했다."); return; }
+  if(churchDonated()){ toast("이번 계절에는 이미 기부했다."); return; }
   if(S.gold < CHURCH_DONATE){ toast("자금이 모자란다."); return; }
   S.gold -= CHURCH_DONATE;
-  churchState().don = churchHalfKey();
+  churchTake("don");
   const had = S.students.filter(s=> karmaOf(s) > 0);
   had.forEach(s=> addKarma(s, -CHURCH_KARMA));
   logE(`교회 기부 — <b>${fmt(CHURCH_DONATE)} G</b>를 헌금했다. 전 학생의 업보가 <b style="color:var(--ok)">${CHURCH_KARMA}</b> 씻겼다${had.length? ` (${had.length}명)`:""}.`,"good");
   save(); render();
   toast(had.length? `업보 -${CHURCH_KARMA} (${had.length}명)` : "씻을 업보가 없었다.");
+}
+function doBigDonate(){
+  if(churchLeft("big") <= 0){ toast("이번 계절에는 이미 거액을 헌금했다."); return; }
+  if(S.gold < CHURCH_BIG){ toast("자금이 모자란다."); return; }
+  S.gold -= CHURCH_BIG;
+  churchTake("big");
+  const had = S.students.filter(s=> karmaOf(s) > 0);
+  had.forEach(s=> addKarma(s, -CHURCH_BIG_KARMA));
+  logE(`교회 거액 기부 — <b>${fmt(CHURCH_BIG)} G</b>를 헌금했다. 전 학생의 업보가 <b style="color:var(--ok)">${CHURCH_BIG_KARMA}</b> 씻겼다${had.length? ` (${had.length}명)`:""}.`,"good");
+  save(); render();
+  toast(had.length? `업보 -${CHURCH_BIG_KARMA} (${had.length}명)` : "씻을 업보가 없었다.");
 }
 function doHeal(sid){
   const st = S.students.find(x=>x.id===sid);
@@ -7562,25 +7585,31 @@ function viewChurch(){
     <div class="panel-h"><h2>교회</h2><span class="hint">업보를 씻고 다친 학생을 돌본다 · 학원 전체 업보 <b style="color:var(--${km?"bad":"dim"})">${fmt(km)}</b></span></div>
     <div class="grid2">
       <button class="opt ${done?"locked":""}" id="btnDonate" ${done||S.gold<CHURCH_DONATE?"disabled":""}>
-        <div class="on">기부<span class="price">${done? "이번 반기 완료" : fmt(CHURCH_DONATE)+" G"}</span></div>
+        <div class="on">기부<span class="price">${done? "이번 계절 소진" : fmt(CHURCH_DONATE)+" G"}</span></div>
         <div class="od">모든 학생의 업보가 <b style="color:var(--ok)">${CHURCH_KARMA}</b> 감소한다.</div>
-        <div class="od" style="color:var(--dim)">각 계절의 상반기·하반기마다 1회 · 현재 ${S.year}년 ${PHASES[S.phase].n} ${halfLabel(S.week)}</div>
+        <div class="od" style="color:var(--dim)">${churchLeftLabel("don")} · 현재 ${S.year}년 ${PHASES[S.phase].n}</div>
       </button>
+      ${(()=>{ const bd = churchLeft("big")<=0;
+        return `<button class="opt ${bd?"locked":""}" id="btnBigDonate" ${bd||S.gold<CHURCH_BIG?"disabled":""}>
+        <div class="on">거액 기부<span class="price">${bd? "이번 계절 소진" : fmt(CHURCH_BIG)+" G"}</span></div>
+        <div class="od">모든 학생의 업보가 <b style="color:var(--ok)">${CHURCH_BIG_KARMA}</b> 감소한다.</div>
+        <div class="od" style="color:var(--dim)">${churchLeftLabel("big")} · 현재 ${S.year}년 ${PHASES[S.phase].n}</div>
+      </button>`; })()}
       <div class="opt" style="cursor:default">
         <div class="on">치유<span class="price">${fmt(CHURCH_HEAL)} G</span></div>
         <div class="od">부상을 즉시 낫게 하고 컨디션을 <b style="color:var(--ok)">100</b>까지 올린다.</div>
         <div class="od" style="color:var(--dim)">${hurt.length? `치료 대상 ${hurt.length}명` : "지금은 다친 학생이 없다"}</div>
       </div>
       <button class="opt ${churchBought("water")?"locked":""}" id="btnWater" ${churchBought("water")||S.gold<holyWaterCost()?"disabled":""}>
-        <div class="on">신비한 성수<span class="price">${churchBought("water")? "이번 반기 완료" : fmt(holyWaterCost())+" G"}</span></div>
+        <div class="on">신비한 성수<span class="price">${churchBought("water")? "이번 계절 소진" : fmt(holyWaterCost())+" G"}</span></div>
         <div class="od">전 학생의 컨디션이 그 자리에서 <b style="color:var(--ok)">${HOLY_WATER_COND}</b> 회복된다.</div>
-        <div class="od" style="color:var(--dim)">각 계절의 상반기·하반기마다 1회 · 현재 ${S.year}년 ${PHASES[S.phase].n} ${halfLabel(S.week)}</div>
+        <div class="od" style="color:var(--dim)">${churchLeftLabel("water")} · 현재 ${S.year}년 ${PHASES[S.phase].n}</div>
       </button>
       ${(()=>{ const pr = foresightPrice(), done = churchBought("book"), nx = Math.min(pr+FORESIGHT_STEP, FORESIGHT_MAX);
         return `<button class="opt ${done?"locked":""}" id="btnBook" ${done||S.gold<pr?"disabled":""}>
-        <div class="on">예지의 서<span class="price">${done? "이번 반기 완료" : fmt(pr)+" G"}</span></div>
+        <div class="on">예지의 서<span class="price">${done? "이번 계절 소진" : fmt(pr)+" G"}</span></div>
         <div class="od">진행 탭에서 펼치면 <b>손패를 통째로</b> 새로 뽑는다. 월~금에 올려둔 카드는 그대로 둔다.</div>
-        <div class="od" style="color:var(--dim)">각 계절의 상반기·하반기마다 1회 · 지금 가진 책 <b style="color:var(--brass)">${bookCount()}권</b>
+        <div class="od" style="color:var(--dim)">${churchLeftLabel("book")} · 지금 가진 책 <b style="color:var(--brass)">${bookCount()}권</b>
           · 지금까지 ${foresightBought()}권 구매 ${pr>=FORESIGHT_MAX? `· <b>${fmt(FORESIGHT_MAX)} G</b>에서 값이 멈췄다`
             : `· 다음 권 <b>${fmt(nx)} G</b>`}</div>
       </button>`; })()}
@@ -8239,8 +8268,12 @@ function viewTeam(){
 
 /* 개인 집중 훈련 — 약점 / 강점 일괄 지정 */
 function focusKeys(){ return MENTAL.filter(m=>!m.fixed).map(m=>m.k); }
+/* 아직 상한에 닿지 않아 더 올릴 수 있는 분야만 */
+function focusGrowable(st){
+  return focusKeys().filter(k=> FOCUS_FAC[k] && (st.ment[k]||0) < mentCapOf(st, k));
+}
 function focusPick(st, mode){
-  const ks = focusKeys().filter(k=> FOCUS_FAC[k]);
+  const ks = focusGrowable(st);
   if(!ks.length) return null;
   let best = null;
   ks.forEach(k=>{
@@ -8254,7 +8287,8 @@ function focusPick(st, mode){
 }
 /* 라이벌 한 쌍 — 둘의 멘탈리티를 더해서 가장 낮은(또는 높은) 분야를 함께 고른다 */
 function focusPickPair(a, b, mode){
-  const ks = focusKeys().filter(k=> FOCUS_FAC[k]);
+  const ga = focusGrowable(a), gb = focusGrowable(b);
+  const ks = focusKeys().filter(k=> FOCUS_FAC[k] && (ga.indexOf(k)>=0 || gb.indexOf(k)>=0));
   if(!ks.length) return null;
   let best = null;
   ks.forEach(k=>{
@@ -8387,12 +8421,13 @@ function setFocusAll(mode){
     }
     const b = focusPick(st, mode);
     if(b) put(st, b.k, b.v, false);
+    else put(st, "free", 0, false);      // 더 올릴 분야가 없다 — 지정 없음
   });
   if(!rows.length){ toast("지정할 학생이 없다."); return; }
   const label = mode==="weak" ? "약점" : "강점";
   const cnt = {};
   rows.forEach(r=> cnt[r.k] = (cnt[r.k]||0)+1);
-  const sum = Object.keys(cnt).map(k=>`${MENTAL.find(m=>m.k===k).n} ${cnt[k]}명`).join(" · ");
+  const sum = Object.keys(cnt).map(k=>`${k==="free"? "지정 없음" : MENTAL.find(m=>m.k===k).n} ${cnt[k]}명`).join(" · ");
   logE(`개인 집중 훈련 일괄 지정 (${label}) — ${sum}`,"good");
   save(); render();
   showModal(`<div class="cerhead"><div class="eyebrow">개인 집중 훈련 · 임의 설정</div>
@@ -8405,9 +8440,9 @@ function setFocusAll(mode){
       ${rows.slice().sort((a,b)=> a.v-b.v || a.st.name.localeCompare(b.st.name)).map(r=>`<tr>
         <td>${dnH(r.st)}${r.pair? ' <span class="tag" style="color:var(--bad);border-color:var(--bad)">라이벌</span>':""}${r.changed?"":' <span style="color:var(--dim);font-size:11px">변경 없음</span>'}</td>
         <td class="num">${r.st.year}</td>
-        <td><b style="color:var(--brass)">${MENTAL.find(m=>m.k===r.k).n}</b></td>
-        <td class="num">${r.v}</td>
-        <td style="font-size:12px;color:var(--muted)">${FACILITIES[FOCUS_FAC[r.k]].n} Lv.${S.facil[FOCUS_FAC[r.k]]}</td></tr>`).join("")}
+        <td>${r.k==="free"? `<b style="color:var(--dim)">지정 없음</b>` : `<b style="color:var(--brass)">${MENTAL.find(m=>m.k===r.k).n}</b>`}</td>
+        <td class="num">${r.k==="free"? "—" : r.v}</td>
+        <td style="font-size:12px;color:var(--muted)">${r.k==="free"? "더 올릴 분야가 없다" : `${FACILITIES[FOCUS_FAC[r.k]].n} Lv.${S.facil[FOCUS_FAC[r.k]]}`}</td></tr>`).join("")}
       </tbody></table></div>
     <div class="btnrow" style="margin-top:14px"><button class="btn primary" data-close>확인</button></div>`, null, true);
 }
@@ -8975,6 +9010,7 @@ function bindView(){
     } else lgClockStop();
   }
   const bd = $("#btnDonate"); if(bd) bd.onclick = ()=> doDonate();
+  const bbd = $("#btnBigDonate"); if(bbd) bbd.onclick = ()=> doBigDonate();
   const bhw = $("#btnWater");   if(bhw) bhw.onclick = ()=> buyHolyWater();
   const bbk = $("#btnBook");    if(bbk) bbk.onclick = ()=> buyForesight();
   const bbu = $("#btnBookUse"); if(bbu) bbu.onclick = ()=> useForesight();
