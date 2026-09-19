@@ -10703,11 +10703,13 @@ const BGM = {
   lose:     {loop:"defeat.ogg",   once:true},
   ending:   {loop:"ending.ogg",   once:true, v:.95}
 };
+/* 이 이름을 덮어쓰기로 걸면 밑바닥 곡(계절)까지 눌러 아무 소리도 나지 않는다 */
+const BGM_NONE = "_none";
 const AUD_KEY = "heroschool_audio_v1";
-const AUD = {on:true, vol:55, sfx:70};
+const AUD = {on:false, vol:55, sfx:70};
 try{
   const j = JSON.parse(localStorage.getItem(AUD_KEY) || "null");
-  if(j){ AUD.on = j.on !== false;
+  if(j){ AUD.on = j.on === true;
     if(typeof j.vol === "number") AUD.vol = clamp(j.vol|0, 0, 100);
     if(typeof j.sfx === "number") AUD.sfx = clamp(j.sfx|0, 0, 100); }
 }catch(e){}
@@ -10846,14 +10848,12 @@ function audRefresh(){
 }
 /* 틀고 싶은 곡이 있는데 브라우저가 아직 소리를 막고 있는 상태인가 */
 function audSilent(){
-  if(!AUD.on || !AWANT) return false;
+  if(!AUD.on || !AWANT || AWANT === BGM_NONE) return false;
   if(AWEB === false) return !!(AHTML && AHTML[0] && AHTML[0].paused);
   return !!(ACTX && ACTX.state && ACTX.state !== "running");
 }
 /* 시작 화면의 음악 단추·안내를 지금 상태에 맞춘다 */
 function audHintSync(){
-  const h = document.getElementById("tAudHint");
-  if(h) h.hidden = !audSilent();
   const b = document.getElementById("tAudBtn");
   if(b){
     b.textContent = AUD.on ? "\u266a  음악 켜짐" : "\u266a  음악 꺼짐";
@@ -10978,9 +10978,9 @@ function showTitle(canContinue){
     </div>
     <div class="tsave">${canContinue? `저장된 학원 — ${esc(S.acadName)} · ${S.year}년 ${PHASES[S.phase].n} ${Math.min(S.week+1,PHASES[S.phase].weeks)}주` : "저장된 기록이 없다"}</div>
     <button class="tmus" id="tAudBtn" type="button">\u266a  음악</button>
-    <div class="tahint" id="tAudHint" hidden>브라우저가 자동 재생을 막고 있다 — 아무 곳이나 한 번 누르면 음악이 흐른다</div>
+    <div class="tahint" id="tAudHint">게임의 몰입감을 높이고 싶다면 음악을 켜고 진행해주세요! (설정에서 변경 가능합니다)</div>
   </div></div>`;
-  audOver("title");
+  audOver(BGM_NONE);      // 시작 화면은 무음 — 음악은 프롤로그부터 흐른다
   {
     const ab = $("#tAudBtn");
     if(ab) ab.onclick = ()=>{
@@ -11013,7 +11013,7 @@ function askAcademyName(){
 }
 function showPrologue(name, i){
   const pg = PROLOGUE[i], last = i>=PROLOGUE.length-1;
-  audOver("prologue");
+  audOver("prologue");    // 무음이던 시작 화면을 지나 여기서 처음 음악이 걸린다
   const start = ()=>{
     audOver(null);
     newGame(name); S.mission = newMission(); save();
