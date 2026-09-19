@@ -1,0 +1,22 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>새 전투 필드 미리보기</title>
+<style>body{margin:0;background:#eeeaf1;font:14px system-ui}nav{height:44px;display:flex;gap:8px;align-items:center;padding:0 12px}button{padding:5px 10px;border:1px solid #bbb5c9;border-radius:5px;background:white;cursor:pointer}iframe{width:100%;height:calc(100dvh - 44px);border:0}small{color:#666}</style>
+<nav><button onclick="show(3)">3 대 3</button><button onclick="show(6)">전체 배치</button><button onclick="show(1)">원정 보스</button><small>검수용 전투</small></nav>
+<iframe id="game" src="../heroschool.html" title="전투 필드"></iframe>
+<script>
+function show(mode){
+ const w=document.getElementById('game').contentWindow;
+ w.eval(`(()=>{
+  const end=document.querySelector('#bEnd');if(end)end.click();closeModal();
+  const mode=${mode};
+  const jobs=mode===6?['paladin','monk','sword','wizard','priest','archer']:['paladin','rogue','priest'];
+  const a=jobs.map(j=>newStudent(1,'B',j));
+  const b=mode===1?genMonster(DUNGEONS[0],1):(mode===6?jobs:['forcemage','ninja','darkpriest']).map(j=>newStudent(1,'B',j));
+  a.forEach((s,i)=>s.pers=['hot','intro','dilig','genius','lively','boast'][i]);
+  const rows=list=>Object.fromEntries(list.map((s,i)=>[s.id,mode===6?(i<3?'front':'back'):(i===0?'front':'back')]));
+  const opt={rowsA:rows(a),rowsB:rows(b),formA:mode===3?'wedge':null,formB:mode===3?'wedge':null};
+  openBattle(runBattle(a,b,opt),{titleA:'새봄 용사 학원',titleB:mode===1?'학원 지하 수련장':'은빛 마법 학원'},()=>{});
+ })()`);
+}
+document.getElementById('game').onload=()=>show(3);
+</script></html>
