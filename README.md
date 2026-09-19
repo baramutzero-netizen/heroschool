@@ -69,17 +69,20 @@ python test.py
 
 ### 스프라이트 추가
 
-1. `sprites/SPRITE_SPEC.md` 규격대로 시트를 그려 `sprites/src/<직업id>.png` 로 저장
-2. `python sprites/pack.py` — 아틀라스와 `sprites/sprites.js` 가 만들어집니다
-3. `sprites.js` 내용을 `game.html` 의 `const SPR_CELL=...` 로 시작하는 블록과 교체
-4. `python wrap.py && python wrap_site.py`
+1. `sprites/SPRITE_SPEC.md`의 v3 규격으로 **독립 256×256 프레임**을 제작합니다. 기준점은 (128,170), 안전 여백은 16px입니다.
+2. `sprites/frames-v3/<직업id>/`의 개별 PNG와 `manifest.json`을 사용합니다. Aseprite 편집본을 수정했다면 `sprites/export_frames.lua`로 먼저 내보냅니다.
+3. `python sprites/pack.py` — 검사를 통과한 프레임을 여백 있는 아틀라스로 묶고 `game.html`에 자동 반영합니다.
+4. `python wrap.py`와 `python wrap_site.py`를 실행합니다.
+5. `sprites/review.html`에서 모션, 좌우 반전, 기준점을 확인합니다. `node sprites/check_runtime.cjs`는 Playwright와 설치된 Edge로 렌더링 검사를 수행합니다.
+
+기존 `sprites/src/` 캐릭터 시트는 보관용입니다. v3 manifest가 있으면 새 빌드는 기존 시트를 읽지 않습니다.
 
 전투 이펙트는 `python sprites/fx.py` 로 다시 찍습니다. 형태 6종(참격·관통·타격·폭발·오라·회복)만
 기준 색 하나로 그려두고, 게임에서 원소별로 색상·채도·명도를 돌려 씁니다. 스킬마다 `fx`·`el` 태그가
 붙어 있어서 이펙트를 바꾸려면 그 태그만 고치면 됩니다.
 
-머리색은 자동으로 검출됩니다 — 캐릭터 상단 42% 안에 몰려 있으면서 색상이 서로 가까운
-색들만 머리로 잡고, 학생 ID 해시로 색상 24단 × 진하기 3단 중 하나를 골라 치환합니다.
+복장 색은 피부와 머리 전용 색을 제외하여 검출합니다. 학생 ID 해시로 색상 24단 × 진하기
+3단 중 하나를 골라 치환하며, 분리된 효과는 이 치환을 적용하지 않습니다.
 
 ---
 

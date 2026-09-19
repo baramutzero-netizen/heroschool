@@ -351,4 +351,9 @@ def main():
     print("아틀라스 %dx%d · WebP %.1fKB · base64 %.1fKB → %s" %
           (atlas.size[0],atlas.size[1],len(raw)/1024,len(b64)/1024,out))
 
-main()
+if __name__ == '__main__':
+    if os.path.exists(os.path.join(os.path.dirname(SRC), 'frames-v3', 'manifest.json')):
+        from pack_frames import main as pack_frames
+        pack_frames()
+    else:
+        main()
