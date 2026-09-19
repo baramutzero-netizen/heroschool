@@ -694,9 +694,9 @@ table.tb tr:hover td{background:var(--surface2)}
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--surface);border:1px solid var(--brass);border-radius:3px;padding:8px 16px;z-index:90;box-shadow:var(--shadow);font-size:13px}
 .pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:1px 8px;border-radius:10px;background:var(--surface2);color:var(--muted)}
 .pill.ok{color:var(--ok)}.pill.bad{color:var(--bad)}
-.spr{image-rendering:pixelated;flex:none;pointer-events:none;display:block}
+.spr{image-rendering:pixelated;flex:none;pointer-events:none;display:block;transform-origin:50% 82.8125%}
 .spr.flip{transform:scaleX(-1)}
-.unit .sprwrap{display:flex;justify-content:center;align-items:flex-end;height:108px;margin:-4px 0 2px;overflow:hidden}
+.unit .sprwrap{display:flex;justify-content:center;align-items:flex-end;height:108px;margin:-4px 0 2px;overflow:visible}
 /* ── 원정지 주인 — 정지 그림 한 장 + 번뜩임 ──
    프레임 애니메이션 대신, 같은 그림을 실루엣으로 겹쳐 깜빡인다. */
 .units.solo{grid-template-columns:minmax(0,1fr)}
@@ -773,7 +773,8 @@ table.tb tr:hover td{background:var(--surface2)}
   .unit .uslv{display:none}                    /* Lv·열 표시 — 줄 라벨로 알 수 있다 */
   .unit .usub{gap:4px;margin-top:2px}
   .unit .fx{display:none}                      /* 버프 칩은 로그로 확인 */
-  .unit .sprwrap .spr{transform:scale(.48);transform-origin:bottom center}
+  .unit .sprwrap .spr{transform:scale(.48);transform-origin:50% 82.8125%}
+  .unit .sprwrap .spr.flip{transform:scale(-.48,.48)}
   /* 대형 몬스터 — 이미지와 이펙트를 같은 비율로 줄여야 타격 위치가 맞는다 */
   .unit .sprwrap.mon{min-height:124px;margin:1px 0 3px}
   .unit .sprwrap.mon .monspr{width:auto !important;height:124px !important;transform:none}
@@ -6698,7 +6699,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0919-0950";
+const BUILD = "0920-0102";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
