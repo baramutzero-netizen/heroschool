@@ -344,6 +344,12 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 .tbtns{display:flex;gap:10px;justify-content:center;margin-top:24px;flex-wrap:wrap}
 .tbtns .btn{padding:10px 22px;font-size:14px}
 .tsave{margin-top:14px;font-size:11.5px;color:var(--dim)}
+.tmus{margin-top:16px;display:inline-flex;align-items:center;gap:6px;
+  background:none;border:1px solid var(--line);color:var(--dim);
+  border-radius:20px;padding:4px 14px;font-size:11.5px;cursor:pointer;transition:.15s}
+.tmus:hover{border-color:var(--brass);color:var(--brass)}
+.tmus.on{border-color:var(--brass);color:var(--brass)}
+.tahint{margin-top:8px;font-size:11px;color:var(--brass);opacity:.85}
 .prol{max-width:720px;margin:0 auto}
 .prol .ptitle{font-size:26px;margin:4px 0 14px}
 .prol p{font-size:14px;line-height:2;color:var(--muted);margin:0 0 14px;text-align:justify}
@@ -1199,6 +1205,33 @@ const ACAD = ["백은","흑철","청람","적동","황금","은사","백금","�
    직업 · 스킬
    ============================================================ */
 const ROLE_LABEL = {tank:"탱커",dps:"딜러",heal:"힐러",supp:"보조"};
+
+/* ============================================================
+   효과음 배정 — 직업별 공격 소리와, 기술 종류별 공용 소리
+   ============================================================ */
+const SFX_JOB = {
+  gunner:"gun", darkpriest:"drain",
+  druid:"magic", priest:"magic", wizard:"magic", timemage:"magic", enchanter:"magic",
+  spellsword:"weapon", rogue:"weapon", sword:"weapon",
+  monk:"punch", paladin:"punch", forcemage:"punch",
+  ninja:"ninja", archer:"bow", bard:"bard",
+  /* 원정지 주인 — 그림 효과는 없지만 소리는 낸다 */
+  mon_dummy:"punch", mon_wraith:"magic", mon_gargoyle:"punch",
+  mon_brine:"punch", mon_guardian:"weapon"
+};
+/* 피해를 주지 않는 기술은 직업과 무관하게 같은 소리를 쓴다 */
+const SFX_TYPE = {
+  heal:"heal", ult_heal:"heal", regen:"heal",
+  buff:"buff", shield:"buff", haste:"buff", charge:"buff",
+  ult_bless:"buff", ult_guard:"buff", ult_unseal:"buff",
+  debuff:"debuff", slow:"debuff", taunt:"debuff", ult_time:"debuff"
+};
+/* 독·흡혈처럼 피해를 주는 기술은 쓰는 사람의 공격 소리를 그대로 낸다 */
+function sfxOf(u, sk){
+  const t = SFX_TYPE[sk.type];
+  if(t) return t;
+  return SFX_JOB[u.job] || (sk.el==="phys" ? "punch" : "magic");
+}
 
 const JOBS = {
   paladin:{ name:"팔라딘", role:"tank", sub:"서브 힐러", tone:"tank",
@@ -3292,7 +3325,7 @@ function runBattle(teamA, teamB, opt){
     const label = isUlt? `<b>${epiH(u.name)}</b> 필살기 — ${sk.name}!` : (sk.kind==="basic"? `<b>${epiH(u.name)}</b> ${sk.name}` : `<b>${epiH(u.name)}</b> 스킬 — ${sk.name}`);
     // 이 프레임에 "누구에게 무슨 이펙트" 를 실어 보낸다
     push(label, isUlt?"ult":"", u.uid,
-      sk.fx ? {n:sk.fx, e:sk.el||"phys", u:!!isUlt, t:tg.filter(t=>t && t.alive).map(t=>t.uid)} : null);
+      {n:sk.fx||null, e:sk.el||"phys", u:!!isUlt, s:sfxOf(u, sk), t:tg.filter(t=>t && t.alive).map(t=>t.uid)});
     switch(sk.type){
       case "dmg": { tg.forEach(t=>{ if(!t.alive) return;
           dealDamage(u,t,p,sk);
@@ -4268,6 +4301,7 @@ function expedLoop(E, quick, done){
   };
   if(quick) after();
   else openBattle(bm.b, {titleA:"원정대", titleB:bm.mon[0].name, field:String(E.dg.mon||"").replace(/^mon_/,""),
+    bgm:"friendly", jingle: E.sec>=E.dg.secs,
     head:`${E.dg.n} — ${E.sec}/${E.dg.secs}구간`, doneLabel: E.sec>=E.dg.secs? "결과 확정":"다음 구간"}, after);
 }
 function runExpedition(dg, team, TM){
@@ -4711,7 +4745,17 @@ function ladderRun(t, quick){
   const b = runBattle(my, FT, Object.assign({titleA:S.acadName, titleB:foe.name, moodA:L.mood}, teamBattleOpt(TM), foeBattleOpt(FT)));
   const after = ()=> ladderRecord(t, b, foe.name, ids);
   if(quick) after();
-  else openBattle(b, {titleA:S.acadName, titleB:foe.name, field:t.step, head:`${t.title} — ${ladderMatchLabel(t)}`, doneLabel:"결과 확정"}, after);
+  else openBattle(b, {titleA:S.acadName, titleB:foe.name, field:t.step, bgm:ladderBgm(t), jingle:true,
+    cheer: t.step==="final",
+    head:`${t.title} — ${ladderMatchLabel(t)}`, doneLabel:"결과 확정"}, after);
+}
+/* 대회 단계별 전투곡 — 컵의 마지막 라운드는 결승 전용 곡 */
+function ladderBgm(t){
+  const c = t.cfg || LADDER[t.step] || {};
+  const fin = c.kind==="cup" && (t.round|0) >= ((t.maxRound|| c.rounds ||4) - 1);
+  if(t.step==="qual")  return "fest";
+  if(t.step==="final") return fin ? "festFinal" : "fest";
+  return fin ? "tourFinal" : "tour";
 }
 function ladderRecord(t, b, oppName, ids){
   if(UI.tour!==t) return;
@@ -5770,6 +5814,8 @@ function render(){
       fb.onclick = ()=> feedModal();
     } }
   if(UI.pendingTour && UI.tour && !(UI.tour.stage==="prep" && !UI.tour._prepOpen)){ renderTournament(); }
+  /* 설정에서 곡을 미리 듣던 중 다른 탭으로 넘어가면 멎는다 */
+  if(AUD_PV && UI.view !== "opt"){ AUD_PV = 0; audOver(null); }
   $("#acadName").textContent = S.acadName;
   $("#acadSub").textContent = `${tierOf().n} · ${fameTitle(S.fame).n} · 지도 ${S.master.lead} / 정보 ${S.master.info} / 호소 ${S.master.net}`;
   $("#mDate").textContent = `${S.year}년 ${PHASES[S.phase].n} ${Math.min(S.week+1,PHASES[S.phase].weeks)}주`;
@@ -5814,6 +5860,7 @@ function render(){
   renderPrepBar();
   renderMission();
   renderLog();
+  audBase(S && PHASES[S.phase] ? S.phase : null);
 }
 function renderMission(){
   const box = $("#missionBox"); if(!box) return;
@@ -6858,7 +6905,7 @@ function seasonWatch(r, i){
   }
   const m = seasonBattle(U.SE, U.vg, U.C.order, r, i);
   if(!m){ toast("경기를 불러오지 못했다."); return; }
-  openBattle(m.b, {titleA:m.A.acad, titleB:m.B.acad, field:"jolupseng",
+  openBattle(m.b, {titleA:m.A.acad, titleB:m.B.acad, field:"jolupseng", bgm:"league", jingle:true,
     head:`시즌 ${seasonNo(U.SE.n)} · ${r+1}라운드 — ${m.A.acad} 대 ${m.B.acad}`, doneLabel:"닫는다"}, ()=> render());
 }
 /* 화면에 떠 있는 동안 남은 시간을 센다 */
@@ -7456,6 +7503,53 @@ function viewOpt(){
         <span class="fxstage" data-demo="${n}" data-el="${["phys","fire","buff","heal"][i]}"></span></div>`).join("")}
     </div>
     <p class="opthint">위 미리보기는 실제 전투와 같은 속도로 반복 재생된다.</p>
+  </section>` + viewAudio();
+}
+/* ---------- 음악 ---------- */
+function audText(){
+  if(!AUD.on) return "배경 음악이 꺼져 있다.";
+  if(AUD.vol <= 0) return "음량이 0 이라 소리가 나지 않는다.";
+  if(AUD.vol <= 25) return "배경에 아주 희미하게 깔린다.";
+  if(AUD.vol <= 55) return "말소리를 가리지 않는 정도로 흐른다.";
+  if(AUD.vol <= 80) return "곡이 또렷하게 들린다.";
+  return "곡을 앞세운 크기다.";
+}
+function viewAudio(){
+  return `<section class="panel">
+    <div class="panel-h"><h2>음악</h2><span class="hint">계절·대회·전투마다 다른 곡이 흐르고, 전투에는 효과음이 붙는다</span></div>
+    <div class="optrow">
+      <div class="optlab">
+        <b>배경 음악</b>
+        <span>곡 파일은 이 문서 옆의 <b>bgm</b> 폴더에서 읽는다.
+          단일 파일만 따로 옮긴 배포본에는 곡이 없어 이 설정이 아무 일도 하지 않는다.</span>
+      </div>
+      <div class="optctl">
+        <button class="btn sm ${AUD.on?"primary":"ghost"}" id="bgmOn">${AUD.on?"켜짐":"꺼짐"}</button>
+        <input type="range" id="bgmV" min="0" max="100" step="5" value="${AUD.vol}" ${AUD.on?"":"disabled"}>
+        <div class="optval"><b class="num" id="bgmVV">${AUD.vol}</b><span>/ 100</span></div>
+      </div>
+    </div>
+    <p class="opthint" id="bgmT">${audText()}</p>
+    <div class="btnrow" style="margin-top:10px">
+      <button class="btn sm" id="bgmPv">${AUD_PV? "미리 듣기 멈춤" : "미리 듣기 (타이틀 곡)"}</button>
+      <span class="opthint" style="margin:0;align-self:center">다른 탭으로 넘어가면 자동으로 멎는다.</span>
+    </div>
+    <div class="optrow" style="margin-top:12px">
+      <div class="optlab">
+        <b>효과음</b>
+        <span>전투에서 공격·버프·회복에 맞춰 나는 짧은 소리다.
+          배경 음악을 꺼도 따로 남으며, <b>0</b> 이면 나지 않는다.</span>
+      </div>
+      <div class="optctl">
+        <input type="range" id="sfxV" min="0" max="100" step="5" value="${AUD.sfx}">
+        <div class="optval"><b class="num" id="sfxVV">${AUD.sfx}</b><span>/ 100</span></div>
+      </div>
+    </div>
+    <div class="btnrow" style="margin-top:10px">
+      ${[["weapon","무기"],["punch","타격"],["magic","마법"],["bow","활"],["gun","총"],
+         ["ninja","수리검"],["bard","연주"],["drain","흡혈"],["buff","버프"],["debuff","디버프"],["heal","회복"]]
+        .map(([k,n])=>`<button class="btn sm" data-sfx="${k}">${n}</button>`).join("")}
+    </div>
   </section>`;
 }
 /* 미리보기 — 0.9초마다 다시 튼다 */
@@ -8960,6 +9054,33 @@ function bindView(){
     } else if(FX_DEMO_T){ clearInterval(FX_DEMO_T); FX_DEMO_T = 0; }
   }
   {
+    const bo = $("#bgmOn");
+    if(bo) bo.onclick = ()=>{ AUD.on = !AUD.on; audSave(); audRefresh(); if(!AUD.on) AUD_PV = 0; render(); };
+    const bv = $("#bgmV");
+    if(bv){
+      const ap = ()=>{
+        AUD.vol = clamp(+bv.value|0, 0, 100); audSave(); audRefresh();
+        $("#bgmVV").textContent = AUD.vol;
+        $("#bgmT").textContent = audText();
+      };
+      bv.oninput = ap; bv.onchange = ap;
+    }
+    const sv = $("#sfxV");
+    if(sv){
+      const ap2 = ()=>{ AUD.sfx = clamp(+sv.value|0, 0, 100); audSave(); $("#sfxVV").textContent = AUD.sfx; };
+      sv.oninput = ap2;
+      sv.onchange = ()=>{ ap2(); sfxPlay("weapon"); };
+    }
+    v.querySelectorAll("[data-sfx]").forEach(b=> b.onclick = ()=>{ sfxPreload(); sfxPlay(b.dataset.sfx); });
+    const bp = $("#bgmPv");
+    if(bp) bp.onclick = ()=>{
+      AUD_PV = AUD_PV ? 0 : 1;
+      if(AUD_PV && !AUD.on){ AUD.on = true; audSave(); audRefresh(); }
+      audOver(AUD_PV ? "title" : null);
+      render();
+    };
+  }
+  {
     const L = leagueState();
     v.querySelectorAll("[data-lgtr]").forEach(b=> b.onclick=()=> gradTransferModal(b.dataset.lgtr));
     v.querySelectorAll("[data-lgp]").forEach(b=> b.onclick=()=>{
@@ -9119,7 +9240,8 @@ function closeModal(){ dragCfg($("#modalRoot"), null); $("#modalRoot").innerHTML
 function queueCeremony(c){ UI.ceremonies = UI.ceremonies||[]; UI.ceremonies.push(c); }
 function showCeremony(){
   const c = (UI.ceremonies||[]).shift();
-  if(!c){ render(); return; }
+  if(!c){ audOver(null); render(); return; }
+  audOver(c.type==="grad" ? "ending" : null);
   const html = c.type==="grad" ? gradCeremony(c)
     : (c.type==="rival"||c.type==="bro") ? bondCeremony(c)
     : c.type==="friendly" ? friendlyCeremony(c)
@@ -9546,7 +9668,16 @@ let SPR_BTSCROLL = 0;
 function openBattle(res, opt, onDone){
   SPR_BTSCROLL = 0;
   opt = opt||{};
-  let i = 0, timer=null, speed = UI.bspeed||280;
+  let i = 0, timer=null, speed = UI.bspeed||280, ended = false;
+  if(opt.bgm) audOver(opt.bgm);
+  sfxPreload();
+  if(opt.cheer) setTimeout(()=> sfxPlay("cheer"), 260);
+  /* 마지막 프레임에 닿으면 승패 팡파르를 한 번 틀어준다 */
+  const bgmEnd = ()=>{
+    if(ended) return; ended = true;
+    if(!opt.jingle) return;
+    audOver(res.winner==="A" ? (opt.bgm==="festFinal" ? "winBig" : "win") : "lose");
+  };
   const names = res.names;
   const uids = (()=>{ let a=0,b=0; return names.map(n=> n.side==="A" ? "A"+(a++) : "B"+(b++)); })();
   const formTag = (fk)=>{
@@ -9688,11 +9819,11 @@ function openBattle(res, opt, onDone){
     if(bs) bs.onscroll = ()=>{ SPR_BTSCROLL = bs.scrollTop; };
     const bl = $("#blog"); if(bl) bl.scrollTop = bl.scrollHeight;
     $("#bPlay").onclick = ()=> timer? pause() : play();
-    $("#bEnd").onclick = ()=>{ pause(); i = res.frames.length-1; draw(); };
-    $("#bDone").onclick = ()=>{ pause(); closeModal(); onDone && onDone(res); };
+    $("#bEnd").onclick = ()=>{ pause(); i = res.frames.length-1; bgmEnd(); draw(); };
+    $("#bDone").onclick = ()=>{ pause(); audOver(null); closeModal(); onDone && onDone(res); };
     $("#modalRoot").querySelectorAll("[data-sp]").forEach(b=> b.onclick=()=>{ speed=+b.dataset.sp; UI.bspeed=speed; if(timer){pause();play();} });
   };
-  const step = ()=>{ if(i<res.frames.length-1){ i++; draw(); } else { pause(); draw(); } };
+  const step = ()=>{ if(i<res.frames.length-1){ i++; sfxFrame(res.frames[i]); if(i>=res.frames.length-1) bgmEnd(); draw(); } else { pause(); draw(); } };
   const play = ()=>{ if(timer) return; timer = setInterval(step, speed); draw(); };
   const pause = ()=>{ if(timer){ clearInterval(timer); timer=null; } };
   draw(); play();
@@ -10015,7 +10146,7 @@ function friendlyRun(t, quick){
   const b = runBattle(my, FT, Object.assign({titleA:S.acadName, titleB:t.foe.name, moodA:L.mood}, teamBattleOpt(TM), foeBattleOpt(FT)));
   const after = ()=> friendlyRecord(t, b, ids);
   if(quick) after();
-  else openBattle(b, {titleA:S.acadName, titleB:t.foe.name,
+  else openBattle(b, {titleA:S.acadName, titleB:t.foe.name, bgm:"friendly", jingle:true,
     head:`${t.title} — 제${i+1}경기`, doneLabel:"결과 확정"}, after);
 }
 function friendlyRecord(t, b, ids){
@@ -10456,7 +10587,8 @@ function renderTournament(){
         const b = runBattle(my, oppTeam, Object.assign({titleA:S.acadName, titleB:oppName, moodA:L2.mood}, teamBattleOpt(TM), foeBattleOpt(oppTeam)));
         const after = ()=> recordMatch(t, b, oppName, myIds);
         if(quick){ after(); }
-        else openBattle(b, {titleA:S.acadName, titleB:oppName, head:`${t.title} — ${head}`, doneLabel:"결과 확정"}, after);
+        else openBattle(b, {titleA:S.acadName, titleB:oppName, bgm:"tour", jingle:true,
+          head:`${t.title} — ${head}`, doneLabel:"결과 확정"}, after);
       };
       $("#tPlay").onclick=()=>run(false);
       $("#tQuick").onclick=()=>run(true);
@@ -10496,6 +10628,277 @@ function recordMatch(t, b, oppName, myIds){
    부팅
    ============================================================ */
 
+
+/* ============================================================
+   BGM — 곡 파일은 이 문서와 같은 자리의 bgm/ 폴더에서 읽는다.
+   파일이 없거나(단일 HTML 만 옮긴 경우) 브라우저가 막으면
+   아무 소리 없이 그냥 넘어간다. 게임 진행에는 영향이 없다.
+
+   intro 가 있는 곡은 인트로를 한 번 틀고 len 초 뒤 loop 를 이어 붙인다.
+   두 파일의 이음매는 미리 맞춰 잘라 뒀으므로 틈이 생기지 않는다.
+   ============================================================ */
+const BGM_DIR = "bgm/";
+const BGM = {
+  title:    {intro:"title_intro.ogg", len:27.96,  loop:"title_loop.ogg",  v:1},
+  prologue: {loop:"prologue.ogg", v:.95},
+  /* 계절 — 평소 육성 화면 */
+  spring:   {intro:"spring_intro.ogg", len:13.355, loop:"spring_loop.ogg", v:.9},
+  summer:   {intro:"summer_intro.ogg", len: 7.595, loop:"summer_loop.ogg", v:.9},
+  fall:     {intro:"fall_intro.ogg",   len:61.867, loop:"fall_loop.ogg",   v:.9},
+  winter:   {intro:"winter_intro.ogg", len:62.549, loop:"winter_loop.ogg", v:.9},
+  /* 전투 */
+  friendly: {intro:"friendlyandexpedition_intro.ogg",      len:11.093, loop:"friendlyandexpedition_loop.ogg"},
+  tour:     {intro:"basetournament_intro.ogg",             len:18.773, loop:"basetournament_loop.ogg"},
+  tourFinal:{intro:"basetournamentfinalbattle_intro.ogg",  len:38.144, loop:"basetournamentfinalbattle_loop.ogg"},
+  fest:     {intro:"finaltournament_intro.ogg",            len:78.763, loop:"finaltournament_loop.ogg"},
+  festFinal:{intro:"finaltournamentfinalbattle_intro.ogg", len:65.024, loop:"finaltournamentfinalbattle_loop.ogg"},
+  league:   {intro:"tournamentleague_intro.ogg",           len:19.157, loop:"tournamentleague_loop.ogg"},
+  /* 한 번만 흐르고 멎는 곡 */
+  win:      {loop:"victory1.ogg", once:true},
+  winBig:   {loop:"victory2.ogg", once:true},
+  lose:     {loop:"defeat.ogg",   once:true},
+  ending:   {loop:"ending.ogg",   once:true, v:.95}
+};
+const AUD_KEY = "heroschool_audio_v1";
+const AUD = {on:true, vol:55, sfx:70};
+try{
+  const j = JSON.parse(localStorage.getItem(AUD_KEY) || "null");
+  if(j){ AUD.on = j.on !== false;
+    if(typeof j.vol === "number") AUD.vol = clamp(j.vol|0, 0, 100);
+    if(typeof j.sfx === "number") AUD.sfx = clamp(j.sfx|0, 0, 100); }
+}catch(e){}
+function audSave(){ try{ localStorage.setItem(AUD_KEY, JSON.stringify(AUD)); }catch(e){} }
+/* 귀에는 제곱이 선형에 가깝게 들린다 */
+function audGain(){ const x = AUD.on ? AUD.vol/100 : 0; return x*x; }
+
+let ACTX=null, AMAST=null, ABUF={}, ABAD={}, ANOW=null, AWANT=null, AHTML=null, AUD_PV=0;
+let ABASE=null, AOVER=null;
+/* file:// 로 연 문서는 fetch 가 막혀 WebAudio 로 못 읽는다 — 처음부터 <audio> 로 간다 */
+let AWEB = (location.protocol === "file:") ? false : null;
+function audCtx(){
+  if(ACTX !== null) return ACTX;
+  const C = window.AudioContext || window.webkitAudioContext;
+  if(!C){ ACTX = false; return false; }
+  try{
+    ACTX = new C();
+    AMAST = ACTX.createGain();
+    AMAST.gain.value = audGain();
+    AMAST.connect(ACTX.destination);
+  }catch(e){ ACTX = false; }
+  return ACTX;
+}
+function audLoad(f){
+  if(ABUF[f]) return Promise.resolve(ABUF[f]);
+  if(ABAD[f]) return Promise.reject(0);
+  const ctx = audCtx(); if(!ctx) return Promise.reject(0);
+  return fetch(BGM_DIR + f)
+    .then(r=>{ if(!r.ok) throw 0; return r.arrayBuffer(); })
+    .then(b=> new Promise((ok,no)=> ctx.decodeAudioData(b, ok, no)))
+    .then(buf=>{ ABUF[f] = buf; return buf; })
+    .catch(e=>{ ABAD[f] = 1; throw e; });
+}
+/* 틀고 싶은 곡을 지정한다. null 이면 서서히 끈다. */
+function audPlay(key){ AWANT = key || null; audSync(); }
+/* 밑바닥 곡(계절) — 덮어쓰는 곡이 없을 때만 들린다 */
+function audBase(key){ key = key||null; if(ABASE===key) return; ABASE = key; if(!AOVER) audPlay(ABASE); }
+/* 덮어쓰는 곡(타이틀·프롤로그·전투·졸업) — null 을 주면 밑바닥 곡으로 돌아간다 */
+function audOver(key){ AOVER = key||null; audPlay(AOVER || ABASE); }
+function audSync(){
+  const key = AWANT;
+  if(!AUD.on || !key || !BGM[key]){ audStop(.8); return; }
+  if(ANOW && ANOW.key === key) return;
+  if(AWEB === false){ audHtml(key); return; }
+  const ctx = audCtx();
+  if(!ctx){ AWEB = false; audHtml(key); return; }
+  const t = BGM[key];
+  const files = t.intro ? [t.loop, t.intro] : [t.loop];
+  Promise.all(files.map(audLoad)).then(()=>{
+    if(AWANT !== key) return;
+    AWEB = true; audWeb(key);
+  }).catch(()=>{
+    if(AWANT !== key) return;
+    AWEB = false; audHtml(key);   // file:// 처럼 fetch 가 막힌 곳 — <audio> 로 되돌린다
+  });
+}
+function audWeb(key){
+  const ctx = ACTX, t = BGM[key];
+  audStop(.7);
+  const g = ctx.createGain(); g.gain.value = 0; g.connect(AMAST);
+  const t0 = ctx.currentTime + .06;
+  const n = {key:key, g:g, srcs:[]};
+  let at = t0;
+  if(t.intro && ABUF[t.intro]){
+    const s = ctx.createBufferSource();
+    s.buffer = ABUF[t.intro]; s.connect(g); s.start(t0);
+    n.srcs.push(s);
+    at = t0 + (t.len != null ? t.len : ABUF[t.intro].duration);
+  }
+  const L = ctx.createBufferSource();
+  L.buffer = ABUF[t.loop]; L.loop = !t.once; L.connect(g); L.start(at);
+  n.srcs.push(L);
+  if(t.once) L.onended = ()=>{ if(ANOW === n) ANOW = null; };   // 다시 틀 수 있게 비워 둔다
+  const vol = (t.v == null ? 1 : t.v);
+  g.gain.setValueAtTime(0, t0);
+  g.gain.linearRampToValueAtTime(vol, t0 + .9);
+  ANOW = n;
+  if(ctx.state === "suspended") ctx.resume().catch(()=>{});
+}
+function audStop(fade){
+  const n = ANOW; ANOW = null;
+  audHtmlStop();
+  if(!n || n.html || !ACTX) return;
+  const t = ACTX.currentTime, f = fade || .6;
+  try{
+    n.g.gain.cancelScheduledValues(t);
+    n.g.gain.setValueAtTime(n.g.gain.value, t);
+    n.g.gain.linearRampToValueAtTime(0, t + f);
+    n.srcs.forEach(s=>{ try{ s.stop(t + f + .05); }catch(e){} });
+  }catch(e){}
+}
+/* ── WebAudio 를 못 쓰는 환경 — <audio> 두 장으로 이어 붙인다 ── */
+function audHtmlStop(){
+  if(!AHTML) return;
+  const list = AHTML; AHTML = null;
+  list.forEach(el=>{
+    const iv = setInterval(()=>{
+      const v = (el.volume || 0) - .08;
+      if(v <= .005){ clearInterval(iv); try{ el.pause(); el.volume = 0; }catch(e){} }
+      else { try{ el.volume = v; }catch(e){ clearInterval(iv); } }
+    }, 40);
+  });
+}
+function audHtml(key){
+  audHtmlStop();
+  const t = BGM[key];
+  const mk = (f, lp)=>{ const el = new Audio(BGM_DIR + f); el.preload = "auto"; el.loop = !!lp; el.volume = 0; return el; };
+  const lo = mk(t.loop, !t.once), list = [lo];
+  if(t.once) lo.addEventListener("ended", ()=>{ if(AHTML === list) ANOW = null; });
+  let head = lo;
+  if(t.intro){
+    const it = mk(t.intro, false);
+    it.addEventListener("ended", ()=>{ if(AHTML === list){ lo.volume = it.volume; lo.play().catch(()=>{}); } });
+    list.unshift(it); head = it;
+  }
+  AHTML = list; ANOW = {key:key, html:true};
+  const vol = (t.v == null ? 1 : t.v) * audGain();
+  let v = 0;
+  const iv = setInterval(()=>{
+    if(AHTML !== list){ clearInterval(iv); return; }
+    v = Math.min(vol, v + Math.max(vol, .02)/14);
+    list.forEach(e=>{ try{ e.volume = v; }catch(x){} });
+    if(v >= vol - 1e-4) clearInterval(iv);
+  }, 40);
+  head.play().catch(()=>{});   // 자동 재생 차단 — 첫 조작 때 다시 시도한다
+}
+/* 음량·on/off 를 바꾼 뒤 */
+function audRefresh(){
+  if(AMAST){ try{ AMAST.gain.value = audGain(); }catch(e){} }
+  if(AHTML && ANOW){
+    const t = BGM[ANOW.key] || {}, vol = (t.v == null ? 1 : t.v) * audGain();
+    AHTML.forEach(e=>{ try{ e.volume = vol; }catch(x){} });
+  }
+  if(!AUD.on) audStop(.4);
+  else if(AWANT && (!ANOW || ANOW.key !== AWANT)) audSync();
+}
+/* 틀고 싶은 곡이 있는데 브라우저가 아직 소리를 막고 있는 상태인가 */
+function audSilent(){
+  if(!AUD.on || !AWANT) return false;
+  if(AWEB === false) return !!(AHTML && AHTML[0] && AHTML[0].paused);
+  return !!(ACTX && ACTX.state && ACTX.state !== "running");
+}
+/* 시작 화면의 음악 단추·안내를 지금 상태에 맞춘다 */
+function audHintSync(){
+  const h = document.getElementById("tAudHint");
+  if(h) h.hidden = !audSilent();
+  const b = document.getElementById("tAudBtn");
+  if(b){
+    b.textContent = AUD.on ? "\u266a  음악 켜짐" : "\u266a  음악 꺼짐";
+    b.classList.toggle("on", AUD.on && !audSilent());
+  }
+}
+/* ============================================================
+   효과음 — 짧은 소리 여러 개가 겹쳐 난다. 배경 음악과 음량이 따로 논다.
+   ============================================================ */
+const SFX = {
+  buff:  {f:"magic_buff.ogg"},
+  debuff:{f:"magic_debuff.ogg"},
+  heal:  {f:"magic_heal.ogg"},
+  gun:   {f:"attack_gun.ogg"},
+  drain: {f:"attack_drain.ogg"},
+  magic: {f:"attack_magic.ogg"},
+  weapon:{f:"attack_weapon.ogg"},
+  punch: {f:"attack_punch.ogg"},
+  ninja: {f:"attack_ninja.ogg"},
+  bow:   {f:"attack_bow.ogg"},
+  bard:  {f:"attack_bard.ogg"},
+  cheer: {f:"tournament_cheer.ogg", v:.85}
+};
+const SFX_GAP = 55;      // 같은 소리가 이보다 짧은 간격으로 겹치지 않게 막는다 (ms)
+const SFX_VOICE = 8;     // 한꺼번에 울릴 수 있는 소리 개수
+let ASG=null, ASBUF={}, ASBAD={}, ASLOAD={}, ASLAST={}, ASN=0, ASEL={};
+function sfxGain(){ const x = clamp((AUD.sfx|0)/100, 0, 1); return x*x; }
+function sfxLoad(f, then){
+  if(ASBUF[f]){ then && then(); return; }
+  if(ASBAD[f] || ASLOAD[f]) return;
+  const ctx = audCtx(); if(!ctx) return;
+  ASLOAD[f] = 1;
+  fetch(BGM_DIR + f).then(r=>{ if(!r.ok) throw 0; return r.arrayBuffer(); })
+    .then(b=> new Promise((ok,no)=> ctx.decodeAudioData(b, ok, no)))
+    .then(buf=>{ ASBUF[f] = buf; then && then(); })
+    .catch(()=>{ ASBAD[f] = 1; });
+}
+/* 전투를 열 때 미리 받아 둔다 — 첫 타격이 소리 없이 지나가지 않게 */
+function sfxPreload(){
+  if(AWEB === false || sfxGain() <= 0) return;
+  Object.keys(SFX).forEach(k=> sfxLoad(SFX[k].f));
+}
+function sfxPlay(key){
+  const t = SFX[key]; if(!t) return;
+  const g = sfxGain(); if(g <= 0) return;
+  const now = (typeof performance!=="undefined") ? performance.now() : Date.now();
+  if(now - (ASLAST[key]||0) < SFX_GAP) return;
+  ASLAST[key] = now;
+  const v = (t.v == null ? 1 : t.v);
+  if(AWEB === false || ASBAD[t.f]) return sfxHtml(t, g*v);
+  const ctx = audCtx();
+  if(!ctx){ AWEB = false; return sfxHtml(t, g*v); }
+  if(ctx.state === "suspended") ctx.resume().catch(()=>{});
+  const buf = ASBUF[t.f];
+  if(!buf){ ASLAST[key] = 0; sfxLoad(t.f, ()=> sfxPlay(key)); return; }   // 받자마자 한 번 울린다
+  if(ASN >= SFX_VOICE) return;
+  if(!ASG){ ASG = ctx.createGain(); ASG.connect(ctx.destination); }
+  ASG.gain.value = g;
+  try{
+    const src = ctx.createBufferSource(); src.buffer = buf;
+    const vg = ctx.createGain(); vg.gain.value = v;
+    src.connect(vg); vg.connect(ASG); src.start();
+    ASN++; src.onended = ()=>{ ASN = Math.max(0, ASN-1); };
+  }catch(e){}
+}
+function sfxHtml(t, vol){
+  let base = ASEL[t.f];
+  if(!base){ base = ASEL[t.f] = new Audio(BGM_DIR + t.f); base.preload = "auto"; }
+  try{
+    const e = base.cloneNode();
+    e.volume = clamp(vol, 0, 1);
+    e.play().catch(()=>{});
+  }catch(x){}
+}
+/* 한 프레임에 실린 소리 */
+function sfxFrame(f){ if(f && f.fx && f.fx.s) sfxPlay(f.fx.s); }
+
+/* 브라우저는 사용자가 한 번 누르기 전에는 소리를 내주지 않는다 */
+function audUnlock(){
+  if(ACTX && ACTX.resume) ACTX.resume().catch(()=>{});
+  if(AHTML && AHTML.length){
+    const e = AHTML[0];
+    if(e.paused && !e.currentTime) e.play().catch(()=>{});
+  }
+  if(AWANT && !ANOW) audSync();
+  audHintSync(); setTimeout(audHintSync, 150); setTimeout(audHintSync, 600);
+}
+["pointerdown","keydown","touchstart"].forEach(ev=> window.addEventListener(ev, audUnlock, {passive:true}));
+
 /* ============================================================
    시작 화면 · 프롤로그
    ============================================================ */
@@ -10530,10 +10933,21 @@ function showTitle(canContinue){
       <button class="btn" id="tCont" ${canContinue?"":"disabled"}>이어하기</button>
     </div>
     <div class="tsave">${canContinue? `저장된 학원 — ${esc(S.acadName)} · ${S.year}년 ${PHASES[S.phase].n} ${Math.min(S.week+1,PHASES[S.phase].weeks)}주` : "저장된 기록이 없다"}</div>
+    <button class="tmus" id="tAudBtn" type="button">\u266a  음악</button>
+    <div class="tahint" id="tAudHint" hidden>브라우저가 자동 재생을 막고 있다 — 아무 곳이나 한 번 누르면 음악이 흐른다</div>
   </div></div>`;
+  audOver("title");
+  {
+    const ab = $("#tAudBtn");
+    if(ab) ab.onclick = ()=>{
+      AUD.on = !AUD.on; audSave(); audRefresh();
+      audHintSync(); setTimeout(audHintSync, 200);
+    };
+    audHintSync(); setTimeout(audHintSync, 200); setTimeout(audHintSync, 800);
+  }
   $("#tNew").onclick = ()=> askAcademyName();
   const c = $("#tCont");
-  if(canContinue && c) c.onclick = ()=>{ closeModal(); UI.view="home"; render(); };
+  if(canContinue && c) c.onclick = ()=>{ audOver(null); closeModal(); UI.view="home"; render(); };
 }
 function askAcademyName(){
   let nm = pick(ACAD)+" 용사 학원";
@@ -10555,7 +10969,9 @@ function askAcademyName(){
 }
 function showPrologue(name, i){
   const pg = PROLOGUE[i], last = i>=PROLOGUE.length-1;
+  audOver("prologue");
   const start = ()=>{
+    audOver(null);
     newGame(name); S.mission = newMission(); save();
     closeModal(); UI.view="home"; UI.sel=null; render();
     if(tutHas()) showTutorial(0, {start:true, after:()=>{ render(); toast("새 학기가 시작되었다."); }});
