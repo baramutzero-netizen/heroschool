@@ -2901,9 +2901,13 @@ function modOf(o, id){
 function autoSkMod(st, level){
   st.skMod = {};
   const ids = JOBS[st.job].skills.map(x=>x.id).concat(["passive"]);
+  /* skMod 에 빈 항목을 만들지 않고 읽기만 한다 */
+  const upOf = id => ((((st.skMod||{})[id])||{}).up) || 0;
   let n = Math.max(0, Math.floor(level/2));
   while(n-- > 0){
-    const m = modOf(st, pick(ids));
+    const open = ids.filter(id=> upOf(id) < SK_LV_MAX - 1);   // 레벨 상한을 넘기지 않는다
+    if(!open.length) break;
+    const m = modOf(st, pick(open));
     m.pow += .12; m.up++;
     if(RNG() < .16) m.grade = Math.min(4, m.grade+1);
   }
