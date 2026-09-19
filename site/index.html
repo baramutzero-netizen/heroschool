@@ -132,7 +132,7 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 :focus-visible{outline:2px solid var(--brass);outline-offset:2px}
 
 /* ---------- tags ---------- */
-.tag{display:inline-block;font-size:10.5px;padding:1px 7px;border-radius:2px;border:1px solid var(--line);color:var(--muted);font-weight:600;letter-spacing:.02em}
+.tag{display:inline-block;font-size:10.5px;padding:1px 7px;border-radius:2px;border:1px solid var(--line);color:var(--muted);font-weight:600;letter-spacing:.02em;white-space:nowrap}
 .tag.role-tank{color:var(--tank);border-color:color-mix(in srgb,var(--tank) 45%,transparent)}
 .tag.role-dps{color:var(--dps);border-color:color-mix(in srgb,var(--dps) 45%,transparent)}
 .tag.role-heal{color:var(--heal);border-color:color-mix(in srgb,var(--heal) 45%,transparent)}
@@ -483,7 +483,8 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 
 .unit{border:1px solid var(--line-soft);border-radius:3px;padding:8px;background:var(--bg);font-size:12px}
 .unit.act{border-color:var(--brass);box-shadow:0 0 0 1px var(--brass) inset}
-.unit .un{font-weight:600;font-size:13px;display:flex;gap:5px;align-items:center}
+.unit .un{font-weight:600;font-size:13px;display:flex;gap:5px;align-items:center;flex-wrap:wrap;line-height:1.3}
+.unit .usub{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:3px;font-size:10.5px;color:var(--dim)}
 .unit .hpb{height:7px;background:var(--surface2);border-radius:2px;overflow:hidden;margin-top:5px;position:relative}
 .unit .hpb > i{display:block;height:100%;background:var(--ok);transition:width .2s}
 .unit .hpb > u{position:absolute;top:0;left:0;height:100%;background:rgba(120,180,255,.55);text-decoration:none}
@@ -777,7 +778,8 @@ table.tb tr:hover td{background:var(--surface2)}
   .side h4{font-size:11px;margin-bottom:5px}
   .unit{padding:5px 4px;font-size:10px}
   .unit .sprwrap{height:46px;margin:-3px 0 0}
-  .unit .un + div{display:none}                /* Lv·열 표시 — 줄 라벨로 알 수 있다 */
+  .unit .uslv{display:none}                    /* Lv·열 표시 — 줄 라벨로 알 수 있다 */
+  .unit .usub{gap:4px;margin-top:2px}
   .unit .fx{display:none}                      /* 버프 칩은 로그로 확인 */
   .unit .sprwrap .spr{transform:scale(.48);transform-origin:bottom center}
   /* 대형 몬스터 — 이미지와 이펙트를 같은 비율로 줄여야 타격 위치가 맞는다 */
@@ -1212,6 +1214,48 @@ function wchoose(map){ // {key:weight}
 }
 
 /* ---------- 명명 ---------- */
+/* ============================================================
+   이름 — 직업 갈래마다 어감이 다른 판타지 이름을 쓴다.
+   (SUR·GIV 는 예전 세이브에 남은 한국식 이름을 손볼 때만 쓴다)
+   ============================================================ */
+const NAME_POOL = {
+  knight : ["가웨인","롤랑","아르튀르","베르트랑","고드프리","라이문트","세드릭","에드가","유리안","카시안","테오발트","레온하르트","발터","하이너","로데릭","에르윈","지크베르트","브렌던","코르윈","뤼시앙","알디스","가레스","바스티안","르노","엘드릭","케이드","아르만드","발데마르","유스타스","클로비스","라이너","베렌","로슈포르","브륀힐트","마틸데","요한나","아델하이트","로잘린","지그린데","오딜"],
+  brawl  : ["브루노","가르드","토르핀","마그누스","라그나","바르트","요른","스벤","할독","드로간","케이간","보르크","레이프","시구르드","군나르","하콘","비요른","에길","그림","바락","가름","루도","스티그","아르비드","브란드","하르드","케르크","오르그","툴","크바르","우르드","토크","헬가","에나","타라","무라드","오스릭","요툰","아스비","베리크"],
+  shadow : ["비렌","실라","녹스","렌","카이","시노","유리","아셰","베스퍼","셀비","라쉬","키라","스렌","발렌","이든","세린","니케","티르","실비","에이든","로안","카시","다스크","쉐일","베릴","미넬","에린","자하","루카","페인","쉐이드","실프","나르","크레인","얀","드루","미카","셀","라비","벨크"],
+  shot   : ["아르테","실반","로빈","퀸","에이미","타린","셀윈","리안","바렛","코델","핀리","델핀","마르코","유안","니콜","오웬","클레이","시엔","레미","블레어","조슬린","테런스","아델린","하퍼","엘로이","로건","밀리아","프란","이니드","뮤리엘","스칼렛","케일럽","다니엘","로렐","윈터","브릴","애슐린","페트라","시드니","마일로"],
+  holy   : ["세라핀","엘리안","미카엘","라파엘","가브리엘","아리엘","셀레네","루멘","클라라","베네딕","아멜리","세실","노아","유페미아","아가타","로렌츠","안셀름","테레제","리디아","마리엘","소피아","카일라","에스텔","오렐리아","비비안","콘스탄체","알바","루치아","이레네","유스티나","클레멘스","아우렐","엘리사","미리암","하나","세라","요엘","타비타","프리다","아니타"],
+  nature : ["브리아르","실비아","헤이즐","로완","아이비","페른","윌로","세이지","클로버","린든","아스펜","주니퍼","모스","티모","코랄","헤더","소렐","엘더","버치","알더","브램블","로즈마리","실바누스","포레나","그웬","타냐","피오나","아일린","마브","누아라","시아라","브리짓","라라","페타","이브","미르테","올린","칼렌","시프","하난"],
+  arcane : ["아르젠","이졸데","베르단","세라스","뮈렐","오르비스","루넬","아스트리드","셀레스","피아나","베릴린","이시르","노바","에테르","리라","오필리아","테사","비리디스","알케이드","미르","실렌","카산드라","모르가나","에일린","벨라돈나","아르카나","하이델","라비린","클레어","니벨","오브리","페르가","아젤","비엔","셀레스티아","유니스","아델라","프리셀","로엔","미라벨"],
+  dark   : ["모르웬","레이븐","세이렌","발푸르가","카르밀라","베라","다르카","엘리자","녹턴","벨라","오르키스","아자렐","무르","셀렌","카론","리비아","에레보","타나","스틱스","아셔","리제","도르마","코르베","살렘","이스카","마라","드레아","포르티아","아비스","루인","그리셀","하르피","네레","발모라","오스카르","시엘","데비아","로비나","아드라","크로우"],
+  song   : ["아리아","소넷","칸타","리리","세레나","카덴","오베론","노엘라","미뉴에","오라","실피드","프렐류","라르고","비올","루체","파반","에코","시린","안단","클라리","뮤제","셀비아","리코","다카","알레그라","포르테","모데라","소프라","카프리","룬델","칸초네","세레노","리라벨","오르페","유포니","비바체","돌체","아미","라리사","멜로디"]
+};/* 직업이 어느 갈래에서 이름을 가져오는가 — 둘이면 반반 */
+const NAME_JOB = {
+  paladin:["knight","holy"], sword:["knight"], spellsword:["knight","arcane"],
+  monk:["brawl"],            forcemage:["brawl","arcane"],
+  rogue:["shadow"],          ninja:["shadow"],
+  archer:["shot"],           gunner:["shot","song"],
+  priest:["holy"],           darkpriest:["dark"],
+  druid:["nature"],
+  wizard:["arcane"],         timemage:["arcane"],  enchanter:["arcane"],
+  bard:["song"]
+};
+function fantasyName(job){
+  const ks = NAME_JOB[job] || ["knight"];
+  return pick(NAME_POOL[pick(ks)] || NAME_POOL.knight);
+}
+/* 같은 학원 안에서도, 한 번에 여러 명을 만들 때도 이름이 겹치지 않게 다시 뽑는다.
+   NAME_RECENT 는 방금 내준 이름 24개를 기억한다 — 상대 팀 3인이 같은 이름을 다는 일이 없다. */
+let NAME_RECENT = [];
+function freshName(job){
+  const used = new Set(NAME_RECENT);
+  try{ (S.students||[]).forEach(x=> used.add(x.name)); }catch(e){}
+  let n = fantasyName(job);
+  for(let i=0; i<14 && used.has(n); i++) n = fantasyName(job);
+  NAME_RECENT.push(n);
+  if(NAME_RECENT.length > 24) NAME_RECENT.shift();
+  return n;
+}
+
 const SUR = ["강","고","곽","권","김","남","노","류","마","문","민","박","백","서","선","성","송","신","심","안","양","엄","여","오","유","윤","이","임","장","전","정","조","주","진","차","채","최","하","한","허","홍","황"];
 const GIV = ["가람","건우","결","경민","다온","도윤","라온","루아","린","무진","백현","서준","세하","소윤","수아","시온","아린","여운","연우","우빈","윤슬","은하","이레","재하","주안","지호","진서","찬율","태오","하랑","해든","현서","호연","희수","노을","단","려원","서린","아율","유하","청하","한결","별","온유","도하","슬기","나래","은결","시아","윤후"];
 const ACAD = ["백은","흑철","청람","적동","황금","은사","백금","흑요","적철","청동","잿빛탑","붉은탑","푸른탑","은빛탑","흑탑","상아탑","금사자","은늑대","서리늑대","백호","청룡","주작","현무","흑표","붉은매","푸른매","회색곰","백학","흑조","철송골","은여우","적사슴","눈표범","쇠부엉이","붉은살쾡이","백마","은화살","푸른창","흑검","백검","금방패","철방패","은창","적궁","무쇠도끼","쌍칼","새벽종","저녁종","은종","쇠사슬","금술잔","은열쇠","돌망치","긴활","성월","초승달","보름달","그믐달","새벽별","북두","남십자","자미","은하","여명","한밤","노을","해오름","별무리","일식","월식","고요한산","바람고개","검은강","맑은샘","천둥곶","안개숲","눈보라재","이슬벌판","소금호수","깊은골","흰벼랑","붉은사막","푸른초원","서리평원","불의계곡","메아리협곡","조용한만","거친바다","은빛폭포","잿빛늪","황금떡갈","은행나무","서리자작","붉은단풍","푸른소나무","가시덤불","백양목","고목뜰","옛성터","돌문","무너진문","높은성","낮은성","별관","서고","종각","성소","수도원","회랑","석실","북문","남문","동문","서문","성벽","관문","등대","망루","청명","정적","불굴","연무","정진","묵언","단심","강녕","청빈","정한","인화","화평","광명","혜안","적심","선율","묵향","청아","백결","현묵","봄바람","여름볕","가을서리","겨울눈","첫눈","소나기","가랑비","된서리","무지개","돌개바람","등불","촛대","화톳불","잔불","불씨","섬광","잔광","여광","금빛","은광"];
@@ -2376,7 +2420,7 @@ function newStudent(year, grade, job){
   });
   const st = {
     id:"s"+RNG().toString(36).slice(2,9),
-    name: pick(SUR)+pick(GIV), job, year, grade,
+    name: freshName(job), job, year, grade,
     level:1, exp:0, cond:ri(78,96), fame:0, eval:0,
     ment:m, focus:"free", relics:[], skMod:{}, sp:0, hist:[], injured:0, karma:0, trust:0, epithet:null,
     pers: wchoose(PERSONA_KEYS.reduce((a,k)=>{ a[k]=PERSONA[k].w; return a; }, {}))
@@ -6643,7 +6687,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0919-0714";
+const BUILD = "0919-0729";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -9770,8 +9814,8 @@ function openBattle(res, opt, onDone){
           ms: Math.max(35, Math.round(speed/fn))})}</div>`;
       }
       return `<div class="unit ${u.alive?"":"dead"} ${act?"act":""}">
-        ${popHtml}${fxc}${spr}<div class="un">${epiH(n.name)} ${JOBS[n.job].mon? `<span class="tag" style="color:var(--bad);border-color:var(--bad)">원정지 주인</span>` : `<span class="tag role-${JOBS[n.job].tone}">${JOBS[n.job].name}</span>`}</div>
-        <div style="font-size:10.5px;color:var(--dim)">Lv.${n.lv} · ${n.row==="front"?"전열":"후열"}</div>
+        ${popHtml}${fxc}${spr}<div class="un">${epiH(n.name)}</div>
+        <div class="usub">${JOBS[n.job].mon? `<span class="tag" style="color:var(--bad);border-color:var(--bad)">원정지 주인</span>` : `<span class="tag role-${JOBS[n.job].tone}">${JOBS[n.job].name}</span>`}<span class="uslv">Lv.${n.lv} · ${n.row==="front"?"전열":"후열"}</span></div>
         <div class="hpb"><i style="width:${hpP}%"></i><u style="left:${hpP}%;width:${Math.min(100-hpP,shP)}%"></u></div>
         <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--dim)" class="num"><span>${fmt(u.hp)}${u.sh>0?` +${fmt(u.sh)}`:""}</span><span>/ ${fmt(u.maxHp)}</span></div>
         <div class="atbb"><i style="width:${u.atb*100}%"></i></div>
