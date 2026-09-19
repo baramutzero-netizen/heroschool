@@ -1227,8 +1227,8 @@ const JOBS = {
     skills:[
       {id:"mo_b",fx:"blunt",el:"phys",kind:"basic",name:"연격",type:"dmg_multi",target:"enemy_rand",power:.56,hits:2,proc:1,dur:0,txt:"빠른 2연타"},
       {id:"mo_1",fx:"burst",el:"arcane",name:"기공파",type:"dmg",target:"enemy_rand",power:1.45,proc:.22,dur:0,txt:"응축한 기를 쏘아낸다"},
-      {id:"mo_2",fx:"aura",el:"buff",name:"내공 순환",type:"buff",target:"self",power:.3,proc:.16,dur:3,stat:"atk",leech:.12,txt:"공격력과 피흡을 끌어올린다"},
-      {id:"mo_u",fx:"blunt",el:"phys",kind:"ult",name:"백열권",type:"ult_single",target:"enemy_rand",power:3.1,proc:1,dur:0,heal:.3,txt:"연속 타격 후 자신을 회복"}
+      {id:"mo_2",fx:"aura",el:"buff",name:"내공 순환",type:"buff",target:"self",power:.1,pow2:.1,stat2:"def",proc:.16,dur:3,stat:"atk",leech:.1,txt:"공격·방어와 피흡을 끌어올린다"},
+      {id:"mo_u",fx:"blunt",el:"phys",kind:"ult",name:"백열권",type:"ult_single",target:"enemy_rand",power:2.8,proc:1,dur:0,heal:.3,txt:"연속 타격 후 자신을 회복"}
     ]},
   archer:{ name:"아쳐", role:"dps", sub:"원거리", tone:"dps",
     desc:"거리를 재는 사수. 조준이 길수록 한 발이 무겁다.",
@@ -1242,7 +1242,7 @@ const JOBS = {
     ]},
   rogue:{ name:"로그", role:"dps", sub:"암살", tone:"dps",
     desc:"속도로 먹고사는 단검잡이. 약해진 적을 놓치지 않는다.",
-    base:{hp:870,atk:134,def:48,spd:128,crit:.23,critDmg:1.9,acc:.97,eva:.16,skAcc:.9,skRes:.12,ultGain:1.15,leech:.04},
+    base:{hp:870,atk:128,def:48,spd:128,crit:.15,critDmg:1.65,acc:.93,eva:.16,skAcc:.9,skRes:.12,ultGain:1.1,leech:.01},
     grow:{hp:42,atk:7.6,def:2.4,spd:4.0},
     skills:[
       {id:"ro_b",fx:"slash",el:"phys",kind:"basic",name:"급습",type:"dmg",target:"enemy_low",power:1.0,proc:1,dur:0,txt:"빈틈을 파고든다"},
@@ -1258,7 +1258,7 @@ const JOBS = {
       {id:"pr_b",fx:"burst",el:"holy",kind:"basic",name:"신성 파동",type:"dmg",target:"enemy_rand",power:.74,proc:1,dur:0,txt:"정화의 빛을 쏜다"},
       {id:"pr_1",fx:"heal",el:"heal",name:"대치유",type:"heal",target:"ally_low",power:1.05,proc:.3,dur:0,cleanse:1,txt:"아군 한 명을 크게 회복하고 디버프 1개를 지운다"},
       {id:"pr_2",fx:"aura",el:"holy",name:"축복",type:"buff",target:"ally_all",power:.22,pow2:.22,stat2:"def",proc:.18,dur:3,stat:"atk",txt:"아군 전체 공격·방어 상승"},
-      {id:"pr_u",fx:"heal",el:"holy",kind:"ult",name:"부활의 기도",type:"ult_heal",target:"ally_all",power:1.2,proc:1,dur:0,txt:"전체 대회복과 디버프 해제"}
+      {id:"pr_u",fx:"heal",el:"holy",kind:"ult",name:"부활의 기도",type:"ult_heal",target:"ally_all",power:1.2,proc:1,dur:0,revive:true,txt:"전체 대회복·디버프 해제 · 쓰러진 아군을 일으킨다 (1인 1회)"}
     ]},
   timemage:{ name:"타임 매지션", role:"supp", sub:"시간 조작", tone:"supp",
     desc:"행동 순서를 다시 쓰는 술사. 한 박자가 승부를 뒤집는다.",
@@ -1296,9 +1296,9 @@ const JOBS = {
     grow:{hp:54,atk:7.6,def:3.6,spd:2.4},
     skills:[
       {id:"fm_b",fx:"blunt",el:"arcane",kind:"basic",name:"마력 강타",type:"dmg",target:"enemy_front",power:1.04,proc:1,dur:0,txt:"마력을 두른 주먹을 꽂는다"},
-      {id:"fm_1",fx:"burst",el:"arcane",name:"중력 붕괴",type:"dmg",target:"enemy_low",power:1.55,proc:.2,dur:0,pierce:.2,txt:"무너지는 적을 짓누른다"},
-      {id:"fm_2",fx:"aura",el:"arcane",name:"마력 과충전",type:"buff",target:"self",power:.36,proc:.16,dur:3,stat:"atk",txt:"자신의 공격력을 폭발적으로 올린다"},
-      {id:"fm_u",fx:"blunt",el:"arcane",kind:"ult",name:"파쇄 일격",type:"ult_single",target:"enemy_front",power:3.3,proc:1,dur:0,execute:.2,txt:"방어를 부수는 단 한 방"}
+      {id:"fm_1",fx:"burst",el:"arcane",name:"파쇄격",type:"dmg",target:"enemy_low",power:1.55,proc:.2,dur:0,pierce:.2,txt:"무너지는 적을 짓누른다"},
+      {id:"fm_2",fx:"aura",el:"arcane",name:"마력 과충전",type:"charge",target:"self",power:.3,proc:.15,dur:0,ultGive:30,txt:"마력을 끌어모아 봉인을 앞당긴다 — 필살 게이지 +30"},
+      {id:"fm_u",fx:"aura",el:"arcane",kind:"ult",name:"봉인 해제",type:"ult_unseal",target:"self",power:.1,unseal:.1,atbGive:.3,proc:1,dur:2,txt:"몸에 묶어둔 마력을 모두 푼다 — 모든 능력 상승 · 단일 대상 공격 기술이 전체로"}
     ]},
   enchanter:{ name:"인챈터", role:"supp", sub:"각인 · 봉인", tone:"supp",
     desc:"무기와 갑옷에 글자를 새기는 술사. 팀 전체를 한 단계 끌어올린다.",
@@ -1312,8 +1312,8 @@ const JOBS = {
     ]},
   darkpriest:{ name:"암흑 사제", role:"heal", sub:"서브 딜러", tone:"heal",
     desc:"남의 피로 아군을 살리는 사제. 오래 끌수록 유리해진다.",
-    base:{hp:960,atk:104,def:60,spd:98,crit:.1,critDmg:1.6,acc:.95,eva:.07,skAcc:.96,skRes:.2,ultGain:1.1,leech:.1},
-    grow:{hp:50,atk:5.8,def:3.2,spd:2.4},
+    base:{hp:980,atk:104,def:66,spd:98,crit:.1,critDmg:1.6,acc:.98,eva:.07,skAcc:.98,skRes:.2,ultGain:1.1,leech:.1},
+    grow:{hp:55,atk:5.8,def:3.5,spd:2.4},
     skills:[
       {id:"dp_b",fx:"burst",el:"dark",kind:"basic",name:"어둠의 손길",type:"dmg",target:"enemy_rand",power:1.0,proc:1,dur:0,txt:"생기를 훑어 간다"},
       {id:"dp_1",fx:"heal",el:"dark",name:"흡혈 의식",type:"drain",target:"enemy_low",power:1.15,proc:.24,dur:0,drain:1.0,txt:"뺏은 만큼 위험한 아군을 회복시킨다"},
@@ -1352,13 +1352,13 @@ const JOBS = {
     ]},
   ninja:{ name:"닌자", role:"dps", sub:"교란 · 저주", tone:"dps",
     desc:"그림자에서 판을 흔드는 밀정. 상대를 느리고 무디게 만든다.",
-    base:{hp:900,atk:110,def:52,spd:124,crit:.15,critDmg:1.6,acc:.96,eva:.14,skAcc:.97,skRes:.16,ultGain:1.2,leech:.03},
-    grow:{hp:44,atk:6.8,def:2.6,spd:4.2},
+    base:{hp:900,atk:110,def:52,spd:124,crit:.15,critDmg:1.6,acc:.96,eva:.18,skAcc:.97,skRes:.16,ultGain:1.1,leech:0},
+    grow:{hp:44,atk:6,def:2.6,spd:4.2},
     skills:[
-      {id:"nj_b",fx:"pierce",el:"phys",kind:"basic",name:"표창",type:"dmg",target:"enemy_back",power:.88,proc:1,dur:0,txt:"뒤쪽을 노려 던진다"},
-      {id:"nj_1",fx:"aura",el:"debuff",name:"마름쇠",type:"slow",target:"enemy_all",power:.22,proc:.2,dur:2,txt:"발밑을 흩뿌려 적 전체를 묶는다"},
-      {id:"nj_2",fx:"slash",el:"poison",name:"독날",type:"dot",target:"enemy_rand",power:.34,proc:.24,dur:3,txt:"칼날의 독이 천천히 퍼진다"},
-      {id:"nj_u",fx:"slash",el:"dark",kind:"ult",name:"그림자 분신",type:"ult_single",target:"enemy_low",power:3.0,proc:1,dur:0,txt:"그림자가 한꺼번에 덮친다"}
+      {id:"nj_b",fx:"pierce",el:"phys",kind:"basic",name:"쿠나이",type:"dmg",target:"enemy_back",power:.88,proc:1,dur:0,txt:"뒤쪽을 노려 던진다"},
+      {id:"nj_1",fx:"aura",el:"debuff",name:"수둔·수렁",type:"slow",target:"enemy_all",power:.22,proc:.2,dur:2,txt:"발밑을 물로 적셔 적 전체를 묶는다"},
+      {id:"nj_2",fx:"pierce",el:"arcane",name:"수둔·수룡아",type:"dmg",target:"enemy_rand",power:1.1,proc:.24,dur:0,atbCut:.2,txt:"물의 이빨이 덮쳐 상대의 박자를 끊는다"},
+      {id:"nj_u",fx:"slash",el:"dark",kind:"ult",name:"천류·풍마수리검",type:"ult_single",target:"enemy_low",power:3.0,proc:1,dur:0,mirBonus:.5,txt:"물그림자를 모두 실어 던진다 — 1겹마다 위력이 오른다"}
     ]}
 };
 const JOB_KEYS = Object.keys(JOBS);
@@ -1369,9 +1369,9 @@ const JOB_KEYS = Object.keys(JOBS);
 const PASSIVES = {
   paladin:   {n:"수호 서약",  d:"전투 시작 시 자신을 제외한 아군에게 각자 최대 체력 8%의 보호막을 두른다", onStart:"shieldAll"},
   sword:     {n:"반격 자세",   d:"단일 공격의 대상이 되면 그만큼 되받아친다 (피해 0.2 · 필살 게이지는 오르지 않는다)", counter:.2},
-  monk:      {n:"연공",       d:"일반 공격으로 얻는 필살 게이지가 50% 늘어난다", ultBasic:.5},
+  monk:      {n:"연공",       d:"일반 공격으로 얻는 필살 게이지가 25% 늘어난다", ultBasic:.25},
   archer:    {n:"저격 자세",  d:"후열의 적에게 주는 피해가 12% 늘어난다", vsBack:.12},
-  rogue:     {n:"약점 간파",  d:"체력 50% 이하인 적에게 주는 피해가 15% 늘어난다", vsLow:.15},
+  rogue:     {n:"약점 간파",  d:"체력 40% 이하인 적에게 주는 피해가 15% 늘어난다", vsLow:.15},
   priest:    {n:"기도",       d:"자신이 디버프에 걸릴 때마다 행동 게이지가 10% 회복된다", atbOnDebuff:.10},
   timemage:  {n:"예지",       d:"전투 시작 시 자신의 행동 게이지가 40% 차 있다", onStart:"atbSelf"},
   wizard:    {n:"원소 공명",  d:"자신이 쓰는 광역 스킬의 피해가 15% 늘어난다 (화염 폭발 · 유성 강림)", aoe:.15},
@@ -1382,7 +1382,7 @@ const PASSIVES = {
   bard:      {n:"합주",       d:"전투 시작 시 아군 전체의 행동 게이지가 15% 차 있다", onStart:"atbAll"},
   spellsword:{n:"검격 잔향",  d:"체력 40% 이상인 적에게 주는 피해가 10% 늘어난다", vsHigh:.10},
   gunner:    {n:"앙코르는 기본이죠", d:"기본기나 스킬을 쓸 때 14% 확률로 같은 것을 한 번 더 쓴다 (필살기 제외)", encore:.14},
-  ninja:     {n:"그림자 밟기", d:"피해 회피가 8%p 오른다", evaSelf:.08}
+  ninja:     {n:"인법·물그림자", d:"스킬을 쓸 때마다 물그림자가 1겹 쌓인다 (최대 2겹). 피해를 받으면 1겹을 소모해 그 피해를 15% 줄인다", mirage:.15}
 };
 function passiveOf(job){ return PASSIVES[job] || null; }
 function healMulOf(u){ const P=u.pas||passiveOf(u.job); return P && P.healMul ? 1+P.healMul : 1; }
@@ -1392,7 +1392,7 @@ function passiveDmgMul(src, tgt, sk){
   if(Ps){
     if(Ps.vsBack && tgt.row==="back") m *= 1+Ps.vsBack;
     if(Ps.vsFront && tgt.row==="front") m *= 1+Ps.vsFront;
-    if(Ps.vsLow && tgt.hp/tgt.maxHp <= .5) m *= 1+Ps.vsLow;
+    if(Ps.vsLow && tgt.hp/tgt.maxHp <= .4) m *= 1+Ps.vsLow;
     if(Ps.vsHigh && tgt.hp/tgt.maxHp > .4) m *= 1+Ps.vsHigh;
     if(Ps.aoe && sk && (sk.type==="dmg_aoe"||sk.type==="ult_aoe"||sk.type==="ult_drain")) m *= 1+Ps.aoe;
   }
@@ -2792,9 +2792,11 @@ function mkUnit(st, side, idx, row){
 }
 /* 0~1 척도로 다루는 항목 — 보정을 가산으로 얹는다 */
 const RATE_STAT = ["crit","acc","eva","skAcc","skRes","leech","critDmg","ultGain","critRes"];
+/* 봉인 해제 — 전체로 바뀌는 것은 피해를 주는 기술뿐 */
+const UNSEAL_AOE = ["dmg","dmg_multi","drain"];
 function eff(u, key){
   let v = u.base[key]||0, add=0, mul=0;
-  u.fx.forEach(f=>{ if(f.stat===key){ if(f.mode==="mul") mul+=f.val; else add+=f.val; } });
+  u.fx.forEach(f=>{ if(f.stat===key || (f.stats && f.stats.indexOf(key)>=0)){ if(f.mode==="mul") mul+=f.val; else add+=f.val; } });
   if(RATE_STAT.includes(key)) return Math.max(0, v+add+ v*mul);
   return Math.max(1, (v+add)*(1+mul));
 }
@@ -2867,7 +2869,8 @@ function pickTarget(actor, foes, allies, sk){
   }
   let pool = aliveOf(foes);
   if(!pool.length) return [];
-  if(t==="enemy_all") return dropOne(pool, smart);
+  const allT = UNSEAL_AOE.includes(sk.type) && (actor.fx||[]).some(f=> f.allT);
+  if(t==="enemy_all" || allT) return dropOne(pool, smart);
   { const tn = tauntTarget(actor, pool); if(tn) return [tn]; }
   if(smart){
     pool = freshFirst(pool, actor, sk);
@@ -2916,7 +2919,7 @@ function passiveFor(o){
   if(!P) return null;
   const k = 1 + (((o.skMod&&o.skMod.passive)||{}).pow||0);
   const out = Object.assign({}, P);
-  ["takeLow","ultBasic","vsBack","vsFront","vsLow","vsHigh","healMul","aoe","regen","take","leech","leechAll","evaSelf","counter","atbOnDebuff","encore"].forEach(x=>{ if(out[x]) out[x] = out[x]*k; });
+  ["takeLow","ultBasic","vsBack","vsFront","vsLow","vsHigh","healMul","aoe","regen","take","leech","leechAll","evaSelf","counter","atbOnDebuff","encore","mirage"].forEach(x=>{ if(out[x]) out[x] = out[x]*k; });
   out.k = k;
   return out;
 }
@@ -3112,6 +3115,7 @@ function runBattle(teamA, teamB, opt){
       } else chosen = basic;
     }
     resolve(u, chosen, foes, allies, isUlt);
+    if(chosen !== basic) mirGain(u);
     /* 앙코르 — 같은 기본기·스킬을 한 번 더 (필살기 제외) */
     {
       const Pe = u.pas;
@@ -3185,6 +3189,12 @@ function runBattle(teamA, teamB, opt){
       dmg *= 1 + (cd-1)*(1-cr);
     }
     if(o.execute && tgt.hp/tgt.maxHp < .4) dmg *= (1+o.execute*2);
+    /* 물그림자 — 한 겹을 흩어 피해를 줄인다 */
+    { const Pw = tgt.pas;
+      if(Pw && Pw.mirage && (tgt.mir|0)>0){
+        dmg *= (1 - Pw.mirage); tgt.mir--; mirSync(tgt);
+        push(`<b>${epiH(tgt.name)}</b> 물그림자가 흩어진다 — 피해 ${Math.round(Pw.mirage*100)}% 감소 (남은 ${tgt.mir}겹)`,"",tgt.uid);
+      } }
     dmg = Math.max(1, Math.round(dmg));
     let absorbed = 0;
     if(tgt.shield>0){ absorbed = Math.min(tgt.shield, dmg); tgt.shield -= absorbed; dmg -= absorbed; }
@@ -3232,6 +3242,17 @@ function runBattle(teamA, teamB, opt){
       if(P && P.atbOnDebuff && tgt.alive) tgt.atb = Math.min(999, tgt.atb + 1000*P.atbOnDebuff);
     }
   }
+  /* 물그림자 — 겹 수를 표시 칩으로 동기화한다 */
+  function mirCap(){ return 2; }
+  function mirSync(t){
+    t.fx = t.fx.filter(f=> f.mir!==true);
+    if((t.mir|0)>0) t.fx.push({name:`물그림자 ×${t.mir}`,kind:"b",turns:99,stat:null,val:0,mir:true});
+  }
+  function mirGain(t){
+    const P = t.pas; if(!P || !P.mirage) return;
+    t.mir = Math.min(mirCap(), (t.mir|0)+1); mirSync(t);
+    push(`<b>${epiH(t.name)}</b> 물그림자 ${t.mir}겹`,"",t.uid);
+  }
   function resolve(u, sk, foes, allies, isUlt){
     const p = skPow(u, sk) * (sk.kind==="basic" ? 1 : consOf(u).skill);
     const dur = skDur(u, sk);
@@ -3242,8 +3263,12 @@ function runBattle(teamA, teamB, opt){
     push(label, isUlt?"ult":"", u.uid,
       sk.fx ? {n:sk.fx, e:sk.el||"phys", u:!!isUlt, t:tg.filter(t=>t && t.alive).map(t=>t.uid)} : null);
     switch(sk.type){
-      case "dmg": dealDamage(u,tg[0],p,sk); break;
-      case "dmg_multi": for(let i=0;i<(sk.hits||2);i++){ const t=aliveOf(foes); if(!t.length)break; dealDamage(u, tg[0].alive?tg[0]:pick(t), p, sk); } break;
+      case "dmg": { tg.forEach(t=>{ if(!t.alive) return;
+          dealDamage(u,t,p,sk);
+          if(sk.atbCut && t.alive){ t.atb = Math.max(0, t.atb - 1000*sk.atbCut);
+            push(`<b>${epiH(t.name)}</b> 행동 게이지 -${Math.round(sk.atbCut*100)}%`,"",u.uid); } });
+        break; }
+      case "dmg_multi": tg.forEach(t0=>{ for(let i=0;i<(sk.hits||2);i++){ const t=aliveOf(foes); if(!t.length)break; dealDamage(u, t0.alive?t0:pick(t), p, sk); } }); break;
       case "dmg_aoe": tg.forEach(t=> t.alive && dealDamage(u,t,p,sk)); break;
       case "dot": {
         const hit = [];
@@ -3296,7 +3321,7 @@ function runBattle(teamA, teamB, opt){
         tg.forEach(t=>{ t.atb = Math.max(0, t.atb - 1000*p); addFx(t,{name:sk.name,kind:"d",turns:dur+1,stat:"spd",mode:"mul",val:-p*.5}); });
         push(`<b>${epiH(tg[0].name)}</b> 행동 게이지 -${Math.round(p*100)}%`,"",u.uid);
         break; }
-      case "ult_single": dealDamage(u,tg[0],p,sk); if(sk.heal){ const h=Math.round(u.maxHp*sk.heal*.35); const h0=u.hp; u.hp=Math.min(u.maxHp,u.hp+h); recHeal(u, u.hp-h0); push(`<b>${epiH(u.name)}</b> 회복 ${fmt(h)}`,"heal",u.uid,null,[{u:u.uid,v:u.hp-h0,k:"heal"}]);} break;
+      case "ult_single": tg.forEach(t=> t.alive && dealDamage(u, t, p + (sk.mirBonus? sk.mirBonus*(u.mir|0) : 0), sk)); if(sk.heal){ const h=Math.round(u.maxHp*sk.heal*.35); const h0=u.hp; u.hp=Math.min(u.maxHp,u.hp+h); recHeal(u, u.hp-h0); push(`<b>${epiH(u.name)}</b> 회복 ${fmt(h)}`,"heal",u.uid,null,[{u:u.uid,v:u.hp-h0,k:"heal"}]);} break;
       case "ult_aoe": { let tot = 0;
         tg.forEach(t=>{ if(t.alive) tot += dealDamage(u,t,p,sk); });
         if(!sk.noBreak) tg.forEach(t=> t.alive && addFx(t,{name:"방어 붕괴",kind:"d",turns:dur+1,stat:"def",mode:"mul",val:-.25}));
@@ -3308,7 +3333,8 @@ function runBattle(teamA, teamB, opt){
         if(sk.heal){ const h=Math.round(u.maxHp*sk.heal*.3); const h0=u.hp; u.hp=Math.min(u.maxHp,u.hp+h); recHeal(u, u.hp-h0); push(`<b>${epiH(u.name)}</b> 회복 ${fmt(h)}`,"heal",u.uid,null,[{u:u.uid,v:u.hp-h0,k:"heal"}]); }
         break; }
       case "drain": {
-        const d = dealDamage(u,tg[0],p,sk);
+        let d = 0;
+        tg.forEach(t=>{ if(t.alive) d += dealDamage(u,t,p,sk); });
         if(d>0){
           const low = aliveOf(allies).slice().sort((a,b)=> a.hp/a.maxHp - b.hp/b.maxHp)[0];
           if(low){ const h=Math.round(d*(sk.drain||.7)*healMulOf(u)), ab=Math.min(low.maxHp-low.hp,h); low.hp+=ab; recHeal(u, ab);
@@ -3346,10 +3372,29 @@ function runBattle(teamA, teamB, opt){
           push(`아군 전체 회복 ${fmt(h)} · 보호막 ${fmt(sh)} · 방어 강화`,"heal",u.uid,null,pp); } break; }
       case "ult_heal": {
         const h=Math.round(eff(u,"atk")*p*2.9*healMulOf(u));
-        { const pp=[];
+        { const pp=[]; const back=[];
           tg.forEach(t=>{ const h0=t.hp; t.hp=Math.min(t.maxHp,t.hp+h); recHeal(u, t.hp-h0); if(t.hp>h0) pp.push({u:t.uid,v:t.hp-h0,k:"heal"});
             t.fx=t.fx.filter(f=>f.kind!=="d"&&f.kind!=="dot"); });
-          push(`아군 전체 회복 ${fmt(h)} · 약화 해제`,"heal",u.uid,null,pp); } break; }
+          /* 부활 — 쓰러진 아군을 일으킨다 (전투당 1인 1회) */
+          if(sk.revive) (allies||[]).forEach(t=>{
+            if(t.alive || t.revived) return;
+            t.revived = true; t.alive = true; t.fx = []; t.shield = 0; t.mir = 0; t.atb = 0;
+            t.hp = Math.min(t.maxHp, h); recHeal(u, t.hp);
+            pp.push({u:t.uid,v:t.hp,k:"heal"}); back.push(epiH(t.name));
+          });
+          push(`아군 전체 회복 ${fmt(h)} · 약화 해제${back.length? ` · <b>${back.join("</b>, <b>")}</b> 다시 일어선다`:""}`,"heal",u.uid,null,pp); } break; }
+      case "charge": {
+        const g = sk.ultGive|0;
+        u.ult = clamp(u.ult + g, 0, 100);
+        push(`<b>${epiH(u.name)}</b> 필살 게이지 +${g}`,"heal",u.uid);
+        break; }
+      case "ult_unseal": {
+        const kk = p/sk.power, v = (sk.unseal!=null? sk.unseal : .1)*kk, ag = (sk.atbGive!=null? sk.atbGive : .3);
+        addFx(u,{name:sk.name,kind:"b",turns:dur+1,stat:null,mode:"mul",val:v,allT:true,
+                 stats:["atk","def","spd","crit","critDmg","acc","eva","skAcc","skRes","leech"]});
+        u.atb = Math.min(1999, u.atb + 1000*ag);
+        push(`<b>${epiH(u.name)}</b> 봉인 해제 — 모든 능력 +${Math.round(v*100)}% · 단일 기술이 전체로 · 행동 게이지 +${Math.round(ag*100)}% (${dur}턴)`,"heal",u.uid);
+        break; }
       case "ult_time": {
         tg.forEach(t=>{ t.atb = 0; });
         aliveOf(allies).forEach(a=> a.ult = clamp(a.ult+30,0,100));
