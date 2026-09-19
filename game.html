@@ -838,6 +838,27 @@ table.tb tr:hover td{background:var(--surface2)}
   .btnrow{gap:7px}
 }
 
+/* 직업별 필살기: 전투 계산과 독립된 1.4초 연출 */
+.bf-ultimate{position:absolute;left:50%;top:43px;width:220px;height:220px;transform:translate(-50%,-50%);pointer-events:none;z-index:3;color:var(--ult-color);filter:drop-shadow(0 0 4px var(--ult-color))}
+.bf-ultimate.caster{width:170px;height:170px;top:73px;z-index:-1}
+.bf-ultimate svg{width:100%;height:100%;overflow:visible;transform:scaleX(var(--ult-flip,1));animation:ultEnvelope 1400ms both;animation-delay:var(--ult-age)}
+.bf-ultimate path,.bf-ultimate circle,.bf-ultimate ellipse{fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.bf-ultimate .ult-solid{fill:currentColor;fill-opacity:.25;stroke-width:2.5}
+.bf-ultimate .ult-scene{transform-origin:100px 100px;animation:ultBloom 1400ms both;animation-delay:var(--ult-age)}
+.bf-ultimate .ult-orbit,.bf-ultimate .ult-spin,.bf-ultimate .ult-hand{transform-origin:100px 100px;animation:ultTurn 1400ms both;animation-delay:var(--ult-age)}
+.bf-ultimate .ult-orbit{stroke-dasharray:12 5 2 5;stroke-opacity:.8}
+.bf-ultimate .ult-impact{transform-origin:100px 100px;animation:ultRipple 1400ms both;animation-delay:var(--ult-age)}
+.bf-ultimate .ult-blade{stroke-width:3;stroke-dasharray:220;animation:ultTrace 1400ms both;animation-delay:var(--ult-age)}
+.bf-ultimate .ult-root{stroke-width:3;stroke-dasharray:280;animation:ultTrace 1400ms both;animation-delay:var(--ult-age)}
+.bf-ultimate .ult-spark{fill:currentColor;stroke:none;transform-origin:100px 100px;animation:ultRipple 1400ms both;animation-delay:var(--ult-age)}
+.bf-stage .bf-name,.bf-stage .bf-gauges,.bf-stage .bf-status{position:relative;z-index:5}
+.bf-stage .bf-gauges{position:absolute}
+@keyframes ultEnvelope{0%{opacity:0}12%{opacity:.8}60%{opacity:.75}100%{opacity:0}}
+@keyframes ultBloom{0%{transform:scale(.35)}23%{transform:scale(1.04)}65%{transform:scale(1)}100%{transform:scale(1.16)}}
+@keyframes ultTurn{from{transform:rotate(-65deg)}to{transform:rotate(120deg)}}
+@keyframes ultRipple{0%{transform:scale(.3);opacity:0}25%{opacity:1}100%{transform:scale(1.35);opacity:0}}
+@keyframes ultTrace{0%{stroke-dashoffset:280;opacity:0}20%{opacity:1}55%,100%{stroke-dashoffset:0}}
+@media(prefers-reduced-motion:reduce){.bf-ultimate .ult-scene,.bf-ultimate .ult-orbit,.bf-ultimate .ult-spin,.bf-ultimate .ult-hand,.bf-ultimate .ult-impact,.bf-ultimate .ult-spark,.bf-ultimate .ult-blade,.bf-ultimate .ult-root{animation:none}}
 /* 대각선 전투 필드 */
 .bf-layout{display:grid!important;grid-template-columns:minmax(0,1fr) 220px;gap:16px;align-items:start}
 .bf-stage{grid-column:1;grid-row:1;position:relative;height:clamp(520px,calc(100dvh - 210px),720px);isolation:isolate;border:1px solid var(--line);border-radius:12px;background:linear-gradient(155deg,#ecf5ff24,#ffffff08 55%,#aecce324);overflow:visible}
@@ -9854,6 +9875,41 @@ function skillUpModal(sid){
   }, true);
 }
 let SPR_BTSCROLL = 0;
+const ULT_STYLE={
+ paladin:['#ffe79c','sanctuary'],sword:['#ffc28b','fracture'],monk:['#ff9c61','fists'],
+ archer:['#ffcb6d','arrow'],rogue:['#b9a0ff','assassin'],priest:['#fff3c5','wings'],
+ timemage:['#b4afff','clock'],wizard:['#ff966e','meteors'],druid:['#9befac','roots'],
+ forcemage:['#e5a2ff','unseal'],enchanter:['#8fe3ff','runes'],darkpriest:['#d79bff','eclipse'],
+ bard:['#ffda9d','music'],spellsword:['#a6d3ff','blades'],gunner:['#ffd38d','barrage'],ninja:['#80dfff','shuriken']
+};
+function ultimateEffect(job,role,age,flip){
+ const style=ULT_STYLE[job];if(!style||age>=1400||fxAlpha()<=0)return '';
+ const [color,type]=style;
+ const path=(d,cls='')=>`<path class="${cls}" d="${d}"/>`;
+ const ring=(r,cls='')=>`<circle class="${cls}" cx="100" cy="100" r="${r}"/>`;
+ const rays=Array.from({length:12},(_,i)=>`<path transform="rotate(${i*30} 100 100)" d="M100 23v9M97 16l3-5 3 5-3 5z"/>`).join('');
+ let art='';
+ switch(type){
+ case 'sanctuary':art=ring(64)+ring(72,'ult-orbit')+rays+path('M92 46h16v28h26v16h-26v46H92V90H66V74h26z','ult-solid');break;
+ case 'fracture':art=path('M28 166 88 111 71 98 162 28 113 103 130 115 28 166z','ult-solid')+path('M40 163 68 151 75 164 95 135 115 152 128 135 165 149','ult-impact');break;
+ case 'fists':art=Array.from({length:5},(_,i)=>`<g transform="translate(${(i%3-1)*30} ${Math.floor(i/3)*35-25}) rotate(${i*20-40} 100 100)">${path('M83 112V83l7-7 8 4 8-6 9 8 8-1 6 13-5 25-25 6z','ult-solid')}</g>`).join('')+ring(73,'ult-impact');break;
+ case 'arrow':art=path('M21 174 132 62 121 53 173 24 147 77 139 69 28 181z','ult-solid')+path('M24 139 89 73M45 171l58-56M15 109l30-30');break;
+ case 'assassin':art=path('M25 39Q115 70 175 168Q85 128 25 39M173 35Q89 77 24 163Q131 110 173 35','ult-solid')+ring(60,'ult-impact');break;
+ case 'wings':art=path('M95 125Q60 51 17 44L34 78 22 74 46 107 35 104Q62 147 95 125M105 125Q140 51 183 44L166 78 178 74 154 107 165 104Q138 147 105 125','ult-solid')+ring(24,'ult-orbit')+path('M100 65v69M80 86h40');break;
+ case 'clock':art=ring(69)+ring(60)+rays+path('M100 54v46l28 16','ult-hand')+path('M91 93h6v18h-6zM104 93h6v18h-6z','ult-solid');break;
+ case 'meteors':art=Array.from({length:4},(_,i)=>`<g transform="translate(${(i%2)*53-25} ${Math.floor(i/2)*40-25})">${path('M57 130Q49 105 145 25L86 139z','ult-solid')}<circle cx="72" cy="128" r="13"/></g>`).join('');break;
+ case 'roots':art=Array.from({length:7},(_,i)=>`<g transform="rotate(${(i-3)*20} 100 156)">${path('M99 171Q65 126 93 87Q117 57 100 21M92 112Q43 109 54 84Q81 80 92 112M99 76Q147 75 140 48Q114 47 99 76','ult-root')}</g>`).join('');break;
+ case 'unseal':art=ring(59,'ult-orbit')+ring(76,'ult-impact')+Array.from({length:8},(_,i)=>`<path transform="rotate(${i*45} 100 100)" d="M100 81 86 54 99 62 106 19 118 48 111 38 120 76z" class="ult-solid"/>`).join('');break;
+ case 'runes':art=ring(60,'ult-orbit')+ring(73)+path('m100 32 59 102H41zM100 168 41 66h118z')+Array.from({length:6},(_,i)=>`<path transform="rotate(${i*60} 100 100)" d="M94 20v13h12V20m-12 6h12"/>`).join('');break;
+ case 'eclipse':art=ring(62,'ult-orbit')+path('M129 41a62 62 0 1 0 0 118 50 50 0 0 1 0-118','ult-solid')+Array.from({length:6},(_,i)=>`<path transform="rotate(${i*60} 100 100)" d="M15 100Q52 52 88 99" class="ult-root"/>`).join('');break;
+ case 'music':art=path('M18 112Q85 53 179 112M18 125Q85 66 179 125M18 138Q85 79 179 138')+Array.from({length:5},(_,i)=>`<g transform="translate(${i*30-58} ${i%2*23-23})">${path('M99 102V62l22-5v35M99 71l22-5')}<ellipse cx="91" cy="104" rx="9" ry="6" class="ult-solid"/><ellipse cx="113" cy="94" rx="9" ry="6" class="ult-solid"/></g>`).join('');break;
+ case 'blades':art=Array.from({length:7},(_,i)=>`<g transform="rotate(${i*51.4} 100 100)">${path('M97 89V30l3-14 3 14v59M91 80h18M100 89v12','ult-blade')}</g>`).join('')+ring(70,'ult-orbit');break;
+ case 'barrage':art=Array.from({length:9},(_,i)=>`<path d="M${17+i*17} ${10+(i%3)*12}l-8 86m3 9-5 14m-6 2 10-5 5 10" class="ult-blade"/>`).join('')+ring(50,'ult-impact');break;
+ case 'shuriken':art=`<g class="ult-spin">${path('M100 92 80 22 102 49 161 24 137 77 179 113 145 105 142 174 112 140 43 167 62 119 21 81 66 88 100 92z','ult-solid')}${ring(11)}</g>`+path('M28 151Q110 196 177 129M22 137Q93 180 178 113','ult-root');break;
+ }
+ const geometry=role==='caster'?ring(68,'ult-orbit')+rays:art;
+ return `<span class="bf-ultimate ${role}" style="--ult-color:${color};--ult-age:-${Math.round(age)}ms;opacity:${fxAlpha()};${flip?'--ult-flip:-1;':''}"><svg viewBox="0 0 200 200" aria-hidden="true"><g class="ult-scene">${geometry}</g>${Array.from({length:8},(_,i)=>`<circle class="ult-spark" cx="${100+Math.cos(i*.785)*78}" cy="${100+Math.sin(i*.785)*78}" r="${i%3+1}"/>`).join('')}</svg></span>`;
+}
 function battleStatusIcon(effect){
   const e=effect, negative=e.k==='d'||e.k==='dot'||e.k==='mind';
   const paths={
@@ -9911,6 +9967,7 @@ function openBattle(res, opt, onDone){
   };
   const names = res.names;
   const speech = new Map();
+  let ultimateCasts=[];
   let speechFrame = -1;
   const uids = (()=>{ let a=0,b=0; return names.map(n=> n.side==="A" ? "A"+(a++) : "B"+(b++)); })();
   const formTag = (fk)=>{
@@ -9994,6 +10051,10 @@ function openBattle(res, opt, onDone){
       const slots=form?form[row]:null;
       const col=slots&&slots[order]?+slots[order].slice(1)-1:order;
       const boss=monHas(n.job);
+      const ultFX=ultimateCasts.map(c=>{
+        const target=c.targets.includes(uids[k]),caster=c.actor===uids[k];
+        return target||caster?ultimateEffect(c.job,target?'target':'caster',performance.now()-c.at,n.side==='B'):'';
+      }).join('');
       const x=boss?77:side==='A'?(row==='front'?24:14)+col*17:(row==='front'?50:60)+col*14;
       const y=boss?29:side==='A'?(row==='front'?47:65)+col*9:(row==='front'?35:16)+col*10;
       const talk=speech.get(uids[k]), age=talk?performance.now()-talk.at:Infinity;
@@ -10002,7 +10063,7 @@ function openBattle(res, opt, onDone){
         style="left:${x}%;top:${y}%;z-index:${Math.round(y)}" tabindex="0"
         aria-label="${esc(n.name)} 체력 ${Math.round(u.hp)} / ${u.maxHp}, 행동 ${Math.round(u.atb*100)}%, 필살기 ${Math.round(u.ult)}%"
         title="${esc(n.name)} · ${JOBS[n.job].name} · ${row==='front'?'전열':'후열'} / 체력 ${fmt(u.hp)} / ${fmt(u.maxHp)}${u.sh>0?' · 보호막 '+fmt(u.sh):''} / 행동 ${Math.round(u.atb*100)}% · ${esc(n.ult||ultName(n.job))} ${Math.round(u.ult)}%">
-        ${popHtml}${fxc}${spr}
+        ${popHtml}${fxc}${spr}${ultFX}
         ${say?`<div class="bf-speech ${say.tone} ${talk.call.kind==='ult'?'ultimate':''}" style="animation-delay:-${Math.round(age)}ms">${esc(say.text)}</div>`:''}
         <div class="bf-gauges" aria-hidden="true">
           <div class="bf-ult ${u.ult>=100?'ready':''}" style="--charge:${clamp(u.ult,0,100)}%"><span>${Math.round(u.ult)}</span></div>
@@ -10031,9 +10092,14 @@ function openBattle(res, opt, onDone){
     const f = res.frames[i];
     if(speechFrame!==i){
       if(f.call&&f.actor) speech.set(f.actor,{call:f.call,at:performance.now(),frame:i});
-      if(i===res.frames.length-1) speech.clear();
+      if(f.call&&f.call.kind==='ult'&&f.fx){
+        const actor=names[uids.indexOf(f.actor)];
+        if(actor&&ULT_STYLE[actor.job]) ultimateCasts.push({actor:f.actor,job:actor.job,targets:f.fx.t||[],at:performance.now()});
+      }
+      if(i===res.frames.length-1){speech.clear();ultimateCasts=[];}
       speechFrame=i;
     }
+    ultimateCasts=ultimateCasts.filter(c=>performance.now()-c.at<1400).slice(-3);
     const logs = res.frames.slice(0,i+1).slice(-90);
     dragCfg($("#modalRoot"), null);
     const fk = battleFieldKey(opt.field);
