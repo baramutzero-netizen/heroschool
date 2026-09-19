@@ -3,7 +3,7 @@
 <style>
 *{box-sizing:border-box}body{margin:0;background:#161b25;color:#e8edf6;font:15px system-ui}header{position:sticky;top:0;background:#202738f5;padding:18px 24px;z-index:2;border-bottom:1px solid #44516a}h1{font-size:21px;margin:0 0 9px}p{color:#b7c5d9;margin:8px 0}button,select,input{font:inherit}button,select{padding:7px;background:#33425e;color:white;border:1px solid #72809b;border-radius:5px}nav{display:flex;flex-wrap:wrap;gap:14px;align-items:center}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:16px;padding:20px}.card{background:#222c3d;border:1px solid #44536e;border-radius:9px;text-align:center;padding:12px;overflow:visible}h2{font-size:16px;margin:0 0 6px}canvas{max-width:100%;image-rendering:pixelated;background:repeating-conic-gradient(#283447 0 25%,#2c394d 0 50%) 0/16px 16px}.detail{font-size:12px;color:#bccbde}label{white-space:nowrap}a{color:#b9d9ff}
 </style>
-<header><h1>캐릭터 프레임 검수 · 여백과 발밑 기준점</h1><p>256×256 캔버스 · 기준점 (128, 170) · 점선 안쪽 16px 안전 여백 · 초록색 선은 지면입니다.</p>
+<header><h1>캐릭터 프레임 검수 · 여백과 발밑 기준점</h1><p>재생 속도 70% · 256×256 캔버스 · 기준점 (128, 170) · 점선 안쪽 16px 안전 여백 · 초록색 선은 지면입니다.</p>
 <nav><select id="motion"><option value="0">기본</option><option value="1" selected>공격</option><option value="2">피격</option><option value="3">쓰러짐</option><option value="4">승리</option></select><button id="play">일시 정지</button><label>프레임 <input id="frame" type="range" min="0" max="5" value="0"></label><label><input id="flip" type="checkbox">좌우 반전</label><label><input id="guides" type="checkbox" checked>기준선</label><label><input id="effects" type="checkbox" checked>분리 효과</label><select id="zoom"><option value="1">원래 크기</option><option value="2">2배 확대</option></select></nav>
 <p>공격·피격은 검수 편의를 위해 반복합니다. 게임에서는 전투 상태에 맞춰 복귀합니다. <a href="SPRITE_SPEC.md">제작 규칙</a></p></header><main class="grid" id="grid"></main>
 <script src="sprites.js"></script><script src="runtime.js"></script><script>
@@ -18,12 +18,12 @@ function draw(now){requestAnimationFrame(draw);if(!SPR_READY)return;
  const m=+control('motion').value;
  document.querySelectorAll('.card canvas').forEach(cv=>{
   const job=cv.dataset.job,fs=SPR_META[job][m],total=fs.reduce((s,f)=>s+f.duration,0);let f=Math.min(selected,fs.length-1);
-  if(running){let t=now%total;f=0;while(f<fs.length-1&&t>=fs[f].duration){t-=fs[f].duration;f++}}
+  if(running){let t=(now*SPR_PLAYBACK_RATE)%total;f=0;while(f<fs.length-1&&t>=fs[f].duration){t-=fs[f].duration;f++}}
   const cx=cv.getContext('2d');cx.imageSmoothingEnabled=false;cx.clearRect(0,0,256,256);cx.save();
   if(control('flip').checked){cx.translate(256,0);cx.scale(-1,1)}
   cx.drawImage(SPR_BASE,...fs[f].rect,0,0,256,256);if(control('effects').checked&&fs[f].fx)cx.drawImage(SPR_BASE,...fs[f].fx,0,0,256,256);cx.restore();
   if(control('guides').checked){cx.lineWidth=1;cx.setLineDash([3,3]);cx.strokeStyle='#cda660';cx.strokeRect(16.5,16.5,223,223);cx.setLineDash([]);cx.strokeStyle='#6384b066';cx.strokeRect(64.5,64.5,127,127);cx.beginPath();cx.moveTo(128.5,0);cx.lineTo(128.5,256);cx.stroke();cx.strokeStyle='#80e4b588';cx.beginPath();cx.moveTo(0,170.5);cx.lineTo(256,170.5);cx.stroke();cx.fillStyle='#ffcf66';cx.fillRect(126,168,4,4)}
-  cv.nextElementSibling.textContent=(f+1)+' / '+fs.length+' 프레임 · '+fs[f].duration+'ms';
+  cv.nextElementSibling.textContent=(f+1)+' / '+fs.length+' 프레임 · '+Math.round(fs[f].duration/SPR_PLAYBACK_RATE)+'ms';
  });
 }requestAnimationFrame(draw);
 </script></html>

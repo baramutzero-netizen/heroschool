@@ -6,6 +6,7 @@
    (직업 × 색) 단위로 만들어 캐시한다. 그림은 한 장만 있으면 된다. */
 const SPR_M   = {idle:0, attack:1, hit:2, down:3, win:4};
 const SPR_MS  = [180, 70, 90, 110, 150];
+const SPR_PLAYBACK_RATE = 0.7; // 70% 속도: 모션 길이는 약 1.43배
 const SPR_LOOP= [1, 0, 0, 0, 1];
 const SPR_KEYS= Object.keys(SPR_JOB);
 const SPR_IDX = (()=>{ const o={}; SPR_KEYS.forEach((k,i)=>o[k]=i); return o; })();
@@ -136,7 +137,7 @@ function sprFrameAt(j, m, elapsed, ms, ended){
   const frames = SPR_META[SPR_KEYS[j]][m];
   if(!SPR_LOOP[m] && ended) return frames.length-1;
   const rawTotal = frames.reduce((s,f)=>s+f.duration,0);
-  const total = frames.length*ms;
+  const total = frames.length*ms/SPR_PLAYBACK_RATE;
   let t = SPR_LOOP[m] ? ((elapsed%total)+total)%total : Math.max(0,Math.min(elapsed,total));
   for(let i=0;i<frames.length;i++){
     t -= frames[i].duration/rawTotal*total;
