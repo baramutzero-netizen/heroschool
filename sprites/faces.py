@@ -12,20 +12,22 @@ from scipy import ndimage
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC  = os.path.join(HERE, "src")
+FSRC = os.path.join(HERE, "face_src")   # 얼굴 전용 원본 — 있으면 original_*.png 보다 우선한다
 OUTJS= os.path.join(HERE, "faces.js")
 GAME = os.path.join(os.path.dirname(HERE), "game.html")
 SIZE = 128            # 굽는 크기 (정사각)
+# face_src/ 는 전투 시트에서 뽑은 128px 칸 — 확대하므로 도트가 뭉개지지 않게 NEAREST 로 키운다
 
 JOBS = ["paladin","sword","monk","druid","archer","rogue","wizard","forcemage",
         "spellsword","gunner","ninja","priest","darkpriest","timemage","enchanter","bard"]
 
 # 자동 검출이 빗나가는 그림만 직접 잡는다 — box:[왼쪽, 위, 한 변] (원본 좌표)
+# 아래 좌표는 face_src/<job>.png (128px 칸) 기준이다.
 TUNE = {
-  "bard":      {"box":[320,110,570]},
-  "forcemage": {"box":[390,250,500]},
-  "druid":     {"dx":0.06},
-  "monk":      {"dy":-0.03},
-  "archer":    {"dx":-0.03},
+  "wizard":     {"box":[32,14,64]},   # 모자가 커서 살색 덩어리를 못 찾는다
+  "darkpriest": {"box":[40, 8,60]},   # 머리카락에 얼굴이 묻힌다
+  "timemage":   {"box":[34,14,64]},   # 눈만 잡혀 지나치게 확대된다
+  "bard":       {"box":[56,18,62]},   # 모자 깃털을 얼굴로 착각한다
 }
 
 def _near(c,d,tol): return max(abs(c[0]-d[0]),abs(c[1]-d[1]),abs(c[2]-d[2]))<=tol
@@ -90,19 +92,24 @@ def faceBox(im, job):
         sizes = ndimage.sum(skin, lab, range(1,n+1))
         ys,xs = np.where(lab==int(np.argmax(sizes))+1)
         cx=int(xs.mean()); cy=int(ys.mean()); fw=xs.max()-xs.min()+1
-    side = int(min(max(fw*t.get("k",2.6), H*0.26), H*0.52))
+    W = im.size[0]
+    side = int(min(max(fw*t.get("k",2.6), H*0.45), H*0.60))
     cx += int(side*t.get("dx",0)); cy += int(side*t.get("dy",0))
     left = int(cx-side/2); top = int(cy-side*0.50)
+    left = max(0, min(left, W-side)); top = max(0, min(top, im.size[1]-side))
     return (left, top, left+side, top+side)
 
 def main():
     out={}; tot=0
     for job in JOBS:
-        p = os.path.join(SRC, f"original_{job}.png")
+        fp = os.path.join(FSRC, f"{job}.png")
+        p  = fp if os.path.exists(fp) else os.path.join(SRC, f"original_{job}.png")
         if not os.path.exists(p): print(f"{job:11s} 원본 없음 — 건너뛴다"); continue
         im = Image.open(p).convert("RGBA")
         how = declutter(im)
-        face = im.crop(faceBox(im, job)).resize((SIZE,SIZE), Image.LANCZOS)
+        small = (p == fp)
+        if small: how = "전용"
+        face = im.crop(faceBox(im, job)).resize((SIZE,SIZE), Image.NEAREST if small else Image.LANCZOS)
         buf = io.BytesIO(); face.save(buf,"WEBP",lossless=True,method=6)
         b64 = base64.b64encode(buf.getvalue()).decode()
         out[job] = "data:image/webp;base64,"+b64
