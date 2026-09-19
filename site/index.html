@@ -1233,7 +1233,7 @@ const JOBS = {
       {id:"sw_b",fx:"slash",el:"phys",kind:"basic",name:"베기",type:"dmg",target:"enemy_front",power:1.02,proc:1,dur:0,txt:"기본에 충실한 종베기"},
       {id:"sw_1",fx:"aura",el:"debuff",name:"도발",type:"taunt",target:"enemy_rand",power:.15,proc:.2,dur:2,noDur:true,txt:"한 명을 걸고 넘어져 시선을 끈다 — 침착성 저하"},
       {id:"sw_2",fx:"aura",el:"buff",name:"철벽 자세",type:"buff",target:"self",power:.42,pow2:.21,stat2:"atk",proc:.2,dur:2,stat:"def",txt:"자세를 굳혀 방어와 공격을 함께 올린다"},
-      {id:"sw_u",fx:"slash",el:"phys",kind:"ult",name:"대지 가르기",type:"ult_aoe",target:"enemy_all",power:1.7,proc:1,dur:2,shieldSelf:1,txt:"땅을 가르며 전체 피해와 방어 저하 · 입힌 만큼 자신에게 보호막"}
+      {id:"sw_u",fx:"slash",el:"phys",kind:"ult",name:"대지 가르기",type:"ult_aoe",target:"enemy_all",power:1.7,proc:1,dur:2,shieldSelf:1,shieldDef:1,txt:"땅을 가르며 전체 피해와 방어 저하 · 입힌 만큼 + 방어력만큼 자신에게 보호막"}
     ]},
   monk:{ name:"몽크", role:"tank", sub:"서브 딜러", tone:"tank",
     desc:"맨몸으로 받아내고 되돌려주는 수도자. 흡혈과 연타가 특기.",
@@ -1301,8 +1301,8 @@ const JOBS = {
     grow:{hp:66,atk:5.4,def:5.0,spd:2.2},
     skills:[
       {id:"dr_b",fx:"slash",el:"poison",kind:"basic",name:"가시 채찍",type:"dmg",target:"enemy_front",power:.96,proc:1,dur:0,txt:"덩굴을 휘둘러 후려친다"},
-      {id:"dr_1",fx:"heal",el:"heal",name:"재생의 씨앗",type:"heal",target:"ally_low",power:.52,proc:.2,dur:0,txt:"상처 위에 생명을 틔운다"},
-      {id:"dr_2",fx:"aura",el:"buff",name:"야수 변신",type:"buff",target:"self",power:.32,proc:.18,dur:3,stat:"atk",leech:.1,txt:"야수의 몸으로 공격과 피흡을 올린다"},
+      {id:"dr_1",fx:"heal",el:"heal",name:"재생의 씨앗",type:"regen",target:"ally_low",power:.03,proc:.2,dur:2,txt:"상처 위에 생명을 틔운다 — 대상이 자기 차례마다 최대 체력의 3%를 회복한다"},
+      {id:"dr_2",fx:"aura",el:"buff",name:"야수화",type:"buff",target:"self",power:.3,pow2:.1,stat2:"spd",regen:.06,proc:.2,dur:3,stat:"def",txt:"야수의 몸으로 바뀐다 — 방어·속도 상승, 차례마다 최대 체력의 6% 회복"},
       {id:"dr_u",fx:"burst",el:"poison",kind:"ult",name:"대자연의 진노",type:"ult_aoe",target:"enemy_all",power:1.8,proc:1,dur:2,heal:.3,txt:"뿌리와 가시가 전장을 휩쓴다"}
     ]},
   forcemage:{ name:"배틀메이지", role:"dps", sub:"근접 마력", tone:"dps", row:"front",
@@ -1337,7 +1337,7 @@ const JOBS = {
     ]},
   bard:{ name:"바드", role:"supp", sub:"합주 · 사기", tone:"supp",
     desc:"노래로 대열의 호흡을 맞추는 연주자. 오래 버틸수록 합이 살아난다.",
-    base:{hp:950,atk:82,def:60,spd:110,crit:.08,critDmg:1.5,acc:.95,eva:.11,skAcc:.99,skRes:.24,ultGain:1.25,leech:0},
+    base:{hp:855,atk:82,def:60,spd:110,crit:.08,critDmg:1.5,acc:.95,eva:.11,skAcc:.99,skRes:.24,ultGain:1.25,leech:0},
     grow:{hp:48,atk:4.4,def:3.1,spd:3.2},
     skills:[
       {id:"bd_b",fx:"burst",el:"arcane",kind:"basic",name:"현 튕기기",type:"dmg",target:"enemy_rand",power:.8,proc:1,dur:0,txt:"날카로운 한 음을 튕겨 보낸다"},
@@ -1390,7 +1390,7 @@ const PASSIVES = {
   priest:    {n:"기도",       d:"자신이 디버프에 걸릴 때마다 행동 게이지가 10% 회복된다", atbOnDebuff:.10},
   timemage:  {n:"예지",       d:"전투 시작 시 자신의 행동 게이지가 40% 차 있다", onStart:"atbSelf"},
   wizard:    {n:"원소 공명",  d:"자신이 쓰는 광역 스킬의 피해가 15% 늘어난다 (화염 폭발 · 유성 강림)", aoe:.15},
-  druid:     {n:"자연 회복",  d:"자기 차례마다 최대 체력의 3%를 회복한다", regen:.03},
+  druid:     {n:"자연 회복",  d:"자기 차례마다 아군 전체가 각자 최대 체력의 3%를 회복한다", regenAll:.03},
   forcemage: {n:"마력 육체",  d:"받는 피해가 항상 10% 줄어든다", take:.10},
   enchanter: {n:"상시 각인",  d:"전투 시작 시 아군 전체의 스킬 성공률이 5%p 오른다", onStart:"skAccAll"},
   darkpriest:{n:"암흑 계약", d:"팀 전원의 피흡이 6%p 오른다", leechAll:.06},
@@ -2934,7 +2934,7 @@ function passiveFor(o){
   if(!P) return null;
   const k = 1 + (((o.skMod&&o.skMod.passive)||{}).pow||0);
   const out = Object.assign({}, P);
-  ["takeLow","ultBasic","vsBack","vsFront","vsLow","vsHigh","healMul","aoe","regen","take","leech","leechAll","evaSelf","counter","atbOnDebuff","encore","mirage"].forEach(x=>{ if(out[x]) out[x] = out[x]*k; });
+  ["takeLow","ultBasic","vsBack","vsFront","vsLow","vsHigh","healMul","aoe","regen","take","leech","leechAll","evaSelf","counter","atbOnDebuff","encore","mirage","regenAll"].forEach(x=>{ if(out[x]) out[x] = out[x]*k; });
   out.k = k;
   return out;
 }
@@ -3093,6 +3093,26 @@ function runBattle(teamA, teamB, opt){
         const h = Math.min(u.maxHp-u.hp, Math.round(u.maxHp*Pr.regen));
         if(h>0){ u.hp += h; recHeal(u, h); push(`<b>${epiH(u.name)}</b> 자연 회복 ${fmt(h)}`,"heal",u.uid); }
       }
+      /* 자연 회복 — 아군 전체 */
+      if(Pr && Pr.regenAll){
+        const pp = [];
+        aliveOf(u.side==="A"? A : B).forEach(a=>{
+          if(a.hp >= a.maxHp) return;
+          const h = Math.min(a.maxHp-a.hp, Math.round(a.maxHp*Pr.regenAll));
+          if(h>0){ a.hp += h; recHeal(u, h); pp.push({u:a.uid,v:h,k:"heal"}); }
+        });
+        if(pp.length) push(`아군 전체 자연 회복`,"heal",u.uid,null,pp);
+      }
+      /* 걸려 있는 지속 회복 — 시전자에게 공로가 간다 */
+      u.fx.forEach(f=>{
+        if(!f.regen || u.hp >= u.maxHp) return;
+        const h = Math.min(u.maxHp-u.hp, Math.round(u.maxHp*f.regen));
+        if(h<=0) return;
+        u.hp += h;
+        const sv = (f.src!=null) ? all.find(x=> x.uid===f.src) : null;
+        recHeal(sv || u, h);
+        push(`<b>${epiH(u.name)}</b> ${esc(f.name)} ${fmt(h)} 회복`,"heal",(sv||u).uid,null,[{u:u.uid,v:h,k:"heal"}]);
+      });
     }
 
     const foes = u.side==="A"?B:A, allies = u.side==="A"?A:B;
@@ -3180,6 +3200,7 @@ function runBattle(teamA, teamB, opt){
     if(sk.type==="buff"||sk.type==="haste") return dup ? .08 : .8;
     if(sk.type==="debuff"||sk.type==="slow") return dup ? .07 : .7;
     if(sk.type==="dot") return dup ? .35 : 1.05;
+    if(sk.type==="regen") return dup ? .1 : 1.0;
     return 1.0 + (sk.type==="dmg_aoe"? aliveOf(foes).length*.22 : 0);
   }
 
@@ -3309,7 +3330,8 @@ function runBattle(teamA, teamB, opt){
         break; }
       case "buff": {
         tg.forEach(t=>{
-          addFx(t,{name:sk.name,kind:"b",turns:dur+1,stat:sk.stat,mode:sk.stat==="crit"?"add":"mul",val:sk.stat==="crit"?p*.5:p});
+          addFx(t,{name:sk.name,kind:"b",turns:dur+1,stat:sk.stat,mode:sk.stat==="crit"?"add":"mul",val:sk.stat==="crit"?p*.5:p,
+                   regen:(sk.regen? sk.regen*(p/sk.power) : 0), src:u.uid});
           if(sk.leech) addFx(t,{name:sk.name+"·피흡",kind:"b",turns:dur+1,stat:"leech",mode:"add",val:sk.leech});
           if(sk.eva) addFx(t,{name:sk.name+"·회피",kind:"b",turns:dur+1,stat:"eva",mode:"add",val:sk.eva});
           if(sk.stat2 && sk.pow2){ const r2 = RATE_STAT.includes(sk.stat2);
@@ -3340,8 +3362,8 @@ function runBattle(teamA, teamB, opt){
       case "ult_aoe": { let tot = 0;
         tg.forEach(t=>{ if(t.alive) tot += dealDamage(u,t,p,sk); });
         if(!sk.noBreak) tg.forEach(t=> t.alive && addFx(t,{name:"방어 붕괴",kind:"d",turns:dur+1,stat:"def",mode:"mul",val:-.25}));
-        if(sk.shieldSelf && tot>0){
-          const sh = Math.round(tot*sk.shieldSelf);
+        if((sk.shieldSelf || sk.shieldDef) && tot>0){
+          const sh = Math.round(tot*(sk.shieldSelf||0) + (sk.shieldDef? eff(u,"def")*sk.shieldDef : 0));
           u.shield += sh; u.shBy = u.uid;
           push(`<b>${epiH(u.name)}</b> 보호막 ${fmt(sh)} — 가른 만큼 몸을 두른다`,"heal",u.uid,null,[{u:u.uid,v:sh,k:"shield"}]);
         }
@@ -3398,6 +3420,11 @@ function runBattle(teamA, teamB, opt){
             pp.push({u:t.uid,v:t.hp,k:"heal"}); back.push(epiH(t.name));
           });
           push(`아군 전체 회복 ${fmt(h)} · 약화 해제${back.length? ` · <b>${back.join("</b>, <b>")}</b> 다시 일어선다`:""}`,"heal",u.uid,null,pp); } break; }
+      case "regen": {
+        tg.forEach(t=>{ if(!t.alive) return;
+          addFx(t,{name:sk.name,kind:"b",turns:dur+1,stat:null,val:0,regen:p,src:u.uid}); });
+        push(`${tg.length>1?`아군 ${tg.length}인`:`<b>${epiH(tg[0].name)}</b>`} 지속 회복 — 차례마다 최대 체력 ${Math.round(p*100)}% (${dur}턴)`,"heal",u.uid);
+        break; }
       case "charge": {
         const g = sk.ultGive|0;
         u.ult = clamp(u.ult + g, 0, 100);
@@ -6559,7 +6586,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0919-0207";
+const BUILD = "0919-0240";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
