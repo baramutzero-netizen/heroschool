@@ -6756,7 +6756,9 @@ function viewPlan(){
     <div class="eyebrow" style="margin:18px 0 0;display:flex;align-items:center;gap:10px">손패 ${hand.length}장
       <button class="btn sm" id="btnBookUse" ${bookCount()>0 && hand.length? "" : "disabled"}
         title="손패를 통째로 새로 뽑는다 — 월~금에 올려둔 카드는 그대로 둔다">예지의 서 (손패 교체)${bookCount()>0? ` ×${bookCount()}`:""}</button>
-      ${bookCount()<=0? `<span class="hint" style="font-size:11px;color:var(--dim)">교회에서 구입 가능</span>`:""}</div>
+      ${(()=>{ const pr = foresightPrice(), done = churchBought("book");
+        return `<button class="btn sm ghost" id="btnBook2" ${done||S.gold<pr?"disabled":""}
+          title="교회에 가지 않고 바로 산다 · ${esc(churchLeftLabel("book"))}">예지의 서 구매 · ${done? "이번 계절 소진" : fmt(pr)+" G"}</button>`; })()}</div>
     <div class="handrow handzone" data-handzone="1">
       ${hand.length? hand.map(c=> cardHtml(c)).join("") : `<div class="empty" style="grid-column:1/-1">손패가 비었다.</div>`}
     </div>
@@ -6796,7 +6798,10 @@ function viewPlan(){
         <div class="od">${S.students.filter(s=>s.focus==="free").map(s=>dnH(s)).join(" · ")}</div></div>`:""}
     </div>
     <div class="rule"></div>
-    <div class="eyebrow" style="margin-bottom:6px">컨디션</div>
+    <div class="eyebrow" style="margin-bottom:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">컨디션
+      ${(()=>{ const done = churchBought("water"), c = holyWaterCost();
+        return `<button class="btn sm ghost" id="btnWater2" ${done||S.gold<c?"disabled":""}
+          title="교회에 가지 않고 바로 쓴다 · 전 학생 컨디션 +${HOLY_WATER_COND} · ${esc(churchLeftLabel("water"))}">신비한 성수 (전원 +${HOLY_WATER_COND}) · ${done? "이번 계절 소진" : fmt(c)+" G"}</button>`; })()}</div>
     <div class="condbox">
       ${S.students.slice().sort((a,b)=> a.cond-b.cond).map(s=>{
         const e = condEff(s.cond);
@@ -7116,7 +7121,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0920-0707";
+const BUILD = "0920-0721";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -9699,6 +9704,9 @@ function bindView(){
   const bbd = $("#btnBigDonate"); if(bbd) bbd.onclick = ()=> doBigDonate();
   const bhw = $("#btnWater");   if(bhw) bhw.onclick = ()=> buyHolyWater();
   const bbk = $("#btnBook");    if(bbk) bbk.onclick = ()=> buyForesight();
+  /* 진행 탭의 바로 구매 버튼 — 교회와 같은 함수·같은 계절 한도를 쓴다 */
+  const bhw2 = $("#btnWater2"); if(bhw2) bhw2.onclick = ()=> buyHolyWater();
+  const bbk2 = $("#btnBook2");  if(bbk2) bbk2.onclick = ()=> buyForesight();
   const bbu = $("#btnBookUse"); if(bbu) bbu.onclick = ()=> useForesight();
   v.querySelectorAll("[data-heal]").forEach(b=> b.onclick=()=> doHeal(b.dataset.heal));
   v.querySelectorAll("[data-item]").forEach(b=> b.onclick=()=>{
