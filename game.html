@@ -95,6 +95,9 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 .panel-h{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;flex-wrap:wrap}
 .panel-h h2{font-size:16px}
 .panel-h .hint{font-size:11.5px;color:var(--dim);margin-left:auto}
+.panel-h.planhead{align-items:center}
+.panel-h.planhead .hint{margin-left:0}
+.panel-h.planhead .runpair{margin-left:auto;align-items:center}
 .rule{height:1px;background:var(--line-soft);margin:12px 0}
 
 /* ---------- buttons ---------- */
@@ -866,7 +869,7 @@ table.tb tr:hover td{background:var(--surface2)}
 .bf-layout .blog{max-height:none;height:auto}
 .bf-layout .bf-stats{grid-column:2;grid-row:2;display:block;font-size:12px}
 .bf-stats summary{cursor:pointer;padding:10px;border:1px solid var(--line);border-radius:6px}
-.bf-school{position:absolute;z-index:100;display:flex;flex-direction:column;gap:7px;max-width:45%;pointer-events:none}
+.bf-school{position:absolute;z-index:100;display:flex;flex-direction:column;align-items:flex-start;gap:7px;max-width:45%;pointer-events:none}
 .bf-school b{font-size:22px;text-shadow:0 1px 4px var(--bg)}
 .bf-school.enemy{right:18px;top:15px;align-items:flex-end}
 .bf-school.ally{left:18px;bottom:15px}
@@ -2472,6 +2475,22 @@ function halfLeft(){ return Math.max(0, halfEnd(S.week) - S.week); }
 const PHASE_ORDER = ["spring","summer","fall","winter"];
 let S = null;
 let UI = {view:"home", sel:null, battle:null, modal:null};
+/* ── 전투 화면 설정 — 세이브가 아니라 이 브라우저에 남는다.
+      새 시나리오를 시작해도, 창을 닫았다 열어도 그대로다. ── */
+const PREF_KEY = "heroschool_pref_v1";
+const BSPEEDS = [440, 280, 120, 40];          // ×0.5 · ×1 · ×2 · ×6
+const PREF = {bspeed: 280};
+try{
+  const j = JSON.parse(localStorage.getItem(PREF_KEY) || "null");
+  if(j && BSPEEDS.indexOf(j.bspeed|0) >= 0) PREF.bspeed = j.bspeed|0;
+}catch(e){}
+function prefSave(){ try{ localStorage.setItem(PREF_KEY, JSON.stringify(PREF)); }catch(e){} }
+function bspeedNow(){ return UI.bspeed || PREF.bspeed || 280; }
+function bspeedSet(v){
+  v = (BSPEEDS.indexOf(v|0) >= 0) ? (v|0) : 280;
+  UI.bspeed = v; PREF.bspeed = v; prefSave();
+}
+function bspeedLabel(v){ return ({440:"×0.5", 280:"×1", 120:"×2", 40:"×6"})[v|0] || "×1"; }
 
 /* 졸업 기록에서 전투에 세울 수 있는 유닛을 되살린다.
    멘탈리티가 안 남아 있는 옛 기록은 되살릴 수 없다 (null). */
@@ -6392,6 +6411,32 @@ function cardHtml(c){
     <div class="ceff">${cardEffLine(tr)}</div>
   </div>`;
 }
+/* 카드 색 범례 · 표식 범례 · 컨디션 안내 — 도감 카드 목록에 싣는다 */
+function cardLegendHtml(){
+  return `<p class="opthint" style="margin:0 0 12px;line-height:1.7"><b style="color:var(--text)">월요일부터 금요일까지 다섯 칸</b>에 손패 <b style="color:var(--text)">${HAND_SIZE}장</b> 중 다섯 장을 끌어다 놓고 진행하면 월요일부터 순서대로 치러진다.
+      전날과 <b style="color:var(--text)">같은 색</b>이 이어질 때마다 그 훈련의 효과가 <b style="color:var(--brass)">+${Math.round(CHAIN_STEP*100)}%</b>씩 오른다 (최대 +${Math.round(CHAIN_STEP*CHAIN_MAX*100)}%).
+      사용된 카드는 버려지며 새로운 주가 시작되면 손패가 <b style="color:var(--text)">${HAND_SIZE}장</b>까지 충전된다.
+      합숙 기간에는 훈련·집중 훈련 효과 <b style="color:var(--brass)">×${CAMP_GAIN}</b>, 컨디션 소모와 휴식 회복이 <b style="color:var(--brass)">×${CAMP_COND}</b>가 되고 원정 카드는 나오지 않는다.</p>
+    <div class="cardlegend">
+      ${Object.keys(CARD_COLOR).map(k=>{
+        const ids = Object.keys(CARD_COL).filter(id=>CARD_COL[id]===k);
+        if(k==="none") return `<span><i style="background:${CARD_COLOR[k].c}"></i>원정 파견 — 무색, 체인 불가</span>`;
+        const names = ids.map(id=>{
+          const t = TR[id], lock = t.need && !S.items[t.need];
+          return lock? `<span style="color:var(--dim)">${t.n}(${ITEMS[t.need].n})</span>` : t.n;
+        });
+        return `<span><i style="background:${CARD_COLOR[k].c}"></i>${names.join(" · ")}</span>`;
+      }).join("")}
+      <span style="color:var(--dim)">* 휴식 — 랜덤</span>
+    </div>
+    <div class="marklegend">가끔 카드에 <b>표식</b>이 붙어 들어온다 —
+      ${Object.keys(CARD_MARK).map(k=>{ const m=CARD_MARK[k];
+        return `<span><i style="background:${m.c}">${m.i}</i>${esc(m.d)}</span>`; }).join("")}
+    </div>
+    <p class="opthint" style="margin-top:12px;line-height:1.7">컨디션 70 이상 훈련 효율 100% · 40~69 60% · 39 이하 20%.
+      훈련 성공률은 컨디션 70 이상이면 100%, 그 아래는 <b style="color:var(--text)">컨디션이 하락할수록 훈련 실패 확률 증가</b> (휴식은 항상 성공).
+      실패하면 성과가 ${Math.round(TRAIN_FAIL_MUL*100)}%로 줄고 <b style="color:var(--bad)">컨디션 상태에 따라 확률적으로 부상</b>을 입는다.</p>`;
+}
 function viewPlan(){
   const ph = PHASES[S.phase];
   const slots = S.slots || [], hand = S.hand || [];
@@ -6401,12 +6446,16 @@ function viewPlan(){
   const camp = isCampWeek();
   const fld = fieldOf(S.phase);
   return `<section class="panel${fld?" fldp":""}"${fld?` style="--fld:url('${fld}')"`:""}>
-    <div class="panel-h"><h2>${S.year}년 ${ph.n} ${Math.min(S.week+1, ph.weeks)}주 스케줄</h2>
+    <div class="panel-h planhead"><h2>${S.year}년 ${ph.n} ${Math.min(S.week+1, ph.weeks)}주 스케줄</h2>
       <span class="hint">${ph.weeks}주 · ${ph.d}</span>
-      <span class="btnpair"><button class="btn sm" id="btnAuto">자동 배치</button><button class="btn sm" id="btnClearSlots">전부 비우기</button></span></div>
-    <p style="font-size:11.5px;color:var(--dim);margin:-4px 0 12px"><b>월요일부터 금요일까지 다섯 칸</b>에 손패 <b>${HAND_SIZE}장</b> 중 다섯 장을 끌어다 놓고 진행하면 월요일부터 순서대로 치러진다.
-      전날과 <b>같은 색</b>이 이어질 때마다 그 훈련의 효과가 <b style="color:var(--brass)">+${Math.round(CHAIN_STEP*100)}%</b>씩 오른다 (최대 +${Math.round(CHAIN_STEP*CHAIN_MAX*100)}%). 사용된 카드는 버려지며 새로운 주가 시작되면 손패가 <b>${HAND_SIZE}장</b>까지 충전된다.
-      ${camp? `<b style="color:var(--brass)">합숙 기간 — 훈련·집중 훈련 효과 ×${CAMP_GAIN}, 컨디션 소모 ×${CAMP_COND}, 휴식 회복도 ×${CAMP_COND}. 원정 카드는 나오지 않는다.</b>`:""}</p>
+      <span class="btnpair runpair">
+        <button class="btn sm" id="btnAuto">자동 배치</button>
+        <button class="btn sm" id="btnClearSlots">전부 비우기</button>
+        ${SHOW_BULKRUN? `<button class="btn sm" id="btnRest" ${S.week>=ph.weeks?"disabled":""}>남은 주 일괄 진행</button>` : ""}
+        <button class="btn primary bigrun" id="btnWeek" ${((S.week>=ph.weeks && UI.pendingTour) || (S.week<ph.weeks && left>0))?"disabled":""}>${
+          S.week>=ph.weeks? "시즌 마무리" : left>0? `카드를 ${left}장 더 놓는다` : `${S.week+1}주차 진행`}</button>
+      </span></div>
+    ${camp? `<p style="font-size:11.5px;margin:-4px 0 12px;color:var(--brass)"><b>합숙 기간 — 훈련·집중 훈련 효과 ×${CAMP_GAIN}, 컨디션 소모 ×${CAMP_COND}, 휴식 회복도 ×${CAMP_COND}. 원정 카드는 나오지 않는다.</b></p>`:""}
     <div class="dayrow">
       ${DAY_N.map((d,i)=>{
         const c = slots[i];
@@ -6424,32 +6473,9 @@ function viewPlan(){
     <div class="handrow handzone" data-handzone="1">
       ${hand.length? hand.map(c=> cardHtml(c)).join("") : `<div class="empty" style="grid-column:1/-1">손패가 비었다.</div>`}
     </div>
-    <div class="cardlegend">
-      ${Object.keys(CARD_COLOR).map(k=>{
-        const ids = Object.keys(CARD_COL).filter(id=>CARD_COL[id]===k);
-        if(k==="none") return `<span><i style="background:${CARD_COLOR[k].c}"></i>원정 파견 — 무색, 체인 불가</span>`;
-        const names = ids.map(id=>{
-          const t = TR[id], lock = t.need && !S.items[t.need];
-          return lock? `<span style="color:var(--dim)">${t.n}(${ITEMS[t.need].n})</span>` : t.n;
-        });
-        return `<span><i style="background:${CARD_COLOR[k].c}"></i>${names.join(" · ")}</span>`;
-      }).join("")}
-      <span style="color:var(--dim)">* 휴식 — 랜덤</span>
-    </div>
-    <div class="marklegend">가끔 카드에 <b>표식</b>이 붙어 들어온다 —
-      ${Object.keys(CARD_MARK).map(k=>{ const m=CARD_MARK[k];
-        return `<span><i style="background:${m.c}">${m.i}</i>${esc(m.d)}</span>`; }).join("")}
-    </div>
-    <div class="rule"></div>
-    <div class="btnrow">
-      <button class="btn primary bigrun" id="btnWeek" ${((S.week>=ph.weeks && UI.pendingTour) || (S.week<ph.weeks && left>0))?"disabled":""}>${
-        S.week>=ph.weeks? "시즌 마무리" : left>0? `카드를 ${left}장 더 놓는다` : `${S.week+1}주차 진행`}</button>
-      ${bonusSum>0? `<span class="pill ok">체인 보너스 합계 +${Math.round(bonusSum*100)}%</span>`:""}
-      ${SHOW_BULKRUN? `<button class="btn" id="btnRest" ${S.week>=ph.weeks?"disabled":""}>남은 주 일괄 진행</button>` : ""}
-      <span class="hint" style="color:var(--dim);font-size:12px">컨디션 70 이상 훈련 효율 100% · 40~69 60% · 39 이하 20%.
-        훈련 성공률은 컨디션 70 이상이면 100%, 그 아래는 <b style="color:var(--text)">컨디션이 하락할수록 훈련 실패 확률 증가</b> (휴식은 항상 성공).
-        실패하면 성과가 ${Math.round(TRAIN_FAIL_MUL*100)}%로 줄고 <b style="color:var(--bad)">컨디션 상태에 따라 확률적으로 부상</b>을 입는다.</span>
-    </div>
+    ${bonusSum>0? `<div class="rule"></div>
+    <div class="btnrow"><span class="pill ok">체인 보너스 합계 +${Math.round(bonusSum*100)}%</span>
+      <span class="hint" style="color:var(--dim);font-size:12px">색이 이어진 만큼 그 훈련의 효과가 오른다 — 자세한 내용은 <b style="color:var(--text)">도감 · 카드 목록</b>에 있다.</span></div>`:""}
   </section>
   <section class="panel">
     <div class="panel-h"><h2>개인 집중 훈련</h2><span class="hint">스케줄 진행 시 각 학생이 개별적으로 진행할 행동입니다. 개인 집중 훈련은 학생 탭에서도 개별적으로 설정이 가능합니다.</span>
@@ -7672,6 +7698,15 @@ function viewOpt(){
       </div>
     </div>
     <p class="opthint" id="fxAT">${fxAText(a)}</p>
+    <div class="optrow" style="margin-top:12px">
+      <div class="optlab">
+        <b>전투 재생 속도</b>
+        <span>전투 화면이 처음 열릴 때의 속도다. 전투 중에 바꿔도 이 값으로 기억된다.</span>
+      </div>
+      <div class="optctl">
+        <span class="btnpair">${BSPEEDS.map(v=>`<button class="btn sm${bspeedNow()===v?" primary":""}" data-bsp="${v}">${bspeedLabel(v)}</button>`).join("")}</span>
+      </div>
+    </div>
     <div class="fxdemo" id="fxDemo">
       ${["slash","burst","aura","heal"].map((n,i)=>`<div class="fxcell">
         <span class="fxname">${["참격","폭발","오라","회복"][i]}</span>
@@ -8869,6 +8904,8 @@ function viewCodex(){
         </div>`;
       }).join("")}
     </div>
+    <div class="rule"></div>
+    ${cardLegendHtml()}
   </section>`
     + `  <section class="panel">
     <div class="panel-h"><h2>원정지</h2><span class="hint">각 원정지의 주인 1체와 연전한다 · 구간 사이 체력은 일부만 회복된다</span></div>
@@ -9232,6 +9269,7 @@ function bindView(){
       sl.oninput = apply; sl.onchange = apply;
       fxDemoStart();
     } else if(FX_DEMO_T){ clearInterval(FX_DEMO_T); FX_DEMO_T = 0; }
+    v.querySelectorAll("[data-bsp]").forEach(b=> b.onclick = ()=>{ bspeedSet(+b.dataset.bsp); render(); });
   }
   {
     const bo = $("#bgmOn");
@@ -9958,7 +9996,7 @@ function battleCallout(call, seed){
 function openBattle(res, opt, onDone){
   SPR_BTSCROLL = 0;
   opt = opt||{};
-  let i = 0, timer=null, speed = UI.bspeed||280, ended = false;
+  let i = 0, timer=null, speed = bspeedNow(), ended = false;
   if(opt.bgm) audOver(opt.bgm);
   sfxPreload();
   if(opt.cheer) setTimeout(()=> sfxPlay("cheer"), 260);
@@ -10123,10 +10161,7 @@ function openBattle(res, opt, onDone){
       </div>
       <div class="btnrow btbar">
         <button class="btn" id="bPlay">${timer?"일시정지":"재생"}</button>
-        <button class="btn sm" data-sp="440">×0.5</button>
-        <button class="btn sm" data-sp="280">×1</button>
-        <button class="btn sm" data-sp="120">×2</button>
-        <button class="btn sm" data-sp="40">×6</button>
+        ${BSPEEDS.map(v=>`<button class="btn sm${speed===v?" primary":""}" data-sp="${v}">${bspeedLabel(v)}</button>`).join("")}
         <button class="btn" id="bEnd">결과로 건너뛰기</button>
         <button class="btn primary" id="bDone" ${i>=res.frames.length-1?"":"disabled"}>${opt.doneLabel||"확인"}</button>
       </div>
@@ -10138,7 +10173,7 @@ function openBattle(res, opt, onDone){
     $("#bPlay").onclick = ()=> timer? pause() : play();
     $("#bEnd").onclick = ()=>{ pause(); i = res.frames.length-1; bgmEnd(); draw(); };
     $("#bDone").onclick = ()=>{ pause(); audOver(null); closeModal(); onDone && onDone(res); };
-    $("#modalRoot").querySelectorAll("[data-sp]").forEach(b=> b.onclick=()=>{ speed=+b.dataset.sp; UI.bspeed=speed; if(timer){pause();play();} });
+    $("#modalRoot").querySelectorAll("[data-sp]").forEach(b=> b.onclick=()=>{ bspeedSet(+b.dataset.sp); speed=bspeedNow(); if(timer){pause();play();} draw(); });
   };
   const step = ()=>{ if(i<res.frames.length-1){ i++; sfxFrame(res.frames[i]); if(i>=res.frames.length-1) bgmEnd(); draw(); } else { pause(); draw(); } };
   const play = ()=>{ if(timer) return; timer = setInterval(step, speed/SPR_PLAYBACK_RATE); draw(); };

@@ -1,5 +1,7 @@
 import datetime, re
 src=open('game.html',encoding='utf-8').read()
+from build_guard import validate_game_source
+validate_game_source(src)
 STAMP=datetime.datetime.now().strftime('%m%d-%H%M')
 src=re.sub(r'const BUILD = "[^"]*";', 'const BUILD = "%s";' % STAMP, src, count=1)
 i=src.index('<div id="app">')
