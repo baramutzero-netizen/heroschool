@@ -89,7 +89,7 @@ function reportSceneBind(records){
     $("#dlSkip").insertAdjacentElement("afterend",confirm);
     if(oldConfirmRow && !oldConfirmRow.children.length)oldConfirmRow.remove();
   }
-  let at=0, speed=2, paused=reduced, full=false, elapsed=0, last=performance.now(), timer=null, disposed=false;
+  let at=0, speed=[1,2,6].includes(PREF.reportSpeed)?PREF.reportSpeed:2, paused=reduced, full=false, elapsed=0, last=performance.now(), timer=null, disposed=false;
   const duration=4800;
   const phaseName=s=>s.phase==="exped"?"오전 원정":s.phase==="pm"?"오후 집중":s.students.every(x=>x.state==="rest")?"오전 휴식":"오전 훈련";
   const chip=c=>`<span class="dr-chip ${c.kind}">${esc(c.label)} ${c.value>0?"+":""}${c.value}</span>`;
@@ -148,7 +148,7 @@ function reportSceneBind(records){
   $("#drPlay").onclick=()=>{if(elapsed>=duration&&at===scenes.length-1){seek(0);paused=false;}else paused=!paused;last=performance.now();sync();};
   $("#drPrev").onclick=()=>seek(at-1);$("#drNext").onclick=()=>seek(at+1);
   root.querySelectorAll("[data-dr-day]").forEach(b=>b.onclick=()=>{const i=scenes.findIndex(s=>s.day===+b.dataset.drDay);if(i>=0)seek(i);});
-  root.querySelectorAll("[data-dr-speed]").forEach(b=>b.onclick=()=>{speed=+b.dataset.drSpeed;sync();});
+  root.querySelectorAll("[data-dr-speed]").forEach(b=>b.onclick=()=>{speed=+b.dataset.drSpeed;PREF.reportSpeed=speed;prefSave();sync();});
   $("#dlSkip").onclick=()=>{full=!full;paused=true;$("#drFullLog").hidden=!full;$("#dlSkip").textContent=full?"전체 기록 접기":"한 번에 보기";sync();if(full)$("#drFullLog").scrollIntoView({block:"start",behavior:reduced?"instant":"smooth"});};
   $("#drDetail").addEventListener("toggle",()=>{if($("#drDetail").open){paused=true;sync();}});
   timer=setInterval(()=>{const now=performance.now(),dt=Math.min(now-last,200);last=now;if(disposed||paused||document.hidden)return;if(!$("#drStage")){reportPlayerStop();return;}elapsed+=dt*speed;if(elapsed>=duration){if(at<scenes.length-1){seek(at+1);return;}elapsed=duration;paused=true;sync();}progress();},80);
