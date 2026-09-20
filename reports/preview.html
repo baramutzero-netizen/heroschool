@@ -1,26 +1,28 @@
 <!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>시설 장면 경과 보고 미리보기</title>
 <style>body{margin:0;background:#eeeaf1;font:13px system-ui}nav{min-height:44px;box-sizing:border-box;display:flex;gap:10px;align-items:center;padding:7px 12px;flex-wrap:wrap}button{padding:5px 10px;border:1px solid #bbb5c9;border-radius:5px;background:white;cursor:pointer}iframe{width:100%;height:calc(100dvh - 44px);border:0}small{color:#665c70}</style>
-<nav><button id="restart" disabled>주간 보고 다시 보기</button><button id="normal" disabled>평소 훈련</button><button id="summer" disabled>여름 훈련</button><button id="sunbath" disabled>일광욕</button><small>미리보기용 학생 · 실제 저장 데이터와 분리되어 있습니다</small></nav>
+<nav><button id="restart" disabled>주간 보고 다시 보기</button><button id="normal" disabled>평소 훈련</button><button id="summer" disabled>여름 훈련</button><button id="sunbath" disabled>일광욕</button><button id="study" disabled>수련관 공부</button><small>미리보기용 학생 · 실제 저장 데이터와 분리되어 있습니다</small></nav>
 <iframe id="game" title="시설 장면 경과 보고"></iframe>
 <script>
 const frame=document.getElementById('game');
 let season=new URLSearchParams(location.search).get('season')==='summer'?'summer':'spring';
+let studyMode=new URLSearchParams(location.search).has('study');
 function show(){frame.contentWindow.eval(`(()=>{
  closeModal();newGame('새봄 용사 학원');UI.ceremonies=[];UI.pendingTour=null;
  S.phase='${season}';S.week=5;
- S.students=['ninja','druid','paladin','bard','wizard'].map((j,i)=>{const s=newStudent(1,'B',j);s.name=['라비','포레나','요엘','세레나','아르젠'][i];s.focus='genius';s.cond=95;return s;});
+ S.students=${JSON.stringify(studyMode?['forcemage','gunner','monk','sword','wizard']:['ninja','druid','paladin','bard','wizard'])}.map((j,i)=>{const s=newStudent(1,'B',j);s.name=${JSON.stringify(['라비','포레나','요엘','세레나','아르젠'])}[i];s.focus='genius';s.cond=95;return s;});
  const snap=snapStudents();RUN={expeds:[]};DAYLOG=[];UI.wrun={scenes:[]};
  ['tact','basic','form','medit','rest'].forEach((id,i)=>{dayRun(TR[id],i===1?.25:0,i);dlog('','gap');});
  const scenes=UI.wrun.scenes;UI.wrun=null;
  showReport({snap,startWeek:5,ranTo:6,startPhase:S.phase,startYear:1,acts:['tact','basic','form','medit','rest'].map(id=>({n:TR[id].n})),scenes,daylog:DAYLOG.slice(),gold:0,fame:0,relics:0});
  if(!UI._reportPlayer.paused)document.querySelector('#drPlay').click();document.querySelector('.modal').scrollTop=0;
-})()`);}
+})()`);if(studyMode)frame.contentWindow.document.querySelector('[data-dr-day="2"]').click();}
 frame.onload=()=>{if(!frame.srcdoc)return;document.querySelectorAll('nav button').forEach(b=>b.disabled=false);show();};
 document.getElementById('restart').onclick=show;
-document.getElementById('normal').onclick=()=>{season='spring';show();};
-document.getElementById('summer').onclick=()=>{season='summer';show();};
-document.getElementById('sunbath').onclick=()=>{season='summer';show();frame.contentWindow.document.querySelector('[data-dr-day="4"]').click();};
+document.getElementById('normal').onclick=()=>{studyMode=false;season='spring';show();};
+document.getElementById('summer').onclick=()=>{studyMode=false;season='summer';show();};
+document.getElementById('sunbath').onclick=()=>{studyMode=false;season='summer';show();frame.contentWindow.document.querySelector('[data-dr-day="4"]').click();};
+document.getElementById('study').onclick=()=>{studyMode=true;season='spring';show();};
 fetch('../heroschool.html').then(r=>{if(!r.ok)throw Error('게임 파일을 불러오지 못했습니다');return r.text();}).then(html=>{
  // Isolate startup reads and every subsequent write before any game script runs.
  const isolated=`<script>for(const key of ['localStorage','sessionStorage']){const m=new Map();Object.defineProperty(window,key,{value:{getItem:k=>m.get(String(k))??null,setItem:(k,v)=>m.set(String(k),String(v)),removeItem:k=>m.delete(String(k)),clear:()=>m.clear(),key:i=>[...m.keys()][i]??null,get length(){return m.size}}});}<\/script>`;

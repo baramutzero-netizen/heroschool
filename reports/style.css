@@ -47,3 +47,15 @@
 .dr-condition-number{position:absolute;inset:0;text-align:center;color:white;text-shadow:0 1px 2px #000;font-size:clamp(4px,.8cqw,9px);font-weight:700;display:flex;align-items:center;justify-content:center}
 .dr-student .dr-bubbles,.dr-student.low-bubble .dr-bubbles{top:auto;bottom:91%;height:0;width:0}
 .dr-bubbles .dr-stat-card{position:absolute;bottom:0;left:50%;transform:translateX(-50%)}
+
+/* Seated classroom sprites include the desk and chair, so their feet never drift. */
+.dr-stage[data-facility="hall"] .dr-room{width:100%;height:100%;left:0;top:0;object-fit:cover}
+.dr-student.studying{width:16cqw;height:16cqw;transform:translate(-50%,-70%)}
+.dr-student.studying .dr-avatar{inset:0;width:100%;height:100%;transform:none}
+.dr-study-sprite{display:block;width:100%;height:100%;background-size:400% 100%;background-repeat:no-repeat}
+.dr-study-sprite.empty{background-size:100% 100%}
+.dr-student.studying .dr-shadow{display:none}
+.dr-student.studying .dr-name{top:91%}
+.dr-student.studying .dr-condition{top:106%;width:62%}
+.dr-student.studying .dr-bubbles{bottom:90%}
+.empty-seat{pointer-events:none}

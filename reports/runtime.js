@@ -34,7 +34,7 @@ const REPORT_LAYOUTS = {
   library:{crop:.235, slots:[[12,79],[45,42],[63,47],[79,73],[88,84]]},
   gym:{crop:.255, slots:[[14,75],[34,48],[52,29],[77,81],[90,84]]},
   arena:{crop:.215, slots:[[20,65],[46,25],[72,57],[80,69],[89,81]]},
-  hall:{crop:.235, scale:1350, slots:[[33,43],[40,61],[51,61],[65,58],[58,24]]},
+  hall:{crop:0, slots:[[53,42],[67.5,57],[82.3,71],[41.2,66],[55.8,78]]},
   chapel:{crop:.255, slots:[[12,76],[20,63],[27,52],[73,52],[80,63],[88,76]]},
   infirm:{crop:.195, slots:[[17,63],[36,42],[66,51]]},
   beach:{crop:0, capacity:5, slots:[[19,75],[35,54],[51,80],[67,55],[83,78],[19,48],[35,80],[51,51],[67,81],[83,51]]}
@@ -125,7 +125,7 @@ function reportSceneBind(records){
   }
   let at=0, speed=[1,2,6].includes(PREF.reportSpeed)?PREF.reportSpeed:2, paused=reduced, full=false, elapsed=0, last=performance.now(), timer=null, disposed=false;
   let duration=2400, queue=[], displayed=[], lastSound=-1;
-  const stepMs=450, leadMs=250, cardMs=900/0.7;
+  const stepMs=450, leadMs=250, riseMs=900/0.7, cardMs=400+riseMs, fadeMs=100, fadeDelayMs=cardMs-fadeMs;
   const statAudio=new Audio(REPORT_STATUP);
   const recoveryAudio=new Audio(REPORT_RECOVERY);
   const reportAudio=[statAudio,recoveryAudio];
@@ -175,11 +175,15 @@ function reportSceneBind(records){
     if(s.facility==="beach" && !placements.has(s))placements.set(s,reportBeachPositions());
     const pos=placements.get(s) || layout.slots;
     $("#drStudents").innerHTML=visible.map((x,i)=>{
+      const studying=s.facility==="hall" && !!REPORT_STUDY[x.job];
       const resting=s.facility==="infirm" || (s.facility==="beach" && x.state==="rest");
       const motion=resting?"down":x.state==="rest"?"idle":x.state==="failed"?"hit":["gym","hall","arena"].includes(x.trainingFacility || s.facility)?"attack":"idle";
       const cond=x.condition?.from ?? 100;
-      return `<button class="dr-student ${resting?"resting":""} ${pos[i][1]<48?"low-bubble":""}" data-dr-student="${i}" style="left:${pos[i][0]}%;top:${pos[i][1]}%;z-index:${Math.round(pos[i][1])}" aria-label="${esc(x.name)} 성장 내역"><span class="dr-shadow"></span><span class="dr-avatar">${sprHTML(x.job,motion,1,{p:x.palette,flip:resting?i!==2:i%2===1,t0:resting?0:performance.now()})}</span><span class="dr-name">${esc(x.name)}</span><span class="dr-condition ${reportConditionColor(cond)}" role="meter" aria-label="컨디션" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${cond}"><span class="dr-condition-fill" style="width:${clamp(cond,0,100)}%"></span><span class="dr-condition-number">${cond}</span></span><span class="dr-bubbles" hidden></span></button>`;
+      return `<button class="dr-student ${studying?"studying":""} ${resting?"resting":""} ${pos[i][1]<48?"low-bubble":""}" data-dr-student="${i}" style="left:${pos[i][0]}%;top:${pos[i][1]}%;z-index:${Math.round(pos[i][1])}" aria-label="${esc(x.name)} 성장 내역"><span class="dr-shadow"></span><span class="dr-avatar">${studying?`<span class="dr-study-sprite" data-study-job="${x.job}" style="background-image:url(${REPORT_STUDY[x.job]})"></span>`:sprHTML(x.job,motion,1,{p:x.palette,flip:resting?i!==2:i%2===1,t0:resting?0:performance.now()})}</span><span class="dr-name">${esc(x.name)}</span><span class="dr-condition ${reportConditionColor(cond)}" role="meter" aria-label="컨디션" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${cond}"><span class="dr-condition-fill" style="width:${clamp(cond,0,100)}%"></span><span class="dr-condition-number">${cond}</span></span><span class="dr-bubbles" hidden></span></button>`;
     }).join("");
+    if(s.facility==="hall"){
+      $("#drStudents").insertAdjacentHTML("beforeend",pos.slice(visible.length).map(p=>`<div class="dr-student studying empty-seat" aria-hidden="true" style="left:${p[0]}%;top:${p[1]}%;z-index:${Math.round(p[1])}"><span class="dr-avatar"><span class="dr-study-sprite empty" style="background-image:url(${REPORT_STUDY.empty})"></span></span></div>`).join(""));
+    }
     root.querySelectorAll("[data-dr-student]").forEach(b=>b.onclick=()=>details(visible[+b.dataset.drStudent].id));
     $("#drSceneCount").textContent=`${visible.length}명 표시${s.students.length>visible.length?` · 시설 참여 ${s.students.length}명`:""}`;
     $("#drResultTitle").textContent=`${DAY_N[s.day]}요일 · ${s.phase==="pm"?"개인 집중 훈련":s.training}`;
@@ -191,6 +195,10 @@ function reportSceneBind(records){
   }
   function timeline(sound){
     const n=Math.floor((elapsed-leadMs)/stepMs);
+    root.querySelectorAll(".dr-study-sprite[data-study-job]").forEach((el,i)=>{
+      const frame=reduced?0:Math.floor(elapsed/360+i*.7)%4;
+      el.style.backgroundPosition=`${frame*100/3}% 0`;el.dataset.frame=frame;
+    });
     root.querySelectorAll(".dr-bubbles").forEach(el=>{el.hidden=true;el.innerHTML="";});
     displayed.forEach((student,index)=>{
       const cond=student.condition;if(!cond)return;
@@ -210,13 +218,13 @@ function reportSceneBind(records){
       const popup=root.querySelector(`[data-dr-student="${event.index}"] .dr-bubbles`);
       popup.hidden=false;popup.style.marginLeft="0px";popup.style.marginTop="0px";
       const positive=event.to>event.from;
-      popup.insertAdjacentHTML("beforeend",`<span class="dr-stat-card ${positive?"up":"down"}" data-stat-event="${q}"><span class="dr-stat-label">${esc(event.label)}</span><span class="dr-stat-from">${event.from}</span><span class="dr-stat-arrow">→</span><b class="dr-stat-to">${event.to}</b></span>`);
+      popup.insertAdjacentHTML("beforeend",`<span class="dr-stat-card ${positive?"up":"down"}" data-stat-event="${q}"><span class="dr-stat-label">${esc(event.label)}</span><span class="dr-stat-from">${mentalGradeHTML(event.from)}${event.from}</span><span class="dr-stat-arrow">→</span><b class="dr-stat-to">${mentalGradeHTML(event.to)}${event.to}</b></span>`);
       const card=popup.lastElementChild, rect=card.getBoundingClientRect();
       const dx=Math.max(0,bounds.left+4-rect.left)-Math.max(0,rect.right-bounds.right+4);
       const baseY=Math.max(0,bounds.top+4-rect.top);
       const rise=Math.min((rect.height+3)*2,Math.max(0,rect.top+baseY-bounds.top-2));
-      card.style.opacity=1-age/cardMs;
-      card.style.transform=`translate(calc(-50% + ${dx}px),${baseY-(reduced?0:rise*age/cardMs)}px)`;
+      card.style.opacity=1-clamp((age-fadeDelayMs)/fadeMs,0,1);
+      card.style.transform=`translate(calc(-50% + ${dx}px),${baseY-(reduced?0:rise*Math.min(age/riseMs,1))}px)`;
     }
     const event=queue[n];
     if(sound && n!==lastSound){
