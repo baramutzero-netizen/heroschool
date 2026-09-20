@@ -790,8 +790,12 @@ table.tb tr:hover td{background:var(--surface2)}
   border:1px solid var(--line-soft);border-radius:3px;background:var(--surface2)}
 .facebox img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 40%}
 .cxjob .facebox{width:104px;height:104px}
-.sprrow{display:flex;gap:2px;align-items:flex-end;margin:2px 0 4px;height:55px;overflow:visible}
+.sprrow{display:flex;gap:2px;align-items:flex-end;margin:2px 0 4px;height:55px;overflow:visible;max-width:100%}
 .sprrow .spr-anchor{margin-bottom:-9px}
+/* 넷 이상이면 카드 폭을 넘치지 않게 겹쳐 세운다 (앵커 64px → 실효 46px) */
+.sprrow.tight{gap:0}
+.sprrow.tight .spr-anchor{margin-right:-18px}
+.sprrow.tight .spr-anchor:last-child{margin-right:0}
 .cercard .sprbox{width:72px;height:80px;margin-bottom:6px}
 .cercard .sprbox .spr-anchor{margin-bottom:-5px}
 .cerhd{display:flex;gap:10px;align-items:stretch}
@@ -7148,7 +7152,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0920-0832";
+const BUILD = "0920-0845";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -10952,7 +10956,7 @@ function entryTeamCards(picked, maxN){
         style="text-align:left;border-color:${i>=0?"var(--brass)":"var(--line-soft)"}">
       <div class="on">${esc(teamLabel(tm))} <span class="tag">${formOf(tm.form).n}</span>
         <span class="price" style="color:${i>=0?"var(--brass)":"var(--dim)"}">${i>=0? (maxN>1? `${i+1}번째 출전` : "출전") : (full? "대기":"인원 부족")}</span></div>
-      ${mem.some(x=>sprHas(x.job))? `<div class="sprrow">${mem.map(x=> sprHas(x.job)? sprHTML(x.job,"idle",.5,{p:sprPalOf(x)}) : "").join("")}</div>`:""}
+      ${mem.some(x=>sprHas(x.job))? `<div class="sprrow ${mem.length>3?"tight":""}">${mem.map(x=> sprHas(x.job)? sprHTML(x.job,"idle",.5,{p:sprPalOf(x)}) : "").join("")}</div>`:""}
       <div class="od">${mem.length? mem.map(x=>`${dnH(x)}(${JOBS[x.job].name} Lv.${x.level} · 컨디션 ${Math.round(x.cond)})${isInjured(x)?`<b style="color:var(--bad)"> [부상 ${injWeeks(x)}주]</b>`:""}`).join(" · ") : "편성되지 않음"}</div>
       ${mem.some(isInjured)? `<div class="od" style="color:var(--bad)">⚠ 부상자 ${mem.filter(isInjured).length}명 — 출전은 가능하지만 잠재력을 제외한 멘탈리티가 50%로 계산된다</div>`:""}
       <div class="od" style="color:var(--dim)">${formOf(tm.form).txt.join(" · ")}</div>
@@ -11067,6 +11071,7 @@ function renderFriendly(){
       <div class="grid2">${t.foe.teams.map((tm,k)=>`<div class="opt" style="cursor:default">
         <div class="on">${t.need>1?`제${k+1}경기`:"상대 팀"} <span class="tag">${foeFormName(tm)}</span></div>${oppInfo(tm,lvl)}</div>`).join("")}</div>
       <div class="btnrow" style="margin-top:14px">
+        <button class="btn ghost" id="tBackPrep">뒤로가기</button>
         <button class="btn primary" id="tEntry" ${ok?"":"disabled"}>${ok?"친선전 시작":`팀을 고른다 (${t.entryTeams.length}/${t.need})`}</button>
         <span class="hint" style="font-size:12px;color:var(--dim)">${t.entryTeams.length? esc(t.entryTeams.map(n=>teamLabel(n)).join(" → ")) : "선택 없음"}</span>
       </div>`, ()=>{
@@ -11075,6 +11080,7 @@ function renderFriendly(){
         if(i>=0) t.entryTeams.splice(i,1); else if(t.entryTeams.length<t.need) t.entryTeams.push(n);
         renderFriendly();
       });
+      $("#tBackPrep").onclick = ()=>{ t.stage="prep"; t._prepOpen=true; renderTournament(); };   // 고른 팀은 그대로 둔다
       $("#tEntry").onclick = ()=>{
         t.myTeams = t.entryTeams.map(n=> teamMembers(teamByName(n)).map(x=>x.id));
         t.stage="match"; renderFriendly();
@@ -11175,6 +11181,7 @@ function renderPrepStage(t){
       <div class="od">학생이 ${need*3}명 이상이어야 ${need}팀을 짤 수 있다 (현재 ${S.students.length}명 · 편성 상한 ${teamCap()}팀).
         올해는 기권하고 남은 일정을 훈련으로 보낼 수 있다. 기권해도 다음 해에 다시 도전할 수 있다.</div></div>`}
     <div class="btnrow">
+      <button class="btn ghost" id="tBack" title="창을 닫고 학원을 둘러본다 · 상단의 ‘준비 화면’으로 언제든 돌아온다">뒤로가기</button>
       <button class="btn" id="tPrep">유물 · 스킬 정비</button>
       <button class="btn ${can?"":"primary"}" id="tTeam">팀 편성</button>
       <button class="btn ${can?"primary":""}" id="tGo" ${can?"":"disabled"}>대회 시작</button>
@@ -11182,6 +11189,8 @@ function renderPrepStage(t){
     </div>`, ()=>{
     const gu = $("#tGiveUp");
     if(gu) gu.onclick = ()=>{ tourForfeit(t); };
+    /* 뒤로가기 — 창만 닫는다. 대회는 그대로 대기(주차 진행 불가)하고 상단 바에서 다시 연다 */
+    $("#tBack").onclick = ()=>{ t._prepOpen=false; closeModal(); render(); };
     $("#tPrep").onclick = ()=>{ t._prepOpen=false; UI.view="relic"; closeModal(); render(); toast("정비를 마치면 상단의 \u2018대회 시작\u2019을 누른다."); };
     $("#tTeam").onclick = ()=>{ t._prepOpen=false; UI.view="team"; UI.slot=null; closeModal(); render(); toast("편성을 마치면 상단의 \u2018대회 시작\u2019을 누른다."); };
     const go = $("#tGo");
@@ -11207,6 +11216,7 @@ function renderLadder(){
         ${U===1? "라운드마다 단판으로 올라간다." : U===2? "라운드마다 두 팀이 한 경기씩 치르고, 1:1이면 이긴 팀끼리 결정전을 한다." : "라운드마다 세 팀이 순서대로 나서 먼저 2승을 가져가는 쪽이 올라간다."}</p>
       ${entryTeamCards(t.entryTeams, U)}
       <div class="btnrow" style="margin-top:14px">
+        <button class="btn ghost" id="tBackPrep">뒤로가기</button>
         <button class="btn primary" id="tEntry" ${ok?"":"disabled"}>엔트리 확정</button>
         <span class="hint" style="font-size:12px;color:var(--dim)">${t.entryTeams.length}/${U} 선택${t.entryTeams.length? ` — ${esc(t.entryTeams.map(n=>teamLabel(n)).join(" → "))}`:""}</span>
       </div>`, ()=>{
@@ -11216,6 +11226,7 @@ function renderLadder(){
         else if(t.entryTeams.length<U) t.entryTeams.push(n);
         renderLadder();
       });
+      $("#tBackPrep").onclick = ()=>{ t.stage="prep"; t._prepOpen=true; renderTournament(); };   // 고른 팀은 그대로 둔다
       $("#tEntry").onclick = ()=>{
         t.myTeams = t.entryTeams.map(n=> teamMembers(teamByName(n)).map(x=>x.id));
         t.order = t.myTeams.map((_,i)=>i);
@@ -11341,6 +11352,7 @@ function renderTournament(){
       <div class="grid2">${t.opps.map((o,i)=>`<div class="opt" style="cursor:default"><div class="on">${esc(o.name)}${t.kind==="fall"?` <span class="tag">${i+1}라운드</span>`:""}</div>
         ${o.teams.map((tm,k)=> (t.kind==="fall"? `<div class="od" style="color:var(--dim)">${"ABC"[k]}팀</div>`:"")+oppInfo(tm,lvl)).join("")}</div>`).join("")}</div>
       <div class="btnrow" style="margin-top:14px">
+        <button class="btn ghost" id="tBackPrep">뒤로가기</button>
         <button class="btn primary" id="tEntry" ${ok?"":"disabled"}>${ok? (need===1? `${esc(teamLabel(t.entryTeams[0]))}${ro(teamLabel(t.entryTeams[0]))} 출전` : "엔트리 확정") : `팀을 고른다 (${t.entryTeams.length}/${need})`}</button>
         <span class="hint" style="font-size:12px;color:var(--dim)">${t.entryTeams.length? esc(t.entryTeams.map(n=>teamLabel(n)).join(" → ")) : "선택 없음"}</span>
       </div>`, ()=>{
@@ -11350,6 +11362,7 @@ function renderTournament(){
         else if(t.entryTeams.length<need) t.entryTeams.push(n);
         renderTournament();
       });
+      $("#tBackPrep").onclick = ()=>{ t.stage="prep"; t._prepOpen=true; renderTournament(); };   // 고른 팀은 그대로 둔다
       $("#tEntry").onclick = ()=>{
         t.myTeams = t.entryTeams.map(n=> teamMembers(teamByName(n)).map(x=>x.id));
         t.stage = t.kind==="spring" ? "match" : "scout";
