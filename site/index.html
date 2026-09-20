@@ -5131,10 +5131,22 @@ const LADDER_TIER = {city:0, region:1, qual:2, final:3};
 function portalLadderSpec(step, round){
   return PORTAL_SPEC[(step==="final" && (round|0) >= (LADDER.final.rounds-1)) ? "finalLast" : step] || PORTAL_SPEC.city;
 }
+/* 이계 본선 결승 1군 — 13년차 졸업생 다섯 명이 유물을 그대로 찬 채 쐐기진·改 로 나온다.
+   자리 순서 = 전열 1·2·3, 후열 1·3 (허나래 / 성단 / 한현서 / 송찬율 / 전하랑) */
+const PORTAL_FINAL_BOSS = [{"raw":"허나래","epithet":"선공의 칼날","job":"spellsword","grade":"S","pers":"intro","lv":22,"karma":48,"ment":{"team":91,"aggr":94,"calm":110.4,"will":107,"stam":102.6,"genius":100.3,"pot":85},"skMod":{"ss_1":{"pow":0,"proc":0.3,"dur":0,"grade":1,"up":1},"ss_2":{"pow":0.96,"proc":0.5,"dur":0,"grade":4,"up":4},"ss_b":{"pow":0.96,"proc":0,"dur":0,"grade":4,"up":2},"ss_u":{"pow":0.48,"proc":0,"dur":0,"grade":2,"up":1},"passive":{"pow":1.2,"proc":0,"dur":0,"grade":4,"up":3}},"relics":[{"grade":"S","name":"용사의 나침반","aff":[{"k":"leech","n":"피흡","v":0.117},{"k":"crit","n":"크리 확률","v":0.135},{"k":"critDmg","n":"크리 피해","v":0.477},{"k":"skAcc","n":"스킬 성공률","v":0.119}]},{"grade":"A","name":"고대의 서약서","aff":[{"k":"critDmg","n":"크리 피해","v":0.244},{"k":"leech","n":"피흡","v":0.074},{"k":"def","n":"방어력","v":16}]},{"grade":"EX","name":"엑스칼리버","aff":[{"k":"atk","n":"공격력","v":100},{"k":"crit","n":"크리 확률","v":0.2},{"k":"critDmg","n":"크리 피해","v":0.5}]},{"grade":"S","name":"불멸의 인장","aff":[{"k":"leech","n":"피흡","v":0.133},{"k":"eva","n":"피해 회피","v":0.093},{"k":"spd","n":"속도","v":21},{"k":"ultGain","n":"필살 게이지","v":0.26}]}]},{"raw":"성단","epithet":"새벽빛 기사","job":"paladin","grade":"S","pers":"stone","lv":22,"karma":48,"ment":{"team":102.8,"aggr":103.8,"calm":119,"will":99,"stam":92,"genius":104.1,"pot":91},"skMod":{"pa_1":{"pow":0.96,"proc":0,"dur":0,"grade":4,"up":3},"pa_2":{"pow":0.72,"proc":0.5,"dur":0,"grade":4,"up":3},"pa_b":{"pow":0.24,"proc":0,"dur":0,"grade":1,"up":1},"pa_u":{"pow":0.72,"proc":0,"dur":0,"grade":3,"up":2},"passive":{"pow":0.72,"proc":0,"dur":0,"grade":3,"up":2}},"relics":[{"grade":"S","name":"불멸의 목걸이","aff":[{"k":"skRes","n":"스킬 저항률","v":0.048},{"k":"leech","n":"피흡","v":0.086},{"k":"atk","n":"공격력","v":34},{"k":"critDmg","n":"크리 피해","v":0.387}]},{"grade":"A","name":"고대의 고리","aff":[{"k":"atk","n":"공격력","v":21},{"k":"hp","n":"체력","v":103},{"k":"skRes","n":"스킬 저항률","v":0.044}]},{"grade":"A","name":"봉인된 반지","aff":[{"k":"skRes","n":"스킬 저항률","v":0.043},{"k":"leech","n":"피흡","v":0.093},{"k":"def","n":"방어력","v":23}]},{"grade":"A","name":"황금 성물","aff":[{"k":"atk","n":"공격력","v":30},{"k":"ultGain","n":"필살 게이지","v":0.29},{"k":"skRes","n":"스킬 저항률","v":0.035}]}]},{"raw":"한현서","epithet":null,"job":"rogue","grade":"B","pers":"intro","lv":18,"karma":0,"ment":{"team":70,"aggr":70,"calm":94,"will":97,"stam":86,"genius":85,"pot":67},"skMod":{"ro_u":{"pow":0.96,"proc":0,"dur":0,"grade":4,"up":3},"ro_2":{"pow":0.48,"proc":0.8,"dur":0,"grade":4,"up":3},"ro_b":{"pow":0.48,"proc":0,"dur":0,"grade":2,"up":1},"ro_1":{"pow":0.24,"proc":0,"dur":0,"grade":1,"up":1},"passive":{"pow":0.48,"proc":0,"dur":0,"grade":2,"up":1}},"relics":[{"grade":"A","name":"황금 깃털","aff":[{"k":"skAcc","n":"스킬 성공률","v":0.1},{"k":"atk","n":"공격력","v":26},{"k":"crit","n":"크리 확률","v":0.115}]},{"grade":"A","name":"황금 성물","aff":[{"k":"def","n":"방어력","v":12},{"k":"skRes","n":"스킬 저항률","v":0.112},{"k":"hp","n":"체력","v":215}]},{"grade":"A","name":"고대의 반지","aff":[{"k":"spd","n":"속도","v":6},{"k":"ultGain","n":"필살 게이지","v":0.103},{"k":"skRes","n":"스킬 저항률","v":0.073}]},{"grade":"A","name":"봉인된 나침반","aff":[{"k":"critDmg","n":"크리 피해","v":0.136},{"k":"skAcc","n":"스킬 성공률","v":0.052},{"k":"atk","n":"공격력","v":11}]}]},{"raw":"송찬율","epithet":"파멸의 영창","job":"wizard","grade":"B","pers":"lively","lv":20,"karma":0,"ment":{"team":91,"aggr":90,"calm":67,"will":70,"stam":83,"genius":81,"pot":65},"skMod":{"wz_1":{"pow":1.36,"proc":0,"dur":0,"grade":4,"up":6},"wz_2":{"pow":0.72,"proc":0,"dur":0,"grade":3,"up":2},"wz_b":{"pow":0.48,"proc":0,"dur":0,"grade":2,"up":1},"wz_u":{"pow":1.2,"proc":0,"dur":0,"grade":4,"up":3},"passive":{"pow":0.96,"proc":0,"dur":0,"grade":4,"up":2}},"relics":[{"grade":"A","name":"황금 조각","aff":[{"k":"eva","n":"피해 회피","v":0.074},{"k":"hp","n":"체력","v":125},{"k":"acc","n":"피해 명중","v":0.093}]},{"grade":"A","name":"고대의 부적","aff":[{"k":"acc","n":"피해 명중","v":0.066},{"k":"def","n":"방어력","v":16},{"k":"atk","n":"공격력","v":28}]},{"grade":"A","name":"봉인된 목걸이","aff":[{"k":"acc","n":"피해 명중","v":0.082},{"k":"def","n":"방어력","v":8},{"k":"spd","n":"속도","v":5}]},{"grade":"A","name":"봉인된 조각","aff":[{"k":"eva","n":"피해 회피","v":0.062},{"k":"acc","n":"피해 명중","v":0.049},{"k":"ultGain","n":"필살 게이지","v":0.245}]}]},{"raw":"전하랑","epithet":"전장의 노래","job":"bard","grade":"S","pers":"intro","lv":22,"karma":48,"ment":{"team":98,"aggr":94,"calm":110.1,"will":113.9,"stam":105.9,"genius":101.3,"pot":89},"skMod":{"bd_1":{"pow":1.2000000000000002,"proc":0.15,"dur":0,"grade":3,"up":7},"bd_2":{"pow":1.44,"proc":0,"dur":0,"grade":4,"up":4},"bd_b":{"pow":0.96,"proc":0,"dur":0,"grade":4,"up":2},"bd_u":{"pow":0.6,"proc":0,"dur":0,"grade":1,"up":4},"passive":{"pow":0.24,"proc":0,"dur":0,"grade":1,"up":1}},"relics":[{"grade":"S","name":"신탁의 목걸이","aff":[{"k":"hp","n":"체력","v":224},{"k":"ultGain","n":"필살 게이지","v":0.339},{"k":"atk","n":"공격력","v":21},{"k":"skAcc","n":"스킬 성공률","v":0.086}]},{"grade":"A","name":"고대의 부적","aff":[{"k":"hp","n":"체력","v":266},{"k":"skAcc","n":"스킬 성공률","v":0.032},{"k":"crit","n":"크리 확률","v":0.033}]},{"grade":"A","name":"봉인된 인장","aff":[{"k":"skRes","n":"스킬 저항률","v":0.119},{"k":"acc","n":"피해 명중","v":0.088},{"k":"skAcc","n":"스킬 성공률","v":0.062}]},{"grade":"A","name":"황금 성물","aff":[{"k":"hp","n":"체력","v":231},{"k":"atk","n":"공격력","v":20},{"k":"skAcc","n":"스킬 성공률","v":0.069}]}]}];
+function portalBossTeam(){
+  const arr = PORTAL_FINAL_BOSS.map(g=>{
+    const st = gradUnit(Object.assign({sid:"boss_"+g.raw}, g));
+    st.cond = 92; st.exp = 0;
+    return st;
+  }).filter(Boolean);
+  return assignFoeForm(arr, "wedge", true);
+}
 function ladderAcademy(step, round, name){
   if(portalOn()){
     const spec = portalLadderSpec(step, round);
     const teams = Array.from({length: ladderUse(step)}, ()=> portalTeam(spec));
+    if(step==="final" && (round|0) >= (LADDER.final.rounds-1)) teams[0] = portalBossTeam();   // 결승 1군은 고정 멤버
     return {name: name || (pick(ACAD)+" 학원"), teams, tier: PORTAL_TIER};
   }
   const P = LADDER_FOE[step];
@@ -7145,7 +7157,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0920-0742";
+const BUILD = "0920-0832";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -8774,14 +8786,17 @@ function friendlyFame(diff, win){
    lv 는 평균 레벨(±FOE_LV_VAR), relics 는 등급별 랜덤 유물 개수. 신인전은 명세가 따로 없어 친선전과 같다. */
 const PORTAL_TIER = 5;
 const PORTAL_TEAM_N = 5;
+/* ment — 팀 멘탈리티 평균 구간. 팀마다 평균을 하나 뽑고 학생·능력마다 ±PORTAL_MENT_JIT 흔든다.
+   (적지 않은 단계는 newStudent 가 주는 값 그대로 — 평균 60 언저리) */
+const PORTAL_MENT_JIT = 6;
 const PORTAL_SPEC = {
   friendly: {lv:21, relics:{A:2, S:2}},
   spring:   {lv:21, relics:{A:2, S:2}},
-  city:     {lv:23, relics:{A:2, S:2}},
-  region:   {lv:24, relics:{A:1, S:3}},
-  qual:     {lv:25, relics:{S:4}},
-  final:    {lv:26, relics:{S:4}},
-  finalLast:{lv:28, relics:{S:3, EX:1}}
+  city:     {lv:23, relics:{A:2, S:2}, ment:[50,60]},
+  region:   {lv:24, relics:{A:1, S:3}, ment:[60,65]},
+  qual:     {lv:25, relics:{S:4},      ment:[65,70]},
+  final:    {lv:26, relics:{S:4},      ment:[70,75]},
+  finalLast:{lv:28, relics:{S:3, EX:1}, ment:[70,75]}
 };
 function portalOn(){ return !!(S && S.facil && S.facil.portal); }
 function portalRelic(g){ return g==="EX" ? spRelic(pick(SP_SHOP)) : makeRelic(g); }
@@ -8793,10 +8808,12 @@ function portalComp(n){
   return base;
 }
 function portalTeam(spec){
+  const mentAvgT = spec.ment ? rnd(spec.ment[0], spec.ment[1]) : null;   // 팀 공통 평균
   return assignFoeForm(portalComp(PORTAL_TEAM_N).map(job=>{
     const lv = clamp(spec.lv + ri(-FOE_LV_VAR, FOE_LV_VAR), 1, 30);
     const st = newStudent(3, "S", job);
     st.level = lv; st.exp = 0; st.cond = 92;
+    if(mentAvgT != null) MENTAL.forEach(m=>{ if(m.k!=="pot") st.ment[m.k] = clamp(mentAvgT + ri(-PORTAL_MENT_JIT, PORTAL_MENT_JIT), 5, 130); });
     st.relics = [];
     Object.keys(spec.relics).forEach(g=>{ for(let i=0;i<spec.relics[g];i++) st.relics.push(portalRelic(g)); });
     autoSkMod(st, lv);
@@ -8805,7 +8822,7 @@ function portalTeam(spec){
 }
 function portalSpecText(spec){
   const r = Object.keys(spec.relics).map(g=>`${g}급 유물 ${spec.relics[g]}개`).join(" · ");
-  return `이계 등급 · S급 Lv.${spec.lv-FOE_LV_VAR}~${spec.lv+FOE_LV_VAR} · ${PORTAL_TEAM_N}명 · ${r}`;
+  return `이계 등급 · S급 Lv.${spec.lv-FOE_LV_VAR}~${spec.lv+FOE_LV_VAR} · ${PORTAL_TEAM_N}명 · ${r}${spec.ment? ` · 멘탈리티 ${spec.ment[0]}~${spec.ment[1]}` : ""}`;
 }
 function friendlyTeam(ti){
   if(portalOn()) return portalTeam(PORTAL_SPEC.friendly);
