@@ -192,11 +192,21 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 .card.dragging{opacity:.4;cursor:grabbing}
 .card .ctop{display:flex;align-items:center;gap:4px;flex:none}
 .card.marked{box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--mk) 55%,transparent)}
-.cmark{position:absolute;top:-7px;right:-7px;z-index:2;width:22px;height:22px;border-radius:50%;
+.cmark{position:absolute;bottom:-7px;right:-7px;z-index:2;width:22px;height:22px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;line-height:1;
   color:#fff;background:var(--mk);border:1.5px solid var(--surface);
   box-shadow:0 1px 3px rgba(25,26,36,.3)}
-.dslot .cmark{top:-6px;right:-6px}
+.dslot .cmark{bottom:-6px;right:-6px}
+/* 카드 수명 배지 — 좌상단, 카드 위로 올려 색 라벨(청·녹·적)을 가리지 않는다. 3주 회색 → 2주 황동 → 이번 주까지 붉은색 */
+.card .clife{position:absolute;top:-11px;left:-6px;z-index:2;height:17px;padding:0 6px;border-radius:9px;display:inline-flex;align-items:center;gap:3px;
+  font-size:9.5px;font-weight:700;line-height:1;white-space:nowrap;color:var(--text);background:var(--surface);border:1.5px solid var(--line);
+  box-shadow:0 1px 3px rgba(25,26,36,.25);pointer-events:none}
+.card .clife i{width:5px;height:5px;border-radius:50%;background:var(--dim);display:inline-block}
+.card .clife.l2{border-color:var(--brass);color:var(--brass)}.card .clife.l2 i{background:var(--brass)}
+.card .clife.l1{border-color:var(--bad);color:#fff;background:var(--bad)}.card .clife.l1 i{background:#fff;animation:lifePulse 1s ease-in-out infinite}
+@keyframes lifePulse{0%,100%{opacity:1}50%{opacity:.2}}
+.dslot .clife{display:none}
+.handrow{padding-top:6px}
 .card .cdot{width:8px;height:8px;border-radius:50%;background:var(--cc);flex:none}
 .card .ccol{font-size:9.5px;color:var(--cc);letter-spacing:.08em}
 .card .cname{font-size:12.5px;font-weight:700;color:var(--text);line-height:1.25;word-break:keep-all;flex:none}
@@ -406,7 +416,7 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 .daylog .dlline.sub{padding-left:11px;font-size:12px}
 .daylog .dlgap{height:11px}
 @media (max-width:820px){
-  .handrow{grid-template-columns:repeat(5,1fr)}
+  .handrow{grid-template-columns:repeat(5,1fr);row-gap:16px}   /* 둘째 줄 카드의 수명 배지가 윗줄을 덮지 않게 */
   .dayrow{grid-template-columns:repeat(3,1fr)}
 }
 
@@ -885,7 +895,7 @@ table.tb tr:hover td{background:var(--surface2)}
   /* ── ② 스케줄 — 카드를 절반 크기로 줄여 한 화면에 다 넣는다.
         요일 다섯 칸은 한 줄, 손패 아홉 장은 다섯 칸 격자로 두 줄이 된다. ── */
   .dayrow{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
-  .handrow{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:12px}
+  .handrow{display:grid;grid-template-columns:repeat(5,1fr);gap:16px 4px;margin-top:12px}
   .dslot{min-height:0;border-radius:4px}
   .dslot > .dh{font-size:10px;padding:3px 0 2px;letter-spacing:0}
   .dslot .dempty{font-size:10px;line-height:1.3;padding:6px 2px}
@@ -898,6 +908,7 @@ table.tb tr:hover td{background:var(--surface2)}
   .card .fxl{font-size:9px;line-height:1.3}
   .card .ceff{font-size:10px;padding-top:3px}
   .card .cmark{width:15px;height:15px;font-size:9px}
+  .card .clife{height:14px;font-size:8px;padding:0 4px;top:-11px;left:-4px;gap:2px}.card .clife i{width:4px;height:4px}
   .dchain{font-size:9px;padding:0 5px}
   /* 손패 머리줄 · 안내 문단은 폰에서 자리를 덜 차지하게 */
   .eyebrow{font-size:10.5px;gap:6px !important;flex-wrap:wrap}
@@ -2265,9 +2276,21 @@ function cardWeights(){
   return w;
 }
 function drawCardType(){ return wchoose(cardWeights()); }
+/* 손패 수명 — 뽑힌 카드는 CARD_LIFE 주 동안만 쥘 수 있다. w = 뽑힌 시점의 주 일련번호(S.weekSeq).
+   남은 주 = CARD_LIFE - (지난 주 수). 0 이 되면 주가 끝날 때 사라진다. w 가 없는 옛 카드는 새 카드로 본다 */
+const CARD_LIFE = 3;
+function cardLeft(c){ if(!c || c.w==null) return CARD_LIFE; return CARD_LIFE - ((S.weekSeq|0) - (c.w|0)); }
+function cardLeftText(n){ return n<=1 ? "이번 주까지" : `${Math.min(n,CARD_LIFE)}주`; }
+function handExpire(){
+  const gone = (S.hand||[]).filter(c=> c && cardLeft(c) <= 0);
+  if(!gone.length) return 0;
+  S.hand = S.hand.filter(c=> !(c && cardLeft(c) <= 0));
+  logE(`손패 — ${CARD_LIFE}주 동안 쓰지 않은 카드 <b>${gone.length}장</b>(${gone.map(c=> (TR[c.t]||TR.free).n).join(" · ")})이 사라졌다.`, "");
+  return gone.length;
+}
 function newCard(){
   S.cardSeq = (S.cardSeq||0)+1;
-  const c = {u:S.cardSeq, t:drawCardType()};
+  const c = {u:S.cardSeq, t:drawCardType(), w:(S.weekSeq|0)};
   if(CARD_COL[c.t] === null) c.c = pick(REST_COLORS);
   if(RNG() < CARD_MARK_P) c.m = wchoose(CARD_MARK_W);
   return c;
@@ -4325,8 +4348,10 @@ function weekRunEnd(){
   const R = UI.wrun; if(!R) return;
   UI.wrun = null;
   UI.skipRestWarn = false;        // 다음 주에는 다시 물어본다
-  // 쓴 카드는 버리고 새로 다섯 장
+  // 쓴 카드는 버리고 새로 다섯 장 — 한 주가 지났으니 손패도 한 주 늙고, 다 늙은 카드는 사라진다
   S.slots = Array(WEEK_DAYS).fill(null);
+  S.weekSeq = (S.weekSeq|0) + 1;
+  handExpire();
   tickInjury();
   tryBonds();
   tryPortalLetter();
@@ -6853,6 +6878,7 @@ function cardHtml(c){
   return `<div class="card${mk?" marked":""}" draggable="true" data-card="${c.u}" style="--cc:${col.c};--cs:${col.s}${
       mk? `;--mk:${mk.c}`:""}" title="${esc(tr.d)}${mk? ` — ${mk.i} ${mk.n}: ${mk.d}`:""}">
     ${mk? `<span class="cmark" title="${esc(mk.n)} — ${esc(mk.d)}">${mk.i}</span>`:""}
+    ${(()=>{ const L = clamp(cardLeft(c), 1, CARD_LIFE); return `<span class="clife l${L}" title="쓰지 않으면 ${L<=1? "이번 주가 끝날 때" : L+"주 뒤"} 사라진다"><i></i>${cardLeftText(L)}</span>`; })()}
     <div class="ctop"><span class="cdot"></span><span class="ccol">${col.n}</span></div>
     <div class="cname">${esc(tr.n)}</div>
     <div class="cdesc">${esc(tr.d)}</div>
@@ -6864,7 +6890,7 @@ function cardHtml(c){
 function cardLegendHtml(){
   return `<p class="opthint" style="margin:0 0 12px;line-height:1.7"><b style="color:var(--text)">월요일부터 금요일까지 다섯 칸</b>에 손패 <b style="color:var(--text)">${HAND_SIZE}장</b> 중 다섯 장을 끌어다 놓고 진행하면 월요일부터 순서대로 치러진다.
       전날과 <b style="color:var(--text)">같은 색</b>이 이어질 때마다 그 훈련의 효과가 <b style="color:var(--brass)">+${Math.round(CHAIN_STEP*100)}%</b>씩 오른다 (최대 +${Math.round(CHAIN_STEP*CHAIN_MAX*100)}%).
-      사용된 카드는 버려지며 새로운 주가 시작되면 손패가 <b style="color:var(--text)">${HAND_SIZE}장</b>까지 충전된다.
+      사용된 카드는 버려지며 새로운 주가 시작되면 손패가 <b style="color:var(--text)">${HAND_SIZE}장</b>까지 충전된다. 뽑힌 카드는 <b style="color:var(--text)">3주</b> 동안만 쥘 수 있고 그 안에 쓰지 않으면 사라진다 — 카드 왼쪽 위 배지가 남은 기간을 알려 준다 (<b style="color:var(--text)">3주 → 2주 → 이번 주까지</b>).
       합숙 기간에는 훈련·집중 훈련 효과 <b style="color:var(--brass)">×${CAMP_GAIN}</b>, 컨디션 소모와 휴식 회복이 <b style="color:var(--brass)">×${CAMP_COND}</b>가 되고 원정 카드는 나오지 않는다.</p>
     <div class="cardlegend">
       ${Object.keys(CARD_COLOR).map(k=>{
@@ -8588,7 +8614,7 @@ function relicFitScore(r, role){
 function relicAutoEquip(){
   S.relicPool = S.relicPool||[];
   const who = [];
-  const bare = S.students.filter(st=> !(st.relics||[]).filter(Boolean).length).sort((a,b)=> power(b)-power(a));
+  const bare = S.students.filter(st=> (st.relics||[]).filter(Boolean).length < relicSlots(st)).sort((a,b)=> power(b)-power(a));
   bare.forEach(st=>{
     st.relics = (st.relics||[]).filter(Boolean);
     const role = roleOf(st);
@@ -8652,8 +8678,8 @@ function viewRelic(){
     ${(()=>{ const P=RELIC_SELL;
       const rows = ["C","B","A"].map(g=>{ const n=pool.filter(r=>r.grade===g).length;
         return n? `<button class="btn sm ${g==="A"?"":""}" data-sellgrade="${g}" style="${g==="A"?"border-color:var(--bad)":""}">${g}급 ${n}개 일괄 처분 <span style="color:var(--brass)">+${fmt(n*P[g])} G</span></button>` : ""; }).filter(Boolean);
-      const bare = S.students.filter(st=> !(st.relics||[]).filter(Boolean).length).length;
-      const rec = pool.length && bare ? `<button class="btn sm primary" id="btnRelicAuto" title="유물을 하나도 차지 않은 학생에게 역할에 맞는 유물을 골라 채운다">추천 장착 <span style="opacity:.8">(빈손 ${bare}명)</span></button>` : "";
+      const bare = S.students.filter(st=> (st.relics||[]).filter(Boolean).length < relicSlots(st)).length;
+      const rec = pool.length && bare ? `<button class="btn sm primary" id="btnRelicAuto" title="유물 칸이 비어 있는 학생에게 역할에 맞는 유물을 골라 빈 칸을 채운다 (이미 찬 유물은 그대로)">추천 장착 <span style="opacity:.8">(빈 칸 ${bare}명)</span></button>` : "";
       return (rows.length||rec)? `<div class="btnrow" style="margin-bottom:12px">${rec}${rows.join("")}
         <span class="hint" style="font-size:11.5px;color:var(--dim)">장착 중인 유물은 처분되지 않는다</span></div>` : ""; })()}
     ${pool.length? `<div class="grid2">${sortRelicPool(pool, rMode).map(({r,i})=>`
@@ -8853,15 +8879,16 @@ function bondCeremony(c){
    편지가 오면 시설 탭의 ??? 가 차원 포탈로 드러난다 */
 function tryPortalLetter(){
   if(S.portalLetter) return;
-  if(S.phase!=="spring" || S.week+1 !== 2) return;
+  if(S.phase!=="spring" || S.week+1 !== 1) return;   // 1주차를 마친 시점 = 2주차 시작
   if(fameTitleIdx(S.fame) < 4 || (S.finalWins|0) < 1) return;
   S.portalLetter = S.year;
   logE(`<b>이계에서의 편지</b>가 도착했다 — 시설 탭에 <b>차원 포탈</b>이 드러났다. 봄 상반기에만 설치할 수 있다.`, "big");
   queueCeremony({type:"portal", year:S.year});
 }
-/* 발렌타인 — 겨울 4주차를 마치면(5주차 시작) 졸업을 앞둔 학생들이 초콜릿과 손편지를 남긴다.
+/* 발렌타인 — 겨울 4주차를 마치면 졸업을 앞둔 학생들이 초콜릿과 손편지를 남긴다.
+   주간 훅은 S.week++ 전에 돌므로 S.week+1 = 방금 끝난 주차.
    팝업 셋: 상자 → 초콜릿과 편지 → 성격대로 쓴 감사 인사. 이명은 빼고 이름만 적는다 */
-const VALENTINE_WEEK = 5;
+const VALENTINE_WEEK = 4;
 const VALENTINE_MSG = {
   intro:  ["……직접 말로는 못 할 것 같아서 글로 남깁니다. 3년 동안 저를 기다려 주셔서 감사했습니다. 이제는 먼저 인사할 수 있게 됐어요.",
            "말수가 적은 저를 끝까지 포기하지 않고 봐 주셨습니다. 뒤에서 조용히 응원하겠습니다. 감사합니다."],
@@ -10022,10 +10049,10 @@ function bindView(){
       $("#rsYes").onclick = ()=>{ closeModal(); doSell(); };
     });
   });
-  /* 추천 장착 — 빈손인 학생에게 역할에 맞는 유물을 채워 준다 */
+  /* 추천 장착 — 유물 칸이 하나라도 비어 있는 학생에게 역할에 맞는 유물을 채워 준다 */
   { const ra = $("#btnRelicAuto"); if(ra) ra.onclick = ()=>{
       const res = relicAutoEquip();
-      if(!res.n){ toast("장착할 유물이 없거나 빈손인 학생이 없다."); return; }
+      if(!res.n){ toast("장착할 유물이 없거나 빈 칸인 학생이 없다."); return; }
       logE(`추천 장착 — ${res.who.map(w=>`${dnH(w.s)} ${w.n}개`).join(", ")}`,"good");
       save(); render(); toast(`${res.who.length}명에게 유물 ${res.n}개 장착`);
   }; }
@@ -12165,6 +12192,9 @@ function boot(){
   if(typeof S.books !== "number") S.books = 0;
   // 카드 덱 — 구버전 세이브는 여기서 처음 손패를 받는다
   if(!Array.isArray(S.hand) || !Array.isArray(S.slots)) handInit();
+  /* 카드 수명 — 옛 세이브의 카드는 지금 뽑힌 것으로 친다 */
+  if(typeof S.weekSeq !== "number") S.weekSeq = 0;
+  (S.hand||[]).forEach(c=>{ if(c && c.w==null) c.w = S.weekSeq; });
   if(S.slots.length !== WEEK_DAYS){ S.slots = Array(WEEK_DAYS).fill(null); }
   S.hand = S.hand.filter(c=> c && TR[c.t]);
   [S.hand, S.slots].forEach(L=> (L||[]).forEach(c=>{ if(c && CARD_COL[c.t]===null && !c.c) c.c = pick(REST_COLORS); }));
