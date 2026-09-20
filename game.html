@@ -5606,12 +5606,27 @@ const CAMP_INSIGHT = [
   {t:"합숙이 끝나고 짐을 싸는데, 아무도 먼저 가자고 하지 않았다.",
    d:"힘들었다고 투덜대면서도 한 명씩 연무장을 돌아보고 나왔다. 이 아이들을 어디까지 데려갈 수 있을지, 처음으로 욕심이 났다."}
 ];
+/* 마스터 포인트 총량 상한 — 배분한 것 + 남은 것이 30(세 능력 ×10)에 닿으면 더 주지 않고 팝업도 띄우지 않는다 */
+const MASTER_TOTAL_MAX = MASTER_MAX * 3;
+function mpTotal(){ const m = S.master||{}; return (m.lead|0)+(m.info|0)+(m.net|0)+(m.pts|0); }
+function mpRoom(){ return Math.max(0, MASTER_TOTAL_MAX - mpTotal()); }
+/* 상한을 넘긴 세이브 — 쓰지 못할 남은 포인트를 지운다 */
+function mpTrim(){
+  if(!S.master) return;
+  const over = mpTotal() - MASTER_TOTAL_MAX;
+  if(over > 0) S.master.pts = Math.max(0, (S.master.pts|0) - over);
+}
 function grantMasterPts(){
-  S.master.pts += MASTER_PTS_YEAR;
+  const give = Math.min(MASTER_PTS_YEAR, mpRoom());
+  if(give <= 0){
+    logE(`여름 합숙을 마쳤다 — 마스터 육성은 이미 끝에 닿았다 (포인트 ${MASTER_TOTAL_MAX}/${MASTER_TOTAL_MAX}).`, "");
+    return;
+  }
+  S.master.pts += give;
   UI.skipPtWarn = false;
   const ins = pick(CAMP_INSIGHT);
-  logE(`여름 합숙을 마쳤다 — <b style="color:var(--brass)">마스터 육성 포인트 ${MASTER_PTS_YEAR}</b>을 얻었다. ${esc(ins.t)}`, "big");
-  queueCeremony({type:"insight", year:S.year, ins:ins, pts:MASTER_PTS_YEAR});
+  logE(`여름 합숙을 마쳤다 — <b style="color:var(--brass)">마스터 육성 포인트 ${give}</b>을 얻었다. ${esc(ins.t)}`, "big");
+  queueCeremony({type:"insight", year:S.year, ins:ins, pts:give});
 }
 function insightCeremony(c){
   return `<div class="cerhead">
@@ -5625,7 +5640,7 @@ function insightCeremony(c){
     <div class="opt" style="cursor:default;margin-top:10px">
       <div class="on">마스터 육성 포인트 <span class="price">+${c.pts}</span></div>
       <div class="od">학원 탭에서 <b>지도력 · 정보력 · 호소력</b>에 나누어 배분할 수 있다. 배분한 뒤 <b>확정</b>을 눌러야 반영된다.</div>
-      <div class="od" style="color:var(--dim)">지금 쓸 수 있는 포인트 <b style="color:var(--brass)">${S.master.pts}</b></div>
+      <div class="od" style="color:var(--dim)">지금 쓸 수 있는 포인트 <b style="color:var(--brass)">${S.master.pts}</b> · 누적 ${mpTotal()}/${MASTER_TOTAL_MAX}</div>
     </div>
     <div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">가을을 맞는다</button></div>`;
 }
@@ -11861,6 +11876,7 @@ function boot(){
     S.potV = POT_VER;
   }
   Object.keys(FACILITIES).forEach(k=>{ if(typeof S.facil[k]!=="number") S.facil[k] = facStart(k); });
+  mpTrim();   // 마스터 포인트 총량 상한(30)을 넘긴 세이브 — 남은 포인트를 지운다
   /* 본선 우승 횟수 — 기록이 없던 세이브는 지침(학원제 본선 우승) 달성 여부로 센다 */
   if(typeof S.finalWins !== "number") S.finalWins = ((S.mission&&S.mission.done)||[]).some(d=>d.id==="m4") ? 1 : 0;
   teamsOf(); cleanTeams(); cleanBonds();
