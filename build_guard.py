@@ -10,6 +10,9 @@ def validate_game_source(source):
         '직업별 필살기': 'function ultimateEffect(',
         '보호막 표시': 'class="bf-shield"',
         '의식 상태 색상': '.bf-meter.hp.stupor',
+        '시설 장면 경과 보고': 'function reportSceneBind(',
+        '요일별 실제 성장 기록': 'scenes: R.scenes || []',
+        '시설 배경': 'const REPORT_ROOMS = ',
     }
     missing = [name for name, marker in required.items() if marker not in source]
     if missing:

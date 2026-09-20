@@ -1,0 +1,21 @@
+const {chromium}=require('playwright');
+const assert=require('assert'),path=require('path');
+(async()=>{
+ const browser=await chromium.launch({headless:true,channel:'msedge'}),page=await browser.newPage({viewport:{width:1280,height:1000}}),errors=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('http://127.0.0.1:18765/reports/preview.html');
+ await page.waitForFunction(()=>!document.querySelector('#restart').disabled);
+ const f=page.frames().find(f=>f!==page.mainFrame());
+ await f.waitForFunction(()=>document.querySelector('#drRoom')?.complete && document.querySelector('#drRoom').naturalWidth);
+ const sizes=await f.evaluate(()=>{const r=document.querySelector('.dr-stage').getBoundingClientRect();return {width:r.width,height:r.height};});assert(Math.abs(sizes.width/sizes.height-3)<.03);
+ assert.equal(await f.locator('.dr-student').count(),5);
+ assert.equal(await page.evaluate(()=>localStorage.length),0,'Preview wrote to real storage');
+ await page.screenshot({path:path.join(__dirname,'shot_preview.png')});
+ await f.locator('[data-dr-day="2"]').click();assert.equal(await f.locator('#drFacility').textContent(),'수련관');
+ await f.locator('[data-dr-day="0"]').click();
+ await page.setViewportSize({width:390,height:844});
+ assert(await f.evaluate(()=>document.querySelector('.modal').scrollWidth<=document.querySelector('.modal').clientWidth+2));
+ await page.screenshot({path:path.join(__dirname,'shot_preview_mobile.png')});
+ assert.deepEqual(errors,[]);console.log(JSON.stringify({sizes,storage:'isolated',errors}));
+ await browser.close();
+})().catch(e=>{console.error(e);process.exit(1)});
