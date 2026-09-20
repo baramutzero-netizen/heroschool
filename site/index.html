@@ -396,6 +396,11 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 .dr-student.studying .dr-shadow{display:none}
 .dr-student.studying .dr-name{top:91%}
 .dr-student.studying .dr-condition{top:106%;width:62%}
+/* 폰 — 이름표가 cqw 로 줄지 않고 최소 글자 크기에 걸려 컨디션바와 겹친다. 바를 이름 아래로 내린다 */
+@media(max-width:600px){
+  .dr-condition{top:calc(98% + 9px)}
+  .dr-student.studying .dr-condition{top:calc(106% + 9px)}
+}
 .dr-student.studying .dr-bubbles{bottom:90%}
 .empty-seat{pointer-events:none}
 
@@ -1013,7 +1018,10 @@ table.tb tr:hover td{background:var(--surface2)}
  .bf-stage .bf-unit{transform:translate(-50%,-50%) scale(.6);transform-origin:50% 65%}
  .bf-stage .bf-unit .sprwrap .spr-anchor{transform:none}
  .bf-school b{font-size:15px}.bf-school.enemy{right:10px;top:12px}.bf-school.ally{left:10px;bottom:12px}
- .bf-school .fmtag{font-size:9px}.bf-legend{left:8px;top:12px;font-size:8px;gap:2px;max-width:45%;flex-wrap:wrap}
+ .bf-school .fmtag{font-size:6px;gap:3px;padding:1px 4px;white-space:nowrap}
+ .bf-school .fmtag b{font-size:9px}
+ .bf-school .fmtag .fmdot{gap:1px}.bf-school .fmtag .fmdot u{width:5px;height:3px}
+ .bf-legend{left:8px;top:12px;font-size:8px;gap:2px;max-width:45%;flex-wrap:wrap}
  .bf-slot{width:55px;height:20px;transform:translate(-50%,26px) skewX(-20deg)}
  .bf-stage .bf-boss{transform:translate(-50%,-50%) scale(.68)}
  .bf-stage .bf-speech{font-size:16px;max-width:170px}
@@ -2311,7 +2319,7 @@ function slotsFull(){ return (S.slots||[]).filter(Boolean).length === WEEK_DAYS;
 function autoFillSlots(){
   S.slots = S.slots || Array(WEEK_DAYS).fill(null);
   S.hand = S.hand || [];
-  handRefill();
+  /* 손패는 채우지 않는다 — 손패 9장은 주가 끝날 때만 다시 받는다. 이미 올린 카드만큼 손패가 줄어 있어야 한다 */
   const need = WEEK_DAYS - S.slots.filter(Boolean).length;
   if(need<=0) return;
   const avg = S.students.length ? S.students.reduce((a,s)=>a+s.cond,0)/S.students.length : 100;
@@ -2335,8 +2343,7 @@ function autoFillSlots(){
   }
   while(S.slots.filter(Boolean).length < WEEK_DAYS){
     const d = S.slots.findIndex(x=>!x);
-    handRefill();
-    S.slots[d] = S.hand.shift() || newCard();
+    S.slots[d] = S.hand.shift() || newCard();   // 손패가 비면 그 자리만 새 카드로
   }
 }
 /* 전날부터 거슬러 올라가 같은 색이 몇 장 이어졌는지 — 10%씩, 최대 40% */
@@ -4338,6 +4345,7 @@ function weekRunEnd(){
   tickInjury();
   tryBonds();
   tryPortalLetter();
+  tryValentine();
   tryFriendly();
   tryCounsel();
   const dealt = handRefill();
@@ -4702,7 +4710,6 @@ function showReport(r){
     <div class="panel-h"><h2 style="font-size:18px">${r.startYear}년 ${ph.n} ${range} 경과 보고</h2>
       <span class="hint">${esc(actLine)}</span></div>
     ${reportSceneShell(r.scenes || [], dlg)}
-    <p style="font-size:11.5px;color:var(--dim);margin:-6px 0 10px">기본 전투력은 컨디션 100 기준 — 레벨업과 유물로 오른다. 멘탈리티 수치는 전투 중 행동·대상 판단과 원정 지속력에 작용한다.</p>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
       <span class="pill">자금 ${dl(r.gold)}</span>
       <span class="pill">명성 ${dl(r.fame)}</span>
@@ -4716,8 +4723,8 @@ function showReport(r){
         <div class="od">${esc(e.team.join(" · "))}</div>
         <div class="od">경험 ${fmt(e.exp)}${e.fameGain? ` · 완주 명성 +${e.fameGain}`:""} · 유물 ${e.relics.length}개${e.stopped? ` · ${esc(e.stopped)}`:""}</div>
       </div>`).join("")}</div>`:""}
-    <div class="eyebrow" style="margin-bottom:6px">학생 변화 (전투력 증가 순)</div>
-    <div class="grid2">
+    <details class="dr-details rep-students"><summary>학생 변화 (전투력 증가 순) · ${rows.length}명</summary>
+    <div class="grid2" style="margin-top:10px">
       ${rows.map(x=>`<div class="opt" style="cursor:default">
         <div class="on">${esc(x.c.name)} ${roleTag(x.c.job)} <span class="tag yr">${x.c.year}학년</span>
           <span class="price">${x.dLv? `Lv.${x.o.level} → ${x.c.level}` : `Lv.${x.c.level}`}</span></div>
@@ -4734,6 +4741,7 @@ function showReport(r){
           : `<span style="color:var(--dim);font-size:11px">멘탈리티 변화 없음</span>`}</div>
       </div>`).join("")}
     </div>
+    </details>
     ${fresh.length? `<div class="rule"></div><div class="eyebrow" style="margin-bottom:6px">신규 합류</div>
       <div class="grid2">${fresh.map(c=>`<div class="opt" style="cursor:default">
         <div class="on">${esc(c.name)} ${gradeTag(c.grade)} ${roleTag(c.job)}<span class="price">${c.year}학년</span></div>
@@ -7290,7 +7298,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0921-0212";
+const BUILD = "0920-1925";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -8579,6 +8587,41 @@ const SKILL_SORT = [
 const RELIC_GRADE_ORD = {D:0, C:1, B:2, A:3, S:4, EX:5};
 /* 처분가 — EX 는 SP 로 산 것이라 금화로 되팔 수 없다 */
 const RELIC_SELL = {C:120, B:320, A:800, S:2000};
+/* 추천 장착 — 역할별로 어울리는 능력치 (앞이 우선). 유물 하나의 점수 = 맞는 옵션 가중치 합, 같으면 등급 */
+const RELIC_ROLE_PREF = {
+  dps:  ["atk","ultGain","crit","critDmg","acc"],
+  tank: ["hp","def","eva","skRes","leech"],
+  heal: ["skAcc","skRes","ultGain","hp","spd"],
+  supp: ["ultGain","spd","def","hp","eva","skAcc"]
+};
+function relicFitScore(r, role){
+  const pref = RELIC_ROLE_PREF[role] || RELIC_ROLE_PREF.dps;
+  let sc = 0;
+  (r.aff||[]).forEach(a=>{ const i = pref.indexOf(a.k); if(i>=0) sc += pref.length - i; });
+  return sc*10 + (RELIC_GRADE_ORD[r.grade]||0);
+}
+function relicAutoEquip(){
+  S.relicPool = S.relicPool||[];
+  const who = [];
+  const bare = S.students.filter(st=> !(st.relics||[]).filter(Boolean).length).sort((a,b)=> power(b)-power(a));
+  bare.forEach(st=>{
+    st.relics = (st.relics||[]).filter(Boolean);
+    const role = roleOf(st);
+    let n = 0;
+    while(st.relics.length < relicSlots(st) && S.relicPool.length){
+      let best=-1, bs=-1;
+      S.relicPool.forEach((r,i)=>{
+        if(r.grade==="EX" && exCount(st) >= EX_PER_STUDENT) return;
+        const sc = relicFitScore(r, role);
+        if(sc > bs){ bs = sc; best = i; }
+      });
+      if(best < 0) break;
+      st.relics.push(S.relicPool.splice(best,1)[0]); n++;
+    }
+    if(n) who.push({s:st, n});
+  });
+  return {who, n: who.reduce((a,w)=>a+w.n,0)};
+}
 const SK_CAT_ORD = {passive:0, ult:1, skill:2, basic:3};
 /* 보관고는 배열 인덱스로 장착·처분하므로 {원본 인덱스}를 유지한 채 정렬한다 */
 function sortRelicPool(pool, mode){
@@ -8621,10 +8664,12 @@ function viewRelic(){
   return `<section class="panel">
     <div class="panel-h"><h2>유물 보관고</h2><span class="hint">${pool.length}개 보관 · 학생을 선택해 장착한다</span>
       ${pool.length? sortSelect("rlsort", RELIC_SORT, rMode) : ""}</div>
-    ${(()=>{ const P={C:120,B:320,A:800,S:2000};
-      const rows = ["C","B"].map(g=>{ const n=pool.filter(r=>r.grade===g).length;
-        return n? `<button class="btn sm" data-sellgrade="${g}">${g}급 ${n}개 일괄 처분 <span style="color:var(--brass)">+${fmt(n*P[g])} G</span></button>` : ""; }).filter(Boolean);
-      return rows.length? `<div class="btnrow" style="margin-bottom:12px">${rows.join("")}
+    ${(()=>{ const P=RELIC_SELL;
+      const rows = ["C","B","A"].map(g=>{ const n=pool.filter(r=>r.grade===g).length;
+        return n? `<button class="btn sm ${g==="A"?"":""}" data-sellgrade="${g}" style="${g==="A"?"border-color:var(--bad)":""}">${g}급 ${n}개 일괄 처분 <span style="color:var(--brass)">+${fmt(n*P[g])} G</span></button>` : ""; }).filter(Boolean);
+      const bare = S.students.filter(st=> !(st.relics||[]).filter(Boolean).length).length;
+      const rec = pool.length && bare ? `<button class="btn sm primary" id="btnRelicAuto" title="유물을 하나도 차지 않은 학생에게 역할에 맞는 유물을 골라 채운다">추천 장착 <span style="opacity:.8">(빈손 ${bare}명)</span></button>` : "";
+      return (rows.length||rec)? `<div class="btnrow" style="margin-bottom:12px">${rec}${rows.join("")}
         <span class="hint" style="font-size:11.5px;color:var(--dim)">장착 중인 유물은 처분되지 않는다</span></div>` : ""; })()}
     ${pool.length? `<div class="grid2">${sortRelicPool(pool, rMode).map(({r,i})=>`
       <div class="opt" style="cursor:default">
@@ -8828,6 +8873,63 @@ function tryPortalLetter(){
   S.portalLetter = S.year;
   logE(`<b>이계에서의 편지</b>가 도착했다 — 시설 탭에 <b>차원 포탈</b>이 드러났다. 봄 상반기에만 설치할 수 있다.`, "big");
   queueCeremony({type:"portal", year:S.year});
+}
+/* 발렌타인 — 겨울 4주차를 마치면(5주차 시작) 졸업을 앞둔 학생들이 초콜릿과 손편지를 남긴다.
+   팝업 셋: 상자 → 초콜릿과 편지 → 성격대로 쓴 감사 인사. 이명은 빼고 이름만 적는다 */
+const VALENTINE_WEEK = 5;
+const VALENTINE_MSG = {
+  intro:  ["……직접 말로는 못 할 것 같아서 글로 남깁니다. 3년 동안 저를 기다려 주셔서 감사했습니다. 이제는 먼저 인사할 수 있게 됐어요.",
+           "말수가 적은 저를 끝까지 포기하지 않고 봐 주셨습니다. 뒤에서 조용히 응원하겠습니다. 감사합니다."],
+  hot:    ["마스터! 먼저 부딪히고 사고 치던 저를 늘 뒤에서 수습해 주셔서 감사합니다. 이제는 앞만 보지 않고 옆도 보겠습니다!",
+           "3년 내내 열만 올렸는데 한 번도 식히라고 하지 않으셨죠. 그 불, 밖에서 제대로 써 보겠습니다. 감사했습니다!"],
+  stone:  ["돌아보면 겁 없이 파고들 수 있었던 건 뒤에 마스터가 계셨기 때문입니다. 계산은 늘 정확했지만, 이 마음은 계산 밖입니다. 감사합니다.",
+           "가장 차가워야 할 순간마다 마스터의 말이 떠올랐습니다. 그 덕에 여기까지 왔습니다. 고맙습니다."],
+  dilig:  ["시키신 것은 전부 끝냈는지 늘 되짚어 보았습니다. 마지막으로 못 끝낸 것이 있다면 이 인사입니다. 3년 동안 정말 감사했습니다.",
+           "매일 같은 자리에서 저를 봐 주셔서, 저도 매일 같은 자리를 지킬 수 있었습니다. 감사합니다. 후배들도 잘 챙길게요."],
+  tsun:   ["……별로 감사한 건 아니지만, 그래도 이 정도는 해야 할 것 같아서요. 3년 동안 신경 써 주신 거, 모르는 척했지만 다 알고 있었습니다.",
+           "초콜릿은 남는 재료로 만든 거니까 의미 두지 마세요. ……거짓말이에요. 감사했습니다, 마스터."],
+  lively: ["마스터!! 3년 동안 시끄러웠죠? 그래도 한 번도 조용히 하라고 안 하셔서 좋았어요! 밖에서도 분위기 확실히 띄우고 올게요. 고마워요!",
+           "첫날 먼저 말을 건 게 마스터였다는 거 기억하세요? 그날부터 여기가 집 같았어요. 정말 감사합니다!"],
+  boast:  ["제가 늘 크게 말했던 거, 절반은 마스터가 믿어 주셔서 지킬 수 있었습니다. 남은 절반도 밖에서 채워 오겠습니다. 감사합니다.",
+           "이 초콜릿, 대륙에서 제일 맛있을 겁니다. ……아마도요. 3년 동안 제 말을 웃지 않고 들어 주셔서 감사했습니다."],
+  plain:  ["특별할 것 없는 저를 특별하게 봐 주셔서 감사합니다. 3년 동안 배운 것, 잊지 않겠습니다.",
+           "대단한 말은 못 하지만, 진심으로 감사했습니다. 마스터의 학생이었다는 게 자랑입니다."],
+  genius: ["가르쳐 주신 것은 한 번에 따라왔지만, 마스터가 보여 주신 것은 아직 다 따라가지 못했습니다. 감사합니다. 남은 것은 평생 배우겠습니다.",
+           "재능은 타고났다지만, 그것을 어디에 쓸지는 여기서 배웠습니다. 3년 동안 감사했습니다."]
+};
+function tryValentine(){
+  if(S.phase!=="winter" || S.week+1 !== VALENTINE_WEEK) return;
+  if(S.valentine === S.year) return;
+  const list = (S.pendingGrad && S.pendingGrad.list) || [];
+  if(!list.length) return;
+  S.valentine = S.year;
+  const notes = list.map(g=>{
+    const pers = PERSONA[g.pers] ? g.pers : "plain";
+    return {name: g.raw || g.name, pers, msg: pick(VALENTINE_MSG[pers] || VALENTINE_MSG.plain)};
+  });
+  logE(`<b>발렌타인</b> — 졸업을 앞둔 ${list.length}명이 책상에 초콜릿과 손편지를 남겼다.`, "good");
+  queueCeremony({type:"valentine", page:1, year:S.year, n:list.length});
+  queueCeremony({type:"valentine", page:2, year:S.year, n:list.length});
+  queueCeremony({type:"valentine", page:3, year:S.year, notes});
+}
+function valentineCeremony(c){
+  const head = (sub)=> `<div class="cerhead">
+      <div class="eyebrow">${c.year}년 겨울 · 4주차를 마치고</div>
+      <h2 style="font-size:24px;margin-top:2px">발렌타인</h2>
+      <p style="color:var(--muted);font-size:13px;margin-top:6px">${sub}</p>
+    </div>`;
+  if(c.page===1) return head("훈련을 마치고 돌아와보니 책상에 소중하게 포장한듯한 작은 상자가 놓여있었다.") +
+    `<div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">열어본다</button></div>`;
+  if(c.page===2) return head("열어보니 그 안에는 초콜릿과 편지가 들어있었다.") +
+    `<div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">편지를 펼친다</button></div>`;
+  return head("손편지를 펼치자 졸업 예정인 학생들의 감사 인사가 담겨있었다.") +
+    `<div class="opt" style="cursor:default;margin-top:12px;border-color:var(--brass);padding:16px 20px">
+      ${(c.notes||[]).map(n=>`<div style="margin-bottom:14px">
+        <div style="font-size:13.5px;line-height:1.85;color:var(--text)">${esc(n.msg)}</div>
+        <div style="text-align:right;font-size:12.5px;color:var(--muted);margin-top:4px">- ${esc(n.name)}</div>
+      </div>`).join("")}
+    </div>
+    <div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">소중히 간직한다</button></div>`;
 }
 /* 주간 훅 — 라이벌은 봄 2주, 소울메이트는 여름 상반기 중 한 주 */
 function tryBonds(){
@@ -9913,16 +10015,35 @@ function bindView(){
     teachCompare(i, sel? sel.value : null);
   });
   v.querySelectorAll("[data-sellgrade]").forEach(b=> b.onclick=()=>{
-    const g = b.dataset.sellgrade, P={C:120,B:320,A:800,S:2000};
-    const keep = [], sold = [];
-    (S.relicPool||[]).forEach(r=> (r.grade===g? sold : keep).push(r));
-    if(!sold.length) return;
-    S.relicPool = keep;
-    const gain = sold.length*P[g];
-    addGold(gain);
-    logE(`유물 ${g}급 ${sold.length}개 일괄 처분 — 자금 +${fmt(gain)}`,"good");
-    save(); render(); toast(`${g}급 ${sold.length}개를 처분했다.`);
+    const g = b.dataset.sellgrade, P=RELIC_SELL;
+    const n = (S.relicPool||[]).filter(r=>r.grade===g).length;
+    if(!n) return;
+    const doSell = ()=>{
+      const keep = [], sold = [];
+      (S.relicPool||[]).forEach(r=> (r.grade===g? sold : keep).push(r));
+      if(!sold.length) return;
+      S.relicPool = keep;
+      const gain = sold.length*P[g];
+      addGold(gain);
+      logE(`유물 ${g}급 ${sold.length}개 일괄 처분 — 자금 +${fmt(gain)}`,"good");
+      save(); render(); toast(`${g}급 ${sold.length}개를 처분했다.`);
+    };
+    if(g !== "A"){ doSell(); return; }
+    /* A급은 아까운 물건이라 한 번 더 묻는다 */
+    showModal(`<h2 style="font-size:17px;margin-bottom:8px">A급 유물 일괄 처분</h2>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:12px">보관고의 <b style="color:var(--text)">A급 유물 ${n}개</b>를 전부 처분하고 <b style="color:var(--brass)">${fmt(n*P.A)} G</b>를 받는다. 되돌릴 수 없다. 장착 중인 유물은 처분되지 않는다.</p>
+      <div class="btnrow"><button class="btn primary" id="rsNo">취소</button><button class="btn" id="rsYes" style="border-color:var(--bad);color:var(--bad)">정말 처분한다</button></div>`, ()=>{
+      $("#rsNo").onclick = closeModal;
+      $("#rsYes").onclick = ()=>{ closeModal(); doSell(); };
+    });
   });
+  /* 추천 장착 — 빈손인 학생에게 역할에 맞는 유물을 채워 준다 */
+  { const ra = $("#btnRelicAuto"); if(ra) ra.onclick = ()=>{
+      const res = relicAutoEquip();
+      if(!res.n){ toast("장착할 유물이 없거나 빈손인 학생이 없다."); return; }
+      logE(`추천 장착 — ${res.who.map(w=>`${dnH(w.s)} ${w.n}개`).join(", ")}`,"good");
+      save(); render(); toast(`${res.who.length}명에게 유물 ${res.n}개 장착`);
+  }; }
   v.querySelectorAll("[data-sksell]").forEach(b=> b.onclick=()=>{
     const i=+b.dataset.sksell, e=(S.skillPool||[])[i];
     if(!e) return;
@@ -10071,6 +10192,7 @@ function showCeremony(){
     : c.type==="scout" ? scoutCeremony(c)
     : c.type==="fame" ? fameCeremony(c)
     : c.type==="portal" ? portalCeremony(c)
+    : c.type==="valentine" ? valentineCeremony(c)
     : enrollCeremony(c);
   showModal(html, ()=>{
     if(c.type==="friendly"){
