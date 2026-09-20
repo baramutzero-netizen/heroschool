@@ -930,10 +930,9 @@ table.tb tr:hover td{background:var(--surface2)}
 .bf-legend{position:absolute;left:16px;top:18px;font-size:11px;color:var(--text);display:flex;align-items:center;gap:5px}
 .bf-legend i{width:7px;height:14px;border-radius:5px;display:inline-block;margin-left:5px}
 .bf-legend .hp{background:#53cf88}.bf-legend .atb{background:#42b9ef}.bf-legend .ult{background:#f4654b;border-radius:50%;width:12px;height:12px}
-.bf-slot{position:absolute;width:102px;height:32px;transform:translate(-50%,32px) skewX(-20deg);border:1px solid #618dbe45;background:#b5e0ff12;border-radius:9px;z-index:0}
-.bf-slot.team-B{border-color:#b77a7045;background:#ffdbc412}
+.bf-slot{position:absolute;width:102px;height:32px;transform:translate(-50%,32px) skewX(-20deg);border:2px solid #527daeb3;background:#b5e0ff12;border-radius:9px;box-shadow:0 0 0 1px #ffffff70;z-index:0}
+.bf-slot.team-B{border-color:#a66759b3;background:#ffdbc412}
 .bf-stage .bf-unit,.bf-stage .bf-slot{margin-top:20px}
-.bf-slot span{position:absolute;bottom:1px;right:5px;font-size:8px;opacity:.45}
 .bf-stage .bf-unit{position:absolute;width:110px;height:132px;transform:translate(-50%,-50%);border:0!important;padding:0;background:transparent!important;box-shadow:none!important;overflow:visible}
 .bf-stage .bf-unit:focus-visible{outline:2px solid var(--brass);outline-offset:8px}
 .bf-stage .bf-unit.act::before{content:"";position:absolute;bottom:24px;left:12px;width:84px;height:19px;border-radius:50%;background:#ffd16a50;box-shadow:0 0 18px #ffce7670;z-index:-1}
@@ -4337,7 +4336,7 @@ function reportRecord(day, tr, bonus, phase, before, members, status, logStart, 
         const xp=Math.round((s.totalExp||0)-old.exp);
         if(xp)changes.push({label:"경험",value:xp,kind:"exp"});
       }
-      return {id:s.id,name:dn(s),job:s.job,palette:sprPalOf(s),focus:s.focus,
+      return {id:s.id,name:s.name,job:s.job,palette:sprPalOf(s),focus:s.focus,
         state:status[s.id] || (phase==="pm"?"focus":"returned"),changes};
     })
   }));
@@ -7024,7 +7023,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0920-1236";
+const BUILD = "0920-1243";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -10314,7 +10313,7 @@ function openBattle(res, opt, onDone){
     const ground=['A','B'].map(side=>['front','back'].map(row=>[0,1,2].map(col=>{
       const x=side==='A'?(row==='front'?24:14)+col*17:(row==='front'?50:60)+col*14;
       const y=side==='A'?(row==='front'?47:65)+col*9:(row==='front'?35:16)+col*10;
-      return `<div class="bf-slot team-${side}" style="left:${x}%;top:${y}%"><span>${row==='front'?'전':'후'}${col+1}</span></div>`;
+      return `<div class="bf-slot team-${side}" style="left:${x}%;top:${y}%" aria-hidden="true"></div>`;
     }).join('')).join('')).join('');
     return `<div class="bf-stage">
       <div class="bf-school enemy"><b>${esc(opt.titleB||'상대 학원')}</b>${formTag(res.formB)}</div>

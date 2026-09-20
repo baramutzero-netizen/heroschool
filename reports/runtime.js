@@ -24,7 +24,7 @@ function reportRecord(day, tr, bonus, phase, before, members, status, logStart, 
         const xp=Math.round((s.totalExp||0)-old.exp);
         if(xp)changes.push({label:"경험",value:xp,kind:"exp"});
       }
-      return {id:s.id,name:dn(s),job:s.job,palette:sprPalOf(s),focus:s.focus,
+      return {id:s.id,name:s.name,job:s.job,palette:sprPalOf(s),focus:s.focus,
         state:status[s.id] || (phase==="pm"?"focus":"returned"),changes};
     })
   }));
