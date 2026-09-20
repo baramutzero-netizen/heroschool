@@ -45,7 +45,7 @@ const path=require('path'),assert=require('assert');
  const first=await page.evaluate(()=>UI._reportPlayer.index);
  await page.waitForTimeout(300);assert.equal(await page.evaluate(()=>UI._reportPlayer.index),first);
  await page.locator('[data-dr-speed="6"]').click();await page.locator('#drPlay').click();
- await page.waitForTimeout(1100);assert((await page.evaluate(()=>UI._reportPlayer.index))>first,'Playback did not advance');
+ await page.waitForFunction(first=>UI._reportPlayer.index>first,first,{timeout:20000});
  await page.locator('#drPlay').click();await page.locator('[data-dr-day="4"]').click();
  assert.equal(await page.locator('#drFacility').textContent(),'의무실');
  assert.equal(await page.locator('.dr-student').count(),3,'Infirmary bed capacity');

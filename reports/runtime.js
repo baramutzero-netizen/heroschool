@@ -8,23 +8,22 @@ function reportRecord(day, tr, bonus, phase, before, members, status, logStart, 
   });
   const scenes = UI.wrun.scenes ||= [];
   Object.entries(groups).forEach(([facility, group])=> scenes.push({
-    day, training:tr.n, trainingId:tr.id, color:cardColor(UI.wrun.days?.[day] || tr.id).c, bonus, phase, facility,
+    day, season:UI.wrun.startPhase || S.phase, training:tr.n, trainingId:tr.id, color:cardColor(UI.wrun.days?.[day] || tr.id).c, bonus, phase, facility,
     logs:DAYLOG.slice(logStart), reward:extra?.reward || "",
     students:group.map(s=>{
       const old=before[s.id], changes=[];
       if(old){
         MENTAL.forEach(m=>{
           if(m.k==="pot")return;
-          const d=s.ment[m.k]-old.ment[m.k];
-          if(Math.abs(d)>=.05) changes.push({label:m.n,value:Math.round(d*10)/10,kind:d>0?"gain":"loss"});
+          const from=Math.round(old.ment[m.k]), to=Math.round(s.ment[m.k]), d=to-from;
+          if(d) changes.push({label:m.n,from,to,value:d,kind:d>0?"gain":"loss"});
         });
-        changes.sort((a,b)=>Math.abs(b.value)-Math.abs(a.value));
-        const cond=Math.round((s.cond-old.cond)*10)/10;
-        if(cond)changes.push({label:"컨디션",value:cond,kind:cond>0?"heal":"loss"});
-        const xp=Math.round((s.totalExp||0)-old.exp);
-        if(xp)changes.push({label:"경험",value:xp,kind:"exp"});
+        const cond=Math.round(s.cond)-Math.round(old.cond);
+        if(cond)changes.push({label:"컨디션",from:Math.round(old.cond),to:Math.round(s.cond),value:cond,kind:cond>0?"heal":"loss"});
+        const xp=Math.round(s.totalExp||0)-Math.round(old.exp);
+        if(xp)changes.push({label:"경험",from:Math.round(old.exp),to:Math.round(s.totalExp||0),value:xp,kind:"exp"});
       }
-      return {id:s.id,name:s.name,job:s.job,palette:sprPalOf(s),focus:s.focus,
+      return {id:s.id,name:s.name,job:s.job,palette:sprPalOf(s),focus:s.focus,condition:{from:Math.round(old?.cond ?? s.cond),to:Math.round(s.cond)},
         state:status[s.id] || (phase==="pm"?"focus":"returned"),changes};
     })
   }));
@@ -34,16 +33,38 @@ function reportRecord(day, tr, bonus, phase, before, members, status, logStart, 
 const REPORT_LAYOUTS = {
   library:{crop:.235, slots:[[12,79],[45,42],[63,47],[79,73],[88,84]]},
   gym:{crop:.255, slots:[[14,75],[34,48],[52,29],[77,81],[90,84]]},
-  arena:{crop:.245, slots:[[20,65],[46,25],[72,57],[80,69],[89,81]]},
+  arena:{crop:.215, slots:[[20,65],[46,25],[72,57],[80,69],[89,81]]},
   hall:{crop:.235, scale:1350, slots:[[33,43],[40,61],[51,61],[65,58],[58,24]]},
   chapel:{crop:.255, slots:[[12,76],[20,63],[27,52],[73,52],[80,63],[88,76]]},
-  infirm:{crop:.195, slots:[[17,63],[36,42],[66,51]]}
+  infirm:{crop:.195, slots:[[17,63],[36,42],[66,51]]},
+  beach:{crop:0, capacity:5, slots:[[19,75],[35,54],[51,80],[67,55],[83,78],[19,48],[35,80],[51,51],[67,81],[83,51]]}
 };
+function reportBeachPositions(){
+  // Presentation-only randomness; never consume the simulation's random stream.
+  const slots=REPORT_LAYOUTS.beach.slots, keys=crypto.getRandomValues(new Uint32Array(slots.length));
+  const candidates=slots.map((slot,i)=>({slot,key:keys[i]})).sort((a,b)=>a.key-b.key), chosen=[];
+  for(const {slot} of candidates){
+    // One position per column keeps sprites and growth labels from overlapping.
+    if(chosen.every(p=>Math.abs(p[0]-slot[0])>=12))chosen.push(slot);
+    if(chosen.length===REPORT_LAYOUTS.beach.capacity)break;
+  }
+  return chosen;
+}
 // Keep full records for the text report, but never tour every focus/rest facility.
 function reportScenesForPlayback(records){
   const out=[];
   [...new Set(records.map(s=>s.day))].sort((a,b)=>a-b).forEach(day=>{
-    const daily=records.filter(s=>s.day===day);
+    let daily=records.filter(s=>s.day===day);
+    // Merge summer training/rest groups into one beach per phase, without changing gains.
+    const summer=daily.filter(s=>s.season==="summer" && s.phase!=="exped");
+    if(summer.length){
+      daily=daily.filter(s=>!summer.includes(s));
+      for(const phase of ["am","pm"]){
+        const group=summer.filter(s=>s.phase===phase);
+        if(group.length)daily.push({...group[0],facility:"beach",
+          students:group.flatMap(s=>s.students.map(x=>({...x,trainingFacility:s.facility}))) });
+      }
+    }
     const morning=daily.filter(s=>s.phase!=="pm"), afternoon=daily.filter(s=>s.phase==="pm");
     const choose=list=>list.slice().sort((a,b)=>b.students.length-a.students.length)[0];
     const am=morning.find(s=>s.phase==="exped") || choose(morning.filter(s=>s.students.some(x=>x.state!=="rest"))) || choose(morning);
@@ -78,6 +99,19 @@ function reportPlayerStop(){
   if(UI._reportPlayer){UI._reportPlayer.dispose();UI._reportPlayer=null;}
   if(UI._dlT){clearTimeout(UI._dlT);UI._dlT=null;}
 }
+function reportConditionColor(value){return value<=39?"critical":value<=69?"tired":"healthy";}
+function reportStatQueue(students){
+  const queue=[];
+  if(students.some(s=>s.condition && s.condition.to>s.condition.from))
+    queue.push({condition:true,recovery:true,from:0,to:1});
+  students.forEach((student,index)=>{
+    const condition=student.condition;
+    if(condition && condition.to<condition.from)queue.push({index,condition:true,...condition});
+    student.changes.filter(c=>c.label!=="컨디션" && c.kind!=="exp" && c.label!=="경험" && Number.isInteger(c.from) && Number.isInteger(c.to) && c.from!==c.to)
+      .forEach(change=>queue.push({index,...change}));
+  });
+  return queue;
+}
 function reportSceneBind(records){
   const scenes=reportScenesForPlayback(records);
   if(!scenes.length || !$("#drStage"))return;
@@ -90,17 +124,25 @@ function reportSceneBind(records){
     if(oldConfirmRow && !oldConfirmRow.children.length)oldConfirmRow.remove();
   }
   let at=0, speed=[1,2,6].includes(PREF.reportSpeed)?PREF.reportSpeed:2, paused=reduced, full=false, elapsed=0, last=performance.now(), timer=null, disposed=false;
-  const duration=4800;
-  const phaseName=s=>s.phase==="exped"?"오전 원정":s.phase==="pm"?"오후 집중":s.students.every(x=>x.state==="rest")?"오전 휴식":"오전 훈련";
+  let duration=2400, queue=[], displayed=[], lastSound=-1;
+  const stepMs=450, leadMs=250, cardMs=900/0.7;
+  const statAudio=new Audio(REPORT_STATUP);
+  const recoveryAudio=new Audio(REPORT_RECOVERY);
+  const reportAudio=[statAudio,recoveryAudio];
+  reportAudio.forEach(audio=>audio.preload="auto");
+  function silence(){reportAudio.forEach(audio=>{audio.pause();audio.currentTime=0;});}
+  const placements=new Map();
+  const phaseName=s=>s.phase==="exped"?"오전 원정":s.phase==="pm"?"오후 집중":s.students.every(x=>x.state==="rest")?(s.facility==="beach"?"오전 일광욕":"오전 휴식"):"오전 훈련";
   const chip=c=>`<span class="dr-chip ${c.kind}">${esc(c.label)} ${c.value>0?"+":""}${c.value}</span>`;
   const stateName=s=>s.state==="failed"?"실패 · 성과 25%":s.state==="rest"?"휴식":s.state==="focus"?"집중 훈련":s.state==="returned"?"원정 귀환":"훈련 완료";
-  const player={dispose(){disposed=true;clearInterval(timer);},get index(){return at;},get paused(){return paused;}};
+  const player={dispose(){disposed=true;clearInterval(timer);silence();reportAudio.forEach(audio=>{audio.removeAttribute("src");audio.load();});},get index(){return at;},get paused(){return paused;}};
   UI._reportPlayer=player;
   function sync(){
     $("#drPlay").textContent=at===scenes.length-1&&elapsed>=duration?"다시 보기":paused?"재생":"일시정지";
     $("#drPrev").disabled=at===0;$("#drNext").disabled=at===scenes.length-1;
     root.querySelectorAll("[data-dr-speed]").forEach(b=>{b.classList.toggle("primary",+b.dataset.drSpeed===speed);b.setAttribute("aria-pressed",String(+b.dataset.drSpeed===speed));});
     $("#drStage").classList.toggle("paused",paused);
+    if(paused)silence();
     root.querySelectorAll("#drStudents canvas").forEach(c=>{if(paused && +c.dataset.m!==SPR_M.down)c.dataset.still="1";else delete c.dataset.still;});
   }
   function details(id){
@@ -112,27 +154,31 @@ function reportSceneBind(records){
   function draw(){
     const s=scenes[at], day=scenes.filter(x=>x.day===s.day), offset=(s.day*3)%Math.max(1,s.students.length);
     const layout=REPORT_LAYOUTS[s.facility] || REPORT_LAYOUTS.gym;
-    const visible=s.students.slice(offset).concat(s.students.slice(0,offset)).slice(0,layout.slots.length);
+    const visible=s.students.slice(offset).concat(s.students.slice(0,offset)).slice(0,layout.capacity || layout.slots.length);
+    displayed=visible;queue=reportStatQueue(visible);lastSound=-1;silence();
+    duration=Math.max(2400,leadMs+queue.length*stepMs+cardMs);
     const source=REPORT_ROOMS[s.facility];
     if($("#drRoom").getAttribute("src")!==source)$("#drRoom").src=source;
-    $("#drRoom").alt=`${FACILITIES[s.facility]?.n||"학원"} 실내`;
+    const facilityName=s.facility==="beach"?"해수욕장":FACILITIES[s.facility]?.n||"학원";
+    $("#drRoom").alt=s.facility==="beach"?"여름 해수욕장 모래사장":`${facilityName} 실내`;
     $("#drStage").dataset.phase=s.phase;
     $("#drStage").dataset.facility=s.facility;
     $("#drStage").style.setProperty("--crop-top",`${-layout.crop*312.5}%`);
     $("#drStage").style.setProperty("--sprite-unit",`${layout.scale || 1050}px`);
-    $("#drFacility").textContent=FACILITIES[s.facility]?.n||"학원";
+    $("#drFacility").textContent=facilityName;
     $("#drActivity").textContent=`${DAY_N[s.day]}요일 · ${phaseName(s)}${s.phase==="pm"?"":" · "+s.training}`;
     $("#drChain").textContent=s.bonus?`+${Math.round(s.bonus*100)}% 체인`:"";
     $("#drChain").hidden=!s.bonus;
     root.querySelectorAll("[data-dr-day]").forEach(b=>{const d=+b.dataset.drDay;b.classList.toggle("current",d===s.day);b.classList.toggle("done",d<s.day);b.setAttribute("aria-current",d===s.day?"step":"false");b.querySelector("i").textContent=d<s.day?"✓":"";});
     $("#drPhases").innerHTML=day.map(x=>`<button class="${x===s?"active":""}" data-dr-scene="${scenes.indexOf(x)}" aria-pressed="${x===s}">${phaseName(x)}${day.length>2?" · "+(FACILITIES[x.facility]?.n||""):""}</button>`).join("");
     root.querySelectorAll("[data-dr-scene]").forEach(b=>b.onclick=()=>seek(+b.dataset.drScene));
-    const pos=layout.slots;
+    if(s.facility==="beach" && !placements.has(s))placements.set(s,reportBeachPositions());
+    const pos=placements.get(s) || layout.slots;
     $("#drStudents").innerHTML=visible.map((x,i)=>{
-      const resting=s.facility==="infirm";
-      const motion=resting?"down":x.state==="rest"?"idle":x.state==="failed"?"hit":["gym","hall","arena"].includes(s.facility)?"attack":"idle";
-      const bubbles=x.changes.filter(c=>c.kind!=="exp").slice(0,1);
-      return `<button class="dr-student ${resting?"resting":""} ${pos[i][1]<48?"low-bubble":""}" data-dr-student="${i}" style="left:${pos[i][0]}%;top:${pos[i][1]}%;z-index:${Math.round(pos[i][1])}" aria-label="${esc(x.name)} 성장 내역"><span class="dr-shadow"></span><span class="dr-avatar">${sprHTML(x.job,motion,1,{p:x.palette,flip:resting?i!==2:i%2===1,t0:resting?0:performance.now()})}</span><span class="dr-name">${esc(x.name)}</span><span class="dr-bubbles" style="--delay:${i*.16}s">${x.state==="failed"?`<span class="dr-chip fail">실패 · 성과 25%</span>`:bubbles.map(chip).join("")}</span></button>`;
+      const resting=s.facility==="infirm" || (s.facility==="beach" && x.state==="rest");
+      const motion=resting?"down":x.state==="rest"?"idle":x.state==="failed"?"hit":["gym","hall","arena"].includes(x.trainingFacility || s.facility)?"attack":"idle";
+      const cond=x.condition?.from ?? 100;
+      return `<button class="dr-student ${resting?"resting":""} ${pos[i][1]<48?"low-bubble":""}" data-dr-student="${i}" style="left:${pos[i][0]}%;top:${pos[i][1]}%;z-index:${Math.round(pos[i][1])}" aria-label="${esc(x.name)} 성장 내역"><span class="dr-shadow"></span><span class="dr-avatar">${sprHTML(x.job,motion,1,{p:x.palette,flip:resting?i!==2:i%2===1,t0:resting?0:performance.now()})}</span><span class="dr-name">${esc(x.name)}</span><span class="dr-condition ${reportConditionColor(cond)}" role="meter" aria-label="컨디션" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${cond}"><span class="dr-condition-fill" style="width:${clamp(cond,0,100)}%"></span><span class="dr-condition-number">${cond}</span></span><span class="dr-bubbles" hidden></span></button>`;
     }).join("");
     root.querySelectorAll("[data-dr-student]").forEach(b=>b.onclick=()=>details(visible[+b.dataset.drStudent].id));
     $("#drSceneCount").textContent=`${visible.length}명 표시${s.students.length>visible.length?` · 시설 참여 ${s.students.length}명`:""}`;
@@ -141,7 +187,45 @@ function reportSceneBind(records){
     $("#drResultHint").textContent=`${phaseName(s)} · ${s.students.length}명${fail?` · 실패 ${fail}명`:""}`;
     const totals={};s.students.forEach(x=>x.changes.forEach(c=>{totals[c.label]=(totals[c.label]||0)+c.value;}));
     $("#drResultChips").innerHTML=s.reward?`<span>${esc(s.reward)}</span>`:Object.entries(totals).map(([label,value])=>chip({label:`${label} 합계`,value:Math.round(value*10)/10,kind:value<0?"loss":label==="컨디션"?"heal":"gain"})).join("")||`<span class="hint">오늘의 기록을 차곡차곡 쌓았어요.</span>`;
-    details();sync();progress();
+    details();sync();timeline(false);progress();
+  }
+  function timeline(sound){
+    const n=Math.floor((elapsed-leadMs)/stepMs);
+    root.querySelectorAll(".dr-bubbles").forEach(el=>{el.hidden=true;el.innerHTML="";});
+    displayed.forEach((student,index)=>{
+      const cond=student.condition;if(!cond)return;
+      const qi=queue.findIndex(e=>e.condition && (cond.to>cond.from?e.recovery:e.index===index));
+      const fraction=qi<0?1:clamp((elapsed-leadMs-qi*stepMs)/stepMs,0,1);
+      const value=Math.round(cond.from+(cond.to-cond.from)*fraction);
+      const bar=root.querySelector(`[data-dr-student="${index}"] .dr-condition`);
+      bar.className=`dr-condition ${reportConditionColor(value)}`;bar.setAttribute("aria-valuenow",String(value));
+      bar.title=`컨디션 ${cond.from} → ${cond.to}`;
+      bar.querySelector(".dr-condition-fill").style.width=`${clamp(value,0,100)}%`;
+      bar.querySelector(".dr-condition-number").textContent=value;
+    });
+    const bounds=$("#drStage").getBoundingClientRect();
+    for(let q=Math.max(0,n-Math.ceil(cardMs/stepMs));q<=Math.min(n,queue.length-1);q++){
+      const event=queue[q], age=elapsed-leadMs-q*stepMs;
+      if(event.condition || age<0 || age>=cardMs)continue;
+      const popup=root.querySelector(`[data-dr-student="${event.index}"] .dr-bubbles`);
+      popup.hidden=false;popup.style.marginLeft="0px";popup.style.marginTop="0px";
+      const positive=event.to>event.from;
+      popup.insertAdjacentHTML("beforeend",`<span class="dr-stat-card ${positive?"up":"down"}" data-stat-event="${q}"><span class="dr-stat-label">${esc(event.label)}</span><span class="dr-stat-from">${event.from}</span><span class="dr-stat-arrow">→</span><b class="dr-stat-to">${event.to}</b></span>`);
+      const card=popup.lastElementChild, rect=card.getBoundingClientRect();
+      const dx=Math.max(0,bounds.left+4-rect.left)-Math.max(0,rect.right-bounds.right+4);
+      const baseY=Math.max(0,bounds.top+4-rect.top);
+      const rise=Math.min((rect.height+3)*2,Math.max(0,rect.top+baseY-bounds.top-2));
+      card.style.opacity=1-age/cardMs;
+      card.style.transform=`translate(calc(-50% + ${dx}px),${baseY-(reduced?0:rise*age/cardMs)}px)`;
+    }
+    const event=queue[n];
+    if(sound && n!==lastSound){
+      lastSound=n;
+      if(event && event.to>event.from && sfxGain()>0){
+        const audio=event.condition?recoveryAudio:statAudio;
+        audio.pause();audio.currentTime=0;audio.volume=sfxGain();audio.play().catch(()=>{});
+      }
+    }
   }
   function progress(){const s=scenes[at], list=scenes.filter(x=>x.day===s.day), local=list.indexOf(s);const p=(local+Math.min(1,elapsed/duration))/list.length;root.querySelector(`[data-dr-day="${s.day}"]`).style.setProperty("--progress",`${p*100}%`);$("#drProgress").textContent=`${at+1} / ${scenes.length} 장면`;}
   function seek(index){at=Math.max(0,Math.min(scenes.length-1,index));elapsed=0;last=performance.now();root.querySelectorAll("[data-dr-day]").forEach(b=>b.style.removeProperty("--progress"));draw();}
@@ -151,6 +235,6 @@ function reportSceneBind(records){
   root.querySelectorAll("[data-dr-speed]").forEach(b=>b.onclick=()=>{speed=+b.dataset.drSpeed;PREF.reportSpeed=speed;prefSave();sync();});
   $("#dlSkip").onclick=()=>{full=!full;paused=true;$("#drFullLog").hidden=!full;$("#dlSkip").textContent=full?"전체 기록 접기":"한 번에 보기";sync();if(full)$("#drFullLog").scrollIntoView({block:"start",behavior:reduced?"instant":"smooth"});};
   $("#drDetail").addEventListener("toggle",()=>{if($("#drDetail").open){paused=true;sync();}});
-  timer=setInterval(()=>{const now=performance.now(),dt=Math.min(now-last,200);last=now;if(disposed||paused||document.hidden)return;if(!$("#drStage")){reportPlayerStop();return;}elapsed+=dt*speed;if(elapsed>=duration){if(at<scenes.length-1){seek(at+1);return;}elapsed=duration;paused=true;sync();}progress();},80);
+  timer=setInterval(()=>{const now=performance.now(),dt=Math.min(now-last,60);last=now;if(disposed||paused||document.hidden){if(document.hidden)silence();return;}if(!$("#drStage")){reportPlayerStop();return;}elapsed+=dt*speed;timeline(true);if(elapsed>=duration){if(at<scenes.length-1){seek(at+1);return;}elapsed=duration;paused=true;sync();}progress();},30);
   draw();
 }

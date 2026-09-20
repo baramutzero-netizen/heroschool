@@ -1,0 +1,65 @@
+const {chromium}=require('playwright'),assert=require('assert'),path=require('path');
+(async()=>{
+ const browser=await chromium.launch({headless:true,channel:'msedge'}),page=await browser.newPage({viewport:{width:1280,height:900}}),errors=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ await page.goto('http://127.0.0.1:18765/reports/preview.html?season=summer');
+ await page.waitForFunction(()=>!document.querySelector('#restart').disabled);
+ const f=page.frames().find(x=>x!==page.mainFrame());
+ const captured=await f.evaluate(async()=>{
+   closeModal();S.students=S.students.slice(0,2);
+   const a=S.students[0],b=S.students[1];a.ment.team=39.49;a.ment.calm=50.51;a.ment.genius=20.1;a.cond=70;
+   b.ment.team=40.49;b.cond=40;
+   const snap=snapStudents(),before=mentSnap();
+   a.ment.team=39.51;a.ment.calm=50.49;a.ment.genius=20.3;a.cond=69;b.ment.team=40.51;b.cond=39;
+   UI.wrun={startPhase:'summer',scenes:[]};DAYLOG=[];
+   reportRecord(0,TR.tact,0,'am',before,S.students,{[a.id]:'trained',[b.id]:'trained'},0);
+   const records=UI.wrun.scenes;UI.wrun=null;
+   const changes=records.flatMap(s=>s.students.flatMap(x=>x.changes));
+   if(changes.some(c=>c.label==='천재성'))throw Error('Fractional-only gain shown');
+   const team=changes.find(c=>c.label==='팀워크');if(team.from!==39||team.to!==40)throw Error('Rounding boundary');
+   if(!changes.some(c=>c.label==='침착성'&&c.from===51&&c.to===50))throw Error('Missing decrease');
+   for(const [v,c] of [[70,'healthy'],[69,'tired'],[40,'tired'],[39,'critical']])if(reportConditionColor(v)!==c)throw Error('Condition boundary '+v);
+   const data=await (await fetch(REPORT_STATUP)).arrayBuffer();const ctx=new AudioContext();const decoded=await ctx.decodeAudioData(data);await ctx.close();if(!decoded.duration)throw Error('MP3 decoding');
+   window.reportTestSounds=[];
+   HTMLMediaElement.prototype.play=function(){if(this.src===REPORT_STATUP)reportTestSounds.push(performance.now());return Promise.resolve();};
+   PREF.reportSpeed=1;AUD.sfx=70;
+   window.statReport={snap,startWeek:0,ranTo:1,startPhase:'summer',startYear:1,acts:[{n:'전술 연구'}],scenes:records,daylog:[],gold:0,fame:0,relics:0};
+   window.statState=JSON.stringify(S);showReport(statReport);
+   return {changes,expectedEvents:reportStatQueue(reportScenesForPlayback(records)[0].students).length,audioSeconds:decoded.duration};
+ });
+ // First rising card must appear alone, then remain unchanged while paused.
+ await f.waitForFunction(()=>document.querySelector('.dr-bubbles:not([hidden]) .dr-stat-to')?.textContent==='40');
+ assert.equal(await f.locator('.dr-bubbles:not([hidden])').count(),1);
+ await f.locator('#drPlay').click();
+ const pausedText=await f.locator('.dr-bubbles:not([hidden])').textContent();
+ const sounds=await f.evaluate(()=>reportTestSounds.length);await page.waitForTimeout(250);
+ assert.equal(await f.locator('.dr-bubbles:not([hidden])').textContent(),pausedText);
+ assert.equal(await f.evaluate(()=>reportTestSounds.length),sounds);
+ await f.locator('#drStage').screenshot({path:path.join(__dirname,'shot_stat_sequence.png')});
+ await f.locator('[data-dr-speed="6"]').click();await f.locator('#drPlay').click();
+ const seen=new Set([pausedText]);
+ for(let i=0;i<100;i++){
+   const sample=await f.evaluate(()=>({text:[...document.querySelectorAll('.dr-stat-card')].map(c=>c.textContent).join(' / '),number:document.querySelectorAll('.dr-stat-card').length,paused:UI._reportPlayer.paused}));
+   assert(sample.number<=2,'Expired notifications retained');if(sample.text)seen.add(sample.text);if(sample.paused)break;await page.waitForTimeout(40);
+ }
+ assert([...seen].some(s=>s.includes('침착성')&&s.includes('51')&&s.includes('50')),'Decrease skipped');
+ assert([...seen].some(s=>s.includes('팀워크')&&s.includes('41')),'Second student skipped');
+ assert.equal(await f.locator('.dr-bubbles:not([hidden])').count(),0,'Card did not disappear');
+ assert.equal(await f.locator('[data-dr-student="0"] .dr-condition').getAttribute('aria-valuenow'),'69');
+ assert(await f.locator('[data-dr-student="0"] .dr-condition').evaluate(el=>el.classList.contains('tired')));
+ assert(await f.locator('[data-dr-student="1"] .dr-condition').evaluate(el=>el.classList.contains('critical')));
+ assert.equal(await f.evaluate(()=>reportTestSounds.length),2,'Expected sounds only for two increases');
+ assert(await f.evaluate(()=>JSON.stringify(S)===statState),'Presentation mutated game state');
+ await f.evaluate(()=>{showReport(statReport);document.querySelector('#drPlay').click();});
+ await page.setViewportSize({width:390,height:844});
+ await f.locator('[data-dr-speed="1"]').click();
+ await f.locator('#drPlay').click();
+ await f.waitForFunction(()=>document.querySelector('.dr-bubbles:not([hidden]) .dr-stat-card'));
+ await f.locator('#drPlay').click();
+ assert(await f.evaluate(()=>{const s=document.querySelector('#drStage').getBoundingClientRect(),r=document.querySelector('.dr-bubbles:not([hidden])').getBoundingClientRect();return r.left>=s.left&&r.right<=s.right&&r.top>=s.top&&r.bottom<=s.bottom;}),'Mobile stat card clipped');
+ await page.screenshot({path:path.join(__dirname,'shot_stat_mobile.png')});
+ assert(await f.evaluate(()=>document.querySelector('.modal').scrollWidth<=document.querySelector('.modal').clientWidth+2));
+ const stopped=await f.evaluate(()=>{closeModal();return reportTestSounds.length;});await page.waitForTimeout(300);assert.equal(await f.evaluate(()=>reportTestSounds.length),stopped);
+ assert.deepEqual(errors,[]);console.log(JSON.stringify({...captured,observed:[...seen],checks:'integer crossings, decreases, single sequence, condition thresholds, pause, speed, MP3 decoding, sound count, cleanup, mobile, unchanged state',errors}));
+ await browser.close();
+})().catch(e=>{console.error(e);process.exit(1)});
