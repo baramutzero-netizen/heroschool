@@ -1735,27 +1735,48 @@ function faceHTML(job, alt){
   return `<div class="facebox"><img src="${FACE_IMG[job]}" alt="${esc(alt||JOBS[job].name)}" loading="lazy" draggable="false"></div>`;
 }
 /* ---------- 진형 ---------- */
+/* plus — 진형 강화의 서를 갖추면 열리는 두 자리 (formData 에서 합친다) */
 const FORMS = {
-  wedge:   {n:"쐐기 대형",   sh:"1-2", front:["f2"],            back:["b1","b3"],
+  wedge:   {n:"쐐기진",   sh:"1-2", front:["f2"],            back:["b1","b3"],
             d:"한 명이 앞장서 파고들고 둘이 뒤를 받친다",
             fx:{fOut:.15, bIn:-.08},
-            txt:["전열 주는 피해 +15%","후열 받는 피해 -8%"]},
-  pocket:  {n:"주머니 대형", sh:"2-1", front:["f1","f3"],       back:["b2"],
+            txt:["전열 주는 피해 +15%","후열 받는 피해 -8%"],
+            plus:{front:["f1","f3"]}},
+  pocket:  {n:"학익진",   sh:"2-1", front:["f1","f3"],       back:["b2"],
             d:"둘이 감싸고 한 명이 안쪽에서 쏜다",
             fx:{fIn:-.10, bOut:.15, bInGuard:-.12},
-            txt:["전열 받는 피해 -10%","후열 주는 피해 +15%","전열이 살아 있으면 후열 받는 피해 -12%"]},
-  echelon: {n:"제대 대형",   sh:"1-2", front:["f1"],            back:["b2","b3"],
+            txt:["전열 받는 피해 -10%","후열 주는 피해 +15%","전열이 살아 있으면 후열 받는 피해 -12%"],
+            plus:{back:["b1","b3"]}},
+  echelon: {n:"언월진",   sh:"1-2", front:["f1"],            back:["b2","b3"],
             d:"비스듬히 늘어서 시야와 각을 넓힌다",
             fx:{fEva:.08, bCrit:.10},
-            txt:["전열 피해 회피 +8%p","후열 크리 확률 +10%p"]},
-  line:    {n:"일자 대형",   sh:"3-0", front:["f1","f2","f3"],  back:[],
+            txt:["전열 피해 회피 +8%p","후열 크리 확률 +10%p"],
+            plus:{front:["f2"], back:["b1"]}},
+  line:    {n:"일자진",   sh:"3-0", front:["f1","f2","f3"],  back:[],
             d:"셋이 나란히 서서 정면으로 버틴다",
             fx:{fIn:-.18},
-            txt:["전열 받는 피해 -18%"]}
+            txt:["전열 받는 피해 -18%"],
+            plus:{back:["b1","b2"], fx:{bOut:.05}, txt:["후열 주는 피해 +5%"]}}
 };
 const FORM_KEYS = Object.keys(FORMS);
 const SLOT_IDS = ["f1","f2","f3","b1","b2","b3"];
-function formOf(k){ return FORMS[k] || FORMS.wedge; }
+const FORM_PLUS_SUFFIX = "·改";
+/* 진형 강화의 서 — 우리 팀 진형에 두 자리를 더한다 */
+function formPlusOn(){ return !!(S && S.items && S.items.formbook); }
+/* 진형 데이터 — plus 가 참이면 강화판(자리 +2 · 이름 뒤에 ·改) */
+function formData(k, plus){
+  const B = FORMS[k] || FORMS.wedge;
+  if(!plus || !B.plus) return B;
+  if(!B._plus){
+    const P = B.plus;
+    const front = SLOT_IDS.filter(x=> x.charAt(0)==="f" && (B.front.includes(x) || (P.front||[]).includes(x)));
+    const back  = SLOT_IDS.filter(x=> x.charAt(0)==="b" && (B.back.includes(x)  || (P.back||[]).includes(x)));
+    B._plus = {n:B.n + FORM_PLUS_SUFFIX, sh:`${front.length}-${back.length}`, front, back, d:B.d,
+               fx:Object.assign({}, B.fx, P.fx||{}), txt:B.txt.concat(P.txt||[]), plus:true, base:k};
+  }
+  return B._plus;
+}
+function formOf(k){ return formData(k, formPlusOn()); }
 function formSlots(k){ const F=formOf(k); return F.front.concat(F.back); }
 function slotRow(id){ return id.charAt(0)==="f" ? "front" : "back"; }
 const TEAM_NAMES = ["A","B","C","D","E"];
@@ -1803,36 +1824,40 @@ function teamMembers(t){
   return formSlots(t.form).map(k=> t.slots[k]).filter(Boolean)
     .map(id=> S.students.find(s=>s.id===id)).filter(Boolean);
 }
-function teamFull(t){ return teamMembers(t).length===3; }
+/* 출전 조건 — 세 명 이상 (진형 강화의 서로 다섯 자리가 열려도 셋만 있으면 나갈 수 있다) */
+const TEAM_MIN = 3;
+function teamFull(t){ return teamMembers(t).length>=TEAM_MIN; }
 function teamRows(t){
   const out = {};
   formSlots(t.form).forEach(k=>{ if(t.slots[k]) out[t.slots[k]] = slotRow(k); });
   return out;
 }
-function teamBattleOpt(t){ return {formA: t.form, rowsA: teamRows(t)}; }
-/* 상대 팀 — 진형을 붙이고 전투 옵션으로 변환 */
-function assignFoeForm(arr, fk){
+function teamBattleOpt(t){ return {formA: t.form, plusA: formPlusOn(), rowsA: teamRows(t)}; }
+/* 상대 팀 — 진형을 붙이고 전투 옵션으로 변환. plus 면 다섯 자리 강화 진형을 쓴다 */
+function assignFoeForm(arr, fk, plus){
   fk = (fk && FORMS[fk]) ? fk : pick(FORM_KEYS);
-  const F = FORMS[fk];
-  arr.form = fk;
+  const F = formData(fk, !!plus);
+  arr.form = fk; arr.plus = !!plus;
   const order = F.front.concat(F.back);
   arr.rows = {};
   arr.forEach((st,i)=>{ const k = order[i]; if(k) arr.rows[st.id] = slotRow(k); });
   return arr;
 }
+/* 상대 팀의 진형 이름 — 상대가 강화 진형이면 ·改 를 붙인다 (우리 서 보유와 무관) */
+function foeFormName(arr){ return formData(arr && arr.form, !!(arr && arr.plus)).n; }
 function foeBattleOpt(arr){
   if(!arr || !arr.form) return {};
-  return {formB: arr.form, rowsB: arr.rows||{}};
+  return {formB: arr.form, plusB: !!arr.plus, rowsB: arr.rows||{}};
 }
 function teamByName(n){ return teamsOf().find(t=>t.n===n) || teamsOf()[0]; }
 function teamLabel(t){ if(typeof t==="string") t = teamByName(t); return (t && t.label) ? t.label : `팀 ${t?t.n:"?"}`; }
 /* 어느 팀에 들어가 있는지 */
 /* 진형별 자리 요구 역할 — 앞에서부터 우선순위 */
 const FORM_ROLES = {
-  wedge:   {f2:["tank"],              b1:["dps"],            b3:["heal","supp"]},
-  pocket:  {f1:["tank"],              f3:["heal","supp","tank"], b2:["dps"]},
-  echelon: {f1:["tank","supp"],       b2:["dps"],            b3:["dps"]},
-  line:    {f1:["tank"],              f2:["dps"],            f3:["heal","supp"]}
+  wedge:   {f2:["tank"],              b1:["dps"],            b3:["heal","supp"],   f1:["dps","tank"], f3:["supp","heal"]},
+  pocket:  {f1:["tank"],              f3:["heal","supp","tank"], b2:["dps"],       b1:["dps"],        b3:["heal","supp"]},
+  echelon: {f1:["tank","supp"],       b2:["dps"],            b3:["dps"],           f2:["tank","dps"], b1:["supp","heal"]},
+  line:    {f1:["tank"],              f2:["dps"],            f3:["heal","supp"],   b1:["dps"],        b2:["heal","supp"]}
 };
 function roleOf(st){ return JOBS[st.job] ? JOBS[st.job].role : "dps"; }
 /* 진형 기준 자동 편성 — 빈 자리에 미배정 학생을 역할에 맞춰 넣는다 */
@@ -1985,8 +2010,33 @@ const FACILITIES = {
   gym:    Object.assign({n:"단련장",   d:"지구력 단련",               base:115, ex:0},  FAC_TRAIN),
   hall:   Object.assign({n:"수련관",   d:"적극성 · 팀워크 실습",      base:115, ex:2},  FAC_TRAIN),
   arena:  Object.assign({n:"대련장",   d:"실전 형식 훈련",            base:115, ex:0},  FAC_TRAIN),
-  counsel:{n:"상담실",   d:"상담에서 지도력·정보력·호소력 보정", base:1000, start:0, max:6, ex:3}
+  counsel:{n:"상담실",   d:"상담에서 지도력·정보력·호소력 보정", base:1000, start:0, max:6, ex:3},
+  /* 차원 포탈 — 이계에서 온 편지를 받은 뒤, 봄 상반기에만 설치할 수 있다. 편지 전에는 ??? 로만 보인다 */
+  portal: {n:"차원 포탈", d:"모든 대회의 난이도 증가 — 상대 학원의 유명도가 전부 이계 등급(S급 5명 · 유물 장착)으로 바뀐다",
+           start:0, max:1, costs:[20000], secret:true}
 };
+const PORTAL_PRICE = 20000;
+/* 시설·물품이 화면에 이름을 드러내는가 — 숨김 항목은 조건을 채우기 전까지 ??? */
+function facKnown(k){ return k==="portal" ? !!(S && S.portalLetter) : true; }
+/* 숨김 항목의 해금 조건 — ??? 카드에도 조건만은 적어 준다 */
+function secretConds(kind, k){
+  if(kind==="fac" && k==="portal") return [
+    {n:"학원제 본선 우승", ok:(S.finalWins|0) >= 1},
+    {n:"초명문 도달",      ok:fameTitleIdx(S.fame) >= 4}
+  ];
+  if(kind==="item" && ITEMS[k] && ITEMS[k].needFac) return [
+    {n:`${FACILITIES[ITEMS[k].needFac].n} 설치`, ok:!!(S.facil && S.facil[ITEMS[k].needFac])}
+  ];
+  return [];
+}
+function secretCondHtml(kind, k, tail){
+  const c = secretConds(kind, k);
+  if(!c.length) return "";
+  return `<div class="od">조건 — ${c.map(x=>`<span style="color:var(--${x.ok?"ok":"muted"})">${x.ok?"✓":"○"} ${esc(x.n)}</span>`).join(" · ")}${tail? ` <span style="color:var(--dim)">· ${esc(tail)}</span>` : ""}</div>`;
+}
+function itemKnown(k){ return (ITEMS[k] && ITEMS[k].needFac) ? !!(S.facil && S.facil[ITEMS[k].needFac]) : true; }
+/* 봄 상반기(1~6주) 인가 */
+function springEarly(){ return S.phase==="spring" && !isLateHalf(S.week, "spring"); }
 function expandLv(){ return clamp((S.facil && S.facil.expand)|0, 0, 3); }
 /* 이 단계에서 열리는 시설·물품 (표에서 그대로 읽는다) */
 function expandUnlocks(lv){
@@ -1997,6 +2047,10 @@ function expandUnlocks(lv){
 function facLock(k){
   const f = FACILITIES[k];
   if(!f) return null;
+  if(k==="portal"){
+    if(!facKnown(k)) return "???";
+    return springEarly() ? null : "봄 상반기에만 설치 가능";
+  }
   if(f.tierNeed){
     const need = f.tierNeed[(S.facil[k]|0)];
     return (need && S.tier < need) ? `${TIERS[need-1].n} 필요` : null;
@@ -2008,14 +2062,17 @@ function facOrder(){
   const ks = Object.keys(FACILITIES);
   return ks.slice().sort((a,b)=>
     (a==="expand"? -1 : b==="expand"? 1 : 0) ||
+    (FACILITIES[a].secret?1:0) - (FACILITIES[b].secret?1:0) ||
     (FACILITIES[a].ex|0) - (FACILITIES[b].ex|0) || ks.indexOf(a) - ks.indexOf(b));
 }
 function itemOrder(){
   const ks = Object.keys(ITEMS);
-  return ks.slice().sort((a,b)=> (ITEMS[a].ex|0) - (ITEMS[b].ex|0) || ks.indexOf(a) - ks.indexOf(b));
+  return ks.slice().sort((a,b)=> (ITEMS[a].secret?1:0) - (ITEMS[b].secret?1:0) ||
+    (ITEMS[a].ex|0) - (ITEMS[b].ex|0) || ks.indexOf(a) - ks.indexOf(b));
 }
 function itemLock(k){
   const it = ITEMS[k];
+  if(it && it.needFac && !(S.facil && S.facil[it.needFac])) return `${FACILITIES[it.needFac].n} 필요`;
   return (it && it.ex && expandLv() < it.ex) ? `학원 증축 Lv.${it.ex} 필요` : null;
 }
 function facStart(k){ const f=FACILITIES[k]; return f && f.start!==undefined ? f.start : 1; }
@@ -2039,8 +2096,22 @@ const ITEMS = {
   tonic:   {n:"회복 강장제",d:"휴식 주간·휴식 집중 회복량 +25%", price:2500, ex:1},
   charm:   {n:"행운의 부적",d:"유물을 얻을 때 25% 확률로 한 개 더 획득", price:1600, ex:0},
   scope:   {n:"관측경",    d:"대회 정찰 정보 1단계 상승", price:1800, ex:1},
-  banner:  {n:"학원기",    d:"대회 승리 명성 +25%",       price:2200, ex:2}
+  banner:  {n:"학원기",    d:"대회 승리 명성 +25%",       price:2200, ex:2},
+  /* 진형 강화의 서 — 차원 포탈을 설치해야 보인다. 모든 진형에 두 자리가 더 열리고 이름 뒤에 ·改 가 붙는다 */
+  formbook:{n:"진형 강화의 서", d:"진형 배치 가능 인원 수 +2 — 모든 진형이 ·改 로 강화된다 (출전 최소 인원 3명은 그대로)",
+            price:40000, ex:0, secret:true, needFac:"portal"},
+  /* 이계의 지도 — 차원 포탈을 설치해야 보인다. 모든 원정이 이계· 판으로 바뀐다 */
+  worldmap:{n:"이계의 지도", d:"모든 원정 이름 앞에 이계· 가 붙는다 — 권장 레벨 +7 (난이도도 그만큼) · 구간당 경험/자금 2배",
+            price:20000, ex:0, secret:true, needFac:"portal"}
 };
+/* 진형 강화의 서로 열리는 자리 — 화면 안내용 */
+function formPlusText(){
+  return FORM_KEYS.map(k=>{
+    const B = FORMS[k], P = B.plus||{};
+    const add = (P.front||[]).map(x=>`전열 ${x.slice(1)}번`).concat((P.back||[]).map(x=>`후열 ${x.slice(1)}번`)).join("·");
+    return `${B.n} ${add}${P.txt? ` + ${P.txt.join(", ")}` : ""}`;
+  }).join(" / ");
+}
 // 트레이닝: gains = 멘탈리티 스탯별 가중치, cost = 컨디션 소모
 /* fx = 카드에 찍히는 효과 표시 [이름, + 개수, 나쁜 것이면 1] */
 const TRAININGS = [
@@ -3193,10 +3264,10 @@ function runBattle(teamA, teamB, opt){
   const A = teamA.map((st,i)=>mkUnit(st,"A",i, rowA? rowA[st.id] : null));
   const B = teamB.map((st,i)=>mkUnit(st,"B",i, rowB? rowB[st.id] : null));
   // 진형 보정
-  [[A,opt.formA],[B,opt.formB]].forEach(([U,fk])=>{
+  [[A,opt.formA,opt.plusA],[B,opt.formB,opt.plusB]].forEach(([U,fk,pl])=>{
     U.forEach(u=>{ u.fOut=0; u.fIn=0; u.fGuard=0; });
     if(!fk || !FORMS[fk]) return;
-    const F = FORMS[fk].fx;
+    const F = formData(fk, !!pl).fx;
     U.forEach(u=>{
       if(u.row==="front"){
         if(F.fOut) u.fOut += F.fOut;
@@ -3695,6 +3766,7 @@ function runBattle(teamA, teamB, opt){
   return {winner, frames, acts:totalActs, A, B,
     formA: (opt.formA && FORMS[opt.formA])? opt.formA : null,
     formB: (opt.formB && FORMS[opt.formB])? opt.formB : null,
+    plusA: !!opt.plusA, plusB: !!opt.plusB,
     names:all.map(u=>{
     const us = (u.skills||JOBS[u.job].skills).find(x=>x.kind==="ult");
     return {name:u.name,job:u.job,side:u.side,lv:u.lv,row:u.row,ult:us?us.name:"필살기"};
@@ -4212,6 +4284,7 @@ function weekRunEnd(){
   S.slots = Array(WEEK_DAYS).fill(null);
   tickInjury();
   tryBonds();
+  tryPortalLetter();
   tryFriendly();
   tryCounsel();
   const dealt = handRefill();
@@ -4573,7 +4646,7 @@ const EXPED_COND = 1;                         // 전투 한 판당 컨디션 소
 function dgExp(d){ return Math.round(d.exp * EXPED_EXP_MUL); }
 function dgFame(d){ return Math.round((d.fameClear||0) * EXPED_RWD_MUL); }
 function dgKarma(d){ return (d.karma||0) * EXPED_RWD_MUL; }
-function dgGold(d){ return EXPED_GOLD + d.tier*EXPED_GOLD_TIER; }
+function dgGold(d){ return (EXPED_GOLD + d.tier*EXPED_GOLD_TIER) * (d.goldMul||1); }
 function expedInit(dg, team, TM){
   const avgStam = team.reduce((a,s)=>a+mentEff(s).stam,0)/team.length;
   const avgWill = team.reduce((a,s)=>a+mentEff(s).will,0)/team.length;
@@ -4642,7 +4715,7 @@ function expedFinish(E){
     res.karma = (dg.karma||0) * res.secs.length * EXPED_RWD_MUL;
     if(res.karma) team.forEach(s=> addKarma(s, res.karma));
   }
-  res.gold = Math.round((EXPED_GOLD + dg.tier*EXPED_GOLD_TIER) * res.reached);
+  res.gold = Math.round(dgGold(dg) * res.reached);
   if(res.gold) addGold(res.gold);
   if(res.reached >= dg.secs){
     res.fameGain = Math.round((dg.fameClear||0) * EXPED_RWD_MUL); addFame(res.fameGain);
@@ -4675,7 +4748,15 @@ function runExpedition(dg, team, TM){
 }
 
 /* ---------- 원정 카드가 걸린 요일 ---------- */
-function expedDgList(){ return DUNGEONS.filter(d=> S.fame >= d.needFame); }
+/* 이계의 지도 — 모든 원정이 이계 판으로 바뀐다: 이름 앞에 이계· · 권장 레벨 +7(적도 그만큼 세진다) · 구간당 경험/자금 ×2.
+   원정 객체는 매번 새로 복사해 만든다 (세이브에 그대로 들어가도 순환 참조가 없게). */
+const MAP_LV_ADD = 7, MAP_RWD_MUL = 2;
+function mapOn(){ return !!(S && S.items && S.items.worldmap); }
+function dgView(d){
+  if(!mapOn() || !d || d.otherworld) return d;
+  return Object.assign({}, d, {n:"이계·"+d.n, lv:d.lv+MAP_LV_ADD, exp:d.exp*MAP_RWD_MUL, goldMul:MAP_RWD_MUL, otherworld:true});
+}
+function expedDgList(){ return DUNGEONS.filter(d=> S.fame >= d.needFame).map(dgView); }
 /* 처음 열 때 어디를 골라 둘까 — 팀 평균 레벨로 감당되는 가장 깊은 곳.
    명성만 보고 제일 깊은 곳을 집어 주면 신입생이 첫 주부터 전멸한다. */
 function expedDefault(dgs, mem){
@@ -4770,7 +4851,7 @@ function renderExpedPick(R, bonus){
       <button class="btn primary" id="xGo">원정 시작</button>
       <button class="btn" id="xQuick">빠르게 결과만</button>
       <button class="btn ghost" id="xSkip">이 칸은 자율 훈련으로</button>
-      <span class="hint" style="font-size:12px;color:var(--dim)">${esc(dg.n)} · ${esc(teamLabel(TM))} (${mem.length}/3)</span>
+      <span class="hint" style="font-size:12px;color:var(--dim)">${esc(dg.n)} · ${esc(teamLabel(TM))} (${mem.length}/${formSlots(TM.form).length})</span>
     </div>`, ()=>{
     $("#modalRoot").querySelectorAll("[data-xdg]").forEach(b=> b.onclick=()=>{ UI.expPick.dg=b.dataset.xdg; renderExpedPick(R, bonus); });
     $("#modalRoot").querySelectorAll("[data-xtm]").forEach(b=> b.onclick=()=>{ UI.expPick.tm=b.dataset.xtm; renderExpedPick(R, bonus); });
@@ -4826,6 +4907,7 @@ function startSpringTour(){
     kind:"spring", title:`${S.year+1}년 봄 신인전`, stage:"prep", _prepOpen:true,
     myTeams:[[]], entryTeams:[], round:0, maxRound:1, results:[], matchIdx:0,
     opps: (()=>{ const nm = acadNames(4);
+      if(portalOn()) return Array.from({length:4},(_,i)=> ({name:nm[i], teams:[portalTeam(PORTAL_SPEC.spring)], tier:PORTAL_TIER}));
       return Array.from({length:4},(_,i)=> Object.assign(
         rivalAcademy(ourAvgLevel(pool) + SPRING_LV_OFF + tierSpringLv() + i*1.0, 1, "rival", nm[i]), {tier:0})); })(),
     pool
@@ -5014,6 +5096,11 @@ const FOE_COMPS = [
   ["forcemage","spellsword","bard"],["monk","spellsword","priest"],["druid","ninja","bard"]
 ];
 function foeProfileText(step){
+  if(portalOn()){
+    const a = LADDER_ROUND[step] || [];
+    if(step==="final") return `${CUP_ROUND_NAME.slice(0,-1).join("·")} ${portalSpecText(PORTAL_SPEC.final)} · 결승 ${portalSpecText(PORTAL_SPEC.finalLast)}`;
+    return `전 경기 ${portalSpecText(PORTAL_SPEC[step] || PORTAL_SPEC.city)}`;
+  }
   const a = LADDER_ROUND[step];
   if(a){
     if(a.length === 1) return `전 경기 ${foeSpecText(a[0])}`;
@@ -5026,7 +5113,15 @@ function foeProfileText(step){
 /* 대회 단계별 상대 유명도 — 라커룸에서 상대 전력을 읽는 난이도를 정한다.
    단계 자체가 곧 상대의 격이므로 우리 학원 등급은 섞지 않는다. */
 const LADDER_TIER = {city:0, region:1, qual:2, final:3};
+function portalLadderSpec(step, round){
+  return PORTAL_SPEC[(step==="final" && (round|0) >= (LADDER.final.rounds-1)) ? "finalLast" : step] || PORTAL_SPEC.city;
+}
 function ladderAcademy(step, round, name){
+  if(portalOn()){
+    const spec = portalLadderSpec(step, round);
+    const teams = Array.from({length: ladderUse(step)}, ()=> portalTeam(spec));
+    return {name: name || (pick(ACAD)+" 학원"), teams, tier: PORTAL_TIER};
+  }
   const P = LADDER_FOE[step];
   const spec = foeRoundSpec(step, round);          // 라운드 난이도를 못박아 둔 대회
   const rareP = clamp(.08 + round*.04, 0, .32);
@@ -5204,6 +5299,7 @@ function finishLadder(t){
   if(top && cfg.champFame){ fame += cfg.champFame; gold += cfg.champGold||0; }
   if(champ) missionProgress(t.step);
   if(champ && t.step==="city") missionProgress("debut");   // 우승은 4강을 포함한다
+  if(champ && t.step==="final") S.finalWins = (S.finalWins|0) + 1;   // 이계에서의 편지 조건
   fame = Math.round(bannerFame(fame));
   if(fame) addFame(fame);
   if(gold) addGold(gold);
@@ -8134,15 +8230,20 @@ function viewFacil(){
     <div class="grid2">
       ${facOrder().map(k=>{
         const f=FACILITIES[k], c=facCost(k), lv=S.facil[k]||0, mx=facMax(k), full=lv>=mx;
+        if(f.secret && !facKnown(k)) return `<button class="opt locked" disabled title="조건을 채우면 드러난다">
+          <div class="on" style="color:var(--dim)">??? <span class="price" style="color:var(--dim)">???</span></div>
+          <div class="od">???</div>${secretCondHtml("fac", k, "둘 다 채운 뒤 봄 2주차에 드러난다")}</button>`;
         const lock = full ? null : facLock(k);
         const eff = k==="counsel"
           ? (()=>{ const b=cslFacBonus(); return `현재 지도력 +${b.lead} · 정보력 +${b.info} · 호소력 +${b.net}`; })()
           : k==="expand"
           ? (full ? "더 넓힐 곳이 없다" : `다음 단계 — ${expandUnlocks(lv+1).join(" · ")}`)
+          : k==="portal" ? (full ? "이계와 이어져 있다" : "봄 상반기(1~6주)에만 설치할 수 있다 · 설치 후에는 되돌릴 수 없다")
           : k==="infirm" ? `현재 매주 +${lv}` : `현재 효율 ×${facEff(k).toFixed(2)}`;
+        const tag = k==="portal" ? (full ? "설치 완료" : "미설치") : `Lv.${lv} / ${mx}`;
         return `<button class="opt ${lock?"locked":""}" data-fac="${k}" ${lock||S.gold<c||full?"disabled":""}>
-          <div class="on">${f.n} <span class="tag">Lv.${lv} / ${mx}</span><span class="price" style="${
-            lock?"color:var(--bad)":""}">${full?"최대":lock||fmt(c)+" G"}</span></div>
+          <div class="on">${f.n} <span class="tag">${tag}</span><span class="price" style="${
+            lock?"color:var(--bad)":""}">${full?(k==="portal"?"":"최대"):lock||fmt(c)+" G"}</span></div>
           <div class="od">${facDesc(k)} · ${eff}</div>
         </button>`;
       }).join("")}
@@ -8153,6 +8254,9 @@ function viewFacil(){
     <div class="grid2">
       ${itemOrder().map(k=>{
         const it=ITEMS[k], has=!!S.items[k], lock = has? null : itemLock(k);
+        if(it.secret && !has && !itemKnown(k)) return `<button class="opt locked" disabled title="조건을 채우면 드러난다">
+          <div class="on" style="color:var(--dim)">??? <span class="price" style="color:var(--dim)">???</span></div>
+          <div class="od">???</div>${secretCondHtml("item", k)}</button>`;
         return `<button class="opt ${has||lock?"locked":""}" data-item="${k}" ${has||lock||S.gold<it.price?"disabled":""}>
           <div class="on">${it.n}<span class="price" style="${lock?"color:var(--bad)":""}">${
             has?"보유 중":lock||fmt(it.price)+" G"}</span></div>
@@ -8535,6 +8639,16 @@ function bondCeremony(c){
     </div>
     <div class="btnrow" style="margin-top:14px"><button class="btn primary" id="cerOk">확인</button></div>`;
 }
+/* 이계에서의 편지 — 초명문에 올라 있고 본선 우승이 한 번이라도 있으면, 그다음 봄 2주차 시작에 한 번 온다.
+   편지가 오면 시설 탭의 ??? 가 차원 포탈로 드러난다 */
+function tryPortalLetter(){
+  if(S.portalLetter) return;
+  if(S.phase!=="spring" || S.week+1 !== 2) return;
+  if(fameTitleIdx(S.fame) < 4 || (S.finalWins|0) < 1) return;
+  S.portalLetter = S.year;
+  logE(`<b>이계에서의 편지</b>가 도착했다 — 시설 탭에 <b>차원 포탈</b>이 드러났다. 봄 상반기에만 설치할 수 있다.`, "big");
+  queueCeremony({type:"portal", year:S.year});
+}
 /* 주간 훅 — 라이벌은 봄 2주, 소울메이트는 여름 상반기 중 한 주 */
 function tryBonds(){
   const wk = S.week + 1;   // 표시 기준 주차
@@ -8591,7 +8705,8 @@ const FRIENDLY_TIER = [
   {n:"유명",   d:"시내 대회 상위권",         g:"D",g2:"B", lv:9,  lv2:13},
   {n:"강호",   d:"광역 대회 상위권",         g:"B",g2:"A", lv:13, lv2:17},
   {n:"명문",   d:"왕국 대회 우승 후보 학원",  g:"S",        g2:"S", lv:15, lv2:19},
-  {n:"초명문", d:"믿기지 않을 업적을 이룬 학원", g:"S",     g2:"S", lv:18, lv2:24}
+  {n:"초명문", d:"믿기지 않을 업적을 이룬 학원", g:"S",     g2:"S", lv:18, lv2:24},
+  {n:"이계",   d:"차원 포탈 너머에서 온 학원",    g:"S",     g2:"S", lv:21, lv2:21}
 ];
 const FRIENDLY_PHASES = {
   spring:{teams:1, n:"가을 대회 대비", d:"가을을 대비해 세 학원이 연습 경기를 청해왔다."},
@@ -8619,7 +8734,46 @@ function friendlyFame(diff, win){
     : -(diff>0 ? .35 : diff===0 ? .9 : 1.6);    // 상위에 지면 조금, 하위에 지면 크게
   return Math.round(U*k);
 }
+/* ---------- 차원 포탈 — 이계 학원 ----------
+   포탈을 설치하면 친선전·신인전·가을 사다리의 상대가 전부 이계 학원(S급 5명 · 유물 장착)으로 바뀐다.
+   lv 는 평균 레벨(±FOE_LV_VAR), relics 는 등급별 랜덤 유물 개수. 신인전은 명세가 따로 없어 친선전과 같다. */
+const PORTAL_TIER = 5;
+const PORTAL_TEAM_N = 5;
+const PORTAL_SPEC = {
+  friendly: {lv:21, relics:{A:2, S:2}},
+  spring:   {lv:21, relics:{A:2, S:2}},
+  city:     {lv:23, relics:{A:2, S:2}},
+  region:   {lv:24, relics:{A:1, S:3}},
+  qual:     {lv:25, relics:{S:4}},
+  final:    {lv:26, relics:{S:4}},
+  finalLast:{lv:28, relics:{S:3, EX:1}}
+};
+function portalOn(){ return !!(S && S.facil && S.facil.portal); }
+function portalRelic(g){ return g==="EX" ? spRelic(pick(SP_SHOP)) : makeRelic(g); }
+/* 탱-딜-힐 기본 구성에 서로 다른 직업 둘을 더한다 */
+function portalComp(n){
+  const base = pick(FOE_COMPS).slice();
+  const rest = shuffle(JOB_KEYS.filter(j=> !base.includes(j)));
+  while(base.length < n && rest.length) base.push(rest.shift());
+  return base;
+}
+function portalTeam(spec){
+  return assignFoeForm(portalComp(PORTAL_TEAM_N).map(job=>{
+    const lv = clamp(spec.lv + ri(-FOE_LV_VAR, FOE_LV_VAR), 1, 30);
+    const st = newStudent(3, "S", job);
+    st.level = lv; st.exp = 0; st.cond = 92;
+    st.relics = [];
+    Object.keys(spec.relics).forEach(g=>{ for(let i=0;i<spec.relics[g];i++) st.relics.push(portalRelic(g)); });
+    autoSkMod(st, lv);
+    return st;
+  }), null, true);
+}
+function portalSpecText(spec){
+  const r = Object.keys(spec.relics).map(g=>`${g}급 유물 ${spec.relics[g]}개`).join(" · ");
+  return `이계 등급 · S급 Lv.${spec.lv-FOE_LV_VAR}~${spec.lv+FOE_LV_VAR} · ${PORTAL_TEAM_N}명 · ${r}`;
+}
 function friendlyTeam(ti){
+  if(portalOn()) return portalTeam(PORTAL_SPEC.friendly);
   const T = FRIENDLY_TIER[clamp(ti,0,4)];
   const comp = pick(FOE_COMPS);
   return assignFoeForm(comp.map(job=>{
@@ -8637,7 +8791,7 @@ function genFriendlyOffers(){
   const nt = (FRIENDLY_PHASES[S.phase]||FRIENDLY_PHASES.spring).teams;
   const nm = acadNames(3);
   return [0,1,2].map((_,k)=>{
-    const ti = clamp(me + ri(-1,1), 0, 4);
+    const ti = portalOn() ? PORTAL_TIER : clamp(me + ri(-1,1), 0, 4);
     const name = nm[k];
     return {name, tier:ti, teams: Array.from({length:nt},()=> friendlyTeam(ti))};
   });
@@ -8696,12 +8850,12 @@ function viewTeam(){
     <div class="teamtabs">${teams.map(t=>{
       const n = teamMembers(t).length;
       return `<button class="ttab ${t.n===cur.n?"on":""}" data-team="${t.n}">${esc(teamLabel(t))}
-        <span class="tt-sub">${formOf(t.form).n} · ${n}/3</span></button>`;
+        <span class="tt-sub">${formOf(t.form).n} · ${n}/${formSlots(t.form).length}</span></button>`;
     }).join("")}</div>
 
     <div class="eyebrow" style="margin:14px 0 6px">진형</div>
     <div class="formrow">${FORM_KEYS.map(k=>{
-      const f = FORMS[k];
+      const f = formOf(k);
       return `<button class="formcard ${cur.form===k?"on":""}" data-form="${k}">
         <div class="fmhead">${f.n}<span class="fmsh">${f.sh}</span></div>
         <div class="fmmini">${["f1","f2","f3"].map(x=>`<i class="${f.front.includes(x)?"f":""}"></i>`).join("")}</div>
@@ -8728,7 +8882,7 @@ function viewTeam(){
           : `<div class="slot off"><div class="sempty">사용 안 함</div></div>`).join("")}</div>
     </div>
     <div class="btnrow" style="margin-top:10px">
-      <span class="hint" style="font-size:12px;color:${teamFull(cur)?"var(--ok)":"var(--dim)"}">${teamFull(cur)? "편성 완료" : `${teamMembers(cur).length}/3`} — 카드를 자리로 <b style="color:var(--text)">끌어다 놓거나</b>, 자리를 누르고 아래에서 고른다</span>
+      <span class="hint" style="font-size:12px;color:${teamFull(cur)?"var(--ok)":"var(--dim)"}">${teamFull(cur)? `편성 완료 (${teamMembers(cur).length}/${formSlots(cur.form).length})` : `${teamMembers(cur).length}/${formSlots(cur.form).length} · 최소 ${TEAM_MIN}명`} — 카드를 자리로 <b style="color:var(--text)">끌어다 놓거나</b>, 자리를 누르고 아래에서 고른다</span>
       <button class="btn sm" id="btnTeamName">이름 변경</button>
       <button class="btn sm primary" id="btnTeamRole">진형에 맞춰 임의 편성</button>
       <button class="btn sm" id="btnTeamAuto">전투력 순으로 자동 편성</button>
@@ -9095,7 +9249,7 @@ function viewCodex(){
     + `  <section class="panel">
     <div class="panel-h"><h2>원정지</h2><span class="hint">각 원정지의 주인 1체와 연전한다 · 구간 사이 체력은 일부만 회복된다</span></div>
     <div class="grid2">
-      ${DUNGEONS.map(d=>{
+      ${DUNGEONS.map(dgView).map(d=>{
         const lock = S.fame < d.needFame;
         return `<div class="opt ${lock?"locked":""}" style="cursor:default">
           <div class="on">${d.n}<span class="price">${d.secs}구간</span></div>
@@ -9381,11 +9535,18 @@ function bindView(){
   v.querySelectorAll("[data-fac]").forEach(b=> b.onclick=()=>{
     const k=b.dataset.fac, c=facCost(k);
     if(facLock(k) || S.gold<c || (S.facil[k]||0) >= facMax(k)) return;
+    if(k==="portal"){ portalConfirmModal(()=> facBuyNow(k)); return; }   // 되돌릴 수 없는 선택 — 한 번 더 묻는다
+    facBuyNow(k);
+  });
+  function facBuyNow(k){
+    const c=facCost(k);
     S.gold-=c; S.facil[k] = (S.facil[k]||0) + 1;
     logE(k==="expand"
       ? `<b>학원 증축</b> Lv.${S.facil[k]} — ${expandUnlocks(S.facil[k]).join(" · ")}${eulr(expandUnlocks(S.facil[k]).slice(-1)[0]||"")} 들일 수 있게 됐다.`
+      : k==="portal"
+      ? `<b>차원 포탈</b> 설치 — 이계와 이어졌다. 이제부터 친선전·신인전·가을 대회에 나오는 학원은 모두 유명도 <b>이계</b> 등급이다. 구매 탭에 새 항목이 드러났다.`
       : `<b>${FACILITIES[k].n}</b> 확장 — Lv.${S.facil[k]}`, "good"); save(); render();
-  });
+  }
   {
     const mk = $("#xfMake");
     if(mk) mk.onclick = async ()=>{
@@ -9538,7 +9699,11 @@ function bindView(){
     const k=b.dataset.item, it=ITEMS[k];
     if(S.items[k] || itemLock(k) || S.gold<it.price) return;
     S.gold-=it.price; S.items[k]=1;
-    logE(`<b>${it.n}</b> 구비 — ${it.d}`,"good"); save(); render();
+    logE(k==="formbook"
+      ? `<b>${it.n}</b> 구비 — 모든 진형에 두 자리가 더 열렸다 (${formPlusText()}). 진형 이름 뒤에 ${FORM_PLUS_SUFFIX} 가 붙는다.`
+      : k==="worldmap"
+      ? `<b>${it.n}</b> 구비 — 모든 원정지가 <b>이계·</b> 판으로 바뀌었다. 권장 레벨 +${MAP_LV_ADD}, 구간당 경험·자금 ×${MAP_RWD_MUL}.`
+      : `<b>${it.n}</b> 구비 — ${it.d}`,"good"); save(); render();
   });
   v.querySelectorAll("[data-equip]").forEach(b=> b.onclick=()=>{
     const i=+b.dataset.equip;
@@ -9717,6 +9882,7 @@ function showCeremony(){
     : c.type==="fall" ? fallCeremony(c)
     : c.type==="scout" ? scoutCeremony(c)
     : c.type==="fame" ? fameCeremony(c)
+    : c.type==="portal" ? portalCeremony(c)
     : enrollCeremony(c);
   showModal(html, ()=>{
     if(c.type==="friendly"){
@@ -9768,6 +9934,7 @@ function showCeremony(){
       if(c.type==="scout" && S.phase==="winter" && S.scouts) UI.view = "scout";
       if(c.type==="camp" && S.phase==="summer") UI.view = "plan";
       if(c.type==="fall" && S.phase==="fall") UI.view = "plan";
+      if(c.type==="portal") UI.view = "facil";
       if(c.type==="friendly"){
         const F = friendlyState(c.phase||"spring"); F.answered=true; UI.fsel=null;
         const n = F.slots.filter(x=>x!=null).length;
@@ -9805,6 +9972,47 @@ function gradCeremony(c){
       </div>`).join("")}
     </div>
     <div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">졸업생을 보낸다</button></div>`;
+}
+/* 차원 포탈 설치 확인 — 되돌릴 수 없는 선택이라 한 번 더 묻는다 */
+function portalConfirmModal(onYes){
+  showModal(`<div class="cerhead">
+      <div class="eyebrow">차원 포탈 · ${fmt(PORTAL_PRICE)} G</div>
+      <h2 style="font-size:22px;margin-top:2px">정말 설치하시겠어요?</h2>
+    </div>
+    <div class="opt" style="cursor:default;margin-top:12px;border-color:var(--bad)">
+      <div class="on" style="color:var(--bad)">이 선택은 되돌릴 수 없어요!</div>
+      <div class="od" style="font-size:13.5px;color:var(--text)"><b style="color:var(--bad)">난이도가 대폭 상승합니다!!</b></div>
+      <div class="od">친선전·신인전·가을 대회에 나오는 학원이 모두 유명도 <b style="color:var(--text)">이계</b> 등급(S급 5명 · 유물 장착)으로 바뀌고, 포탈은 철거할 수 없다.</div>
+    </div>
+    <div class="btnrow" style="margin-top:14px">
+      <button class="btn" id="portalYes" style="border-color:var(--bad);color:var(--bad)">설치한다</button>
+      <button class="btn primary" data-close>그만둔다</button>
+    </div>`, ()=>{
+    $("#portalYes").onclick = ()=>{ closeModal(); onYes && onYes(); };
+  });
+}
+/* 이계에서의 편지 — 차원 포탈 안내 */
+const PORTAL_LETTER = "귀하와 학원의 소문은 많이 들었습니다. 편지에 포함된 아이템은 설치형 전송기입니다. 부디 저희 세계와 이어지는 차원 포탈을 구축하셔서 대회에 참가해주시기 바랍니다. 지맥의 특성상 봄 상반기에만 설치가 가능할겁니다.";
+function portalCeremony(c){
+  return `<div class="cerhead">
+      <div class="eyebrow">${c.year}년 봄 · 2주차</div>
+      <h2 style="font-size:26px;margin-top:2px">이계에서의 편지</h2>
+      <p style="color:var(--muted);font-size:13px;margin-top:6px">발신인이 적혀 있지 않은 편지 한 통이 학원장실에 놓여 있었다. 봉인을 풀자 낯선 문양이 새겨진 작은 장치가 함께 굴러 나온다.</p>
+    </div>
+    <div class="opt" style="cursor:default;margin-top:12px;border-color:var(--brass)">
+      <div class="od" style="font-size:13.5px;line-height:1.85;color:var(--text)">${esc(PORTAL_LETTER)}</div>
+    </div>
+    <div class="grid2" style="margin-top:10px">
+      <div class="opt" style="cursor:default">
+        <div class="on">차원 포탈<span class="price">${fmt(PORTAL_PRICE)} G</span></div>
+        <div class="od">시설 탭의 <b style="color:var(--text)">???</b> 가 드러났다. <b style="color:var(--text)">봄 상반기(1~6주)</b>에만 설치할 수 있다.</div>
+      </div>
+      <div class="opt" style="cursor:default">
+        <div class="on">이계 대회<span class="price" style="color:var(--bad)">난이도 증가</span></div>
+        <div class="od">설치하면 친선전·신인전·가을 대회에 나오는 학원의 유명도가 모두 <b style="color:var(--text)">이계</b> 등급(S급 5명 · 유물 장착)으로 바뀐다. 우리 팀의 출전 조건(3명 이상)은 그대로다.</div>
+      </div>
+    </div>
+    <div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">확인</button></div>`;
 }
 /* 명성 구간 돌파 — 그 자리에서 무엇이 열렸는지 함께 알린다 */
 function fameCeremony(c){
@@ -10227,14 +10435,14 @@ function openBattle(res, opt, onDone){
   let ultimateCasts=[];
   let speechFrame = -1;
   const uids = (()=>{ let a=0,b=0; return names.map(n=> n.side==="A" ? "A"+(a++) : "B"+(b++)); })();
-  const formTag = (fk)=>{
+  const formTag = (fk, pl)=>{
     if(!fk || !FORMS[fk]) return `<span class="fmtag none">진형 없음</span>`;
-    const F = FORMS[fk];
+    const F = formData(fk, !!pl);
     return `<span class="fmtag" title="${esc(F.txt.join(" · "))}">${F.n}<b>${F.sh}</b>
       <i class="fmdot">${["f1","f2","f3"].map(x=>`<u class="${F.front.includes(x)?"f":""}"></u>`).join("")}</i>
       <i class="fmdot">${["b1","b2","b3"].map(x=>`<u class="${F.back.includes(x)?"b":""}"></u>`).join("")}</i></span>`;
   };
-  const formFx = (fk)=> (fk && FORMS[fk]) ? `<div class="fmfx">${FORMS[fk].txt.map(x=>`<span>${esc(x)}</span>`).join("")}</div>` : "";
+  const formFx = (fk, pl)=> (fk && FORMS[fk]) ? `<div class="fmfx">${formData(fk, !!pl).txt.map(x=>`<span>${esc(x)}</span>`).join("")}</div>` : "";
   const BS_ICON = {
     dmg:`<svg viewBox="0 0 12 12" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M10.4 1.6 5.2 6.8"/><path d="M8.2 1.6h2.2v2.2"/><path d="M1.6 10.4 4.3 7.7"/><path d="m3.1 8.9 1.4-1.4 1.6 1.6-1.4 1.4a1.1 1.1 0 0 1-1.6-1.6Z"/></svg>`,
     heal:`<svg viewBox="0 0 12 12" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M6 2.2v7.6M2.2 6h7.6"/></svg>`,
@@ -10304,7 +10512,8 @@ function openBattle(res, opt, onDone){
       const side=n.side, row=n.row==='front'?'front':'back';
       const peers=names.map((v,idx)=>({v,idx})).filter(x=>x.v.side===side&&x.v.row===n.row);
       const order=peers.findIndex(x=>x.idx===k);
-      const form=FORMS[side==='A'?res.formA:res.formB];
+      const fkey=side==='A'?res.formA:res.formB;
+      const form=(fkey&&FORMS[fkey])?formData(fkey, side==='A'?res.plusA:res.plusB):null;
       const slots=form?form[row]:null;
       const col=slots&&slots[order]?+slots[order].slice(1)-1:order;
       const boss=monHas(n.job);
@@ -10337,8 +10546,8 @@ function openBattle(res, opt, onDone){
       return `<div class="bf-slot team-${side}" style="left:${x}%;top:${y}%" aria-hidden="true"></div>`;
     }).join('')).join('')).join('');
     return `<div class="bf-stage">
-      <div class="bf-school enemy"><b>${esc(opt.titleB||'상대 학원')}</b>${formTag(res.formB)}</div>
-      <div class="bf-school ally"><b>${esc(opt.titleA||S.acadName||'우리 학원')}</b>${formTag(res.formA)}</div>
+      <div class="bf-school enemy"><b>${esc(opt.titleB||'상대 학원')}</b>${formTag(res.formB, res.plusB)}</div>
+      <div class="bf-school ally"><b>${esc(opt.titleA||S.acadName||'우리 학원')}</b>${formTag(res.formA, res.plusA)}</div>
       <div class="bf-legend"><i class="hp"></i> 체력 <i class="atb"></i> 행동 <i class="ult"></i> 필살기</div>
       ${ground}${names.map((n,k)=>one(n,k)).join('')}
     </div>`;
@@ -10514,10 +10723,11 @@ function moodNetP(){ return clamp(S.master.net*MOOD_NET, 0, .6); }
 function teamPowerOf(list){ return Math.round((list||[]).reduce((a,s)=> a+power(s), 0)); }
 /* 상대 전력 노출 — 상대 유명도가 높을수록 더 많은 정보력을 요구한다
    확정 노출 정보력: 무명 4 · 유명 5 · 강호 6 · 명문 8 · 초명문 10 (1 모자랄 때마다 -20%p) */
-const FOE_INFO_NEED = [4, 5, 6, 8, 10];
-function foeTierOf(o){ return clamp((o && typeof o.tier==="number") ? o.tier : 0, 0, 4); }
+const FOE_INFO_NEED = [4, 5, 6, 8, 10, 12];
+function foeTierOf(o){ return clamp((o && typeof o.tier==="number") ? o.tier : 0, 0, PORTAL_TIER); }
+function foeTierName(t){ t = clamp(t|0, 0, PORTAL_TIER); return t >= PORTAL_TIER ? FRIENDLY_TIER[PORTAL_TIER].n : FAME_TITLES[t].n; }
 function foePowerSeenP(tier){
-  const need = FOE_INFO_NEED[clamp(tier,0,4)];
+  const need = FOE_INFO_NEED[clamp(tier,0,PORTAL_TIER)];
   return clamp(1 - (need - (S.master.info||0)) * .2, 0, 1);
 }
 /* 기본치 50 · 컨디션 70 기준 ±(+20/-30) · 상대 전력 비교 ±40 */
@@ -10616,12 +10826,12 @@ function lockerSpeak(t, L, idx, my){
 function lockerHtml(L, my){
   const said = (L.said!=null) ? L.offers[L.said] : null;
   const gap = L.foeP - L.myP;
-  const tierN = FAME_TITLES[clamp(L.tier||0,0,4)].n;
+  const tierN = foeTierName(L.tier||0);
   return `<div class="rule"></div>
     <div class="panel-h" style="margin-bottom:8px"><h2 style="font-size:13px">락커룸</h2>
       <span class="hint">전력 우리 <b style="color:var(--text)">${fmt(L.myP)}</b> · 상대 ${L.seen
         ? `<b style="color:var(--text)">${fmt(L.foeP)}</b> ${gap>0? `· <span style="color:var(--bad)">열세</span>` : gap<0? `· <span style="color:var(--ok)">우세</span>` : `· 호각`}`
-        : `<b style="color:var(--dim)">파악 못 함</b> <span style="color:var(--dim)">· ${esc(tierN)} 학원은 정보력 ${FOE_INFO_NEED[clamp(L.tier||0,0,4)]}에서 확실히 읽힌다</span>`}</span></div>
+        : `<b style="color:var(--dim)">파악 못 함</b> <span style="color:var(--dim)">· ${esc(tierN)} 학원은 정보력 ${FOE_INFO_NEED[clamp(L.tier||0,0,PORTAL_TIER)]}에서 확실히 읽힌다</span>`}</span></div>
     <div class="lkrow">${(my||[]).map(st=>{
       const v = L.mood[st.id], tone = moodTone(v), r = L.res[st.id], d = v - L.base[st.id];
       return `<div class="lkcard">
@@ -10809,7 +11019,7 @@ function renderFriendly(){
       <div class="rule"></div>
       <div class="eyebrow" style="margin-bottom:6px">상대 — ${esc(t.foe.name)} (정찰 ${lvl}단계)</div>
       <div class="grid2">${t.foe.teams.map((tm,k)=>`<div class="opt" style="cursor:default">
-        <div class="on">${t.need>1?`제${k+1}경기`:"상대 팀"} <span class="tag">${formOf(tm.form).n}</span></div>${oppInfo(tm,lvl)}</div>`).join("")}</div>
+        <div class="on">${t.need>1?`제${k+1}경기`:"상대 팀"} <span class="tag">${foeFormName(tm)}</span></div>${oppInfo(tm,lvl)}</div>`).join("")}</div>
       <div class="btnrow" style="margin-top:14px">
         <button class="btn primary" id="tEntry" ${ok?"":"disabled"}>${ok?"친선전 시작":`팀을 고른다 (${t.entryTeams.length}/${t.need})`}</button>
         <span class="hint" style="font-size:12px;color:var(--dim)">${t.entryTeams.length? esc(t.entryTeams.map(n=>teamLabel(n)).join(" → ")) : "선택 없음"}</span>
@@ -10835,7 +11045,7 @@ function renderFriendly(){
       <div class="grid2">
         <div class="opt" style="cursor:default"><div class="on">${esc(teamLabel(TM))} <span class="tag">${formOf(TM.form).n}</span></div>
           <div class="od">${t.myTeams[i].map(id=>{const x=S.students.find(y=>y.id===id); return x? `${dnH(x)}(${JOBS[x.job].name} Lv.${x.level} · 컨디션 ${Math.round(x.cond)})`:"";}).join(" · ")}</div></div>
-        <div class="opt" style="cursor:default"><div class="on">${esc(t.foe.name)} <span class="tag">${formOf(t.foe.teams[i].form).n}</span></div>${oppInfo(t.foe.teams[i], Math.max(1,scoutLevel()))}</div>
+        <div class="opt" style="cursor:default"><div class="on">${esc(t.foe.name)} <span class="tag">${foeFormName(t.foe.teams[i])}</span></div>${oppInfo(t.foe.teams[i], Math.max(1,scoutLevel()))}</div>
       </div>
       ${lockerHtml(fL, fMy)}
       <div class="btnrow" style="margin-top:14px">
@@ -10909,10 +11119,10 @@ function renderPrepStage(t){
       <div class="on" style="color:var(--${can?"ok":"bad"})">출전 준비 ${ready}/${need}팀
         <span class="price">${can? "출전 가능" : `${need-ready}팀 더 필요하다`}</span></div>
       <div class="od">${teamsOf().map(x=>{
-        const n = teamMembers(x).length, full = n===3;
-        return `<span style="color:var(--${full?"ok":"dim"})">${esc(teamLabel(x))} ${n}/3</span>`;
+        const n = teamMembers(x).length, full = teamFull(x);
+        return `<span style="color:var(--${full?"ok":"dim"})">${esc(teamLabel(x))} ${n}/${formSlots(x.form).length}</span>`;
       }).join(" · ")}</div>
-      ${can? "" : `<div class="od" style="color:var(--bad)">3인이 모두 채워진 팀이 ${need}개 있어야 출전할 수 있다. <b>팀 편성</b>에서 자리를 채운다.</div>`}
+      ${can? "" : `<div class="od" style="color:var(--bad)">${TEAM_MIN}인 이상 채워진 팀이 ${need}개 있어야 출전할 수 있다. <b>팀 편성</b>에서 자리를 채운다.</div>`}
     </div>
     ${can? "" : `<div class="opt" style="cursor:default;border-color:var(--bad);margin-bottom:12px">
       <div class="on" style="color:var(--bad)">인원이 모자라면 기권할 수 있다</div>
@@ -11643,6 +11853,8 @@ function boot(){
     S.potV = POT_VER;
   }
   Object.keys(FACILITIES).forEach(k=>{ if(typeof S.facil[k]!=="number") S.facil[k] = facStart(k); });
+  /* 본선 우승 횟수 — 기록이 없던 세이브는 지침(학원제 본선 우승) 달성 여부로 센다 */
+  if(typeof S.finalWins !== "number") S.finalWins = ((S.mission&&S.mission.done)||[]).some(d=>d.id==="m4") ? 1 : 0;
   teamsOf(); cleanTeams(); cleanBonds();
   if(S.plan) delete S.plan;   // 주 단위 스케줄은 카드 덱으로 대체됐다
   if(typeof S.books !== "number") S.books = 0;
