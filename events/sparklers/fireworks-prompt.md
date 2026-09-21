@@ -1,0 +1,7 @@
+# 밤하늘 폭죽
+
+내장 image_gen으로 생성. 사용자 참고 이미지는 어두운 밤하늘과 폭죽의 색감 및 파노라마 구도 참고로 사용.
+
+## 프롬프트
+
+Create an original beautiful wide landscape 16:9 nighttime fireworks illustration for a fantasy academy visual novel event backdrop. Use the attached image solely as a reference for the broad panorama of many simultaneous silver-white firework blossoms across a very dark sky. Deep nearly black midnight navy sky remains genuinely dark, not twilight. Several spectacular overlapping but clearly distinguishable radial chrysanthemum fireworks spread across the full width, varying sizes and distances, mostly brilliant ivory silver and subtle champagne gold. One taller large burst near upper center, smaller bursts across the middle and lower sides, delicate curved falling ember trails and fine sparks. Subtle cool charcoal-blue smoke illuminated locally by flashes, restrained warm glow and high contrast, each fine streak crisp and elegant, cinematic anime background painting with believable light and refined painterly finish, celebratory and quietly moving, complementing an intimate anime summer-night sparkler scene. Sky-only composition filling the frame: NO people, NO hands, NO buildings, NO scaffolding, NO power lines, NO ground, NO text, NO logos, NO watermark, NO interface, NO border. Compose a new arrangement instead of reproducing the reference. Do not reproduce its central watermark or diagonal lines. Rich detail, natural firework physics, controlled bloom without washing out the dark sky.
