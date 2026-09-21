@@ -349,8 +349,13 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 .optlab{flex:1;min-width:240px}
 .optlab > b{display:block;font-size:13.5px;margin-bottom:3px}
 .optlab span{font-size:11.5px;color:var(--muted);line-height:1.55}
-.optctl{display:flex;align-items:center;gap:12px;flex:none}
-.optctl input[type=range]{width:220px;accent-color:var(--brass)}
+.optctl{display:flex;align-items:center;gap:12px;flex:none;max-width:100%;flex-wrap:wrap}
+.optctl input[type=range]{width:220px;max-width:100%;accent-color:var(--brass)}
+@media(max-width:640px){
+  .optctl{flex:1 1 100%;min-width:0}
+  .optctl input[type=range]{flex:1 1 120px;width:auto;min-width:0}
+  .optlab{min-width:0;flex:1 1 100%}
+}
 .optval{font-size:12px;color:var(--dim);display:flex;align-items:baseline;gap:3px}
 .optval b{font-size:17px;color:var(--brass)}
 .opthint{font-size:11.5px;color:var(--dim);margin:8px 0 0}
@@ -642,7 +647,7 @@ html.modal-open body{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .opt .od{font-size:11.5px;color:var(--muted);margin-top:3px}
 .opt .price{margin-left:auto;color:var(--brass);font-weight:600;font-size:12px}
 .opt.cxjob{display:flex;gap:8px;align-items:flex-start}
-.grid2.gx2{grid-template-columns:repeat(auto-fill,minmax(360px,1fr))}
+.grid2.gx2{grid-template-columns:repeat(auto-fill,minmax(min(360px,100%),1fr))}   /* 좁은 폰(폴드 커버)에서도 넘치지 않게 */
 .cxjob .cxspr{flex:none;width:118px;height:118px;display:flex;align-items:center;justify-content:center;overflow:visible;
   border:1px solid var(--line-soft);border-radius:3px;background:var(--surface2)}
 .cxjob .cxbody{flex:1 1 auto;min-width:0}
@@ -2587,11 +2592,24 @@ function handInit(){
   S.hand = []; S.slots = Array(WEEK_DAYS).fill(null); S.cardSeq = 0;
   for(let i=0;i<HAND_SIZE;i++) S.hand.push(newCard());
 }
+/* 손패 보충 — 손패 + 칸에 올린 카드가 합쳐 HAND_SIZE 가 되도록만 채운다.
+   (칸에 다섯 장을 올린 채 화면이 다시 열리면(폰 탭 복원 등) 손패만 9장으로 채워져 14장이 되던 버그 방지) */
 function handRefill(){
   S.hand = S.hand||[];
+  const placed = (S.slots||[]).filter(Boolean).length;
   let n=0;
-  while(S.hand.length < HAND_SIZE){ S.hand.push(newCard()); n++; }
+  while(S.hand.length + placed < HAND_SIZE){ S.hand.push(newCard()); n++; }
+  handTrim();
   return n;
+}
+/* 어떤 경로로든 손패 + 칸이 HAND_SIZE 를 넘었으면, 손패 뒤쪽(가장 나중에 들어온 카드)부터 잘라낸다 */
+function handTrim(){
+  const placed = (S.slots||[]).filter(Boolean).length;
+  const over = (S.hand||[]).length + placed - HAND_SIZE;
+  if(over <= 0) return 0;
+  S.hand.splice(S.hand.length - over, over);
+  logE(`손패 정리 — 규정 ${HAND_SIZE}장을 넘은 카드 ${over}장을 치웠다.`, "");
+  return over;
 }
 function slotPut(u, day){
   if(day<0 || day>=WEEK_DAYS) return;
@@ -7051,7 +7069,7 @@ function studentDetail(s){
     <div class="stuhead">
     ${faceHas(s.job)? faceHTML(s.job, dn(s)) : (sprHas(s.job)? `<div class="sprbox">${sprHTML(s.job,"idle",1,{p:sprPalOf(s)})}</div>`:"")}
     <div class="panel-h"><h2>${dnH(s)}<button class="btn icon" id="btnStName" title="이름 변경">${ICON_EDIT}</button></h2>
-      <span>${teamTag(s)} ${gradeTag(s.grade)} ${roleTag(s.job)} <span class="tag">${ROLE_LABEL[J.role]}${J.sub? " · "+J.sub:""}</span> <span class="tag yr">${s.year}학년</span> <span class="tag">Lv.${s.level}</span> ${bondTags(s)}</span>
+      <span>${teamTag(s)} ${gradeTag(s.grade)} ${roleTag(s.job)} <span class="tag" style="white-space:normal">${ROLE_LABEL[J.role]}${J.sub? " · "+J.sub:""}</span> <span class="tag yr">${s.year}학년</span> <span class="tag">Lv.${s.level}</span> ${bondTags(s)}</span>
       <span class="hint">${esc(J.desc)}</span></div>
     </div>
     ${s.note? `<div class="cerwhy" style="margin-bottom:12px">입학 당시 — ${esc(s.note)}</div>`:""}
