@@ -155,6 +155,16 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 .scard .n2{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:5px}
 .scard .lv{margin-left:auto;font-size:11.5px;color:var(--dim)}
 .scard .bars{margin-top:7px;display:grid;gap:3px}
+/* 학생 카드 v2 — 얼굴 + 핵심 정보만 */
+.scard.sc2{display:flex;gap:10px;align-items:flex-start}
+.scard.sc2 .sface{flex:none}
+.scard.sc2 .sface .facebox{width:74px;height:74px}
+.scard.sc2 .sbody{flex:1;min-width:0}
+.scard.sc2 .n1{gap:6px}
+.scard.sc2 .n2{margin-top:4px}
+.scard.sc2 .bars{margin-top:6px}
+.scard.sc2 .sfoot{display:flex;gap:10px;margin-top:6px;font-size:11.5px;color:var(--muted);flex-wrap:wrap;align-items:center}
+.scard.sc2 .skup{margin-left:auto;font-size:10px;padding:1px 5px}
 .bar{height:5px;background:var(--surface2);border-radius:2px;overflow:hidden;position:relative}
 .bar > i{display:block;height:100%;background:var(--brass);transition:width .35s ease}
 .bar.cond > i{background:var(--ok)}
@@ -6655,21 +6665,22 @@ function viewHome(){
   `;
 }
 function studentCard(s, sel){
-  const bs = battleStats(s);
-  return `<button class="scard ${sel?"sel":""}" data-sid="${s.id}">
-    <div class="n1"><span class="nm">${dnH(s)}</span>${teamTag(s)}${injTag(s)}${karmaTag(s)}</div>
-    <div class="n2">${persTag(s)}${gradeTag(s.grade)}${roleTag(s.job)}
-      <span class="tag yr">${s.year}학년</span>${bondTags(s)}<span class="lv num">Lv.${s.level}</span></div>
-    <div class="bars">
-      <div class="barlab"><span>컨디션 <b style="color:var(--${condEff(s.cond).tone})">훈련 ${condEff(s.cond).pct}%</b></span><span class="num">${Math.round(s.cond)}</span></div>
-      <div class="bar cond ${condClass(s.cond)}"><i style="width:${s.cond}%"></i></div>
-      <div class="barlab"><span>경험치</span><span class="num">${Math.round(s.exp)}/${expNeed(s.level)}</span></div>
-      <div class="bar"><i style="width:${clamp(s.exp/expNeed(s.level)*100,0,100)}%"></i></div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:6px;font-size:11.5px;color:var(--muted)">
-      <span>전투력 <b class="num" style="color:var(--text)">${fmt(power(s))}</b></span>
-      <span>진로 평가 <b class="num" style="color:var(--brass)">${Math.round(s.eval||0)}</b></span>
-      ${(s.sp||0)>0? `<span class="tag gr">스킬 강화 +${s.sp}</span>`:""}
+  /* 얼굴 | 이명·이름 / 성격·등급·직업·학년·레벨 / 컨디션 / 전투력·진로 평가·스킬 강화 */
+  const face = faceHas(s.job) ? `<div class="sface">${faceHTML(s.job, dn(s))}</div>` : "";
+  return `<button class="scard sc2 ${sel?"sel":""}" data-sid="${s.id}">
+    ${face}
+    <div class="sbody">
+      <div class="n1"><span class="nm">${dnH(s)}</span>${injTag(s)}${(s.sp||0)>0? `<span class="tag gr skup">스킬 강화 +${s.sp}</span>`:""}</div>
+      <div class="n2">${persTag(s)}${gradeTag(s.grade)}${roleTag(s.job)}
+        <span class="tag yr">${s.year}학년</span><span class="lv num">Lv.${s.level}</span></div>
+      <div class="bars">
+        <div class="barlab"><span>컨디션 <b style="color:var(--${condEff(s.cond).tone})">훈련 ${condEff(s.cond).pct}%</b></span><span class="num">${Math.round(s.cond)}</span></div>
+        <div class="bar cond ${condClass(s.cond)}"><i style="width:${s.cond}%"></i></div>
+      </div>
+      <div class="sfoot">
+        <span>전투력 <b class="num" style="color:var(--text)">${fmt(power(s))}</b></span>
+        <span>진로 평가 <b class="num" style="color:var(--brass)">${Math.round(s.eval||0)}</b></span>
+      </div>
     </div>
   </button>`;
 }
@@ -7326,7 +7337,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0921-1215";
+const BUILD = "0921-0322";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -12270,4 +12281,4 @@ function boot(){
 boot();
 </script>
 
-</body></html>
+</body></html>
