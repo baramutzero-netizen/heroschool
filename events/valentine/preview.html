@@ -1,0 +1,9 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>발렌타인 이벤트 미리보기</title>
+<style>body{margin:0;background:#eeeaf1;font:13px system-ui}nav{padding:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}button{padding:7px 12px;cursor:pointer}iframe{width:100%;height:calc(100dvh - 55px);border:0}small{color:#665c70}</style>
+<nav><button data-page="1" disabled>1 · 선물 상자</button><button data-page="2" disabled>2 · 초콜릿과 편지</button><button data-page="3" disabled>3 · 감사 인사</button><small>미리보기 전용 · 실제 저장 데이터와 분리</small></nav><iframe id="game" title="발렌타인 이벤트"></iframe>
+<script>
+const frame=document.querySelector('#game');let current=1;
+function show(n){current=n;frame.contentWindow.eval(`(()=>{closeModal();showModal(valentineCeremony({page:${n},year:3,n:3,notes:[{name:'라비',msg:VALENTINE_MSG.intro[0]},{name:'포레나',msg:VALENTINE_MSG.dilig[0]},{name:'요엘',msg:VALENTINE_MSG.hot[0]}]}));})()`);frame.contentWindow.document.querySelector('#cerOk').onclick=()=>show(n===3?1:n+1);}
+frame.onload=()=>{if(!frame.srcdoc)return;document.querySelectorAll('[data-page]').forEach(b=>{b.disabled=false;b.onclick=()=>show(+b.dataset.page)});show(1)};
+fetch('../../heroschool.html').then(r=>r.text()).then(html=>{const isolated=`<script>for(const key of ['localStorage','sessionStorage']){const m=new Map();Object.defineProperty(window,key,{value:{getItem:k=>m.get(String(k))??null,setItem:(k,v)=>m.set(String(k),String(v)),removeItem:k=>m.delete(String(k)),clear:()=>m.clear(),key:i=>[...m.keys()][i]??null,get length(){return m.size}}});}<\/script>`;frame.srcdoc=html.replace('<head>','<head>'+isolated)});
+</script></html>
