@@ -70,6 +70,24 @@ nav button{background:none;border:0;border-bottom:2px solid transparent;padding:
 nav button:hover{color:var(--text)}
 nav button[aria-current="true"]{color:var(--text);border-bottom-color:var(--brass)}
 nav button .badge{display:inline-block;margin-left:5px;background:var(--brass);color:var(--bg);border-radius:8px;font-size:10px;padding:0 5px;font-weight:700}
+/* 폰 메뉴 — 4열 2줄 + 더보기. PC 에서는 #nav 한 줄 그대로 */
+nav#navm{display:none}
+@media(max-width:640px){
+  nav#nav{display:none}
+  nav#navm{display:block;overflow:visible;margin-top:8px}
+  .navm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0 2px}
+  .navm-grid button{padding:7px 4px;font-size:12.5px;text-align:center;justify-content:center;display:flex;align-items:center;white-space:nowrap;min-width:0}
+  .navm-grid button.hot{border-radius:3px 3px 0 0}
+  .navm-grid button .badge{margin-left:4px}
+  .navm-grid .morebtn{color:var(--dim)}
+  .navm-grid .morebtn.open,.navm-grid .morebtn[aria-current="true"]{color:var(--text)}
+  .navm-grid .morebtn[aria-current="true"]{border-bottom-color:var(--brass)}
+  .navm-grid .morebtn i{font-style:normal;font-size:10px;margin-left:3px;color:var(--dim)}
+  .moremenu{display:flex;flex-wrap:wrap;gap:6px;padding:8px 0 10px;border-top:1px dashed var(--line-soft)}
+  .moremenu[hidden]{display:none}
+  .moremenu button{background:var(--surface);border:1px solid var(--line-soft);border-radius:3px;padding:6px 11px;font-size:12.5px;color:var(--muted);white-space:nowrap}
+  .moremenu button[aria-current="true"]{border-color:var(--brass);color:var(--text);background:var(--brass-soft)}
+}
 /* 스케줄 — 한 주를 넘기는 탭이라 늘 눈에 띄게 둔다 */
 nav button.hot{color:var(--brass);font-weight:700;background:var(--brass-soft);border-radius:3px 3px 0 0;
   display:inline-flex;align-items:center;gap:0;white-space:nowrap;flex:none}
@@ -516,7 +534,6 @@ html.modal-open body{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .trustsay{margin:5px 0 8px;padding:7px 9px;border-left:2px solid var(--brass);background:var(--brass-soft);
   font-size:12.5px;color:var(--text);line-height:1.6;border-radius:0 2px 2px 0}
 .lkrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-@media (max-width:620px){.lkrow{grid-template-columns:1fr}}
 .lkcard{border:1px solid var(--line-soft);border-radius:3px;background:var(--surface);padding:8px 10px}
 .lkn{font-size:13px;font-weight:600;line-height:1.35}
 .lkp{margin:4px 0 6px}
@@ -723,7 +740,41 @@ table.tb tr:hover td{background:var(--surface2)}
 .scard.dimmed{opacity:.5}
 .btnpair{display:inline-flex;gap:6px;flex:none}
 .fslots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-@media (max-width:620px){ .fslots{grid-template-columns:1fr} }
+/* 친선전 요청 — 학원 카드 세 장 한 줄 */
+.grid2.foflist{grid-template-columns:repeat(3,1fr)}
+.opt.fof{display:flex;flex-direction:column;gap:3px}
+.opt.fof .fof-n{font-weight:600;line-height:1.3;word-break:keep-all}
+.opt.fof .od{margin-top:0;line-height:1.45}
+.opt.fof .fof-s{margin-top:auto;padding-top:4px;font-weight:600}
+@media (max-width:620px){
+  .grid2.foflist,.fslots{gap:6px}
+  .opt.fof{padding:8px 8px}
+  .opt.fof .fof-n{font-size:12.5px}
+  .opt.fof .od{font-size:10.5px}
+  .fslot{padding:8px 8px}
+  .fslot .fs-k{font-size:9.5px;letter-spacing:.03em}
+  .fslot .fs-v{font-size:12px}
+  .fslot .fs-d{font-size:10.5px}
+}
+/* 엔트리 팀 카드 — 멤버는 이름 · 직업 · Lv 한 줄씩 */
+.etm-mem{display:grid;gap:2px;margin-top:5px}
+.etm-m{display:flex;align-items:center;gap:5px;flex-wrap:wrap;color:var(--text)}
+.etm-m .num{color:var(--dim)}
+/* 락커룸 — 폰에서는 출전 팀/상대 카드를 접고, 정보력 문구를 짧게 */
+.lk-mob{display:none}
+@media (max-width:640px){
+  .mt-cards:not(.keep){display:none}
+  .lk-pc{display:none}.lk-mob{display:inline}
+  .lkrow{grid-template-columns:repeat(3,1fr);gap:6px}
+  .lkcard{padding:7px 7px}
+  .lkn{font-size:12px}
+  .lkp{margin:3px 0 4px}
+  .lkp .tag:not([class*="role-"]){display:none}
+  .lkm{font-size:12px;flex-wrap:wrap;gap:3px}
+  .lkf{font-size:10px}
+  .lkr{font-size:10.5px}
+  .sp-x{display:none}
+}
 .fslot{border:1px dashed var(--line);border-radius:3px;background:var(--bg);padding:10px 12px;text-align:left;cursor:pointer;transition:.12s}
 .fslot:hover{border-color:var(--brass)}
 .fslot.on{border-style:solid;border-color:var(--ok);background:color-mix(in srgb,var(--ok) 7%,transparent)}
@@ -1061,6 +1112,11 @@ table.tb tr:hover td{background:var(--surface2)}
 .bf-stage .bf-boss .sprwrap.mon{min-height:0;height:164px;margin:0;display:flex;align-items:flex-end}
 .bf-stage .bf-boss .monspr{height:164px!important;width:auto!important;max-width:240px;object-fit:contain}
 .bf-stage .bf-boss .bf-gauges{top:70px}
+/* 원정 잡몹 — 보스보다 작게, 학생 자리에 선다 */
+.bf-stage .bf-mob{width:130px;height:140px}
+.bf-stage .bf-mob .sprwrap.mon{min-height:0;height:112px;margin:0;display:flex;align-items:flex-end;justify-content:center}
+.bf-stage .bf-mob .monspr{height:112px!important;width:auto!important;max-width:140px;object-fit:contain}
+.bf-stage .bf-mob .bf-gauges{top:30px}
 @media(max-width:900px){
  .bf-layout{grid-template-columns:minmax(0,1fr)}
  .bf-stage{height:600px}.bf-layout .blogwrap{grid-column:1;grid-row:2;height:110px}.bf-layout .bf-stats{grid-column:1;grid-row:3}
@@ -1108,6 +1164,7 @@ table.tb tr:hover td{background:var(--surface2)}
       </div>
     </div>
     <nav id="nav"></nav>
+    <nav id="navm" aria-label="메뉴 (폰)"></nav>
     <div id="prepBar" hidden></div>
   </header>
 
@@ -1907,18 +1964,43 @@ function dungeonMonsterKey(dg,sec){
 }
 
 /* DUNGEON_ENCOUNTERS_END */
-function genMonster(dg, sec){
-  const key = dungeonMonsterKey(dg, sec), J = JOBS[key];
-  const lv = dg.lv + (sec-1);
+/* 원정 조우 — 구간마다 그 원정지 마물 풀에서 무작위로 세 마리, 마지막 구간(보스 방)은 보스 + 두 마리.
+   자리는 전열 좌·우 + 후열 중앙(보스). MOB_K 는 잡몹 전용 배율 (보스는 monK 그대로). */
+const MOB_N = 3, MOB_SLOTS = ["f1","f3","b2"];
+/* 원정지별 잡몹 배율 — 권장 레벨·그 무렵 멘탈리티(DG_MENT)의 B급 3인(유물 없음) 기준
+   완주 95 / 90 / 85 / 80 / 75% 가 되도록 시뮬레이션으로 맞췄다 (A급은 그보다 높다) */
+const MOB_K = {d1:1.9, d2:.97, d3:.85, d4:1.68, d5:.83};
+/* 마물 멘탈리티 — 그 원정지에 올 무렵의 A급 학생 평균에 맞춘다 (배율은 그 위에서 조정) */
+const DG_MENT = {d1:20, d2:30, d3:50, d4:70, d5:80};
+function genMonsterOne(dg, key, lv, kMul){
+  const J = JOBS[key];
+  const M = DG_MENT[dg.id] != null ? DG_MENT[dg.id] : 60;
   const st = {
     id:"m"+RNG().toString(36).slice(2,8), name:J.name, job:key, year:1, grade:"A",
     level:lv, exp:0, cond:100, fame:0, eval:0, focus:"free", relics:[], skMod:{}, sp:0, hist:[],
-    ment:{team:50, aggr:72, calm:72, will:85, stam:62, genius:58, pot:55}
+    ment:{team:M, aggr:M, calm:M, will:M, stam:M, genius:M, pot:55}
   };
   autoSkMod(st, lv);
-  const k = dg.monK || 1;
+  const k = (dg.monK || 1) * (kMul||1);
   st.mul = {hp:k, atk:Math.pow(k,.7), def:Math.pow(k,.5), spd:Math.pow(k,.12)};
-  return [st];
+  return st;
+}
+function genMonster(dg, sec){
+  const lv = dg.lv + (sec-1);
+  const pool = (typeof DUNGEON_MONSTERS!=="undefined" && DUNGEON_MONSTERS[dg.id]) || [];
+  if(!pool.length) return [genMonsterOne(dg, dg.mon, lv, 1)];          // 풀이 없으면 예전처럼 한 마리
+  const bossRoom = sec >= dg.secs;
+  const mob = ()=> genMonsterOne(dg, pick(pool), lv, MOB_K[dg.id]!=null ? MOB_K[dg.id] : 1);
+  const arr = bossRoom ? [mob(), mob(), genMonsterOne(dg, dg.mon, lv, 1)] : [mob(), mob(), mob()];
+  arr.slots = {}; arr.rows = {};
+  arr.forEach((m,i)=>{ arr.slots[m.id] = MOB_SLOTS[i]; arr.rows[m.id] = slotRow(MOB_SLOTS[i]); });
+  return arr;
+}
+/* 조우 이름표 — 보스가 있으면 보스 이름, 아니면 마물 이름을 겹치지 않게 이어 붙인다 */
+function monLabel(mon){
+  const boss = (mon||[]).find(m=> !(JOBS[m.job] && JOBS[m.job].encounter));
+  if(boss) return boss.name;
+  return [...new Set((mon||[]).map(m=>m.name))].join("·") || "미지의 존재";
 }
 
 
@@ -4000,7 +4082,7 @@ function runBattle(teamA, teamB, opt){
   return {winner, frames, acts:totalActs, A, B,
     formA: (opt.formA && FORMS[opt.formA])? opt.formA : null,
     formB: (opt.formB && FORMS[opt.formB])? opt.formB : null,
-    plusA: !!opt.plusA, plusB: !!opt.plusB,
+    plusA: !!opt.plusA, plusB: !!opt.plusB, slotsB: opt.slotsB||null,
     names:all.map(u=>{
     const us = (u.skills||JOBS[u.job].skills).find(x=>x.kind==="ult");
     return {name:u.name,job:u.job,side:u.side,lv:u.lv,row:u.row,ult:us?us.name:"필살기"};
@@ -4991,16 +5073,17 @@ function expedInit(dg, team, TM){
 }
 function expedBattle(E){
   const mon = genMonster(E.dg, E.sec);
-  const b = runBattle(E.team, mon, Object.assign({titleA:"원정대", titleB:`${mon[0].name} · ${E.sec}구간`, hpA:E.hpLeft},
+  const b = runBattle(E.team, mon, Object.assign({titleA:"원정대", titleB:`${monLabel(mon)} · ${E.sec}구간`, hpA:E.hpLeft,
+    rowsB: mon.rows||null, slotsB: mon.slots||null},
     E.TM? teamBattleOpt(E.TM) : {}));
   return {b:b, mon:mon};
 }
 /* 전투 하나를 반영 — 더 갈 수 있으면 true */
 function expedApply(E, b, mon){
   const res = E.res;
-  res.secs.push({sec:E.sec, win:b.winner==="A", frames:b.frames, foe:mon[0].name});
+  res.secs.push({sec:E.sec, win:b.winner==="A", frames:b.frames, foe:monLabel(mon)});
   b.A.forEach(u=>{ E.hpLeft[u.ref] = u.alive ? clamp(u.hp/u.maxHp + .18, .06, 1) : .25; });
-  if(b.winner!=="A"){ res.stopped = `${E.sec}구간 ${mon[0].name}에게 전멸 — 철수`; return false; }
+  if(b.winner!=="A"){ res.stopped = `${E.sec}구간 ${monLabel(mon)}에게 전멸 — 철수`; return false; }
   res.reached = E.sec;
   res.exp += E.dg.exp*(1+E.sec*.14)*EXPED_EXP_MUL;
   const retire = clamp((.02 + E.sec*.015) * (1 - E.avgWill/120), 0, .35);
@@ -5068,7 +5151,7 @@ function expedLoop(E, quick, done){
     expedLoop(E, quick, done);
   };
   if(quick) after();
-  else openBattle(bm.b, {titleA:"원정대", titleB:bm.mon[0].name, field:String(E.dg.mon||"").replace(/^mon_/,""),
+  else openBattle(bm.b, {titleA:"원정대", titleB:monLabel(bm.mon), field:String(E.dg.mon||"").replace(/^mon_/,""),
     bgm:"friendly", jingle: E.sec>=E.dg.secs,
     head:`${E.dg.n} — ${E.sec}/${E.dg.secs}구간`, doneLabel: E.sec>=E.dg.secs? "결과 확정":"다음 구간"}, after);
 }
@@ -6673,6 +6756,21 @@ function render(){
   $("#nav").innerHTML = tabs.map(v=>`<button data-view="${v.id}" class="${v.hot?"hot":""}" aria-current="${UI.view===v.id}">${v.n}${
     v.side?`<span class="wk">${v.side}</span>`:""}${v.badge?`<span class="badge">${v.badge}</span>`:""}</button>`).join("");
   $("#nav").querySelectorAll("button").forEach(b=> b.onclick=()=>{ UI.view=b.dataset.view; render(); });
+  { /* 폰 메뉴 — 4열 2줄(학원·학생·팀 편성·진행 / 시설·유물·상담·더보기), 나머지는 더보기 안에. CSS 가 폭에 따라 #nav 와 바꿔 보여준다 */
+    const MAIN = ["home","roster","team","plan","facil","relic","counsel"], SHORT = {facil:"시설", relic:"유물"};
+    const mainT = MAIN.map(id=> tabs.find(v=>v.id===id)).filter(Boolean);
+    const restT = tabs.filter(v=> !MAIN.includes(v.id));
+    const curRest = restT.find(v=>v.id===UI.view);
+    const restBadge = restT.reduce((a,v)=> a+(v.badge||0), 0);
+    const tb = (v)=>`<button data-view="${v.id}" class="${v.hot?"hot":""}" aria-current="${UI.view===v.id}">${SHORT[v.id]||v.n}${
+      v.side?`<span class="wk">${v.side}</span>`:""}${v.badge?`<span class="badge">${v.badge}</span>`:""}</button>`;
+    $("#navm").innerHTML = `<div class="navm-grid">${mainT.map(tb).join("")}
+        <button class="morebtn ${UI.navMore?"open":""}" id="navMore" aria-current="${!!curRest}">${curRest? esc(curRest.n) : "더보기"}<i>${UI.navMore?"▴":"▾"}</i>${
+          (!UI.navMore && restBadge)? `<span class="badge">${restBadge}</span>`:""}</button></div>
+      <div class="moremenu" ${UI.navMore?"":"hidden"}>${restT.map(v=>`<button data-view="${v.id}" aria-current="${UI.view===v.id}">${v.n}${v.badge?`<span class="badge">${v.badge}</span>`:""}</button>`).join("")}</div>`;
+    $("#navm").querySelectorAll("[data-view]").forEach(b=> b.onclick=()=>{ UI.view=b.dataset.view; UI.navMore=false; render(); });
+    $("#navMore").onclick = ()=>{ UI.navMore=!UI.navMore; render(); };
+  }
 
   const v = $("#view");
   if(UI.view==="home") v.innerHTML = viewHome();
@@ -8980,25 +9078,19 @@ function friendlyCeremony(c){
       <p style="color:var(--muted);font-size:13px;margin-top:6px">${esc(CF.d)} 받아들일 곳을 골라 하반기 일정에 넣는다.
         <b style="color:var(--text)">비워두거나 전부 거절해도 된다.</b> 친선전은 ${CF.teams}팀이 ${CF.teams===1?"한 경기":`${CF.teams}경기를 모두`} 치른다.</p></div>
 
-    <div class="opt" style="cursor:default;margin-top:10px;border-color:var(--brass)">
-      <div class="on" style="color:var(--brass)">연습이라도 명성이 걸린다<span class="price">경기당</span></div>
-      <div class="od">상위 학원에 <b style="color:var(--ok)">승 +${fmt(friendlyFame(1,true))}</b> / 패 <b style="color:var(--bad)">${fmt(friendlyFame(1,false))}</b>
-        · 동급 <b style="color:var(--ok)">승 +${fmt(friendlyFame(0,true))}</b> / 패 <b style="color:var(--bad)">${fmt(friendlyFame(0,false))}</b>
-        · 하위 학원에 <b style="color:var(--ok)">승 +${fmt(friendlyFame(-1,true))}</b> / 패 <b style="color:var(--bad)">${fmt(friendlyFame(-1,false))}</b></div>
-      <div class="od" style="color:var(--dim)">우리보다 센 곳에 도전하면 얻는 게 크고 잃는 게 적다. 아래 학원을 상대로는 반대다.</div>
-    </div>
 
     <div class="eyebrow" style="margin:12px 0 6px">요청한 학원 — 우리 유명도(${fameTitle(S.fame).n}) 기준 ±1등급</div>
     <div class="grid2 foflist">
       ${offers.map((o,oi)=>{
         const at = placed(oi);
-        return `<button class="opt drg ${sel===oi?"sel-entry":""}" data-fof="${oi}"
+        /* 세로로 긴 간략 카드 — 이름 / 등급 / 평균 Lv / 명성 / 상태 (세 장이 한 줄) */
+        return `<button class="opt drg fof ${sel===oi?"sel-entry":""}" data-fof="${oi}"
             style="text-align:left;border-color:${sel===oi?"var(--brass)":at>=0?"var(--ok)":"var(--line-soft)"}">
-          <div class="on">${esc(o.name)} <span class="tag" style="color:var(--brass);border-color:var(--brass)">${FRIENDLY_TIER[o.tier].n}</span>
-            <span class="price" style="color:${at>=0?"var(--ok)":"var(--dim)"}">${at>=0? friendlySlotLabel(ph, at) : (sel===oi? "자리를 고른다" : "대기")}</span></div>
-          <div class="od">${esc(FRIENDLY_TIER[o.tier].d)}</div>
-          <div class="od" style="color:var(--dim)">${o.teams.map((tm,k)=>`${o.teams.length>1?"ABC"[k]+"팀 ":""}${lvText(tm)}`).join(" · ")}</div>
-          <div class="od">경기당 <span style="color:var(--ok)">승 +${fmt(friendlyFame(o.tier-me,true))}</span> · <span style="color:var(--bad)">패 ${fmt(friendlyFame(o.tier-me,false))}</span></div>
+          <div class="fof-n">${esc(o.name)}</div>
+          <div class="fof-t"><span class="tag" style="color:var(--brass);border-color:var(--brass)">${FRIENDLY_TIER[o.tier].n}</span></div>
+          <div class="od fof-lv">${o.teams.map((tm,k)=>`${o.teams.length>1?"ABC"[k]+"팀 ":""}${lvText(tm)}`).join("<br>")}</div>
+          <div class="od fof-f"><span style="color:var(--ok)">승 +${fmt(friendlyFame(o.tier-me,true))}</span><br><span style="color:var(--bad)">패 ${fmt(friendlyFame(o.tier-me,false))}</span></div>
+          <div class="od fof-s" style="color:${at>=0?"var(--ok)":sel===oi?"var(--brass)":"var(--dim)"}">${at>=0? friendlySlotLabel(ph, at) : (sel===oi? "자리를 고른다" : "대기")}</div>
         </button>`;
       }).join("")}
     </div>
@@ -11011,17 +11103,19 @@ function openBattle(res, opt, onDone){
       const fkey=side==='A'?res.formA:res.formB;
       const form=(fkey&&FORMS[fkey])?formData(fkey, side==='A'?res.plusA:res.plusB):null;
       const slots=form?form[row]:null;
-      const col=slots&&slots[order]?+slots[order].slice(1)-1:order;
-      const boss=monHas(n.job);
+      const skey=(side==='B'&&res.slotsB)?res.slotsB[refs[k]]:null;          // 원정 마물 — 지정 자리
+      const col=skey?+skey.slice(1)-1:(slots&&slots[order]?+slots[order].slice(1)-1:order);
+      const isMon=monHas(n.job), boss=isMon&&!(JOBS[n.job]&&JOBS[n.job].encounter), mobU=isMon&&!boss;
+      const soloBoss=boss&&names.filter(v=>v.side==='B').length===1;
       const ultFX=ultimateCasts.map(c=>{
         const target=c.targets.includes(uids[k]),caster=c.actor===uids[k];
         return target||caster?ultimateEffect(c.job,target?'target':'caster',performance.now()-c.at,n.side==='B'):'';
       }).join('');
-      const x=boss?77:side==='A'?(row==='front'?24:14)+col*17:(row==='front'?50:60)+col*14;
-      const y=boss?29:side==='A'?(row==='front'?47:65)+col*9:(row==='front'?35:16)+col*10;
+      const x=soloBoss?77:side==='A'?(row==='front'?24:14)+col*17:(row==='front'?50:60)+col*14;
+      const y=soloBoss?29:side==='A'?(row==='front'?47:65)+col*9:(row==='front'?35:16)+col*10;
       const talk=speech.get(uids[k]), age=talk?performance.now()-talk.at:Infinity;
       const say=talk&&age<1600&&u.alive?battleCallout(talk.call,talk.frame):null;
-      return `<div class="unit bf-unit team-${side} ${boss?'bf-boss':''} ${u.alive?'':'dead'} ${act?'act':''}"
+      return `<div class="unit bf-unit team-${side} ${boss?'bf-boss':''} ${mobU?'bf-mob':''} ${u.alive?'':'dead'} ${act?'act':''}"
         style="left:${x}%;top:${y}%;z-index:${Math.round(y)}" tabindex="0"
         aria-label="${esc(n.name)} 체력 ${Math.round(u.hp)} / ${u.maxHp}, 행동 ${Math.round(u.atb*100)}%, 필살기 ${Math.round(u.ult)}%"
         title="${esc(n.name)} · ${JOBS[n.job].name} · ${row==='front'?'전열':'후열'} / 체력 ${fmt(u.hp)} / ${fmt(u.maxHp)}${u.sh>0?' · 보호막 '+fmt(u.sh):''} / 행동 ${Math.round(u.atb*100)}% · ${esc(n.ult||ultName(n.job))} ${Math.round(u.ult)}%">
@@ -11327,7 +11421,7 @@ function lockerHtml(L, my){
     <div class="panel-h" style="margin-bottom:8px"><h2 style="font-size:13px">락커룸</h2>
       <span class="hint">전력 우리 <b style="color:var(--text)">${fmt(L.myP)}</b> · 상대 ${L.seen
         ? `<b style="color:var(--text)">${fmt(L.foeP)}</b> ${gap>0? `· <span style="color:var(--bad)">열세</span>` : gap<0? `· <span style="color:var(--ok)">우세</span>` : `· 호각`}`
-        : `<b style="color:var(--dim)">파악 못 함</b> <span style="color:var(--dim)">· ${esc(tierN)} 학원은 정보력 ${FOE_INFO_NEED[clamp(L.tier||0,0,PORTAL_TIER)]}에서 확실히 읽힌다</span>`}</span></div>
+        : `<b style="color:var(--dim)">파악 못 함</b> <span style="color:var(--dim)">· <span class="lk-pc">${esc(tierN)} 학원은 정보력 ${FOE_INFO_NEED[clamp(L.tier||0,0,PORTAL_TIER)]}에서 확실히 읽힌다</span><span class="lk-mob">정보력 부족</span></span>`}</span></div>
     <div class="lkrow">${(my||[]).map(st=>{
       const v = L.mood[st.id], tone = moodTone(v), r = L.res[st.id], d = v - L.base[st.id];
       return `<div class="lkcard">
@@ -11350,7 +11444,7 @@ function lockerHtml(L, my){
           <button class="opt" data-say="${i}" style="text-align:left">
             <div class="on">${SPEECH_TYPE[o.type].n}</div>
             <div class="od">&ldquo;${esc(o.t)}&rdquo;</div>
-            <div class="od" style="color:var(--dim)">${SPEECH_TYPE[o.type].d} · ${o.type==="motive"
+            <div class="od sp-x" style="color:var(--dim)">${SPEECH_TYPE[o.type].d} · ${o.type==="motive"
             ? `<span style="color:var(--brass)">통한 학생은 신뢰 대폭 증가</span>`
             : `통한 학생은 신뢰 증가`}</div>
           </button>`).join("")}</div>
@@ -11403,9 +11497,7 @@ function entryTeamCards(picked, maxN){
       <div class="on">${esc(teamLabel(tm))} <span class="tag">${formOf(tm.form).n}</span>
         <span class="price" style="color:${i>=0?"var(--brass)":"var(--dim)"}">${i>=0? (maxN>1? `${i+1}번째 출전` : "출전") : (full? "대기":"인원 부족")}</span></div>
       ${mem.some(x=>sprHas(x.job))? `<div class="sprrow ${mem.length>3?"tight":""}">${mem.map(x=> sprHas(x.job)? sprHTML(x.job,"idle",.5,{p:sprPalOf(x)}) : "").join("")}</div>`:""}
-      <div class="od">${mem.length? mem.map(x=>`${dnH(x)}(${JOBS[x.job].name} Lv.${x.level} · 컨디션 ${Math.round(x.cond)})${isInjured(x)?`<b style="color:var(--bad)"> [부상 ${injWeeks(x)}주]</b>`:""}`).join(" · ") : "편성되지 않음"}</div>
-      ${mem.some(isInjured)? `<div class="od" style="color:var(--bad)">⚠ 부상자 ${mem.filter(isInjured).length}명 — 출전은 가능하지만 잠재력을 제외한 멘탈리티가 50%로 계산된다</div>`:""}
-      <div class="od" style="color:var(--dim)">${formOf(tm.form).txt.join(" · ")}</div>
+      <div class="od etm-mem">${mem.length? mem.map(x=>`<span class="etm-m">${dnH(x)} <span class="tag">${JOBS[x.job].name}</span> <span class="num">Lv.${x.level}</span>${isInjured(x)?`<b style="color:var(--bad)"> 부상 ${injWeeks(x)}주</b>`:""}</span>`).join("") : "편성되지 않음"}</div>
     </button>`;
   }).join("")}</div>`;
 }
@@ -11510,7 +11602,6 @@ function renderFriendly(){
         <h2 style="font-size:24px;margin-top:2px">${esc(t.title)}</h2>
         <p style="color:var(--muted);font-size:13px;margin-top:6px">${esc(FRIENDLY_TIER[t.foe.tier].d)} · ${t.need===1? "한 팀이 한 경기를 치른다." : `${t.need}팀이 순서대로 ${t.need}경기를 모두 치른다.`}
           경기당 <b style="color:var(--ok)">승 +${fmt(friendlyFame(diff,true))}</b> · <b style="color:var(--bad)">패 ${fmt(friendlyFame(diff,false))}</b></p></div>
-      <p style="color:var(--muted);font-size:12.5px;margin-bottom:10px">${t.need===1? "내보낼 팀을 고른다." : "고른 순서대로 상대 A·B·C팀과 맞붙는다."}</p>
       ${entryTeamCards(t.entryTeams, t.need)}
       <div class="rule"></div>
       <div class="eyebrow" style="margin-bottom:6px">상대 — ${esc(t.foe.name)} (정찰 ${lvl}단계)</div>
@@ -11540,7 +11631,7 @@ function renderFriendly(){
     const fL  = lockerState(t, `f${i}`, fMy, t.foe.teams[i], foeTierOf(t.foe));
     showModal(`<h2 style="font-size:18px">${esc(t.title)}</h2>
       <p style="color:var(--muted);font-size:13px;margin:6px 0 12px">제 ${i+1}경기 / ${t.need} · 현재 ${t.w}승 ${t.l}패</p>
-      <div class="grid2">
+      <div class="grid2 mt-cards">
         <div class="opt" style="cursor:default"><div class="on">${esc(teamLabel(TM))} <span class="tag">${formOf(TM.form).n}</span></div>
           <div class="od">${t.myTeams[i].map(id=>{const x=S.students.find(y=>y.id===id); return x? `${dnH(x)}(${JOBS[x.job].name} Lv.${x.level} · 컨디션 ${Math.round(x.cond)})`:"";}).join(" · ")}</div></div>
         <div class="opt" style="cursor:default"><div class="on">${esc(t.foe.name)} <span class="tag">${foeFormName(t.foe.teams[i])}</span></div>${oppInfo(t.foe.teams[i], Math.max(1,scoutLevel()))}</div>
@@ -11657,9 +11748,6 @@ function renderLadder(){
         <p style="color:var(--muted);font-size:13px;margin-top:6px">${esc(cfg.d)} · ${cfg.kind==="cup"?`${cfg.rounds}라운드 · 라운드마다 3선 2승제`:`${cfg.matches}차전 리그 · 경기당 1팀`}
           ${cfg.enterFame?` · 진출 보상 명성 +${Math.round(bannerFame(cfg.enterFame))}`:""}</p></div>
       <div style="margin:10px 0">${ladderPath(t.step)}</div>
-      <p style="font-size:12.5px;color:var(--brass);margin-bottom:6px">예상 상대 — ${foeProfileText(t.step)}</p>
-      <p style="color:var(--muted);font-size:12.5px;margin-bottom:10px">편성해둔 팀 중 <b style="color:var(--text)">${U}팀</b>을 고른다. 고른 순서가 출전 순서가 되고, 진형 보정도 그대로 따라간다.
-        ${U===1? "라운드마다 단판으로 올라간다." : U===2? "라운드마다 두 팀이 한 경기씩 치르고, 1:1이면 이긴 팀끼리 결정전을 한다." : "라운드마다 세 팀이 순서대로 나서 먼저 2승을 가져가는 쪽이 올라간다."}</p>
       ${entryTeamCards(t.entryTeams, U)}
       <div class="btnrow" style="margin-top:14px">
         <button class="btn ghost" id="tBackPrep">뒤로가기</button>
@@ -11721,7 +11809,7 @@ function renderLadder(){
     showModal(`<div class="panel-h"><h2 style="font-size:18px">${esc(t.title)}</h2>
         <span class="hint">${ladderMatchLabel(t)}${cfg.kind==="cup"? (ladderUse(t.step)>1? ` · 라운드 ${t.rw}:${t.rl}` : "") : ` · ${t.w}승 ${t.l}패`}</span></div>
       <div style="margin:6px 0 12px">${ladderPath(t.step)}</div>
-      <div class="grid2">
+      <div class="grid2 mt-cards ${cfg.kind==="league"?"keep":""}">
         <div class="opt" style="cursor:default">
           <div class="on">출전 팀
             <span class="price">${esc(teamLabel(t.entryTeams[ladderTeamIdx(t)]||"A"))}</span></div>
@@ -11788,10 +11876,6 @@ function renderTournament(){
     const need = tourNeedTeams(t);
     const ok = t.entryTeams.length===need;
     showModal(`<h2 style="font-size:18px">${esc(t.title)}</h2>
-      <p style="color:var(--muted);font-size:13px;margin:6px 0 12px">
-        ${t.kind==="spring"
-          ? "겨울이 끝나고 치르는 신인전. 미리 짜둔 네 팀 중 <b style=\"color:var(--text)\">한 팀</b>이 리그 4경기를 치른다. 대회가 끝나면 신입생이 입학하고 학년이 오른다."
-          : `미리 짜둔 네 팀 중 <b style="color:var(--text)">세 팀</b>을 고른다. 고른 순서가 출전 순서가 된다. 총 ${t.maxRound}라운드.`}</p>
       ${entryTeamCards(t.entryTeams, need)}
       <div class="rule"></div>
       <div class="eyebrow" style="margin-bottom:6px">상대 정보 (정찰 ${lvl}단계)</div>
@@ -11858,7 +11942,7 @@ function renderTournament(){
     const mL  = lockerState(t, `m${t.round||0}-${t.matchIdx}`, mMy, oppTeam, foeTierOf(isSpring? t.opps[t.matchIdx] : t.opps[t.round]));
     showModal(`<h2 style="font-size:18px">${esc(t.title)}</h2>
       <p style="color:var(--muted);font-size:13px;margin:6px 0 12px">${head} · 상대 <b style="color:var(--text)">${esc(oppName)}</b></p>
-      <div class="grid2">
+      <div class="grid2 mt-cards">
         <div class="opt" style="cursor:default"><div class="on">우리 ${isSpring?"":`${"ABC"[t.matchIdx]}팀`}</div>
           <div class="od">${myIds.map(id=>{const s=S.students.find(x=>x.id===id); return `${dnH(s)}(${JOBS[s.job].name} Lv.${s.level})`;}).join(" · ")}</div></div>
         <div class="opt" style="cursor:default"><div class="on">${esc(oppName)}</div>${oppInfo(oppTeam, Math.max(1,lvl))}</div>
