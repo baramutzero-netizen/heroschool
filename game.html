@@ -767,6 +767,11 @@ table.tb tr:hover td{background:var(--surface2)}
 .mrow .mv{flex:none;font-weight:600;font-size:12.5px}
 .mrow button{flex:none}
 .cslcard{border:1px solid var(--brass);border-radius:3px;padding:12px 14px;background:color-mix(in srgb,var(--brass) 6%,transparent)}
+.cslrow{display:flex;gap:14px;align-items:flex-start}
+.cslrow .facebox{width:84px;height:84px;flex:none}
+.cslrow .facebox .spr-anchor{margin-bottom:-12px}
+.cslmain{flex:1;min-width:0}
+@media (max-width:640px){ .cslrow{gap:10px} .cslrow .facebox{width:64px;height:64px} }
 .cslwho{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-weight:600}
 .cslwho .price{margin-left:auto;font-weight:400;font-size:12px;color:var(--muted)}
 .cslq{margin-top:8px;font-size:14px;line-height:1.75;color:var(--text)}
@@ -9923,16 +9928,18 @@ function counselBlock(p, qi){
   if(!st || !c) return "";
   const P = personaOf(st);
   const order = p.order || [0,1,2];
+  const face = faceHas(st.job)? faceHTML(st.job, dn(st))
+    : (sprHas(st.job)? `<div class="facebox" style="display:flex;align-items:flex-end;justify-content:center">${sprHTML(st.job,"idle",.5,{p:sprPalOf(st), still:true})}</div>` : "");
   return `<div class="cslblock">
     <div class="cslcard">
+      <div class="cslrow">${face}<div class="cslmain">
       <div class="cslwho">${dnH(st)} ${roleTag(st.job)}<span class="tag yr">${st.year}학년</span>
         <span class="tag" style="color:var(--brass);border-color:var(--brass)">${P.n}</span>
         <span class="price">${PHASES[p.phase]? PHASES[p.phase].n+" "+p.week+"주 · ":""}${esc(c.t)}</span></div>
       <div class="cslq">“${esc(c.q)}”</div>
+      </div></div>
     </div>
-    <p style="color:var(--muted);font-size:12.5px;margin:10px 0 8px">${p.reveal
-      ? `<b style="color:var(--brass)">정보력으로 ${dnH(st)}에게 통할 말을 미리 파악했다.</b>`
-      : `정보력이 높으면 통할 말을 미리 알아볼 수 있다.`}</p>
+    ${p.reveal? `<p style="color:var(--muted);font-size:12.5px;margin:10px 0 8px"><b style="color:var(--brass)">정보력으로 ${dnH(st)}에게 통할 말을 미리 파악했다.</b></p>` : `<div style="height:10px"></div>`}
     <div class="grid2">
       ${order.map(i=>{
         const hit = p.reveal && (c.o[i].f||[]).includes(st.pers||"plain");
@@ -9951,8 +9958,7 @@ function viewCounsel(){
     <span class="hint">${S.year}년차 · 상담 ${C.done.length}회 진행${q.length? ` · <b style="color:var(--brass)">대기 ${q.length}/${CSL_QUEUE_MAX}건</b>`:""}</span></div>`;
   let body = "";
   if(q.length){
-    body = `<p style="color:var(--muted);font-size:12.5px;margin:0 0 12px">어떻게 답할지 고른다. 같은 말도 성격에 따라 다르게 가 닿는다. 마음에 닿으면 멘탈리티 한 항목이 조금 오른다.
-        찾아온 순서대로 아래에 쌓이며, 최대 ${CSL_QUEUE_MAX}건까지 기다려준다. ${q.length>=CSL_QUEUE_MAX? `<b style="color:var(--bad)">지금은 가득 차서 새 상담이 들어오지 않는다.</b>`:""}</p>
+    body = `${q.length>=CSL_QUEUE_MAX? `<p style="font-size:12.5px;margin:0 0 12px"><b style="color:var(--bad)">지금은 가득 차서 새 상담이 들어오지 않는다.</b></p>`:""}
       ${q.map((p,i)=> counselBlock(p,i)).join('<div class="rule"></div>')}
       <div class="cslprob">
         <span>지도력 ${cslLead()} — 맞지 않아도 설득 <b>${Math.round(cslLeadP()*100)}%</b></span>
