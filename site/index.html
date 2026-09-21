@@ -440,7 +440,19 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 .daylog .dlgap{height:11px}
 @media (max-width:820px){
   .handrow{grid-template-columns:repeat(5,1fr);row-gap:16px}   /* 둘째 줄 카드의 수명 배지가 윗줄을 덮지 않게 */
-  .dayrow{grid-template-columns:repeat(3,1fr)}
+}
+/* 폴드 내부 화면·태블릿 세로 (641~820px) — 요일 다섯 칸을 한 줄에 두고 카드를 한 단계 줄인다 */
+@media (min-width:641px) and (max-width:820px){
+  .dayrow{grid-template-columns:repeat(5,1fr);gap:6px}
+  .dslot{min-height:150px}
+  .dslot > .dh{font-size:10.5px;letter-spacing:.03em}
+  .dslot .dempty{font-size:10.5px;padding:0 4px}
+  .card{min-height:150px;padding:6px 5px 5px;gap:2px}
+  .card .cname{font-size:11.5px;letter-spacing:-.2px}
+  .card .cdesc{font-size:10px;line-height:1.35}
+  .card .fxl{font-size:9.5px}
+  .card .ceff{font-size:10.5px}
+  .card .clife{top:-10px;left:-5px}
 }
 
 /* ---------- log ---------- */
@@ -7337,7 +7349,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0921-0322";
+const BUILD = "0921-0459";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
