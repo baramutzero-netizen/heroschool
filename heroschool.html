@@ -7625,7 +7625,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0921-0913";
+const BUILD = "0921-0921";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -12144,10 +12144,11 @@ const BGM = {
   title:    {intro:"title_intro.ogg", len:27.96,  loop:"title_loop.ogg",  v:1},
   prologue: {loop:"prologue.ogg", v:.95},
   /* 계절 — 평소 육성 화면 */
-  spring:   {intro:"spring_intro.ogg", len:13.355, loop:"spring_loop.ogg", v:.9},
-  summer:   {intro:"summer_intro.ogg", len: 7.595, loop:"summer_loop.ogg", v:.9},
-  fall:     {intro:"fall_intro.ogg",   len:61.867, loop:"fall_loop.ogg",   v:.9},
-  winter:   {intro:"winter_intro.ogg", len:62.549, loop:"winter_loop.ogg", v:.9},
+  /* refade — 이어 붙이지 않고, 한 바퀴가 끝나갈 때 서서히 꺼진 뒤 잠깐 쉬고 다시 켠다 (이음새 위화감 방지) */
+  spring:   {intro:"spring_intro.ogg", len:13.355, loop:"spring_loop.ogg", v:.9, refade:true},
+  summer:   {intro:"summer_intro.ogg", len: 7.595, loop:"summer_loop.ogg", v:.9, refade:true},
+  fall:     {intro:"fall_intro.ogg",   len:61.867, loop:"fall_loop.ogg",   v:.9, refade:true},
+  winter:   {intro:"winter_intro.ogg", len:62.549, loop:"winter_loop.ogg", v:.9, refade:true},
   /* 전투 */
   friendly: {intro:"friendlyandexpedition_intro.ogg",      len:11.093, loop:"friendlyandexpedition_loop.ogg"},
   tour:     {intro:"basetournament_intro.ogg",             len:18.773, loop:"basetournament_loop.ogg"},
@@ -12161,6 +12162,8 @@ const BGM = {
   lose:     {loop:"defeat.ogg",   once:true},
   ending:   {loop:"ending.ogg",   once:true, v:.95}
 };
+/* refade 곡의 호흡 — 끝나기 전 페이드아웃(초) · 무음 간격 · 다시 켤 때 페이드인 */
+const BGM_REFADE = {out:3.0, gap:1.2, in:2.0};
 /* 이 이름을 덮어쓰기로 걸면 밑바닥 곡(계절)까지 눌러 아무 소리도 나지 않는다 */
 const BGM_NONE = "_none";
 const AUD_KEY = "heroschool_audio_v1";
@@ -12237,11 +12240,34 @@ function audWeb(key){
     n.srcs.push(s);
     at = t0 + (t.len != null ? t.len : ABUF[t.intro].duration);
   }
-  const L = ctx.createBufferSource();
-  L.buffer = ABUF[t.loop]; L.loop = !t.once; L.connect(g); L.start(at);
-  n.srcs.push(L);
-  if(t.once) L.onended = ()=>{ if(ANOW === n) ANOW = null; };   // 다시 틀 수 있게 비워 둔다
   const vol = (t.v == null ? 1 : t.v);
+  const durL = ABUF[t.loop].duration, RF = BGM_REFADE;
+  if(t.refade && !t.once && durL > RF.out + RF.in + 2){
+    /* 한 바퀴씩 따로 튼다 — 끝나기 out 초 전부터 꺼지고, gap 초 쉬고, in 초 동안 다시 켜진다.
+       첫 바퀴는 인트로에서 그대로 이어지므로 켜는 페이드가 없다. */
+    const R = BGM_REFADE, dur = ABUF[t.loop].duration;
+    const cycle = (start, first)=>{
+      if(n.dead) return;
+      const L = ctx.createBufferSource();
+      L.buffer = ABUF[t.loop]; L.loop = false; L.connect(g); L.start(start);
+      n.srcs.push(L);
+      if(!first){ g.gain.setValueAtTime(0, start); g.gain.linearRampToValueAtTime(vol, start + R.in); }
+      const fo = Math.max(start + R.in + .5, start + dur - R.out);
+      g.gain.setValueAtTime(vol, fo);
+      g.gain.linearRampToValueAtTime(0, start + dur);
+      L.onended = ()=>{
+        n.srcs = n.srcs.filter(x=> x !== L);
+        if(n.dead || ANOW !== n) return;
+        cycle(Math.max(ctx.currentTime, start + dur) + R.gap, false);
+      };
+    };
+    cycle(at, true);
+  } else {
+    const L = ctx.createBufferSource();
+    L.buffer = ABUF[t.loop]; L.loop = !t.once; L.connect(g); L.start(at);
+    n.srcs.push(L);
+    if(t.once) L.onended = ()=>{ if(ANOW === n) ANOW = null; };   // 다시 틀 수 있게 비워 둔다
+  }
   g.gain.setValueAtTime(0, t0);
   g.gain.linearRampToValueAtTime(vol, t0 + .9);
   ANOW = n;
@@ -12251,6 +12277,7 @@ function audStop(fade){
   const n = ANOW; ANOW = null;
   audHtmlStop();
   if(!n || n.html || !ACTX) return;
+  n.dead = true;
   const t = ACTX.currentTime, f = fade || .6;
   try{
     n.g.gain.cancelScheduledValues(t);
@@ -12275,8 +12302,33 @@ function audHtml(key){
   audHtmlStop();
   const t = BGM[key];
   const mk = (f, lp)=>{ const el = new Audio(BGM_DIR + f); el.preload = "auto"; el.loop = !!lp; el.volume = 0; return el; };
-  const lo = mk(t.loop, !t.once), list = [lo];
+  const lo = mk(t.loop, !t.once && !t.refade), list = [lo];
   if(t.once) lo.addEventListener("ended", ()=>{ if(AHTML === list) ANOW = null; });
+  if(t.refade && !t.once){
+    /* <audio> 판 — 끝나기 전 볼륨을 내리고, 끝나면 잠깐 쉬었다가 처음부터 다시 올린다 */
+    const R = BGM_REFADE;
+    const full = ()=> (t.v == null ? 1 : t.v) * audGain();
+    lo.addEventListener("timeupdate", ()=>{
+      if(AHTML !== list || !lo.duration) return;
+      const left = lo.duration - lo.currentTime;
+      if(left < R.out){ try{ lo.volume = full() * Math.max(0, left / R.out); }catch(e){} }
+    });
+    lo.addEventListener("ended", ()=>{
+      if(AHTML !== list) return;
+      setTimeout(()=>{
+        if(AHTML !== list) return;
+        try{ lo.currentTime = 0; lo.volume = 0; }catch(e){}
+        lo.play().catch(()=>{});
+        const st = performance.now();
+        const iv = setInterval(()=>{
+          if(AHTML !== list){ clearInterval(iv); return; }
+          const k = Math.min(1, (performance.now() - st) / (R.in*1000));
+          try{ lo.volume = full() * k; }catch(e){}
+          if(k >= 1) clearInterval(iv);
+        }, 40);
+      }, R.gap*1000);
+    });
+  }
   let head = lo;
   if(t.intro){
     const it = mk(t.intro, false);
