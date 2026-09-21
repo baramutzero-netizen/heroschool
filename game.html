@@ -860,6 +860,38 @@ table.tb tr:hover td{background:var(--surface2)}
 .slot .sprslot{position:absolute;right:4px;bottom:0;width:64px;height:62px;overflow:visible;opacity:.85}
 .slot .sprslot .spr-anchor{margin-bottom:-9px}
 .slot.drg{position:relative}
+.scard.tm2 .sprmini{display:none}
+/* 폰 — 팀 편성: 진형 2열 · 쓰지 않는 자리 숨김 · 명부 2열(이름·학년·스프라이트만) */
+@media (max-width:640px){
+  .formrow{grid-template-columns:repeat(2,1fr);gap:6px}
+  .formcard{padding:7px 8px}
+  .formcard .fmtxt, .formcard .fmrole, .fmdesc{display:none}   /* 부가 설명은 도감에서 */
+  /* 배치 자리 — 전열/후열 줄 구분 없이 쓰는 자리만 3열로 (3자리 1줄 · 5자리 2줄) */
+  .field{grid-template-columns:repeat(3,1fr);gap:6px}
+  .frow{display:contents}
+  .frowlab{display:none}
+  .slot.off{display:none}
+  .slot{padding:7px 34px 6px 8px;min-height:78px;gap:2px;overflow:hidden}
+  .slot.empty{padding-right:8px}
+  .slot .slabel{font-size:9px;letter-spacing:.08em}
+  .slot .nm{font-size:12.5px;line-height:1.2}
+  .slot .n1 .epi{display:none}
+  .slot .n2 .tag:not([class*="role-"]), .slot .sfoot{display:none}
+  .slot .n2{gap:4px}
+  .slot .lv{font-size:10.5px;flex:0 0 100%;margin-left:0}   /* 레벨은 언제나 셋째 줄 */
+  .slot .sprslot{transform:scale(.62);transform-origin:100% 100%;right:-4px;bottom:-2px;opacity:.85}
+  /* 명부 — 배치 자리 카드와 같은 3열 · 이름/직업/Lv/스프라이트 */
+  .roster.tmr{grid-template-columns:repeat(3,1fr);gap:6px}
+  .scard.tm2{position:relative;padding:7px 34px 6px 8px;min-height:78px;overflow:hidden}
+  .scard.tm2 .n1{gap:4px}
+  .scard.tm2 .n1 .tag:not(.inj), .scard.tm2 .n1 .epi, .scard.tm2 .n2 .tag:not([class*="role-"]), .scard.tm2 .sfoot{display:none}
+  .scard.tm2 .nm{font-size:12.5px;line-height:1.2}
+  .scard.tm2 .n2{margin-top:3px;gap:4px}
+  .scard.tm2 .lv{font-size:10.5px;flex:0 0 100%;margin-left:0}
+  .scard.tm2 .sprmini{display:block;position:absolute;right:-2px;bottom:-1px;width:52px;height:52px;overflow:visible;opacity:.85;pointer-events:none;
+    transform:scale(.8);transform-origin:100% 100%}
+  .scard.tm2 .sprmini .spr-anchor{margin-bottom:-7px}
+}
 .slot.drg .n1,.slot.drg .n2,.slot.drg .sfoot{position:relative;z-index:1}
 .unit.dead .sprwrap{opacity:1}
 @media (prefers-reduced-motion:reduce){.spr{animation:none}}
@@ -9198,7 +9230,7 @@ function viewTeam(){
           }).join(" · "); })()}</div>
       </button>`;
     }).join("")}</div>
-    <p style="font-size:12px;color:var(--dim);margin:8px 0 0">${esc(F.d)} · 진형을 바꾸면 사라지는 자리의 학생은 편성에서 빠진다.</p>
+    <p class="fmdesc" style="font-size:12px;color:var(--dim);margin:8px 0 0">${esc(F.d)} · 진형을 바꾸면 사라지는 자리의 학생은 편성에서 빠진다.</p>
 
     <div class="eyebrow" style="margin:16px 0 6px">배치 — ${esc(teamLabel(cur))}</div>
     <div class="field">
@@ -9225,10 +9257,11 @@ function viewTeam(){
       <select id="rsort2" style="background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:4px 6px;font-size:12px;flex:none">
         ${ROSTER_SORT.map(o=>`<option value="${o.k}" ${((S.opts&&S.opts.rsort)||"default")===o.k?"selected":""}>정렬 — ${o.n}</option>`).join("")}
       </select></div>
-    <div class="roster">${sortRoster(S.students, (S.opts&&S.opts.rsort)||"default").map(st=>{
+    <div class="roster tmr">${sortRoster(S.students, (S.opts&&S.opts.rsort)||"default").map(st=>{
       const at = teamOfStudent(st.id);
       const mine = at && at.t.n===cur.n;
-      return `<button class="scard drg ${mine?"sel":""} ${!sel?"dimmed":""}" data-assign2="${st.id}">
+      return `<button class="scard drg tm2 ${mine?"sel":""} ${!sel?"dimmed":""}" data-assign2="${st.id}">
+        ${sprHas(st.job)? `<div class="sprmini">${sprHTML(st.job,"idle",.4,{p:sprPalOf(st), still:true})}</div>`:""}
         <div class="n1"><span class="nm">${dnH(st)}</span>${injTag(st)}
           ${at? `<span class="tag" style="color:var(--brass);border-color:var(--brass)">${esc(teamLabel(at.t))} · ${slotRow(at.slot)==="front"?"전열":"후열"}</span>`:""}</div>
         <div class="n2">${persTag(st)}${gradeTag(st.grade)}${roleTag(st.job)}<span class="tag yr">${st.year}학년</span><span class="lv num">Lv.${st.level}</span></div>
