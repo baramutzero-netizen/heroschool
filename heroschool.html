@@ -807,6 +807,8 @@ table.tb tr:hover td{background:var(--surface2)}
 .slot .n2{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
 .sfoot{display:flex;gap:10px;margin-top:auto;padding-top:4px;font-size:11px;color:var(--muted)}
 .scard.dimmed{opacity:.5}
+.scard.intm{opacity:.45}                 /* 팀 편성 명부 — 지금 보는 팀에 이미 든 학생 */
+.scard.intm.dimmed{opacity:.3}
 .btnpair{display:inline-flex;gap:6px;flex:none}
 .fslots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 /* 친선전 요청 — 학원 카드 세 장 한 줄 */
@@ -967,6 +969,13 @@ table.tb tr:hover td{background:var(--surface2)}
   border:1px solid var(--line-soft);border-radius:3px;background:var(--surface2)}
 .facebox img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 40%}
 .cxjob .facebox{width:104px;height:104px}
+.xtm-mem{display:flex;flex-wrap:wrap;gap:6px 4px;margin-top:6px;max-width:100%}
+.xtm-m{display:flex;flex-direction:column;align-items:center;width:62px;min-width:0}
+.xtm-spr{width:60px;height:54px;display:flex;align-items:flex-end;justify-content:center;overflow:visible}
+.xtm-spr .spr-anchor{margin-bottom:-9px}
+.xtm-n{margin-top:7px;font-size:12px;color:var(--text);max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}
+.xtm-r{font-size:10.5px;color:var(--ok)}
+.opt.locked .xtm-spr{opacity:.55}
 .sprrow{display:flex;gap:2px;align-items:flex-end;margin:2px 0 4px;height:55px;overflow:visible;max-width:100%}
 .sprrow .spr-anchor{margin-bottom:-9px}
 /* 넷 이상이면 카드 폭을 넘치지 않게 겹쳐 세운다 (앵커 64px → 실효 46px) */
@@ -2417,7 +2426,7 @@ const FACILITIES = {
   arena:  Object.assign({n:"대련장",   d:"실전 형식 훈련",            base:115, ex:0},  FAC_TRAIN),
   counsel:{n:"상담실",   d:"상담에서 지도력·정보력·호소력 보정", base:1000, start:0, max:6, ex:3},
   /* 차원 포탈 — 이계에서 온 편지를 받은 뒤, 봄 상반기에만 설치할 수 있다. 편지 전에는 ??? 로만 보인다 */
-  portal: {n:"차원 포탈", d:"모든 대회의 난이도 증가 — 상대 학원의 유명도가 전부 이계 등급(S급 5명 · 유물 장착)으로 바뀐다",
+  portal: {n:"차원 포탈", d:"모든 대회의 난이도 대폭 증가",
            start:0, max:1, costs:[20000], secret:true}
 };
 const PORTAL_PRICE = 20000;
@@ -2506,7 +2515,7 @@ const ITEMS = {
   formbook:{n:"진형 강화의 서", d:"진형 배치 가능 인원 수 +2 — 모든 진형이 ·改 로 강화된다 (출전 최소 인원 3명은 그대로)",
             price:40000, ex:0, secret:true, needFac:"portal"},
   /* 이계의 지도 — 차원 포탈을 설치해야 보인다. 모든 원정이 이계· 판으로 바뀐다 */
-  worldmap:{n:"이계의 지도", d:"모든 원정 이름 앞에 이계· 가 붙는다 — 권장 레벨 +7 (난이도도 그만큼) · 구간당 경험/자금 2배",
+  worldmap:{n:"이계의 지도", d:"모든 원정의 난이도 증가",
             price:20000, ex:0, secret:true, needFac:"portal"}
 };
 /* 진형 강화의 서로 열리는 자리 — 화면 안내용 */
@@ -4273,7 +4282,7 @@ function masterConfirmRow(idOk, idNo){
   return `<div class="btnrow" style="margin-top:8px">
     <button class="btn sm primary" id="${idOk}" ${n?"":"disabled"}>확정 ${n? `(${n}점)`:""}</button>
     <button class="btn sm ghost" id="${idNo}" ${n?"":"disabled"}>되돌리기</button>
-    <span class="hint" style="font-size:11.5px;color:var(--dim)">잔여 ${mpAvail()}pt · 확정하기 전에는 언제든 되돌릴 수 있다</span></div>`;
+    <span class="hint" style="font-size:11.5px;color:var(--dim)">잔여 ${mpAvail()}pt</span></div>`;
 }
 function addGold(n){ S.gold += Math.round(n * (1 + S.master.net*.02)); }
 function infoBattleMul(){ return 1 + S.master.info*.02; }
@@ -5352,6 +5361,11 @@ function expedDay(R, bonus){
   }
   renderExpedPick(R, bonus);
 }
+function xtmMemHtml(mem){
+  return `<div class="xtm-mem">${mem.map(x=>`<div class="xtm-m">
+    <div class="xtm-spr">${sprHas(x.job)? sprHTML(x.job,"idle",.5,{p:sprPalOf(x)}) : ""}</div>
+    <div class="xtm-n">${esc(x.name)}</div>${isRestFocus(x)? `<div class="xtm-r">휴식</div>`:""}</div>`).join("")}</div>`;
+}
 function renderExpedPick(R, bonus){
   const day = R.day, D = DAY_N[day];
   const dgs = expedDgList(), tms = expedTeams();
@@ -5361,13 +5375,13 @@ function renderExpedPick(R, bonus){
   const mem = teamMembers(TM);
   showModal(`<div class="cerhead"><div class="eyebrow">${S.year}년 ${PHASES[S.phase].n} ${S.week+1}주 · ${D}요일</div>
       <h2 style="font-size:24px;margin-top:2px">원정 파견</h2>
-      <p style="color:var(--muted);font-size:13px;margin-top:6px">원정지의 구간을 차례로 돌파한다. 구간마다 전투가 벌어지고, 지구력이 다하면 그 자리에서 철수한다.${bonus>0? ` <b style="color:var(--brass)">${Math.round(bonus*100)}% 체인 보너스 적용 중</b>`:""}</p></div>
+      ${bonus>0? `<p style="color:var(--muted);font-size:13px;margin-top:6px"><b style="color:var(--brass)">${Math.round(bonus*100)}% 체인 보너스 적용 중</b></p>`:""}</div>
     <div class="eyebrow" style="margin-bottom:6px">원정지</div>
     <div class="grid2" style="margin-bottom:12px">
       ${dgs.map(d=>`<button class="opt ${d.id===dg.id?"sel":""}" data-xdg="${d.id}">
         <div class="on">${esc(d.n)} <span class="tag">${d.secs}구간</span><span class="price">Lv.${d.lv}</span></div>
         <div class="od">${esc(d.d)}</div>
-        <div class="od" style="color:var(--dim)">구간당 경험 ${fmt(dgExp(d))} · 자금 ${fmt(dgGold(d))} · 유물 ${Math.round(d.relicP*100)}%${dgKarma(d)? ` · 업보 ${dgKarma(d).toFixed(1)}`:""} · 완주 명성 +${dgFame(d)}</div>
+        <div class="od" style="color:var(--dim)">구간당 경험 ${fmt(dgExp(d))} · 자금 ${fmt(dgGold(d))} · 유물 ${Math.round(d.relicP*100)}%${dgKarma(d)? ` · 업보 ${dgKarma(d).toFixed(1)}`:""}</div>
       </button>`).join("")}
     </div>
     <div class="eyebrow" style="margin-bottom:6px">파견 팀</div>
@@ -5377,11 +5391,11 @@ function renderExpedPick(R, bonus){
         if(rest.length) return `<div class="opt locked" style="cursor:default">
           <div class="on">${esc(teamLabel(t))} <span class="tag">${formOf(t.form).n}</span>
             <span class="price" style="color:var(--ok)">휴식 집중 ${rest.length}명</span></div>
-          <div class="od">${teamMembers(t).map(x=>`${dnH(x)}${isRestFocus(x)?' <span style="color:var(--ok)">휴식</span>':""}`).join(" · ")}</div>
+          ${xtmMemHtml(teamMembers(t))}
           <div class="od" style="color:var(--dim)">휴식 집중인 학생은 원정에 나가지 않는다 — 학생 탭에서 집중을 풀어야 파견할 수 있다.</div></div>`;
         return `<button class="opt ${t.n===TM.n?"sel":""}" data-xtm="${t.n}">
           <div class="on">${esc(teamLabel(t))} <span class="tag">${formOf(t.form).n}</span></div>
-          <div class="od">${teamMembers(t).map(x=>`${dnH(x)}(${JOBS[x.job].name} Lv.${x.level} · 컨디션 ${Math.round(x.cond)})`).join(" · ")}</div>
+          ${xtmMemHtml(teamMembers(t))}
         </button>`;
       }).join("")}
     </div>
@@ -6970,7 +6984,7 @@ function viewHome(){
   const top = S.students.slice().sort((a,b)=>power(b)-power(a)).slice(0,3);
   return `
   <section class="panel">
-    <div class="panel-h"><h2>${esc(S.acadName)}</h2><span class="hint">${tierOf().d}</span></div>
+    <div class="panel-h"><h2>${esc(S.acadName)}</h2></div>
     <div class="homegrid">
       <div>
         <div class="kv"><span class="k">현재</span><span class="v">${S.year}년 ${next.n} ${S.week+1}주차</span></div>
@@ -6995,7 +7009,7 @@ function viewHome(){
     </div>
   </section>
   <section class="panel">
-    <div class="panel-h"><h2>주요 전력</h2><span class="hint">전투력 = 스탯 종합 환산</span></div>
+    <div class="panel-h"><h2>주요 전력</h2></div>
     <div class="roster">${top.map(s=>studentCard(s)).join("")||`<div class="empty">학생이 없다.</div>`}</div>
   </section>
   ${SHOW_YEARFLOW? `<section class="panel">
@@ -7087,7 +7101,7 @@ function viewRoster(){
   const mode = S.opts.rsort || "default";
   const list = sortRoster(S.students, mode);
   return `<section class="panel">
-    <div class="panel-h"><h2>학생 명부</h2><span class="hint">카드를 누르면 상세 · 집중 분야 · 유물을 설정한다</span>
+    <div class="panel-h"><h2>학생 명부</h2><span class="hint">상세보기는 학생 클릭</span>
       <select id="rsort" style="background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:4px 6px;font-size:12px;flex:none">
         ${ROSTER_SORT.map(o=>`<option value="${o.k}" ${mode===o.k?"selected":""}>정렬 — ${o.n}</option>`).join("")}
       </select>
@@ -7147,7 +7161,7 @@ function studentDetail(s){
           <div class="on"${(s.pers||"plain")==="genius"?' style="color:var(--brass)"':""}>${personaOf(s).n}<span class="price">${esc(personaText(s.pers||"plain"))}</span></div>
           <div class="od">${esc(personaOf(s).d)}</div>
         </div>
-        <div class="eyebrow" style="margin-bottom:6px">멘탈리티 · 성장 <span style="color:var(--dim)">— 항목마다 한계가 다르다 (잠재력 + 성격)</span></div>
+        <div class="eyebrow" style="margin-bottom:6px">멘탈리티</div>
         ${MENTAL.map(m=>{
           const v = s.ment[m.k], top = m.fixed? 0 : mentCapOf(s, m.k), full = !m.fixed && v >= top;
           return `<div class="st"${full? ` title="한계 도달 — 더 오르지 않는다"`:""}><span class="k">${m.n}</span>
@@ -7161,9 +7175,8 @@ function studentDetail(s){
             <option value="rest" ${s.focus==="rest"?"selected":""}>휴식 집중 — 스케줄 불참, 컨디션 +${restFocusWeek()}</option>
             ${MENTAL.filter(m=>!m.fixed).map(m=>`<option value="${m.k}" ${s.focus===m.k?"selected":""}>${m.n} — ${m.d}</option>`).join("")}
           </select>
-          <div style="font-size:11.5px;color:var(--dim);margin-top:4px">학원 스케줄과 <b>별개로</b> 매주 혼자 이 분야를 단련한다. 컨디션을 6 더 소모하며, 휴식 주간·원정에 나간 주·컨디션 25 미만일 때는 쉰다.
-            ${isRestFocus(s)? `<b style="color:var(--ok)">휴식 집중 중 — 학원 스케줄에 참여하지 않고 매주 컨디션을 ${restFocusWeek()} 회복한다.</b>`
-              : s.focus!=="free"? `현재 <b style="color:var(--brass)">${FACILITIES[FOCUS_FAC[s.focus]].n}</b>(Lv.${S.facil[FOCUS_FAC[s.focus]]})의 효율을 받는다.`:""}</div>
+          <div style="font-size:11.5px;color:var(--dim);margin-top:4px">학원 스케줄과 <b>별개로</b> 컨디션을 추가 소모해 이 분야를 단련한다.
+            ${isRestFocus(s)? ` <b style="color:var(--ok)">휴식 집중 중 — 학원 스케줄에 참여하지 않고 매주 컨디션을 ${restFocusWeek()} 회복한다.</b>`:""}</div>
         </div>
       </div>
       <div>
@@ -7704,7 +7717,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0921-2154";
+const BUILD = "0921-2309";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -8276,11 +8289,9 @@ function viewSpShop(){
   const have = spOf();
   return `<section class="panel">
     <div class="panel-h"><h2>SP 상점</h2>
-      <span class="hint">졸업생 리그에서 모은 SP 로만 살 수 있다 · 전부 <b style="color:var(--ex)">EX</b> 등급</span>
+      <span class="hint">졸업생 리그에서 모은 SP로 구매 가능</span>
       <span class="btnpair"><span class="pill">보유 SP <b style="color:var(--indigo)">${fmt(have)}</b></span></span></div>
-    <p class="opthint">산 유물은 <b>유물 · 스킬</b> 탭의 보관함으로 들어간다.
-      각 유물은 학원당 <b>하나씩만</b> 살 수 있고, 학생 한 명이 EX 유물을 <b>둘 이상 찰 수 없다</b>.
-      처분되지 않으니 한 번 사면 영영 남는다.</p>
+    <p class="opthint">학생 당 EX 유물 최대 장착 수량: 1개</p>
     <div class="grid2">
       ${SP_SHOP.map(it=>{
         const own = spHas(it.id), ok = !own && have >= it.cost;
@@ -8756,7 +8767,7 @@ function viewChurch(){
   const done = churchDonated();
   const km = S.students.reduce((a,s)=>a+karmaOf(s),0);
   return `<section class="panel">
-    <div class="panel-h"><h2>교회</h2><span class="hint">업보를 씻고 다친 학생을 돌본다 · 학원 전체 업보 <b style="color:var(--${km?"bad":"dim"})">${fmt(km)}</b></span></div>
+    <div class="panel-h"><h2>교회</h2><span class="hint">학원 전체 업보 <b style="color:var(--${km?"bad":"dim"})">${fmt(km)}</b></span></div>
     <div class="grid2">
       <button class="opt ${done?"locked":""}" id="btnDonate" ${done||S.gold<CHURCH_DONATE?"disabled":""}>
         <div class="on">기부<span class="price">${done? "이번 계절 소진" : fmt(CHURCH_DONATE)+" G"}</span></div>
@@ -8783,9 +8794,7 @@ function viewChurch(){
         return `<button class="opt ${done?"locked":""}" id="btnBook" ${done||S.gold<pr?"disabled":""}>
         <div class="on">예지의 서<span class="price">${done? "이번 계절 소진" : fmt(pr)+" G"}</span></div>
         <div class="od">진행 탭에서 펼치면 <b>손패를 통째로</b> 새로 뽑는다. 월~금에 올려둔 카드는 그대로 둔다.</div>
-        <div class="od" style="color:var(--dim)">${churchLeftLabel("book")} · 지금 가진 책 <b style="color:var(--brass)">${bookCount()}권</b>
-          · 지금까지 ${foresightBought()}권 구매 ${pr>=FORESIGHT_MAX? `· <b>${fmt(FORESIGHT_MAX)} G</b>에서 값이 멈췄다`
-            : `· 다음 권 <b>${fmt(nx)} G</b>`}</div>
+        <div class="od" style="color:var(--dim)">${churchLeftLabel("book")} · 지금 가진 책 <b style="color:var(--brass)">${bookCount()}권</b></div>
       </button>`; })()}
     </div>
     ${hurt.length? `<div class="rule"></div><div class="eyebrow" style="margin-bottom:6px">치유 대상</div>
@@ -8820,7 +8829,7 @@ function facCostAt(k, lv){
 function facCost(k){ return facCostAt(k, S.facil[k]||0); }
 function viewFacil(){
   return `<section class="panel">
-    <div class="panel-h"><h2>시설</h2><span class="hint">한 단계마다 해당 훈련 효율 +2% · 최대 Lv.70 에서 ×2.4</span></div>
+    <div class="panel-h"><h2>시설</h2></div>
     <div class="grid2">
       ${facOrder().map(k=>{
         const f=FACILITIES[k], c=facCost(k), lv=S.facil[k]||0, mx=facMax(k), full=lv>=mx;
@@ -8844,7 +8853,7 @@ function viewFacil(){
     </div>
   </section>
   <section class="panel">
-    <div class="panel-h"><h2>구매</h2><span class="hint">한 번 구비하면 영구히 유지된다</span></div>
+    <div class="panel-h"><h2>구매</h2></div>
     <div class="grid2">
       ${itemOrder().map(k=>{
         const it=ITEMS[k], has=!!S.items[k], lock = has? null : itemLock(k);
@@ -9094,7 +9103,7 @@ function viewRelic(){
       </div>`).join("")}</div>` : `<div class="empty">보관 중인 유물이 없다. 원정을 통해 획득한다.</div>`}
   </section>
   <section class="panel">
-    <div class="panel-h"><h2>스킬 보관고</h2><span class="hint">졸업생이 남긴 기술 ${(S.skillPool||[]).length}개 · 학생당 전수는 1회 · 등급과 레벨에 따라 처분할 수 있다</span>
+    <div class="panel-h"><h2>스킬 보관고</h2><span class="hint">학생당 전수는 1회</span>
       ${(S.skillPool||[]).length? sortSelect("sksort", SKILL_SORT, sMode) : ""}</div>
     ${(S.skillPool||[]).length? `<div class="grid2">${sortSkillPool(S.skillPool, sMode).map(({e,i})=>{
       const g = SK_GRADE[clamp(e.mod.grade||0,0,4)];
@@ -9675,7 +9684,7 @@ function viewTeam(){
   const used = new Set();
   teams.forEach(t=> formSlots(t.form).forEach(k=>{ if(t.slots[k]) used.add(t.slots[k]); }));
   return `<section class="panel">
-    <div class="panel-h"><h2>팀 편성</h2><span class="hint">원정과 대회에 이 팀이 그대로 나간다 · 언제든 바꿀 수 있다</span></div>
+    <div class="panel-h"><h2>팀 편성</h2></div>
     <div class="teamtabs">${teams.map(t=>{
       const n = teamMembers(t).length;
       return `<button class="ttab ${t.n===cur.n?"on":""}" data-team="${t.n}">${esc(teamLabel(t))}
@@ -9690,14 +9699,8 @@ function viewTeam(){
         <div class="fmmini">${["f1","f2","f3"].map(x=>`<i class="${f.front.includes(x)?"f":""}"></i>`).join("")}</div>
         <div class="fmmini">${["b1","b2","b3"].map(x=>`<i class="${f.back.includes(x)?"b":""}"></i>`).join("")}</div>
         <div class="fmtxt">${f.txt.map(x=>`<div>${esc(x)}</div>`).join("")}</div>
-        <div class="fmrole">${(()=>{ const w=FORM_ROLES[k]||{};
-          return f.front.concat(f.back).map(sk=>{
-            const r=(w[sk]||[]).map(x=>ROLE_LABEL[x]).join("/");
-            return `${slotRow(sk)==="front"?"전":"후"} ${r||"—"}`;
-          }).join(" · "); })()}</div>
       </button>`;
     }).join("")}</div>
-    <p class="fmdesc" style="font-size:12px;color:var(--dim);margin:8px 0 0">${esc(F.d)} · 진형을 바꾸면 사라지는 자리의 학생은 편성에서 빠진다.</p>
 
     <div class="eyebrow" style="margin:16px 0 6px">배치 — ${esc(teamLabel(cur))}</div>
     <div class="field">
@@ -9711,7 +9714,7 @@ function viewTeam(){
           : `<div class="slot off"><div class="sempty">사용 안 함</div></div>`).join("")}</div>
     </div>
     <div class="btnrow" style="margin-top:10px">
-      <span class="hint" style="font-size:12px;color:${teamFull(cur)?"var(--ok)":"var(--dim)"}">${teamFull(cur)? `편성 완료 (${teamMembers(cur).length}/${formSlots(cur.form).length})` : `${teamMembers(cur).length}/${formSlots(cur.form).length} · 최소 ${TEAM_MIN}명`} — 카드를 자리로 <b style="color:var(--text)">끌어다 놓거나</b>, 자리를 누르고 아래에서 고른다</span>
+      <span class="hint" style="font-size:12px;color:${teamFull(cur)?"var(--ok)":"var(--dim)"}">${teamFull(cur)? `편성 완료 (${teamMembers(cur).length}/${formSlots(cur.form).length})` : `${teamMembers(cur).length}/${formSlots(cur.form).length} · 최소 ${TEAM_MIN}명`}</span>
       <button class="btn sm" id="btnTeamName">이름 변경</button>
       <button class="btn sm primary" id="btnTeamRole">진형에 맞춰 임의 편성</button>
       <button class="btn sm" id="btnTeamAuto">전투력 순으로 자동 편성</button>
@@ -9720,14 +9723,14 @@ function viewTeam(){
   </section>
   <section class="panel">
     <div class="panel-h"><h2>학생 명부</h2>
-      <span class="hint">${sel? `${esc(teamLabel(cur))} <b style="color:var(--brass)">${slotRow(sel)==="front"?"전열":"후열"}</b> 자리에 넣을 학생을 고른다` : "카드를 위 자리로 끌어다 놓는다 · 배치된 학생을 여기로 끌어내면 편성에서 빠진다"}</span>
+      <span class="hint">${sel? `${esc(teamLabel(cur))} <b style="color:var(--brass)">${slotRow(sel)==="front"?"전열":"후열"}</b> 자리에 넣을 학생을 고른다` : "드래그 또는 클릭으로 배치"}</span>
       <select id="rsort2" style="background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:4px 6px;font-size:12px;flex:none">
         ${ROSTER_SORT.map(o=>`<option value="${o.k}" ${((S.opts&&S.opts.rsort)||"default")===o.k?"selected":""}>정렬 — ${o.n}</option>`).join("")}
       </select></div>
     <div class="roster tmr">${sortRoster(S.students, (S.opts&&S.opts.rsort)||"default").map(st=>{
       const at = teamOfStudent(st.id);
       const mine = at && at.t.n===cur.n;
-      return `<button class="scard drg tm2 ${mine?"sel":""} ${!sel?"dimmed":""}" data-assign2="${st.id}">
+      return `<button class="scard drg tm2 ${mine?"sel intm":""} ${!sel?"dimmed":""}" data-assign2="${st.id}">
         ${sprHas(st.job)? `<div class="sprmini">${sprHTML(st.job,"idle",.4,{p:sprPalOf(st), still:true})}</div>`:""}
         <div class="n1"><span class="nm">${dnH(st)}</span>${injTag(st)}
           ${at? `<span class="tag" style="color:var(--brass);border-color:var(--brass)">${esc(teamLabel(at.t))} · ${slotRow(at.slot)==="front"?"전열":"후열"}</span>`:""}</div>
@@ -9965,7 +9968,7 @@ function viewCounsel(){
       </div>`;
   } else {
     body = `<div class="empty">지금은 찾아온 학생이 없다. 한 주를 보내면 누군가 문을 두드릴 수 있다.
-      <div style="font-size:11.5px;color:var(--dim);margin-top:6px">남은 상담거리 ${left}건 · 학생 한 명은 한 해에 한 번만 찾아온다 · 최대 ${CSL_QUEUE_MAX}건까지 밀려서 기다린다 · 해가 바뀌면 처음부터 다시 쌓인다</div></div>
+</div>
       <div class="cslprob">
         <span>지도력 ${cslLead()} — 맞지 않아도 설득 <b>${Math.round(cslLeadP()*100)}%</b></span>
         <span>정보력 ${cslInfo()} — 통할 말 파악 <b>${Math.round(cslInfoP()*100)}%</b></span>
@@ -10036,7 +10039,7 @@ function codexJobs(){
   JOB_KEYS.forEach(k=>{ (byRole[JOBS[k].role] = byRole[JOBS[k].role] || []).push(k); });
   const mine = k => S.students.filter(x=> x.job===k).length;
   return `  <section class="panel">
-    <div class="panel-h"><h2>직업</h2><span class="hint">입학 시 정해지며 특정 조건을 달성하면 그랜드 칭호가 붙는다</span></div>
+    <div class="panel-h"><h2>직업</h2></div>
     ${Object.keys(byRole).filter(r=> byRole[r].length).map(r=>`
       <div class="eyebrow" style="margin:10px 0 6px">${ROLE_LABEL[r]}</div>
       <div class="grid2 gx2">${byRole[r].map(k=>{ const J=JOBS[k], n=mine(k);
@@ -10077,17 +10080,15 @@ function viewCodex(){
     ${cardLegendHtml()}
   </section>`
     + `  <section class="panel">
-    <div class="panel-h"><h2>원정지</h2><span class="hint">각 원정지의 주인 1체와 연전한다 · 구간 사이 체력은 일부만 회복된다</span></div>
+    <div class="panel-h"><h2>원정지</h2></div>
     <div class="grid2">
       ${DUNGEONS.map(dgView).map(d=>{
         const lock = S.fame < d.needFame;
         return `<div class="opt ${lock?"locked":""}" style="cursor:default">
           <div class="on">${d.n}<span class="price">${d.secs}구간</span></div>
-          <div class="od">${d.d} · 권장 Lv.${d.lv} · 구간 적 ${(DUNGEON_MONSTERS[d.id]||[]).length}종 · 마지막: ${esc(JOBS[d.mon].name)} · ${d.secs}구간</div>
-          <div class="od">구간당 경험 ${fmt(dgExp(d))} · 자금 ${fmt(dgGold(d))}${dgKarma(d)? ` · 업보 ${dgKarma(d).toFixed(1)}`:""} · 완주 시 학원 명성 +${dgFame(d)} · 전투 한 판마다 컨디션 ${EXPED_COND} 소모</div>
-          <div class="od" style="color:var(--brass)">진로 평가 상한 ${d.evalCap} · 완주할수록 상한까지 빠르게 오른다</div>
-          ${(()=>{ const tot=Object.values(d.relic).reduce((a,b)=>a+b,0);
-            return `<div class="od">유물 — 구간 승리마다 ${Math.round(d.relicP*100)}% (완주 시 평균 ${(d.relicP*d.secs).toFixed(2)}개) · 등급 ${Object.keys(d.relic).map(g=>`${g} ${Math.round(d.relic[g]/tot*100)}%`).join(" / ")}</div>`; })()}
+          <div class="od">권장 Lv.${d.lv}</div>
+          <div class="od">구간당 경험 ${fmt(dgExp(d))} · 자금 ${fmt(dgGold(d))} · 완주 시 학원 명성 +${dgFame(d)}</div>
+          <div class="od">유물 — 구간 승리마다 ${Math.round(d.relicP*100)}%</div>
           ${lock? `<div class="od" style="color:var(--bad)">학원 명성 부족 — <b>${fmt(d.needFame-S.fame)}</b> 더 필요 (현재 ${fmt(S.fame)} / ${fmt(d.needFame)})</div>`
                 : `<div class="od" style="color:var(--ok)">개방됨 — 필요 명성 ${fmt(d.needFame)}</div>`}
         </div>`;
@@ -10124,7 +10125,7 @@ function viewCodex(){
 function viewRecord(){
   const g = S.graduates.slice().reverse();
   return `<section class="panel">
-    <div class="panel-h"><h2>졸업생 명부</h2><span class="hint">진로가 학원 명성으로 돌아온다</span></div>
+    <div class="panel-h"><h2>졸업생 명부</h2></div>
     ${g.length? `<div class="grid2">${g.map(x=>`<div class="cercard">
         <div class="on">${epiH(x.name)} ${roleTag(x.job)}${x.tr? ` <span class="tag" style="color:var(--dim);border-color:var(--line)">이적</span>`:""}<span class="price">${x.year}년 졸업 · Lv.${x.lv}</span></div>
         <div class="cerrole" style="${x.dark?"color:var(--bad)":""}">${esc(x.career)}</div>
