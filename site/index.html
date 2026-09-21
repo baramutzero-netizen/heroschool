@@ -707,6 +707,52 @@ table.tb tr:hover td{background:var(--surface2)}
 .cerbanner img{display:block;width:100%;aspect-ratio:1672/760;object-fit:cover;object-position:50% 42%}
 @media(max-width:640px){.cerbanner img{aspect-ratio:16/9}}
 .cerhead{border-bottom:1px solid var(--brass);padding-bottom:12px}
+/* 졸업식 스텝롤 */
+.gradroll{position:relative;height:min(62vh,600px);overflow:hidden;margin-top:12px;
+  -webkit-mask-image:linear-gradient(to bottom,transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(to bottom,transparent,#000 7%,#000 93%,transparent)}
+.gr-track{position:absolute;left:0;right:0;top:0;will-change:transform;padding:0 4px}
+.gr-head,.gr-end{text-align:center;padding:40px 10px}
+.gr-h1{font-family:"Gowun Batang","Nanum Myeongjo",serif;font-size:26px;font-weight:700;letter-spacing:.04em;margin-top:6px}
+.gr-h2{color:var(--muted);font-size:13px;margin-top:6px}
+.gr-gift{font-size:12.5px;color:var(--brass);line-height:1.7;word-break:keep-all}
+.gr-sum{display:flex;gap:10px;justify-content:center;margin:14px 0 16px}
+.gr-sum > div{min-width:130px;border:1px solid var(--line-soft);border-radius:3px;background:var(--bg);padding:8px 14px}
+.gr-sum span{display:block;font-size:10.5px;letter-spacing:.12em;color:var(--dim)}
+.gr-sum b{font-size:18px}
+.gr-ctl{display:flex;gap:6px;justify-content:flex-end;margin-top:8px}
+.gcert{max-width:520px;margin:18px auto;padding:26px 28px 22px;border:3px double var(--brass);border-radius:4px;background:var(--surface);
+  box-shadow:var(--shadow);font-size:13px;line-height:1.75;color:var(--text)}
+.gcert.dark{border-color:var(--bad)}
+.gc-title{text-align:center;font-family:"Gowun Batang","Nanum Myeongjo",serif;font-size:22px;font-weight:700;letter-spacing:.3em;color:var(--brass);margin-bottom:16px}
+.gc-who{display:flex;gap:14px;align-items:center}
+.gc-who .facebox{width:84px;height:84px;flex:none}
+.gc-name{font-size:18px;font-weight:700;line-height:1.3}
+.gc-sub{color:var(--muted);font-size:12.5px;margin-top:3px}
+.gc-gap{height:14px}
+.gc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
+.gc-stats > div{border:1px solid var(--line-soft);border-radius:3px;padding:6px 4px;background:var(--bg)}
+.gc-stats span{display:block;font-size:10.5px;letter-spacing:.1em;color:var(--dim)}
+.gc-stats b{font-size:15px}
+.gc-sec{font-size:10.5px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase;border-bottom:1px dashed var(--line);padding-bottom:3px;margin-bottom:4px}
+.gc-row{display:flex;align-items:baseline;gap:8px;font-size:13px}
+.gc-row span{color:var(--muted)}
+.gc-row span:first-child{flex:1}
+.gc-row i{color:var(--dim);font-style:normal;flex:none;min-width:12px;text-align:center}
+.gc-row b{min-width:2.2em;text-align:right}
+.gc-career{font-family:"Gowun Batang","Nanum Myeongjo",serif;font-size:22px;font-weight:700;color:var(--brass);text-align:center;letter-spacing:.06em}
+.gc-cdesc{text-align:center;color:var(--text);font-size:13.5px;margin-top:2px}
+.gc-reason{text-align:center;color:var(--muted);font-size:12px;line-height:1.7;margin-top:6px;word-break:keep-all}
+.gc-text{font-size:13.5px;line-height:1.9;word-break:keep-all;margin-top:4px}
+.gc-sign{text-align:right;margin-top:14px;font-family:"Gowun Batang","Nanum Myeongjo",serif;font-size:14px;line-height:1.9}
+.gc-sign div:last-child{font-size:16px;font-weight:700;letter-spacing:.2em}
+@media(max-width:640px){
+  .gradroll{height:min(66vh,560px)}
+  .gcert{padding:18px 16px 16px;font-size:12.5px}
+  .gc-who .facebox{width:68px;height:68px}
+  .gc-name{font-size:16px}
+  .gc-stats{gap:4px}.gc-stats b{font-size:13.5px}
+  .gc-career{font-size:19px}
+}
 /* 진화?! 팝업 — 가운데 스프라이트, 1쪽에서는 하얗게 반짝인다 */
 .evo-stage{position:relative;width:220px;height:150px;margin:14px auto 4px;display:flex;justify-content:center;align-items:flex-end}
 .evo-stage .spr-anchor{margin-bottom:-14px}
@@ -3048,6 +3094,7 @@ function newStudent(year, grade, job){
   };
   applyPersona(st);
   rollMentCaps(st);                 // 항목별 한계는 입학할 때 정해진다
+  st.ment0 = Object.assign({}, st.ment);   // 졸업 증서용 — 입학 당시 멘탈리티
 
   // 상급생은 이미 어느 정도 성장해 있다
   const preLv = year===1?0 : year===2? ri(4,7) : ri(9,14);
@@ -5274,7 +5321,8 @@ function expedDone(R, bonus, res, TM){
   reportRecord(day, TR.exped, bonus, "exped", {}, S.students.filter(s=>res.ids.includes(s.id)), {}, Math.max(0, DAYLOG.length-3),
     {facility:"arena", reward:`${res.dg.n} · ${res.reached}/${res.dg.secs}구간 · 유물 ${res.relics.length}개 · 자금 +${fmt(res.gold)}`});
   const skip = new Set(res.ids);
-  res.ids.forEach(id=>{ const s=S.students.find(x=>x.id===id); if(s) s._exp=(s._exp||0)+1; });
+  res.ids.forEach(id=>{ const s=S.students.find(x=>x.id===id); if(!s) return; s._exp=(s._exp||0)+1;
+    s.expedN = s.expedN||{}; s.expedN[res.dg.id] = (s.expedN[res.dg.id]||0)+1; });   // 졸업 증서용 — 원정지별 횟수
   if(S.students.some(s=> !skip.has(s.id)))
     dayRun(TR.free, bonus, day, {skip:skip, head:`남은 학생들은 <b>자율 훈련</b>으로 하루를 보냈다.`, mark:markOf(R.days[day])});
   dlog("", "gap");
@@ -5470,6 +5518,7 @@ function finishTournament(t){
     }
     const got = addEval(s, d);
     if(got) evalNotes.push(`${dnH(s)} ${got>0?"+":""}${got.toFixed(0)}`);
+    if(t.kind==="spring" ? t.champ : t.roundWins===t.maxRound){ s.wins = s.wins||[]; s.wins.push({y:S.year, n: t.kind==="spring" ? "봄 신인전" : "가을 대회"}); }
     const fg = Math.round((t.kind==="spring"?wins*9:(t.roundWins||0)*22)+8);
     s.fame += fg;
     const lv0 = s.level;
@@ -5813,6 +5862,7 @@ function finishLadder(t){
   const ups=[], notes=[], rows=[];
   parts.forEach(id=>{
     const s = S.students.find(x=>x.id===id); if(!s) return;
+    if(champ){ s.wins = s.wins||[]; s.wins.push({y:S.year, n:cfg.n}); }      // 졸업 증서용 — 우승 경력
     const myWins = t.results.filter(r=>r.win && r.myIds.includes(id)).length;
     let d = myWins*5 + (t.advanced? 8:0) + (champ? 20:0);
     if(t.w===0) d = -8;
@@ -6545,6 +6595,9 @@ function graduateAll(){
       // 대전용 — 이 기록만으로 전투 유닛을 다시 세울 수 있어야 한다
       grade:st.grade, pers:st.pers||"plain", raw:st.name,
       ment:Object.assign({}, st.ment), skMod:JSON.parse(JSON.stringify(st.skMod||{})),
+      // 졸업 증서용
+      enrollYear: S.year - (st.year-1), ment0: st.ment0 ? Object.assign({}, st.ment0) : null,
+      expedN: Object.assign({}, st.expedN||{}), expedTotal: st._exp|0, wins: (st.wins||[]).slice(), careerD: c.d||"",
       relics:(st.relics||[]).filter(Boolean).map(r=>({grade:r.grade, name:r.name, aff:r.aff.map(a=>({k:a.k,n:a.n,v:a.v}))}))};
     // 졸업 선물 — 가장 깊이 체득한 기술 하나를 마스터에게 남긴다
     const abil = skillsOf(st).map(sk=>({cat: sk.kind==="basic"?"basic":sk.kind==="ult"?"ult":"skill",
@@ -7652,7 +7705,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0921-0956";
+const BUILD = "0921-1845";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -10623,6 +10676,7 @@ function showCeremony(){
     : c.type==="evolve" ? evolveCeremony(c)
     : enrollCeremony(c);
   showModal(html, ()=>{
+    if(c.type==="grad") gradRollStart();
     if(c.type==="friendly"){
       const F = friendlyState(c.phase||"spring");
       const redraw = ()=>{ UI.ceremonies.unshift(c); closeModal(); showCeremony(); };
@@ -10686,30 +10740,102 @@ function showCeremony(){
   /* 첫 친선전 요청 — 안내 한 장을 그 위에 겹쳐 띄운다 */
   if(c.type==="friendly" && !tutSeen("7")) tutOverPage("7");
 }
+/* ── 졸업식 — 졸업 증서가 아래에서 위로 흘러 올라가는 스텝롤 ── */
+function careerDescOf(id){ const c = CAREERS.find(x=>x.id===id) || DARK_CAREERS.find(x=>x.id===id); return c ? c.d : ""; }
+function gradCertHtml(g, c){
+  const J = JOBS[g.job] || {name:g.job};
+  const P = PERSONA[g.pers] || PERSONA.plain;
+  const face = faceHas(g.job) ? faceHTML(g.job, g.name) : (sprHas(g.job) ? `<div class="facebox" style="display:flex;align-items:flex-end;justify-content:center">${sprHTML(g.job,"idle",.6,{p:sprPalOf(g), still:true})}</div>` : "");
+  const m0 = g.ment0 || null, m1 = g.ment || {};
+  const mentRows = MENTAL.filter(m=>!m.fixed).map(m=>
+    `<div class="gc-row"><span>${m.n}</span><b class="num">${m0? Math.round(m0[m.k]||0) : "—"}</b><i>→</i><b class="num" style="color:var(--brass)">${Math.round(m1[m.k]||0)}</b></div>`).join("");
+  const dgRows = DUNGEONS.map(d=>{ const n = (g.expedN||{})[d.id]|0; return `<div class="gc-row"><span>${esc(d.n)}</span><b class="num">${n}회</b></div>`; }).join("")
+    + ((!g.expedN || !Object.keys(g.expedN).length) && g.expedTotal ? `<div class="gc-note">원정지별 기록이 없는 옛 기록 — 총 ${g.expedTotal}회</div>` : "");
+  const winRows = (g.wins||[]).length
+    ? g.wins.map(w=>`<div class="gc-row"><span>${w.y}년 ${esc(w.n)}</span><b style="color:var(--brass)">우승</b></div>`).join("")
+    : `<div class="gc-row"><span style="color:var(--dim)">우승 경력 없음</span></div>`;
+  const enroll = g.enrollYear != null ? g.enrollYear : (c.year-2);
+  return `<div class="gcert ${g.dark?"dark":""}">
+    <div class="gc-title">졸 업 증 서</div>
+    <div class="gc-who">${face}
+      <div class="gc-id">
+        <div class="gc-name">${epiH(g.name)}</div>
+        <div class="gc-sub">${esc(J.name)} · ${esc(P.n)} · ${enroll}년 입학</div>
+      </div></div>
+    <div class="gc-gap"></div>
+    <div class="gc-stats">
+      <div><span>평가</span><b class="num">${Math.round(g.score||0)}</b></div>
+      <div><span>신뢰</span><b class="num">${g.trust!=null? trustBand(g.trust).step : "—"}</b></div>
+      <div><span>업보</span><b class="num" style="${(g.karma|0)>0?"color:var(--bad)":""}">${fmt(g.karma||0)}</b></div>
+      <div><span>전투력</span><b class="num">${fmt(g.pw||0)}</b></div>
+    </div>
+    <div class="gc-gap"></div>
+    <div class="gc-sec">멘탈리티 — 입학 → 졸업</div>${mentRows}
+    <div class="gc-gap"></div>
+    <div class="gc-sec">원정</div>${dgRows}
+    <div class="gc-gap"></div>
+    <div class="gc-sec">대회 우승 경력</div>${winRows}
+    <div class="gc-gap"></div><div class="gc-gap"></div>
+    <div class="gc-career" style="${g.dark?"color:var(--bad)":""}">${esc(g.career)}</div>
+    <div class="gc-cdesc">${esc(g.careerD || careerDescOf(g.careerId))}</div>
+    ${g.reason? `<div class="gc-reason">${esc(g.reason)}</div>`:""}
+    <div class="gc-gap"></div>
+    <div class="gc-row"><span>졸업</span><b>${c.year}년</b><i></i><span>최종</span><b class="num">Lv.${g.lv}</b></div>
+    <div class="gc-gap"></div>
+    <div class="gc-text">본 학생은 <b>${esc(S.acadName||"학원")}</b>의 과정을 3년간 수료하였으니 이 증서를 수여합니다.</div>
+    <div class="gc-sign"><div>${c.year}년 2월</div><div>마스터</div></div>
+  </div>`;
+}
 function gradCeremony(c){
+  const list = c.list || [];
   return `<div class="cerhead">
       <div class="eyebrow">${c.year}년 · 제 ${c.year}회</div>
       <h2 style="font-size:26px;margin-top:2px">졸업식</h2>
-      <p style="color:var(--muted);font-size:13px;margin-top:6px">3년 과정을 마친 ${c.list.length}명이 학원을 떠난다. 이들이 택한 길이 곧 학원의 이름이 된다.</p>
+      <p style="color:var(--muted);font-size:13px;margin-top:6px">3년 과정을 마친 ${list.length}명이 학원을 떠난다. 이들이 택한 길이 곧 학원의 이름이 된다.</p>
     </div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin:12px 0">
-      <span class="pill ok">학원 명성 +${fmt(c.fame)}</span>
-      <span class="pill">후원금 +${fmt(c.gold)}</span>
+    <div class="gradroll" id="gradRoll">
+      <div class="gr-track" id="grTrack">
+        <div class="gr-head"><div class="eyebrow">${esc(S.acadName||"학원")}</div><div class="gr-h1">제 ${c.year}회 졸업식</div>
+          <div class="gr-h2">${list.length}명의 졸업생</div></div>
+        ${list.map(g=> gradCertHtml(g, c)).join("")}
+        <div class="gr-end">
+          <div class="gr-h1">졸업을 축하합니다</div>
+          <div class="gr-h2" style="font-size:14px;margin-top:8px">졸업생들의 여정은 이제부터 시작입니다</div>
+          <div class="gr-sum">
+            <div><span>학원 명성</span><b class="num" style="color:var(--ok)">${c.fame>=0?"+":""}${fmt(c.fame)}</b></div>
+            <div><span>후원금</span><b class="num" style="color:var(--brass)">+${fmt(c.gold)} G</b></div>
+          </div>
+          ${list.some(g=>g.gift)? `<div class="gr-gift">전수 — ${list.filter(g=>g.gift).map(g=>`${epiH(g.name)}의 <b>${esc(g.gift)}</b>`).join(" · ")}</div>`:""}
+          <div class="btnrow" style="justify-content:center;margin-top:14px"><button class="btn" id="grReplay">다시 보기</button><button class="btn primary" id="cerOk">졸업생을 보낸다</button></div>
+        </div>
+      </div>
     </div>
-    <div class="grid2">
-      ${c.list.map(g=>`<div class="cercard">
-        <div class="cerhd">
-        ${sprHas(g.job)? `<div class="sprbox">${sprHTML(g.job, g.dark?"idle":"win", .5, {p:sprPalOf(g)})}</div>`:""}
-        <div>
-        <div class="on">${epiH(g.name)} ${roleTag(g.job)}<span class="price">Lv.${g.lv}</span></div>
-        <div class="cerrole" style="${g.dark?"color:var(--bad)":""}">${esc(g.career)}</div>
-        <div class="cerwhy" style="${g.farewell?"color:var(--brass)":""}">${esc(g.reason)}</div>
-        ${g.gift? `<div class="od" style="color:var(--brass);margin-top:6px">전수 — ${esc(g.gift)}</div>`:""}
-        </div></div>
-        <div class="cerfoot"><span>진로 평가 ${g.score}</span>${g.trust? `<span style="color:var(--brass)">신뢰 ${trustBand(g.trust).step}</span>`:""}${g.karma? `<span style="color:var(--bad)">업보 ${fmt(g.karma)}</span>`:""}<span>전투력 ${fmt(g.pw)}</span>${g.pfame? `<span title="개인 명성이 높을수록 후원금이 오른다">명성 ${fmt(g.pfame)}</span>`:""}<span style="color:var(--${g.fame<0?"bad":"brass"})">명성 ${g.fame<0?"":"+"}${fmt(g.fame)}</span></div>
-      </div>`).join("")}
-    </div>
-    <div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">졸업생을 보낸다</button></div>`;
+    <div class="gr-ctl"><button class="btn sm" id="grSpeed">▶ ×1</button><button class="btn sm ghost" id="grSkip">끝으로</button></div>`;
+}
+/* 스텝롤 구동 — 뷰 아래에서 시작해 위로, 끝 카드의 아랫단이 뷰 아랫단에 닿으면 멈춘다 */
+function gradRollStart(){
+  const view = $("#gradRoll"), track = $("#grTrack"); if(!view || !track) return;
+  const R = {y: view.clientHeight, speed: 1, last: performance.now(), done:false};
+  const base = 52;                                   // px/초
+  const endY = ()=> view.clientHeight - track.scrollHeight;
+  const place = ()=>{ track.style.transform = `translateY(${Math.round(R.y)}px)`; };
+  const ctl = (show)=>{ ["#grSpeed","#grSkip"].forEach(q=>{ const b=$(q); if(b) b.style.display = show? "" : "none"; }); };
+  const finish = ()=>{ R.done = true; R.y = endY(); place(); ctl(false); };
+  const step = (now)=>{
+    if(!document.body.contains(track)) return;
+    if(R.done) return;
+    const dt = Math.min(.1, (now - R.last)/1000); R.last = now;
+    R.y -= base * R.speed * dt;
+    if(R.y <= endY()){ finish(); return; }
+    place(); requestAnimationFrame(step);
+  };
+  const replay = ()=>{ R.y = view.clientHeight; R.speed = 1; R.done = false; R.last = performance.now();
+    const sp=$("#grSpeed"); if(sp) sp.textContent = "▶ ×1"; ctl(true); place(); requestAnimationFrame(step); };
+  place();
+  const sp = $("#grSpeed"); if(sp) sp.onclick = ()=>{ R.speed = R.speed>=4 ? 1 : R.speed*2; sp.textContent = `▶ ×${R.speed}`; };
+  const sk = $("#grSkip"); if(sk) sk.onclick = finish;
+  const rp = $("#grReplay"); if(rp) rp.onclick = replay;
+  requestAnimationFrame(step);
 }
 /* 차원 포탈 설치 확인 — 되돌릴 수 없는 선택이라 한 번 더 묻는다 */
 function portalConfirmModal(onYes){
