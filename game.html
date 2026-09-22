@@ -712,6 +712,26 @@ table.tb tr:hover td{background:var(--surface2)}
 .gr-sum span{display:block;font-size:10.5px;letter-spacing:.12em;color:var(--dim)}
 .gr-sum b{font-size:18px}
 .gr-ctl{display:flex;gap:6px;justify-content:flex-end;margin-top:8px}
+.gradcard{display:flex;gap:12px;align-items:center;text-align:left;cursor:pointer;width:100%}
+.gradcard:hover{border-color:var(--brass)}
+.gradcard.dark:hover{border-color:var(--bad)}
+.gradcard .facebox{width:64px;height:64px;flex:none}
+.gradcard-b{min-width:0;flex:1}
+.gradcard-epi{font-size:11.5px;color:var(--brass);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gradcard-n{font-weight:700;font-size:15px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gradcard-s{display:flex;gap:4px 6px;align-items:center;flex-wrap:wrap;margin-top:4px;font-size:12px;color:var(--muted)}
+.gradcard-s span{white-space:nowrap}
+.gcert-pop .gcert{margin:0 auto;max-height:min(72vh,720px);overflow-y:auto}
+.slot .lgface{position:absolute;right:6px;top:6px;width:46px;height:46px;opacity:.95;pointer-events:none}
+.slot .lgface .facebox{width:46px;height:46px}
+.slot .lgdrop{margin-left:auto;color:var(--dim);font-size:12px;padding:0 4px;cursor:pointer}
+.slot .lgdrop:hover{color:var(--bad)}
+.lggrad.sel{border-color:var(--brass);box-shadow:0 0 0 1px var(--brass) inset;background:var(--brass-soft)}
+.lgpick .lgtr{display:flex;gap:6px;align-items:center;justify-content:flex-end;margin-top:4px;font-size:12px}
+.graddetail .panel{margin:0;box-shadow:none;border:0;padding:0;background:transparent}
+.graddetail{max-height:min(74vh,760px);overflow-y:auto}
+.slot .lgdrop-m{display:none;position:absolute;right:6px;bottom:4px;font-size:12px;z-index:2;line-height:1}
+@media (max-width:640px){ .slot .lgface{width:34px;height:34px;right:2px;top:2px} .slot .lgface .facebox{width:34px;height:34px} .slot .lgdrop-m{display:block} }
 .gcert{max-width:520px;margin:18px auto;padding:26px 28px 22px;border:3px double var(--brass);border-radius:4px;background:var(--surface);
   box-shadow:var(--shadow);font-size:13px;line-height:1.75;color:var(--text)}
 .gcert.dark{border-color:var(--bad)}
@@ -737,6 +757,10 @@ table.tb tr:hover td{background:var(--surface2)}
 .gc-text{font-size:13.5px;line-height:1.9;word-break:keep-all;margin-top:4px}
 .gc-sign{text-align:right;margin-top:14px;font-family:"Gowun Batang","Nanum Myeongjo",serif;font-size:14px;line-height:1.9}
 .gc-sign div:last-child{font-size:16px;font-weight:700;letter-spacing:.2em}
+.gc-sign{position:relative}
+.gc-stamp{position:absolute;right:18px;bottom:-14px;width:84px;height:84px;color:#A8353A;opacity:.9;transform:rotate(-13deg);pointer-events:none;mix-blend-mode:multiply}
+.gcert.dark .gc-stamp{color:#6E2B2B}
+@media (max-width:640px){ .gc-stamp{width:70px;height:70px;right:16px;bottom:-10px} }
 @media(max-width:640px){
   .gradroll{height:min(66vh,560px)}
   .gcert{padding:18px 16px 16px;font-size:12.5px}
@@ -6895,7 +6919,8 @@ const VIEWS = [
   {id:"facil", n:"시설 · 상점"},
   {id:"relic", n:"유물 · 스킬"},
   {id:"record", n:"기록"},
-  {id:"league", n:"리그"},
+  {id:"league", n:"졸업생 리그"},
+  {id:"lgentry", n:"리그 등록"},
   {id:"rank", n:"순위표"},
   {id:"spshop", n:"SP 상점"},
   {id:"codex",  n:"도감"},
@@ -6974,6 +6999,10 @@ function render(){
   }
   if(S.phase==="winter" && S.scouts) tabs.splice(2,0,{id:"scout", n:"스카우트", badge: scoutOpen()? (S.scoutTries||0) : null});
   tabs.splice(tabs.findIndex(v=>v.id==="record"), 0, {id:"counsel", n:"상담", badge: counselState().queue.length || null});
+  if(!(S.graduates||[]).length){           // 기록 — 첫 졸업생이 나온 뒤에야 열린다
+    tabs.splice(tabs.findIndex(v=>v.id==="record"), 1);
+    if(UI.view==="record") UI.view = "home";
+  }
   {  // 스케줄 탭에는 지금 몇 주차인지 붙여둔다
     const pv = tabs.find(v=>v.id==="plan");
     if(pv) pv.side = `${Math.min(S.week+1, PHASES[S.phase].weeks)}주`;
@@ -7008,6 +7037,7 @@ function render(){
   else if(UI.view==="codex") v.innerHTML = viewCodex();
   else if(UI.view==="record") v.innerHTML = viewRecord();
   else if(UI.view==="league") v.innerHTML = viewLeague();
+  else if(UI.view==="lgentry") v.innerHTML = viewLgEntry();
   else if(UI.view==="rank") v.innerHTML = viewRank();
   else if(UI.view==="spshop") v.innerHTML = viewSpShop();
   else if(UI.view==="opt") v.innerHTML = viewOpt();
@@ -7222,16 +7252,18 @@ function renameStudent(id){
     $("#snOk").onclick = go;
   });
 }
-function studentDetail(s){
+function studentDetail(s, opt){
   if(!s) return "";
+  opt = opt || {};
+  const G = opt.grad || null;                       // 졸업생 기록이면 — 이름 변경·집중 분야 없이, 진로는 확정된 것을 보여준다
   const bs = battleStats(s), J = JOBS[s.job];
   const slots = relicSlots(s);
   const {c:career, sc} = careerFor(s);
   return `<section class="panel">
     <div class="stuhead">
     ${faceHas(s.job)? faceHTML(s.job, dn(s)) : (sprHas(s.job)? `<div class="sprbox">${sprHTML(s.job,"idle",1,{p:sprPalOf(s)})}</div>`:"")}
-    <div class="panel-h"><h2>${dnH(s)}<button class="btn icon" id="btnStName" title="이름 변경">${ICON_EDIT}</button></h2>
-      <span>${teamTag(s)} ${gradeTag(s.grade)} ${roleTag(s.job)} <span class="tag" style="white-space:normal">${ROLE_LABEL[J.role]}${J.sub? " · "+J.sub:""}</span> <span class="tag yr">${s.year}학년</span> <span class="tag">Lv.${s.level}</span> ${bondTags(s)}</span>
+    <div class="panel-h"><h2>${dnH(s)}${G? "" : `<button class="btn icon" id="btnStName" title="이름 변경">${ICON_EDIT}</button>`}</h2>
+      <span>${G? `<span class="tag" style="color:var(--brass);border-color:var(--brass)">${G.year}년 졸업</span>` : teamTag(s)} ${gradeTag(s.grade)} ${roleTag(s.job)} <span class="tag" style="white-space:normal">${ROLE_LABEL[J.role]}${J.sub? " · "+J.sub:""}</span> ${G? "" : `<span class="tag yr">${s.year}학년</span>`} <span class="tag">Lv.${s.level}</span> ${G? "" : bondTags(s)}</span>
       <span class="hint">${esc(J.desc)}</span></div>
     </div>
     ${s.note? `<div class="cerwhy" style="margin-bottom:12px">입학 당시 — ${esc(s.note)}</div>`:""}
@@ -7249,7 +7281,7 @@ function studentDetail(s){
           <span class="mentbar${v>MENT_SOFT?" over":""}${full?" full":""}"><i style="width:${Math.min(100, v)}%"></i></span>
           <span class="v num mentv${(v>MENT_SOFT||full)?" over":""}">${mentalGradeHTML(v)}${Math.round(v)}</span></div>`;
         }).join("")}
-        <div style="margin-top:10px">
+        ${G? "" : `<div style="margin-top:10px">
           <div class="eyebrow" style="margin-bottom:4px">집중 트레이닝 분야</div>
           <select id="focusSel" style="width:100%;background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:5px">
             <option value="free" ${s.focus==="free"?"selected":""}>지정 없음 (개인 훈련 안 함)</option>
@@ -7258,7 +7290,7 @@ function studentDetail(s){
           </select>
           <div style="font-size:11.5px;color:var(--dim);margin-top:4px">학원 스케줄과 <b>별개로</b> 컨디션을 추가 소모해 이 분야를 단련한다.
             ${isRestFocus(s)? ` <b style="color:var(--ok)">휴식 집중 중 — 학원 스케줄에 참여하지 않고 매주 컨디션을 ${restFocusWeek()} 회복한다.</b>`:""}</div>
-        </div>
+        </div>`}
       </div>
       <div>
         <div class="eyebrow" style="margin-bottom:6px">전투 능력치</div>
@@ -7271,14 +7303,19 @@ function studentDetail(s){
         </div>
         <div class="kv" style="margin-top:8px"><span class="k">의식 유지선</span><span class="v num">체력 ${Math.round(consThr(s.ment.stam))}% 이상</span></div>
         <div class="kv"><span class="k">의식 저하 경감</span><span class="v num">${Math.round((1-clamp(1-s.ment.will/100*.7,.3,1))*100)}%</span></div>
-        <div class="kv"><span class="k">컨디션</span><span class="v num">${Math.round(s.cond)} <span style="color:var(--${condEff(s.cond).tone})">훈련 효율 ${condEff(s.cond).pct}%</span></span></div>
+        ${G? "" : `<div class="kv"><span class="k">컨디션</span><span class="v num">${Math.round(s.cond)} <span style="color:var(--${condEff(s.cond).tone})">훈련 효율 ${condEff(s.cond).pct}%</span></span></div>
         <div class="kv"><span class="k">훈련 성공률</span><span class="v num" style="color:var(--${isInjured(s)?"bad":trainSuccessP(s,false)>=1?"ok":"warn"})">${Math.round(trainSuccessP(s,false)*100)}%</span></div>
         ${isInjured(s)? `<div class="kv"><span class="k">부상</span><span class="v" style="color:var(--bad)">회복까지 <b class="num">${injWeeks(s)}주</b> · 잠재력 외 멘탈리티 50%</span></div>`:""}
-        <div class="kv"><span class="k">집중 분야</span><span class="v">${s.focus==="free"?"지정 없음":isRestFocus(s)?"휴식 집중":MENTAL.find(m=>m.k===s.focus).n}</span></div>
+        <div class="kv"><span class="k">집중 분야</span><span class="v">${s.focus==="free"?"지정 없음":isRestFocus(s)?"휴식 집중":MENTAL.find(m=>m.k===s.focus).n}</span></div>`}
       </div>
       <div>
         <div class="eyebrow" style="margin-bottom:6px">학적</div>
-        ${(()=>{ const tv=trustOf(s), tb=trustBand(tv);
+        ${G? `<div class="kv"><span class="k">졸업</span><span class="v num">${G.year}년 · 최종 Lv.${G.lv}</span></div>
+          ${G.trust!=null? `<div class="kv"><span class="k">신뢰 단계</span><span class="v" style="color:var(--brass)">${trustBand(G.trust).step}</span></div>`:""}
+          <div class="kv"><span class="k">업보</span><span class="v num" style="color:var(--${(G.karma|0)>0?"bad":"dim"})">${fmt(G.karma||0)}</span></div>
+          <div class="kv"><span class="k">진로 평가</span><span class="v num" style="color:var(--brass)">${Math.round(G.score||0)}</span></div>
+          <div class="kv"><span class="k">직업</span><span class="v" style="color:var(--${G.dark?"bad":"brass"})">${esc(G.career||"진로 미정")}${G.dark? ` <span class="tag inj">업보</span>`:""}</span></div>`
+        : `${(()=>{ const tv=trustOf(s), tb=trustBand(tv);
           return `<div class="kv"><span class="k">신뢰 단계</span><span class="v" style="color:var(--brass)">${tb.step}${tv>=TRUST_MAX? ` <span class="tag" style="color:var(--brass);border-color:var(--brass)">최대</span>`:""}</span></div>
           <div class="kv"><span class="k">관계 상태</span><span class="v">${tb.rel}</span></div>
           <div class="trustsay">&ldquo;${esc(trustLine(s))}&rdquo;</div>`; })()}
@@ -7288,13 +7325,13 @@ function studentDetail(s){
         <div class="kv"><span class="k">진로 평가</span><span class="v num" style="color:var(--brass)">${sc}</span></div>
         <div class="kv"><span class="k">현재 진로 전망</span><span class="v" style="color:var(--${darkCareerFor(s)?"bad":"brass"})">${career.n}${darkCareerFor(s)? ` <span class="tag inj">업보</span>`:""}</span></div>
         ${darkCareerFor(s)? `<div class="kv"><span class="k">업보 진로</span><span class="v" style="color:var(--bad)">업보 ${darkCareerFor(s).karma} 이상 — 기존 진로를 덮었다. 교회 기부로 씻을 수 있다</span></div>`:""}
-        <div class="kv"><span class="k">다음 단계</span><span class="v">${nextCareer(sc)? `${nextCareer(sc).n} <span class="num" style="color:var(--dim)">까지 ${nextCareer(sc).min-sc}</span>` : "최고 진로 도달"}</span></div>
+        <div class="kv"><span class="k">다음 단계</span><span class="v">${nextCareer(sc)? `${nextCareer(sc).n} <span class="num" style="color:var(--dim)">까지 ${nextCareer(sc).min-sc}</span>` : "최고 진로 도달"}</span></div>`}
       </div>
     </div>
     <div class="rule"></div>
     <div class="panel-h" style="margin-bottom:8px"><h2 style="font-size:13px">패시브 · 스킬</h2>
-      <span class="hint">${(s.sp||0)>0? `강화 포인트 <b style="color:var(--brass)">${s.sp}</b>점` : "레벨 2마다 강화 포인트 1점"}${s.taught? ` · <b style="color:var(--ok)">전수 완료</b>` : ""}</span>
-      <button class="btn sm ${(s.sp||0)>0?"primary":""}" id="btnSkUp" ${(s.sp||0)>0?"":"disabled"}>스킬 강화</button></div>
+      ${G? "" : `<span class="hint">${(s.sp||0)>0? `강화 포인트 <b style="color:var(--brass)">${s.sp}</b>점` : "레벨 2마다 강화 포인트 1점"}${s.taught? ` · <b style="color:var(--ok)">전수 완료</b>` : ""}</span>
+      <button class="btn sm ${(s.sp||0)>0?"primary":""}" id="btnSkUp" ${(s.sp||0)>0?"":"disabled"}>스킬 강화</button>`}</div>
     <div class="grid2">
       ${(()=>{ const P=passiveOf(passiveJobOf(s)); if(!P) return "";
         const g = skGrade(s,"passive"), k = 1+((s.skMod&&s.skMod.passive||{}).pow||0);
@@ -7318,14 +7355,14 @@ function studentDetail(s){
       }).join("")}
     </div>
     <div class="rule"></div>
-    <div class="eyebrow" style="margin-bottom:6px">유물 (${(s.relics||[]).filter(Boolean).length}/${slots}칸 · ${RELIC_SLOT_EVERY}레벨마다 1칸 · 최대 ${RELIC_SLOT_MAX}칸)</div>
+    <div class="eyebrow" style="margin-bottom:6px">유물 (${(s.relics||[]).filter(Boolean).length}/${slots}칸${G? "" : ` · ${RELIC_SLOT_EVERY}레벨마다 1칸 · 최대 ${RELIC_SLOT_MAX}칸`})</div>
     <div class="grid2">
       ${Array.from({length:slots},(_,i)=>{
         const r = (s.relics||[])[i];
-        if(!r) return `<div class="opt locked" style="cursor:default"><div class="on" style="color:var(--dim)">빈 칸</div><div class="od">유물 탭에서 장착</div></div>`;
+        if(!r) return `<div class="opt locked" style="cursor:default"><div class="on" style="color:var(--dim)">빈 칸</div>${G? "" : `<div class="od">유물 탭에서 장착</div>`}</div>`;
         return `<div class="opt" style="cursor:default"><div class="on" style="color:${GRADE_COLOR[r.grade]}">${esc(r.name)}<span class="price">${r.grade}</span></div>
           <div class="od">${r.aff.map(a=>`${a.n} +${a.v<1&&a.v>0?(a.v*100).toFixed(1)+"%":fmt(a.v)}`).join(" · ")}</div>
-          <div style="margin-top:6px"><button class="btn sm" data-unequip="${s.id}|${i}">해제</button></div></div>`;
+          ${G? "" : `<div style="margin-top:6px"><button class="btn sm" data-unequip="${s.id}|${i}">해제</button></div>`}</div>`;
       }).join("")}
     </div>
   </section>`;
@@ -7684,7 +7721,7 @@ function leaguePackUnit(g){
              aff:(x.aff||[]).map(a=>({k:a.k,n:a.n,v:a.v}))}))};
 }
 function leagueMyPack(sids, form){
-  const gs = sids.map(id => (S.graduates||[]).find(g=>g.sid===id)).filter(gradCanFight);
+  const gs = (sids||[]).filter(Boolean).map(id => (S.graduates||[]).find(g=>g.sid===id)).filter(gradCanFight);
   return {acad:String(S.acadName||"이름 없는 학원").slice(0,24), form:form||"wedge",
           t:gs.map(leaguePackUnit), ts:Date.now(), v:1};
 }
@@ -7732,10 +7769,28 @@ function leagueState(){
   if(!Array.isArray(S.league.hist)) S.league.hist = [];
   return S.league;
 }
+/* 출전 명단은 자리 순서(진형의 전열→후열 첫 세 자리)대로 든 배열 — 빈 자리는 null */
+function lgOrder(L){ const F = formData((L||leagueState()).form, false); return F.front.concat(F.back).slice(0, LEAGUE_TEAM); }
+function lgSids(L){ return ((L||leagueState()).sids||[]).filter(Boolean); }
+function lgPlace(L, idx, sid){
+  while(L.sids.length < LEAGUE_TEAM) L.sids.push(null);
+  const cur = L.sids.indexOf(sid);
+  if(cur >= 0) L.sids[cur] = L.sids[idx] || null;      // 이미 다른 자리에 있었으면 자리를 맞바꾼다
+  L.sids[idx] = sid;
+}
+function lgRemove(L, sid){ const i = L.sids.indexOf(sid); if(i>=0) L.sids[i] = null; }
+function lgTidy(L){ while(L.sids.length && L.sids[L.sids.length-1]==null) L.sids.pop(); }
+function gradDetailModal(sid){
+  const g = (S.graduates||[]).find(x=>x.sid===sid); if(!g) return;
+  const u = gradUnit(g); if(!u) return;
+  showModal(`<div class="graddetail">${studentDetail(u, {grad:g})}</div>
+    <div class="btnrow" style="justify-content:center;margin-top:10px"><button class="btn primary" data-close>닫기</button></div>`, null, true);
+}
 function leagueReady(){
   const L = leagueState();
-  return L.sids.length === LEAGUE_TEAM &&
-    L.sids.every(id => gradCanFight((S.graduates||[]).find(g=>g.sid===id)));
+  const ids = lgSids(L);
+  return ids.length === LEAGUE_TEAM &&
+    ids.every(id => gradCanFight((S.graduates||[]).find(g=>g.sid===id)));
 }
 function gradPool(){ return (S.graduates||[]).filter(g=> gradCanFight(g) && !g.tr); }
 /* 이적 — 리그 명부에서만 빼고 기록의 졸업생 명부에는 남긴다 */
@@ -8130,6 +8185,44 @@ async function leagueSync(){
 }
 
 /* ---------- 리그 화면 ---------- */
+function gradFace(g, k){
+  return faceHas(g.job) ? faceHTML(g.job, g.raw||g.name)
+    : (sprHas(g.job) ? `<div class="facebox" style="display:flex;align-items:flex-end;justify-content:center">${sprHTML(g.job,"idle",k||.5,{p:sprPalOf(g), still:true})}</div>` : "");
+}
+/* 출전 등록 — 자리 카드 (팀 편성의 배치 자리와 같은 모양) */
+function lgSlotCard(L, idx, k, sel){
+  const sid = L.sids[idx] || null, g = sid && (S.graduates||[]).find(x=>x.sid===sid);
+  const row = slotRow(k);
+  if(!g) return `<button class="slot empty ${sel?"on":""}" data-lgslot="${idx}">
+    <div class="slabel">${row==="front"?"전열":"후열"}</div>
+    <div class="sempty">빈 자리</div></button>`;
+  const u = gradUnit(g);
+  return `<button class="slot drg ${sel?"on":""}" data-lgslot="${idx}">
+    <div class="lgface">${gradFace(g,.45)}</div>
+    <div class="slabel">${row==="front"?"전열":"후열"}</div>
+    <div class="n1"><span class="nm">${epiH(g.raw||g.name)}</span></div>
+    <div class="n2">${gradeTag(g.grade||"C")}${roleTag(g.job)}<span class="lv num">Lv.${g.lv}</span></div>
+    <div class="sfoot"><span>전투력 <b class="num">${fmt(u? power(u) : g.pw||0)}</b></span><span class="lgdrop" data-lgdrop="${idx}" data-nodrag title="자리에서 빼기">✕</span></div>
+    <span class="lgdrop lgdrop-m" data-lgdrop="${idx}" data-nodrag title="자리에서 빼기">✕</span>
+  </button>`;
+}
+/* 출전 등록 — 졸업생 명부 카드: 얼굴 · 이명 이름 · 직업 · 전투력. 클릭으로 배치, 상세로 능력치 */
+function lgGradCard(g, L, sel){
+  const u = gradUnit(g), inTeam = L.sids.includes(g.sid);
+  return `<div class="lgpick">
+    <button class="cercard gradcard lggrad ${inTeam?"sel":""} ${(!inTeam && sel==null)?"":""}" data-lgp="${g.sid}" title="${inTeam? "명단에서 뺀다" : "자리에 넣는다"}">
+      ${gradFace(g,.5)}
+      <div class="gradcard-b">
+        ${g.epithet? `<div class="gradcard-epi">“${esc(g.epithet)}”</div>`:""}
+        <div class="gradcard-n">${esc(g.raw||g.name)}${inTeam? ` <span class="tag" style="color:var(--brass);border-color:var(--brass)">출전</span>`:""}</div>
+        <div class="gradcard-s">${gradeTag(g.grade||"C")}${roleTag(g.job)}<span class="num">Lv.${g.lv}</span><span class="num">전투력 <b>${fmt(u? power(u) : g.pw||0)}</b></span></div>
+      </div>
+    </button>
+    <div class="lgtr"><button class="btn sm ghost" data-lgdetail="${g.sid}">상세</button>${inTeam
+      ? `<span style="color:var(--dim)">출전 중 — 이적 불가</span>`
+      : `<button class="btn sm" data-lgtr="${g.sid}">이적 · <b style="color:var(--indigo)">SP +${gradFee(g)}</b></button>`}</div>
+  </div>`;
+}
 function lgUnitCard(g, sel, pick){
   const u = gradUnit(g);
   const card = `<${pick?"button":"div"} class="opt ${sel?"sel":""}" ${pick?`data-lgp="${g.sid}"`:'style="cursor:default"'}>
@@ -8147,13 +8240,33 @@ function lgUnitCard(g, sel, pick){
 }
 function viewLeague(){
   const L = leagueState(), pool = gradPool(), U = UI.league || {};
+  /* 서브 탭 — 지금은 3인 리그 하나. 리그 종류가 늘면 여기에 붙는다 */
+  const sub = `<section class="panel">
+    <div class="panel-h"><h2>졸업생 리그</h2></div>
+    <div class="teamtabs"><button class="ttab on" data-lgtab="trio">3인 리그
+      <span class="tt-sub">LP ${fmt(L.lp)} · ${L.w}승 ${L.l}패 · ${L.n}시즌</span></button></div>
+  </section>`;
+  if(!leagueOn()) return sub + `<section class="panel">
+    <div class="panel-h"><h2>3인 리그</h2><span class="hint">아직 서버가 연결되지 않았다</span></div>
+    <div class="empty">리그 서버 주소가 설정되지 않아 다른 학원과 겨룰 수 없다.</div></section>`;
+  return sub + lgSeasonView(U, L) + (L.hist.length? `<section class="panel">
+    <div class="panel-h"><h2>지난 시즌</h2><span class="hint">통산 ${L.w}승 ${L.l}패 · ${L.n}시즌</span></div>
+      <div class="condbox">${L.hist.map(h=>`<div class="condrow">
+        <span class="cn">${h.season? `시즌 ${h.season}` : new Date(h.ts).toLocaleDateString("ko-KR")}</span>
+        <span class="cv num" style="color:var(--${h.rank<=3?"ok":"muted"})">${h.rank}위${h.size? ` / ${h.size}팀`:""}</span>
+        <span class="ce">${h.w}승 ${h.l}패</span>
+        <span class="cf num" style="color:var(--brass)">+${h.lp} → ${fmt(h.now)}${h.sp? ` · <span style="color:var(--indigo)">SP +${h.sp}</span>`:""}</span></div>`).join("")}</div>
+  </section>` : "");
+}
+/* 출전 등록 탭 — 리그 탭에 있던 출전 등록 박스를 그대로 옮겨 왔다 */
+function viewLgEntry(){
+  const L = leagueState(), pool = gradPool();
   if(!leagueOn()) return `<section class="panel">
-    <div class="panel-h"><h2>졸업생 리그</h2><span class="hint">아직 서버가 연결되지 않았다</span></div>
+    <div class="panel-h"><h2>리그 등록</h2><span class="hint">아직 서버가 연결되지 않았다</span></div>
     <div class="empty">리그 서버 주소가 설정되지 않아 다른 학원과 겨룰 수 없다.</div></section>`;
   const old = (S.graduates||[]).length - pool.length;
-  return lgSeasonView(U, L) + `<section class="panel">
-    <div class="panel-h"><h2>출전 등록</h2>
-      <span class="hint">졸업생 ${LEAGUE_TEAM}명으로 팀을 짠다 · 등록해 둔 명단이 다음 시즌에 그대로 나간다</span>
+  return `<section class="panel">
+    <div class="panel-h"><h2>리그 등록</h2>
       <span class="btnpair">
         <button class="btn primary sm" id="lgSync" ${leagueReady()?"":"disabled"}>등록 · 갱신</button></span></div>
     <div class="lgbar">
@@ -8162,40 +8275,48 @@ function viewLeague(){
       <div class="lgstat"><span>참가</span><b class="num">${L.n}시즌</b></div>
       <div class="lgstat"><span>통산</span><b class="num">${L.w}승 ${L.l}패</b></div>
     </div>
-    <p class="opthint">시즌이 끝나면 순위에 따라 <b>리그 포인트</b>를 받고, 같은 만큼 <b style="color:var(--indigo)">SP</b> 가 쌓인다 — 꼴찌라도 깎이지 않는다.
-      시즌이 열리는 순간의 명단이 <b>통째로 얼어붙는다</b>. 시즌 중에 명단을 바꿔도 다음 시즌부터 반영된다.
-      전투는 시드가 박혀 있어 <b>누가 어느 브라우저에서 열어도 같은 결과</b>가 나온다.</p>
     <div class="rule"></div>
-    <div class="eyebrow" style="margin-bottom:6px">출전 명단 ${L.sids.length}/${LEAGUE_TEAM}</div>
-    <div class="grid2" style="margin-bottom:10px">
-      ${Array.from({length:LEAGUE_TEAM},(_,i)=>{
-        const g = pool.find(x=>x.sid===L.sids[i]);
-        if(!g) return `<div class="opt locked" style="cursor:default"><div class="on" style="color:var(--dim)">빈 자리</div>
-          <div class="od">아래 명부에서 졸업생을 고른다</div></div>`;
-        return lgUnitCard(g, false, false);
-      }).join("")}
+    ${(()=>{
+      // 명단이 옛 저장(빈 자리 없는 배열)이어도 그대로 자리 순서로 읽는다
+      L.sids = L.sids.filter(id=> id==null || pool.some(g=>g.sid===id));
+      const order = lgOrder(L), F = formOf(L.form);
+      const sel = (UI.lgSlot!=null && UI.lgSlot < order.length) ? UI.lgSlot : null;
+      const n = lgSids(L).length;
+      const cell = (k)=>{ const idx = order.indexOf(k);
+        return idx >= 0 ? lgSlotCard(L, idx, k, sel===idx) : `<div class="slot off"><div class="sempty">사용 안 함</div></div>`; };
+      return `<div class="teamtabs"><button class="ttab on" style="cursor:default">3인 리그
+        <span class="tt-sub">${F.n} · ${n}/${LEAGUE_TEAM}</span></button></div>
+    <div class="eyebrow" style="margin:14px 0 6px">진형</div>
+    <div class="formrow">${FORM_KEYS.map(k=>{
+      const f = formOf(k);
+      return `<button class="formcard ${L.form===k?"on":""}" data-lgform="${k}">
+        <div class="fmhead">${f.n}<span class="fmsh">${f.sh}</span></div>
+        <div class="fmmini">${["f1","f2","f3"].map(x=>`<i class="${f.front.includes(x)?"f":""}"></i>`).join("")}</div>
+        <div class="fmmini">${["b1","b2","b3"].map(x=>`<i class="${f.back.includes(x)?"b":""}"></i>`).join("")}</div>
+        <div class="fmtxt">${f.txt.map(x=>`<div>${esc(x)}</div>`).join("")}</div>
+      </button>`;
+    }).join("")}</div>
+    <div class="eyebrow" style="margin:16px 0 6px">배치 — 3인 리그</div>
+    <div class="field">
+      <div class="frow"><div class="frowlab">전열</div>${["f1","f2","f3"].map(cell).join("")}</div>
+      <div class="frow"><div class="frowlab">후열</div>${["b1","b2","b3"].map(cell).join("")}</div>
     </div>
-    <div class="btnrow" style="margin-bottom:12px">
-      <span style="font-size:12px;color:var(--muted)">진형</span>
-      <select id="lgForm">${FORM_KEYS.map(k=>`<option value="${k}" ${L.form===k?"selected":""}>${FORMS[k].n}</option>`).join("")}</select>
-      <button class="btn sm" id="lgClear">명단 비우기</button>
-    </div>
-    <div class="rule"></div>
-    <div class="eyebrow" style="margin-bottom:6px">졸업생 명부 ${pool.length}명${old? ` <span style="color:var(--dim)">(옛 기록 ${old}명은 전투 정보가 없어 출전 불가)</span>`:""}
-      <span class="hint" style="text-transform:none;letter-spacing:0">출전 중이 아닌 졸업생은 <b style="color:var(--text)">이적</b>으로 내보낼 수 있다 — 전투력 ${fmt(TRANSFER_PER)}당 <b style="color:var(--indigo)">SP 1</b>(최소 1)이 들어오고, 기록 탭 명부에는 남는다</span></div>
-    ${pool.length? `<div class="grid2">${pool.map(g=> lgUnitCard(g, L.sids.includes(g.sid), true)).join("")}</div>`
+    <div class="btnrow" style="margin-top:10px">
+      <span class="hint" style="font-size:12px;color:${n>=LEAGUE_TEAM?"var(--ok)":"var(--dim)"}">${n>=LEAGUE_TEAM? `편성 완료 (${n}/${LEAGUE_TEAM})` : `${n}/${LEAGUE_TEAM} · 진형의 앞 ${LEAGUE_TEAM}자리만 쓴다`}</span>
+      <button class="btn sm ghost" id="lgClear">비우기</button>
+    </div>`; })()}
+  </section>
+  <section class="panel">
+    <div class="panel-h"><h2>졸업생 명부</h2>
+      <span class="hint">${UI.lgSlot!=null? `<b style="color:var(--brass)">${slotRow(lgOrder(L)[UI.lgSlot]||"f1")==="front"?"전열":"후열"}</b> 자리에 넣을 졸업생을 고른다` : "드래그 또는 클릭으로 배치 · 상세로 능력치 확인"}${old? ` · <span style="color:var(--dim)">옛 기록 ${old}명은 전투 정보가 없어 출전 불가</span>`:""}</span></div>
+    ${pool.length? `<div class="grid2 lgroster">${pool.map(g=> lgGradCard(g, L, UI.lgSlot)).join("")}</div>`
       : `<div class="empty">아직 졸업생이 없다. 3학년이 졸업하면 여기에 쌓인다.</div>`}
-    ${L.hist.length? `<div class="rule"></div><div class="eyebrow" style="margin-bottom:6px">지난 시즌</div>
-      <div class="condbox">${L.hist.map(h=>`<div class="condrow">
-        <span class="cn">${h.season? `시즌 ${h.season}` : new Date(h.ts).toLocaleDateString("ko-KR")}</span>
-        <span class="cv num" style="color:var(--${h.rank<=3?"ok":"muted"})">${h.rank}위${h.size? ` / ${h.size}팀`:""}</span>
-        <span class="ce">${h.w}승 ${h.l}패</span>
-        <span class="cf num" style="color:var(--brass)">+${h.lp} → ${fmt(h.now)}${h.sp? ` · <span style="color:var(--indigo)">SP +${h.sp}</span>`:""}</span></div>`).join("")}</div>`:""}
+    <p class="opthint" style="margin-top:10px">출전 중이 아닌 졸업생은 <b>이적</b>으로 내보낼 수 있다 — 전투력 ${fmt(TRANSFER_PER)}당 <b style="color:var(--indigo)">SP 1</b>(최소 1)이 들어오고, 기록 탭 명부에는 남는다.</p>
   </section>`;
 }
 /* 시즌 판 — 서버에 얼려 둔 대진을 그대로 펼쳐 보여준다 */
 function lgSeasonView(U, L){
-  const head = ()=> `<div class="panel-h"><h2>졸업생 리그</h2>
+  const head = ()=> `<div class="panel-h"><h2>3인 리그</h2>
     <span class="hint" id="lgClock">${U.making? "시즌을 여는 중…" : "모두가 같은 순위표를 본다"}</span>
     <span class="btnpair">
       <button class="btn sm" id="lgLoad" ${U.loading||U.making?"disabled":""}>${U.loading?"불러오는 중…":"새로고침"}</button></span></div>`;
@@ -8476,7 +8597,7 @@ function viewRank(){
   if(R.err) return `<section class="panel">${head}<div class="empty">서버에 닿지 못했다 — ${esc(R.err)}</div></section>`;
   if(!R.list) return `<section class="panel">${head}<div class="empty">불러오는 중…</div></section>`;
   if(!R.list.length) return `<section class="panel">${head}
-    <div class="empty">아직 등록된 학원이 없다. 리그 탭에서 <b>등록 · 갱신</b>을 누르면 여기에 올라온다.</div></section>`;
+    <div class="empty">아직 등록된 학원이 없다. 리그 등록 탭에서 <b>등록 · 갱신</b>을 누르면 여기에 올라온다.</div></section>`;
   return `<section class="panel">${head}
     <p class="opthint">각 학원이 마지막으로 등록해 둔 졸업생 명단이다. 시즌은 이 순위를 기준으로 조를 나눈다.</p>
     <div class="rktable">
@@ -10208,12 +10329,18 @@ function viewRecord(){
   const g = S.graduates.slice().reverse();
   return `<section class="panel">
     <div class="panel-h"><h2>졸업생 명부</h2></div>
-    ${g.length? `<div class="grid2">${g.map(x=>`<div class="cercard">
-        <div class="on">${epiH(x.name)} ${roleTag(x.job)}${x.tr? ` <span class="tag" style="color:var(--dim);border-color:var(--line)">이적</span>`:""}<span class="price">${x.year}년 졸업 · Lv.${x.lv}</span></div>
-        <div class="cerrole" style="${x.dark?"color:var(--bad)":""}">${esc(x.career)}</div>
-        ${x.reason? `<div class="cerwhy">${esc(x.reason)}</div>`:""}
-        <div class="cerfoot"><span>평가 ${x.score}</span>${x.trust? `<span style="color:var(--brass)">신뢰 ${trustBand(x.trust).step}</span>`:""}${x.karma? `<span style="color:var(--bad)">업보 ${fmt(x.karma)}</span>`:""}${x.pw?`<span>전투력 ${fmt(x.pw)}</span>`:""}<span style="color:var(--${x.fame<0?"bad":"brass"})">명성 ${x.fame<0?"":"+"}${fmt(x.fame)}</span>${x.tr? `<span style="color:var(--indigo)">이적료 SP +${x.trFee|0}</span>`:""}</div>
-      </div>`).join("")}</div>`
+    ${g.length? `<div class="grid2">${g.map(x=>{
+        const idx = S.graduates.indexOf(x);
+        const face = faceHas(x.job) ? faceHTML(x.job, x.name)
+          : (sprHas(x.job) ? `<div class="facebox" style="display:flex;align-items:flex-end;justify-content:center">${sprHTML(x.job,"idle",.5,{p:sprPalOf(x), still:true})}</div>` : "");
+        return `<button class="cercard gradcard ${x.dark?"dark":""}" data-gcert="${idx}" title="졸업 증서 보기">
+        ${face}
+        <div class="gradcard-b">
+          ${x.epithet? `<div class="gradcard-epi">“${esc(x.epithet)}”</div>`:""}
+          <div class="gradcard-n">${esc(x.raw||x.name)}${x.tr? ` <span class="tag" style="color:var(--dim);border-color:var(--line)">이적</span>`:""}</div>
+          <div class="gradcard-s">${roleTag(x.job)}<span class="num">${x.year}년 졸업</span></div>
+        </div>
+      </button>`; }).join("")}</div>`
     : `<div class="empty">아직 졸업생이 없다. 3학년은 가을 대회가 끝나면 졸업한다.</div>`}
   </section>`;
 }
@@ -10254,6 +10381,7 @@ function viewScout(){
 function bindView(){
   const v = $("#view");
   v.querySelectorAll("[data-sid]").forEach(b=> b.onclick=()=>{ UI.sel = (UI.sel===b.dataset.sid?null:b.dataset.sid); UI.view="roster"; render(); });
+  v.querySelectorAll("[data-gcert]").forEach(b=> b.onclick=()=> gradCertModal(+b.dataset.gcert));
   const fs = $("#focusSel");
   if(fs) fs.onchange = ()=>{ const s=S.students.find(x=>x.id===UI.sel); if(s){ s.focus=fs.value; save(); render(); toast(`${dn(s)}의 집중 분야 변경`);} };
   const bsu = $("#btnSkUp"); if(bsu) bsu.onclick = ()=> skillUpModal(UI.sel);
@@ -10307,7 +10435,25 @@ function bindView(){
       slotPut(pl.u, +tg.dataset.slot); save(); render();
     }
   };
-  dragCfg(v, UI.view==="plan" ? PLAN_DRAG : UI.view!=="team" ? null : {
+  const LG_DRAG = {
+    from: "[data-lgp],[data-lgslot]",
+    to:   "[data-lgslot],.lgroster",
+    payload: el=>{
+      if(el.dataset.lgp) return {kind:"g", id:el.dataset.lgp};
+      const L = leagueState(), i = +el.dataset.lgslot;
+      return L.sids[i] ? {kind:"slot", i, id:L.sids[i]} : null;
+    },
+    accept: (pl, t)=> t.classList.contains("lgroster") ? pl.kind==="slot" : true,
+    drop: (pl, t)=>{
+      if(!t || !pl) return;
+      const L = leagueState();
+      if(t.classList.contains("lgroster")){ lgRemove(L, pl.id); lgTidy(L); UI.lgSlot=null; save(); render(); return; }
+      const i = +t.dataset.lgslot;
+      if(pl.kind==="slot" && pl.i===i) return;
+      lgPlace(L, i, pl.id); lgTidy(L); UI.lgSlot=null; save(); render();
+    }
+  };
+  dragCfg(v, UI.view==="plan" ? PLAN_DRAG : UI.view==="lgentry" ? LG_DRAG : UI.view!=="team" ? null : {
     from: "[data-assign2],[data-slot]",
     to:   "[data-slot],.roster",
     payload: el=>{
@@ -10561,14 +10707,28 @@ function bindView(){
     const L = leagueState();
     v.querySelectorAll("[data-lgtr]").forEach(b=> b.onclick=()=> gradTransferModal(b.dataset.lgtr));
     v.querySelectorAll("[data-lgp]").forEach(b=> b.onclick=()=>{
-      const id = b.dataset.lgp, i = L.sids.indexOf(id);
-      if(i>=0) L.sids.splice(i,1);
-      else if(L.sids.length < LEAGUE_TEAM) L.sids.push(id);
-      else { toast(`${LEAGUE_TEAM}명까지만 뽑을 수 있다.`); return; }
-      save(); render();
+      const id = b.dataset.lgp;
+      if(L.sids.includes(id)){ lgRemove(L, id); lgTidy(L); UI.lgSlot=null; save(); render(); return; }
+      let idx = UI.lgSlot;
+      if(idx==null){
+        idx = -1;
+        for(let i=0;i<LEAGUE_TEAM;i++){ if(!L.sids[i]){ idx=i; break; } }
+        if(idx<0){ toast("빈 자리가 없다. 자리를 먼저 고르거나 카드를 자리로 끌어다 놓는다."); return; }
+      }
+      lgPlace(L, idx, id); lgTidy(L); UI.lgSlot=null; save(); render();
     });
-    const lf = $("#lgForm");   if(lf) lf.onchange = ()=>{ L.form = lf.value; save(); };
-    const lc = $("#lgClear");  if(lc) lc.onclick = ()=>{ L.sids = []; save(); render(); };
+    v.querySelectorAll("[data-lgslot]").forEach(b=> b.onclick=(e)=>{
+      if(e.target && e.target.dataset && e.target.dataset.lgdrop!=null) return;
+      const i = +b.dataset.lgslot;
+      UI.lgSlot = (UI.lgSlot===i) ? null : i; render();
+    });
+    v.querySelectorAll("[data-lgdrop]").forEach(b=> b.onclick=(e)=>{
+      e.stopPropagation();
+      const i = +b.dataset.lgdrop; if(L.sids[i]) L.sids[i]=null; lgTidy(L); UI.lgSlot=null; save(); render();
+    });
+    v.querySelectorAll("[data-lgform]").forEach(b=> b.onclick=()=>{ L.form = b.dataset.lgform; UI.lgSlot=null; save(); render(); });
+    v.querySelectorAll("[data-lgdetail]").forEach(b=> b.onclick=()=> gradDetailModal(b.dataset.lgdetail));
+    const lc = $("#lgClear");  if(lc) lc.onclick = ()=>{ L.sids = []; UI.lgSlot=null; save(); render(); };
     const ls = $("#lgSync");   if(ls) ls.onclick = async ()=>{
       ls.disabled = true; ls.textContent = "올리는 중…";
       const ok = await leagueSync();
@@ -10915,6 +11075,42 @@ function showCeremony(){
 }
 /* ── 졸업식 — 졸업 증서가 아래에서 위로 흘러 올라가는 스텝롤 ── */
 function careerDescOf(id){ const c = CAREERS.find(x=>x.id===id) || DARK_CAREERS.find(x=>x.id===id); return c ? c.d : ""; }
+/* 졸업 증서 도장 — 학원 이름 앞 두 글자. 이중 원 + 월계수 + 왕관, 잉크가 고르지 않게 찍힌 느낌 */
+function stampSvg(text){
+  const t = esc(String(text||"학원").replace(/\s+/g,"").slice(0,2) || "학원");
+  /* 월계수 — 좌우 각 8장, 아래에서 위로 원을 따라 올라간다 */
+  const leaf = (side)=> Array.from({length:8},(_,i)=>{
+    const phi = 205 + i*15;                                   // 12시 기준 시계방향 각도(왼쪽 가지)
+    const a = (side>0? 360-phi : phi) * Math.PI/180, r = 33;
+    const x = 50 + r*Math.sin(a), y = 50 - r*Math.cos(a);
+    const rot = (side>0? 360-phi : phi) + 90 + side*22;       // 접선 방향에서 살짝 바깥으로
+    return `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="2.4" ry="5.4" transform="rotate(${rot.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)})"/>`;
+  }).join("");
+  return `<svg class="gc-stamp" viewBox="0 0 100 100" aria-hidden="true">
+    <defs>
+      <filter id="stInk" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency=".55" numOctaves="3" seed="7" result="n"/>
+        <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.1 1.12" result="m"/>
+        <feComposite in="SourceGraphic" in2="m" operator="in"/>
+      </filter>
+    </defs>
+    <g filter="url(#stInk)" fill="none" stroke="currentColor">
+      <circle cx="50" cy="50" r="46" stroke-width="3.4"/>
+      <circle cx="50" cy="50" r="41" stroke-width="1.5"/>
+      <g fill="currentColor" stroke="none">${leaf(1)}${leaf(-1)}</g>
+      <path d="M39.5 26 l3.6 -9 l6.9 6.2 l6.9 -6.2 l3.6 9 z" fill="currentColor" stroke="none"/>
+      <circle cx="43.1" cy="16.2" r="1.6" fill="currentColor" stroke="none"/><circle cx="56.9" cy="16.2" r="1.6" fill="currentColor" stroke="none"/><circle cx="50" cy="22.4" r="1.6" fill="currentColor" stroke="none"/>
+      <text x="50" y="61" text-anchor="middle" font-size="24" font-weight="800" fill="currentColor" stroke="none" font-family="'Gowun Batang','Nanum Myeongjo',serif" letter-spacing="1">${t}</text>
+      <path d="M37 71 q13 6 26 0" stroke-width="1.7"/>
+    </g>
+  </svg>`;
+}
+/* 기록 탭 — 졸업생 한 명의 졸업 증서를 팝업으로 */
+function gradCertModal(idx){
+  const g = (S.graduates||[])[idx]; if(!g) return;
+  showModal(`<div class="gcert-pop">${gradCertHtml(g, {year:g.year})}</div>
+    <div class="btnrow" style="justify-content:center;margin-top:10px"><button class="btn primary" data-close>닫기</button></div>`, null, false);
+}
 function gradCertHtml(g, c){
   const J = JOBS[g.job] || {name:g.job};
   const P = PERSONA[g.pers] || PERSONA.plain;
@@ -10956,7 +11152,7 @@ function gradCertHtml(g, c){
     <div class="gc-row"><span>졸업</span><b>${c.year}년</b><i></i><span>최종</span><b class="num">Lv.${g.lv}</b></div>
     <div class="gc-gap"></div>
     <div class="gc-text">본 학생은 <b>${esc(S.acadName||"학원")}</b>의 과정을 3년간 수료하였으니 이 증서를 수여합니다.</div>
-    <div class="gc-sign"><div>${c.year}년 2월</div><div>마스터</div></div>
+    <div class="gc-sign"><div>${c.year}년 2월</div><div>마스터</div>${stampSvg(S.acadName)}</div>
   </div>`;
 }
 function gradCeremony(c){
@@ -11680,6 +11876,7 @@ function dragBind(root){
     DRAG.block = false;
     const c = cfg(); if(!c) return;
     if(e.button!=null && e.button!==0) return;
+    if(e.target && e.target.closest && e.target.closest("[data-nodrag]")) return;   // 카드 안의 작은 버튼(✕ 등)은 드래그로 집지 않는다
     const el = e.target && e.target.closest ? e.target.closest(c.from) : null;
     if(!el) return;
     const payload = c.payload(el);
