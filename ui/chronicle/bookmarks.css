@@ -1,0 +1,32 @@
+/* Composed paper bookmarks. Dimensions and fan offsets can be adjusted here. */
+.chronicle .handrow.chron-bookmarks{display:flex!important;position:relative;isolation:isolate;gap:0;padding:42px 8px 35px;min-height:375px;overflow:visible;align-items:flex-start}
+.chron-bookmarks .chron-bookmark{flex:0 0 114px;margin:0 calc((100% - 130px) / var(--fan-gaps) - 114px) 0 0}
+.chron-bookmarks .chron-bookmark:last-child{margin-right:0}
+.chronicle .card.chron-bookmark,.chron-bookmark.dragghost{position:relative;box-sizing:border-box;width:114px;min-width:114px;height:306px;min-height:306px;padding:45px 11px 12px;border:0;border-radius:2px;background:#fff7e7 var(--paper) center/100% 100%;color:#433023;box-shadow:2px 3px 5px #49301e45;transform:translateY(var(--rise)) rotate(var(--tilt));transform-origin:50% 90%;z-index:var(--order);cursor:grab;font-family:ChroniclePen,serif;transition:transform .16s,box-shadow .16s;overflow:visible;touch-action:pan-x}
+.chron-bookmark:before{content:'';position:absolute;inset:0 0 55%;background:linear-gradient(var(--cc),transparent);opacity:.22;pointer-events:none}
+.chronicle .chron-bookmark:hover,.chronicle .chron-bookmark:focus-visible{z-index:40;transform:translateY(-22px) rotate(0);box-shadow:4px 9px 12px #49301e65;outline:1px solid #927348}
+.chron-bookmark>*{position:relative;pointer-events:none}
+.chron-bookmark .bookmark-thread{position:absolute;left:-17px;top:7px;width:45px;height:48px;z-index:4;overflow:visible}
+.bookmark-thread path{fill:none;stroke:#25221f;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.chron-bookmark .bookmark-tag{position:absolute;left:-15px;top:33px;width:36px;height:68px;transform:rotate(0deg);z-index:3}
+.bookmark-tag img{width:100%;height:100%;mix-blend-mode:multiply}
+.bookmark-tag span{position:absolute;inset:17px 1px 3px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-align:center;font:700 17px/1.15 sans-serif;color:#30251f;text-shadow:0 1px #ffffff50}
+.chron-bookmark .bookmark-color{display:block;margin-left:24px;font:12px/1.2 ChroniclePen,serif;color:#68543f}
+.chron-bookmark .bookmark-name{display:block;margin:8px 0 5px 22px;font:bold 25px/1.02 ChroniclePen,serif;min-height:50px;word-break:keep-all}
+.chron-bookmark .bookmark-desc{font:16px/1.12 ChroniclePen,serif;min-height:42px;margin:0 0 8px}
+.chron-bookmark .bookmark-stats{font:16px/1.1 ChroniclePen,serif;min-height:36px;color:#466d53}
+.bookmark-stats .fxl{display:flex;justify-content:space-between;gap:2px}
+.bookmark-stats .bad{color:#a7493e}
+.chron-bookmark .bookmark-effect{border-top:1px solid #aa91725c;padding-top:5px;font:16px/1.1 ChroniclePen,serif;white-space:normal}
+.chron-bookmark .chron-training-art{position:absolute;width:45px;height:45px;bottom:12px;left:35px;object-fit:contain}
+.chron-bookmark .bookmark-mark{position:absolute;right:3px;bottom:5px;background:var(--mk);color:white;border-radius:50%;padding:2px 4px;font:12px sans-serif}
+.chronicle .chron-right .chron-funds{margin-top:auto;padding:20px 0 0;justify-content:flex-end}
+.chronicle .chron-left{padding-bottom:30px}
+@media(max-width:1250px){.chronicle .handrow.chron-bookmarks{overflow-x:auto;overflow-y:hidden;min-height:385px;padding-left:12px;padding-right:18px}.chron-bookmarks .chron-bookmark{margin-right:-48px}.chron-bookmarks .chron-bookmark:last-child{margin-right:6px}}
+@media(prefers-reduced-motion:reduce){.chronicle .card.chron-bookmark{transition:none}}
+
+/* Remove the white atlas matte during compositing, including outside card edges. */
+.chron-bookmark .bookmark-cord,.chron-bookmark .bookmark-tag img{filter:url(#chron-paper-cutout)}
+.chron-bookmark .bookmark-stats .fxl{font:16px/1.1 ChroniclePen,serif}
+
+.bookmark-tag span b{font:inherit;white-space:nowrap}.bookmark-tag span small{font:600 13px/1.1 sans-serif}

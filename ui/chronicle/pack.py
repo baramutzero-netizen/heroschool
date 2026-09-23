@@ -9,7 +9,7 @@ s=s.replace('const PREF = {bspeed: 280, reportSpeed: 2};','const PREF = {bspeed:
 anchor='if(j && [1,2,6].includes(j.reportSpeed)) PREF.reportSpeed = j.reportSpeed;'
 if 'PREF.chronicleTest = j.chronicleTest' not in s:s=s.replace(anchor,anchor+'\n  if(j && typeof j.chronicleTest === "boolean") PREF.chronicleTest = j.chronicleTest;')
 fonts='\n'.join("@font-face{font-family:'"+family+"';src:url(data:font/woff2;base64,"+base64.b64encode((out/'fonts'/filename).read_bytes()).decode()+") format('woff2');font-weight:400;font-display:swap;}" for family,filename in [('ChroniclePen','NanumPenScript.woff2'),('ChronicleBrush','NanumBrushScript.woff2')])
-css='/* CHRONICLE_CSS_START */\n'+fonts+'\n'+(out/'style.css').read_text(encoding='utf-8')+'\n'+(out/'ornaments.css').read_text(encoding='utf-8')+'\n/* CHRONICLE_CSS_END */'
+css='/* CHRONICLE_CSS_START */\n'+fonts+'\n'+(out/'style.css').read_text(encoding='utf-8')+'\n'+(out/'ornaments.css').read_text(encoding='utf-8')+'\n'+(out/'bookmarks.css').read_text(encoding='utf-8')+'\n/* CHRONICLE_CSS_END */'
 if '/* CHRONICLE_CSS_START */' in s:s=re.sub(r'/\* CHRONICLE_CSS_START \*/.*?/\* CHRONICLE_CSS_END \*/',lambda _:css,s,flags=re.S)
 else:s=s.replace('</style>',css+'\n</style>',1)
 assets={f.stem:'data:image/webp;base64,'+base64.b64encode(f.read_bytes()).decode() for f in (out/'ornaments').glob('*.webp')}
