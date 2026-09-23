@@ -6999,6 +6999,10 @@ function render(){
   }
   if(S.phase==="winter" && S.scouts) tabs.splice(2,0,{id:"scout", n:"스카우트", badge: scoutOpen()? (S.scoutTries||0) : null});
   tabs.splice(tabs.findIndex(v=>v.id==="record"), 0, {id:"counsel", n:"상담", badge: counselState().queue.length || null});
+  if((S.year|0) < 4){                      // 리그 등록 — 첫 졸업생이 나오는 4년차 봄부터 열린다
+    tabs.splice(tabs.findIndex(v=>v.id==="lgentry"), 1);
+    if(UI.view==="lgentry") UI.view = "league";
+  }
   if(!(S.graduates||[]).length){           // 기록 — 첫 졸업생이 나온 뒤에야 열린다
     tabs.splice(tabs.findIndex(v=>v.id==="record"), 1);
     if(UI.view==="record") UI.view = "home";
@@ -8353,8 +8357,7 @@ function lgSeasonView(U, L){
         사람마다 순위표가 다르게 나올 수 있어 리그 포인트를 반영하지 않는다.
         다음 시즌부터는 정상으로 돌아온다.</div>`;
   const banner = out ? `<div class="empty" style="margin-bottom:10px">이번 시즌 명단에 우리 학원이 없다 —
-      <b>등록 · 갱신</b>을 해 두면 다음 시즌에 자동으로 들어간다. 그동안은 ${vg+1}조${
-      vg===0? "(리그 포인트 상위)":""} 경기를 구경할 수 있다.</div>` : "";
+      <b>등록 · 갱신</b>을 해 두면 다음 시즌에 자동으로 들어간다.</div>` : "";
   const acad = tid => SE.t[tid] ? SE.t[tid].acad : "?";
   const myRows = (vg !== U.gi) ? [] : C.rr.map((pairs, r)=>{
     const i = pairs.findIndex(pr => C.order[pr[0]]===mine || C.order[pr[1]]===mine);
