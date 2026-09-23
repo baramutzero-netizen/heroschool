@@ -1,9 +1,9 @@
 /* Illustrated manuscript layer, confined to the experimental progress page. */
 .chronicle{--chron-ink:#54372a;--chron-faint:#8e785a;color:var(--chron-ink)}
 .chron-art{object-fit:contain;pointer-events:none;user-select:none;flex-shrink:0}
-.chron-masthead{display:flex;align-items:center;gap:12px;min-width:0;margin-left:-24px}
-.chron-crest{width:166px;height:228px;align-self:flex-start;position: relative;left:100px;top:-100px;}
-.chron-title-block{flex:1;min-width:0;padding-top:5px}
+.chron-masthead{display:flex;align-items:flex-start;gap:18px;min-width:0;margin:6px 0 0 22px}
+.chron-crest{width:118px;height:150px;align-self:flex-start;margin:6px 0 0 4px}
+.chron-title-block{flex:1;min-width:0;padding-top:30px}
 .chronicle .chron-masthead h2{font-family:ChronicleBrush,'Batang',serif;font-weight:400;font-size:clamp(30px,3.1vw,48px);line-height:1.05;color:#482c23;letter-spacing:.015em;margin:0;word-break:keep-all;overflow-wrap:anywhere}
 .chron-rule{display:block;width:100%;height:12px;overflow:visible;fill:none;stroke:#8a7355;stroke-width:1;opacity:.8;pointer-events:none}
 .chron-title-rule{margin:0 0 5px;stroke-width:1.4}
@@ -36,8 +36,77 @@
 .chron-focus-heading .chron-heading .chron-rule{bottom:29px}
 .chron-focus-heading>p{font:20px/1.05 ChroniclePen,serif;text-align:right;transform:rotate(-4deg);color:#785b44;margin:-4px 0 0;flex:0 1 190px}
 .chron-letter{position:absolute;width:clamp(105px,10vw,163px);height:auto;left:-15px;bottom:-7px;z-index:1;filter:drop-shadow(1px 4px 3px #38251035)}
-@media(max-width:1250px) and (min-width:651px){.chron-masthead{margin-left:-12px;gap:6px}.chron-crest{width:59px;height:92px}.chronicle .chron-date{font-size:24px}.chron-intro{grid-template-columns:1fr}.chron-motto{text-align:right;font-size:19px;margin:0 0 8px;line-height:.95}.chron-motto br{display:none}.chron-motto span{padding-left:3px}.chronicle .chron-note{font-size:22px}.chron-heading h3{font-size:30px!important}.chron-focus-heading{flex-wrap:wrap;gap:2px;min-height:110px}.chron-focus-heading>p{flex-basis:100%;text-align:right;font-size:19px}.chron-focus-heading .chron-heading .chron-rule{bottom:0}.chronicle .chron-entry strong{font-size:23px;flex-basis:75px}.chron-training-art{width:32px;height:36px}.chronicle .chron-entry small{display:none}.chron-letter{width:100px;left:-8px}.chronicle footer{padding-left:30px}}
-@media(max-width:650px){.chron-masthead{margin-left:0;gap:7px}.chron-crest{width:50px;height:76px}.chronicle .chron-masthead h2{font-size:31px}.chronicle .chron-date{font-size:23px}.chron-intro{grid-template-columns:1fr}.chron-motto{font-size:19px;text-align:right;line-height:1.05;margin:0 0 12px}.chron-motto br{display:none}.chron-motto span{padding-left:4px}.chron-note{font-size:23px!important}.chron-heading h3{font-size:32px!important}.chronicle .chron-entry{gap:7px}.chronicle .chron-entry strong{font-size:23px;flex-basis:68px}.chronicle .chron-entry small{font-size:17px;display:block}.chron-training-art{width:31px;height:33px}.chron-weekday{min-width:29px;font-size:24px!important}.chronicle footer{font-size:25px}.chron-focus-heading{flex-wrap:wrap;min-height:105px}.chron-focus-heading>p{flex-basis:100%;font-size:20px}.chron-focus-heading .chron-heading .chron-rule{bottom:0}.chron-letter{width:85px;bottom:5px;left:0}.chron-tabs{padding-left:75px;gap:5px}.chron-tabs button{padding:8px 10px}.chron-hand-title{justify-content:flex-start}}
+@media(max-width:1250px) and (min-width:651px){.chron-masthead{margin:4px 0 0 16px;gap:12px}.chron-crest{width:82px;height:104px;margin:4px 0 0 2px}.chron-title-block{padding-top:18px}.chronicle .chron-date{font-size:24px}.chron-intro{grid-template-columns:1fr}.chron-motto{text-align:right;font-size:19px;margin:0 0 8px;line-height:.95}.chron-motto br{display:none}.chron-motto span{padding-left:3px}.chronicle .chron-note{font-size:22px}.chron-heading h3{font-size:30px!important}.chron-focus-heading{flex-wrap:wrap;gap:2px;min-height:110px}.chron-focus-heading>p{flex-basis:100%;text-align:right;font-size:19px}.chron-focus-heading .chron-heading .chron-rule{bottom:0}.chronicle .chron-entry strong{font-size:23px;flex-basis:75px}.chron-training-art{width:32px;height:36px}.chronicle .chron-entry small{display:none}.chron-letter{width:100px;left:-8px}.chronicle footer{padding-left:30px}}
+@media(max-width:650px){.chron-masthead{margin:2px 0 0 4px;gap:10px}.chron-crest{width:60px;height:76px;margin:2px 0 0 0}.chron-title-block{padding-top:8px}.chronicle .chron-masthead h2{font-size:31px}.chronicle .chron-date{font-size:23px}.chron-intro{grid-template-columns:1fr}.chron-motto{font-size:19px;text-align:right;line-height:1.05;margin:0 0 12px}.chron-motto br{display:none}.chron-motto span{padding-left:4px}.chron-note{font-size:23px!important}.chron-heading h3{font-size:32px!important}.chronicle .chron-entry{gap:7px}.chronicle .chron-entry strong{font-size:23px;flex-basis:68px}.chronicle .chron-entry small{font-size:17px;display:block}.chron-training-art{width:31px;height:33px}.chron-weekday{min-width:29px;font-size:24px!important}.chronicle footer{font-size:25px}.chron-focus-heading{flex-wrap:wrap;min-height:105px}.chron-focus-heading>p{flex-basis:100%;font-size:20px}.chron-focus-heading .chron-heading .chron-rule{bottom:0}.chron-letter{width:85px;bottom:5px;left:0}.chron-tabs{padding-left:75px;gap:5px}.chron-tabs button{padding:8px 10px}.chron-hand-title{justify-content:flex-start}}
 /* Keep the headings rounded and weighty like the mockup; brush is reserved for short flourishes. */
 .chronicle .chron-masthead h2{font-family:ChroniclePen,'Batang',serif;font-weight:700;font-size:clamp(32px,3.2vw,48px);line-height:1.08}
 .chronicle .chron-heading h3{font-family:ChroniclePen,'Batang',serif;font-weight:700;font-size:35px}.chron-focus-heading .chron-heading h3{font-size:34px}
+
+/* 넓은 화면 — 왼쪽 페이지 배치 (문양·일지 제목을 위로, 본문은 안쪽으로, 서두 글귀와 잎사귀 크게) */
+@media(min-width:1251px){
+.chron-left{padding-left:40px}
+.chron-left .chron-masthead{margin:-34px 0 0 -18px}
+.chron-intro{grid-template-columns:.85fr 1.3fr;margin-top:-6px;margin-bottom:-8px}
+.chronicle .chron-note{display:inline-flex;margin:-4px 0 0 118px;transform:rotate(12deg);transform-origin:0 50%;white-space:nowrap}
+.chron-note .chron-art{width:46px;height:60px}
+.chron-intro{display:block;min-height:50px;margin-top:-40px}
+.chron-left .chron-heading{margin-top:0}
+}
+@media(min-width:1251px) and (max-width:1449px){
+.chron-daterow .chron-motto{font-size:17px}
+.chronicle .chron-note{font-size:21px}
+}
+
+/* 자동 배치 · 전부 비우기는 일단 숨긴다 / 예지의 서 버튼은 손패 제목 줄 위(밑줄 위쪽)에 */
+.chron-toolbar{display:none}
+.chron-hand-heading{margin-bottom:0}
+.chron-hand-title{position:relative;z-index:1;margin:-50px 0 26px;min-height:32px;align-items:center;justify-content:flex-end}
+@media(max-width:650px){.chron-hand-title{margin:-4px 0 12px;justify-content:flex-start}}
+
+/* 글귀 — 운영 일지 밑줄 아래, 주차 오른쪽 (runtime.js 가 .chron-daterow 안에 둔다) */
+.chron-daterow{display:flex;align-items:flex-start;gap:16px}
+.chron-daterow .chron-date{min-width:0;flex:none}
+.chron-daterow .chron-motto{flex:1;min-width:0;margin:4px -10px 0 0;padding:0 0 4px 0;white-space:normal;word-break:keep-all;font-size:20px;line-height:1.08;text-align:left}
+.chron-daterow .chron-motto br{display:inline}
+.chron-daterow .chron-motto span{padding-left:20px}
+.chron-daterow .chron-motto .chron-art{position:absolute;width:72px;height:92px;right:4px;bottom:3px;transform:rotate(6deg)}
+@media(max-width:1449px){.chron-daterow{flex-wrap:wrap;gap:4px}.chron-daterow .chron-motto{flex-basis:100%;margin:2px 0 8px;text-align:right;padding-right:74px}.chron-daterow .chron-motto .chron-art{right:0}.chron-daterow .chron-motto span{padding-left:4px}}
+@media(min-width:1251px) and (max-width:1449px){.chron-intro{margin-top:-6px}}
+/* 첫 문장 잎사귀는 숨긴다 */
+.chron-note .chron-art{display:none}
+/* 손패 영역 — 제목·예지의 서 버튼·카드 전체를 30px 아래로 */
+.chronicle .chron-left .chron-hand-heading{margin-top:50px}
+@media(min-width:1251px){.chronicle .chron-left .chron-hand-heading{margin-top:30px}}
+/* 이번 주의 계획 — 잎 대신 만년필 (잎과 같은 크기) */
+.chron-heading>.chron-art.chron-h-quill{width:35px;height:39px;transform:rotate(22deg) scale(1.12)}
+/* 좌하단 편지 — 두 배 */
+.chron-letter{width:clamp(210px,20vw,326px)}
+@media(max-width:1250px) and (min-width:651px){.chron-letter{width:200px}}
+@media(max-width:650px){.chron-letter{width:170px}}
+/* '언젠가, 이 아이들이…' — 왼쪽으로 150px, 글자 1.5배 */
+@media(min-width:1251px){.chron-focus-heading>p{font-size:30px;flex-basis:285px;transform:translateX(-150px) rotate(-4deg)}}
+/* 커진 편지가 카드·자금을 가리지 않게 — 조금 더 모서리 밖으로, 자금 줄은 편지 오른쪽부터 */
+.chron-letter{left:-44px;bottom:-26px}
+.chronicle .chron-left footer{padding-left:clamp(150px,15vw,250px)}
+@media(max-width:650px){.chronicle .chron-left footer{padding-left:120px}}
+@media(min-width:1251px) and (max-width:1449px){.chron-focus-heading>p{font-size:23px;flex-basis:220px;transform:translateX(-20px) rotate(-4deg)}}
+/* '언젠가…' — 오른쪽으로 50px 되돌리고 3px 위로, 크기 30% 줄임 / '개인 집중 훈련' 글자·잎은 7px 아래로 (밑줄은 그대로) */
+@media(min-width:1251px){.chron-focus-heading>p{font-size:21px;flex-basis:200px;transform:translate(-100px,-3px) rotate(-4deg)}}
+@media(min-width:1251px) and (max-width:1449px){.chron-focus-heading>p{font-size:16px;flex-basis:160px;transform:translate(-20px,-3px) rotate(-4deg)}}
+.chron-focus-heading .chron-heading>.chron-art,.chron-focus-heading .chron-heading h3{position:relative;top:7px}
+/* 요일 줄 오른쪽 — 표식 · 능률 (본문 설명과 같은 글씨) */
+.chron-tail{display:flex;align-items:center;gap:8px;flex:none;margin-left:auto;padding-right:4px}
+.chronicle .chron-tail .chron-chain{position:static;background:none;font:22px/1.1 ChroniclePen,serif;color:#6e523c;white-space:nowrap;z-index:auto}
+.chron-tail .chron-mark{font-size:12px;line-height:1;padding:4px 6px}
+@media(max-width:650px){.chronicle .chron-tail .chron-chain{font-size:17px}}
+/* '언젠가…' 3px 아래로 */
+@media(min-width:1251px){.chron-focus-heading>p{transform:translate(-100px,0) rotate(-4deg)}}
+@media(min-width:1251px) and (max-width:1449px){.chron-focus-heading>p{transform:translate(-20px,0) rotate(-4deg)}}
+/* 표식 · 능률 — 10px 왼쪽으로 */
+.chron-tail{padding-right:14px}
+/* 제목 옆 장식 — 개인 집중 훈련은 회중시계, 손패는 잉크병 (잎과 같은 자리 · 크기) */
+.chron-heading>.chron-art.chron-h-watch,.chron-heading>.chron-art.chron-h-ink{transform:none}
+.chron-focus-heading .chron-heading>.chron-art.chron-h-watch{width:31px;height:37px}
+.chron-heading>.chron-art.chron-h-ink{width:35px;height:39px}
+/* 책 테두리 밖으로 나가는 장식(편지 등)은 책 화면 안에서 잘라낸다 */
+.chronicle{overflow:hidden}
