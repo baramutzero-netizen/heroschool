@@ -2,7 +2,7 @@
 .chronicle{--chron-ink:#54372a;--chron-faint:#8e785a;color:var(--chron-ink)}
 .chron-art{object-fit:contain;pointer-events:none;user-select:none;flex-shrink:0}
 .chron-masthead{display:flex;align-items:center;gap:12px;min-width:0;margin-left:-24px}
-.chron-crest{width:166px;height:228px;align-self:flex-start;position: relative;left:500px;top:0px;}
+.chron-crest{width:166px;height:228px;align-self:flex-start;position: relative;left:100px;top:-100px;}
 .chron-title-block{flex:1;min-width:0;padding-top:5px}
 .chronicle .chron-masthead h2{font-family:ChronicleBrush,'Batang',serif;font-weight:400;font-size:clamp(30px,3.1vw,48px);line-height:1.05;color:#482c23;letter-spacing:.015em;margin:0;word-break:keep-all;overflow-wrap:anywhere}
 .chron-rule{display:block;width:100%;height:12px;overflow:visible;fill:none;stroke:#8a7355;stroke-width:1;opacity:.8;pointer-events:none}
