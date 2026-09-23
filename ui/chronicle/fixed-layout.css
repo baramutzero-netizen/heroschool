@@ -1,0 +1,20 @@
+/* Test mode design canvas: 1600px viewport, 1568 × 1021px book.
+   Width-based media rules are frozen by pack.py. Smaller windows scroll. */
+#app:has(.chronicle){width:1600px;min-width:1600px;max-width:1600px;box-sizing:border-box;margin:0 auto;padding-inline:16px}
+.layout:has(.chronicle){width:1568px;grid-template-columns:1568px;margin-top:18px}
+.chronicle:has(.chron-bookmark-stage){box-sizing:border-box;width:1568px;min-width:1568px;max-width:1568px;height:1021px;min-height:1021px;max-height:1021px;padding:78.4px 156.8px;margin-bottom:100px;overflow:visible}
+.chronicle .chron-pages{height:864.2px;grid-template-columns:583.5px 583.5px;gap:87.4px}
+.chronicle .chron-page{height:864.2px;position:relative;box-sizing:border-box;flex-shrink:0}
+.chronicle .chron-masthead h2{font-size:48px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chronicle .chron-letter{width:320px}
+.chronicle .chron-students{max-height:none;min-height:560px;overflow:visible;flex-shrink:0}   /* 스크롤 없이 15명 모두 — 자금 줄 위까지 쓰는 기본 크기 */
+.chronicle .chron-right .chron-funds{position:absolute;bottom:94px;right:0;margin:0}
+.chronicle .chron-right .chron-seal-wrap{position:absolute;bottom:0;right:0;margin:0;padding-top:0}
+.chronicle .chron-bookmark-stage{flex-shrink:0}
+/* 책 그림 바깥으로 나가는 것(책갈피·편지 등)은 모두 잘라낸다 */
+.chronicle:has(.chron-bookmark-stage){overflow:hidden}
+.chronicle .btn.sm{min-height:0}
+#app:has(.chronicle) nav#nav{display:flex}
+#app:has(.chronicle) nav#navm{display:none}
+
+.chronicle .chron-right .chron-seal-wrap{right:-60px;bottom:-38px}

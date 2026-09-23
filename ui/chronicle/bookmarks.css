@@ -1,32 +1,79 @@
 /* Composed paper bookmarks. Dimensions and fan offsets can be adjusted here. */
-.chronicle .handrow.chron-bookmarks{display:flex!important;position:relative;isolation:isolate;gap:0;padding:42px 8px 35px;min-height:375px;overflow:visible;align-items:flex-start}
-.chron-bookmarks .chron-bookmark{flex:0 0 114px;margin:0 calc((100% - 130px) / var(--fan-gaps) - 114px) 0 0}
+.chronicle .handrow.chron-bookmarks{display:flex!important;position:relative;isolation:isolate;gap:0;padding:63px 12px 52.5px;min-height:562.5px;overflow:visible;align-items:flex-start}
+.chron-bookmarks .chron-bookmark{flex:0 0 119.7px;margin:0 calc((100% - 143.7px) / var(--fan-gaps) - 119.7px) 0 0}
 .chron-bookmarks .chron-bookmark:last-child{margin-right:0}
-.chronicle .card.chron-bookmark,.chron-bookmark.dragghost{position:relative;box-sizing:border-box;width:114px;min-width:114px;height:306px;min-height:306px;padding:45px 11px 12px;border:0;border-radius:2px;background:#fff7e7 var(--paper) center/100% 100%;color:#433023;box-shadow:2px 3px 5px #49301e45;transform:translateY(var(--rise)) rotate(var(--tilt));transform-origin:50% 90%;z-index:var(--order);cursor:grab;font-family:ChroniclePen,serif;transition:transform .16s,box-shadow .16s;overflow:visible;touch-action:pan-x}
+.chronicle .card.chron-bookmark,.chron-bookmark.dragghost{position:relative;box-sizing:border-box;width:119.7px;min-width:119.7px;height:321.3px;min-height:321.3px;padding:30.8px 11.55px 12.6px;border:0;border-radius:2.1px;background:#fff7e7 var(--paper) center/100% 100%;color:#433023;box-shadow:2.1px 3.15px 5.25px #49301e45;transform:translateY(var(--rise)) rotate(var(--tilt));transform-origin:50% 90%;z-index:var(--order);cursor:grab;font-family:ChroniclePen,serif;transition:transform .16s,box-shadow .16s;overflow:visible;touch-action:pan-x}
 .chron-bookmark:before{content:'';position:absolute;inset:0 0 55%;background:linear-gradient(var(--cc),transparent);opacity:.22;pointer-events:none}
-.chronicle .chron-bookmark:hover,.chronicle .chron-bookmark:focus-visible{z-index:40;transform:translateY(-22px) rotate(0);box-shadow:4px 9px 12px #49301e65;outline:1px solid #927348}
+.chronicle .chron-bookmark:hover,.chronicle .chron-bookmark:focus-visible{z-index:40;transform:translateY(-23.1px) rotate(0);box-shadow:4.2px 9.45px 12.6px #49301e65;outline:1.05px solid #927348}
 .chron-bookmark>*{position:relative;pointer-events:none}
-.chron-bookmark .bookmark-thread{position:absolute;left:-17px;top:7px;width:45px;height:48px;z-index:4;overflow:visible}
+.chron-bookmark .bookmark-thread{position:absolute;left:-30px;top:-18px;width:60px;height:45px;z-index:4;overflow:visible}
 .bookmark-thread path{fill:none;stroke:#25221f;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.chron-bookmark .bookmark-tag{position:absolute;left:-15px;top:33px;width:36px;height:68px;transform:rotate(0deg);z-index:3}
+.chron-bookmark .bookmark-tag{position:absolute;left:-32px;top:-13px;width:37.8px;height:71.4px;transform:rotate(40deg);transform-origin:50% 10%;z-index:3}
 .bookmark-tag img{width:100%;height:100%;mix-blend-mode:multiply}
-.bookmark-tag span{position:absolute;inset:17px 1px 3px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-align:center;font:700 17px/1.15 sans-serif;color:#30251f;text-shadow:0 1px #ffffff50}
-.chron-bookmark .bookmark-color{display:block;margin-left:24px;font:12px/1.2 ChroniclePen,serif;color:#68543f}
-.chron-bookmark .bookmark-name{display:block;margin:8px 0 5px 22px;font:bold 25px/1.02 ChroniclePen,serif;min-height:50px;word-break:keep-all}
-.chron-bookmark .bookmark-desc{font:16px/1.12 ChroniclePen,serif;min-height:42px;margin:0 0 8px}
-.chron-bookmark .bookmark-stats{font:16px/1.1 ChroniclePen,serif;min-height:36px;color:#466d53}
-.bookmark-stats .fxl{display:flex;justify-content:space-between;gap:2px}
+.bookmark-tag span{position:absolute;inset:17.85px 1.05px 3.15px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3.15px;text-align:center;font:700 17.85px/1.15 sans-serif;color:#30251f;text-shadow:0 1.05px #ffffff50}
+.chron-bookmark .bookmark-name{display:block;margin:0 0 5.25px 11.2px;font:bold 26.25px/1.02 ChroniclePen,serif;min-height:52.5px;word-break:keep-all}
+.chron-bookmark .bookmark-desc{font:16.8px/1.12 ChroniclePen,serif;min-height:44.1px;margin:0 0 8.4px}
+.chron-bookmark .bookmark-stats{font:16.8px/1.1 ChroniclePen,serif;min-height:37.8px;color:#466d53}
+.bookmark-stats .fxl{display:flex;justify-content:space-between;gap:2.1px}
 .bookmark-stats .bad{color:#a7493e}
-.chron-bookmark .bookmark-effect{border-top:1px solid #aa91725c;padding-top:5px;font:16px/1.1 ChroniclePen,serif;white-space:normal}
-.chron-bookmark .chron-training-art{position:absolute;width:45px;height:45px;bottom:12px;left:35px;object-fit:contain}
-.chron-bookmark .bookmark-mark{position:absolute;right:3px;bottom:5px;background:var(--mk);color:white;border-radius:50%;padding:2px 4px;font:12px sans-serif}
+.chron-bookmark .bookmark-effect{border-top:1.05px solid #aa91725c;padding-top:5.25px;font:16.8px/1.1 ChroniclePen,serif;white-space:normal}
+.chron-bookmark .chron-training-art{position:absolute;width:47.25px;height:47.25px;bottom:12.6px;left:36.75px;object-fit:contain}
+.chron-bookmark .bookmark-mark{position:absolute;right:3.15px;bottom:5.25px;background:var(--mk);color:white;border-radius:50%;padding:2.1px 4.2px;font:12.6px sans-serif}
 .chronicle .chron-right .chron-funds{margin-top:auto;padding:20px 0 0;justify-content:flex-end}
 .chronicle .chron-left{padding-bottom:30px}
-@media(max-width:1250px){.chronicle .handrow.chron-bookmarks{overflow-x:auto;overflow-y:hidden;min-height:385px;padding-left:12px;padding-right:18px}.chron-bookmarks .chron-bookmark{margin-right:-48px}.chron-bookmarks .chron-bookmark:last-child{margin-right:6px}}
+@media(max-width:1250px){.chronicle .handrow.chron-bookmarks{overflow-x:auto;overflow-y:hidden;min-height:578px;padding-left:27px;padding-right:27px}.chron-bookmarks .chron-bookmark{margin-right:-50.4px}.chron-bookmarks .chron-bookmark:last-child{margin-right:9px}}
 @media(prefers-reduced-motion:reduce){.chronicle .card.chron-bookmark{transition:none}}
 
 /* Remove the white atlas matte during compositing, including outside card edges. */
 .chron-bookmark .bookmark-cord,.chron-bookmark .bookmark-tag img{filter:url(#chron-paper-cutout)}
-.chron-bookmark .bookmark-stats .fxl{font:16px/1.1 ChroniclePen,serif}
+.chron-bookmark .bookmark-stats .fxl{font:16.8px/1.1 ChroniclePen,serif}
 
-.bookmark-tag span b{font:inherit;white-space:nowrap}.bookmark-tag span small{font:600 13px/1.1 sans-serif}
+.bookmark-tag span b{font:inherit;white-space:nowrap}.bookmark-tag span small{font:600 13.65px/1.1 sans-serif}
+
+/* The fixed placeholder restores the original page layout. The hand is an
+   independent overlay: changing card size/coordinates cannot stretch the book. */
+.chron-bookmark-stage{position:relative;flex:none;height:220px;min-width:0;--hand-left:-125px;--hand-top:2px;--hand-extra-width:145px}
+.chronicle .chron-left{padding-bottom:0}
+.chronicle .chron-bookmark-stage .chron-bookmarks{position:absolute;left:calc(var(--hand-left) + 9px);top:calc(var(--hand-top) - 6px);width:calc(100% + var(--hand-extra-width));height:500px;min-height:0;margin:0;padding:16px 12px 20px;box-sizing:border-box}
+.chronicle:has(.chron-bookmark-stage){overflow:visible;margin-bottom:260px}
+@media(max-width:1250px) and (min-width:651px){
+ .chron-bookmark-stage{--hand-left:-65px;--hand-extra-width:65px}
+ .chronicle .chron-bookmark-stage .chron-bookmarks{overflow:visible}
+ .chron-bookmarks .chron-bookmark{margin-right:calc((100% - 143.7px) / var(--fan-gaps) - 119.7px)}
+ .chron-bookmarks .chron-bookmark:last-child{margin-right:0}
+}
+@media(max-width:650px){
+ .chron-bookmark-stage{height:530px;--hand-left:0px;--hand-extra-width:0px}
+ .chronicle .chron-bookmark-stage .chron-bookmarks{height:530px;padding:40px 27px 20px;overflow-x:auto;overflow-y:hidden}
+ .chronicle:has(.chron-bookmark-stage){margin-bottom:0}
+}
+.chron-bookmark-stage{z-index:4}
+.chronicle .chron-right .chron-seal-wrap{margin-top:0}
+
+/* 끈·종이 태그는 숨긴다 / 종이 구멍은 가운데 실제로 뚫린 구멍(투명)으로 */
+.chron-bookmark .bookmark-thread,.chron-bookmark .bookmark-tag{display:none}
+.chronicle .card.chron-bookmark,.chron-bookmark.dragghost{background-color:transparent}
+.chron-bookmark:before{-webkit-mask:radial-gradient(circle at 50% 18px,transparent 6px,#000 7px);mask:radial-gradient(circle at 50% 18px,transparent 6px,#000 7px)}
+
+/* N주 남음 — 책갈피 좌상단의 투명 테이프. 위(종이 밖)는 남은 주 색 · 글자, 아래(종이 위)는 반투명으로 종이 결이 비친다 */
+.chron-bookmark .bookmark-tape{position:absolute;left:1px;top:-21px;width:56px;height:42px;z-index:5;transform:none;pointer-events:none;
+ --tape:#4f7f5b;
+ background:linear-gradient(180deg,var(--tape) 0 50%,rgba(236,239,242,.42) 50% 100%);
+ box-shadow:0 1px 1.5px #3a28181f;
+ clip-path:polygon(0 4%,9% 0,20% 5%,31% 1%,43% 4%,55% 0,67% 4%,79% 1%,90% 5%,100% 2%,99% 26%,100% 50%,98% 76%,100% 98%,89% 95%,77% 100%,65% 96%,53% 100%,41% 95%,29% 99%,17% 95%,6% 100%,0 97%,2% 74%,0 50%,2% 25%)}
+.chron-bookmark .bookmark-tape:after{content:"";position:absolute;left:0;right:0;top:50%;bottom:0;background:linear-gradient(115deg,transparent 20%,rgba(255,255,255,.35) 38%,transparent 52%),repeating-linear-gradient(90deg,rgba(255,255,255,.08) 0 2px,transparent 2px 5px)}
+.chron-bookmark .bookmark-tape b{position:absolute;left:0;right:0;top:0;height:50%;display:flex;align-items:center;justify-content:center;font:700 14px/1 sans-serif;color:#fff;letter-spacing:.02em;text-shadow:0 1px 1px #0005}
+.chron-bookmark .bookmark-tape[data-life="2"]{--tape:#c8891f}
+.chron-bookmark .bookmark-tape[data-life="1"]{--tape:#c23a26}
+
+/* 테이프 — 네모 모양, 색 부분도 살짝 비치게(불투명도 60%), "N주 남음" */
+.chron-bookmark .bookmark-tape{clip-path:none;width:66px;background:linear-gradient(180deg,color-mix(in srgb,var(--tape) 60%,transparent) 0 50%,rgba(236,239,242,.42) 50% 100%)}
+.chron-bookmark .bookmark-tape b{font-size:13px;gap:3px}
+.chron-bookmark .bookmark-tape b small{font:600 11px/1 sans-serif;opacity:.95}
+
+/* 테이프는 더 비치게, 글자는 또렷하게 — 글자에 테이프 원색 테두리 */
+.chron-bookmark .bookmark-tape{background:linear-gradient(180deg,color-mix(in srgb,var(--tape) 42%,transparent) 0 50%,rgba(236,239,242,.34) 50% 100%)}
+.chron-bookmark .bookmark-tape b{color:#fff;-webkit-font-smoothing:antialiased;text-shadow:0 0 1px var(--tape),0 0 1px var(--tape),1px 0 0 var(--tape),-1px 0 0 var(--tape),0 1px 0 var(--tape),0 -1px 0 var(--tape),1px 1px 0 var(--tape),-1px -1px 0 var(--tape),1px -1px 0 var(--tape),-1px 1px 0 var(--tape)}
+
+/* 표식 — 컨디션 줄 바로 아래 */
+.chron-bookmark .bookmark-mark{position:relative;right:auto;bottom:auto;display:inline-flex;align-items:center;justify-content:center;align-self:flex-start;width:fit-content;min-width:22px;height:22px;box-sizing:border-box;margin-top:6px;padding:0 5px;line-height:1}

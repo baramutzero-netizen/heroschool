@@ -9,7 +9,7 @@ for n in range(1,4):
     image=Image.open(HERE/f'page-{n}.png').convert('RGB')
     image.thumbnail((1100,734),Image.Resampling.LANCZOS)
     out=HERE/f'page-{n}.webp'
-    image.save(out,format='WEBP',quality=88,method=6)
+    image.save(out,format='WEBP',quality=75,method=6)
     assets[str(n)]='data:image/webp;base64,'+base64.b64encode(out.read_bytes()).decode()
 p=ROOT/'game.html'
 s=p.read_text(encoding='utf-8')

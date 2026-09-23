@@ -23,3 +23,7 @@ Final generated source: exec-6c797a67-28e9-4b57-90ca-fdc09911251c.png. Cropped i
 - 색상 끈 이미지를 가는 검은 SVG 선으로 교체하여 종이 구멍과 태그 구멍을 연결.
 - 태그 회전 0도, 36×68px. 기간 숫자는 17px 굵은 글씨, 남음은 13px로 분리 표시.
 - 기존 선택/되돌리기/드래그/모바일 스크롤 검증 통과.
+
+## 진행 도구 이미지 (2026-09-23)
+Built-in image_gen으로 참조의 붉은 왁스 봉인/양피지 버튼 스타일을 이용한 4종 atlas 제작. Prompt: four isolated fantasy parchment-journal assets on white, crimson wax botanical seal, parchment plaque with exact Korean 이번 주를 진행한다, midnight-blue eye-emblem Book of Prophecy, crystal aqua holy-water bottle with golden wing stopper. Source: journal-actions-source.png (exec-f82e8602-d9cc-434f-9613-038ce4324ed3.png).
+각각 wax-stamp, proceed-button, prophecy-book, supreme-water의 PNG와 WebP로 분리. 버튼과 아이콘은 테스트 모드에 연결. 기존 disabled/클릭 처리 유지, 진행 버튼 접근성 라벨 및 조건 안내 유지.

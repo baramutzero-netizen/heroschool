@@ -110,3 +110,97 @@
 .chron-heading>.chron-art.chron-h-ink{width:35px;height:39px}
 /* 책 테두리 밖으로 나가는 장식(편지 등)은 책 화면 안에서 잘라낸다 */
 .chronicle{overflow:hidden}
+/* 요일 방패 — 색을 50% 비치게 (글자는 그대로 선명하게) */
+.chronicle .chron-weekday{background:color-mix(in srgb,var(--day-color) 50%,transparent)}
+/* 표식 — 어느 줄이든 같은 세로선(능률 앞)에 맞춘다 */
+.chron-tail{flex:0 0 150px;box-sizing:border-box;justify-content:flex-start}
+/* 봉인 버튼 왼쪽 — 예지의 서 · 초성수: 버튼 모양 없이 손글씨만 (눌러서 쓰는 건 그대로) */
+.chronicle .chron-right .chron-actions{position:absolute;right:270px;bottom:6px;height:70px;display:flex;align-items:center;gap:30px;z-index:3}
+.chronicle .chron-inkbtn{all:unset;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font:24px/1.05 ChroniclePen,serif;color:#54372a;text-align:center;white-space:nowrap;padding:2px 4px;border-radius:4px;transition:color .15s,transform .15s}
+.chronicle .chron-inkbtn small{font:20px/1.05 ChroniclePen,serif;color:#7a5c44}
+.chronicle .chron-inkbtn:hover:not(:disabled){color:#2f1d13;transform:translateY(-1px);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.chronicle .chron-inkbtn:focus-visible{outline:1px dashed #8a6a48;outline-offset:2px}
+.chronicle .chron-inkbtn:disabled{cursor:default;opacity:.45}
+/* 능률 — 표식 유무와 상관없이 늘 같은 세로선에서 시작 (표식 칸 50px 뒤) */
+.chronicle .chron-tail{display:grid;grid-template-columns:50px auto;align-items:center;gap:0}
+.chronicle .chron-tail .chron-mark{grid-column:1;justify-self:start}
+.chronicle .chron-tail .chron-chain{grid-column:2}
+.chronicle .chron-tail{width:150px;min-width:0;max-width:150px;grid-template-columns:50px minmax(0,1fr)}
+/* 개인 집중 훈련 도구 — 네 가지만, 손글씨 한 줄로 */
+.chronicle .chron-focus-tools{gap:6px 26px;margin:6px 0 12px;align-items:baseline}
+.chronicle .chron-inkbtn.chron-inkline{flex-direction:row;font-size:21px;padding:0 2px}
+/* 학생 카드 — 얼굴 | 이름·학년·직업 | 집중 훈련 · 목표(누르면 순서대로 바뀜) / 아래 컨디션 막대, 모두 손글씨 */
+.chronicle .chron-student.chron-st2{display:grid;grid-template-columns:52px minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:8px;row-gap:6px;align-items:start;text-align:left;padding:6px 2px 10px;font-family:ChroniclePen,serif;color:#4a3225}
+.chron-st2 .chron-person{grid-row:1;grid-column:1;width:52px;padding:0}
+.chron-st2 .chron-person .facebox{width:50px;height:50px;flex-basis:50px;border-radius:6px}
+.chron-st2 .chron-st-id{grid-column:2;display:flex;flex-direction:column;min-width:0;line-height:1.05}
+.chron-st2 .chron-st-id strong{font:700 23px/1.05 ChroniclePen,serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chron-st2 .chron-st-id span{font:19px/1.05 ChroniclePen,serif;color:#6b4e3a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chron-st2 .chron-st-focus{grid-column:3;display:flex;flex-direction:column;align-items:flex-start;line-height:1.05}
+.chron-st2 .chron-st-focus strong{font:700 21px/1.05 ChroniclePen,serif;white-space:nowrap}
+.chronicle .chron-focus-cycle{all:unset;box-sizing:border-box;display:inline-flex;align-items:center;gap:4px;cursor:pointer;margin-top:3px;padding:1px 3px 1px 0;border-radius:4px;font:22px/1.05 ChroniclePen,serif;color:#54372a;white-space:nowrap}
+.chronicle .chron-focus-cycle:hover{color:#2f1d13}
+.chronicle .chron-focus-cycle:hover .chron-cycle-ic{transform:rotate(90deg)}
+.chronicle .chron-focus-cycle:focus-visible{outline:1px dashed #8a6a48;outline-offset:2px}
+.chron-cycle-ic{width:18px;height:18px;fill:none;stroke:#6b4e3a;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.chron-st2 .chron-condition{grid-column:1/-1;margin:0;height:13px}
+.chron-st2 .chron-condition span{font:12px/13px ChroniclePen,serif;text-align:center}
+/* 학생 카드 다듬기 — '집중' 칸 폭 고정(목표가 바뀌어도 제자리), 목표 글씨 조금 크게, 학년·직업은 작게 */
+.chron-st2 .chron-st-focus{width:84px}
+.chronicle .chron-focus-cycle{font-size:24px}
+.chron-st2 .chron-st-id span{font-size:16px;line-height:1.02}
+.chron-st2 .chron-st-id strong{font-size:22px}
+.chronicle .chron-student.chron-st2{row-gap:5px;padding:4px 2px 8px}
+/* 도구·학생 카드 20px 위로, 스크롤 없이 15명 전부 */
+.chronicle .chron-right .chron-focus-tools{margin-top:-14px}
+.chronicle .chron-students{max-height:none;overflow:visible}
+.chronicle .chron-pagination[hidden]{display:none}
+/* 이름이 잘리지 않게 — 얼굴 조금 작게, '집중' 칸은 좁게 두고 목표 글자는 칸 밖으로 넘쳐도 보이게 */
+.chronicle .chron-student.chron-st2{grid-template-columns:44px minmax(0,1fr) 60px;column-gap:6px}
+.chron-st2 .chron-person{width:44px}
+.chron-st2 .chron-person .facebox{width:44px;height:44px;flex-basis:44px}
+.chron-st2 .chron-st-focus{width:60px;overflow:visible}
+.chron-st2 .chron-st-id strong{font-size:21px}
+.chronicle .chron-focus-cycle .chron-cycle-ic{width:16px;height:16px}
+/* 컨디션 막대 1.5배 두껍게 · 숫자는 흰 글자에 검은 테두리 */
+.chron-st2 .chron-condition{height:20px;border-radius:10px}
+.chron-st2 .chron-condition span{font:700 15px/20px ChroniclePen,serif;color:#fff;text-shadow:none;-webkit-text-stroke:3px #1e140d;paint-order:stroke fill}
+.chron-st2 .chron-condition span{font-size:17px}
+/* 학생 카드 — 학년·직업 대신 훈련 실패 확률, 이름은 더 크게 */
+.chron-st2 .chron-st-id strong{font-size:26px;line-height:1.05}
+.chron-st2 .chron-st-id{justify-content:center;min-height:44px;gap:2px}
+.chron-st2 .chron-st-id .chron-fail{font:17px/1.05 ChroniclePen,serif;color:#6b4e3a}
+.chron-st2 .chron-st-id .chron-fail.bad{color:#a7493e}
+/* '훈련 실패:' 와 숫자를 두 줄로 — 좁은 칸에서도 잘리지 않게 */
+.chron-st2 .chron-st-id .chron-fail{display:flex;flex-direction:column;white-space:nowrap;overflow:visible;font-size:16px;line-height:1}
+.chron-st2 .chron-st-id .chron-fail b{font:700 19px/1.05 ChroniclePen,serif}
+.chron-st2 .chron-st-id strong{font-size:25px}
+/* Separate illustrated action assets; all existing button handlers are retained. */
+.chronicle .chron-actions .chron-action-icon{width:46px;height:46px;object-fit:contain;filter:url(#chron-paper-cutout);pointer-events:none}
+.chronicle .chron-actions .chron-inkbtn{position:relative;padding-top:46px}
+.chronicle .chron-actions .chron-action-icon{position:absolute;top:0;left:calc(50% - 23px)}
+.chronicle .chron-seal-wrap #btnWeek.chron-proceed-art{position:relative;width:319px;height:101px;min-height:101px;padding:0;border:0;background:none;overflow:visible;opacity:1}
+.chronicle .chron-seal-wrap #btnWeek.chron-proceed-art:before{display:none}
+.chron-proceed-art .chron-proceed-paper{display:block;width:319px;height:101px;object-fit:fill;mix-blend-mode:multiply;pointer-events:none}
+.chron-proceed-art .chron-wax-stamp{position:absolute;width:96px;height:96px;left:-57px;top:2px;object-fit:contain;filter:url(#chron-paper-cutout);pointer-events:none}
+.chron-proceed-art:disabled .chron-proceed-paper,.chron-proceed-art:disabled .chron-wax-stamp{opacity:.6}
+.chron-proceed-status{position:absolute;left:0;right:0;bottom:-15px;text-align:center;font:16px/1 ChroniclePen,serif;white-space:nowrap}
+.chron-proceed-art.stamped .chron-wax-stamp{animation:chronStamp .25s ease-out}
+.chronicle .chron-right .chron-actions{right:310px;gap:18px;bottom:8px}
+/* 마지막 열의 목표 글자(천재성 등)가 쪽 밖으로 나가지 않게 */
+.chronicle .chron-students{box-sizing:border-box;padding-right:8px}
+
+/* Paper-and-wax silhouette only: no rectangular button panel or hover shadow. */
+.chronicle .chron-seal-wrap #btnWeek.chron-proceed-art,
+.chronicle .chron-seal-wrap #btnWeek.chron-proceed-art:hover,
+.chronicle .chron-seal-wrap #btnWeek.chron-proceed-art:active{box-shadow:none;filter:none;background:transparent;border:0;transform:none;mix-blend-mode:multiply}
+.chron-proceed-art:disabled .chron-proceed-paper,.chron-proceed-art:disabled .chron-wax-stamp{opacity:1}
+
+/* 이번 주를 진행한다 — 카드 5장이 다 놓이기 전(비활성)엔 반투명, 누르면 붉은 도장이 찍힌 뒤 진행 */
+.chronicle .chron-seal-wrap #btnWeek.chron-proceed-art{transition:opacity .25s ease}
+.chronicle .chron-seal-wrap #btnWeek.chron-proceed-art:disabled{opacity:.42;cursor:not-allowed}
+.chronicle .chron-seal-wrap #btnWeek.chron-proceed-art.stamped{opacity:1;cursor:default}
+.chronicle .chron-ink-stamp{position:absolute;z-index:5;width:118px;height:118px;color:#c4271c;opacity:.92;mix-blend-mode:multiply;pointer-events:none;transform:translate(-50%,-50%) rotate(var(--rot,-12deg));animation:chronInkStamp .32s cubic-bezier(.3,1.4,.5,1) both}
+.chronicle .chron-ink-stamp svg{display:block;width:100%;height:100%;overflow:visible}
+@keyframes chronInkStamp{0%{transform:translate(-50%,-50%) scale(1.9) rotate(var(--rot,-12deg));opacity:0}55%{transform:translate(-50%,-50%) scale(.93) rotate(var(--rot,-12deg));opacity:.97}100%{transform:translate(-50%,-50%) scale(1) rotate(var(--rot,-12deg));opacity:.92}}
+@media (prefers-reduced-motion:reduce){.chronicle .chron-ink-stamp{animation:none}}

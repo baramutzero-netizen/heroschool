@@ -9,7 +9,28 @@ s=s.replace('const PREF = {bspeed: 280, reportSpeed: 2};','const PREF = {bspeed:
 anchor='if(j && [1,2,6].includes(j.reportSpeed)) PREF.reportSpeed = j.reportSpeed;'
 if 'PREF.chronicleTest = j.chronicleTest' not in s:s=s.replace(anchor,anchor+'\n  if(j && typeof j.chronicleTest === "boolean") PREF.chronicleTest = j.chronicleTest;')
 fonts='\n'.join("@font-face{font-family:'"+family+"';src:url(data:font/woff2;base64,"+base64.b64encode((out/'fonts'/filename).read_bytes()).decode()+") format('woff2');font-weight:400;font-display:swap;}" for family,filename in [('ChroniclePen','NanumPenScript.woff2'),('ChronicleBrush','NanumBrushScript.woff2')])
-css='/* CHRONICLE_CSS_START */\n'+fonts+'\n'+(out/'style.css').read_text(encoding='utf-8')+'\n'+(out/'ornaments.css').read_text(encoding='utf-8')+'\n'+(out/'bookmarks.css').read_text(encoding='utf-8')+'\n/* CHRONICLE_CSS_END */'
+def fixed_desktop_css(css):
+    """Freeze chronicle width-dependent rules at the 1600px design viewport."""
+    import re
+    result='';pos=0
+    while True:
+        m=re.search(r'@media\s*([^{}]+)\{',css[pos:])
+        if not m:
+            return result+css[pos:]
+        start=pos+m.start();body=pos+m.end();depth=1;end=body
+        while depth:
+            if css[end]=='{':depth+=1
+            elif css[end]=='}':depth-=1
+            end+=1
+        result+=css[pos:start];query=m[1]
+        if 'width' not in query:result+=css[start:end]
+        else:
+            limits=re.findall(r'(min|max)-width\s*:\s*(\d+)px',query)
+            if all(1600>=int(n) if kind=='min' else 1600<=int(n) for kind,n in limits):
+                result+=css[body:end-1]
+        pos=end
+
+css='/* CHRONICLE_CSS_START */\n'+fonts+'\n'+fixed_desktop_css((out/'style.css').read_text(encoding='utf-8')+'\n'+(out/'ornaments.css').read_text(encoding='utf-8')+'\n'+(out/'bookmarks.css').read_text(encoding='utf-8'))+'\n'+(out/'fixed-layout.css').read_text(encoding='utf-8')+'\n/* CHRONICLE_CSS_END */'
 if '/* CHRONICLE_CSS_START */' in s:s=re.sub(r'/\* CHRONICLE_CSS_START \*/.*?/\* CHRONICLE_CSS_END \*/',lambda _:css,s,flags=re.S)
 else:s=s.replace('</style>',css+'\n</style>',1)
 assets={f.stem:'data:image/webp;base64,'+base64.b64encode(f.read_bytes()).decode() for f in (out/'ornaments').glob('*.webp')}

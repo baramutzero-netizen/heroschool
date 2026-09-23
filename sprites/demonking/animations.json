@@ -1,0 +1,63 @@
+{
+  "image": "../src/demonking.png",
+  "frameSize": [
+    256,
+    256
+  ],
+  "columns": 6,
+  "rows": 5,
+  "motions": {
+    "idle": {
+      "row": 0,
+      "frames": 4,
+      "durations": [
+        180,
+        180,
+        180,
+        180
+      ]
+    },
+    "attack": {
+      "row": 1,
+      "frames": 6,
+      "durations": [
+        90,
+        90,
+        90,
+        90,
+        90,
+        90
+      ]
+    },
+    "hit": {
+      "row": 2,
+      "frames": 3,
+      "durations": [
+        100,
+        100,
+        100
+      ]
+    },
+    "down": {
+      "row": 3,
+      "frames": 5,
+      "durations": [
+        140,
+        140,
+        140,
+        140,
+        140
+      ]
+    },
+    "win": {
+      "row": 4,
+      "frames": 4,
+      "durations": [
+        180,
+        180,
+        180,
+        180
+      ]
+    }
+  }
+}
