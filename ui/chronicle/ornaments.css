@@ -1,0 +1,43 @@
+/* Illustrated manuscript layer, confined to the experimental progress page. */
+.chronicle{--chron-ink:#54372a;--chron-faint:#8e785a;color:var(--chron-ink)}
+.chron-art{object-fit:contain;pointer-events:none;user-select:none;flex-shrink:0}
+.chron-masthead{display:flex;align-items:center;gap:12px;min-width:0;margin-left:-24px}
+.chron-crest{width:166px;height:228px;align-self:flex-start;position: relative;left:500px;top:0px;}
+.chron-title-block{flex:1;min-width:0;padding-top:5px}
+.chronicle .chron-masthead h2{font-family:ChronicleBrush,'Batang',serif;font-weight:400;font-size:clamp(30px,3.1vw,48px);line-height:1.05;color:#482c23;letter-spacing:.015em;margin:0;word-break:keep-all;overflow-wrap:anywhere}
+.chron-rule{display:block;width:100%;height:12px;overflow:visible;fill:none;stroke:#8a7355;stroke-width:1;opacity:.8;pointer-events:none}
+.chron-title-rule{margin:0 0 5px;stroke-width:1.4}
+.chronicle .chron-date{position:relative;display:table;min-width:52%;font:29px/1.2 ChroniclePen,'Batang',serif;margin:0;padding:0 6px 7px;color:#69442f;letter-spacing:1px}
+.chron-date-rule{position:absolute;bottom:0;left:0;height:5px;opacity:.5}
+.chron-intro{display:grid;grid-template-columns:1fr 1fr;align-items:start;gap:8px;margin-top:3px;margin-bottom:3px}
+.chronicle .chron-note{font:24px/1.3 ChroniclePen,serif;color:#6d4531;margin:8px 0;display:flex;align-items:center;gap:7px}
+.chron-note .chron-art{width:23px;height:30px}
+.chron-motto{position:relative;transform:rotate(-5deg);font:22px/1.05 ChroniclePen,serif;color:#74553d;margin:-4px 9px 8px 0;padding:0 24px 0 3px}
+.chron-motto span{padding-left:27px}.chron-motto .chron-art{position:absolute;width:31px;height:39px;right:-5px;bottom:-7px;transform:rotate(10deg)}
+.chron-heading{position:relative;display:flex;align-items:center;gap:9px;margin:5px 0 8px;padding-bottom:12px;min-height:45px}
+.chron-heading>.chron-art{width:35px;height:39px;transform:rotate(-12deg)}
+.chronicle .chron-heading h3{font:36px/1 ChronicleBrush,serif;color:#4d3125;margin:0;letter-spacing:1px;word-break:keep-all}
+.chron-heading .chron-rule{position:absolute;bottom:0;left:0}
+.chron-toolbar{margin:0 0 4px;justify-content:flex-end;opacity:.9}
+.chron-day.dslot{min-height:65px;border-bottom:0;gap:10px;padding:7px 0 9px}
+.chron-weekday{font:27px/1 ChroniclePen,serif!important;min-width:38px;padding:8px 2px!important;clip-path:polygon(8% 3%,92% 3%,100% 12%,96% 82%,50% 100%,4% 82%,0 12%);box-shadow:inset 0 0 0 2px #b29d6b}
+.chronicle .chron-entry{gap:12px}.chronicle .chron-entry strong{font:26px/1.05 ChroniclePen,serif;flex:0 0 92px;word-break:keep-all}
+.chronicle .chron-entry small{font:22px/1.1 ChroniclePen,serif;color:#6e523c}
+.chron-training-art{width:44px;height:44px;filter:saturate(.65);opacity:.9}
+.chron-day-rule{position:absolute;bottom:0;left:0;height:6px;stroke-width:.7;opacity:.5}
+.chron-chain{bottom:-5px;font-size:10px}.chron-empty{font:20px/1.2 ChroniclePen,serif}
+.chron-hand-heading{margin-top:20px;margin-bottom:3px}.chron-heading small{font:24px ChroniclePen,serif;color:#88694c}
+.chron-hand-title{margin:2px 0 13px;justify-content:flex-end}
+.chronicle footer{display:flex;align-items:center;gap:8px;padding:24px 0 5px 7px;font:27px/1 ChroniclePen,serif;min-height:61px}
+.chronicle footer b{font-weight:400}.chron-purse{width:37px;height:43px}
+.chron-focus-heading{position:relative;display:flex;align-items:flex-start;gap:12px;min-height:104px;padding-top:10px}
+.chron-focus-heading .chron-heading{position:static;flex:1;margin:0;padding-bottom:23px}.chron-focus-heading .chron-heading h3{font-size:35px;white-space:nowrap;letter-spacing:0}
+.chron-focus-heading .chron-heading>.chron-art{width:31px;height:37px}
+.chron-focus-heading .chron-heading .chron-rule{bottom:29px}
+.chron-focus-heading>p{font:20px/1.05 ChroniclePen,serif;text-align:right;transform:rotate(-4deg);color:#785b44;margin:-4px 0 0;flex:0 1 190px}
+.chron-letter{position:absolute;width:clamp(105px,10vw,163px);height:auto;left:-15px;bottom:-7px;z-index:1;filter:drop-shadow(1px 4px 3px #38251035)}
+@media(max-width:1250px) and (min-width:651px){.chron-masthead{margin-left:-12px;gap:6px}.chron-crest{width:59px;height:92px}.chronicle .chron-date{font-size:24px}.chron-intro{grid-template-columns:1fr}.chron-motto{text-align:right;font-size:19px;margin:0 0 8px;line-height:.95}.chron-motto br{display:none}.chron-motto span{padding-left:3px}.chronicle .chron-note{font-size:22px}.chron-heading h3{font-size:30px!important}.chron-focus-heading{flex-wrap:wrap;gap:2px;min-height:110px}.chron-focus-heading>p{flex-basis:100%;text-align:right;font-size:19px}.chron-focus-heading .chron-heading .chron-rule{bottom:0}.chronicle .chron-entry strong{font-size:23px;flex-basis:75px}.chron-training-art{width:32px;height:36px}.chronicle .chron-entry small{display:none}.chron-letter{width:100px;left:-8px}.chronicle footer{padding-left:30px}}
+@media(max-width:650px){.chron-masthead{margin-left:0;gap:7px}.chron-crest{width:50px;height:76px}.chronicle .chron-masthead h2{font-size:31px}.chronicle .chron-date{font-size:23px}.chron-intro{grid-template-columns:1fr}.chron-motto{font-size:19px;text-align:right;line-height:1.05;margin:0 0 12px}.chron-motto br{display:none}.chron-motto span{padding-left:4px}.chron-note{font-size:23px!important}.chron-heading h3{font-size:32px!important}.chronicle .chron-entry{gap:7px}.chronicle .chron-entry strong{font-size:23px;flex-basis:68px}.chronicle .chron-entry small{font-size:17px;display:block}.chron-training-art{width:31px;height:33px}.chron-weekday{min-width:29px;font-size:24px!important}.chronicle footer{font-size:25px}.chron-focus-heading{flex-wrap:wrap;min-height:105px}.chron-focus-heading>p{flex-basis:100%;font-size:20px}.chron-focus-heading .chron-heading .chron-rule{bottom:0}.chron-letter{width:85px;bottom:5px;left:0}.chron-tabs{padding-left:75px;gap:5px}.chron-tabs button{padding:8px 10px}.chron-hand-title{justify-content:flex-start}}
+/* Keep the headings rounded and weighty like the mockup; brush is reserved for short flourishes. */
+.chronicle .chron-masthead h2{font-family:ChroniclePen,'Batang',serif;font-weight:700;font-size:clamp(32px,3.2vw,48px);line-height:1.08}
+.chronicle .chron-heading h3{font-family:ChroniclePen,'Batang',serif;font-weight:700;font-size:35px}.chron-focus-heading .chron-heading h3{font-size:34px}
