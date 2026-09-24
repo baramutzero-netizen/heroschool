@@ -8582,7 +8582,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0924-0257";
+const BUILD = "0924-0310";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -8734,6 +8734,7 @@ async function seasonLoad(quiet){
   await leagueClockSync();
   let raw = null, err = null;
   try{ raw = await leagueReq("season"); }catch(e){ err = String(e.message||e); }
+  if(!err) await leagueServerMerge();       // 서버에 쌓인 내 성적부터 받아 온다
   U.loading = false;
   U.err = err;
   U.SE = err ? null : seasonSane(raw);
@@ -8889,9 +8890,31 @@ function lgClockStart(){
 }
 
 /* 내 자리만 갱신한다 — 남의 기록은 건드리지 않는다 */
+/* 서버에 있는 내 성적을 내 저장으로 받아 온다 (0924).
+   내가 게임을 켜지 않은 동안의 시즌은 다른 학원의 게임이 서버에 대신 반영한다 — 그 몫이 내 저장에는 없다.
+   예전에는 등록할 때 내 저장 값으로 서버를 통째로 덮어써서, 그렇게 쌓인 성적이 지워졌다.
+   리그 포인트 · 승 · 패 · 시즌 수는 줄어드는 일이 없으니 둘 중 큰 쪽을 남긴다.
+   서버에 닿지 못하면 false — 그때는 서버에 쓰지 않는다. */
+async function leagueServerMerge(L){
+  L = L || leagueState();
+  let cur;
+  try{ cur = await leagueReq("teams/" + leagueId()); }catch(e){ return false; }
+  if(cur && typeof cur === "object"){
+    const n = (v, hi)=> clamp(Math.round(+v||0), 0, hi);
+    const before = [L.lp, L.w, L.l, L.n].join("/");
+    L.lp = Math.max(L.lp|0, n(cur.lp, 99999));
+    L.w  = Math.max(L.w|0,  n(cur.w, 999999));
+    L.l  = Math.max(L.l|0,  n(cur.l, 999999));
+    L.n  = Math.max(L.n|0,  n(cur.n, 999999));
+    L.lastSeason = Math.max(L.lastSeason|0, n(cur.ls, 1e9));   // 서버가 이미 정산한 시즌은 다시 더하지 않는다
+    if(before !== [L.lp, L.w, L.l, L.n].join("/")) save();
+  }
+  return true;
+}
 async function leagueSync(){
   if(!leagueOn()) return false;
   const L = leagueState();
+  if(!(await leagueServerMerge(L))){ toast("리그 서버에 닿지 못했다 — 기록을 덮어쓰지 않도록 올리지 않았다"); return false; }
   /* 명단이 조건을 못 채워도 이미 등록해 둔 자리라면 점수만은 남긴다 —
      이게 없으면 시즌 결과가 내 저장에만 쌓이고 서버 순위표에는 안 올라간다 */
   if(!leagueReady()){
