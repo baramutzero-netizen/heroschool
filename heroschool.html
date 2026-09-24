@@ -3486,7 +3486,8 @@ function gradUnit(g){
   st.level = Math.max(1, g.lv|0);
   st.exp = 0; st.injured = 0; st.focus = "free"; st.cond = 100; delete st._injFocus;
   st.karma = g.karma|0; st.trust = 0; st.rival = null; st.bro = null;
-  MENTAL.forEach(m=>{ if(g.ment[m.k] != null) st.ment[m.k] = g.ment[m.k]; });
+  /* 졸업생 멘탈리티는 소수점을 버린 값으로 되살린다 — 리그에 올리는 값 · 순위표 · 전투력 표시가 모두 같아진다 */
+  MENTAL.forEach(m=>{ if(g.ment[m.k] != null) st.ment[m.k] = Math.floor(g.ment[m.k]); });
   st.skMod = JSON.parse(JSON.stringify(g.skMod || {}));
   st.relics = (g.relics||[]).map(r=>({id:"r"+RNG().toString(36).slice(2,9),
     grade:r.grade, name:r.name, aff:(r.aff||[]).map(a=>({k:a.k,n:a.n,v:a.v}))}));
@@ -3940,22 +3941,30 @@ function battleStats(st){
 function corePower(st){ const c=st.cond; st.cond=100; const v=power(st); st.cond=c; return v; }
 /* 표시 전투력 — 방어력 감쇠·회피·받는 크리 감소·스킬 저항을 실효 내구로,
    크리·명중·스킬 성공률을 실효 공격으로 환산해 더한다. */
-var PW_K = 1.13;
+/* 전투력 — 실제 전투 결과에 맞춘 식 (0924, 9만 판 시뮬레이션으로 가중치를 맞췄다).
+   생존력(실효 체력)과 화력(실효 공격)을 곱한 값을 예전 전투력과 같은 폭으로 줄여 보여준다.
+     실효 체력 = 체력 × 방어 감쇠 × 회피 × 받는 크리 감소 × 스킬 저항 × 피흡
+     실효 화력 = 공격력 × 속도^1.44 × 크리 기대값 × 명중 × 스킬 성공률 × 필살 게이지
+   팀 전투력(합)의 비율로 승패를 가장 잘 맞히도록 계수를 골랐다. */
+const PW = {ehp:.6843, dps:.7751, spd:1.4374, ult:3.983, leech:.5845, skAcc:.12, skRes:.08, critExp:.75,
+            crit:.5638, accRef:1.1546, evaRef:.3047, def:289.8913, t:.375, K:2.2145};
 function powerParts(st){
   const s = battleStats(st);
-  const take = 1 - s.def/(s.def + DEF_K), takeRef = 1 - 150/(150 + DEF_K);
-  const hitIn = clamp(.95 - (s.eva||0), .35, .99);                  // 적이 나를 맞힐 확률
-  const critIn = 1 + .088*(1 - clamp(s.critRes||0, 0, .8));         // 받는 크리 기대 배율
-  const skIn = 1 - clamp(s.skRes||0, 0, .8)*.12;                    // 스킬 저항
-  const durM = Math.pow((takeRef/take) * (.90/hitIn) * (1.088/critIn) * (1/skIn), .8);
-  const offM = Math.pow((1 + (s.crit||0)*((s.critDmg||1.5) - 1))/1.035
-                        * (1 + ((s.acc||.95) - .95)*.9)
-                        * (1 + ((s.skAcc||.88) - .88)*.45), .8);
-  return {s, durM, offM};
+  const ehp = s.hp * (1 + (s.def||0)/PW.def)
+    / clamp(PW.accRef - (s.eva||0), .35, .99)                      // 적이 나를 맞힐 확률
+    / (1 + PW.crit*(1 - clamp(s.critRes||0, 0, .8)))              // 받는 크리
+    / (1 - PW.skRes*clamp(s.skRes||0, 0, 1))                      // 스킬 저항
+    * (1 + PW.leech*(s.leech||0));                                // 피흡
+  const dps = s.atk * Math.pow(Math.max(1, s.spd), PW.spd)
+    * Math.pow(1 + clamp(s.crit||0, 0, 1)*((s.critDmg||1.5) - 1), PW.critExp)   // 크리 기대값
+    * clamp((s.acc||.95) - PW.evaRef, .35, .99)                   // 명중
+    * (1 + PW.skAcc*clamp(s.skAcc||0, 0, 2))                      // 스킬 성공률
+    * (1 + PW.ult*(s.ultGain||0));                                // 필살 게이지
+  return {s, ehp, dps};
 }
 function power(st){
-  const q = powerParts(st), s = q.s;
-  return Math.round((s.hp*.05*q.durM + s.atk*1.8*q.offM + s.spd*1.4 + s.ultGain*80) * PW_K);
+  const q = powerParts(st);
+  return Math.round(PW.K * Math.pow(Math.pow(q.ehp, PW.ehp) * Math.pow(q.dps, PW.dps), PW.t));
 }
 function mentAvg(st){ return Math.round(MENTAL.reduce((a,x)=>a+st.ment[x.k],0)/MENTAL.length); }
 
@@ -4796,9 +4805,9 @@ function isInjured(st){ return !!st && (st.injured|0) > 0; }
 function injWeeks(st){ return st ? (st.injured|0) : 0; }
 /* 전투에 쓰이는 실효 멘탈리티 — 부상 중이면 잠재력 외 50% */
 function mentEff(st){
-  if(!isInjured(st)) return st.ment;
-  const m = {};
-  for(const k in st.ment) m[k] = (k==="pot") ? st.ment[k] : st.ment[k]*.5;
+  /* 전투력 계산 · 실제 전투에 쓰는 멘탈리티 — 소수점은 버린다 (부상 중이면 절반으로 줄인 뒤 버린다) */
+  const inj = isInjured(st), m = {};
+  for(const k in st.ment) m[k] = Math.floor((k==="pot" || !inj) ? st.ment[k] : st.ment[k]*.5);
   return m;
 }
 /* 훈련 성공 확률 */
@@ -8208,7 +8217,7 @@ function leaguePackUnit(g){
   return {n:(g.raw||g.name||"").slice(0,12), e:g.epithet? String(g.epithet).slice(0,20):null,
           j:g.job, g:g.grade||"C", lv:g.lv|0, p:g.pers||"plain", k:g.karma|0,
           c:(g.career||"").slice(0,16),
-          m:MENTAL.reduce((a,x)=>{ a[x.k]=Math.round((g.ment&&g.ment[x.k])||10); return a; },{}),
+          m:MENTAL.reduce((a,x)=>{ a[x.k]=Math.floor((g.ment&&g.ment[x.k])||10); return a; },{}),   // 소수점은 버린다
           sm:g.skMod||{},
           r:(g.relics||[]).slice(0,RELIC_SLOT_MAX).map(x=>({grade:x.grade,name:String(x.name||"").slice(0,20),
              aff:(x.aff||[]).map(a=>({k:a.k,n:a.n,v:a.v}))}))};
@@ -8230,7 +8239,7 @@ function exTrim(list){
 function leagueSaneUnit(u, tid, ui){
     if(!u || !JOBS[u.j]) return null;
     const m = {};
-    MENTAL.forEach(x=>{ m[x.k] = clamp(Math.round(+(u.m&&u.m[x.k])||10), 1, MENT_MAX); });
+    MENTAL.forEach(x=>{ m[x.k] = clamp(Math.floor(+(u.m&&u.m[x.k])||10), 1, MENT_MAX); });
     return {sid:tid+"_"+ui, raw:String(u.n||"무명").slice(0,12),
             name:String(u.n||"무명").slice(0,12), epithet:u.e? String(u.e).slice(0,20):null,
             job:u.j, grade:["D","C","B","A","S"].indexOf(u.g)>=0? u.g : "C",
@@ -8295,7 +8304,8 @@ function gradPool(){ return (S.graduates||[]).filter(g=> gradCanFight(g) && !g.t
 /* 이적 — 리그 명부에서만 빼고 기록의 졸업생 명부에는 남긴다 */
 const TRANSFER_PER = 1000;      // 전투력 이만큼마다 1 SP
 function gradPower(g){ const u = gradUnit(g); return Math.round(u? power(u) : (g.pw||0)); }
-function gradFee(g){ return Math.max(1, Math.floor(gradPower(g)/TRANSFER_PER)); }
+const TRANSFER_BASE = 1;        // 기본 이적료 — 전투력 몫에 더한다 (전투력 1,000 이면 1 + 1 = 2)
+function gradFee(g){ return TRANSFER_BASE + Math.floor(gradPower(g)/TRANSFER_PER); }
 function gradTransfer(sid){
   const g = (S.graduates||[]).find(x=>x.sid===sid);
   if(!g || g.tr) return;
@@ -8318,7 +8328,7 @@ function gradTransferModal(sid){
     <div class="opt" style="cursor:default;margin-top:14px;border-color:var(--brass)">
       <div class="on">${esc(g.career||"진로 미정")}<span class="price">${g.year}년 졸업 · Lv.${g.lv}</span></div>
       <div class="od">전투력 <b style="color:var(--text)">${fmt(gradPower(g))}</b> · 이적료 <b style="color:var(--indigo)">SP +${fee}</b>
-        <span style="color:var(--dim)">(전투력 ${fmt(TRANSFER_PER)}당 1, 최소 1)</span></div>
+        <span style="color:var(--dim)">(기본 ${TRANSFER_BASE} + 전투력 ${fmt(TRANSFER_PER)}당 1)</span></div>
     </div>
     <div class="btnrow" style="margin-top:16px">
       <button class="btn primary" id="trOkBtn">보낸다 · SP +${fee}</button>
@@ -8352,7 +8362,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0923-1417";
+const BUILD = "0924-0144";
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -8823,7 +8833,7 @@ function viewLgEntry(){
       <span class="hint">${UI.lgSlot!=null? `<b style="color:var(--brass)">${slotRow(lgOrder(L)[UI.lgSlot]||"f1")==="front"?"전열":"후열"}</b> 자리에 넣을 졸업생을 고른다` : "드래그 또는 클릭으로 배치 · 상세로 능력치 확인"}${old? ` · <span style="color:var(--dim)">옛 기록 ${old}명은 전투 정보가 없어 출전 불가</span>`:""}</span></div>
     ${pool.length? `<div class="grid2 lgroster">${pool.map(g=> lgGradCard(g, L, UI.lgSlot)).join("")}</div>`
       : `<div class="empty">아직 졸업생이 없다. 3학년이 졸업하면 여기에 쌓인다.</div>`}
-    <p class="opthint" style="margin-top:10px">출전 중이 아닌 졸업생은 <b>이적</b>으로 내보낼 수 있다 — 전투력 ${fmt(TRANSFER_PER)}당 <b style="color:var(--indigo)">SP 1</b>(최소 1)이 들어오고, 기록 탭 명부에는 남는다.</p>
+    <p class="opthint" style="margin-top:10px">출전 중이 아닌 졸업생은 <b>이적</b>으로 내보낼 수 있다 — 기본 <b style="color:var(--indigo)">SP ${TRANSFER_BASE}</b>에 전투력 ${fmt(TRANSFER_PER)}당 <b style="color:var(--indigo)">SP 1</b>이 더해져 들어오고, 기록 탭 명부에는 남는다.</p>
   </section>`;
 }
 /* 시즌 판 — 서버에 얼려 둔 대진을 그대로 펼쳐 보여준다 */
