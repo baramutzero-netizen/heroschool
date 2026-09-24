@@ -522,6 +522,12 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 .mrowdone{font-size:11.5px;color:var(--ok);display:flex;justify-content:space-between;padding:2px 0}
 .mrowdone span{color:var(--dim)}
 .logbox{background:var(--surface);border:1px solid var(--line-soft);border-radius:4px;padding:12px;position:sticky;top:118px}
+.logbox.fold .panel-h{margin-bottom:0;flex-wrap:nowrap;align-items:center}
+.logbox.fold .loglist{display:none}
+.log-peek{display:none}
+.logbox.fold .log-peek{display:block;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;color:var(--muted);cursor:pointer}
+.logbox.fold .panel-h h2{flex:none}
+.logbox.fold .panel-h .hint{flex:none}
 .loglist{max-height:min(62vh,620px);overflow-y:auto;display:flex;flex-direction:column;gap:7px;font-size:12.5px}
 .le{border-left:2px solid var(--line);padding-left:8px;color:var(--muted)}
 .le b{color:var(--text);font-weight:600}
@@ -1688,9 +1694,10 @@ table.tb tr:hover td{background:var(--surface2)}
     <main id="view"></main>
     <aside>
       <div class="missionbox" id="missionBox"></div>
-      <div class="logbox">
+      <div class="logbox fold" id="logBox">
         <div class="panel-h"><h2 style="font-size:13px">학원 일지</h2>
-          <span class="hint"><button class="btn sm ghost" id="btnSave">저장</button></span>
+          <span class="log-peek" id="logPeek" title="펼치기"></span>
+          <span class="hint"><button class="btn sm ghost" id="btnLogFold" aria-expanded="false" aria-controls="logList">펼치기</button></span>
         </div>
         <div class="loglist" id="logList"></div>
       </div>
@@ -7741,7 +7748,21 @@ function renderMission(){
     <div class="mhint">${esc(c.hint)}</div>
     ${done.length? `<div class="rule" style="margin:10px 0 6px"></div>${done.map(d=>`<div class="mrowdone">✓ ${esc(d.n)} <span>${d.year}년</span></div>`).join("")}`:""}`;
 }
+/* 학원 일지 — 기본은 한 줄로 접어 두고 가장 최근 기록만 보여준다 (0924). 펼침 여부는 이번 접속 동안만 기억한다 */
+function logFoldPaint(){
+  const box = $("#logBox"), btn = $("#btnLogFold"), peek = $("#logPeek");
+  if(!box) return;
+  const open = !!UI.logOpen;
+  box.classList.toggle("fold", !open);
+  if(btn){ btn.textContent = open ? "접기" : "펼치기"; btn.setAttribute("aria-expanded", open ? "true" : "false"); }
+  if(peek){
+    const e = S.log && S.log[0];
+    if(e){ const d = document.createElement("div"); d.innerHTML = e.h; peek.textContent = `${e.t} · ${d.textContent.replace(/\s+/g," ").trim()}`; }
+    else peek.textContent = "아직 기록이 없다.";
+  }
+}
 function renderLog(){
+  logFoldPaint();
   $("#logList").innerHTML = S.log.length? S.log.map(e=>`<div class="le ${e.c}"><div class="t">${e.t}</div>${e.h}</div>`).join("")
     : `<div class="empty">아직 기록이 없다.</div>`;
 }
@@ -12261,7 +12282,8 @@ function bindView(){
     });
   };
 }
-$("#btnSave").onclick = ()=>{ save(); toast("저장했다."); };
+$("#btnLogFold").onclick = ()=>{ UI.logOpen = !UI.logOpen; logFoldPaint(); };
+$("#logPeek").onclick = ()=>{ UI.logOpen = true; logFoldPaint(); };
 
 /* ============================================================
    모달
