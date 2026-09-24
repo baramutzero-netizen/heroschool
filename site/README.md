@@ -2,6 +2,8 @@
 
 `index.html` 한 개로 완결된 정적 사이트입니다. 빌드 과정도, 서버도 필요 없습니다.
 같은 폴더의 `og.png`는 링크를 채팅이나 SNS에 붙였을 때 뜨는 미리보기 이미지입니다.
+`version.json`은 새 버전 알림용입니다. 게임이 켤 때와 30분마다 읽어서, 더 새 빌드가 올라와 있으면 화면 위에 새로고침 띠를 띄웁니다.
+`wrap_site.py`가 `index.html`과 함께 만들어 주니 **항상 같이 올려 주세요.** (`msg`에 한 줄 적어 두면 띠에 같이 뜹니다.)
 
 ## Netlify Drop — 가장 빠름 (1분)
 
@@ -15,7 +17,7 @@
 ## GitHub Pages — 주소를 오래 유지하고 싶을 때
 
 1. GitHub에서 새 저장소 생성 (예: `heroschool`, Public)
-2. 이 폴더의 `index.html`과 `og.png`를 저장소 루트에 업로드
+2. 이 폴더의 `index.html`, `og.png`, `version.json`을 저장소 루트에 업로드
    - 웹에서 할 경우: 저장소 첫 화면 → "uploading an existing file" → 두 파일 드래그 → Commit
 3. 저장소 Settings → Pages → Source를 `Deploy from a branch`, 브랜치 `main` / 폴더 `/ (root)` 로 지정 후 Save
 4. 1~2분 뒤 `https://<아이디>.github.io/heroschool/` 에서 열립니다

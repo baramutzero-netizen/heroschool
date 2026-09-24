@@ -4,6 +4,10 @@ from build_guard import validate_game_source
 validate_game_source(src)
 STAMP=datetime.datetime.now().strftime('%m%d-%H%M')
 src=re.sub(r'const BUILD = "[^"]*";', 'const BUILD = "%s";' % STAMP, src, count=1)
+NOW=datetime.datetime.now()
+TS=int(NOW.timestamp()*1000)
+src=re.sub(r'const BUILD_TS = \d+;', 'const BUILD_TS = %d;' % TS, src, count=1)
+RULES=int(re.search(r'const RULES_VER = (\d+);', src).group(1))
 i=src.index('<div id="app">')
 head=src[:i]; body=src[i:]
 favicon=("data:image/svg+xml,"
@@ -29,4 +33,8 @@ out=f'''<!doctype html>
 {body}
 </body></html>'''
 open('site/index.html','w',encoding='utf-8').write(out)
-print('site/index.html', len(out), 'build', STAMP)
+# 새 버전 알림 — 게임이 켤 때 · 30분마다 이 파일을 읽어 자기 빌드와 견준다. index.html 과 같이 올려야 한다.
+# msg 에 한 줄 적어 두면 알림 띠에 같이 뜬다 (예: "마왕 대항전 보상 조정").
+import json
+json.dump({"build":STAMP, "ts":TS, "rules":RULES, "msg":""}, open('site/version.json','w',encoding='utf-8'), ensure_ascii=False)
+print('site/index.html', len(out), 'build', STAMP, 'rules', RULES, '+ site/version.json')

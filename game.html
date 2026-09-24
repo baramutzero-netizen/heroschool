@@ -980,6 +980,10 @@ table.tb tr:hover td{background:var(--surface2)}
 .prepbar .pb-k{font-size:11px;letter-spacing:.14em;color:var(--brass);text-transform:uppercase;flex:none}
 .prepbar .pb-t{font-size:12.5px;color:var(--muted);flex:1;min-width:140px}
 /* 채팅 — 우하단 버튼 · 작은 창 (팝업보다 아래) */
+.ver-bar{position:fixed;top:0;left:0;right:0;z-index:90;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;padding:8px 44px 8px 14px;background:linear-gradient(var(--brass-soft),var(--brass-soft)),var(--surface);color:var(--text);border-bottom:1px solid var(--brass-b);font-size:13px;box-shadow:var(--shadow)}
+.ver-bar.must{background:var(--bad);color:#fff;border-bottom-color:transparent}
+.ver-bar b{font-weight:700}.ver-bar .ver-msg{opacity:.85}
+.ver-bar .ver-x{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:none;color:inherit;font-size:18px;line-height:1;cursor:pointer;padding:4px 8px;opacity:.7}
 .chat-fab{position:fixed;right:18px;bottom:18px;z-index:70;width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--text);box-shadow:var(--shadow);display:grid;place-items:center;cursor:pointer}
 .chat-fab:hover,.chat-fab.on{border-color:var(--brass);color:var(--brass)}
 .chat-badge{position:absolute;top:-4px;right:-4px;min-width:19px;height:19px;padding:0 5px;border-radius:10px;background:var(--bad);color:#fff;font-size:11px;line-height:19px;text-align:center}
@@ -8346,6 +8350,68 @@ async function feedSend(rec){
   try{ localStorage.setItem(FEED_KEY, String(Date.now())); }catch(e){}
 }
 
+/* ══════ 새 버전 알림 (0924) ══════
+   배포 사이트의 version.json (wrap_site.py 가 index.html 과 함께 만든다) 을 읽어 내 빌드와 견준다.
+   · 켤 때 · 30분마다 · 다른 탭에 있다 돌아왔을 때(마지막 확인에서 5분 넘게 지났으면) 확인한다
+   · 서버 빌드가 더 새로우면 — 위에 띠를 띄운다. 닫고 계속 해도 된다
+   · 서버의 전투 규칙 판번호가 내 것보다 높으면 — 필수. 리그 등록 · 시즌 정산 · 마왕전 기록 올리기를 막는다
+   · 파일로 연 경우(file://) · 개발본(BUILD "dev") · version.json 이 없으면 아무것도 하지 않는다 */
+const VER_EVERY = 30 * 60 * 1000, VER_BACK = 5 * 60 * 1000, VER_HIDE_KEY = "heroacademy_ver_hide";
+const VER = {at:0, busy:false, srv:null};
+function verOn(){ return /^https?:$/.test(location.protocol) && BUILD !== "dev" && BUILD_TS > 0; }
+async function verCheck(){
+  if(!verOn() || VER.busy) return;
+  VER.busy = true;
+  try{
+    const r = await fetch("version.json?t=" + Date.now(), {cache:"no-store"});
+    if(r.ok){
+      const j = await r.json();
+      if(j && typeof j.build === "string" && +j.ts > 0)
+        VER.srv = {build:j.build.slice(0,20), ts:+j.ts, rules:Math.max(0, j.rules|0), msg:String(j.msg||"").slice(0,140)};
+    }
+  }catch(e){}
+  VER.busy = false; VER.at = Date.now();
+  verPaint();
+}
+/* 0 = 최신 · 1 = 새 빌드 있음 · 2 = 필수 (전투 규칙이 바뀌었다) */
+function verGap(){
+  const v = VER.srv;
+  if(!v) return 0;
+  if(v.rules > RULES_VER) return 2;
+  return v.ts > BUILD_TS ? 1 : 0;
+}
+function verBlock(){ return verGap() === 2; }
+function verBlockToast(){ toast("새 버전이 나왔다 — 새로고침 전까지는 리그 기록을 서버에 올리지 않는다"); }
+function verReload(){
+  try{ save(); }catch(e){}
+  const v = VER.srv ? VER.srv.build : String(Date.now());
+  location.replace(location.pathname + "?v=" + encodeURIComponent(v) + location.hash);   // 주소가 바뀌어야 캐시에 남은 옛 파일을 안 받는다
+}
+function verPaint(){
+  const gap = verGap(), v = VER.srv;
+  let bar = document.getElementById("verBar");
+  let hid = ""; try{ hid = localStorage.getItem(VER_HIDE_KEY) || ""; }catch(e){}
+  if(!gap || (gap === 1 && v && hid === v.build)){ if(bar) bar.remove(); return; }
+  if(!bar){ bar = document.createElement("div"); bar.id = "verBar"; document.body.appendChild(bar); }
+  bar.className = "ver-bar" + (gap === 2 ? " must" : "");
+  bar.innerHTML = (gap === 2
+      ? `<span><b>필수 업데이트</b> — 전투 규칙이 바뀌었다. 새로고침 전까지 리그 기록이 서버에 올라가지 않는다.</span>`
+      : `<span><b>새 버전이 나왔다</b> (빌드 ${esc(v.build)})</span>`)
+    + (v.msg ? `<span class="ver-msg">${esc(v.msg)}</span>` : "")
+    + `<button class="btn sm primary" id="verGo">저장하고 새로고침</button>`
+    + (gap === 1 ? `<button class="ver-x" id="verX" aria-label="닫기" title="이 빌드는 다시 알리지 않는다">×</button>` : "");
+  bar.querySelector("#verGo").onclick = verReload;
+  const x = bar.querySelector("#verX");
+  if(x) x.onclick = ()=>{ try{ localStorage.setItem(VER_HIDE_KEY, v.build); }catch(e){} bar.remove(); };
+}
+let VER_T = 0;
+function verStart(){
+  if(!verOn() || VER_T) return;
+  VER_T = setInterval(()=>{ if(!document.hidden && Date.now() - VER.at >= VER_EVERY) verCheck(); }, 60000);
+  document.addEventListener("visibilitychange", ()=>{ if(!document.hidden && Date.now() - VER.at >= VER_BACK) verCheck(); });
+  setTimeout(verCheck, 1500);
+}
+
 /* ══════ 채팅 ══════
    리그 서버의 chat/ 에 방 하나. 게임을 켠 모든 학원이 함께 쓴다.
    · 한 번에 100자 · 3초에 한 번 (게임에서 막는다)
@@ -8764,6 +8830,7 @@ const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간�
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
 const BUILD = "dev";
+const BUILD_TS = 0;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -8953,6 +9020,7 @@ function seasonRefresh(){
    서버의 ls(마지막 정산 시즌)로 중복 반영을 막는다. */
 async function seasonSettleOthers(SE){
   if(!leagueOn() || !SE || !Array.isArray(SE.g)) return;
+  if(verBlock()) return;
   if(seasonVerGap(SE)) return;
   const U = UI.league = UI.league || {};
   if(U.setAll === SE.n || U.setting) return;
@@ -9000,7 +9068,7 @@ function seasonSeeGroup(gi){
    그 순간 등록돼 있던 팀들이 리그 포인트 순으로 조에 배정되어 통째로 얼어붙는다. */
 async function seasonAuto(prev){
   const U = UI.league = UI.league || {};
-  if(!leagueOn() || U.making) return seasonRefresh();
+  if(!leagueOn() || U.making || verBlock()) return seasonRefresh();
   const n = seasonDue();
   /* 이미 올라와 있거나, 이번 시즌은 벌써 한 번 시도해 봤다 —
      어느 쪽이든 그냥 지금 서버에 있는 시즌을 펼친다.
@@ -9094,6 +9162,7 @@ async function leagueServerMerge(L){
 }
 async function leagueSync(){
   if(!leagueOn()) return false;
+  if(verBlock()){ verBlockToast(); return false; }
   const L = leagueState();
   if(!(await leagueServerMerge(L))){ toast("리그 서버에 닿지 못했다 — 기록을 덮어쓰지 않도록 올리지 않았다"); return false; }
   /* 명단이 조건을 못 채워도 이미 등록해 둔 자리라면 점수만은 남긴다 —
@@ -9464,7 +9533,7 @@ function demonRec(D){
 let DEMON_PUSHING = false;
 async function demonPush(){
   const D = demonState(), rec = demonRec(D);
-  if(!leagueOn() || !rec || DEMON_PUSHING) return false;
+  if(!leagueOn() || !rec || DEMON_PUSHING || verBlock()) return false;
   DEMON_PUSHING = true; D.tryAt = Date.now();
   try{
     await leagueReq("teams/" + leagueId(), "PATCH", {dm:rec});
@@ -14437,6 +14506,7 @@ function boot(){
   teamsOf(); cleanTeams(); cleanBonds();
   demonTimerStart();
   chatMount();
+  verStart();
   if(S.plan) delete S.plan;   // 주 단위 스케줄은 카드 덱으로 대체됐다
   if(typeof S.books !== "number") S.books = 0;
   // 카드 덱 — 구버전 세이브는 여기서 처음 손패를 받는다
