@@ -298,6 +298,33 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 .exaff{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:7px;font-size:12px;color:var(--muted);
   border-top:1px solid var(--line-soft);padding-top:7px}
 .exaff span{white-space:nowrap}
+.raff{display:flex;flex-direction:column;gap:1px;line-height:1.55}
+/* 유물 합성 */
+.syn-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:12px;align-items:start}
+.syn-col .eyebrow{margin-bottom:6px;text-align:center}
+.syn-card{cursor:default}
+.syn-empty{border:1px dashed var(--line);border-radius:8px;padding:22px 12px;text-align:center;color:var(--dim);font-size:12.5px}
+.syn-ln{font:inherit;display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;font-size:12.5px;line-height:1.55;color:var(--muted);background:none;border:0;padding:1px 0;text-align:left}
+.syn-lockable{cursor:pointer;border-radius:4px;padding:2px 4px;margin:0 -4px;width:calc(100% + 8px)}
+.syn-lockable:hover{background:var(--brass-soft)}
+.syn-lockable.on{background:var(--brass-soft);outline:1px solid var(--brass)}
+.syn-tg{flex:none;font-size:10.5px;padding:0 6px;border:1px solid var(--line);border-radius:10px;color:var(--dim)}
+.syn-tg.shared{border-color:var(--ok);color:var(--ok)}
+.syn-tg.lock{border-color:var(--brass);color:var(--brass);font-weight:700}
+.syn-res{display:flex;flex-direction:column;gap:6px}
+.syn-slot{display:flex;gap:9px;align-items:flex-start;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);font-size:13px}
+.syn-slot.rand{border-style:dashed}
+.syn-slot.lock{border-color:var(--brass)}
+.syn-no{flex:none;width:18px;height:18px;border-radius:50%;background:var(--line);color:var(--text);font-size:11px;display:grid;place-items:center;margin-top:1px}
+.syn-sub{font-size:11.5px;color:var(--dim);margin-top:2px}
+.syn-note{font-size:11.5px;color:var(--dim);text-align:center;margin-top:8px}
+.syn-cands{padding:7px 10px;border:1px dashed var(--line);border-radius:8px;font-size:12px;line-height:1.6;color:var(--muted)}
+.syn-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:14px}
+.syn-pick{max-height:300px;overflow:auto}
+.syn-card.splus{border-color:#2A9D74;box-shadow:0 0 0 1px #2A9D74,0 0 18px #2A9D7455}
+@media(max-width:640px){.syn-grid,.syn-btns{grid-template-columns:1fr}}
+.raff b{color:var(--text);font-weight:600}
+.exaff.raff{flex-direction:column;flex-wrap:nowrap;gap:1px}
 .exitem.owned{opacity:.72;border-color:var(--line-soft);background:var(--surface)}
 .exitem.owned .on{color:var(--muted) !important}
 
@@ -2777,18 +2804,33 @@ const BATTLE = [
 /* ============================================================
    유물
    ============================================================ */
+/* w — 출현 가중치 (합 100 = %). 옵션 하나가 전투력에 주는 값의 제곱근에 반비례하게 정했다 (0924).
+   좋은 옵션(필살 게이지 · 속도 · 명중 · 회피 · 공격력)은 조금 드물게, 약한 옵션은 조금 흔하게.
+   스킬 성공률 · 저항률은 효과가 작아 피흡과 같은 비율로 맞춰 두었다. */
 const RELIC_AFFIX = [
-  {k:"atk",n:"공격력",v:[6,26],int:1},{k:"def",n:"방어력",v:[5,22],int:1},
-  {k:"hp",n:"체력",v:[40,220],int:1},{k:"spd",n:"속도",v:[3,14],int:1},
-  {k:"crit",n:"크리 확률",v:[.02,.09]},{k:"critDmg",n:"크리 피해",v:[.06,.3]},
-  {k:"acc",n:"피해 명중",v:[.02,.08]},{k:"eva",n:"피해 회피",v:[.02,.08]},
-  {k:"skAcc",n:"스킬 성공률",v:[.02,.09]},{k:"skRes",n:"스킬 저항률",v:[.02,.1]},
-  {k:"ultGain",n:"필살 게이지",v:[.05,.22]},{k:"leech",n:"피흡",v:[.02,.08]}
+  {k:"atk",n:"공격력",v:[6,26],int:1,w:7.0},{k:"def",n:"방어력",v:[5,22],int:1,w:10.1},
+  {k:"hp",n:"체력",v:[40,220],int:1,w:8.0},{k:"spd",n:"속도",v:[3,14],int:1,w:6.5},
+  {k:"crit",n:"크리 확률",v:[.02,.09],w:9.6},{k:"critDmg",n:"크리 피해",v:[.06,.3],w:9.2},
+  {k:"acc",n:"피해 명중",v:[.02,.08],w:6.5},{k:"eva",n:"피해 회피",v:[.02,.08],w:6.7},
+  {k:"skAcc",n:"스킬 성공률",v:[.02,.09],w:10.2},{k:"skRes",n:"스킬 저항률",v:[.02,.1],w:10.2},
+  {k:"ultGain",n:"필살 게이지",v:[.05,.22],w:5.8},{k:"leech",n:"피흡",v:[.02,.08],w:10.2}
 ];
+/* 가중치대로 겹치지 않게 n 개를 뽑는다 */
+function relicAffixPick(n){
+  const left = RELIC_AFFIX.slice(), out = [];
+  while(out.length < n && left.length){
+    const tot = left.reduce((a,x)=> a + (x.w||1), 0);
+    let r = RNG()*tot, i = 0;
+    for(; i < left.length-1; i++){ r -= (left[i].w||1); if(r < 0) break; }
+    out.push(left.splice(i,1)[0]);
+  }
+  return out;
+}
 const RELIC_NOUN = ["반지","목걸이","문장","부적","깃털","조각","성물","인장","고리","서약서","향로","나침반"];
-const RELIC_ADJ  = {C:["낡은","무명의","흔한"],B:["연마된","견고한","은빛"],A:["고대의","봉인된","황금"],S:["용사의","신탁의","불멸의"]};
+const RELIC_ADJ  = {C:["낡은","무명의","흔한"],B:["연마된","견고한","은빛"],A:["고대의","봉인된","황금"],S:["용사의","신탁의","불멸의"],
+                    "S+":["초월한","영겁의","찬란한"]};
 const RELIC_GRADE_AFFIX = {C:1,B:2,A:3,S:4};
-const GRADE_COLOR = {D:"var(--dim)",C:"var(--muted)",B:"var(--tank)",A:"var(--supp)",S:"var(--brass)",EX:"var(--ex)"};
+const GRADE_COLOR = {D:"var(--dim)",C:"var(--muted)",B:"var(--tank)",A:"var(--supp)",S:"var(--brass)","S+":"#2A9D74",EX:"var(--ex)"};
 function mentalGrade(value){
   const v=Math.round(value);
   return v>=100?"EX":v>=85?"S":v>=70?"A":v>=55?"B":v>=40?"C":v>=25?"D":v>=10?"E":"F";
@@ -2803,7 +2845,7 @@ function mentalGradeHTML(value){
 const RELIC_POWER = 1.2;    // 유물 효과 배율
 function makeRelic(grade){
   const n = RELIC_GRADE_AFFIX[grade]||1;
-  const pool = shuffle(RELIC_AFFIX.slice()).slice(0,n);
+  const pool = relicAffixPick(n);
   const mul = ({C:.6,B:.85,A:1.1,S:1.4}[grade]) * RELIC_POWER;
   const aff = pool.map(a=>{
     let v = rnd(a.v[0],a.v[1])*mul;
@@ -2925,7 +2967,10 @@ const ITEMS = {
             price:40000, ex:0, secret:true, needFac:"portal"},
   /* 이계의 지도 — 차원 포탈을 설치해야 보인다. 모든 원정이 이계· 판으로 바뀐다 */
   worldmap:{n:"이계의 지도", d:"모든 원정의 난이도 증가",
-            price:20000, ex:0, secret:true, needFac:"portal"}
+            price:20000, ex:0, secret:true, needFac:"portal"},
+  /* 유물 합성기 — 차원 포탈을 설치해야 보인다. 장착하지 않은 S급 유물 둘을 하나로 합친다 */
+  synth:   {n:"유물 합성기", d:"S급 유물 합성 기능 해금",
+            price:10000, ex:0, secret:true, needFac:"portal"}
 };
 /* 진형 강화의 서로 열리는 자리 — 화면 안내용 */
 function formPlusText(){
@@ -5879,11 +5924,31 @@ function addRelicToPool(r){
   S.relicPool = S.relicPool||[];
   S.relicPool.push(r);
 }
-function relicAffText(r){ return (r.aff||[]).map(a=>`${a.n} +${a.v<1&&a.v>0?(a.v*100).toFixed(1)+"%":fmt(a.v)}`).join(" · "); }
+/* 유물 능력치 표시 순서 — 능력치 목록(BATTLE) 순서로 통일한다
+   체력 → 공격력 → 방어력 → 속도 → 크리 확률 → 크리 피해 → 피해 명중 → 피해 회피
+   → 스킬 성공률 → 스킬 저항률 → 받는 크리 감소 → 필살 게이지 → 피흡 */
+const AFF_ORDER = (()=>{ const o={}; BATTLE.forEach((b,i)=> o[b.k]=i); return o; })();
+function affSorted(list){ return (list||[]).slice().sort((a,b)=> (AFF_ORDER[a.k]??99) - (AFF_ORDER[b.k]??99)); }
+function affValTxt(v){ return v<1&&v>0 ? (v*100).toFixed(1)+"%" : fmt(v); }
+/* 한 줄에 하나씩, 최대 4줄 — 넘치면 앞줄부터 둘씩 묶는다 */
+function affLines(items){
+  const n = items.length, L = Math.min(4, n), out = [];
+  let i = 0;
+  for(let l=0; l<L; l++){ const k = (l < n - L) ? 2 : 1; out.push(items.slice(i, i+k)); i += k; }
+  return out;
+}
+function relicAffHtml(r){
+  const items = affSorted(r.aff).map(a=> `${esc(a.n)} <b>+${affValTxt(a.v)}</b>`);
+  return `<div class="od raff">${affLines(items).map(l=> `<div>${l.join(" · ")}</div>`).join("")}</div>`;
+}
+function relicAffText(r){ return affSorted(r.aff).map(a=>`${a.n} +${affValTxt(a.v)}`).join(" · "); }
+/* 유물 이름 — 학생 · 스킬처럼 이름 옆에 등급 태그 */
+function relicNameHtml(r){ return `<div class="on" style="color:${GRADE_COLOR[r.grade]}">${esc(r.name)} ${gradeTag(r.grade)}</div>`; }
 /* 두 유물의 효과 차이 — 항목별 순증감. 오르는 건 연두색 +, 내리는 건 붉은색 − */
 function relicDiffText(oldR, newR){
   const map = {}, order = [];
   const put = (a, sign)=>{ if(!map[a.n]){ map[a.n] = {d:0, pct:false}; order.push(a.n); } map[a.n].d += sign*a.v; if(a.v<1 && a.v>0) map[a.n].pct = true; };
+  affSorted((newR.aff||[]).concat(oldR.aff||[])).forEach(a=> put(a, 0));   // 순서만 먼저 정한다
   (newR.aff||[]).forEach(a=> put(a, +1));
   (oldR.aff||[]).forEach(a=> put(a, -1));
   return order.map(n=>{
@@ -5894,21 +5959,176 @@ function relicDiffText(oldR, newR){
   }).join(" · ");
 }
 /* 유물 칸이 가득 찬 학생에게 보관고 유물을 장착하려 할 때 — 어느 유물과 바꿀지 고른다 */
+/* ══════ 유물 합성 ══════
+   장착하지 않은 S급 유물 둘 → S급 유물 하나 (5% 로 S+).
+   · 두 유물에 같은 능력치가 있으면 그 능력치는 확정 — 값은 (두 값의 합 / 2 × 1.1) ~ S급 최대치
+   · 나머지 칸은 무작위 — 두 유물에서 공통이 아니고 고정하지 않은 능력치를 모두 후보로 두고
+     남은 칸 수만큼 겹치지 않게 뽑는다 (공통 2 + 고정 1 → 후보 3 중 1 · 공통 0 → 후보 8 중 4). 값은 S급 최소 ~ 최대
+   · 무작위 후보 하나를 고정할 수 있다 (합성 가격 2배) — 고정한 능력치는 값 그대로 옮겨 온다
+   · S+ — 네 옵션 값이 모두 2배 */
+const SYNTH_COST = 10000, SYNTH_LOCK_MUL = 2, SYNTH_AVG_MUL = 1.1, SYNTH_PLUS_P = .05, SYNTH_PLUS_MUL = 2;
+function synthOn(){ return !!(S.items && S.items.synth); }
+function affDef(k){ return RELIC_AFFIX.find(x=> x.k===k) || null; }
+function relicSRange(k){ const a = affDef(k), m = 1.4*RELIC_POWER; return a ? [a.v[0]*m, a.v[1]*m] : [0,0]; }
+function affRound(k, v){ const a = affDef(k); return (a && a.int) ? Math.max(1, Math.round(v)) : Math.round(v*1000)/1000; }
+function affRangeTxt(k, lo, hi){ const a = affValTxt(affRound(k,lo)), b = affValTxt(affRound(k,hi)); return a===b ? a : `${a}~${b}`; }
+function synthCands(exclude){ return (S.relicPool||[]).filter(r=> r && r.grade==="S" && r.id && exclude.indexOf(r.id) < 0); }
+function relicById(id){ return (S.relicPool||[]).find(r=> r && r.id===id) || null; }
+/* 결과 예상 — 확정 칸 · 고정 칸 · 무작위 칸 */
+function synthPlan(A, B, lock){
+  const kb = new Set(B.aff.map(x=>x.k)), ka = new Set(A.aff.map(x=>x.k));
+  const shared = affSorted(A.aff.filter(a=> kb.has(a.k))).map(a=>{
+    const b = B.aff.find(x=> x.k===a.k), [, mx] = relicSRange(a.k);
+    return {type:"shared", k:a.k, n:a.n, min:Math.min(mx, (a.v + b.v)/2*SYNTH_AVG_MUL), max:mx};
+  });
+  /* 공통이 아닌 능력치 — 두 유물 것을 모두 모은다 */
+  const rest = affSorted(A.aff.filter(a=> !kb.has(a.k)).map(a=> Object.assign({src:"a"}, a))
+                 .concat(B.aff.filter(b=> !ka.has(b.k)).map(b=> Object.assign({src:"b"}, b))));
+  const lk = lock ? rest.find(o=> o.src===lock.src && o.k===lock.k) || null : null;
+  const pool = rest.filter(o=> o !== lk);
+  const slots = Math.min(4, shared.length + rest.length);
+  const nRand = Math.max(0, slots - shared.length - (lk ? 1 : 0));
+  return {shared, lock:lk, pool, nRand, rest, slots};
+}
+function synthCost(lock){ return SYNTH_COST * (lock ? SYNTH_LOCK_MUL : 1); }
+function synthRoll(plan){
+  const out = [];
+  plan.shared.forEach(x=> out.push({k:x.k, n:x.n, v:affRound(x.k, rnd(x.min, x.max))}));
+  if(plan.lock) out.push({k:plan.lock.k, n:plan.lock.n, v:plan.lock.v});
+  shuffle(plan.pool.slice()).slice(0, plan.nRand).forEach(o=>{
+    const [lo, hi] = relicSRange(o.k);
+    out.push({k:o.k, n:o.n, v:affRound(o.k, rnd(lo, hi))});
+  });
+  const plus = RNG() < SYNTH_PLUS_P;
+  if(plus) out.forEach(a=> a.v = affRound(a.k, a.v*SYNTH_PLUS_MUL));
+  const grade = plus ? "S+" : "S";
+  return {id:"r"+RNG().toString(36).slice(2,9), grade, name:pick(RELIC_ADJ[grade])+" "+pick(RELIC_NOUN), aff:affSorted(out), synth:true};
+}
+/* 합성 팝업 */
+function synthOpen(id){
+  (S.relicPool||[]).forEach(r=>{ if(r && !r.id) r.id = "r"+RNG().toString(36).slice(2,9); });
+  UI.synth = {a:id, b:null, lock:null, pick: synthCands([id]).length ? "b" : null};
+  synthRender();
+}
+function synthRender(){
+  const U = UI.synth; if(!U) return;
+  const A = relicById(U.a), B = U.b ? relicById(U.b) : null;
+  if(!A){ closeModal(); return; }
+  const plan = B ? synthPlan(A, B, U.lock) : null;
+  const cost = synthCost(U.lock), ok = !!plan && S.gold >= cost;
+  /* 대상 유물 칸 — 무작위 후보 능력치는 눌러서 고정한다 */
+  const randKeys = src => plan ? plan.rest.filter(o=> o.src===src).map(o=> o.k) : [];
+  const col = (r, src)=>{
+    if(!r) return `<div class="syn-col"><div class="eyebrow">대상 유물 ${src==="a"?1:2}</div><div class="syn-empty">${
+      synthCands([U.a, U.b].filter(Boolean)).length ? "아래에서 합성할 S급 유물을 고른다" : "장착하지 않은 다른 S급 유물이 없다"}</div></div>`;
+    const rk = randKeys(src), sk = plan ? plan.shared.map(x=>x.k) : [];
+    return `<div class="syn-col"><div class="eyebrow">대상 유물 ${src==="a"?1:2}</div>
+      <div class="opt syn-card">${relicNameHtml(r)}
+        <div class="raff">${affSorted(r.aff).map(a=>{
+          const lk = U.lock && U.lock.src===src && U.lock.k===a.k;
+          const line = `<span>${esc(a.n)} <b>+${affValTxt(a.v)}</b></span>`;
+          if(sk.indexOf(a.k)>=0) return `<div class="syn-ln">${line}<span class="syn-tg shared">공통</span></div>`;
+          if(rk.indexOf(a.k)>=0) return `<button class="syn-ln syn-lockable ${lk?"on":""}" data-synlock="${src}|${a.k}" title="이 능력치를 결과에 그대로 옮긴다 (합성 가격 2배)">${line}<span class="syn-tg ${lk?"lock":""}">${lk?"고정됨":"고정"}</span></button>`;
+          return `<div class="syn-ln">${line}</div>`; }).join("")}</div></div></div>`;
+  };
+  const mid = !plan ? `<div class="syn-empty">두 유물을 고르면 결과를 미리 보여준다</div>`
+    : plan.shared.map((x,i)=> `<div class="syn-slot"><span class="syn-no">${i+1}</span><div><b>${esc(x.n)}</b> ${affRangeTxt(x.k, x.min, x.max)}</div></div>`).join("")
+      + (plan.lock ? `<div class="syn-slot lock"><span class="syn-no">${plan.shared.length+1}</span><div><b>${esc(plan.lock.n)}</b> +${affValTxt(plan.lock.v)}</div></div>` : "")
+      + Array.from({length:plan.nRand}, (_,j)=> `<div class="syn-slot rand"><span class="syn-no">${plan.shared.length + (plan.lock?1:0) + j + 1}</span><div><b>무작위</b></div></div>`).join("")
+      + (plan.nRand ? `<div class="syn-cands"><div class="syn-sub" style="margin-bottom:3px">무작위 후보 — ${plan.pool.length}개 중 ${plan.nRand}개</div>${
+          plan.pool.map(o=>{ const [lo,hi] = relicSRange(o.k); return `<div>${esc(o.n)} <span style="color:var(--dim)">${affRangeTxt(o.k, lo, hi)}</span></div>`; }).join("")}</div>` : "");
+  const other = U.pick === "a" ? U.b : U.a;
+  const cands = U.pick ? synthCands([U.a, U.b].filter(Boolean)) : [];
+  const picker = !U.pick ? "" : `<div class="rule"></div>
+    <div class="eyebrow" style="margin-bottom:6px">대상 유물 ${U.pick==="a"?1:2}로 쓸 S급 유물 <span style="color:var(--dim)">— 장착하지 않은 것만</span></div>
+    ${cands.length ? `<div class="grid2 syn-pick">${cands.map(r=> `<button class="opt" data-synpick="${r.id}" style="text-align:left">${relicNameHtml(r)}${relicAffHtml(r)}</button>`).join("")}</div>`
+      : `<div class="empty">고를 수 있는 다른 S급 유물이 없다.</div>`}`;
+  showModal(`<div class="cerhead"><div class="eyebrow">유물 합성</div>
+      <p style="color:var(--muted);font-size:13px;margin-top:4px;line-height:1.7">장착하지 않은 S급 유물 둘을 하나로 합친다.<br>
+        <b style="color:${GRADE_COLOR["S+"]}">5%</b> 확률로 모든 수치가 2배인 <b style="color:${GRADE_COLOR["S+"]}">S+</b> 유물이 나온다.</p></div>
+    <div class="syn-grid">
+      ${col(A, "a")}
+      <div class="syn-col"><div class="eyebrow">결과 예상</div><div class="syn-res">${mid}</div>
+        ${plan && plan.rest.length ? `<div class="syn-note">공통이 아닌 능력치를 눌러 하나를 고정할 수 있다 — 합성 가격 2배</div>` : ""}</div>
+      ${col(B, "b")}
+    </div>
+    <div class="syn-btns">
+      <button class="btn" data-synchg="a">대상 유물 1 변경</button>
+      <button class="btn primary" id="synGo" ${ok?"":"disabled"}>합성 (${fmt(cost)}G)</button>
+      <button class="btn" data-synchg="b">대상 유물 ${B?"2 변경":"2 선택"}</button>
+    </div>
+    ${plan && S.gold < cost ? `<p class="opthint" style="text-align:center;color:var(--bad)">자금이 ${fmt(cost - S.gold)} G 모자란다</p>` : ""}
+    ${picker}
+    <div class="btnrow" style="justify-content:flex-end;margin-top:12px"><button class="btn ghost" data-close>닫기</button></div>`, ()=>{
+    const root = $("#modalRoot");
+    root.querySelectorAll("[data-synchg]").forEach(b=> b.onclick=()=>{ U.pick = (U.pick===b.dataset.synchg) ? null : b.dataset.synchg; synthRender(); });
+    root.querySelectorAll("[data-synpick]").forEach(b=> b.onclick=()=>{
+      U[U.pick] = b.dataset.synpick; U.lock = null; U.pick = null;   // 대상이 바뀌면 고정은 풀린다
+      synthRender();
+    });
+    root.querySelectorAll("[data-synlock]").forEach(b=> b.onclick=()=>{
+      const [src, k] = b.dataset.synlock.split("|");
+      U.lock = (U.lock && U.lock.src===src && U.lock.k===k) ? null : {src, k};
+      synthRender();
+    });
+    const go = root.querySelector("#synGo"); if(go) go.onclick = ()=> synthDo();
+  }, true);
+}
+function synthDo(){
+  const U = UI.synth; if(!U) return;
+  const A = relicById(U.a), B = relicById(U.b);
+  if(!A || !B || A.grade!=="S" || B.grade!=="S") return;
+  const plan = synthPlan(A, B, U.lock), cost = synthCost(U.lock);
+  if(S.gold < cost){ toast(`자금이 ${fmt(cost - S.gold)} G 모자란다.`); return; }
+  S.gold -= cost;
+  const R = synthRoll(plan);
+  S.relicPool = (S.relicPool||[]).filter(r=> r!==A && r!==B);
+  S.relicPool.push(R);
+  const plus = R.grade === "S+";
+  logE(`유물 합성 — <b style="color:${GRADE_COLOR.S}">${esc(A.name)}</b> + <b style="color:${GRADE_COLOR.S}">${esc(B.name)}</b> → <b style="color:${GRADE_COLOR[R.grade]}">${esc(R.name)}</b> (${R.grade}) · 자금 -${fmt(cost)}`, plus? "big" : "good");
+  UI.synth = null;
+  save(); render();
+  showModal(`<div class="cerhead"><div class="eyebrow">유물 합성 완료</div>
+      <h2 style="font-size:22px;margin-top:2px;color:${GRADE_COLOR[R.grade]}">${plus? "S+ 유물이 탄생했다!" : "새 유물을 얻었다"}</h2>
+      ${plus? `<p style="color:var(--muted);font-size:13px;margin-top:4px">모든 수치가 2배로 굳었다.</p>` : ""}</div>
+    <div class="opt syn-card ${plus?"splus":""}" style="max-width:360px;margin:14px auto 0;cursor:default">${relicNameHtml(R)}${relicAffHtml(R)}</div>
+    <div class="btnrow" style="justify-content:center;margin-top:14px"><button class="btn primary" data-close>확인</button></div>`, null, false);
+  toast(`${R.name} (${R.grade}) 획득`);
+}
+/* 유물 장착 미리보기 — 같은 유물도 누가 끼느냐에 따라 오르는 전투력이 다르다.
+   slot 이 있으면 그 칸의 유물과 바꾼 경우, 없으면 빈 칸에 더한 경우 */
+function relicPowerAfter(st, r, slot){
+  const rel = (st.relics||[]).slice();
+  if(slot != null && slot >= 0) rel[slot] = r; else rel.push(r);
+  return power(Object.assign({}, st, {relics:rel}));
+}
+function powerChangeHtml(a, b){
+  const d = b - a, c = d > 0 ? "ok" : d < 0 ? "bad" : "dim";
+  return `전투력 <b style="color:var(--text)">${fmt(a)}</b> → <b style="color:var(--text)">${fmt(b)}</b> <b style="color:var(--${c})">${d>0?"+":d<0?"−":"±"}${fmt(Math.abs(d))}</b>`;
+}
+function relicEquipPreview(r, st){
+  if(!r || !st) return "";
+  const full = (st.relics||[]).filter(Boolean).length >= relicSlots(st);
+  if(full) return "";                 // 칸이 가득 찬 학생 — 교체 팝업에서 칸마다 변화를 보여준다
+  if(r.grade==="EX" && exCount(st) >= EX_PER_STUDENT) return `<span style="color:var(--bad)">EX 유물을 이미 차고 있다 (한 명당 하나)</span>`;
+  return powerChangeHtml(power(st), relicPowerAfter(st, r));
+}
 function relicSwapModal(poolIdx, sid){
   const s = S.students.find(x=>x.id===sid), want = (S.relicPool||[])[poolIdx];
   if(!s || !want) return;
   const worn = (s.relics||[]).map((r,i)=> r? {r,i} : null).filter(Boolean);
   if(!worn.length) return;
   let pick = -1;
-  const card = (r, extra)=> `<div class="on" style="color:${GRADE_COLOR[r.grade]}">${esc(r.name)}<span class="price">${r.grade}</span></div>
-      <div class="od">${relicAffText(r)}</div>${extra||""}`;
+  const card = (r, extra)=> `${relicNameHtml(r)}${relicAffHtml(r)}${extra||""}`;
   showModal(`<div class="cerhead"><div class="eyebrow">유물 교체</div>
       <h2 style="font-size:22px;margin-top:2px">${dnH(s)} <span class="tag">${JOBS[s.job].name}</span></h2>
       <p style="color:var(--muted);font-size:13px;margin-top:6px">유물 칸이 가득 찼다. 바꿀 유물을 고르면 그 자리에 새 유물이 들어가고, 벗은 유물은 보관고로 돌아간다.</p></div>
     <div class="rswap">
       <div>
         <div class="eyebrow" style="margin-bottom:6px">장착 중</div>
-        ${worn.map(({r,i},k)=>`<button class="opt rswap-w" data-rsw="${i}" style="text-align:left;width:100%;margin-bottom:6px">${card(r, `<div class="od" style="color:var(--dim)">유물 ${k+1}</div>`)}</button>`).join("")}
+        ${worn.map(({r,i},k)=>{ const exB = want.grade==="EX" && r.grade!=="EX" && exCount(s) >= EX_PER_STUDENT;
+          const d = relicPowerAfter(s, want, i) - power(s);
+          return `<button class="opt rswap-w" data-rsw="${i}" style="text-align:left;width:100%;margin-bottom:6px">${card(r, `<div class="od" style="color:var(--dim)">유물 ${k+1}${exB? "" : ` · 바꾸면 전투력 <b style="color:var(--${d>0?"ok":d<0?"bad":"dim"})">${d>0?"+":d<0?"−":"±"}${fmt(Math.abs(d))}</b>`}</div>`)}</button>`; }).join("")}
       </div>
       <div class="rswap-arrow"><span>→</span></div>
       <div>
@@ -5929,7 +6149,7 @@ function relicSwapModal(poolIdx, sid){
       const exBlock = want.grade==="EX" && old.grade!=="EX" && exCount(s) >= EX_PER_STUDENT;
       diff.innerHTML = exBlock
         ? `<span style="color:var(--bad)">EX 유물은 한 명당 하나까지 — 차고 있는 EX 유물과 바꿔야 한다.</span>`
-        : `<b style="color:${GRADE_COLOR[old.grade]}">${esc(old.name)}</b> → <b style="color:${GRADE_COLOR[want.grade]}">${esc(want.name)}</b><br>${relicDiffText(old, want)}`;
+        : `<b style="color:${GRADE_COLOR[old.grade]}">${esc(old.name)}</b> → <b style="color:${GRADE_COLOR[want.grade]}">${esc(want.name)}</b><br>${relicDiffText(old, want)}<br>${powerChangeHtml(power(s), relicPowerAfter(s, want, pick))}`;
       ok.disabled = exBlock;
     });
     ok.onclick = ()=>{
@@ -7779,8 +7999,8 @@ function studentDetail(s, opt){
       ${Array.from({length:slots},(_,i)=>{
         const r = (s.relics||[])[i];
         if(!r) return `<div class="opt locked" style="cursor:default"><div class="on" style="color:var(--dim)">빈 칸</div>${G? "" : `<div class="od">유물 탭에서 장착</div>`}</div>`;
-        return `<div class="opt" style="cursor:default"><div class="on" style="color:${GRADE_COLOR[r.grade]}">${esc(r.name)}<span class="price">${r.grade}</span></div>
-          <div class="od">${r.aff.map(a=>`${a.n} +${a.v<1&&a.v>0?(a.v*100).toFixed(1)+"%":fmt(a.v)}`).join(" · ")}</div>
+        return `<div class="opt" style="cursor:default">${relicNameHtml(r)}
+          ${relicAffHtml(r)}
           ${G? "" : `<div style="margin-top:6px"><button class="btn sm" data-unequip="${s.id}|${i}">해제</button></div>`}</div>`;
       }).join("")}
     </div>
@@ -8241,7 +8461,7 @@ function leagueSaneUnit(u, tid, ui){
             career:String(u.c||"").slice(0,16),
             ment:m, skMod:(u.sm && typeof u.sm==="object")? u.sm : {},
             relics:exTrim(Array.isArray(u.r)? u.r : []).slice(0, RELIC_SLOT_MAX).map(r=>({
-              grade:["C","B","A","S","EX"].indexOf(r&&r.grade)>=0? r.grade : "C",
+              grade:["C","B","A","S","S+","EX"].indexOf(r&&r.grade)>=0? r.grade : "C",
               name:String((r&&r.name)||"유물").slice(0,20),
               aff:(Array.isArray(r&&r.aff)? r.aff : []).slice(0,4).map(a=>({k:a.k,n:a.n,v:+a.v||0}))}))};
 }
@@ -9271,7 +9491,7 @@ function viewSpShop(){
             <span class="tag" style="color:var(--ex);border-color:var(--ex)">EX</span>
             <span class="price" style="color:${own?"var(--ok)":ok?"var(--indigo)":"var(--dim)"}">${own? "보유 중" : it.cost+" SP"}</span></div>
           <div class="od" style="font-style:italic">${esc(it.d)}</div>
-          <div class="exaff">${it.aff.map(a=> `<span>${spAffLine({n:AFF_NAME[a[0]]||a[0], v:a[1]})}</span>`).join("")}</div>
+          <div class="exaff raff">${affLines(affSorted(it.aff.map(a=>({k:a[0], n:AFF_NAME[a[0]]||a[0], v:a[1]}))).map(a=> spAffLine(a))).map(l=> `<div>${l.join(" · ")}</div>`).join("")}</div>
           <div class="btnrow" style="margin-top:8px">
             <button class="btn sm ${ok?"primary":""}" data-spbuy="${it.id}" ${ok?"":"disabled"}>${
               own? "구매 완료" : ok? "구매" : `SP ${it.cost - have} 부족`}</button>
@@ -9997,9 +10217,9 @@ const SKILL_SORT = [
   {k:"year",    n:"졸업 연도 (최신)"},
   {k:"name",    n:"이름"}
 ];
-const RELIC_GRADE_ORD = {D:0, C:1, B:2, A:3, S:4, EX:5};
+const RELIC_GRADE_ORD = {D:0, C:1, B:2, A:3, S:4, "S+":4.5, EX:5};
 /* 처분가 — EX 는 SP 로 산 것이라 금화로 되팔 수 없다 */
-const RELIC_SELL = {C:120, B:320, A:800, S:2000};
+const RELIC_SELL = {C:120, B:320, A:800, S:2000, "S+":4000};   // S+ 는 S 의 두 배
 /* 추천 장착 — 역할별로 어울리는 능력치 (앞이 우선). 유물 하나의 점수 = 맞는 옵션 가중치 합, 같으면 등급 */
 const RELIC_ROLE_PREF = {
   dps:  ["atk","ultGain","crit","critDmg","acc"],
@@ -10088,16 +10308,18 @@ function viewRelic(){
         <span class="hint" style="font-size:11.5px;color:var(--dim)">장착 중인 유물은 처분되지 않는다</span></div>` : ""; })()}
     ${pool.length? `<div class="grid2">${sortRelicPool(pool, rMode).map(({r,i})=>`
       <div class="opt" style="cursor:default">
-        <div class="on" style="color:${GRADE_COLOR[r.grade]}">${esc(r.name)}<span class="price">${r.grade}</span></div>
-        <div class="od">${r.aff.map(a=>`${a.n} +${a.v<1&&a.v>0?(a.v*100).toFixed(1)+"%":fmt(a.v)}`).join(" · ")}</div>
+        ${relicNameHtml(r)}
+        ${relicAffHtml(r)}
         <div style="margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
           <select data-eqsel="${i}" style="background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:3px 5px;font-size:12px">
             ${S.students.map(s=>`<option value="${s.id}">${esc(s.name)} · ${JOBS[s.job].name} (${(s.relics||[]).filter(Boolean).length}/${relicSlots(s)})</option>`).join("")}
           </select>
           <button class="btn sm" data-equip="${i}">장착</button>
+          ${r.grade==="S" && synthOn() ? `<button class="btn sm" data-synth="${i}" style="border-color:var(--brass);color:var(--brass)">합성</button>` : ""}
           ${RELIC_SELL[r.grade] ? `<button class="btn sm ghost" data-sell="${i}">처분 (+${fmt(RELIC_SELL[r.grade])}G)</button>`
             : `<span class="hint" style="font-size:11px;color:var(--dim)">SP 로 얻은 유물은 처분할 수 없다</span>`}
         </div>
+        ${S.students.length? `<div class="od reqpw" data-eqpw="${i}" style="margin-top:5px">${relicEquipPreview(r, S.students[0])}</div>` : ""}
       </div>`).join("")}</div>` : `<div class="empty">보관 중인 유물이 없다. 원정을 통해 획득한다.</div>`}
   </section>
   <section class="panel">
@@ -11582,7 +11804,18 @@ function bindView(){
       ? `<b>${it.n}</b> 구비 — 모든 진형에 두 자리가 더 열렸다 (${formPlusText()}). 진형 이름 뒤에 ${FORM_PLUS_SUFFIX} 가 붙는다.`
       : k==="worldmap"
       ? `<b>${it.n}</b> 구비 — 모든 원정지가 <b>이계·</b> 판으로 바뀌었다. 권장 레벨 +${MAP_LV_ADD}, 구간당 경험·자금 ×${MAP_RWD_MUL}.`
+      : k==="synth"
+      ? `<b>${it.n}</b> 구비 — 유물 보관고의 S급 유물에 <b>합성</b> 버튼이 생겼다.`
       : `<b>${it.n}</b> 구비 — ${it.d}`,"good"); save(); render();
+  });
+  v.querySelectorAll("[data-synth]").forEach(b=> b.onclick=()=>{
+    const r = (S.relicPool||[])[+b.dataset.synth]; if(!r) return;
+    if(!r.id) r.id = "r"+RNG().toString(36).slice(2,9);
+    synthOpen(r.id);
+  });
+  v.querySelectorAll("[data-eqsel]").forEach(sel=> sel.onchange=()=>{
+    const i = +sel.dataset.eqsel, out = v.querySelector(`[data-eqpw="${i}"]`);
+    if(out) out.innerHTML = relicEquipPreview((S.relicPool||[])[i], S.students.find(x=>x.id===sel.value));
   });
   v.querySelectorAll("[data-equip]").forEach(b=> b.onclick=()=>{
     const i=+b.dataset.equip;
@@ -11672,9 +11905,23 @@ function bindView(){
   });
   v.querySelectorAll("[data-sell]").forEach(b=> b.onclick=()=>{
     const i=+b.dataset.sell, r=S.relicPool[i];
+    if(!r) return;
     if(!RELIC_SELL[r.grade]){ toast("SP 로 얻은 유물은 처분할 수 없다."); return; }
-    addGold(RELIC_SELL[r.grade]);
-    S.relicPool.splice(i,1); save(); render();
+    const doSell = ()=>{
+      const cur = S.relicPool.indexOf(r); if(cur < 0) return;   // 팝업이 떠 있는 동안 목록이 바뀌어도 그 유물만 판다
+      addGold(RELIC_SELL[r.grade]);
+      S.relicPool.splice(cur,1); save(); render();
+      toast(`${r.name} 처분 — +${fmt(RELIC_SELL[r.grade])} G`);
+    };
+    /* S · S+ 는 한 번 더 묻는다 */
+    if(r.grade !== "S" && r.grade !== "S+"){ doSell(); return; }
+    showModal(`<h2 style="font-size:17px;margin-bottom:8px">${r.grade}급 유물 처분</h2>
+      <div class="opt" style="cursor:default;max-width:360px;margin:0 0 12px">${relicNameHtml(r)}${relicAffHtml(r)}</div>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:12px">이 유물을 처분하고 <b style="color:var(--brass)">${fmt(RELIC_SELL[r.grade])} G</b>를 받는다. 되돌릴 수 없다.</p>
+      <div class="btnrow"><button class="btn primary" id="rsNo">취소</button><button class="btn" id="rsYes" style="border-color:var(--bad);color:var(--bad)">처분한다</button></div>`, ()=>{
+      $("#rsNo").onclick = closeModal;
+      $("#rsYes").onclick = ()=>{ closeModal(); doSell(); };
+    });
   });
   v.querySelectorAll("[data-scout]").forEach(b=> b.onclick=()=> tryScout(+b.dataset.scout));
   v.querySelectorAll("[data-csl]").forEach(b=> b.onclick=()=>{
