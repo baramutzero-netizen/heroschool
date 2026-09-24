@@ -4237,7 +4237,7 @@ function runBattle(teamA, teamB, opt){
     const tw = T.reduce((a,s)=>a+mentEff(s).team,0)/T.length;
     const m = MR("teamAtk", tw);
     const mS = {atk: m, def: MR("teamDef", tw), hp: MR("teamHp", tw), spd: MR("teamSpd", tw)};
-    const im = side==="A" ? infoM : 1;
+    const im = side==="A" ? infoM : (opt.infoMB!=null ? opt.infoMB : 1);   // B 편 — 리그에서는 상대 학원의 정보 보정
     const mood = side==="A" ? (opt.moodA||null) : (opt.moodB||null);
     U.forEach(u=>{
       if(u.fixed){ u.moodMul = 1; u.formBonus = 0; return; }   // 마왕 — 팀 보정을 받지 않는다
@@ -4817,7 +4817,8 @@ function masterConfirmRow(idOk, idNo){
     <span class="hint" style="font-size:11.5px;color:var(--dim)">잔여 ${mpAvail()}pt</span></div>`;
 }
 function addGold(n){ S.gold += Math.round(n * (1 + S.master.net*.02)); }
-function infoBattleMul(){ return 1 + S.master.info*.02; }
+function infoMulOf(mi){ return 1 + clamp(mi|0, 0, MASTER_MAX)*.02; }
+function infoBattleMul(){ return infoMulOf(S.master.info); }
 function tierOf(){ return TIERS[S.tier-1]; }
 function checkTier(){
   for(let i=TIERS.length-1;i>=0;i--){
@@ -8698,7 +8699,8 @@ function leaguePackUnit(g){
 function leagueMyPack(sids, form){
   const gs = (sids||[]).filter(Boolean).map(id => (S.graduates||[]).find(g=>g.sid===id)).filter(gradCanFight);
   return {acad:String(S.acadName||"이름 없는 학원").slice(0,24), form:form||"wedge",
-          t:gs.map(leaguePackUnit), ts:Date.now(), v:1};
+          t:gs.map(leaguePackUnit), ts:Date.now(), v:1,
+          mi:clamp(S.master.info|0, 0, MASTER_MAX)};   // 마스터 정보 — 리그 전투에서 이 팀의 보정 (+2%/pt)
 }
 /* ---- 받는 쪽 — 남이 올린 값이므로 전부 의심하고 깎는다 ---- */
 /* 남의 명단에도 같은 규칙을 적용한다 — EX 는 한 명당 하나 */
@@ -8734,7 +8736,7 @@ function leagueSane(e, tid){
           form: FORMS[e.form]? e.form : "wedge",
           lp: clamp(Math.round(+e.lp||LEAGUE_LP0), 0, 99999),
           w:Math.max(0,e.w|0), l:Math.max(0,e.l|0), n:Math.max(0,e.n|0),
-          ts:+e.ts||0, units};
+          ts:+e.ts||0, mi:clamp(e.mi|0, 0, MASTER_MAX), units};
 }
 function leagueTeamUnits(T){ return T.units.map(gradUnit).filter(Boolean); }
 
@@ -8835,14 +8837,14 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0924-1741";
+const BUILD = "0924-1747";
 const BUILD_TS = 0;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
    그러니 전투 계산이 한 줄이라도 달라지면 같은 시즌인데 순위표가 갈린다.
    전투에 닿는 수치를 고칠 때마다 이 번호를 올린다. 번호가 어긋난 시즌은 정산하지 않는다. */
-const RULES_VER = 3;   // 3 (0924): 리그 전투에서 보는 사람의 정보 보정을 뺐다 · 유닛을 시드 밖에서 세운다
+const RULES_VER = 3;   // 3 (0924): 리그 정보 보정을 보는 사람이 아니라 각 팀의 등록값(mi)으로 · 유닛을 시드 밖에서 세운다
 /* 시즌 번호와 시작 시각은 시계에서 바로 뽑는다 —
    그래야 서로 상의하지 않아도 모두가 같은 번호, 같은 시작 시각을 말하게 된다. */
 /* ── 서버 시계 ──
@@ -8934,9 +8936,10 @@ function seasonBattle(SE, gi, order, r, i){
     const ua = assignFoeForm(ta, A.form);
     const ub = assignFoeForm(tb, B.form);
     if(!ua.length || !ub.length) return null;
-    /* infoM:1 (0924) — 비워 두면 runBattle 이 "보고 있는 사람"의 정보 포인트(+2%/pt)를 A 편에 얹는다.
-       그래서 같은 경기가 브라우저마다 다른 결과가 났다 (관전은 이겼는데 기록은 패배). 리그는 양쪽 다 보정 없이 싸운다. */
-    const b = runBattle(ua, ub, Object.assign({titleA:A.acad, titleB:B.acad, infoM:1},
+    /* 정보 보정은 각 팀이 등록할 때 올린 마스터 정보(mi)로 건다 (0924).
+       비워 두면 runBattle 이 "보고 있는 사람"의 정보 포인트를 A 편에 얹어서, 같은 경기가 브라우저마다 다른 결과가 났다.
+       mi 는 시즌 문서에 명단과 함께 얼어붙으므로 누가 돌려도 같다. 예전 기록(mi 없음)은 0 으로 친다. */
+    const b = runBattle(ua, ub, Object.assign({titleA:A.acad, titleB:B.acad, infoM:infoMulOf(A.mi), infoMB:infoMulOf(B.mi)},
       {formA:ua.form, rowsA:ua.rows}, foeBattleOpt(ub)));
     return {b, A, B};
   });
@@ -9184,7 +9187,7 @@ async function leagueSync(){
     if(!L.up) return false;
     try{
       await leagueReq("teams/" + leagueId(), "PATCH",
-        {lp:L.lp, w:L.w, l:L.l, n:L.n, ls:L.lastSeason|0});
+        {lp:L.lp, w:L.w, l:L.l, n:L.n, ls:L.lastSeason|0, mi:clamp(S.master.info|0, 0, MASTER_MAX)});
       L.up = Date.now(); save();
       if(UI.rank) UI.rank.at = 0;
       return true;
