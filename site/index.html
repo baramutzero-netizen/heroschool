@@ -8844,14 +8844,14 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0924-0410";
-const BUILD_TS = 1790223007621;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
+const BUILD = "0924-1741";
+const BUILD_TS = 1790271690352;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
    그러니 전투 계산이 한 줄이라도 달라지면 같은 시즌인데 순위표가 갈린다.
    전투에 닿는 수치를 고칠 때마다 이 번호를 올린다. 번호가 어긋난 시즌은 정산하지 않는다. */
-const RULES_VER = 2;
+const RULES_VER = 3;   // 3 (0924): 리그 전투에서 보는 사람의 정보 보정을 뺐다 · 유닛을 시드 밖에서 세운다
 /* 시즌 번호와 시작 시각은 시계에서 바로 뽑는다 —
    그래야 서로 상의하지 않아도 모두가 같은 번호, 같은 시작 시각을 말하게 된다. */
 /* ── 서버 시계 ──
@@ -8934,11 +8934,18 @@ function seasonBattle(SE, gi, order, r, i){
   if(!rr[r] || !rr[r][i]) return null;
   const A = SE.t[order[rr[r][i][0]]], B = SE.t[order[rr[r][i][1]]];
   if(!A || !B) return null;
+  /* 유닛은 시드 밖에서 세운다 (0924) — gradUnit(newStudent)은 이름 중복 검사 때문에
+     내 학생 명단 · 최근 이름 기록에 따라 난수를 다른 만큼 쓴다. 시드 안에서 세우면
+     같은 경기라도 브라우저마다, 또 같은 브라우저에서도 순위표를 계산할 때와 관전할 때 전투가 갈렸다.
+     전투에 닿는 값은 전부 기록에서 덮어쓰므로, 시드는 전투에만 박는다. (RULES_VER 3) */
+  const ta = leagueTeamUnits(A), tb = leagueTeamUnits(B);
   return withSeed(SE.seed + ":" + SE.n + ":" + gi + ":" + r + ":" + i, ()=>{
-    const ua = assignFoeForm(leagueTeamUnits(A), A.form);
-    const ub = assignFoeForm(leagueTeamUnits(B), B.form);
+    const ua = assignFoeForm(ta, A.form);
+    const ub = assignFoeForm(tb, B.form);
     if(!ua.length || !ub.length) return null;
-    const b = runBattle(ua, ub, Object.assign({titleA:A.acad, titleB:B.acad},
+    /* infoM:1 (0924) — 비워 두면 runBattle 이 "보고 있는 사람"의 정보 포인트(+2%/pt)를 A 편에 얹는다.
+       그래서 같은 경기가 브라우저마다 다른 결과가 났다 (관전은 이겼는데 기록은 패배). 리그는 양쪽 다 보정 없이 싸운다. */
+    const b = runBattle(ua, ub, Object.assign({titleA:A.acad, titleB:B.acad, infoM:1},
       {formA:ua.form, rowsA:ua.rows}, foeBattleOpt(ub)));
     return {b, A, B};
   });
