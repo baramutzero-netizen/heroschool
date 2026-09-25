@@ -1,4 +1,4 @@
-<title>학원이 망했다</title>
+<title>용사 학원 키우기 — 학원이 망했다</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
 :root{
@@ -497,6 +497,7 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
   padding:38px 34px;text-align:center;box-shadow:var(--shadow)}
 .tcrest{width:62px;height:62px;margin-bottom:14px}
 .ttitle{font-size:40px;line-height:1.1;margin:4px 0 0;letter-spacing:-.02em}
+.tsubtitle{color:var(--brass);font-size:17px;font-weight:600;letter-spacing:.14em;margin:8px 0 0}
 .tsub{color:var(--muted);font-size:13.5px;line-height:1.8;margin:14px 0 0}
 .tbtns{display:flex;gap:10px;justify-content:center;margin-top:24px;flex-wrap:wrap}
 .tbtns .btn{padding:10px 22px;font-size:14px}
@@ -1993,7 +1994,7 @@ function sprStart(){
 sprStart();
 "use strict";
 /* ============================================================
-   학원이 망했다 — single-file web game
+   용사 학원 키우기 : 학원이 망했다 — single-file web game
    ============================================================ */
 
 const $ = (s,r)=> (r||document).querySelector(s);
@@ -14393,9 +14394,10 @@ function showTitle(canContinue){
       <path d="M20 2 L35 7 V20 C35 29 28 35 20 38 C12 35 5 29 5 20 V7 Z" fill="none" stroke="var(--brass)" stroke-width="1.4"/>
       <path d="M20 10 V30 M14 15 L20 12 L26 15 M13 21 H27" fill="none" stroke="var(--brass)" stroke-width="1.2"/>
     </svg>
-    <div class="eyebrow">용사 학원 운영 시뮬레이션</div>
-    <h1 class="ttitle">학원이 망했다</h1>
-    <p class="tsub">쓰러진 아버지의 학원을 물려받았다.<br>남은 것은 영문을 모르는 신입생 세 명과 갱신이 걸린 라이선스뿐이다.</p>
+    <div class="eyebrow">학원 운영 시뮬레이션</div>
+    <h1 class="ttitle">용사 학원 키우기</h1>
+    <div class="tsubtitle">학원이 망했다</div>
+    <p class="tsub" hidden>쓰러진 아버지의 학원을 물려받았다.<br>남은 것은 영문을 모르는 신입생 세 명과 갱신이 걸린 라이선스뿐이다.</p>
     <div class="tbtns">
       <button class="btn primary" id="tNew">새 시나리오 시작</button>
       <button class="btn" id="tCont" ${canContinue?"":"disabled"}>이어하기</button>
@@ -14493,7 +14495,16 @@ function showTutorial(i, opt){
     const sk = $("#tutSkip"); if(sk) sk.onclick = done;
   }, true);
 }
+/* 첫 접속 로딩 화면 걷기 (0925) — build_boot.py 가 <body> 바로 뒤에 넣는다. 파일을 다 받고 여기까지 오면 치운다 */
+const BOOT_LOADER_MIN = 3000;   // 로딩 화면은 접속한 순간부터 최소 이만큼은 띄운다 (0925)
+function bootLoaderDone(){
+  const el = document.getElementById("bootLoader");
+  if(!el) return;
+  const wait = Math.max(0, BOOT_LOADER_MIN - performance.now());   // performance.now() = 페이지를 연 뒤 지난 시간
+  setTimeout(()=>{ el.classList.add("done"); setTimeout(()=> el.remove(), 300); }, wait);
+}
 function boot(){
+  bootLoaderDone();
   const had = load();
   if(!had) newGame();
   S.relicPool = S.relicPool||[];

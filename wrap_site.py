@@ -10,6 +10,8 @@ src=re.sub(r'const BUILD_TS = \d+;', 'const BUILD_TS = %d;' % TS, src, count=1)
 RULES=int(re.search(r'const RULES_VER = (\d+);', src).group(1))
 i=src.index('<div id="app">')
 head=src[:i]; body=src[i:]
+from build_boot import boot_split
+head, body, tail = boot_split(head, body)   # 첫 접속 로딩 화면 · 글꼴은 맨 뒤로
 favicon=("data:image/svg+xml,"
  "%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E"
  "%3Cpath d='M20 2 L35 7 V20 C35 29 28 35 20 38 C12 35 5 29 5 20 V7 Z' fill='%2313141b' stroke='%23c8a24a' stroke-width='2.4'/%3E"
@@ -23,7 +25,7 @@ out=f'''<!doctype html>
 <meta name="theme-color" content="#13141b">
 <link rel="icon" href="{favicon}">
 <meta property="og:type" content="website">
-<meta property="og:title" content="학원이 망했다">
+<meta property="og:title" content="용사 학원 키우기 — 학원이 망했다">
 <meta property="og:description" content="{desc}">
 <meta property="og:image" content="og.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -31,6 +33,7 @@ out=f'''<!doctype html>
 {head}</head>
 <body>
 {body}
+{tail}
 </body></html>'''
 open('site/index.html','w',encoding='utf-8').write(out)
 # 새 버전 알림 — 게임이 켤 때 · 30분마다 이 파일을 읽어 자기 빌드와 견준다. index.html 과 같이 올려야 한다.
