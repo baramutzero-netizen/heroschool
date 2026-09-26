@@ -239,6 +239,7 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 .card .ccol{font-size:9.5px;color:var(--cc);letter-spacing:.08em}
 .card .cname{font-size:12.5px;font-weight:700;color:var(--text);line-height:1.25;word-break:keep-all;flex:none}
 .card .cdesc{font-size:10.5px;color:var(--muted);line-height:1.4;word-break:keep-all;flex:none}
+.card .ccost{color:var(--brass);font-weight:600;min-height:1.4em}
 .card .cfx{flex:1;display:flex;flex-direction:column;gap:1px;justify-content:flex-end;margin-top:5px}
 .card .fxl{font-size:10px;color:var(--ok);display:flex;justify-content:space-between;gap:4px;
   line-height:1.35;word-break:keep-all}
@@ -538,6 +539,29 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 .le .t{font-size:10px;color:var(--dim);letter-spacing:.06em}
 
 /* ---------- battle ---------- */
+.job-intro{position:fixed;inset:0;z-index:95;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(10,11,15,.55)}
+.ji-card{position:relative;width:min(520px,100%);background:var(--bg);border:1px solid var(--brass);border-radius:8px;overflow:hidden;box-shadow:var(--shadow)}
+.ji-bg{height:130px;background-size:cover;background-position:center 35%;filter:saturate(.9)}
+.ji-body{display:flex;gap:16px;padding:12px 18px 0;position:relative;align-items:flex-start}
+.ji-face{flex:none;width:92px;height:92px;margin-top:-58px;border-radius:12px;border:3px solid var(--bg);overflow:hidden;background:var(--surface2);box-shadow:var(--shadow)}
+.ji-sil{width:100%;height:100%;display:block}
+.ji-text{flex:1;min-width:0}
+.ji-text h3{font-size:20px;margin:2px 0 0}
+.ji-who{font-size:12.5px;color:var(--muted);margin-top:2px}
+.ji-line{margin:14px 18px 0;font-size:14.5px;line-height:1.7;color:var(--text)}
+.ji-meta{margin:10px 18px 0;font-size:12px;color:var(--dim)}
+.ji-body .ji-line,.ji-body .ji-meta{margin-left:0;margin-right:0}
+.ji-btn{display:flex;justify-content:flex-end;padding:14px 18px 16px}
+@media(max-width:520px){.ji-body{flex-direction:column;gap:8px}}
+.fin-card{width:min(420px,100%)}
+.fin-head{padding:18px 20px 4px}.fin-head h3{font-size:20px;margin:2px 0 0}
+.fin-rows{padding:8px 20px 0}
+.fin-row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid var(--line-soft);font-size:14px;opacity:0;transform:translateY(4px);transition:opacity .25s ease,transform .25s ease}
+.fin-row.on{opacity:1;transform:none}
+.fin-row b{font-variant-numeric:tabular-nums}
+.fin-row.sum{border-top:1px solid var(--line);font-weight:600}
+.fin-row.end{border-bottom:0;font-size:16px;font-weight:700}
+@media (prefers-reduced-motion:reduce){.fin-row{transition:none}}
 .overlay{position:fixed;inset:0;background:rgba(10,11,15,.72);z-index:80;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(3px);overscroll-behavior:contain;touch-action:none}
 html.modal-open{overflow:hidden}
 html.modal-open body{position:fixed;left:0;right:0;width:100%;overflow:hidden}
@@ -1182,7 +1206,7 @@ table.tb tr:hover td{background:var(--surface2)}
   .card .ctop{font-size:9px;gap:3px}
   .card .cdot{width:6px;height:6px}
   .card .cname{font-size:11px;line-height:1.25;letter-spacing:-.3px;word-break:keep-all}
-  .card .cdesc{display:none}                 /* 설명은 눌러서 툴팁으로 */
+  .card .cdesc{font-size:9.5px;line-height:1.3}   /* 비용 (0926 — 설명 대신) */
   .card .cfx{margin-top:3px;gap:0}
   .card .fxl{font-size:9px;line-height:1.3}
   .card .ceff{font-size:10px;padding-top:3px}
@@ -1680,7 +1704,7 @@ table.tb tr:hover td{background:var(--surface2)}
       <div class="meters">
         <div class="meter date"><div class="k">일정</div><div class="v num" id="mDate">—</div></div>
         <div class="meter"><div class="k">명성</div><div class="v num" id="mFame">0</div><div class="sub" id="mTitle">무명</div></div>
-        <div class="meter"><div class="k">자금</div><div class="v num" id="mGold">0</div></div>
+        <div class="meter"><div class="k">자금(빚)</div><div class="v num" id="mGold">0</div><div class="sub" id="mDebt" style="color:var(--bad)"></div></div>
         <div class="meter"><div class="k">SP</div><div class="v num" id="mSp">0</div><div class="sub">리그</div></div>
         <div class="meter"><div class="k">학생</div><div class="v num" id="mCnt">0</div></div>
         <button class="fbbtn" id="btnFeed" title="피드백" hidden></button>
@@ -2558,7 +2582,7 @@ function genMonsterOne(dg, key, lv, kMul){
   const M = DG_MENT[dg.id] != null ? DG_MENT[dg.id] : 60;
   const st = {
     id:"m"+RNG().toString(36).slice(2,8), name:J.name, job:key, year:1, grade:"A",
-    level:lv, exp:0, cond:100, fame:0, eval:0, focus:"free", relics:[], skMod:{}, sp:0, hist:[],
+    level:lv, exp:0, cond:100, fame:0, eval:0, focus:"auto", relics:[], skMod:{}, sp:0, hist:[],
     ment:{team:M, aggr:M, calm:M, will:M, stam:M, genius:M, pot:55}
   };
   autoSkMod(st, lv);
@@ -2995,7 +3019,7 @@ const ITEMS = {
   stone:   {n:"명상석",    d:"심층 명상 해금",            price:1000, ex:1},
   board:   {n:"전술판",    d:"모의전 해금",               price:1400, ex:3},
   flag:    {n:"진형 깃발",  d:"진형 훈련 해금",            price:1200, ex:2},
-  tonic:   {n:"회복 강장제",d:"휴식 주간·휴식 집중 회복량 +25%", price:2500, ex:1},
+  tonic:   {n:"회복 강장제",d:"휴식 주간·개인 휴식 회복량 +25%", price:2500, ex:1},
   charm:   {n:"행운의 부적",d:"유물을 얻을 때 25% 확률로 한 개 더 획득", price:1600, ex:0},
   scope:   {n:"관측경",    d:"대회 정찰 정보 1단계 상승", price:1800, ex:1},
   banner:  {n:"학원기",    d:"대회 승리 명성 +25%",       price:2200, ex:2},
@@ -3239,7 +3263,7 @@ function chainOf(list, i){
    던전 (원정)
    ============================================================ */
 const DUNGEONS = [
-  {id:"d1",n:"학원 지하 수련장", tier:1, secs:3, lv:1,  mon:"mon_dummy",    monK:0.55, evalCap:46, relicP:.15, needFame:0,    fameClear:5,  exp:130, karma:0, relic:{C:.62,B:.12}, d:"입학생도 버틸 만한 곳"},
+  {id:"d1",n:"학원 지하 수련장", tier:1, secs:3, lv:1, goldMul:0,  mon:"mon_dummy",    monK:0.55, evalCap:46, relicP:.15, needFame:0,    fameClear:5,  exp:130, karma:0, relic:{C:.62,B:.12}, d:"입학생도 버틸 만한 곳"},
   {id:"d2",n:"안개 낀 옛 성터",  tier:1, secs:4, lv:6,  mon:"mon_wraith",   monK:0.52, evalCap:58, relicP:.162, needFame:0,    fameClear:10, exp:230, karma:5, relic:{C:.5,B:.26,A:.05}, d:"구 단위 학원의 단골 원정지"},
   {id:"d3",n:"무너진 종탑",      tier:2, secs:5, lv:10, mon:"mon_gargoyle", monK:0.58, evalCap:70, relicP:.166, needFame:400,  fameClear:15, exp:390, karma:10, relic:{C:.34,B:.36,A:.13}, d:"이름이 알려진 학원부터 문이 열린다"},
   {id:"d4",n:"소금 바다의 균열", tier:2, secs:6, lv:14, mon:"mon_brine",    monK:0.27, evalCap:82, relicP:.17, needFame:900,  fameClear:20, exp:620, karma:15, relic:{C:.2,B:.38,A:.24,S:.03}, d:"의식 구간이 길어 지구력을 요구"},
@@ -3528,6 +3552,10 @@ function halfStart(w){ return isLateHalf(w) ? halfWeeks() : 0; }
 function halfEnd(w){ return isLateHalf(w) ? phaseWeeks() : halfWeeks(); }
 function halfLeft(){ return Math.max(0, halfEnd(S.week) - S.week); }
 const PHASE_ORDER = ["spring","summer","fall","winter"];
+/* 연도 표시 (0926) — 1년차 = 왕국력 231년. 저장은 그대로 1, 2, 3… 으로 두고 보여줄 때만 바꾼다 */
+const KINGDOM_YEAR0 = 230;
+function yrN(y){ return KINGDOM_YEAR0 + (y|0); }
+function yrName(y){ return `왕국력 ${yrN(y)}년`; }
 let S = null;
 let UI = {view:"home", sel:null, battle:null, modal:null};
 /* ── 전투 화면 설정 — 세이브가 아니라 이 브라우저에 남는다.
@@ -3595,7 +3623,7 @@ function newStudent(year, grade, job){
     id:"s"+RNG().toString(36).slice(2,9),
     name: freshName(job), job, year, grade,
     level:1, exp:0, cond:ri(78,96), fame:0, eval:0,
-    ment:m, focus:"free", relics:[], skMod:{}, sp:0, hist:[], injured:0, karma:0, trust:0, epithet:null,
+    ment:m, focus:"auto", relics:[], skMod:{}, sp:0, hist:[], injured:0, karma:0, trust:0, epithet:null,
     pers: wchoose(PERSONA_KEYS.reduce((a,k)=>{ a[k]=PERSONA[k].w; return a; }, {}))
   };
   applyPersona(st);
@@ -3875,7 +3903,7 @@ function tryEpithet(kind, pool, ctx){
 function epithetCeremony(c){
   const r = c.rec, st = S.students.find(x=>x.id===r.sid);
   return `<div class="cerhead">
-      <div class="eyebrow">${r.year}년 ${PHASES[r.phase].n} ${r.week}주 · ${esc(r.event)}</div>
+      <div class="eyebrow">${yrName(r.year)} ${PHASES[r.phase].n} ${r.week}주 · ${esc(r.event)}</div>
       <h2 style="font-size:26px;margin-top:2px">${r.prev? "새로운 이명" : "이명"}</h2>
       <p style="color:var(--muted);font-size:13px;margin-top:6px">${esc(r.scene)}</p></div>
     <div class="opt" style="cursor:default;margin-top:12px;border-color:var(--brass);text-align:center;padding:18px 14px">
@@ -4048,7 +4076,7 @@ function mentAvg(st){ return Math.round(MENTAL.reduce((a,x)=>a+st.ment[x.k],0)/M
    로그
    ============================================================ */
 function logE(html, cls){
-  S.log.unshift({t:`${S.year}년 ${PHASES[S.phase].n} ${S.week+1}주`, h:html, c:cls||""});
+  S.log.unshift({t:`${yrName(S.year)} ${PHASES[S.phase].n} ${S.week+1}주`, h:html, c:cls||""});
   if(S.log.length>260) S.log.length=260;
 }
 
@@ -4755,7 +4783,7 @@ function newGame(name){
   S = {
     v:1, acadName: name || (pick(ACAD)+" 용사 학원"),
     master:{name:"마스터", lead:0, info:0, net:0, pts:6},
-    tier:1, fame:0, gold:3000, sp:0,
+    tier:1, fame:0, gold:3000, sp:0, debt:DEBT_START, debtV:1, bank:{repay:0},
     year:1, phase:"spring", week:0,
     students:[], graduates:[], log:[],
     facil:{expand:0,gym:0,hall:0,chapel:0,infirm:0,library:0,arena:0,counsel:0}, facilV:FACIL_VER,
@@ -4781,7 +4809,7 @@ function newGame(name){
 }
 const MASTER_MAX = 10;
 const MASTER_INFO = {
-  lead:{n:"지도력", s:"훈련 성장 +3.5%/pt", d:"주간 훈련과 개인 집중 훈련의 성장량이 포인트당 3.5% 증가 · 상담에서 성격에 맞지 않는 답도 받아들일 확률 포인트당 +4%p"},
+  lead:{n:"지도력", s:"훈련 성장 +3.5%/pt", d:"주간 훈련과 개인 훈련의 성장량이 포인트당 3.5% 증가 · 상담에서 성격에 맞지 않는 답도 받아들일 확률 포인트당 +4%p"},
   info:{n:"정보력", s:"정찰 · 전투 +2%/pt",  d:"대회 상대 정찰 단계 상승 · 전투 중 우리 학생 체력·공격력·방어력 포인트당 2% 증가 · 상담에서 성격에 맞는 답을 미리 알아볼 확률 포인트당 +6%p"},
   net: {n:"호소력", s:"스카우트 · 자금",      d:"스카우트 성공률 포인트당 +5%p · 모든 자금 획득량 포인트당 2% 증가 · 상담 멘탈리티 상승폭이 2배가 될 확률 포인트당 +4%p"}
 };
@@ -4916,13 +4944,13 @@ function tryInjure(st, mul){
   setCond(st, st.cond - ri(1, INJ_COND_DROP)); // 부상 시 컨디션 추가 하락
   const turned = injToRest(st);                // 다친 그 순간부터 스케줄에서 빠진다
   logE(`<b>${dnH(st)}</b>${eunn(st.name)} 훈련 중 ${again?"부상이 덧났다":"부상을 입었다"} — <b style="color:var(--bad)">회복까지 ${st.injured}주</b> (심각도 ${Math.round(sev)})${
-    turned? ` · <b style="color:var(--ok)">휴식 집중으로 전환</b>` : ""}`, "bad");
+    turned? ` · <b style="color:var(--ok)">휴식으로 전환</b>` : ""}`, "bad");
   return w;
 }
 /* 부상 → 휴식 집중 자동 전환 · 회복하면 원래 집중으로 되돌린다 */
 function injToRest(st){
   if(!st || st.focus === FOCUS_REST) return false;
-  st._injFocus = st.focus || "free";
+  st._injFocus = st.focus || "auto";
   st.focus = FOCUS_REST;
   return true;
 }
@@ -4944,7 +4972,7 @@ function tickInjury(){
         s.injured = 0;
         const back = injFromRest(s);
         logE(`<b>${dnH(s)}</b>${iga(s.name)} 부상에서 회복했다.${
-          back? ` 집중 분야를 <b>${back==="free"? "지정 없음" : (MENTAL.find(m=>m.k===back)||{n:back}).n}</b>${back==="free"?"으로":"(으)로"} 되돌렸다.` : ""}`, "good");
+          back? ` 개인 행동 <b>${actName(back)}</b>(으)로 되돌렸다.` : ""}`, "good");
       }
     }
   });
@@ -4964,11 +4992,100 @@ function restFocusGain(){
    화면에 적는 주당 값도 같은 계산을 거쳐야 실제와 어긋나지 않는다 */
 function restFocusWeek(){ return WEEK_DAYS * Math.round(restFocusGain() * DAY_MUL); }
 function isRestFocus(st){ return st && st.focus===FOCUS_REST; }
+/* ══════ 개인 행동 (0926) ══════
+   임의 · 훈련 · 휴식 · 의뢰 — 학생마다 하나. st.focus 에 키를 둔다 (옛 세이브의 free · 멘탈리티 키는 actNorm 이 바꿔 읽는다).
+   · 임의 — 매일 아침 스스로 정한다: 컨디션 69 이하면 휴식, 70 이상이면 훈련/의뢰 반반 (여름에는 훈련)
+   · 훈련 — 그날 가장 약한 멘탈리티를 개인 집중 훈련 (상한에 닿은 분야는 건너뛴다)
+   · 휴식 — 스케줄에 참여하지 않고 쉰다 (예전 휴식 집중)
+   · 의뢰 — 그 주의 의뢰를 오후에 수행. 한 주에 처음 의뢰가 나온 순간 그 주의 의뢰가 정해진다 (여름 불가) */
+const ACT = {
+  auto: {n:"임의", d:"매일 스스로 정한다 — 컨디션 69 이하면 휴식, 70 이상이면 훈련·의뢰 반반"},
+  train:{n:"훈련", d:"그날 가장 약한 멘탈리티를 개인 집중 훈련"},
+  rest: {n:"휴식", d:"학원 스케줄에 참여하지 않고 쉰다"},
+  job:  {n:"의뢰", d:"그 주의 의뢰를 오후에 수행 — 보수를 받는다 (여름 불가)"}
+};
+const ACT_KEYS = ["auto","train","rest","job"];
+const AUTO_REST_BELOW = 70;          // 임의 — 이 아래면 휴식
+const FOCUS_G = .8, FOCUS_COND = 6;  // 개인 집중 훈련 (주 단위 · 하루에는 DAY_MUL 이 곱해진다)
+function jobOpen(){ return S.phase !== "summer"; }
+function actKeys(){ return ACT_KEYS.filter(k=> k!=="job" || jobOpen()); }
+function actNorm(k){
+  if(ACT[k]) return k;
+  if(MENTAL.some(m=> m.k===k && !m.fixed)) return "train";   // 옛 집중 분야
+  return "auto";                                              // 지정 없음 · 알 수 없음
+}
+function actOf(st){ const k = actNorm(st && st.focus); return (k==="job" && !jobOpen()) ? "train" : k; }
+function actName(k){ return (ACT[actNorm(k)]||ACT.auto).n; }
+/* 훈련 — 가장 약한 멘탈리티. 상한에 닿은 분야는 빼고, 전부 닿았으면 그냥 가장 낮은 것 */
+function weakestMent(st){
+  const ks = MENTAL.filter(m=>!m.fixed).map(m=>m.k);
+  const grow = ks.filter(k=> (st.ment[k]||0) < mentCapOf(st, k));
+  let best = null;
+  (grow.length ? grow : ks).forEach(k=>{ if(best==null || (st.ment[k]||0) < (st.ment[best]||0)) best = k; });
+  return best;
+}
+/* 그날 무엇을 할지 — 아침에 한 번 정한다 */
+function dayActOf(st){
+  const a = actOf(st);
+  if(a==="auto"){
+    if(isInjured(st) || st.cond < AUTO_REST_BELOW) return "rest";
+    if(!jobOpen()) return "train";
+    return RNG() < .5 ? "train" : "job";
+  }
+  return a;
+}
 function focusOf(st){
-  if(isRestFocus(st)) return null;          // 휴식 집중은 성장 훈련이 아니다
-  if(!st.focus || st.focus==="free") return null;
-  const g = {}; g[st.focus] = .8;
-  return {id:"focus", n:"집중 훈련", fac:FOCUS_FAC[st.focus], cond:6, gains:g};
+  if(st._act !== "train") return null;
+  const k = st._fk || weakestMent(st);
+  if(!k) return null;
+  const g = {}; g[k] = FOCUS_G;
+  return {id:"focus", n:"집중 훈련", fac:FOCUS_FAC[k], cond:FOCUS_COND, gains:g};
+}
+/* ---- 의뢰 ----
+   컨디션 2 소모 · 보수 100G × 의뢰 단계 배율 (일단 1)
+   멘탈리티 — 하나는 조금 오르고(컨디션 1 쓰는 훈련의 0.5배) 하나는 내린다(1.5배) */
+const JOB_PAY = 100, JOB_COND = 2, JOB_STAGE_MUL = 1;
+const JOB_UP = .5 * FOCUS_G / FOCUS_COND, JOB_DOWN = 1.5 * FOCUS_G / FOCUS_COND;
+const JOB_LIST = [
+  {k:"farm",   n:"농경지 제초",  up:"stam",   down:"genius", who:"밭주인 할아버지", hue:95,
+   line:"허리가 예전 같지 않아서 말이야. 풀 좀 뽑아 주면 점심은 내가 사지."},
+  {k:"church", n:"교회 청소",    up:"will",   down:"aggr",   who:"교회 수녀",       hue:210,
+   line:"예배당 바닥이 먼지투성이예요. 조용히, 꼼꼼히 부탁드려요."},
+  {k:"inn",    n:"여관 심부름",  up:"calm",   down:"stam",   who:"여관 안주인",     hue:30,
+   line:"손님이 몰려서 정신이 없네! 짐 좀 날라 주고 심부름 좀 다녀와 줘."},
+  {k:"hunt",   n:"사냥 지원",    up:"team",   down:"will",   who:"마을 사냥꾼",     hue:140,
+   line:"몰이꾼이 모자라. 신호 맞춰서 움직여 주기만 하면 돼."},
+  {k:"salon",  n:"미용실 보조",  up:"genius", down:"team",   who:"미용실 원장",     hue:320,
+   line:"손님 머리 감기고 도구 정리 좀 도와줄래? 눈치 빠른 애면 더 좋고."},
+  {k:"tavern", n:"주점 서빙",    up:"aggr",   down:"calm",   who:"주점 주인",       hue:0,
+   line:"오늘 밤은 만석이야. 목소리는 크게, 발은 빠르게! 알지?"}
+];
+function jobPay(){ return Math.round(JOB_PAY * JOB_STAGE_MUL); }
+function jobDef(k){ return JOB_LIST.find(j=> j.k===k) || JOB_LIST[0]; }
+function mentName(k){ return (MENTAL.find(m=>m.k===k)||{n:k}).n; }
+/* 이번 주 의뢰 — 처음 의뢰가 나온 순간 정한다. 배경은 시설 배경 중 하나 (보여주기용이라 게임 난수는 쓰지 않는다) */
+function weekJob(day){
+  const R = UI.wrun;
+  if(!R) return JOB_LIST[0];
+  if(!R.job){
+    R.job = pick(JOB_LIST).k; R.jobDay = day;
+    const rooms = Object.keys(REPORT_ROOMS).filter(k=> k!=="beach" && REPORT_LAYOUTS[k]);
+    R.jobFac = rooms[Math.floor(Math.random()*rooms.length)] || "hall";
+  }
+  return jobDef(R.job);
+}
+function doJob(st, J){
+  if(isInjured(st) || st.cond < 25) return 0;      // 지쳤거나 다쳤으면 거른다 (개인 훈련과 같은 기준)
+  trainStudent(st, {id:"job", n:J.n, fac:null, cond:0, gains:{[J.up]:JOB_UP}}, true, {noExp:true, noRecover:true});
+  st.ment[J.down] = Math.max(1, (st.ment[J.down]||0) - 2.4*JOB_DOWN*rnd(.7,1.35));
+  setCond(st, st.cond - JOB_COND);
+  const g0 = S.gold; addGold(jobPay());
+  return S.gold - g0;
+}
+/* 의뢰인 얼굴 — 그림이 생기기 전까지 쓰는 실루엣 */
+function jobFaceHTML(J){
+  return `<svg viewBox="0 0 80 80" class="ji-sil" aria-hidden="true"><rect width="80" height="80" rx="10" fill="hsl(${J.hue} 32% 42%)"/>
+    <circle cx="40" cy="31" r="14" fill="hsl(${J.hue} 25% 18%)" opacity=".9"/><path d="M14 80 C16 58 28 50 40 50 C52 50 64 58 66 80 Z" fill="hsl(${J.hue} 25% 18%)" opacity=".9"/></svg>`;
 }
 function doFocus(st, dayMul, condMul){
   const f = focusOf(st);
@@ -5077,9 +5194,15 @@ function dayRun(tr0, bonus, day, opt){
   const D = DAY_N[day];
   let parts=0, foc=0, rested=0, hurt=0, active=0, expSum=0;
   const focWho = [], trained = [];
+  /* 개인 행동 — 아침에 그날 할 일을 정한다 (임의는 컨디션을 보고, 훈련은 가장 약한 분야를) */
   S.students.forEach(s=>{
     if(skip && skip.has(s.id)) return;
-    if(isRestFocus(s)){ doRestFocus(s, tr); rested++; sceneStatus[s.id]="rest"; return; }
+    s._act = dayActOf(s);
+    s._fk = s._act==="train" ? weakestMent(s) : null;
+  });
+  S.students.forEach(s=>{
+    if(skip && skip.has(s.id)) return;
+    if(s._act==="rest"){ doRestFocus(s, tr); rested++; sceneStatus[s.id]="rest"; return; }
     active++;
     const part = trainSuccess(s, resting);
     sceneStatus[s.id] = resting ? "rest" : part ? "trained" : "failed";
@@ -5094,7 +5217,7 @@ function dayRun(tr0, bonus, day, opt){
   if(resting){
     dlog(opt.head || `${D}요일은 <b>휴식</b> 시간을 가졌다.${chainTag(bonus)}`, "rest");
     const g = Math.round(Math.max(0, S.students.reduce((a,s)=> a + (s.cond - snap[s.id].cond), 0) / Math.max(1,S.students.length)));
-    dlog(`전체 컨디션 <b style="color:var(--ok)">${g}</b> 상승${rested? ` · 휴식 집중 ${rested}명 별도 회복`:""}`, "sub");
+    dlog(`전체 컨디션 <b style="color:var(--ok)">${g}</b> 상승${rested? ` · 휴식 ${rested}명 별도 회복`:""}`, "sub");
   } else {
     dlog(opt.head || `${D}요일 훈련으로 <b>${tr.n}</b>${eulr(tr.n)} 단련했다!${chainTag(bonus)}`, "head");
     const cd = Math.round(trained.reduce((a,s)=> a + (snap[s.id].cond - s.cond), 0) / Math.max(1,trained.length));
@@ -5132,19 +5255,26 @@ function dayRun(tr0, bonus, day, opt){
       else dlog(`<span style="color:var(--dim)">눈에 띄는 변화 없이 기초가 쌓였다.</span>`, "sub");
     }
   }
-  // 오후 — 개인 집중 훈련
+  // 오후 — 개인 행동 (훈련 · 의뢰)
   reportRecord(day, tr, bonus, "am", snap, S.students.filter(s=>!skip || !skip.has(s.id)), sceneStatus, sceneLogStart);
   if(!resting){
     const fs = mentSnap();
     const focusLogStart = DAYLOG.length;
+    const jobWho = [];
+    let J = null, pay = 0;
     S.students.forEach(s=>{
       if(skip && skip.has(s.id)) return;
-      if(isRestFocus(s)) return;
-      const cmp = isCampWeek();
-      if(doFocus(s, DAY_MUL*(cmp?CAMP_GAIN:1), DAY_MUL*(cmp?CAMP_COND:1))){ foc++; focWho.push(s); }
+      if(s._act==="train"){
+        const cmp = isCampWeek();
+        if(doFocus(s, DAY_MUL*(cmp?CAMP_GAIN:1), DAY_MUL*(cmp?CAMP_COND:1))){ foc++; focWho.push(s); }
+      } else if(s._act==="job"){
+        J = J || weekJob(day);
+        const g = doJob(s, J);
+        if(g){ pay += g; jobWho.push(s); if(UI.wrun) UI.wrun.jobPay = (UI.wrun.jobPay||0) + g; }
+      }
     });
     if(foc){
-      dlog(`오후에는 각자 개인적으로 집중 분야를 단련했다!`, "head2");
+      dlog(`오후 개인 행동 — <b>훈련</b> ${foc}명이 각자 가장 약한 분야를 단련했다!`, "head2");
       const cs = mentCross(fs, focWho);
       if(cs.length) cs.forEach(x=> dlog(`${dnH(x.s)} <b>${x.n}</b> ${x.d} 증가`, "sub"));
       else {
@@ -5160,6 +5290,21 @@ function dayRun(tr0, bonus, day, opt){
       }
       reportRecord(day, tr, bonus, "pm", fs, focWho, {}, focusLogStart);
     }
+    if(jobWho.length){
+      const jobLogStart = DAYLOG.length;
+      dlog(`오후 개인 행동 — <b>의뢰 · ${J.n}</b> ${jobWho.length}명 · 보수 <b style="color:var(--brass)">+${fmt(pay)} G</b>`, "head2");
+      const lines = [];
+      jobWho.forEach(s=>{
+        const b = fs[s.id], ch = [];
+        [J.up, J.down].forEach(k=>{ const d = Math.round(s.ment[k]) - Math.round(b.ment[k]); if(d) ch.push(`<b>${mentName(k)}</b> ${d>0?"+":""}${d}`); });
+        if(ch.length) lines.push(`${dnH(s)} ${ch.join(" · ")}`);
+      });
+      dlog(lines.length? lines.join(", ")
+        : `<span style="color:var(--dim)">${mentName(J.up)}은(는) 조금 오르고 ${mentName(J.down)}은(는) 조금 내렸다.</span>`, "sub");
+      const st = {}; jobWho.forEach(s=> st[s.id] = "job");
+      reportRecord(day, tr, bonus, "pm", fs, jobWho, st, jobLogStart,
+        {facility:UI.wrun ? UI.wrun.jobFac : "hall", reward:`${J.n} 보수 +${fmt(pay)} G`, job:J.k, jobIntro: !!(UI.wrun && UI.wrun.jobDay===day)});
+    }
   }
 }
 
@@ -5171,24 +5316,24 @@ function restWasteList(){
 }
 function restWasteModal(){
   const list = restWasteList();
-  showModal(`<h2 style="font-size:19px">휴식 집중인 학생이 있다</h2>
+  showModal(`<h2 style="font-size:19px">휴식으로 둔 학생이 있다</h2>
     <p style="color:var(--muted);font-size:13px;margin:8px 0 12px">
-      아래 ${list.length}명은 컨디션이 <b style="color:var(--ok)">${COND_HI}</b> 이상인데도 <b>휴식 집중</b>이라
+      아래 ${list.length}명은 컨디션이 <b style="color:var(--ok)">${COND_HI}</b> 이상인데도 <b>휴식</b>이라
       이번 주 훈련을 받지 않는다. 원정에도 나가지 않는다.</p>
     <div class="condbox">${list.map(s=>`<div class="condrow">
       <span class="cn">${dnH(s)}</span>
       <span class="cv">${JOBS[s.job].name} · ${s.year}학년</span>
       <span class="cf num" style="color:var(--ok);white-space:nowrap">컨디션 ${Math.round(s.cond)}</span></div>`).join("")}</div>
     <div class="btnrow" style="margin-top:14px">
-      <button class="btn primary" id="rwFix">자율 훈련으로 바꾸고 진행</button>
+      <button class="btn primary" id="rwFix">임의로 바꾸고 진행</button>
       <button class="btn" id="rwGo">그대로 진행</button>
       <button class="btn ghost" data-close>돌아가기</button>
     </div>
-    <p style="font-size:11.5px;color:var(--dim);margin:8px 0 0">집중은 <b>학생</b> 탭에서 개별로도 바꿀 수 있다.</p>`, ()=>{
+    <p style="font-size:11.5px;color:var(--dim);margin:8px 0 0">개인 행동은 <b>학생</b> 탭에서 개별로도 바꿀 수 있다.</p>`, ()=>{
     $("#rwFix").onclick = ()=>{
       const n = restWasteList();
-      n.forEach(s=> s.focus = "free");
-      logE(`휴식 집중 해제 — ${n.map(x=>dnH(x)).join(", ")} (컨디션 회복 완료)`, "good");
+      n.forEach(s=> s.focus = "auto");
+      logE(`휴식 해제 — ${n.map(x=>dnH(x)).join(", ")}을(를) 임의로 돌렸다 (컨디션 회복 완료)`, "good");
       UI.skipRestWarn = true; save(); closeModal(); render(); runWithReport();
     };
     $("#rwGo").onclick = ()=>{ UI.skipRestWarn = true; closeModal(); render(); runWithReport(); };
@@ -5213,6 +5358,7 @@ function weekRunGo(quick){
     if(quick) autoFillSlots();
     else { toast("월요일부터 금요일까지 다섯 칸을 모두 채워야 한다."); return; }
   }
+  /* 훈련 비용이 모자라도 진행한다 — 자금은 마이너스(빚)로 내려갈 수 있다 (0926) */
   if(!quick && S.master.pts>0 && !UI.skipPtWarn){ masterPointModal(1); return; }
   if(!quick && !UI.skipRestWarn && restWasteList().length){ restWasteModal(); return; }
   /* 원정 카드를 처음 넣고 주를 돌리는 순간 — 원정 안내를 한 장 띄우고 이어서 진행한다 */
@@ -5220,7 +5366,7 @@ function weekRunGo(quick){
     tutOnePage("6", ()=> weekRunGo(quick));
     return;
   }
-  DAYLOG = []; RUN = {expeds:[]};
+  DAYLOG = []; RUN = {expeds:[]}; FIN = {upkeep:0, interest:0};
   S.students.forEach(x=>{ x._att=0; x._miss=0; x._exp=0; x._up=0; });
   focusHistPush();
   UI.wrun = {quick:!!quick, day:0, days:S.slots.slice(),
@@ -5243,6 +5389,11 @@ function weekRunStepGo(){
   while(R.day < WEEK_DAYS){
     const card = R.days[R.day];
     const tr = (card && TR[card.t]) || TR.free;
+    if(!(R.paid ||= {})[R.day]){
+      R.paid[R.day] = true;
+      const cc = card ? cardCost(card) : 0;
+      if(cc){ S.gold -= cc; R.cost = (R.cost||0) + cc; }
+    }
     const bonus = chainOf(R.days, R.day);
     const mark = markOf(card);
     if(tr.special==="exped"){ expedDay(R, bonus); return; }   // 팝업으로 넘어간다
@@ -5273,7 +5424,7 @@ function weekRunEnd(){
     tryMarkTut();
     levelReport(S.students.map(s=>({s:s, n:s._up||0})));
     const acts = R.days.map(c=> (TR[c.t]||TR.free).n);
-    logE(`${R.startWeek+1}주 — ${acts.join(" · ")}`, "");
+    logE(`${R.startWeek+1}주 — ${acts.join(" · ")}${R.cost? ` · 훈련 비용 <b>-${fmt(R.cost)} G</b>`:""}`, "");
     if(!R.quick) weekReport(R);
     else if(!UI.pendingTour && (UI.ceremonies||[]).length) showCeremony();
     save();
@@ -5292,17 +5443,21 @@ function weekRunEnd(){
 }
 function weekReport(R){
   const ranTo = (S.phase===R.startPhase && S.year===R.startYear) ? S.week : PHASES[R.startPhase].weeks;
+  const F = FIN || {upkeep:0, interest:0};
+  const fin = {g0:R.g0, train:R.cost||0, job:R.jobPay||0, upkeep:F.upkeep, interest:F.interest, g1:S.gold};
+  fin.other = fin.g1 - fin.g0 - (fin.job - fin.train - fin.upkeep - fin.interest);   // 원정 수입 · 구매 등
+  FIN = null;
   showReport({snap:R.snap, startWeek:R.startWeek, ranTo:ranTo, startPhase:R.startPhase, startYear:R.startYear,
     acts: R.days.map(c=>({n:(TR[c.t]||TR.free).n})),
     daylog: DAYLOG.slice(), scenes: R.scenes || [],
-    gold:S.gold-R.g0, fame:S.fame-R.f0, relics:(S.relicPool||[]).length-R.r0});
+    gold:S.gold-R.g0, fame:S.fame-R.f0, relics:(S.relicPool||[]).length-R.r0, fin});
 }
 function runWeek(){ weekRunGo(true); }
 function runWeeks(n){
   for(let i=0;i<n;i++){
     if(UI.pendingTour) break;
     const before = S.phase+S.year;
-    weekRunGo(true);
+    if(weekRunGo(true) === false) break;     // 자금 부족 등으로 시작하지 못했다
     if(UI.pendingTour) break;
     if(S.phase+S.year !== before) break;
   }
@@ -5364,13 +5519,13 @@ function reportRecord(day, tr, bonus, phase, before, members, status, logStart, 
   if(!UI.wrun) return;
   const groups = {};
   members.forEach(s=>{
-    const fac = extra?.facility || (phase==="pm" ? FOCUS_FAC[s.focus] : status[s.id]==="rest" ? "infirm" : tr.fac) || "gym";
+    const fac = extra?.facility || (phase==="pm" ? FOCUS_FAC[s._fk] : status[s.id]==="rest" ? "infirm" : tr.fac) || "gym";
     (groups[fac] ||= []).push(s);
   });
   const scenes = UI.wrun.scenes ||= [];
   Object.entries(groups).forEach(([facility, group])=> scenes.push({
     day, season:UI.wrun.startPhase || S.phase, training:tr.n, trainingId:tr.id, color:cardColor(UI.wrun.days?.[day] || tr.id).c, bonus, phase, facility,
-    logs:DAYLOG.slice(logStart), reward:extra?.reward || "",
+    logs:DAYLOG.slice(logStart), reward:extra?.reward || "", job:extra?.job || null, jobIntro:!!extra?.jobIntro,
     students:group.map(s=>{
       const old=before[s.id], changes=[];
       if(old){
@@ -5384,7 +5539,7 @@ function reportRecord(day, tr, bonus, phase, before, members, status, logStart, 
         const xp=Math.round(s.totalExp||0)-Math.round(old.exp);
         if(xp)changes.push({label:"경험",from:Math.round(old.exp),to:Math.round(s.totalExp||0),value:xp,kind:"exp"});
       }
-      return {id:s.id,name:s.name,job:s.job,palette:sprPalOf(s),focus:s.focus,condition:{from:Math.round(old?.cond ?? s.cond),to:Math.round(s.cond)},
+      return {id:s.id,name:s.name,job:s.job,palette:sprPalOf(s),focus:s._fk||actOf(s),condition:{from:Math.round(old?.cond ?? s.cond),to:Math.round(s.cond)},
         state:status[s.id] || (phase==="pm"?"focus":"returned"),changes};
     })
   }));
@@ -5429,7 +5584,7 @@ function reportScenesForPlayback(records){
     const morning=daily.filter(s=>s.phase!=="pm"), afternoon=daily.filter(s=>s.phase==="pm");
     const choose=list=>list.slice().sort((a,b)=>b.students.length-a.students.length)[0];
     const am=morning.find(s=>s.phase==="exped") || choose(morning.filter(s=>s.students.some(x=>x.state!=="rest"))) || choose(morning);
-    const pm=choose(afternoon);
+    const pm=afternoon.find(s=>s.jobIntro) || choose(afternoon);
     if(am)out.push(am);
     if(pm)out.push(pm);
   });
@@ -5485,7 +5640,7 @@ function reportSceneBind(records){
     if(oldConfirmRow && !oldConfirmRow.children.length)oldConfirmRow.remove();
   }
   let at=0, speed=[1,2,6].includes(PREF.reportSpeed)?PREF.reportSpeed:2, paused=reduced, full=false, elapsed=0, last=performance.now(), timer=null, disposed=false;
-  let duration=2400, queue=[], displayed=[], lastSound=-1;
+  let duration=2400, queue=[], displayed=[], lastSound=-1, jobShown=false;
   const stepMs=450, leadMs=250, riseMs=900/0.7, cardMs=400+riseMs, fadeMs=100, fadeDelayMs=cardMs-fadeMs;
   const statAudio=new Audio(REPORT_STATUP);
   const recoveryAudio=new Audio(REPORT_RECOVERY);
@@ -5493,9 +5648,9 @@ function reportSceneBind(records){
   reportAudio.forEach(audio=>audio.preload="auto");
   function silence(){reportAudio.forEach(audio=>{audio.pause();audio.currentTime=0;});}
   const placements=new Map();
-  const phaseName=s=>s.phase==="exped"?"오전 원정":s.phase==="pm"?"오후 집중":s.students.every(x=>x.state==="rest")?(s.facility==="beach"?"오전 일광욕":"오전 휴식"):"오전 훈련";
+  const phaseName=s=>s.phase==="exped"?"오전 원정":s.phase==="pm"?(s.job?"오후 의뢰":"오후 훈련"):s.students.every(x=>x.state==="rest")?(s.facility==="beach"?"오전 일광욕":"오전 휴식"):"오전 훈련";
   const chip=c=>`<span class="dr-chip ${c.kind}">${esc(c.label)} ${c.value>0?"+":""}${c.value}</span>`;
-  const stateName=s=>s.state==="failed"?"실패 · 성과 25%":s.state==="rest"?"휴식":s.state==="focus"?"집중 훈련":s.state==="returned"?"원정 귀환":"훈련 완료";
+  const stateName=s=>s.state==="failed"?"실패 · 성과 25%":s.state==="rest"?"휴식":s.state==="job"?"의뢰":s.state==="focus"?"개인 훈련":s.state==="returned"?"원정 귀환":"훈련 완료";
   const player={dispose(){disposed=true;clearInterval(timer);silence();reportAudio.forEach(audio=>{audio.removeAttribute("src");audio.load();});},get index(){return at;},get paused(){return paused;}};
   UI._reportPlayer=player;
   function sync(){
@@ -5520,7 +5675,7 @@ function reportSceneBind(records){
     duration=Math.max(2400,leadMs+queue.length*stepMs+cardMs);
     const source=REPORT_ROOMS[s.facility];
     if($("#drRoom").getAttribute("src")!==source)$("#drRoom").src=source;
-    const facilityName=s.facility==="beach"?"해수욕장":FACILITIES[s.facility]?.n||"학원";
+    const facilityName=s.job?jobDef(s.job).n:s.facility==="beach"?"해수욕장":FACILITIES[s.facility]?.n||"학원";
     $("#drRoom").alt=s.facility==="beach"?"여름 해수욕장 모래사장":`${facilityName} 실내`;
     $("#drStage").dataset.phase=s.phase;
     $("#drStage").dataset.facility=s.facility;
@@ -5547,12 +5702,32 @@ function reportSceneBind(records){
     }
     root.querySelectorAll("[data-dr-student]").forEach(b=>b.onclick=()=>details(visible[+b.dataset.drStudent].id));
     $("#drSceneCount").textContent=`${visible.length}명 표시${s.students.length>visible.length?` · 시설 참여 ${s.students.length}명`:""}`;
-    $("#drResultTitle").textContent=`${DAY_N[s.day]}요일 · ${s.phase==="pm"?"개인 집중 훈련":s.training}`;
+    $("#drResultTitle").textContent=`${DAY_N[s.day]}요일 · ${s.phase==="pm"?(s.job?`의뢰 · ${jobDef(s.job).n}`:"개인 행동"):s.training}`;
     const fail=s.students.filter(x=>x.state==="failed").length;
     $("#drResultHint").textContent=`${phaseName(s)} · ${s.students.length}명${fail?` · 실패 ${fail}명`:""}`;
     const totals={};s.students.forEach(x=>x.changes.forEach(c=>{totals[c.label]=(totals[c.label]||0)+c.value;}));
     $("#drResultChips").innerHTML=s.reward?`<span>${esc(s.reward)}</span>`:Object.entries(totals).map(([label,value])=>chip({label:`${label} 합계`,value:Math.round(value*10)/10,kind:value<0?"loss":label==="컨디션"?"heal":"gain"})).join("")||`<span class="hint">오늘의 기록을 차곡차곡 쌓았어요.</span>`;
     details();sync();timeline(false);progress();
+    if(s.jobIntro && !jobShown){
+      jobShown=true; paused=true; sync();
+      jobIntroShow(s, ()=>{ paused=false; last=performance.now(); sync(); });
+    }
+  }
+  function jobIntroShow(s, done){
+    const J=jobDef(s.job), box=root.querySelector(".modal");
+    if(!box){ done(); return; }
+    const el=document.createElement("div");
+    el.className="job-intro";
+    el.innerHTML=`<div class="ji-card" role="dialog" aria-modal="true" aria-label="이번 주 의뢰 — ${esc(J.n)}">
+      <div class="ji-bg" style="background-image:url('${REPORT_ROOMS[s.facility]||""}')"></div>
+      <div class="ji-body"><div class="ji-face">${jobFaceHTML(J)}</div>
+        <div class="ji-text"><div class="eyebrow">이번 주 의뢰</div><h3>${esc(J.n)}</h3><div class="ji-who">${esc(J.who)}</div>
+          <p class="ji-line">“${esc(J.line)}”</p>
+          <div class="ji-meta">${esc(mentName(J.up))} 소폭 증가 · ${esc(mentName(J.down))} 하락 · 컨디션 -${JOB_COND}/일 · 보수 ${fmt(jobPay())} G/일</div></div></div>
+      <div class="ji-btn"><button class="btn primary" id="jiOk">의뢰를 맡는다</button></div></div>`;
+    box.appendChild(el);
+    const ok=el.querySelector("#jiOk"); ok.focus();
+    ok.onclick=()=>{ el.remove(); done(); };
   }
   function timeline(sound){
     const n=Math.floor((elapsed-leadMs)/stepMs);
@@ -5590,7 +5765,7 @@ function reportSceneBind(records){
     const event=queue[n];
     if(sound && n!==lastSound){
       lastSound=n;
-      if(event && event.to>event.from && sfxGain()>0){
+      if(event && (event.to>event.from || (!event.condition && scenes[at].job)) && sfxGain()>0){
         const audio=event.condition?recoveryAudio:statAudio;
         audio.pause();audio.currentTime=0;audio.volume=sfxGain();audio.play().catch(()=>{});
       }
@@ -5602,13 +5777,58 @@ function reportSceneBind(records){
   $("#drPrev").onclick=()=>seek(at-1);$("#drNext").onclick=()=>seek(at+1);
   root.querySelectorAll("[data-dr-day]").forEach(b=>b.onclick=()=>{const i=scenes.findIndex(s=>s.day===+b.dataset.drDay);if(i>=0)seek(i);});
   root.querySelectorAll("[data-dr-speed]").forEach(b=>b.onclick=()=>{speed=+b.dataset.drSpeed;PREF.reportSpeed=speed;prefSave();sync();});
-  $("#dlSkip").onclick=()=>{full=!full;paused=true;$("#drFullLog").hidden=!full;$("#dlSkip").textContent=full?"전체 기록 접기":"한 번에 보기";sync();if(full)$("#drFullLog").scrollIntoView({block:"start",behavior:reduced?"instant":"smooth"});};
+  $("#dlSkip").onclick=()=>{full=!full;paused=true;$("#drFullLog").hidden=!full;$("#dlSkip").textContent=full?"전체 기록 접기":"한 번에 보기";sync();if(full)finPopupShow();if(full)$("#drFullLog").scrollIntoView({block:"start",behavior:reduced?"instant":"smooth"});};
   $("#drDetail").addEventListener("toggle",()=>{if($("#drDetail").open){paused=true;sync();}});
-  timer=setInterval(()=>{const now=performance.now(),dt=Math.min(now-last,60);last=now;if(disposed||paused||document.hidden){if(document.hidden)silence();return;}if(!$("#drStage")){reportPlayerStop();return;}elapsed+=dt*speed;timeline(true);if(elapsed>=duration){if(at<scenes.length-1){seek(at+1);return;}elapsed=duration;paused=true;sync();}progress();},30);
+  timer=setInterval(()=>{const now=performance.now(),dt=Math.min(now-last,60);last=now;if(disposed||paused||document.hidden){if(document.hidden)silence();return;}if(!$("#drStage")){reportPlayerStop();return;}elapsed+=dt*speed;timeline(true);if(elapsed>=duration){if(at<scenes.length-1){seek(at+1);return;}elapsed=duration;paused=true;sync();finPopupShow();}progress();},30);
   draw();
 }
 
 /* REPORT_SCENE_RUNTIME_END */
+/* 이번 주 자금 상황 (0926) — 경과 보고를 끝까지 봤거나 '한 번에 보기'를 누르면 한 번 뜬다.
+   줄마다 차례로 드러나며 멘탈리티 상승 효과음을 쓴다. 다 드러나야 확인을 누를 수 있다. */
+function finPopupShow(){
+  const fin = UI._fin;
+  if(!fin || UI._finShown) return;
+  const box = $("#modalRoot .modal");
+  if(!box) return;
+  UI._finShown = true;
+  const rep = $("#repOk"); if(rep) rep.disabled = false;
+  const sg = v=> `${v>0?"+":v<0?"-":""}${fmt(Math.abs(v))} G`;
+  const rows = [
+    {n:"주 시작 자금", v:fin.g0, base:true},
+    {n:"훈련 비용", v:-fin.train},
+    {n:"의뢰 보수", v:fin.job},
+    {n:"유지비", v:-fin.upkeep},
+    {n:"이자 상환", v:-fin.interest}
+  ];
+  if(fin.other) rows.push({n:"원정 · 기타", v:fin.other});
+  rows.push({n:"비용 증감 총합", v:fin.g1 - fin.g0, sum:true});
+  rows.push({n:"주 완료 후 자금", v:fin.g1, base:true, end:true});
+  const el = document.createElement("div");
+  el.className = "job-intro fin-pop";
+  el.innerHTML = `<div class="ji-card fin-card" role="dialog" aria-modal="true" aria-label="이번 주 자금 상황">
+    <div class="fin-head"><div class="eyebrow">경과 보고</div><h3>이번 주 자금 상황</h3></div>
+    <div class="fin-rows">${rows.map((r,i)=>`<div class="fin-row${r.sum?" sum":""}${r.end?" end":""}" data-fin="${i}">
+      <span>${r.n}</span><b style="color:${r.base ? (r.v<0? "var(--bad)" : "var(--text)") : r.v>0? "var(--ok)" : r.v<0? "var(--bad)" : "var(--dim)"}">${r.base? `${fmt(r.v)} G` : sg(r.v)}</b></div>`).join("")}</div>
+    <div class="ji-btn"><button class="btn primary" id="finOk" disabled>확인</button></div></div>`;
+  box.appendChild(el);
+  const ok = el.querySelector("#finOk");
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let i = 0;
+  const step = ()=>{
+    if(!el.isConnected) return;
+    const row = el.querySelector(`[data-fin="${i}"]`);
+    if(row){
+      row.classList.add("on");
+      if(sfxGain() > 0){ const a = new Audio(REPORT_STATUP); a.volume = sfxGain(); a.play().catch(()=>{}); }
+    }
+    i++;
+    if(i < rows.length) setTimeout(step, reduced ? 120 : 420);
+    else { ok.disabled = false; ok.focus(); }
+  };
+  setTimeout(step, 250);
+  ok.onclick = ()=> el.remove();
+}
 function showReport(r){
   const ph = PHASES[r.startPhase];
   const range = r.ranTo - r.startWeek <= 1 ? `${r.startWeek+1}주` : `${r.startWeek+1}~${r.ranTo}주`;
@@ -5620,7 +5840,7 @@ function showReport(r){
     if(!c) return null;
     const dPow = corePower(c)-o.power, dCond = c.cond-o.cond, dLv = c.level-o.level, dExp = (c.totalExp||0)-o.totalExp;
     const dEv = (c.eval||0)-(o.ev||0);
-    const ments = MENTAL.map(m=>({m, d:c.ment[m.k]-o.ment[m.k]})).filter(x=>x.d>=.05)
+    const ments = MENTAL.map(m=>({m, d:c.ment[m.k]-o.ment[m.k]})).filter(x=>Math.abs(x.d)>=.05)
       .sort((a,b)=>b.d-a.d);
     return {o,c,dPow,dCond,dLv,dExp,dEv,ments, dRel:(c.relics||[]).filter(Boolean).length-o.relics};
   }).filter(Boolean).sort((a,b)=> b.dPow-a.dPow);
@@ -5628,10 +5848,10 @@ function showReport(r){
   const lvUps = rows.reduce((a,x)=>a+x.dLv,0);
   const dlg = r.daylog || [];
   const html = `
-    <div class="panel-h"><h2 style="font-size:18px">${r.startYear}년 ${ph.n} ${range} 경과 보고</h2>
+    <div class="panel-h"><h2 style="font-size:18px">${yrName(r.startYear)} ${ph.n} ${range} 경과 보고</h2>
       <span class="hint">${esc(actLine)}</span></div>
     ${reportSceneShell(r.scenes || [], dlg)}
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px" hidden>
       <span class="pill">자금 ${dl(r.gold)}</span>
       <span class="pill">명성 ${dl(r.fame)}</span>
       <span class="pill">레벨업 ${lvUps}회</span>
@@ -5658,7 +5878,7 @@ function showReport(r){
           ${(x.c._exp||0)>0? `<span style="color:var(--brass)">원정 ${x.c._exp}회</span>`:""}</div>`:""}
         ${Math.abs(x.dEv)>=.05? `<div class="rrow"><span>진로 평가</span><b class="num">${Math.round(x.o.ev)} → ${Math.round(x.c.eval)}</b>${dl(x.dEv,"",1)}</div>`:""}
         ${x.dRel? `<div class="rrow"><span>유물</span><b>${x.dRel>0?"장착":"해제"} ${Math.abs(x.dRel)}개</b></div>`:""}
-        <div class="rmt">${x.ments.length? x.ments.map(y=>`<span class="fxi ${x.c.focus===y.m.k?"foc":"b"}">${x.c.focus===y.m.k?"◆ ":""}${y.m.n} ${dl(y.d,"",1)}</span>`).join("")
+        <div class="rmt">${x.ments.length? x.ments.map(y=>`<span class="fxi b"${y.d<0?' style="color:var(--bad)"':""}>${y.m.n} ${dl(y.d,"",1)}</span>`).join("")
           : `<span style="color:var(--dim);font-size:11px">멘탈리티 변화 없음</span>`}</div>
       </div>`).join("")}
     </div>
@@ -5673,7 +5893,10 @@ function showReport(r){
 
     </div>`;
   showModal(html, ()=>{
+    UI._fin = r.fin || null; UI._finShown = false;
+    if(UI._fin && $("#repOk")) $("#repOk").disabled = true;
     reportSceneBind(r.scenes || []);
+    if(UI._fin && !$("#drStage")) finPopupShow();      // 재생할 장면이 없으면 바로
     $("#repOk").onclick = ()=>{
       if(UI._dlT){ clearTimeout(UI._dlT); UI._dlT=null; }
       closeModal();
@@ -5723,7 +5946,7 @@ const EXPED_COND = 1;                         // 전투 한 판당 컨디션 소
 function dgExp(d){ return Math.round(d.exp * EXPED_EXP_MUL); }
 function dgFame(d){ return Math.round((d.fameClear||0) * EXPED_RWD_MUL); }
 function dgKarma(d){ return (d.karma||0) * EXPED_RWD_MUL; }
-function dgGold(d){ return (EXPED_GOLD + d.tier*EXPED_GOLD_TIER) * (d.goldMul||1); }
+function dgGold(d){ return (EXPED_GOLD + d.tier*EXPED_GOLD_TIER) * (d.goldMul!=null ? d.goldMul : 1); }   // goldMul 0 = 자금 없음 (학원 지하 수련장)
 function expedInit(dg, team, TM){
   const avgStam = team.reduce((a,s)=>a+mentEff(s).stam,0)/team.length;
   const avgWill = team.reduce((a,s)=>a+mentEff(s).will,0)/team.length;
@@ -5771,12 +5994,7 @@ function expedFinish(E){
     const per = clamp(dg.relicP||.2, 0, 1);
     for(let i=0;i<res.reached;i++){ if(RNG() < per) drop(); }
     for(let i=0;i<(res.muscleN||0);i++) drop();          // 그뉵이용 — 유물 확정
-    /* 완주했는데 한 개도 안 나오면 빈손으로 돌려보내지 않는다 —
-       그 원정지에서 나올 수 있는 등급 중 하나로 한 개를 보장한다 */
-    if(res.reached >= dg.secs && !res.relics.length){
-      drop();
-      res.relicSafe = true;
-    }
+    /* 완주(보스 처치) 시 유물 보장은 없앴다 (0926) — 구간마다 확률로만 나온다 */
   }
   const ups=[];
   if(res.reached>0){
@@ -5806,7 +6024,7 @@ function expedFinish(E){
   }
   res.relics.forEach(r=> addRelicToPool(r));
   levelReport(ups);
-  logE(`원정 — <b>${dg.n}</b> ${res.reached}/${dg.secs}구간 도달.${res.muscleN? ` <b style="color:var(--brass)">그뉵이용 ${res.muscleN}회 격파!</b> 그 구간 경험·자금 ×${MUSCLE_RWD} · 유물 확정.`:""} 경험 ${fmt(res.exp)} · 자금 +${fmt(res.gold)}${res.fameGain? ` · <b>완주</b> 학원 명성 +${res.fameGain}`:""} · 유물 ${res.relics.length}개${res.charmN? ` <span style="color:var(--brass)">(부적 +${res.charmN})</span>`:""}${res.relicSafe? " <span style=\"color:var(--brass)\">(완주 보장)</span>":""}${res.karma? ` · <b style="color:var(--bad)">업보 +${res.karma.toFixed(1)}</b>`:""}${(res.evalGain&&res.evalGain.length)? ` · 진로 평가 ${res.evalGain.join(", ")}`:""}${res.stopped? ` (${res.stopped})`:""}`, res.reached>=dg.secs?"good":(res.stopped?"bad":""));
+  logE(`원정 — <b>${dg.n}</b> ${res.reached}/${dg.secs}구간 도달.${res.muscleN? ` <b style="color:var(--brass)">그뉵이용 ${res.muscleN}회 격파!</b> 그 구간 경험·자금 ×${MUSCLE_RWD} · 유물 확정.`:""} 경험 ${fmt(res.exp)}${res.gold? ` · 자금 +${fmt(res.gold)}`:""}${res.fameGain? ` · <b>완주</b> 학원 명성 +${res.fameGain}`:""} · 유물 ${res.relics.length}개${res.charmN? ` <span style="color:var(--brass)">(부적 +${res.charmN})</span>`:""}${res.relicSafe? " <span style=\"color:var(--brass)\">(완주 보장)</span>":""}${res.karma? ` · <b style="color:var(--bad)">업보 +${res.karma.toFixed(1)}</b>`:""}${(res.evalGain&&res.evalGain.length)? ` · 진로 평가 ${res.evalGain.join(", ")}`:""}${res.stopped? ` (${res.stopped})`:""}`, res.reached>=dg.secs?"good":(res.stopped?"bad":""));
   return res;
 }
 function expedLoop(E, quick, done){
@@ -5835,7 +6053,7 @@ const MAP_LV_ADD = 7, MAP_RWD_MUL = 2;
 function mapOn(){ return !!(S && S.items && S.items.worldmap); }
 function dgView(d){
   if(!mapOn() || !d || d.otherworld) return d;
-  return Object.assign({}, d, {n:"이계·"+d.n, lv:d.lv+MAP_LV_ADD, exp:d.exp*MAP_RWD_MUL, goldMul:MAP_RWD_MUL, otherworld:true});
+  return Object.assign({}, d, {n:"이계·"+d.n, lv:d.lv+MAP_LV_ADD, exp:d.exp*MAP_RWD_MUL, goldMul:(d.goldMul!=null ? d.goldMul : 1)*MAP_RWD_MUL, otherworld:true});
 }
 function expedDgList(){ return DUNGEONS.filter(d=> S.fame >= d.needFame).map(dgView); }
 /* 처음 열 때 어디를 골라 둘까 — 팀 평균 레벨로 감당되는 가장 깊은 곳.
@@ -5857,11 +6075,11 @@ function expedDone(R, bonus, res, TM){
   dlog(`${D}요일은 ${res.team.map(n=>esc(n)).join(", ")}${iga(res.team[res.team.length-1]||"")} <b>${esc(res.dg.n)}</b>로 원정을 떠나 <b>${res.reached}/${res.dg.secs}구간</b>까지 나아가 ${ok? `<b style="color:var(--ok)">완주했다!</b>` : `<b style="color:var(--bad)">돌아왔다.</b>`}${chainTag(bonus)}`, "head");
   if(res.muscleN) dlog(`<b style="color:var(--brass)">그뉵이용 출현!</b> 드래곤 슬라임을 ${res.muscleN}회 쓰러뜨려 그 구간 경험·자금이 ${MUSCLE_RWD}배, 유물 하나가 확정으로 떨어졌다.`, "sub");
   if(res.stopped) dlog(`<span style="color:var(--dim)">${esc(res.stopped)}</span>`, "sub");
-  dlog(`경험 <b>${fmt(Math.round(res.exp))}</b> · 자금 <b style="color:var(--brass)">+${fmt(res.gold)}</b>${res.fameGain? ` · 명성 <b style="color:var(--ok)">+${fmt(res.fameGain)}</b>`:""} · 유물 <b>${res.relics.length}</b>개${res.charmN? ` <span style="color:var(--brass)">(부적 +${res.charmN})</span>`:""}${res.relicSafe? ` <span style="color:var(--brass)">(완주 보장)</span>`:""}${res.karma? ` · <span style="color:var(--bad)">업보 +${res.karma.toFixed(1)}</span>`:""}`, "sub");
+  dlog(`경험 <b>${fmt(Math.round(res.exp))}</b>${res.gold? ` · 자금 <b style="color:var(--brass)">+${fmt(res.gold)}</b>`:""}${res.fameGain? ` · 명성 <b style="color:var(--ok)">+${fmt(res.fameGain)}</b>`:""} · 유물 <b>${res.relics.length}</b>개${res.charmN? ` <span style="color:var(--brass)">(부적 +${res.charmN})</span>`:""}${res.relicSafe? ` <span style="color:var(--brass)">(완주 보장)</span>`:""}${res.karma? ` · <span style="color:var(--bad)">업보 +${res.karma.toFixed(1)}</span>`:""}`, "sub");
   RUN.expeds.push(res);
   UI.lastExped = res;
   reportRecord(day, TR.exped, bonus, "exped", {}, S.students.filter(s=>res.ids.includes(s.id)), {}, Math.max(0, DAYLOG.length-3),
-    {facility:"arena", reward:`${res.dg.n} · ${res.reached}/${res.dg.secs}구간 · 유물 ${res.relics.length}개 · 자금 +${fmt(res.gold)}`});
+    {facility:"arena", reward:`${res.dg.n} · ${res.reached}/${res.dg.secs}구간 · 유물 ${res.relics.length}개${res.gold? ` · 자금 +${fmt(res.gold)}`:""}`});
   const skip = new Set(res.ids);
   res.ids.forEach(id=>{ const s=S.students.find(x=>x.id===id); if(!s) return; s._exp=(s._exp||0)+1;
     s.expedN = s.expedN||{}; s.expedN[res.dg.id] = (s.expedN[res.dg.id]||0)+1; });   // 졸업 증서용 — 원정지별 횟수
@@ -5877,7 +6095,7 @@ function expedDay(R, bonus){
   const dgs = expedDgList(), tms = expedTeams();
   if(!tms.length){
     const rst = expedFullTeams().some(t=> teamResting(t).length);
-    dlog(`${D}요일 <b>원정 무산</b> — ${rst? "나갈 수 있는 팀이 모두 <b>휴식 집중</b> 중이다" : "3인으로 채워진 팀이 없다"}. 자율 훈련으로 대신했다.`, "bad");
+    dlog(`${D}요일 <b>원정 무산</b> — ${rst? "나갈 수 있는 팀이 모두 <b>휴식</b> 중이다" : "3인으로 채워진 팀이 없다"}. 자율 훈련으로 대신했다.`, "bad");
     dayRun(TR.free, bonus, day, {head:`${D}요일은 <b>자율 훈련</b>으로 하루를 보냈다.`, mark:markOf(R.days[day])});
     dlog("", "gap"); R.day++; weekRunStep(); return;
   }
@@ -5909,7 +6127,7 @@ function renderExpedPick(R, bonus){
   const dg = dgs.find(d=>d.id===P.dg) || dgs[0];
   const TM = tms.find(t=>t.n===P.tm) || tms[0];
   const mem = teamMembers(TM);
-  showModal(`<div class="cerhead"><div class="eyebrow">${S.year}년 ${PHASES[S.phase].n} ${S.week+1}주 · ${D}요일</div>
+  showModal(`<div class="cerhead"><div class="eyebrow">${yrName(S.year)} ${PHASES[S.phase].n} ${S.week+1}주 · ${D}요일</div>
       <h2 style="font-size:24px;margin-top:2px">원정 파견</h2>
       ${bonus>0? `<p style="color:var(--muted);font-size:13px;margin-top:6px"><b style="color:var(--brass)">${Math.round(bonus*100)}% 체인 보너스 적용 중</b></p>`:""}</div>
     <div class="eyebrow" style="margin-bottom:6px">원정지</div>
@@ -5917,7 +6135,7 @@ function renderExpedPick(R, bonus){
       ${dgs.map(d=>`<button class="opt ${d.id===dg.id?"sel":""}" data-xdg="${d.id}">
         <div class="on">${esc(d.n)} <span class="tag">${d.secs}구간</span><span class="price">Lv.${d.lv}</span></div>
         <div class="od">${esc(d.d)}</div>
-        <div class="od" style="color:var(--dim)">구간당 경험 ${fmt(dgExp(d))} · 자금 ${fmt(dgGold(d))} · 유물 ${Math.round(d.relicP*100)}%${dgKarma(d)? ` · 업보 ${dgKarma(d).toFixed(1)}`:""}</div>
+        <div class="od" style="color:var(--dim)">구간당 경험 ${fmt(dgExp(d))}${dgGold(d)? ` · 자금 ${fmt(dgGold(d))}`:""} · 유물 ${Math.round(d.relicP*100)}%${dgKarma(d)? ` · 업보 ${dgKarma(d).toFixed(1)}`:""}</div>
       </button>`).join("")}
     </div>
     <div class="eyebrow" style="margin-bottom:6px">파견 팀</div>
@@ -5926,9 +6144,9 @@ function renderExpedPick(R, bonus){
         const rest = teamResting(t);
         if(rest.length) return `<div class="opt locked" style="cursor:default">
           <div class="on">${esc(teamLabel(t))} <span class="tag">${formOf(t.form).n}</span>
-            <span class="price" style="color:var(--ok)">휴식 집중 ${rest.length}명</span></div>
+            <span class="price" style="color:var(--ok)">휴식 ${rest.length}명</span></div>
           ${xtmMemHtml(teamMembers(t))}
-          <div class="od" style="color:var(--dim)">휴식 집중인 학생은 원정에 나가지 않는다 — 학생 탭에서 집중을 풀어야 파견할 수 있다.</div></div>`;
+          <div class="od" style="color:var(--dim)">휴식으로 둔 학생은 원정에 나가지 않는다 — 학생 탭에서 개인 행동을 바꿔야 파견할 수 있다.</div></div>`;
         return `<button class="opt ${t.n===TM.n?"sel":""}" data-xtm="${t.n}">
           <div class="on">${esc(teamLabel(t))} <span class="tag">${formOf(t.form).n}</span></div>
           ${xtmMemHtml(teamMembers(t))}
@@ -6233,7 +6451,7 @@ const SPRING_LV_OFF = -3;   // 신인전 상대 기준 레벨 = 우리 1·2학�
 function startSpringTour(){
   const pool = S.students.filter(s=>s.year<=2);
   UI.tour = {
-    kind:"spring", title:`${S.year+1}년 봄 신인전`, stage:"prep", _prepOpen:true,
+    kind:"spring", title:`${yrName(S.year+1)} 봄 신인전`, stage:"prep", _prepOpen:true,
     myTeams:[[]], entryTeams:[], round:0, maxRound:1, results:[], matchIdx:0,
     opps: (()=>{ const nm = acadNames(4);
       if(portalOn()) return Array.from({length:4},(_,i)=> ({name:nm[i], teams:[portalTeam(PORTAL_SPEC.spring)], tier:PORTAL_TIER}));
@@ -6494,7 +6712,7 @@ function ladderAcademy(step, round, name){
 }
 function ladderTitle(step){
   const c = LADDER[step];
-  return (step==="qual"||step==="final") ? `${S.year}년 ${tierOf().n} ${c.n}` : `${S.year}년 ${c.n}`;
+  return (step==="qual"||step==="final") ? `${yrName(S.year)} ${tierOf().n} ${c.n}` : `${yrName(S.year)} ${c.n}`;
 }
 const CUP_ROUND_NAME = ["16강","8강","4강","결승"];
 function newFallRun(){ return {step:"city", alive:true, entry:null, done:[]}; }
@@ -6909,6 +7127,8 @@ function endPhase(){
   advancePhase();
 }
 function advancePhase(){
+  payUpkeep();   // 계절이 끝날 때 시설 유지비
+  payInterest(); // 빚 이자
   const i = PHASE_ORDER.indexOf(S.phase);
   if(S.phase==="fall"){ graduateAll(); }
   if(S.phase==="winter"){ enrollAll(); S.year++; S.phase="spring"; }
@@ -6920,6 +7140,9 @@ function advancePhase(){
     queueCeremony({type:"fall", year:S.year, weeks:phaseWeeks("fall")});
   }
   if(S.phase==="summer"){
+    const jb = S.students.filter(x=> actNorm(x.focus)==="job");
+    jb.forEach(x=> x.focus = "train");
+    if(jb.length) logE(`개인 행동 — 여름에는 의뢰를 받을 수 없다. <b>${jb.length}명</b>의 의뢰를 훈련으로 바꿨다: ${jb.map(x=>dnH(x)).join(", ")}`, "");
     const drop = (S.hand||[]).filter(c=> c && c.t==="exped").length;
     S.hand = (S.hand||[]).filter(c=> !(c && c.t==="exped"));
     handRefill();
@@ -6934,7 +7157,7 @@ function advancePhase(){
                    grad:((S.pendingGrad && S.pendingGrad.list)? S.pendingGrad.list.length : 0)});
     /* 3년차 겨울 — 3학년이 진로 준비로 스케줄에서 빠진다는 안내 한 장 (스카우트 안내 다음) */
     if(S.year >= 3 && !tutSeen("11")) queueCeremony({type:"tut", page:"11"}); }
-  if(S.phase==="spring"){ logE(`${S.year}년 신학기가 시작되었다. 신입생이 학원에 합류했다.`,"big"); }
+  if(S.phase==="spring"){ logE(`${yrName(S.year)} 신학기가 시작되었다. 신입생이 학원에 합류했다.`,"big"); }
   save();
 }
 /* 마스터 육성 포인트 — 여름 합숙을 마치고 가을에 들어설 때 받는다 */
@@ -6975,7 +7198,7 @@ function grantMasterPts(){
 }
 function insightCeremony(c){
   return `<div class="cerhead">
-      <div class="eyebrow">${c.year}년 여름 합숙 · 결산</div>
+      <div class="eyebrow">${yrName(c.year)} 여름 합숙 · 결산</div>
       <h2 style="font-size:26px;margin-top:2px">깨달은 것이 있다</h2>
       <p style="color:var(--muted);font-size:13px;margin-top:6px">${esc(c.ins.t)}</p>
     </div>
@@ -7537,7 +7760,7 @@ let ERRLOG = (()=>{ try{ return JSON.parse(localStorage.getItem(ERR_KEY)||"[]");
 function errWhere(){
   try{
     return [ "탭 " + (UI.view||"?"),
-             S.year? `${S.year}년 ${(PHASES[S.phase]||{}).n||S.phase} ${S.week+1}주` : "",
+             S.year? `${yrName(S.year)} ${(PHASES[S.phase]||{}).n||S.phase} ${S.week+1}주` : "",
              UI.wrun? `주간진행 ${UI.wrun.day+1}일차` : "",
              $("#modalRoot") && $("#modalRoot").innerHTML ? "팝업 열림" : "" ].filter(Boolean).join(" · ");
   }catch(e){ return "?"; }
@@ -7657,10 +7880,12 @@ function render(){
   if(AUD_PV && UI.view !== "opt"){ AUD_PV = 0; audOver(null); }
   $("#acadName").textContent = S.acadName;
   $("#acadSub").textContent = `${tierOf().n} · ${fameTitle(S.fame).n} · 지도 ${S.master.lead} / 정보 ${S.master.info} / 호소 ${S.master.net}`;
-  $("#mDate").textContent = `${S.year}년 ${PHASES[S.phase].n} ${Math.min(S.week+1,PHASES[S.phase].weeks)}주`;
+  $("#mDate").textContent = `${yrName(S.year)} ${PHASES[S.phase].n} ${Math.min(S.week+1,PHASES[S.phase].weeks)}주`;
   $("#mFame").textContent = fmt(S.fame);
   $("#mTitle").textContent = fameTitle(S.fame).n;
   $("#mGold").textContent = fmt(S.gold);
+  $("#mGold").style.color = S.gold < 0 ? "var(--bad)" : "";
+  { const md = $("#mDebt"); if(md){ md.textContent = debtOf() ? `(${fmt(debtOf())})` : ""; md.hidden = !debtOf(); } }
   $("#mSp").textContent = fmt(spOf());
   $("#mCnt").textContent = S.students.length;
 
@@ -7735,7 +7960,7 @@ function renderMission(){
   if(!c){
     box.innerHTML = `<div class="panel-h"><h2 style="font-size:13px">지침</h2><span class="hint">완수</span></div>
       <div class="mdone">모든 지침을 완수했다. 이제 학원이 어디까지 갈지는 당신이 정한다.</div>
-      ${done.map(d=>`<div class="mrowdone">✓ ${esc(d.n)} <span>${d.year}년</span></div>`).join("")}`;
+      ${done.map(d=>`<div class="mrowdone">✓ ${esc(d.n)} <span>${yrName(d.year)}</span></div>`).join("")}`;
     return;
   }
   const over = dl && S.year > dl;
@@ -7744,10 +7969,10 @@ function renderMission(){
     <div class="panel-h"><h2 style="font-size:13px">지침</h2><span class="hint">${S.mission.idx+1} / ${MISSIONS.length}</span></div>
     <div class="mtitle">${esc(c.n)}</div>
     <div class="mdesc">${esc(c.d)}</div>
-    ${dl? `<div class="mdue ${over?"over":left<=0?"warn":""}">${over? `기한 초과 — ${dl}년까지였다` : `기한 ${dl}년 가을까지 · ${left===0?"올해가 마지막":`${left}년 남음`}`}</div>`
+    ${dl? `<div class="mdue ${over?"over":left<=0?"warn":""}">${over? `기한 초과 — ${yrName(dl)}까지였다` : `기한 ${yrName(dl)} 가을까지 · ${left===0?"올해가 마지막":`${left}년 남음`}`}</div>`
         : `<div class="mdue">기한 없음</div>`}
     <div class="mhint">${esc(c.hint)}</div>
-    ${done.length? `<div class="rule" style="margin:10px 0 6px"></div>${done.map(d=>`<div class="mrowdone">✓ ${esc(d.n)} <span>${d.year}년</span></div>`).join("")}`:""}`;
+    ${done.length? `<div class="rule" style="margin:10px 0 6px"></div>${done.map(d=>`<div class="mrowdone">✓ ${esc(d.n)} <span>${yrName(d.year)}</span></div>`).join("")}`:""}`;
 }
 /* 학원 일지 — 기본은 한 줄로 접어 두고 가장 최근 기록만 보여준다 (0924). 펼침 여부는 이번 접속 동안만 기억한다 */
 function logFoldPaint(){
@@ -7789,7 +8014,7 @@ function viewHome(){
     <div class="panel-h"><h2>${esc(S.acadName)}</h2></div>
     <div class="homegrid">
       <div>
-        <div class="kv"><span class="k">현재</span><span class="v">${S.year}년 ${next.n} ${S.week+1}주차</span></div>
+        <div class="kv"><span class="k">현재</span><span class="v">${yrName(S.year)} ${next.n} ${S.week+1}주차</span></div>
         <div class="kv"><span class="k">시즌 잔여</span><span class="v num">${remain}주</span></div>
         <div class="kv"><span class="k">다음 행사</span><span class="v">${nextEvent}</span></div>
         <div class="kv"><span class="k">학년 구성</span><span class="v num">1학년 ${byYear[0]} / 2학년 ${byYear[1]} / 3학년 ${byYear[2]}</span></div>
@@ -7954,7 +8179,7 @@ function studentDetail(s, opt){
     <div class="stuhead">
     ${faceHas(s.job)? faceHTML(s.job, dn(s)) : (sprHas(s.job)? `<div class="sprbox">${sprHTML(s.job,"idle",1,{p:sprPalOf(s)})}</div>`:"")}
     <div class="panel-h"><h2>${dnH(s)}${G? "" : `<button class="btn icon" id="btnStName" title="이름 변경">${ICON_EDIT}</button>`}</h2>
-      <span>${G? `<span class="tag" style="color:var(--brass);border-color:var(--brass)">${G.year}년 졸업</span>` : teamTag(s)} ${gradeTag(s.grade)} ${roleTag(s.job)} <span class="tag" style="white-space:normal">${ROLE_LABEL[J.role]}${J.sub? " · "+J.sub:""}</span> ${G? "" : `<span class="tag yr">${s.year}학년</span>`} <span class="tag">Lv.${s.level}</span> ${G? "" : bondTags(s)}</span>
+      <span>${G? `<span class="tag" style="color:var(--brass);border-color:var(--brass)">${yrName(G.year)} 졸업</span>` : teamTag(s)} ${gradeTag(s.grade)} ${roleTag(s.job)} <span class="tag" style="white-space:normal">${ROLE_LABEL[J.role]}${J.sub? " · "+J.sub:""}</span> ${G? "" : `<span class="tag yr">${s.year}학년</span>`} <span class="tag">Lv.${s.level}</span> ${G? "" : bondTags(s)}</span>
       <span class="hint">${esc(J.desc)}</span></div>
     </div>
     ${s.note? `<div class="cerwhy" style="margin-bottom:12px">입학 당시 — ${esc(s.note)}</div>`:""}
@@ -7973,14 +8198,14 @@ function studentDetail(s, opt){
           <span class="v num mentv${(v>MENT_SOFT||full)?" over":""}">${mentalGradeHTML(v)}${Math.round(v)}</span></div>`;
         }).join("")}
         ${G? "" : `<div style="margin-top:10px">
-          <div class="eyebrow" style="margin-bottom:4px">집중 트레이닝 분야</div>
+          <div class="eyebrow" style="margin-bottom:4px">개인 행동</div>
           <select id="focusSel" style="width:100%;background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:5px">
-            <option value="free" ${s.focus==="free"?"selected":""}>지정 없음 (개인 훈련 안 함)</option>
-            <option value="rest" ${s.focus==="rest"?"selected":""}>휴식 집중 — 스케줄 불참, 컨디션 +${restFocusWeek()}</option>
-            ${MENTAL.filter(m=>!m.fixed).map(m=>`<option value="${m.k}" ${s.focus===m.k?"selected":""}>${m.n} — ${m.d}</option>`).join("")}
+            ${actKeys().map(k=>`<option value="${k}" ${actOf(s)===k?"selected":""}>${ACT[k].n} — ${k==="rest"? `스케줄 불참, 컨디션 +${restFocusWeek()}/주` : k==="job"? `보수 ${fmt(jobPay())}G/일 · 컨디션 -${JOB_COND}/일` : ACT[k].d}</option>`).join("")}
           </select>
-          <div style="font-size:11.5px;color:var(--dim);margin-top:4px">학원 스케줄과 <b>별개로</b> 컨디션을 추가 소모해 이 분야를 단련한다.
-            ${isRestFocus(s)? ` <b style="color:var(--ok)">휴식 집중 중 — 학원 스케줄에 참여하지 않고 매주 컨디션을 ${restFocusWeek()} 회복한다.</b>`:""}</div>
+          <div style="font-size:11.5px;color:var(--dim);margin-top:4px">${actOf(s)==="train"? `오늘 기준 가장 약한 분야: <b>${mentName(weakestMent(s))}</b> — 학원 스케줄과 <b>별개로</b> 컨디션을 추가 소모해 단련한다.`
+            : actOf(s)==="auto"? `매일 아침 컨디션을 보고 정한다 — ${AUTO_REST_BELOW-1} 이하면 휴식, ${AUTO_REST_BELOW} 이상이면 훈련${jobOpen()? "·의뢰 반반":""}.`
+            : actOf(s)==="job"? `그 주의 의뢰를 오후에 수행한다. 멘탈리티 하나가 조금 오르고 하나는 내린다.`
+            : `<b style="color:var(--ok)">휴식 중 — 학원 스케줄에 참여하지 않고 매주 컨디션을 ${restFocusWeek()} 회복한다.</b>`}</div>
         </div>`}
       </div>
       <div>
@@ -7997,11 +8222,11 @@ function studentDetail(s, opt){
         ${G? "" : `<div class="kv"><span class="k">컨디션</span><span class="v num">${Math.round(s.cond)} <span style="color:var(--${condEff(s.cond).tone})">훈련 효율 ${condEff(s.cond).pct}%</span></span></div>
         <div class="kv"><span class="k">훈련 성공률</span><span class="v num" style="color:var(--${isInjured(s)?"bad":trainSuccessP(s,false)>=1?"ok":"warn"})">${Math.round(trainSuccessP(s,false)*100)}%</span></div>
         ${isInjured(s)? `<div class="kv"><span class="k">부상</span><span class="v" style="color:var(--bad)">회복까지 <b class="num">${injWeeks(s)}주</b> · 잠재력 외 멘탈리티 50%</span></div>`:""}
-        <div class="kv"><span class="k">집중 분야</span><span class="v">${s.focus==="free"?"지정 없음":isRestFocus(s)?"휴식 집중":MENTAL.find(m=>m.k===s.focus).n}</span></div>`}
+        <div class="kv"><span class="k">개인 행동</span><span class="v">${actName(actOf(s))}</span></div>`}
       </div>
       <div>
         <div class="eyebrow" style="margin-bottom:6px">학적</div>
-        ${G? `<div class="kv"><span class="k">졸업</span><span class="v num">${G.year}년 · 최종 Lv.${G.lv}</span></div>
+        ${G? `<div class="kv"><span class="k">졸업</span><span class="v num">${yrName(G.year)} · 최종 Lv.${G.lv}</span></div>
           ${G.trust!=null? `<div class="kv"><span class="k">신뢰 단계</span><span class="v" style="color:var(--brass)">${trustBand(G.trust).step}</span></div>`:""}
           <div class="kv"><span class="k">업보</span><span class="v num" style="color:var(--${(G.karma|0)>0?"bad":"dim"})">${fmt(G.karma||0)}</span></div>
           <div class="kv"><span class="k">진로 평가</span><span class="v num" style="color:var(--brass)">${Math.round(G.score||0)}</span></div>
@@ -8090,15 +8315,24 @@ function cardEffLine(tr){
 function fxHtml(tr){
   return (tr.fx||[]).map(f=>`<div class="fxl${f[2]?" bad":""}">${esc(f[0])}<b>${"+".repeat(f[1])}</b></div>`).join("");
 }
+/* 훈련 비용 (0926) — 카드 한 장을 쓸 때마다. 휴식 · 자율 훈련은 무료 · 기본 훈련 10G · 원정 파견과 고급 훈련(아이템 해금) 20G */
+const CARD_COST = 10, CARD_COST_ADV = 20, CARD_COST_FREE = ["free"];
+function cardCost(t){
+  const id = (t && t.t) || t, tr = TR[id];
+  if(!tr || tr.rest || CARD_COST_FREE.includes(id)) return 0;
+  return (tr.need || tr.special==="exped") ? CARD_COST_ADV : CARD_COST;
+}
+function cardCostText(t){ const c = cardCost(t); return c ? `${fmt(c)} G` : ""; }
+function weekCardCost(days){ return (days||[]).reduce((a,c)=> a + (c ? cardCost(c) : 0), 0); }
 function cardHtml(c){
   const tr = TR[c.t] || TR.free, col = cardColor(c), mk = markOf(c);
   return `<div class="card${mk?" marked":""}" draggable="true" data-card="${c.u}" style="--cc:${col.c};--cs:${col.s}${
-      mk? `;--mk:${mk.c}`:""}" title="${esc(tr.d)}${mk? ` — ${mk.i} ${mk.n}: ${mk.d}`:""}">
+      mk? `;--mk:${mk.c}`:""}" title="${esc(tr.n)}${cardCost(c)? ` · 비용 ${fmt(cardCost(c))} G`:""}${mk? ` — ${mk.i} ${mk.n}: ${mk.d}`:""}">
     ${mk? `<span class="cmark" title="${esc(mk.n)} — ${esc(mk.d)}">${mk.i}</span>`:""}
     ${(()=>{ const L = clamp(cardLeft(c), 1, CARD_LIFE); return `<span class="clife l${L}" title="쓰지 않으면 ${L<=1? "이번 주가 끝날 때" : L+"주 뒤"} 사라진다"><i></i>${cardLeftText(L)}</span>`; })()}
     <div class="ctop"><span class="cdot"></span><span class="ccol">${col.n}</span></div>
     <div class="cname">${esc(tr.n)}</div>
-    <div class="cdesc">${esc(tr.d)}</div>
+    <div class="cdesc ccost">${cardCostText(c)}</div>
     <div class="cfx">${fxHtml(tr)}</div>
     <div class="ceff">${cardEffLine(tr)}</div>
   </div>`;
@@ -8136,8 +8370,8 @@ function chronBookmark(c,i,all){
   const tr=TR[c.t]||TR.free,col=cardColor(c),mk=markOf(c),life=clamp(cardLeft(c),1,CARD_LIFE);
   const tilt=(all&&all.length===9&&i===8)?8:[-4,2,-2,3,-3,1,-1,3,-2][i%9],   // 9장일 때 맨 오른쪽 카드는 오른쪽으로 8도
         rise=[3,12,0,9,3,13,1,9,5][i%9];
-  const title=tr.n+' · '+tr.d+' · '+cardLeftText(life)+' · '+cardEffLine(tr)+(mk?' · '+mk.n+': '+mk.d:'');
-  return `<div class="card chron-bookmark" draggable="true" data-card="${c.u}" title="${esc(title)}" aria-label="${esc(title)}" style="--cc:${col.c};--mk:${mk?mk.c:'transparent'};--paper:url('${CHRONICLE_ART['bookmark-paper-center']}');--order:${i+1};--tilt:${tilt}deg;--rise:${rise*1.05}px"><svg class="bookmark-thread" viewBox="0 0 60 45" aria-hidden="true"><path d="M51 36 C43 21 28 15 17 12 M49 35 Q55 32 53 37 Q50 40 48 35"/></svg><div class="bookmark-tape" data-life="${life}" aria-hidden="true"><b>${life}주 <small>남음</small></b></div><strong class="bookmark-name">${esc(tr.n)}</strong><p class="bookmark-desc">${esc(tr.d)}</p><div class="bookmark-stats">${fxHtml(tr)}</div><div class="bookmark-effect">${cardEffLine(tr)}</div>${chronTrainingArt(c.t)}${mk?`<span class="bookmark-mark">${mk.i}</span>`:''}</div>`;
+  const title=tr.n+(cardCost(c)?' · 비용 '+fmt(cardCost(c))+' G':'')+' · '+cardLeftText(life)+' · '+cardEffLine(tr)+(mk?' · '+mk.n+': '+mk.d:'');
+  return `<div class="card chron-bookmark" draggable="true" data-card="${c.u}" title="${esc(title)}" aria-label="${esc(title)}" style="--cc:${col.c};--mk:${mk?mk.c:'transparent'};--paper:url('${CHRONICLE_ART['bookmark-paper-center']}');--order:${i+1};--tilt:${tilt}deg;--rise:${rise*1.05}px"><svg class="bookmark-thread" viewBox="0 0 60 45" aria-hidden="true"><path d="M51 36 C43 21 28 15 17 12 M49 35 Q55 32 53 37 Q50 40 48 35"/></svg><div class="bookmark-tape" data-life="${life}" aria-hidden="true"><b>${life}주 <small>남음</small></b></div><strong class="bookmark-name">${esc(tr.n)}</strong><p class="bookmark-desc">${cardCostText(c)}</p><div class="bookmark-stats">${fxHtml(tr)}</div><div class="bookmark-effect">${cardEffLine(tr)}</div>${chronTrainingArt(c.t)}${mk?`<span class="bookmark-mark">${mk.i}</span>`:''}</div>`;
 }
 function chronHand(){
   // Only sort the presentation: preserve inventory order and card identity.
@@ -8162,13 +8396,13 @@ function viewPlan(){
   const students=S.students.slice(UI.chroniclePage*15,UI.chroniclePage*15+15);
   const slots=S.slots||[], ph=PHASES[S.phase];
   const days=DAY_N.map((day,i)=>{const c=slots[i],tr=c&&(TR[c.t]||TR.free),col=c&&cardColor(c),mk=c&&markOf(c),chain=chainOf(slots,i);
-    return `<div class="dslot chron-day ${c?'filled':''}" data-slot="${i}" style="--day-color:${col?col.c:'#9c8972'}"><b class="chron-weekday">${day}</b>${c?`<div class="chron-entry" draggable="true" data-card="${c.u}" title="클릭하면 손패로 돌아갑니다"><strong>${esc(tr.n)}</strong>${chronTrainingArt(c.t)}<small>${esc(tr.d)}</small></div>`:'<span class="chron-empty">무슨 훈련 메뉴를 준비해볼까?</span>'}${(mk||chain)?`<span class="chron-tail">${mk?`<span class="chron-mark" style="background:${mk.c}" title="${esc(mk.d)}">${mk.i}</span>`:''}${chain?`<span class="chron-chain">능률 +${Math.round(chain*100)}%</span>`:''}</span>`:''}${chronRule('chron-day-rule')}</div>`}).join('');
-  const focusControls=['btnFocusWeak','btnFocusStrong','btnFocusClear','btnRestAll','btnRest40','btnRest70','btnRestInj','btnFocusUndo','btnFocusPrev'];
-  return `<section class="chronicle" style="--book-art:url('${CHRONICLE_BOOK}')"><div class="chron-pages"><div class="chron-page chron-left"><header class="chron-masthead">${chronArt('crest','chron-crest')}<div class="chron-title-block"><h2>${esc(S.acadName)} 운영 일지</h2>${chronRule('chron-title-rule')}<div class="chron-daterow"><p class="chron-date">${S.year}년차 · ${ph.n} · ${Math.min(S.week+1,ph.weeks)}주차${chronRule('chron-date-rule')}</p><p class="chron-motto">좋은 용사는<br>하루아침에 만들어지지 않는다.<br><span>— 그리고,</span><br><span>오늘도, 조금 더.</span>${chronArt('leaf')}</p></div></div></header><div class="chron-intro"><p class="chron-note">새로운 한 주가 시작되었다. ${chronArt('leaf')}</p></div><div class="chron-toolbar">${take('#btnAuto')}${take('#btnClearSlots')}${take('#btnRest')}</div>${chronHeading('이번 주의 계획','chron-plan-heading','quill')}<div class="chron-days">${days}</div>${chronHeading('준비된 훈련 메뉴 <small>'+((S.hand||[]).length)+'장</small>','chron-hand-heading','ink')}<div class="chron-hand-title"></div>${chronHand()}</div><div class="chron-page chron-right"><header class="chron-focus-heading">${chronHeading('개인 집중 훈련','','watch')}<p>… 언젠가, 이 아이들이<br>세상을 더 좋은 곳으로 만들기를.</p></header><div class="chron-focus-tools">${['btnFocusWeak','btnRestAll','btnFocusClear','btnFocusPrev'].map(k=>inkLine('#'+k)).join('')}</div><div class="chron-students">${students.map(s=>`<div class="chron-student chron-st2"><button class="chron-person" data-sid="${esc(s.id)}" title="${esc(s.name)} 상세">${faceHTML(s.job,s.name)}</button><div class="chron-st-id"><strong>${esc(s.name)}</strong>${(()=>{const f=Math.round((1-trainSuccessP(s,false))*100);return `<span class="chron-fail ${f>0?'bad':''}" title="이번 주 훈련이 실패할 확률 — 컨디션 70 이상이면 0%">훈련 실패: <b>${f}%</b></span>`})()}</div><div class="chron-st-focus"><strong>집중</strong><button class="chron-focus-cycle" data-chron-cycle="${esc(s.id)}" title="누를 때마다 다음 목표로 바뀐다" aria-label="${esc(s.name)} 집중 목표 바꾸기 — 지금 ${esc(chronFocusName(s.focus))}"><span>${esc(chronFocusName(s.focus))}</span>${CHRON_CYCLE_ICON}</button></div><div class="chron-condition" title="컨디션 ${Math.round(s.cond)}"><i style="width:${clamp(s.cond,0,100)}%;background:${s.cond<40?'#b54a40':s.cond<70?'#ba8336':'#4d8a65'}"></i><span>${Math.round(s.cond)}</span></div></div>`).join('')||'<p>아직 등록된 학생이 없습니다.</p>'}</div><div class="chron-pagination" ${pages<=1?'hidden':''}><button data-chron-page="-1" ${UI.chroniclePage===0?'disabled':''}>이전</button><span>${UI.chroniclePage+1} / ${pages} · 전체 ${S.students.length}명</span><button data-chron-page="1" ${UI.chroniclePage+1>=pages?'disabled':''}>다음</button></div><div class="chron-condition-tools"></div><footer class="chron-funds">${chronArt('purse','chron-purse')}<span>자금 <b>${fmt(S.gold)} G</b></span></footer><div class="chron-actions">${inkBtn('#btnBookUse',`예지의 서 ×${bookCount()}`,'(훈련 메뉴 교체)')}${inkBtn('#btnWater2','초성수 주문',churchBought('water')?'이번 계절 소진':`컨디션 +${HOLY_WATER_COND} · ${fmt(holyWaterCost())} G`)}</div><div class="chron-seal-wrap">${take('#btnWeek')}</div></div></div>${chronArt('letter','chron-letter')}<nav class="chron-tabs"><button data-chron-nav="plan" aria-current="page">일지</button><button data-chron-nav="roster">학생</button><button data-chron-nav="facil">시설</button></nav></section>`;
+    return `<div class="dslot chron-day ${c?'filled':''}" data-slot="${i}" style="--day-color:${col?col.c:'#9c8972'}"><b class="chron-weekday">${day}</b>${c?`<div class="chron-entry" draggable="true" data-card="${c.u}" title="클릭하면 손패로 돌아갑니다"><strong>${esc(tr.n)}</strong>${chronTrainingArt(c.t)}<small>${cardCostText(c)}</small></div>`:'<span class="chron-empty">무슨 훈련 메뉴를 준비해볼까?</span>'}${(mk||chain)?`<span class="chron-tail">${mk?`<span class="chron-mark" style="background:${mk.c}" title="${esc(mk.d)}">${mk.i}</span>`:''}${chain?`<span class="chron-chain">능률 +${Math.round(chain*100)}%</span>`:''}</span>`:''}${chronRule('chron-day-rule')}</div>`}).join('');
+  const focusControls=['btnActTrain','btnActJob','btnFocusClear','btnRestAll','btnRest40','btnRest70','btnRestInj','btnFocusUndo','btnFocusPrev'];
+  return `<section class="chronicle" style="--book-art:url('${CHRONICLE_BOOK}')"><div class="chron-pages"><div class="chron-page chron-left"><header class="chron-masthead">${chronArt('crest','chron-crest')}<div class="chron-title-block"><h2>${esc(S.acadName)} 운영 일지</h2>${chronRule('chron-title-rule')}<div class="chron-daterow"><p class="chron-date">${yrName(S.year)} · ${ph.n} · ${Math.min(S.week+1,ph.weeks)}주차${chronRule('chron-date-rule')}</p><p class="chron-motto">좋은 용사는<br>하루아침에 만들어지지 않는다.<br><span>— 그리고,</span><br><span>오늘도, 조금 더.</span>${chronArt('leaf')}</p></div></div></header><div class="chron-intro"><p class="chron-note">새로운 한 주가 시작되었다. ${chronArt('leaf')}</p></div><div class="chron-toolbar">${take('#btnAuto')}${take('#btnClearSlots')}${take('#btnRest')}</div>${chronHeading('이번 주의 계획','chron-plan-heading','quill')}<div class="chron-days">${days}</div>${chronHeading('준비된 훈련 메뉴 <small>'+((S.hand||[]).length)+'장</small>','chron-hand-heading','ink')}<div class="chron-hand-title"></div>${chronHand()}</div><div class="chron-page chron-right"><header class="chron-focus-heading">${chronHeading('개인 행동','','watch')}<p>… 언젠가, 이 아이들이<br>세상을 더 좋은 곳으로 만들기를.</p></header><div class="chron-focus-tools">${['btnActTrain','btnRestAll','btnFocusClear','btnFocusPrev'].map(k=>inkLine('#'+k)).join('')}</div><div class="chron-students">${students.map(s=>`<div class="chron-student chron-st2"><button class="chron-person" data-sid="${esc(s.id)}" title="${esc(s.name)} 상세">${faceHTML(s.job,s.name)}</button><div class="chron-st-id"><strong>${esc(s.name)}</strong>${(()=>{const f=Math.round((1-trainSuccessP(s,false))*100);return `<span class="chron-fail ${f>0?'bad':''}" title="이번 주 훈련이 실패할 확률 — 컨디션 70 이상이면 0%">훈련 실패: <b>${f}%</b></span>`})()}</div><div class="chron-st-focus"><strong>행동</strong><button class="chron-focus-cycle" data-chron-cycle="${esc(s.id)}" title="누를 때마다 다음 행동으로 바뀐다" aria-label="${esc(s.name)} 개인 행동 바꾸기 — 지금 ${esc(chronFocusName(actOf(s)))}"><span>${esc(chronFocusName(actOf(s)))}</span>${CHRON_CYCLE_ICON}</button></div><div class="chron-condition" title="컨디션 ${Math.round(s.cond)}"><i style="width:${clamp(s.cond,0,100)}%;background:${s.cond<40?'#b54a40':s.cond<70?'#ba8336':'#4d8a65'}"></i><span>${Math.round(s.cond)}</span></div></div>`).join('')||'<p>아직 등록된 학생이 없습니다.</p>'}</div><div class="chron-pagination" ${pages<=1?'hidden':''}><button data-chron-page="-1" ${UI.chroniclePage===0?'disabled':''}>이전</button><span>${UI.chroniclePage+1} / ${pages} · 전체 ${S.students.length}명</span><button data-chron-page="1" ${UI.chroniclePage+1>=pages?'disabled':''}>다음</button></div><div class="chron-condition-tools"></div><footer class="chron-funds">${chronArt('purse','chron-purse')}<span>자금 <b>${fmt(S.gold)} G</b></span></footer><div class="chron-actions">${inkBtn('#btnBookUse',`예지의 서 ×${bookCount()}`,'(훈련 메뉴 교체)')}${inkBtn('#btnWater2','초성수 주문',churchBought('water')?'이번 계절 소진':`컨디션 +${HOLY_WATER_COND} · ${fmt(holyWaterCost())} G`)}</div><div class="chron-seal-wrap">${take('#btnWeek')}</div></div></div>${chronArt('letter','chron-letter')}<nav class="chron-tabs"><button data-chron-nav="plan" aria-current="page">일지</button><button data-chron-nav="roster">학생</button><button data-chron-nav="facil">시설</button></nav></section>`;
 }
 /* 집중 훈련 목표 — 누를 때마다 없음 → 팀워크 → 적극성 → 침착성 → 정신력 → 지구력 → 천재성 → 휴식 → 없음 */
-const CHRON_FOCUS_CYCLE=['free','team','aggr','calm','will','stam','genius','rest'];
-function chronFocusName(k){if(!k||k==='free')return '없음';if(k==='rest')return '휴식';const m=MENTAL.find(x=>x.k===k);return m?m.n:'없음';}
+const CHRON_FOCUS_CYCLE=['auto','train','job','rest'];
+function chronFocusName(k){return actName(k);}
 const CHRON_CYCLE_ICON='<svg class="chron-cycle-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M19.5 12a7.5 7.5 0 0 1-12.8 5.3"/><path d="M4.5 12A7.5 7.5 0 0 1 17.3 6.7"/><path d="M17.6 2.8v4.2h-4.2"/><path d="M6.4 21.2v-4.2h4.2"/></svg>';
 function bindChronicle(){
   document.querySelectorAll('.chronicle [data-card]').forEach(el=>{el.tabIndex=0;el.setAttribute('role','button');el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click();}};});
@@ -8176,7 +8410,7 @@ function bindChronicle(){
   if(toggle)toggle.onchange=()=>{PREF.chronicleTest=toggle.checked;prefSave();render();};
   document.querySelectorAll('[data-chron-nav]').forEach(b=>b.onclick=()=>{UI.view=b.dataset.chronNav;render()});
   document.querySelectorAll('[data-chron-page]').forEach(b=>b.onclick=()=>{UI.chroniclePage=(UI.chroniclePage||0)+Number(b.dataset.chronPage);render()});
-  document.querySelectorAll('[data-chron-cycle]').forEach(b=>b.onclick=e=>{e.stopPropagation();const st=S.students.find(s=>s.id===b.dataset.chronCycle);if(!st)return;const i=CHRON_FOCUS_CYCLE.indexOf(st.focus);st.focus=CHRON_FOCUS_CYCLE[(i+1)%CHRON_FOCUS_CYCLE.length];save();render()});
+  document.querySelectorAll('[data-chron-cycle]').forEach(b=>b.onclick=e=>{e.stopPropagation();const st=S.students.find(s=>s.id===b.dataset.chronCycle);if(!st)return;const L=CHRON_FOCUS_CYCLE.filter(k=>k!=='job'||jobOpen()),i=L.indexOf(actOf(st));st.focus=L[(i+1)%L.length];save();render()});
   document.querySelectorAll('[data-chron-focus]').forEach(el=>el.onchange=()=>{const st=S.students.find(s=>s.id===el.dataset.chronFocus);if(st){st.focus=el.value;save();render()}});
   const bw=document.querySelector('.chronicle #btnWeek');if(bw)bw.addEventListener('pointerdown',e=>{bw._chronPt={x:e.clientX,y:e.clientY,t:Date.now()}});
   chronAlign();[120,400,1000].forEach(t=>setTimeout(chronAlign,t));
@@ -8192,7 +8426,7 @@ function chronAlign(){
 }
 /* 붉은 인주 도장 — 누른 자리(키보드면 버튼 가운데)에 찍힌다 */
 function chronInkStamp(){
-  return `<svg viewBox="0 0 120 120" aria-hidden="true"><defs><filter id="chron-ink-rough" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.6" result="d"/><feTurbulence type="fractalNoise" baseFrequency=".35" numOctaves="3" seed="3" result="m"/><feColorMatrix in="m" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1.5 1.95" result="mask"/><feComposite in="d" in2="mask" operator="in"/></filter></defs><g filter="url(#chron-ink-rough)" fill="none" stroke="currentColor"><circle cx="60" cy="60" r="53" stroke-width="5"/><circle cx="60" cy="60" r="44" stroke-width="1.8"/><path d="M22 60h10M88 60h10" stroke-width="2.2"/><g fill="currentColor" stroke="currentColor" stroke-width=".9" stroke-linejoin="round" font-family="Batang,'Nanum Myeongjo',serif" font-weight="900" text-anchor="middle"><text x="60" y="55" font-size="25">기록</text><text x="60" y="82" font-size="25">승인</text><text x="60" y="30" font-size="9" letter-spacing="1.5">★ 이번 주 ★</text><text x="60" y="99" font-size="8.5" letter-spacing="1">${esc(String(S.year||''))}년 ${esc(String(S.week+1))}주차</text></g></g></svg>`;
+  return `<svg viewBox="0 0 120 120" aria-hidden="true"><defs><filter id="chron-ink-rough" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.6" result="d"/><feTurbulence type="fractalNoise" baseFrequency=".35" numOctaves="3" seed="3" result="m"/><feColorMatrix in="m" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1.5 1.95" result="mask"/><feComposite in="d" in2="mask" operator="in"/></filter></defs><g filter="url(#chron-ink-rough)" fill="none" stroke="currentColor"><circle cx="60" cy="60" r="53" stroke-width="5"/><circle cx="60" cy="60" r="44" stroke-width="1.8"/><path d="M22 60h10M88 60h10" stroke-width="2.2"/><g fill="currentColor" stroke="currentColor" stroke-width=".9" stroke-linejoin="round" font-family="Batang,'Nanum Myeongjo',serif" font-weight="900" text-anchor="middle"><text x="60" y="55" font-size="25">기록</text><text x="60" y="82" font-size="25">승인</text><text x="60" y="30" font-size="9" letter-spacing="1.5">★ 이번 주 ★</text><text x="60" y="99" font-size="8.5" letter-spacing="1">${esc(String(yrN(S.year)))}년 ${esc(String(S.week+1))}주차</text></g></g></svg>`;
 }
 function chronicleAdvance(button){
   if(!PREF.chronicleTest){runWithReport();return;}
@@ -8215,7 +8449,7 @@ function viewPlanClassic(){
   const camp = isCampWeek();
   const fld = fieldOf(S.phase);
   return `<section class="panel${fld?" fldp":""}"${fld?` style="--fld:url('${fld}')"`:""}>
-    <div class="panel-h planhead"><h2>${S.year}년 ${ph.n} ${Math.min(S.week+1, ph.weeks)}주 스케줄</h2>
+    <div class="panel-h planhead"><h2>${yrName(S.year)} ${ph.n} ${Math.min(S.week+1, ph.weeks)}주 스케줄</h2>
       <span class="hint">${ph.weeks}주 · ${ph.d}</span>
       <span class="btnpair runpair">
         <button class="btn sm" id="btnAuto">자동 배치</button>
@@ -8249,35 +8483,31 @@ function viewPlanClassic(){
       <span class="hint" style="color:var(--dim);font-size:12px">색이 이어진 만큼 그 훈련의 효과가 오른다 — 자세한 내용은 <b style="color:var(--text)">도감 · 카드 목록</b>에 있다.</span></div>`:""}
   </section>
   <section class="panel">
-    <div class="panel-h"><h2>개인 집중 훈련</h2><span class="hint">스케줄 진행 시 각 학생이 개별적으로 진행할 행동입니다. 개인 집중 훈련은 학생 탭에서도 개별적으로 설정이 가능합니다.</span>
-      <span class="btnpair"><button class="btn sm" id="btnFocusWeak">임의 설정 (약점)</button><button class="btn sm" id="btnFocusStrong">임의 설정 (강점)</button><button class="btn sm" id="btnFocusClear">전부 지정 없음</button>${focusUndoDiff()? `<button class="btn sm" id="btnFocusUndo" title="지금 바꾼 집중 설정을 취소하고 지난주 배치로 돌아간다">변경 취소하기 (${focusUndoDiff()}명)</button>`:""}${focusPrevDiff()? `<button class="btn sm" id="btnFocusPrev" title="지난주에 바꾼 집중 설정을 취소하고 지지난주 배치로 돌아간다">지난주 변경 취소 (${focusPrevDiff()}명)</button>`:""}</span>
-      <span class="btnpair"><button class="btn sm" id="btnRestAll" title="컨디션과 상관없이 전 학생을 휴식 집중으로 돌린다">휴식 전환 (전원)</button><button class="btn sm" id="btnRest40">휴식 전환 (39 이하)</button><button class="btn sm" id="btnRest70">휴식 전환 (69 이하)</button>${S.students.some(s=>isInjured(s)&&!isRestFocus(s))? `<button class="btn sm" id="btnRestInj" style="border-color:var(--bad);color:var(--bad)">부상자 휴식 전환 (${S.students.filter(s=>isInjured(s)&&!isRestFocus(s)).length}명)</button>`:""}</span></div>
+    <div class="panel-h"><h2>개인 행동</h2><span class="hint" hidden>스케줄 진행 시 각 학생이 오후에 따로 하는 행동입니다. 학생 탭에서도 개별적으로 바꿀 수 있습니다.</span>
+      <span class="btnpair"><button class="btn sm" id="btnFocusClear">전원 임의</button><button class="btn sm" id="btnActTrain">전원 훈련</button>${jobOpen()? `<button class="btn sm" id="btnActJob">전원 의뢰</button>`:""}${focusUndoDiff()? `<button class="btn sm" id="btnFocusUndo" title="지금 바꾼 설정을 취소하고 지난주 배치로 돌아간다">변경 취소하기 (${focusUndoDiff()}명)</button>`:""}${focusPrevDiff()? `<button class="btn sm" id="btnFocusPrev" title="지난주에 바꾼 설정을 취소하고 지지난주 배치로 돌아간다">지난주 변경 취소 (${focusPrevDiff()}명)</button>`:""}</span>
+      <span class="btnpair"><button class="btn sm" id="btnRestAll" title="컨디션과 상관없이 전 학생을 휴식으로 돌린다">전원 휴식</button><button class="btn sm" id="btnRest40" hidden>휴식 전환 (39 이하)</button><button class="btn sm" id="btnRest70" hidden>휴식 전환 (69 이하)</button>${S.students.some(s=>isInjured(s)&&!isRestFocus(s))? `<button class="btn sm" id="btnRestInj" style="border-color:var(--bad);color:var(--bad)">부상자 휴식 전환 (${S.students.filter(s=>isInjured(s)&&!isRestFocus(s)).length}명)</button>`:""}</span></div>
     ${(()=>{ const hurt=S.students.filter(isInjured); if(!hurt.length) return "";
-      const bad=hurt.filter(s=>!isRestFocus(s));
+      const bad=hurt.filter(s=>!isRestFocus(s) && actOf(s)!=="auto");
       return `<div class="opt" style="cursor:default;border-color:var(--bad);margin-bottom:10px">
         <div class="on" style="color:var(--bad)">부상자<span class="price" style="color:var(--bad)">${hurt.length}명</span></div>
         <div class="od">${hurt.map(s=>`${dnH(s)} <b style="color:var(--bad)">${injWeeks(s)}주</b>${isRestFocus(s)?' <span style="color:var(--ok)">휴식 중</span>':""}`).join(" · ")}</div>
-        <div class="od" style="color:var(--dim)">부상 중에는 잠재력을 제외한 멘탈리티가 <b style="color:var(--bad)">50%</b>로 계산되고, <b>휴식을 제외한 훈련은 100% 실패</b>한다.
-          ${bad.length? `<b style="color:var(--bad)">훈련을 계속하면 다시 다칠 수 있다 — ${bad.length}명을 휴식 집중으로 돌리는 것이 좋다.</b>` : "휴식 집중으로 회복을 기다리는 중이다."}</div></div>`; })()}
-    ${SHOW_FOCUSHELP? `<p style="font-size:11.5px;color:var(--dim);margin:-4px 0 10px">약점은 가장 낮은 멘탈리티를, 강점은 가장 높은 멘탈리티를 전 학생에게 일괄 지정한다 (잠재력 제외). <b>이미 상한에 닿은 분야는 고르지 않고</b>, 더 올릴 분야가 하나도 없으면 지정 없음으로 둔다. <b>전부 지정 없음</b>은 휴식 집중을 포함한 모든 집중 지정을 해제한다. <b>변경 취소하기</b>는 지금 손댄 것을 무르고 <b>지난주</b> 배치로, <b>지난주 변경 취소</b>는 지난주에 바꾼 것을 무르고 <b>지지난주</b> 배치로 되돌린다.
-      휴식 전환은 해당 컨디션 이하인 학생을 <b style="color:var(--ok)">휴식 집중</b>으로 돌린다 — 학원 스케줄에 참여하지 않고 매주 컨디션만 <b style="color:var(--ok)">${restFocusWeek()}</b> 회복한다. 개별 변경은 학생 탭에서 한다.</p>` : ""}
+        <div class="od" style="color:var(--dim)">부상 중에는 잠재력을 제외한 멘탈리티가 <b style="color:var(--bad)">50%</b>로 계산되고, <b>휴식을 제외한 훈련은 100% 실패</b>한다. 임의로 둔 부상자는 알아서 쉰다.
+          ${bad.length? `<b style="color:var(--bad)">훈련을 계속하면 다시 다칠 수 있다 — ${bad.length}명을 휴식으로 돌리는 것이 좋다.</b>` : ""}</div></div>`; })()}
     <div class="grid2">
-      ${MENTAL.filter(m=>!m.fixed).map(m=>{
-        const who = S.students.filter(s=>s.focus===m.k);
+      ${actKeys().map(k=>{
+        const who = S.students.filter(s=> actOf(s)===k);
         if(!who.length) return "";
-        return `<div class="opt" style="cursor:default"><div class="on">${m.n}<span class="price">${who.length}명</span></div>
-          <div class="od">${who.map(s=>`${dnH(s)} ${Math.round(s.ment[m.k])}`).join(" · ")}</div>
-          <div class="od" style="color:var(--dim)">${FACILITIES[FOCUS_FAC[m.k]].n} Lv.${S.facil[FOCUS_FAC[m.k]]} 효율 적용</div></div>`;
-      }).join("") || `<div class="empty">집중 분야를 지정한 학생이 없다. 학생 탭에서 지정한다.</div>`}
-      ${(()=>{ const who=S.students.filter(s=>isRestFocus(s)); if(!who.length) return "";
-        return `<div class="opt" style="cursor:default;border-color:var(--ok)">
-          <div class="on" style="color:var(--ok)">휴식 집중<span class="price">${who.length}명</span></div>
-          <div class="od">${who.map(s=>`${dnH(s)} ${Math.round(s.cond)}`).join(" · ")}</div>
-          <div class="od" style="color:var(--dim)">스케줄 불참 · 매주 컨디션 +${restFocusWeek()}
-            <span style="color:var(--dim)">(기본 ${FOCUS_REST_GAIN}${S.items&&S.items.tonic?` · 강장제 ×${TONIC_MUL}`:""}${S.facil.infirm>0?` · 의무실 +${S.facil.infirm|0}`:""})</span></div></div>`; })()}
-      ${S.students.filter(s=>s.focus==="free").length? `<div class="opt locked" style="cursor:default">
-        <div class="on" style="color:var(--dim)">미지정<span class="price">${S.students.filter(s=>s.focus==="free").length}명</span></div>
-        <div class="od">${S.students.filter(s=>s.focus==="free").map(s=>dnH(s)).join(" · ")}</div></div>`:""}
+        const tone = k==="rest"? "var(--ok)" : k==="job"? "var(--brass)" : "";
+        const names = k==="train"? who.map(s=>{ const w=weakestMent(s); return `${dnH(s)} <span style="color:var(--dim)">${mentName(w)} ${Math.round(s.ment[w])}</span>`; }).join(" · ")
+          : k==="rest"||k==="auto"? who.map(s=>`${dnH(s)} <span style="color:var(--dim)">${Math.round(s.cond)}</span>`).join(" · ")
+          : who.map(s=>dnH(s)).join(" · ");
+        const note = k==="auto"? `매일 컨디션을 보고 정한다 — ${AUTO_REST_BELOW-1} 이하 휴식 · ${AUTO_REST_BELOW} 이상 훈련${jobOpen()? "/의뢰 반반":""}`
+          : k==="train"? `그날 가장 약한 멘탈리티를 개인 집중 훈련 (분야별 시설 효율 적용)`
+          : k==="rest"? `스케줄 불참 · 매주 컨디션 +${restFocusWeek()} <span>(기본 ${FOCUS_REST_GAIN}${S.items&&S.items.tonic?` · 강장제 ×${TONIC_MUL}`:""}${S.facil.infirm>0?` · 의무실 +${S.facil.infirm|0}`:""})</span>`
+          : `그 주 처음 나온 의뢰를 수행 · 보수 ${fmt(jobPay())} G/일 · 컨디션 -${JOB_COND}/일 · 멘탈리티 하나 소폭 증가, 하나 하락`;
+        return `<div class="opt" style="cursor:default${tone? `;border-color:${tone}`:""}"><div class="on"${tone? ` style="color:${tone}"`:""}>${ACT[k].n}<span class="price">${who.length}명</span></div>
+          <div class="od">${names}</div><div class="od" style="color:var(--dim)">${note}</div></div>`;
+      }).join("") || `<div class="empty">학생이 없다.</div>`}
     </div>
     <div class="rule"></div>
     <div class="eyebrow" style="margin-bottom:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">컨디션
@@ -8292,7 +8522,7 @@ function viewPlanClassic(){
           <span class="cbar"><i class="${condClass(s.cond)}" style="width:${clamp(s.cond,0,100)}%"></i></span>
           <span class="cv num" style="color:var(--${e.tone})">${Math.round(s.cond)}</span>
           <span class="ce" style="color:var(--${e.tone})">훈련 ${e.pct}%</span>
-          <span class="cf">${isRestFocus(s)? "휴식 집중" : s.focus==="free"? "집중 없음" : MENTAL.find(m=>m.k===s.focus).n}</span>
+          <span class="cf">${actName(actOf(s))}</span>
         </div>`;
       }).join("")}
     </div>
@@ -8652,7 +8882,7 @@ function xferMeta(){
 function xferMetaLine(m, noName){
   if(!m) return "내용을 확인할 수 없는 기록";
   const ph = (PHASES[m.ph]||{}).n || "";
-  return `${noName? "" : m.acad+" · "}${m.y}년 ${ph} ${m.wk}주 · 명성 ${fmt(m.fame|0)} · 자금 ${fmt(m.gold|0)} G · 학생 ${m.n|0}명`;
+  return `${noName? "" : m.acad+" · "}${yrName(m.y)} ${ph} ${m.wk}주 · 명성 ${fmt(m.fame|0)} · 자금 ${fmt(m.gold|0)} G · 학생 ${m.n|0}명`;
 }
 /* 코드 발급 — 한 번 쓴 코드에는 덮어쓰지 않는다 */
 async function xferIssue(opt){
@@ -8697,7 +8927,7 @@ function xferFileOut(){
                         {type:"application/json"});
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = `heroschool_${S.year}년${(PHASES[S.phase]||{}).n||""}_${new Date().toISOString().slice(0,10)}.json`;
+  a.download = `heroschool_${yrN(S.year)}년${(PHASES[S.phase]||{}).n||""}_${new Date().toISOString().slice(0,10)}.json`;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=> URL.revokeObjectURL(a.href), 5000);
 }
@@ -8817,7 +9047,7 @@ function gradTransferModal(sid){
       <h2 style="font-size:23px;margin-top:2px">${epiH(g.name)}${eulr(g.name)} 보낼까?</h2>
       <p style="color:var(--muted);font-size:13px;margin-top:6px">리그 졸업생 명부에서 사라지고 다시 부를 수 없다. 기록 탭의 졸업생 명부에는 그대로 남는다.</p></div>
     <div class="opt" style="cursor:default;margin-top:14px;border-color:var(--brass)">
-      <div class="on">${esc(g.career||"진로 미정")}<span class="price">${g.year}년 졸업 · Lv.${g.lv}</span></div>
+      <div class="on">${esc(g.career||"진로 미정")}<span class="price">${yrName(g.year)} 졸업 · Lv.${g.lv}</span></div>
       <div class="od">전투력 <b style="color:var(--text)">${fmt(gradPower(g))}</b> · 이적료 <b style="color:var(--indigo)">SP +${fee}</b>
         <span style="color:var(--dim)">(기본 ${TRANSFER_BASE} + 전투력 ${fmt(TRANSFER_PER)}당 1)</span></div>
     </div>
@@ -9263,7 +9493,7 @@ function lgUnitCard(g, sel, pick){
   const u = gradUnit(g);
   const card = `<${pick?"button":"div"} class="opt ${sel?"sel":""}" ${pick?`data-lgp="${g.sid}"`:'style="cursor:default"'}>
     <div class="on">${epiH(g.raw||g.name)} ${roleTag(g.job)}<span class="price">Lv.${g.lv}</span></div>
-    <div class="od">${esc(g.career||"진로 미정")} · ${g.year}년 졸업 · ${gradeTag(g.grade||"C")}</div>
+    <div class="od">${esc(g.career||"진로 미정")} · ${yrName(g.year)} 졸업 · ${gradeTag(g.grade||"C")}</div>
     <div class="od">전투력 <b style="color:var(--text)">${fmt(u? power(u) : g.pw||0)}</b>${
       (g.relics||[]).length? ` · 유물 ${g.relics.length}개`:""}${g.karma? ` · <span style="color:var(--bad)">업보 ${g.karma}</span>`:""}</div>
   </${pick?"button":"div"}>`;
@@ -10303,7 +10533,7 @@ function doHeal(sid){
   const back = injFromRest(st);
   setCond(st, 100);
   logE(`교회 치유 — <b>${dnH(st)}</b>의 부상(${w}주)이 나았다. 컨디션이 <b style="color:var(--ok)">100</b>으로 회복됐다.${
-    back? ` 집중 분야도 <b>${back==="free"? "지정 없음" : (MENTAL.find(m=>m.k===back)||{n:back}).n}</b>${back==="free"?"으로":"(으)로"} 되돌렸다.` : ""} (${fmt(CHURCH_HEAL)} G)`,"good");
+    back? ` 개인 행동도 <b>${actName(back)}</b>(으)로 되돌렸다.` : ""} (${fmt(CHURCH_HEAL)} G)`,"good");
   save(); render();
   toast(`${dn(st)}${iga(st.name)} 완전히 회복했다.`);
 }
@@ -10317,13 +10547,13 @@ function viewChurch(){
       <button class="opt ${done?"locked":""}" id="btnDonate" ${done||S.gold<CHURCH_DONATE?"disabled":""}>
         <div class="on">기부<span class="price">${done? "이번 계절 소진" : fmt(CHURCH_DONATE)+" G"}</span></div>
         <div class="od">모든 학생의 업보가 <b style="color:var(--ok)">${CHURCH_KARMA}</b> 감소한다.</div>
-        <div class="od" style="color:var(--dim)">${churchLeftLabel("don")} · 현재 ${S.year}년 ${PHASES[S.phase].n}</div>
+        <div class="od" style="color:var(--dim)">${churchLeftLabel("don")} · 현재 ${yrName(S.year)} ${PHASES[S.phase].n}</div>
       </button>
       ${(()=>{ const bd = churchLeft("big")<=0;
         return `<button class="opt ${bd?"locked":""}" id="btnBigDonate" ${bd||S.gold<CHURCH_BIG?"disabled":""}>
         <div class="on">거액 기부<span class="price">${bd? "이번 계절 소진" : fmt(CHURCH_BIG)+" G"}</span></div>
         <div class="od">모든 학생의 업보가 <b style="color:var(--ok)">${CHURCH_BIG_KARMA}</b> 감소한다.</div>
-        <div class="od" style="color:var(--dim)">${churchLeftLabel("big")} · 현재 ${S.year}년 ${PHASES[S.phase].n}</div>
+        <div class="od" style="color:var(--dim)">${churchLeftLabel("big")} · 현재 ${yrName(S.year)} ${PHASES[S.phase].n}</div>
       </button>`; })()}
       <div class="opt" style="cursor:default">
         <div class="on">치유<span class="price">${fmt(CHURCH_HEAL)} G</span></div>
@@ -10333,7 +10563,7 @@ function viewChurch(){
       <button class="opt ${churchBought("water")?"locked":""}" id="btnWater" ${churchBought("water")||S.gold<holyWaterCost()?"disabled":""}>
         <div class="on">신비한 성수<span class="price">${churchBought("water")? "이번 계절 소진" : fmt(holyWaterCost())+" G"}</span></div>
         <div class="od">전 학생의 컨디션이 그 자리에서 <b style="color:var(--ok)">${HOLY_WATER_COND}</b> 회복된다.</div>
-        <div class="od" style="color:var(--dim)">${churchLeftLabel("water")} · 현재 ${S.year}년 ${PHASES[S.phase].n}</div>
+        <div class="od" style="color:var(--dim)">${churchLeftLabel("water")} · 현재 ${yrName(S.year)} ${PHASES[S.phase].n}</div>
       </button>
       ${(()=>{ const pr = foresightPrice(), done = churchBought("book"), nx = Math.min(pr+FORESIGHT_STEP, FORESIGHT_MAX);
         return `<button class="opt ${done?"locked":""}" id="btnBook" ${done||S.gold<pr?"disabled":""}>
@@ -10372,9 +10602,68 @@ function facCostAt(k, lv){
   return Math.round(f.base * Math.pow(Math.max(1, lv - facStart(k) + 1), facPw(k)));
 }
 function facCost(k){ return facCostAt(k, S.facil[k]||0); }
+/* 시설 유지비 (0926) — 계절이 끝날 때 한 번에 낸다. 활성화(Lv.1 이상)된 시설만.
+   · 장서고 · 단련장 · 대련장 · 묵상실 · 수련관 — 100G + 지금까지 들인 업그레이드 비용의 1%
+   · 의무실 · 상담실 — 200G + 들인 업그레이드 비용의 2%
+   · 차원 포탈 — 1000G */
+const UPKEEP_TRAIN = ["library","gym","arena","chapel","hall"];
+const UPKEEP_CARE  = ["infirm","counsel"];
+function facSpent(k){ let t = 0; for(let l = facStart(k); l < (S.facil[k]|0); l++) t += facCostAt(k, l); return t; }
+const UPKEEP_BASE0 = 100;    // 아직 0레벨이어도 구매 가능(잠김 없음)하면 내는 기본 유지비 (0926)
+function facUpkeep(k){
+  if(!(UPKEEP_TRAIN.includes(k) || UPKEEP_CARE.includes(k) || k==="portal")) return 0;
+  if(!((S.facil[k]|0) > 0)) return facLock(k) ? 0 : UPKEEP_BASE0;
+  if(UPKEEP_TRAIN.includes(k)) return Math.round(100 + facSpent(k)*.01);
+  if(UPKEEP_CARE.includes(k))  return Math.round(200 + facSpent(k)*.02);
+  if(k==="portal") return 1000;
+  return 0;
+}
+function upkeepTotal(){ return Object.keys(FACILITIES).reduce((a,k)=> a + facUpkeep(k), 0); }
+/* 빚 (0926) — 학원이 물려받은 빚. 처음 5만 G. 계절이 끝날 때 빚의 5%를 이자로 낸다.
+   은행에서 원금 상환(1만 G · 4단계까지)을 사면 빚이 1만씩 준다. 자금(S.gold)과는 따로 센다. */
+const DEBT_START = 50000, DEBT_RATE = .05, REPAY_PRICE = 10000, REPAY_AMOUNT = 10000, REPAY_MAX = 4;
+function debtOf(){ return Math.max(0, S.debt|0); }
+function debtInterest(){ return Math.round(debtOf() * DEBT_RATE); }
+function bankState(){ if(!S.bank || typeof S.bank !== "object") S.bank = {repay:0}; S.bank.repay = S.bank.repay|0; return S.bank; }
+function payInterest(){
+  const v = debtInterest();
+  if(!v) return 0;
+  S.gold -= v;
+  if(FIN) FIN.interest += v;
+  logE(`빚 이자 — ${yrName(S.year)} ${PHASES[S.phase].n} 정산 <b style="color:var(--bad)">-${fmt(v)} G</b> (빚 ${fmt(debtOf())} G의 ${Math.round(DEBT_RATE*100)}%)`, "");
+  return v;
+}
+function buyRepay(){
+  const B = bankState();
+  if(B.repay >= REPAY_MAX){ toast("더 상환할 수 있는 원금 상품이 없다."); return; }
+  if(debtOf() <= 0){ toast("갚을 빚이 없다."); return; }
+  if(S.gold < REPAY_PRICE){ toast("자금이 모자라다."); return; }
+  const cut = Math.min(REPAY_AMOUNT, debtOf());
+  S.gold -= REPAY_PRICE; S.debt = debtOf() - cut; B.repay++;
+  logE(`원금 상환 ${B.repay}단계 — <b>${fmt(REPAY_PRICE)} G</b>를 내고 빚이 <b style="color:var(--ok)">${fmt(cut)} G</b> 줄었다 (남은 빚 ${fmt(debtOf())} G)`, "good");
+  save(); render(); toast(`원금 상환 — 빚 ${fmt(debtOf())} G`);
+}
+/* 이번 주 자금 집계 (0926) — 주를 시작할 때 비우고, 경과 보고 끝의 자금 상황 팝업이 읽는다 */
+let FIN = null;
+function payUpkeep(){
+  const list = Object.keys(FACILITIES).map(k=>({k, v:facUpkeep(k)})).filter(x=> x.v > 0);
+  const total = list.reduce((a,x)=> a + x.v, 0);
+  if(!total) return 0;
+  S.gold -= total;       // 모자라면 마이너스(빚)로 남는다 (0926)
+  if(FIN) FIN.upkeep += total;
+  logE(`시설 유지비 — ${yrName(S.year)} ${PHASES[S.phase].n} 정산 <b style="color:var(--bad)">-${fmt(total)} G</b> · ${list.map(x=>`${FACILITIES[x.k].n} ${fmt(x.v)}`).join(" · ")}${
+    S.gold < 0? ` · <b style="color:var(--bad)">자금 ${fmt(S.gold)} G — 빚을 갚기 전에는 아무것도 살 수 없다</b>`:""}`, S.gold < 0 ? "bad" : "");
+  return total;
+}
+const FAC_TABS = [{k:"fac", n:"시설"}, {k:"item", n:"구매"}, {k:"church", n:"교회"}, {k:"bank", n:"은행"}];
 function viewFacil(){
+  const tab = FAC_TABS.some(t=> t.k===UI.facTab) ? UI.facTab : "fac";
+  const tabs = `<div class="teamtabs" style="margin-bottom:12px">${FAC_TABS.map(t=>`<button class="ttab ${tab===t.k?"on":""}" data-factab="${t.k}">${t.n}</button>`).join("")}</div>`;
+  return tabs + (tab==="item" ? viewItemShop() : tab==="church" ? viewChurch() : tab==="bank" ? viewBank() : viewFacShop());
+}
+function viewFacShop(){
   return `<section class="panel">
-    <div class="panel-h"><h2>시설</h2></div>
+    <div class="panel-h"><h2>시설</h2><span class="hint">계절 당 유지비: <b style="color:var(--bad)">${fmt(upkeepTotal())} G</b></span></div>
     <div class="grid2">
       ${facOrder().map(k=>{
         const f=FACILITIES[k], c=facCost(k), lv=S.facil[k]||0, mx=facMax(k), full=lv>=mx;
@@ -10393,11 +10682,14 @@ function viewFacil(){
           <div class="on">${f.n} <span class="tag">${tag}</span><span class="price" style="${
             lock?"color:var(--bad)":""}">${full?(k==="portal"?"":"최대"):lock||fmt(c)+" G"}</span></div>
           <div class="od">${facDesc(k)} · ${eff}</div>
+          ${facUpkeep(k)? `<div class="od" style="color:var(--bad)">유지비 ${fmt(facUpkeep(k))} G / 계절</div>` : ""}
         </button>`;
       }).join("")}
     </div>
-  </section>
-  <section class="panel">
+  </section>`;
+}
+function viewItemShop(){
+  return `  <section class="panel">
     <div class="panel-h"><h2>구매</h2></div>
     <div class="grid2">
       ${itemOrder().map(k=>{
@@ -10412,8 +10704,22 @@ function viewFacil(){
         </button>`;
       }).join("")}
     </div>
-  </section>
-  ${viewChurch()}`;
+  </section>`;
+}
+/* 은행 (0926) — 원금 상환 · 이자 */
+function viewBank(){
+  const B = bankState(), d = debtOf(), left = REPAY_MAX - B.repay, full = left <= 0 || d <= 0;
+  return `<section class="panel">
+    <div class="panel-h"><h2>은행</h2><span class="hint">계절 당 이자 상환: <b style="color:var(--bad)">${fmt(debtInterest())} G</b></span></div>
+    <div class="kv"><span class="k">남은 빚</span><span class="v num" style="color:var(--${d? "bad" : "ok"})">${fmt(d)} G</span></div>
+    <div class="kv" hidden><span class="k">이자</span><span class="v">빚의 ${Math.round(DEBT_RATE*100)}% · 계절이 끝날 때 자금에서 빠진다</span></div>
+    <div class="grid2" style="margin-top:12px">
+      <button class="opt ${full?"locked":""}" id="btnRepay" ${full||S.gold<REPAY_PRICE?"disabled":""}>
+        <div class="on">원금 상환 <span class="tag">Lv.${B.repay} / ${REPAY_MAX}</span><span class="price">${full? (d? "최대" : "완납") : fmt(REPAY_PRICE)+" G"}</span></div>
+        <div class="od" hidden>빚이 <b style="color:var(--ok)">${fmt(REPAY_AMOUNT)} G</b> 줄어든다 · 이자도 계절 당 ${fmt(Math.round(REPAY_AMOUNT*DEBT_RATE))} G 줄어든다</div>
+      </button>
+    </div>
+  </section>`;
 }
 
 /* ---------- 유물 ---------- */
@@ -10469,7 +10775,7 @@ function teachCompare(i, sid){
             <div class="cmp-arrow">${idxs.length>1? `<label class="cmp-pick"><input type="radio" name="tslot" value="${ix}" ${ix===idxs[0]?"checked":""}> 이 자리를 대체</label>` : "이 자리가 대체된다"}</div></div>`;
         }).join("")}</div>
       <div><div class="eyebrow cmp-h" style="color:var(--brass)">전수될 기술</div>${newCard}
-        <div class="od" style="color:var(--dim);margin-top:6px">${esc(e.from)} · ${e.year}년 졸업 · ${JOBS[e.job].name} 계열</div>
+        <div class="od" style="color:var(--dim);margin-top:6px">${esc(e.from)} · ${yrName(e.year)} 졸업 · ${JOBS[e.job].name} 계열</div>
         <div class="od" style="color:var(--ok)">${skillModText(e.mod)}</div></div>
     </div>`;
     slots = idxs;
@@ -10662,7 +10968,7 @@ function viewRelic(){
           <span class="tag">${catN}</span><span class="price">Lv.${1+(e.mod.up||0)}</span></div>
         <div class="od">${esc(src||"")}</div>
         <div class="od" style="color:var(--ok)">${skillModText(e.mod)}</div>
-        <div class="od" style="color:var(--dim)">${esc(e.from)} · ${e.year}년 졸업 · ${JOBS[e.job].name} 계열</div>
+        <div class="od" style="color:var(--dim)">${esc(e.from)} · ${yrName(e.year)} 졸업 · ${JOBS[e.job].name} 계열</div>
         <div style="margin-top:7px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
           ${(()=>{ const able = S.students.filter(st=>!st.taught);
             if(!able.length) return `<span style="font-size:11.5px;color:var(--bad)">전수 가능한 학생이 없다 (학생당 1회)</span>`;
@@ -10700,15 +11006,15 @@ function cleanBonds(){
 }
 function bondTags(st){
   const r = rivalOf(st), b = broOf(st);
-  return (r? `<span class="tag bond rv" title="라이벌 — 같은 집중 분야를 고르면 성장이 빨라진다">라이벌 ${esc(r.name)}</span>`:"")
+  return (r? `<span class="tag bond rv" title="라이벌 — 같은 날 같은 분야를 개인 훈련하면 성장이 빨라진다">라이벌 ${esc(r.name)}</span>`:"")
        + (b? `<span class="tag bond br" title="소울메이트 — 같은 팀에서 싸우면 능력치와 경험치가 오른다">소울메이트 ${esc(b.name)}</span>`:"");
 }
 /* 집중 훈련 배율 — 라이벌이 같은 분야를 파고들 때 */
 function rivalFocusMul(st){
   const r = rivalOf(st);
   if(!r) return 1;
-  if(!st.focus || st.focus==="free") return 1;
-  return (r.focus===st.focus) ? RIVAL_FOCUS_MUL : 1;
+  if(st._act!=="train" || !st._fk) return 1;
+  return (r._act==="train" && r._fk===st._fk) ? RIVAL_FOCUS_MUL : 1;
 }
 /* 같은 팀에 소울메이트가 있는가 */
 function broTogether(st, ids){
@@ -10761,7 +11067,7 @@ function friendlyCeremony(c){
     const lv = tm.reduce((a,s)=>a+s.level,0)/tm.length;
     return `평균 Lv.${lv.toFixed(1)}`;
   };
-  return `<div class="cerhead"><div class="eyebrow">${S.year}년 ${PHASES[ph].n} 상반기 종료 · ${CF.n}</div>
+  return `<div class="cerhead"><div class="eyebrow">${yrName(S.year)} ${PHASES[ph].n} 상반기 종료 · ${CF.n}</div>
       <h2 style="font-size:26px;margin-top:2px">친선전 요청</h2>
       <p style="color:var(--muted);font-size:13px;margin-top:6px">${esc(CF.d)} 받아들일 곳을 골라 하반기 일정에 넣는다.
         <b style="color:var(--text)">비워두거나 전부 거절해도 된다.</b> 친선전은 ${CF.teams}팀이 ${CF.teams===1?"한 경기":`${CF.teams}경기를 모두`} 치른다.</p></div>
@@ -10807,10 +11113,10 @@ function bondCeremony(c){
   /* 이 자리에서는 이명을 붙이지 않는다 — 둘의 관계가 주인공이지 칭호가 아니다 */
   const card = st=>`<div class="opt" style="cursor:default">
     <div class="on">${esc(st.name)} ${persTag(st)}${gradeTag(st.grade)}${roleTag(st.job)}<span class="price">${st.year}학년</span></div>
-    <div class="od">Lv.${st.level} · 전투력 ${fmt(power(st))}${isRv? ` · 집중 ${st.focus==="free"?"지정 없음":MENTAL.find(m=>m.k===st.focus).n}`:""}</div>
+    <div class="od">Lv.${st.level} · 전투력 ${fmt(power(st))}${isRv? ` · 개인 행동 ${actName(st.focus)}`:""}</div>
   </div>`;
   return `<div class="cerhead">
-      <div class="eyebrow">${c.year}년 ${PHASES[c.phase].n} ${c.week}주</div>
+      <div class="eyebrow">${yrName(c.year)} ${PHASES[c.phase].n} ${c.week}주</div>
       <h2 style="font-size:26px;margin-top:2px">${isRv? "라이벌" : "소울메이트"}</h2>
       <p style="color:var(--muted);font-size:13px;margin-top:6px">${esc(c.scene)}</p></div>
     <div class="grid2" style="margin-top:12px">${card(c.a)}${card(c.b)}</div>
@@ -10854,7 +11160,7 @@ function evolveCeremony(c){
   const st = S.students.find(x=>x.id===c.sid);
   const pal = st ? {p:sprPalOf(st)} : {};
   const head = (title)=> `<div class="cerhead">
-      <div class="eyebrow">${c.year}년 ${PHASES[c.phase].n} ${c.week}주</div>
+      <div class="eyebrow">${yrName(c.year)} ${PHASES[c.phase].n} ${c.week}주</div>
       <h2 style="font-size:26px;margin-top:2px">${title}</h2></div>`;
   const spr = (mot, once)=> sprHas(c.job) ? sprHTML(c.job, mot, 1, Object.assign({once:!!once}, pal)) : "";
   if(c.page===1) return head("진화?!") +
@@ -10964,7 +11270,7 @@ function sparklerCeremony(c){
   const M = k => (SPARKLER_MSG[k][c.pers] || SPARKLER_MSG[k].plain);
   const art = `<div class="valentine-art"><img src="${SPARKLER_ART[c.page<=2 ? "1" : "2"]}" alt="${c.page<=2 ? "밤하늘을 가득 메운 학원제 폭죽" : "마스터와 학생이 나란히 든 작은 폭죽"}" draggable="false"></div>`;
   const head = `<div class="cerhead">
-      <div class="eyebrow">${c.year}년 여름 · ${SPARKLER_WEEK}주차를 마치고</div>
+      <div class="eyebrow">${yrName(c.year)} 여름 · ${SPARKLER_WEEK}주차를 마치고</div>
       <h2 style="font-size:24px;margin-top:2px">학원제 개막식의 밤</h2></div>${art}`;
   const P = t => `<p class="ev-p">${t}</p>`;
   const Q = t => `<p class="ev-q">「${esc(t)}」</p>`;
@@ -11011,7 +11317,7 @@ function valentineCeremony(c){
   const descriptions={1:"겨울 집무실 책상 위에 놓인 리본으로 포장된 선물 상자",2:"열린 선물 상자 속 초콜릿과 봉투",3:"초콜릿 곁에 펼쳐진 졸업생들의 감사 편지"};
   const illustration=`<div class="valentine-art"><img src="${VALENTINE_ART[c.page] || VALENTINE_ART[3]}" alt="${descriptions[c.page] || descriptions[3]}" draggable="false"></div>`;
   const head = (sub)=> `<div class="cerhead">
-      <div class="eyebrow">${c.year}년 겨울 · 4주차를 마치고</div>
+      <div class="eyebrow">${yrName(c.year)} 겨울 · 4주차를 마치고</div>
       <h2 style="font-size:24px;margin-top:2px">발렌타인</h2>
       <p style="color:var(--muted);font-size:13px;margin-top:6px">${sub}</p>
     </div>${illustration}`;
@@ -11327,42 +11633,46 @@ function setRestInjured(){
   const who = S.students.filter(s=> isInjured(s) && !isRestFocus(s));
   if(!who.length){ toast("훈련 중인 부상자가 없다."); return; }
   who.forEach(s=>{ s._prevFocus = s.focus; s.focus = FOCUS_REST; });
-  logE(`휴식 전환 — 부상자 <b>${who.length}명</b>을 휴식 집중으로 돌렸다: ${who.map(s=>`${dnH(s)}(${injWeeks(s)}주)`).join(", ")}`,"good");
-  save(); render(); toast(`부상자 ${who.length}명을 휴식 집중으로 돌렸다.`);
+  logE(`휴식 전환 — 부상자 <b>${who.length}명</b>을 휴식으로 돌렸다: ${who.map(s=>`${dnH(s)}(${injWeeks(s)}주)`).join(", ")}`,"good");
+  save(); render(); toast(`부상자 ${who.length}명을 휴식으로 돌렸다.`);
 }
 /* 컨디션 기준 휴식 집중 전환 */
 function setRestFocus(thr){
   const all = thr >= 100;
   const who = S.students.filter(s=> (all || s.cond <= thr) && !isRestFocus(s));
   const cap = all ? "전원" : `컨디션 ${thr} 이하`;
-  if(!who.length){ toast(all? "이미 전원이 휴식 집중이다." : `컨디션 ${thr} 이하인 학생이 없다.`); return; }
+  if(!who.length){ toast(all? "이미 전원이 휴식이다." : `컨디션 ${thr} 이하인 학생이 없다.`); return; }
   who.forEach(s=>{ s._prevFocus = s.focus; s.focus = FOCUS_REST; });
-  logE(`휴식 전환 — ${cap} <b>${who.length}명</b>을 휴식 집중으로 돌렸다: ${esc(who.map(s=>s.name).join(", "))}`,"good");
+  logE(`휴식 전환 — ${cap} <b>${who.length}명</b>을 휴식으로 돌렸다: ${esc(who.map(s=>s.name).join(", "))}`,"good");
   save(); render();
-  showModal(`<div class="cerhead"><div class="eyebrow">개인 집중 훈련 · 휴식 전환</div>
+  showModal(`<div class="cerhead"><div class="eyebrow">개인 행동 · 휴식 전환</div>
       <h2 style="font-size:22px;margin-top:2px">${cap} ${who.length}명</h2>
       <p style="color:var(--muted);font-size:13px;margin-top:6px">이 학생들은 학원 스케줄에 참여하지 않고 매주 컨디션을 <b style="color:var(--ok)">${restFocusWeek()}</b> 회복한다. 회복되면 학생 탭이나 아래 버튼으로 다시 훈련에 돌린다.</p></div>
     <div class="scroll-x" style="max-height:300px;overflow-y:auto;margin-top:12px">
-      <table class="tb"><thead><tr><th>학생</th><th>컨디션</th><th>훈련 효율</th><th>이전 집중 분야</th></tr></thead><tbody>
+      <table class="tb"><thead><tr><th>학생</th><th>컨디션</th><th>훈련 효율</th><th>이전 개인 행동</th></tr></thead><tbody>
       ${who.slice().sort((a,b)=>a.cond-b.cond).map(s=>{ const e=condEff(s.cond);
         return `<tr><td>${dnH(s)}</td><td class="num" style="color:var(--${e.tone})">${Math.round(s.cond)}</td>
           <td class="num" style="color:var(--${e.tone})">${e.pct}%</td>
-          <td>${s._prevFocus==="free"||!s._prevFocus? "지정 없음" : (MENTAL.find(m=>m.k===s._prevFocus)||{n:"—"}).n}</td></tr>`;
+          <td>${actName(s._prevFocus)}</td></tr>`;
       }).join("")}</tbody></table></div>
     <div class="btnrow" style="margin-top:14px">
       <button class="btn" id="rsBack">되돌리기</button>
       <button class="btn primary" data-close>확인</button></div>`, ()=>{
     $("#rsBack").onclick = ()=>{
-      who.forEach(s=>{ s.focus = s._prevFocus || "free"; delete s._prevFocus; });
+      who.forEach(s=>{ s.focus = s._prevFocus || "auto"; delete s._prevFocus; });
       closeModal(); save(); render(); toast("휴식 전환을 되돌렸다.");
     };
   }, true);
 }
 /* 개인 집중 훈련 — 지난 주에 쓰던 설정 */
-function focusSnapshot(){ const m={}; S.students.forEach(s=> m[s.id] = s.focus||"free"); return m; }
+function focusSnapshot(){ const m={}; S.students.forEach(s=> m[s.id] = actNorm(s.focus)); return m; }
 /* focusHist[0] = 지난주에 쓴 설정 · focusHist[1] = 지지난주에 쓴 설정 */
 function focusHist(){
   if(!Array.isArray(S.focusHist)) S.focusHist = S.focusPrev ? [S.focusPrev] : [];
+  if(!S.focusHistV){   // 개인 행동 (0926) — 옛 키를 새 키로
+    S.focusHist = S.focusHist.map(m=>{ if(!m) return m; const o={}; Object.keys(m).forEach(k=> o[k] = actNorm(m[k])); return o; });
+    S.focusHistV = 1;
+  }
   return S.focusHist;
 }
 function focusHistPush(){
@@ -11379,18 +11689,18 @@ function focusMapDiff(a, b){
 function focusUndoDiff(){
   const p1 = focusHist()[0];
   if(!p1) return 0;
-  return S.students.filter(s=> p1[s.id]!=null && (s.focus||"free") !== p1[s.id]).length;
+  return S.students.filter(s=> p1[s.id]!=null && actNorm(s.focus) !== p1[s.id]).length;
 }
 function undoFocusChange(){
   const p1 = focusHist()[0];
   if(!p1){ toast("아직 진행한 주가 없다."); return; }
   const ch = [];
   S.students.forEach(s=>{
-    if(p1[s.id]==null || (s.focus||"free")===p1[s.id]) return;
+    if(p1[s.id]==null || actNorm(s.focus)===p1[s.id]) return;
     ch.push(s); s.focus = p1[s.id]; delete s._prevFocus;
   });
   if(!ch.length){ toast("이미 지난주 설정과 같다."); return; }
-  logE(`개인 집중 훈련 — 바꾼 설정을 취소하고 지난주 배치로 되돌렸다 (<b>${ch.length}명</b>): ${ch.map(x=>dnH(x)).join(", ")}`, "");
+  logE(`개인 행동 — 바꾼 설정을 취소하고 지난주 배치로 되돌렸다 (<b>${ch.length}명</b>): ${ch.map(x=>dnH(x)).join(", ")}`, "");
   save(); render();
   toast(`${ch.length}명을 지난주 설정으로 되돌렸다.`);
 }
@@ -11399,7 +11709,7 @@ function focusPrevDiff(){
   const h = focusHist(), p1 = h[0], p2 = h[1];
   if(!p1 || !p2) return 0;
   if(!focusMapDiff(p2, p1)) return 0;                       // 지난주에 바뀐 게 없으면 되돌릴 것도 없다
-  return S.students.filter(s=> p2[s.id]!=null && (s.focus||"free") !== p2[s.id]).length;
+  return S.students.filter(s=> p2[s.id]!=null && actNorm(s.focus) !== p2[s.id]).length;
 }
 function restoreFocusPrev(){
   const h = focusHist(), p1 = h[0], p2 = h[1];
@@ -11407,23 +11717,25 @@ function restoreFocusPrev(){
   if(!focusMapDiff(p2, p1)){ toast("지난주에 바꾼 설정이 없다."); return; }
   const ch = [];
   S.students.forEach(s=>{
-    if(p2[s.id]==null || (s.focus||"free")===p2[s.id]) return;
+    if(p2[s.id]==null || actNorm(s.focus)===p2[s.id]) return;
     ch.push(s); s.focus = p2[s.id]; delete s._prevFocus;
   });
   if(!ch.length){ toast("이미 지지난주 설정과 같다."); return; }
-  logE(`개인 집중 훈련 — 지난주에 바꾼 설정을 취소하고 지지난주 배치로 되돌렸다 (<b>${ch.length}명</b>): ${ch.map(x=>dnH(x)).join(", ")}`, "");
+  logE(`개인 행동 — 지난주에 바꾼 설정을 취소하고 지지난주 배치로 되돌렸다 (<b>${ch.length}명</b>): ${ch.map(x=>dnH(x)).join(", ")}`, "");
   save(); render();
   toast(`${ch.length}명을 지지난주 설정으로 되돌렸다.`);
 }
-/* 개인 집중 훈련 — 전부 지정 없음으로 */
-function clearFocusAll(){
-  const who = S.students.filter(s=> s.focus && s.focus!=="free");
-  if(!who.length){ toast("지정된 학생이 없다."); return; }
-  const rest = who.filter(isRestFocus).length;
-  who.forEach(s=>{ s.focus = "free"; delete s._prevFocus; });
-  logE(`개인 집중 훈련 — <b>${who.length}명</b>의 집중 분야를 모두 해제했다${rest? ` (휴식 집중 ${rest}명 포함)`:""}.`,"");
+/* 개인 행동 — 전원 임의로 */
+function clearFocusAll(){ setActAll("auto"); }
+/* 개인 행동 — 전원 같은 행동으로 (부상자는 휴식 그대로) */
+function setActAll(k){
+  if(k==="job" && !jobOpen()){ toast("여름에는 의뢰를 받을 수 없다."); return; }
+  const who = S.students.filter(s=> actNorm(s.focus)!==k && !(isInjured(s) && isRestFocus(s) && k!=="auto"));
+  if(!who.length){ toast(`이미 모두 ${ACT[k].n}이다.`); return; }
+  who.forEach(s=>{ s.focus = k; delete s._prevFocus; });
+  logE(`개인 행동 — <b>${who.length}명</b>을 <b>${ACT[k].n}</b>으로 바꿨다: ${who.map(x=>dnH(x)).join(", ")}`, "");
   save(); render();
-  toast(`${who.length}명의 집중 지정을 해제했다.`);
+  toast(`${who.length}명을 ${ACT[k].n}으로 바꿨다.`);
 }
 function setFocusAll(mode){
   const rows = [], done = new Set();
@@ -11503,7 +11815,7 @@ function viewCounsel(){
   const q = C.queue;
   const left = COUNSEL.filter(c=>!C.usedC.includes(c.id)).length;
   const head = `<div class="panel-h"><h2>상담실</h2>
-    <span class="hint">${S.year}년차 · 상담 ${C.done.length}회 진행${q.length? ` · <b style="color:var(--brass)">대기 ${q.length}/${CSL_QUEUE_MAX}건</b>`:""}</span></div>`;
+    <span class="hint">${yrName(S.year)} · 상담 ${C.done.length}회 진행${q.length? ` · <b style="color:var(--brass)">대기 ${q.length}/${CSL_QUEUE_MAX}건</b>`:""}</span></div>`;
   let body = "";
   if(q.length){
     body = `${q.length>=CSL_QUEUE_MAX? `<p style="font-size:12.5px;margin:0 0 12px"><b style="color:var(--bad)">지금은 가득 차서 새 상담이 들어오지 않는다.</b></p>`:""}
@@ -11527,7 +11839,7 @@ function viewCounsel(){
   const log = C.done.slice().reverse();
   return `<section class="panel">${head}${body}</section>
   <section class="panel">
-    <div class="panel-h"><h2>올해의 상담 기록</h2><span class="hint">${S.year}년차</span></div>
+    <div class="panel-h"><h2>올해의 상담 기록</h2><span class="hint">${yrName(S.year)}</span></div>
     ${log.length? `<div class="grid2">${log.map(d=>{
       const c = counselOf(d.cid); if(!c) return "";
       return `<div class="opt" style="cursor:default;border-color:${d.fit?"var(--ok)":"var(--line)"}">
@@ -11616,7 +11928,7 @@ function viewCodex(){
         return `<div class="opt ${locked?"locked":""}" style="cursor:default;border-left:3px solid ${col.c}">
           <div class="on">${t.n}${campOff? ` <span class="tag">합숙 중 제외</span>` : locked?` <span class="tag">${ITEMS[t.need].n} 필요</span>`: varies? ` <span class="tag" style="color:var(--dim)">색 무작위</span>` : ` <span class="tag" style="color:${col.c};border-color:${col.c}">${col.n}</span>`}
             <span class="price">${t.fac? FACILITIES[t.fac].n+" Lv."+S.facil[t.fac] : ""}</span></div>
-          <div class="od">${t.d}</div>
+          <div class="od" style="color:var(--brass)">${cardCost(id)? `비용 ${fmt(cardCost(id))} G` : "무료"}</div>
           <div class="od" style="display:flex;flex-wrap:wrap;gap:3px 10px;margin-top:4px">
             ${(t.fx||[]).map(f=>`<span style="color:var(--${f[2]?"bad":"ok"})">${esc(f[0])}<b>${"+".repeat(f[1])}</b></span>`).join("")
               || `<span style="color:var(--dim)">—</span>`}
@@ -11635,7 +11947,7 @@ function viewCodex(){
         return `<div class="opt ${lock?"locked":""}" style="cursor:default">
           <div class="on">${d.n}<span class="price">${d.secs}구간</span></div>
           <div class="od">권장 Lv.${d.lv}</div>
-          <div class="od">구간당 경험 ${fmt(dgExp(d))} · 자금 ${fmt(dgGold(d))} · 완주 시 학원 명성 +${dgFame(d)}</div>
+          <div class="od">구간당 경험 ${fmt(dgExp(d))}${dgGold(d)? ` · 자금 ${fmt(dgGold(d))}`:""} · 완주 시 학원 명성 +${dgFame(d)}</div>
           <div class="od">유물 — 구간 승리마다 ${Math.round(d.relicP*100)}%</div>
           ${lock? `<div class="od" style="color:var(--bad)">학원 명성 부족 — <b>${fmt(d.needFame-S.fame)}</b> 더 필요 (현재 ${fmt(S.fame)} / ${fmt(d.needFame)})</div>`
                 : `<div class="od" style="color:var(--ok)">개방됨 — 필요 명성 ${fmt(d.needFame)}</div>`}
@@ -11683,7 +11995,7 @@ function viewRecord(){
         <div class="gradcard-b">
           ${x.epithet? `<div class="gradcard-epi">“${esc(x.epithet)}”</div>`:""}
           <div class="gradcard-n">${esc(x.raw||x.name)}${x.tr? ` <span class="tag" style="color:var(--dim);border-color:var(--line)">이적</span>`:""}</div>
-          <div class="gradcard-s">${roleTag(x.job)}<span class="num">${x.year}년 졸업</span></div>
+          <div class="gradcard-s">${roleTag(x.job)}<span class="num">${yrName(x.year)} 졸업</span></div>
         </div>
       </button>`; }).join("")}</div>`
     : `<div class="empty">아직 졸업생이 없다. 3학년은 가을 대회가 끝나면 졸업한다.</div>`}
@@ -11728,7 +12040,7 @@ function bindView(){
   v.querySelectorAll("[data-sid]").forEach(b=> b.onclick=()=>{ UI.sel = (UI.sel===b.dataset.sid?null:b.dataset.sid); UI.view="roster"; render(); });
   v.querySelectorAll("[data-gcert]").forEach(b=> b.onclick=()=> gradCertModal(+b.dataset.gcert));
   const fs = $("#focusSel");
-  if(fs) fs.onchange = ()=>{ const s=S.students.find(x=>x.id===UI.sel); if(s){ s.focus=fs.value; save(); render(); toast(`${dn(s)}의 집중 분야 변경`);} };
+  if(fs) fs.onchange = ()=>{ const s=S.students.find(x=>x.id===UI.sel); if(s){ s.focus=fs.value; save(); render(); toast(`${dn(s)}의 개인 행동 — ${actName(fs.value)}`);} };
   const bsu = $("#btnSkUp"); if(bsu) bsu.onclick = ()=> skillUpModal(UI.sel);
   const brn = $("#btnStName"); if(brn) brn.onclick = ()=> renameStudent(UI.sel);
   const bas = $("#btnAutoSp"); if(bas) bas.onclick = ()=> autoSkillUpConfirm();
@@ -11926,8 +12238,8 @@ function bindView(){
   });
   const bAuto = $("#btnAuto"); if(bAuto) bAuto.onclick = ()=>{ autoFillSlots(); save(); render(); };
   const bCls  = $("#btnClearSlots"); if(bCls) bCls.onclick = ()=>{ for(let i=WEEK_DAYS-1;i>=0;i--) slotClear(i); save(); render(); };
-  const bfw = $("#btnFocusWeak");   if(bfw) bfw.onclick = ()=> setFocusAll("weak");
-  const bfs = $("#btnFocusStrong"); if(bfs) bfs.onclick = ()=> setFocusAll("strong");
+  const bat = $("#btnActTrain"); if(bat) bat.onclick = ()=> setActAll("train");
+  const baj = $("#btnActJob");   if(baj) baj.onclick = ()=> setActAll("job");
   const brA = $("#btnRestAll"); if(brA) brA.onclick = ()=> setRestFocus(100);
   const br40 = $("#btnRest40"); if(br40) br40.onclick = ()=> setRestFocus(39);
   const br70 = $("#btnRest70"); if(br70) br70.onclick = ()=> setRestFocus(69);
@@ -11937,6 +12249,8 @@ function bindView(){
   const brI = $("#btnRestInj"); if(brI) brI.onclick = ()=> setRestInjured();
   const bw = $("#btnWeek"); if(bw) bw.onclick=()=> chronicleAdvance(bw);
   const br = $("#btnRest"); if(br) br.onclick=()=> runWeeks(halfLeft());
+  v.querySelectorAll("[data-factab]").forEach(b=> b.onclick=()=>{ UI.facTab = b.dataset.factab; render(); });
+  { const br = $("#btnRepay"); if(br) br.onclick = ()=> buyRepay(); }
   v.querySelectorAll("[data-fac]").forEach(b=> b.onclick=()=>{
     const k=b.dataset.fac, c=facCost(k);
     if(facLock(k) || S.gold<c || (S.facil[k]||0) >= facMax(k)) return;
@@ -12499,7 +12813,7 @@ function gradCertHtml(g, c){
   const dgRows = DUNGEONS.map(d=>{ const n = (g.expedN||{})[d.id]|0; return `<div class="gc-row"><span>${esc(d.n)}</span><b class="num">${n}회</b></div>`; }).join("")
     + ((!g.expedN || !Object.keys(g.expedN).length) && g.expedTotal ? `<div class="gc-note">원정지별 기록이 없는 옛 기록 — 총 ${g.expedTotal}회</div>` : "");
   const winRows = (g.wins||[]).length
-    ? g.wins.map(w=>`<div class="gc-row"><span>${w.y}년 ${esc(w.n)}</span><b style="color:var(--brass)">우승</b></div>`).join("")
+    ? g.wins.map(w=>`<div class="gc-row"><span>${yrName(w.y)} ${esc(w.n)}</span><b style="color:var(--brass)">우승</b></div>`).join("")
     : `<div class="gc-row"><span style="color:var(--dim)">우승 경력 없음</span></div>`;
   const enroll = g.enrollYear != null ? g.enrollYear : (c.year-2);
   return `<div class="gcert ${g.dark?"dark":""}">
@@ -12507,7 +12821,7 @@ function gradCertHtml(g, c){
     <div class="gc-who">${face}
       <div class="gc-id">
         <div class="gc-name">${epiH(g.name)}</div>
-        <div class="gc-sub">${esc(J.name)} · ${esc(P.n)} · ${enroll}년 입학</div>
+        <div class="gc-sub">${esc(J.name)} · ${esc(P.n)} · ${yrName(enroll)} 입학</div>
       </div></div>
     <div class="gc-gap"></div>
     <div class="gc-stats">
@@ -12527,16 +12841,16 @@ function gradCertHtml(g, c){
     <div class="gc-cdesc">${esc(g.careerD || careerDescOf(g.careerId))}</div>
     ${g.reason? `<div class="gc-reason">${esc(g.reason)}</div>`:""}
     <div class="gc-gap"></div>
-    <div class="gc-row"><span>졸업</span><b>${c.year}년</b><i></i><span>최종</span><b class="num">Lv.${g.lv}</b></div>
+    <div class="gc-row"><span>졸업</span><b>${yrName(c.year)}</b><i></i><span>최종</span><b class="num">Lv.${g.lv}</b></div>
     <div class="gc-gap"></div>
     <div class="gc-text">본 학생은 <b>${esc(S.acadName||"학원")}</b>의 과정을 3년간 수료하였으니 이 증서를 수여합니다.</div>
-    <div class="gc-sign"><div>${c.year}년 2월</div><div>마스터</div>${stampSvg(S.acadName)}</div>
+    <div class="gc-sign"><div>${yrName(c.year)} 2월</div><div>마스터</div>${stampSvg(S.acadName)}</div>
   </div>`;
 }
 function gradCeremony(c){
   const list = c.list || [];
   return `<div class="cerhead">
-      <div class="eyebrow">${c.year}년 · 제 ${c.year}회</div>
+      <div class="eyebrow">${yrName(c.year)} · 제 ${c.year}회</div>
       <h2 style="font-size:26px;margin-top:2px">졸업식</h2>
       <p style="color:var(--muted);font-size:13px;margin-top:6px">3년 과정을 마친 ${list.length}명이 학원을 떠난다. 이들이 택한 길이 곧 학원의 이름이 된다.</p>
     </div>
@@ -12606,7 +12920,7 @@ function portalConfirmModal(onYes){
 const PORTAL_LETTER = "귀하와 학원의 소문은 많이 들었습니다. 편지에 포함된 아이템은 설치형 전송기입니다. 부디 저희 세계와 이어지는 차원 포탈을 구축하셔서 대회에 참가해주시기 바랍니다. 지맥의 특성상 봄 상반기에만 설치가 가능할겁니다.";
 function portalCeremony(c){
   return `<div class="cerhead">
-      <div class="eyebrow">${c.year}년 봄 · 2주차</div>
+      <div class="eyebrow">${yrName(c.year)} 봄 · 2주차</div>
       <h2 style="font-size:26px;margin-top:2px">이계에서의 편지</h2>
       <p style="color:var(--muted);font-size:13px;margin-top:6px">발신인이 적혀 있지 않은 편지 한 통이 학원장실에 놓여 있었다. 봉인을 풀자 낯선 문양이 새겨진 작은 장치가 함께 굴러 나온다.</p>
     </div>
@@ -12636,7 +12950,7 @@ function fameCeremony(c){
   if(exi >= 0) open.push({n:`학원 증축 Lv.${exi+1}`, v:`${fmt(EXPAND_COST[exi])} G`,
     d:`${expandUnlocks(exi+1).join(" · ")}${eulr(expandUnlocks(exi+1).slice(-1)[0]||"")} 들일 수 있게 된다`});
   return `<div class="cerhead">
-      <div class="eyebrow">${c.year}년 · 학원 명성 ${fmt(f)}</div>
+      <div class="eyebrow">${yrName(c.year)} · 학원 명성 ${fmt(f)}</div>
       <h2 style="font-size:26px;margin-top:2px">${esc(M.t)}</h2>
       <p style="color:var(--muted);font-size:13px;margin-top:6px">${esc(M.m)}</p>
     </div>
@@ -12651,7 +12965,7 @@ function fameCeremony(c){
 function fallCeremony(c){
   const wk = c.weeks || phaseWeeks("fall");
   return popupBanner("fall", c.year) + `<div class="cerhead">
-      <div class="eyebrow">${c.year}년 가을 · 1주차</div>
+      <div class="eyebrow">${yrName(c.year)} 가을 · 1주차</div>
       <h2 style="font-size:26px;margin-top:2px">가을</h2>
       <p style="color:var(--muted);font-size:13px;margin-top:6px">각자의 염원, 하나의 무대</p>
     </div>
@@ -12669,7 +12983,7 @@ function fallCeremony(c){
 function campCeremony(c){
   const wk = c.weeks || phaseWeeks("summer");
   return popupBanner("summer", c.year) + `<div class="cerhead">
-      <div class="eyebrow">${c.year}년 여름 · 1주차</div>
+      <div class="eyebrow">${yrName(c.year)} 여름 · 1주차</div>
       <h2 style="font-size:26px;margin-top:2px">여름</h2>
       <p style="color:var(--muted);font-size:13px;margin-top:6px">${wk}주간의 지옥 합숙이 시작된다.</p>
     </div>
@@ -12692,7 +13006,7 @@ function campCeremony(c){
 function scoutCeremony(c){
   const gradN = (c.grad!=null) ? (c.grad|0) : ((S.pendingGrad && S.pendingGrad.list)? S.pendingGrad.list.length : 0);
   return popupBanner("winter", c.year) + `<div class="cerhead">
-      <div class="eyebrow">${c.year}년 겨울 · 1주차</div>
+      <div class="eyebrow">${yrName(c.year)} 겨울 · 1주차</div>
       <h2 style="font-size:26px;margin-top:2px">겨울</h2>
       <p style="color:var(--muted);font-size:13px;margin-top:6px">겨울 ${phaseWeeks("winter")}주 내내 후보들이 학원 문을 두드린다. 시즌이 끝나기 전에 마음을 정해야 한다.</p>
     </div>
@@ -12720,7 +13034,7 @@ function scoutCeremony(c){
 function unlockCeremony(c){
   const U = UNLOCKS[c.kind] || UNLOCKS.region;
   return `<div class="cerhead">
-      <div class="eyebrow">${c.year}년 신학기 · 초대장</div>
+      <div class="eyebrow">${yrName(c.year)} 신학기 · 초대장</div>
       <h2 style="font-size:26px;margin-top:2px">${esc(U.n)} 참가 자격</h2>
       <p style="color:var(--muted);font-size:13px;margin-top:6px">입학식 아침, 학원 앞으로 봉인된 서한이 한 통 도착했다.${c.rest? " 아직 열어보지 못한 자격이 하나 더 남아 있다 — 그 초대장은 내년 봄에 온다." : ""}</p>
     </div>
@@ -12736,7 +13050,7 @@ function unlockCeremony(c){
 }
 function enrollCeremony(c){
   return popupBanner("spring", c.year) + `<div class="cerhead">
-      <div class="eyebrow">${c.year}년 봄 · 1주차</div>
+      <div class="eyebrow">${yrName(c.year)} 봄 · 1주차</div>
       <h2 style="font-size:26px;margin-top:2px">봄</h2>
       <p style="color:var(--muted);font-size:13px;margin-top:6px">입학식</p>
     </div>
@@ -13544,7 +13858,7 @@ function startFriendly(sl){
   const need = (FRIENDLY_PHASES[sl.phase]||FRIENDLY_PHASES.spring).teams;
   const names = teamsOf().filter(x=>teamFull(x)).map(x=>x.n).slice(0, need);
   UI.tour = {
-    kind:"friendly", title:`${S.year}년 친선전 — ${sl.foe.name}`, stage:"prep", _prepOpen:true,
+    kind:"friendly", title:`${yrName(S.year)} 친선전 — ${sl.foe.name}`, stage:"prep", _prepOpen:true,
     slot: sl.i, foe: sl.foe, ph: sl.phase, need, myTier: fameTitleIdx(S.fame), entryTeams: names,
     myTeams:[], results:[], matchIdx:0, w:0, l:0
   };
@@ -14402,7 +14716,7 @@ function showTitle(canContinue){
       <button class="btn primary" id="tNew">새 시나리오 시작</button>
       <button class="btn" id="tCont" ${canContinue?"":"disabled"}>이어하기</button>
     </div>
-    <div class="tsave">${canContinue? `저장된 학원 — ${esc(S.acadName)} · ${S.year}년 ${PHASES[S.phase].n} ${Math.min(S.week+1,PHASES[S.phase].weeks)}주` : "저장된 기록이 없다"}</div>
+    <div class="tsave">${canContinue? `저장된 학원 — ${esc(S.acadName)} · ${yrName(S.year)} ${PHASES[S.phase].n} ${Math.min(S.week+1,PHASES[S.phase].weeks)}주` : "저장된 기록이 없다"}</div>
     <button class="tmus" id="tAudBtn" type="button">\u266a  음악</button>
     <div class="tahint" id="tAudHint">게임의 몰입감을 높이고 싶다면 음악을 켜고 진행해주세요! (설정에서 변경 가능합니다)</div>
   </div></div>`;
@@ -14507,6 +14821,7 @@ function boot(){
   bootLoaderDone();
   const had = load();
   if(!had) newGame();
+  if(!S.debtV){ S.debt = (S.debt|0) + DEBT_START; S.debtV = 1; bankState(); }   // 빚 (0926) — 새 게임 · 옛 세이브 모두 5만
   S.relicPool = S.relicPool||[];
   S.church = S.church||{};
   S.epiUsed = S.epiUsed||[]; S.epiLog = S.epiLog||[];
@@ -14570,7 +14885,9 @@ function boot(){
     if(typeof x.trust !== "number") x.trust = 0;
     if(typeof x.epithet === "undefined") x.epithet = null;
     if(typeof x.injured !== "number") x.injured = 0;
-    if(x.focus==="pot") x.focus = "free";
+    x.focus = actNorm(x.focus);   // 개인 행동 (0926) — 지정 없음 → 임의 · 멘탈리티 → 훈련
+    if(x._injFocus != null) x._injFocus = actNorm(x._injFocus);
+    if(x._prevFocus != null) x._prevFocus = actNorm(x._prevFocus);
     if(!x.pers){ x.pers = wchoose(PERSONA_KEYS.reduce((a,k)=>{ a[k]=PERSONA[k].w; return a; }, {})); applyPersona(x); }
   });
   if(S.phase==="winter" && S.scouts && typeof S.scoutTries!=="number") S.scoutTries = scoutTriesMax();
