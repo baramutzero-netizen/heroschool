@@ -1687,6 +1687,17 @@ table.tb tr:hover td{background:var(--surface2)}
 .modal.btm-demon .blog b{color:#fff}
 .modal.btm-demon .blog .epi{color:#fff174}
 
+
+/* Keep the arena artwork opaque while preserving the surrounding translucent wash. */
+.modal.btm .bf-stage{background:transparent}
+.modal.btm .bf-stage::before{content:"";position:absolute;pointer-events:none;z-index:-1;left:var(--field-left,0px);top:var(--field-top,0px);width:var(--field-width,100%);height:var(--field-height,100%);background:#171523 var(--btf) center 42%/cover no-repeat;clip-path:inset(var(--field-clip,0px) round 12px)}
+.bf-school,.bf-legend{background:#18202eee;color:#fff;border:1px solid #d8c79b99;border-radius:7px;padding:8px 11px;box-shadow:0 2px 7px #0004}
+.bf-school>b{color:#fff;text-shadow:none}
+.bf-school .fmtag,.modal.btm .bf-school .fmtag.none{background:#273244;color:#fff;border-color:#c7b785}
+.bf-school .fmtag b{color:#ffe3a0;text-shadow:none}
+.bf-legend{z-index:100;color:#fff}
+@media(max-width:640px){.bf-school,.bf-legend{padding:5px 7px}}
+
 </style>
 
 <div id="app">
@@ -8298,7 +8309,7 @@ const FIELD_DARK = ["dummy","gargoyle","guardian","wraith"];
 function fieldOf(k){
   return (typeof FIELD_IMG !== "undefined" && FIELD_IMG[k]) ? FIELD_IMG[k] : "";
 }
-function fieldAlpha(k){ if(k === "demonking") return 0; return FIELD_DARK.indexOf(k) >= 0 ? FIELD_A_DARK : FIELD_A_LIGHT; }
+function fieldAlpha(k){ if(k === "demonking") return FIELD_A_DARK; return FIELD_DARK.indexOf(k) >= 0 ? FIELD_A_DARK : FIELD_A_LIGHT; }
 /* 전투 배경 — 대회는 단계별, 원정은 원정지별, 나머지는 그 계절 */
 const LADDER_FIELD = {city:"citytournament", region:"areatournament", qual:"areatournament", final:"final"};
 function battleFieldKey(k){
@@ -13345,12 +13356,17 @@ function battleCallout(call, seed){
   return {text:variants[index],tone:p};
 }
 function alignDemonField(){
-  const modal=document.querySelector('.modal.btm-demon'),stage=modal&&modal.querySelector('.bf-stage');
+  const modal=document.querySelector('.modal.btm'),stage=modal&&modal.querySelector('.bf-stage');
   if(!stage)return;
   const m=modal.getBoundingClientRect(),r=stage.getBoundingClientRect();
-  // B back-row centre: x=60% + 14%, shared with the ground-slot layout.
-  const shift=Math.max(0,r.left-m.left+r.width*.74-m.width*.5);
+  const shift=modal.classList.contains('btm-demon')?Math.max(0,r.left-m.left+r.width*.74-m.width*.5):0;
   modal.style.setProperty('--demon-shift',shift+'px');
+  const x=r.left-m.left,y=r.top-m.top,w=modal.clientWidth+shift*2,h=modal.clientHeight;
+  stage.style.setProperty('--field-left',-x+'px');
+  stage.style.setProperty('--field-top',-y+'px');
+  stage.style.setProperty('--field-width',w+'px');
+  stage.style.setProperty('--field-height',h+'px');
+  stage.style.setProperty('--field-clip',`${y}px ${Math.max(0,w-x-stage.clientWidth)}px ${Math.max(0,h-y-stage.clientHeight)}px ${x}px`);
 }
 window.addEventListener('resize',alignDemonField);
 function openBattle(res, opt, onDone){
