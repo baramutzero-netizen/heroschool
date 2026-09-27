@@ -3,13 +3,13 @@ function reportRecord(day, tr, bonus, phase, before, members, status, logStart, 
   if(!UI.wrun) return;
   const groups = {};
   members.forEach(s=>{
-    const fac = extra?.facility || (phase==="pm" ? FOCUS_FAC[s.focus] : status[s.id]==="rest" ? "infirm" : tr.fac) || "gym";
+    const fac = extra?.facility || (phase==="pm" ? FOCUS_FAC[s._fk] : status[s.id]==="rest" ? "infirm" : tr.fac) || "gym";
     (groups[fac] ||= []).push(s);
   });
   const scenes = UI.wrun.scenes ||= [];
   Object.entries(groups).forEach(([facility, group])=> scenes.push({
     day, season:UI.wrun.startPhase || S.phase, training:tr.n, trainingId:tr.id, color:cardColor(UI.wrun.days?.[day] || tr.id).c, bonus, phase, facility,
-    logs:DAYLOG.slice(logStart), reward:extra?.reward || "",
+    logs:DAYLOG.slice(logStart), reward:extra?.reward || "", job:extra?.job || null, jobIntro:!!extra?.jobIntro,
     students:group.map(s=>{
       const old=before[s.id], changes=[];
       if(old){
@@ -23,13 +23,15 @@ function reportRecord(day, tr, bonus, phase, before, members, status, logStart, 
         const xp=Math.round(s.totalExp||0)-Math.round(old.exp);
         if(xp)changes.push({label:"경험",from:Math.round(old.exp),to:Math.round(s.totalExp||0),value:xp,kind:"exp"});
       }
-      return {id:s.id,name:s.name,job:s.job,palette:sprPalOf(s),focus:s.focus,condition:{from:Math.round(old?.cond ?? s.cond),to:Math.round(s.cond)},
+      return {id:s.id,name:s.name,job:s.job,palette:sprPalOf(s),focus:s._fk||actOf(s),condition:{from:Math.round(old?.cond ?? s.cond),to:Math.round(s.cond)},
         state:status[s.id] || (phase==="pm"?"focus":"returned"),changes};
     })
   }));
 }
 
 // All rooms use the same 3:1 viewport. Only the vertical crop origin differs.
+const REPORT_JOB_LAYOUT = {crop:0, capacity:5, slots:[[18,75],[34,57],[50,80],[66,56],[82,76]]};
+const reportRoom = s => s.job && REPORT_JOB_MAPS[s.job] || REPORT_ROOMS[s.facility];
 const REPORT_LAYOUTS = {
   library:{crop:.235, slots:[[12,79],[45,42],[63,47],[79,73],[88,84]]},
   gym:{crop:.255, slots:[[14,75],[34,48],[52,29],[77,81],[90,84]]},
@@ -68,7 +70,7 @@ function reportScenesForPlayback(records){
     const morning=daily.filter(s=>s.phase!=="pm"), afternoon=daily.filter(s=>s.phase==="pm");
     const choose=list=>list.slice().sort((a,b)=>b.students.length-a.students.length)[0];
     const am=morning.find(s=>s.phase==="exped") || choose(morning.filter(s=>s.students.some(x=>x.state!=="rest"))) || choose(morning);
-    const pm=choose(afternoon);
+    const pm=afternoon.find(s=>s.jobIntro) || choose(afternoon);
     if(am)out.push(am);
     if(pm)out.push(pm);
   });
@@ -89,7 +91,7 @@ function reportSceneShell(records, dlg){
     </div>
     <nav class="dr-phases" id="drPhases" aria-label="훈련 장면 선택"></nav>
     <div class="dr-result" aria-live="polite"><div><b id="drResultTitle"></b><span id="drResultHint"></span></div><div id="drResultChips"></div></div>
-    <div class="dr-controls"><div><button class="btn sm" id="drPlay">일시정지</button><button class="btn sm" id="drPrev" aria-label="이전 장면">‹</button><button class="btn sm" id="drNext" aria-label="다음 장면">›</button>${[1,2,6].map(n=>`<button class="btn sm" data-dr-speed="${n}">×${n}</button>`).join("")}<button class="btn sm" id="dlSkip">한 번에 보기</button></div><span id="drProgress"></span></div>
+    <div class="dr-controls"><div><button class="btn sm" id="drPlay">일시정지</button><button class="btn sm" id="drPrev" aria-label="이전 장면">‹</button><button class="btn sm" id="drNext" aria-label="다음 장면">›</button>${[1,2,6].map(n=>`<button class="btn sm" data-dr-speed="${n}">×${n}</button>`).join("")}<button class="btn sm" id="dlSkip" hidden style="display:none">한 번에 보기</button></div><span id="drProgress"></span></div>
     <details class="dr-details" id="drDetail"><summary>이 장면의 전체 학생 · 성장 내역</summary><div id="drDetailBody"></div></details>
     <div id="drFullLog" hidden><h3>주간 전체 기록</h3><div class="daylog">${dlg.map(x=>`<div class="on ${x.k==="gap"?"dlgap":"dlline "+x.k}">${x.t}</div>`).join("")}</div></div>
   </section>`;
@@ -124,7 +126,7 @@ function reportSceneBind(records){
     if(oldConfirmRow && !oldConfirmRow.children.length)oldConfirmRow.remove();
   }
   let at=0, speed=[1,2,6].includes(PREF.reportSpeed)?PREF.reportSpeed:2, paused=reduced, full=false, elapsed=0, last=performance.now(), timer=null, disposed=false;
-  let duration=2400, queue=[], displayed=[], lastSound=-1;
+  let duration=2400, queue=[], displayed=[], lastSound=-1, jobShown=false;
   const stepMs=450, leadMs=250, riseMs=900/0.7, cardMs=400+riseMs, fadeMs=100, fadeDelayMs=cardMs-fadeMs;
   const statAudio=new Audio(REPORT_STATUP);
   const recoveryAudio=new Audio(REPORT_RECOVERY);
@@ -132,9 +134,9 @@ function reportSceneBind(records){
   reportAudio.forEach(audio=>audio.preload="auto");
   function silence(){reportAudio.forEach(audio=>{audio.pause();audio.currentTime=0;});}
   const placements=new Map();
-  const phaseName=s=>s.phase==="exped"?"오전 원정":s.phase==="pm"?"오후 집중":s.students.every(x=>x.state==="rest")?(s.facility==="beach"?"오전 일광욕":"오전 휴식"):"오전 훈련";
+  const phaseName=s=>s.phase==="exped"?"오전 원정":s.phase==="pm"?(s.job?"오후 의뢰":"오후 훈련"):s.students.every(x=>x.state==="rest")?(s.facility==="beach"?"오전 일광욕":"오전 휴식"):"오전 훈련";
   const chip=c=>`<span class="dr-chip ${c.kind}">${esc(c.label)} ${c.value>0?"+":""}${c.value}</span>`;
-  const stateName=s=>s.state==="failed"?"실패 · 성과 25%":s.state==="rest"?"휴식":s.state==="focus"?"집중 훈련":s.state==="returned"?"원정 귀환":"훈련 완료";
+  const stateName=s=>s.state==="failed"?"실패 · 성과 25%":s.state==="rest"?"휴식":s.state==="job"?"의뢰":s.state==="focus"?"개인 훈련":s.state==="returned"?"원정 귀환":"훈련 완료";
   const player={dispose(){disposed=true;clearInterval(timer);silence();reportAudio.forEach(audio=>{audio.removeAttribute("src");audio.load();});},get index(){return at;},get paused(){return paused;}};
   UI._reportPlayer=player;
   function sync(){
@@ -153,16 +155,17 @@ function reportSceneBind(records){
   }
   function draw(){
     const s=scenes[at], day=scenes.filter(x=>x.day===s.day), offset=(s.day*3)%Math.max(1,s.students.length);
-    const layout=REPORT_LAYOUTS[s.facility] || REPORT_LAYOUTS.gym;
+    const layout=s.job ? REPORT_JOB_LAYOUT : REPORT_LAYOUTS[s.facility] || REPORT_LAYOUTS.gym;
     const visible=s.students.slice(offset).concat(s.students.slice(0,offset)).slice(0,layout.capacity || layout.slots.length);
     displayed=visible;queue=reportStatQueue(visible);lastSound=-1;silence();
     duration=Math.max(2400,leadMs+queue.length*stepMs+cardMs);
-    const source=REPORT_ROOMS[s.facility];
+    const source=reportRoom(s);
     if($("#drRoom").getAttribute("src")!==source)$("#drRoom").src=source;
-    const facilityName=s.facility==="beach"?"해수욕장":FACILITIES[s.facility]?.n||"학원";
+    const facilityName=s.job?jobDef(s.job).n:s.facility==="beach"?"해수욕장":FACILITIES[s.facility]?.n||"학원";
     $("#drRoom").alt=s.facility==="beach"?"여름 해수욕장 모래사장":`${facilityName} 실내`;
     $("#drStage").dataset.phase=s.phase;
     $("#drStage").dataset.facility=s.facility;
+    $("#drStage").dataset.job=s.job || "";
     $("#drStage").style.setProperty("--crop-top",`${-layout.crop*312.5}%`);
     $("#drStage").style.setProperty("--sprite-unit",`${layout.scale || 1050}px`);
     $("#drFacility").textContent=facilityName;
@@ -175,23 +178,43 @@ function reportSceneBind(records){
     if(s.facility==="beach" && !placements.has(s))placements.set(s,reportBeachPositions());
     const pos=placements.get(s) || layout.slots;
     $("#drStudents").innerHTML=visible.map((x,i)=>{
-      const studying=s.facility==="hall" && !!REPORT_STUDY[x.job];
-      const resting=s.facility==="infirm" || (s.facility==="beach" && x.state==="rest");
+      const studying=!s.job && s.facility==="hall" && !!REPORT_STUDY[x.job];
+      const resting=!s.job && (s.facility==="infirm" || (s.facility==="beach" && x.state==="rest"));
       const motion=resting?"down":x.state==="rest"?"idle":x.state==="failed"?"hit":["gym","hall","arena"].includes(x.trainingFacility || s.facility)?"attack":"idle";
       const cond=x.condition?.from ?? 100;
       return `<button class="dr-student ${studying?"studying":""} ${resting?"resting":""} ${pos[i][1]<48?"low-bubble":""}" data-dr-student="${i}" style="left:${pos[i][0]}%;top:${pos[i][1]}%;z-index:${Math.round(pos[i][1])}" aria-label="${esc(x.name)} 성장 내역"><span class="dr-shadow"></span><span class="dr-avatar">${studying?`<span class="dr-study-sprite" data-study-job="${x.job}" style="background-image:url(${REPORT_STUDY[x.job]})"></span>`:sprHTML(x.job,motion,1,{p:x.palette,flip:resting?i!==2:i%2===1,t0:resting?0:performance.now()})}</span><span class="dr-name">${esc(x.name)}</span><span class="dr-condition ${reportConditionColor(cond)}" role="meter" aria-label="컨디션" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${cond}"><span class="dr-condition-fill" style="width:${clamp(cond,0,100)}%"></span><span class="dr-condition-number">${cond}</span></span><span class="dr-bubbles" hidden></span></button>`;
     }).join("");
-    if(s.facility==="hall"){
+    if(!s.job && s.facility==="hall"){
       $("#drStudents").insertAdjacentHTML("beforeend",pos.slice(visible.length).map(p=>`<div class="dr-student studying empty-seat" aria-hidden="true" style="left:${p[0]}%;top:${p[1]}%;z-index:${Math.round(p[1])}"><span class="dr-avatar"><span class="dr-study-sprite empty" style="background-image:url(${REPORT_STUDY.empty})"></span></span></div>`).join(""));
     }
     root.querySelectorAll("[data-dr-student]").forEach(b=>b.onclick=()=>details(visible[+b.dataset.drStudent].id));
     $("#drSceneCount").textContent=`${visible.length}명 표시${s.students.length>visible.length?` · 시설 참여 ${s.students.length}명`:""}`;
-    $("#drResultTitle").textContent=`${DAY_N[s.day]}요일 · ${s.phase==="pm"?"개인 집중 훈련":s.training}`;
+    $("#drResultTitle").textContent=`${DAY_N[s.day]}요일 · ${s.phase==="pm"?(s.job?`의뢰 · ${jobDef(s.job).n}`:"개인 행동"):s.training}`;
     const fail=s.students.filter(x=>x.state==="failed").length;
     $("#drResultHint").textContent=`${phaseName(s)} · ${s.students.length}명${fail?` · 실패 ${fail}명`:""}`;
     const totals={};s.students.forEach(x=>x.changes.forEach(c=>{totals[c.label]=(totals[c.label]||0)+c.value;}));
     $("#drResultChips").innerHTML=s.reward?`<span>${esc(s.reward)}</span>`:Object.entries(totals).map(([label,value])=>chip({label:`${label} 합계`,value:Math.round(value*10)/10,kind:value<0?"loss":label==="컨디션"?"heal":"gain"})).join("")||`<span class="hint">오늘의 기록을 차곡차곡 쌓았어요.</span>`;
     details();sync();timeline(false);progress();
+    if(s.jobIntro && !jobShown){
+      jobShown=true; paused=true; sync();
+      jobIntroShow(s, ()=>{ paused=false; last=performance.now(); sync(); });
+    }
+  }
+  function jobIntroShow(s, done){
+    const J=jobDef(s.job), box=root.querySelector(".modal");
+    if(!box){ done(); return; }
+    const el=document.createElement("div");
+    el.className="job-intro";
+    el.innerHTML=`<div class="ji-card" role="dialog" aria-modal="true" aria-label="이번 주 의뢰 — ${esc(J.n)}">
+      <div class="ji-bg" style="background-image:url('${reportRoom(s)||""}')"></div>
+      <div class="ji-body"><div class="ji-face">${jobFaceHTML(J)}</div>
+        <div class="ji-text"><div class="eyebrow">이번 주 의뢰</div><h3>${esc(J.n)}</h3><div class="ji-who">${esc(J.who)}</div>
+          <p class="ji-line">“${esc(J.line)}”</p>
+          <div class="ji-meta">${esc(mentName(J.up))} 소폭 증가 · ${esc(mentName(J.down))} 하락 · 컨디션 -${JOB_COND}/일 · 보수 ${fmt(jobPay())} G/일</div></div></div>
+      <div class="ji-btn"><button class="btn primary" id="jiOk">의뢰를 맡는다</button></div></div>`;
+    box.appendChild(el);
+    const ok=el.querySelector("#jiOk"); ok.focus();
+    ok.onclick=()=>{ el.remove(); done(); };
   }
   function timeline(sound){
     const n=Math.floor((elapsed-leadMs)/stepMs);
@@ -229,7 +252,7 @@ function reportSceneBind(records){
     const event=queue[n];
     if(sound && n!==lastSound){
       lastSound=n;
-      if(event && event.to>event.from && sfxGain()>0){
+      if(event && (event.to>event.from || (!event.condition && scenes[at].job)) && sfxGain()>0){
         const audio=event.condition?recoveryAudio:statAudio;
         audio.pause();audio.currentTime=0;audio.volume=sfxGain();audio.play().catch(()=>{});
       }
@@ -241,8 +264,9 @@ function reportSceneBind(records){
   $("#drPrev").onclick=()=>seek(at-1);$("#drNext").onclick=()=>seek(at+1);
   root.querySelectorAll("[data-dr-day]").forEach(b=>b.onclick=()=>{const i=scenes.findIndex(s=>s.day===+b.dataset.drDay);if(i>=0)seek(i);});
   root.querySelectorAll("[data-dr-speed]").forEach(b=>b.onclick=()=>{speed=+b.dataset.drSpeed;PREF.reportSpeed=speed;prefSave();sync();});
-  $("#dlSkip").onclick=()=>{full=!full;paused=true;$("#drFullLog").hidden=!full;$("#dlSkip").textContent=full?"전체 기록 접기":"한 번에 보기";sync();if(full)$("#drFullLog").scrollIntoView({block:"start",behavior:reduced?"instant":"smooth"});};
+  UI._drPause=()=>{if(disposed)return;paused=true;sync();};
+  $("#dlSkip").onclick=()=>{full=!full;paused=true;$("#drFullLog").hidden=!full;$("#dlSkip").textContent=full?"전체 기록 접기":"한 번에 보기";sync();if(full)finPopupShow();if(full)$("#drFullLog").scrollIntoView({block:"start",behavior:reduced?"instant":"smooth"});};
   $("#drDetail").addEventListener("toggle",()=>{if($("#drDetail").open){paused=true;sync();}});
-  timer=setInterval(()=>{const now=performance.now(),dt=Math.min(now-last,60);last=now;if(disposed||paused||document.hidden){if(document.hidden)silence();return;}if(!$("#drStage")){reportPlayerStop();return;}elapsed+=dt*speed;timeline(true);if(elapsed>=duration){if(at<scenes.length-1){seek(at+1);return;}elapsed=duration;paused=true;sync();}progress();},30);
+  timer=setInterval(()=>{const now=performance.now(),dt=Math.min(now-last,60);last=now;if(disposed||paused||document.hidden){if(document.hidden)silence();return;}if(!$("#drStage")){reportPlayerStop();return;}elapsed+=dt*speed;timeline(true);if(elapsed>=duration){if(at<scenes.length-1){seek(at+1);return;}elapsed=duration;paused=true;sync();finPopupShow();}progress();},30);
   draw();
 }

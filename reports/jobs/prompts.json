@@ -1,0 +1,51 @@
+{
+  "farm": {
+    "face": {
+      "prompt": "Create a SINGLE square NPC FACE ICON matching the actual chibi game sprites in both references very closely: cute Japanese RPG SD pixel-art-like crisp outlined rendering, huge round head, large shiny simple eyes, tiny nose and mouth, clean simplified flat shaded skin, absolutely no realistic skin, no detailed wrinkles, no oil painting. Head and shoulders portrait only, transparent background, no border or text. Character: kindly elderly male vegetable farmer, big white eyebrows, small soft white beard, straw hat, olive work tunic. Cute cartoon elderly character in SAME art direction as reference female students, not a realistic mature portrait. Face dominates image, compact silhouette readable tiny. Reference images are style only, do not copy their armor.",
+      "revision": "Preserve original farmer portrait; lengthen and thicken both white eyebrows to completely conceal eyes, no pupils or eye outlines visible. Preserve transparent background and SD pixel style."
+    },
+    "map": {
+      "prompt": "Create single wide landscape 3:1 game background for farming quest progress report. Match reference warm detailed painted isometric medieval fantasy environment art, but make FULL BLEED rectangular panoramic playable scene not floating diamond. Elevated three-quarter view of village vegetable farm, cottage and fence along far upper edge, cabbage/carrot rows on side edges, baskets, watering can, weeds. Broad EMPTY dirt paths and sparse low weed patches through central 65% and lower half for compositing tiny chibi workers. Soft sunny afternoon. No people animals text UI border. Warm earth and leafy green colors, legible miniature game map."
+    }
+  },
+  "church": {
+    "face": {
+      "prompt": "Single transparent-background square NPC face icon for this exact game, match reference sprites' cute Japanese RPG SD style: very large round head, huge shiny anime eyes, tiny nose and mouth, compact head-and-shoulders crop, crisp pixel-like outlined details, simplified smooth flat skin shading, no realism no texture no wrinkles. Adult female church nun with ivory veil and navy habit, small gold sun pendant, brown hair and warm brown eyes, gentle smile. Same cute youthful stylization as students in references, but civilian nun clothes. No frame no letters. Transparent background."
+    },
+    "map": {
+      "prompt": "Single full bleed panoramic 3:1 landscape medieval fantasy village chapel interior map for quest cleaning report. Match reference cozy hand-painted detailed isometric game environment style. Elevated three-quarter camera, soft stained glass light, stone walls and altar along top edge, wooden pews pushed along left/right edges, candles and simple sun emblem, bucket and broom near wall. Keep central 65% and foreground broad EMPTY pale stone tile floor with small dusty patches for overlaying chibi cleaning students. No people, text, UI, border. Not floating diamond, fill rectangular scene. Ivory stone, muted blue/gold, calm morning light."
+    }
+  },
+  "inn": {
+    "face": {
+      "prompt": "One transparent square head-and-shoulders face icon, match attached existing RPG student sprites' cute SD anime sprite art, huge round head and big sparkling eyes, tiny nose/mouth, crisp dark outlines and pixel-like detailed hair, simple smooth skin, no realism. Civilian NPC inn hostess: cheerful adult woman with auburn braided hair coiled up, cream kerchief, amber eyes, cream blouse and warm orange bodice/apron, welcoming confident smile. Compact head-and-shoulders only, no props blocking face, no frame text or background."
+    },
+    "map": {
+      "prompt": "Single 3:1 wide landscape medieval fantasy inn lobby quest progress map. Reference defines warm painterly isometric environment art. Full bleed rectangular scene viewed elevated three-quarter angle. Welcoming daylight timber inn, reception counter and cubby keys along back wall, stairs to guest rooms back right, stacked suitcases baskets linen and parcels at side walls, small rug and fireplace at edge. Broad EMPTY warm plank floor across center 65% and foreground for moving chibi student sprites carrying luggage. Cozy cream and amber light. No people animals writing UI frame, no floating diamond. Visually distinct from tavern: daytime reception lobby without drinking tables."
+    }
+  },
+  "hunt": {
+    "face": {
+      "prompt": "One square transparent NPC head-and-shoulders portrait matching reference game student sprites. Cute Japanese RPG chibi SD, very large round head, huge clear shiny eyes, tiny simple nose/mouth, crisp dark outlined pixel-like detail and simple soft shaded skin. No realistic anatomy or skin texture. Village hunter: young adult male, tousled dark chestnut short hair, forest green hood lowered around neck, brown leather shoulder strap, green eyes, friendly determined slight grin, little feather in hair. Civilian hunter no armor. Head dominates crop. No text frame or background."
+    },
+    "map": {
+      "prompt": "Single panoramic 3:1 landscape quest progress background, medieval fantasy woodland hunting support area. Match reference warm detailed painterly isometric miniature game environment. Elevated three-quarter view, full bleed rectangle not floating platform. Dense oak/birch trees and ferns frame upper and side edges, tiny empty hunter camp with rolled nets, crates and quiver at far upper left, distant winding forest trail. Very broad EMPTY mossy dirt clearing through center 65% and lower area for chibi student sprites. Daylight shafts soft greens earthy browns, no people animals prey corpses blood text UI borders. Ground legible and uncluttered."
+    }
+  },
+  "salon": {
+    "face": {
+      "prompt": "Single square transparent-background face icon matching references' cute Japanese RPG SD student sprite style. Huge head, large sparkling anime eyes, tiny mouth/nose, crisp dark contours, pixel-like detailed hair, simplified clean shaded skin, NOT realistic. Fashionable female medieval fantasy salon owner, plum-purple bob haircut with curled tips and gold scissors-shaped hairpin, violet eyes, playful confident smile, ivory blouse with mauve vest. Head and shoulders only, face large and clear. No border, words, background or extra people."
+    },
+    "map": {
+      "prompt": "Single wide 3:1 medieval fantasy hair salon interior map for quest progress report. Match reference warm painterly detailed isometric environment style. Elevated three-quarter view, full bleed rectangle. Back wall carved wooden oval mirrors with ornate chairs, wooden washbasin, folded towels, combs scissors small glass herbal bottles on shelves, mauve drapery and sunny side window. Broad EMPTY warm cream and pale mauve tiled floor central 65% and foreground for overlaying chibi student workers. Furniture pushed to back/side edges. Medieval tools no electric dryers or modern plastic. No characters, reflections of people, text, UI, frame. Cozy whimsical game environment."
+    }
+  },
+  "tavern": {
+    "face": {
+      "prompt": "One transparent square head-and-shoulders NPC face icon, match reference cute SD RPG sprites. Huge round head, expressive big shiny anime eyes, tiny nose, cheerful open grin, crisp outlined pixel-like hair shading, clean simple skin not realistic. Jovial male tavern keeper, warm chestnut swept hair, thick short cartoon moustache, red bandana around neck, cream shirt with burgundy vest, friendly boisterous personality. Chibi cartoon stylization same as references, no detailed wrinkles or realistic face. Face dominates crop, no lettering, border, props, background."
+    },
+    "map": {
+      "prompt": "Single panoramic 3:1 full bleed rectangular medieval fantasy tavern interior for serving quest report. Match attached warm detailed hand-painted isometric game environment, elevated three-quarter camera. Nighttime cozy amber lanterns and hearth glow, long bar and barrels on back wall, wooden tankards serving trays, red cloth, a few round dining tables ONLY at far left/right edges. Leave center 65% and foreground as broad EMPTY wooden floor serving aisle for overlaying chibi students. Deep burgundy and warm brown palette, bright enough to read sprites. No patrons people animals text UI frame, not floating diamond, no modern items."
+    }
+  }
+}

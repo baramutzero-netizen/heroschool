@@ -57,5 +57,12 @@
 .dr-student.studying .dr-shadow{display:none}
 .dr-student.studying .dr-name{top:91%}
 .dr-student.studying .dr-condition{top:106%;width:62%}
+/* 폰 — 이름표가 cqw 로 줄지 않고 최소 글자 크기에 걸려 컨디션바와 겹친다. 바를 이름 아래로 내린다 */
+@media(max-width:600px){
+  .dr-condition{top:calc(98% + 9px)}
+  .dr-student.studying .dr-condition{top:calc(106% + 9px)}
+}
 .dr-student.studying .dr-bubbles{bottom:90%}
 .empty-seat{pointer-events:none}
+
+.dr-stage[data-job]:not([data-job=""]) .dr-room{width:100%;height:100%;left:0;top:0;object-fit:cover}

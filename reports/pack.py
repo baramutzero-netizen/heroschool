@@ -14,9 +14,11 @@ study = {p.stem:'data:image/webp;base64,'+base64.b64encode(p.read_bytes()).decod
 rooms['hall'] = study.pop('hall')
 assert len(study) == 17, 'Missing study sprite'
 assert set(rooms) == {'library','gym','hall','chapel','infirm','arena','beach'}, 'Missing report room asset'
+jobs = ['farm','church','inn','hunt','salon','tavern']
+job_assets = {kind:{key:'data:image/webp;base64,'+base64.b64encode((ROOT/f'reports/jobs/{key}-{kind}.webp').read_bytes()).decode() for key in jobs} for kind in ['face','map']}
 text = block(text, '/* REPORT_SCENE_STYLE_START */', '/* REPORT_SCENE_STYLE_END */',
     (ROOT/'reports/style.css').read_text(encoding='utf-8'), '/* ---------- 주간 일지 ---------- */')
 text = block(text, '/* REPORT_SCENE_RUNTIME_START */', '/* REPORT_SCENE_RUNTIME_END */',
-    'const REPORT_STUDY = '+json.dumps(study)+';\nconst REPORT_ROOMS = '+json.dumps(rooms)+';\nconst REPORT_STATUP = '+json.dumps('data:audio/mpeg;base64,'+base64.b64encode((ROOT/'bgm/statup.mp3').read_bytes()).decode())+';\nconst REPORT_RECOVERY = '+json.dumps('data:audio/mpeg;base64,'+base64.b64encode((ROOT/'bgm/recovery.mp3').read_bytes()).decode())+';\n'+(ROOT/'reports/runtime.js').read_text(encoding='utf-8'), 'function showReport(r){')
+    'const REPORT_JOB_FACES = '+json.dumps(job_assets['face'])+';\nconst REPORT_JOB_MAPS = '+json.dumps(job_assets['map'])+';\nconst REPORT_STUDY = '+json.dumps(study)+';\nconst REPORT_ROOMS = '+json.dumps(rooms)+';\nconst REPORT_STATUP = '+json.dumps('data:audio/mpeg;base64,'+base64.b64encode((ROOT/'bgm/statup.mp3').read_bytes()).decode())+';\nconst REPORT_RECOVERY = '+json.dumps('data:audio/mpeg;base64,'+base64.b64encode((ROOT/'bgm/recovery.mp3').read_bytes()).decode())+';\n'+(ROOT/'reports/runtime.js').read_text(encoding='utf-8'), 'function showReport(r){')
 src.write_text(text, encoding='utf-8')
 print('Embedded report scenes and', len(rooms), 'rooms')
