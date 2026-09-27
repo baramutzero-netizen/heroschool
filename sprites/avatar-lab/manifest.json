@@ -1,0 +1,150 @@
+{
+  "version": 2,
+  "frameSize": [
+    256,
+    256
+  ],
+  "sheetSize": [
+    1536,
+    1536
+  ],
+  "columns": 6,
+  "origin": [
+    128,
+    171
+  ],
+  "headAnchor": [
+    130,
+    100
+  ],
+  "handAnchor": [
+    147,
+    141
+  ],
+  "actions": [
+    {
+      "name": "idle",
+      "from": 0,
+      "to": 2,
+      "direction": "forward",
+      "color": "#000000ff"
+    },
+    {
+      "name": "attack",
+      "from": 3,
+      "to": 6,
+      "direction": "forward",
+      "color": "#000000ff"
+    },
+    {
+      "name": "hit",
+      "from": 7,
+      "to": 9,
+      "direction": "forward",
+      "color": "#000000ff"
+    },
+    {
+      "name": "down",
+      "from": 10,
+      "to": 12,
+      "direction": "forward",
+      "color": "#000000ff"
+    },
+    {
+      "name": "win",
+      "from": 13,
+      "to": 15,
+      "direction": "forward",
+      "color": "#000000ff"
+    },
+    {
+      "name": "swing_one",
+      "from": 16,
+      "to": 19,
+      "direction": "forward",
+      "color": "#000000ff"
+    },
+    {
+      "name": "swing_two",
+      "from": 20,
+      "to": 23,
+      "direction": "forward",
+      "color": "#000000ff"
+    },
+    {
+      "name": "shoot_gun",
+      "from": 24,
+      "to": 27,
+      "direction": "forward",
+      "color": "#000000ff"
+    },
+    {
+      "name": "shoot_bow",
+      "from": 28,
+      "to": 31,
+      "direction": "forward",
+      "color": "#000000ff"
+    },
+    {
+      "name": "lie",
+      "from": 32,
+      "to": 35,
+      "direction": "forward",
+      "color": "#000000ff"
+    }
+  ],
+  "durations": [
+    240,
+    240,
+    240,
+    180,
+    90,
+    160,
+    180,
+    90,
+    170,
+    180,
+    130,
+    150,
+    500,
+    150,
+    250,
+    350,
+    230,
+    80,
+    170,
+    180,
+    260,
+    90,
+    190,
+    180,
+    200,
+    100,
+    130,
+    220,
+    180,
+    260,
+    90,
+    220,
+    150,
+    200,
+    200,
+    600
+  ],
+  "layers": [
+    "cape_back",
+    "hair_back",
+    "body",
+    "pants",
+    "shoes",
+    "top",
+    "arm_back",
+    "head",
+    "face",
+    "arm_front",
+    "gloves",
+    "hair_front",
+    "hat"
+  ],
+  "note": "Hero School native format; not an MSW PSD import file."
+}

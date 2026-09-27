@@ -1,0 +1,8 @@
+127.0.0.1 - - [27/Sep/2026 07:10:29] "GET /sprites/avatar-lab/preview.html HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2026 07:10:30] "GET /sprites/avatar-lab/preview.html?v=restart HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2026 07:10:30] code 404, message File not found
+127.0.0.1 - - [27/Sep/2026 07:10:30] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Sep/2026 07:20:33] "GET /sprites/avatar-lab/preview.html?v=poses HTTP/1.1" 200 -
+127.0.0.1 - - [27/Sep/2026 07:20:33] code 404, message File not found
+127.0.0.1 - - [27/Sep/2026 07:20:33] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [27/Sep/2026 07:20:59] "GET /sprites/avatar-lab/preview.html?v=restart HTTP/1.1" 200 -

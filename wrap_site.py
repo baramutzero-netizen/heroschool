@@ -8,6 +8,8 @@ NOW=datetime.datetime.now()
 TS=int(NOW.timestamp()*1000)
 src=re.sub(r'const BUILD_TS = \d+;', 'const BUILD_TS = %d;' % TS, src, count=1)
 RULES=int(re.search(r'const RULES_VER = (\d+);', src).group(1))
+from build_strip import strip_dev
+src = strip_dev(src)   # 배포 빌드에서는 테스트 기능(진행 페이지 테스트 모드 · 애니메이션 테스트)을 뺀다
 i=src.index('<div id="app">')
 head=src[:i]; body=src[i:]
 from build_boot import boot_split

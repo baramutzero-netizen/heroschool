@@ -4,6 +4,8 @@ from build_guard import validate_game_source
 validate_game_source(src)
 STAMP=datetime.datetime.now().strftime('%m%d-%H%M')
 src=re.sub(r'const BUILD = "[^"]*";', 'const BUILD = "%s";' % STAMP, src, count=1)
+from build_strip import strip_dev
+src = strip_dev(src)   # 배포 빌드에서는 테스트 기능(진행 페이지 테스트 모드 · 애니메이션 테스트)을 뺀다
 i=src.index('<div id="app">')
 head=src[:i]; body=src[i:]
 from build_boot import boot_split
