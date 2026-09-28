@@ -5508,7 +5508,7 @@ function weekRunStepGo(){
     const tr = (card && TR[card.t]) || TR.free;
     if(!(R.paid ||= {})[R.day]){
       R.paid[R.day] = true;
-      const cc = card ? cardCost(card) : 0;
+      const cc = card ? cardCostAll(card) : 0;
       if(cc){ S.gold -= cc; R.cost = (R.cost||0) + cc; }
     }
     const bonus = chainOf(R.days, R.day);
@@ -5934,8 +5934,8 @@ function finPopupShow(){
     {n:"주 시작 자금", v:fin.g0, base:true},
     {n:"훈련 비용", v:-fin.train},
     {n:"식단 비용", v:-(fin.diet||0)},
-    {n:"의뢰 보수", v:fin.job},
-    {n:"유지비", v:-fin.upkeep},
+    ...((jobUnlocked() || fin.job)? [{n:"의뢰 보수", v:fin.job}] : []),          // 의뢰가 열리기 전에는 숨김 (0929)
+    ...((shopUnlocked() || fin.upkeep)? [{n:"유지비", v:-fin.upkeep}] : []),   // 시설 기능이 열리기 전에는 숨김 (0929)
     {n:"이자 상환", v:-fin.interest}
   ];
   if(fin.other) rows.push({n:"원정 · 기타", v:fin.other});
@@ -8487,12 +8487,15 @@ function cardCost(t){
   if(!tr || tr.rest || CARD_COST_FREE.includes(id)) return 0;
   return (tr.need || tr.special==="exped") ? CARD_COST_ADV : CARD_COST;
 }
-function cardCostText(t){ const c = cardCost(t); return c ? `${fmt(c)} G` : ""; }
-function weekCardCost(days){ return (days||[]).reduce((a,c)=> a + (c ? cardCost(c) : 0), 0); }
+/* 일과 비용은 재학생 한 명당 (0929) — 대련 10G · 재학생 15명이면 그날 150G */
+function cardCostAll(t){ return cardCost(t) * (S.students||[]).length; }
+function cardCostText(t){ const c = cardCost(t); return c ? `${fmt(c)} G/명` : ""; }
+function cardCostTip(t){ const c = cardCost(t); return c ? `비용 학생 당 ${fmt(c)} G (지금 ${fmt(cardCostAll(t))} G)` : ""; }
+function weekCardCost(days){ return (days||[]).reduce((a,c)=> a + (c ? cardCostAll(c) : 0), 0); }
 function cardHtml(c){
   const tr = TR[c.t] || TR.free, col = cardColor(c), mk = markOf(c);
   return `<div class="card${mk?" marked":""}" draggable="true" data-card="${c.u}" style="--cc:${col.c};--cs:${col.s}${
-      mk? `;--mk:${mk.c}`:""}" title="${esc(tr.n)}${cardCost(c)? ` · 비용 ${fmt(cardCost(c))} G`:""}${mk? ` — ${mk.i} ${mk.n}: ${mk.d}`:""}">
+      mk? `;--mk:${mk.c}`:""}" title="${esc(tr.n)}${cardCost(c)? ` · ${cardCostTip(c)}`:""}${mk? ` — ${mk.i} ${mk.n}: ${mk.d}`:""}">
     ${mk? `<span class="cmark" title="${esc(mk.n)} — ${esc(mk.d)}">${mk.i}</span>`:""}
     ${(()=>{ const L = clamp(cardLeft(c), 1, CARD_LIFE); return `<span class="clife l${L}" title="쓰지 않으면 ${L<=1? "이번 주가 끝날 때" : L+"주 뒤"} 사라진다"><i></i>${cardLeftText(L)}</span>`; })()}
     <div class="ctop"><span class="cdot"></span><span class="ccol">${col.n}</span></div>
@@ -9181,8 +9184,8 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0929-0738";
-const BUILD_TS = 1790635137828;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
+const BUILD = "0929-0749";
+const BUILD_TS = 1790635759743;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -12114,7 +12117,7 @@ function viewCodex(){
         return `<div class="opt ${locked?"locked":""}" style="cursor:default;border-left:3px solid ${col.c}">
           <div class="on">${t.n}${campOff? ` <span class="tag">합숙 중 제외</span>` : locked?` <span class="tag">${ITEMS[t.need].n} 필요</span>`: varies? ` <span class="tag" style="color:var(--dim)">색 무작위</span>` : ` <span class="tag" style="color:${col.c};border-color:${col.c}">${col.n}</span>`}
             <span class="price">${t.fac? FACILITIES[t.fac].n+" Lv."+S.facil[t.fac] : ""}</span></div>
-          <div class="od" style="color:var(--brass)">${cardCost(id)? `비용 ${fmt(cardCost(id))} G` : "무료"}</div>
+          <div class="od" style="color:var(--brass)">${cardCost(id)? `비용 학생 당 ${fmt(cardCost(id))} G` : "무료"}</div>
           <div class="od" style="display:flex;flex-wrap:wrap;gap:3px 10px;margin-top:4px">
             ${(t.fx||[]).map(f=>`<span style="color:var(--${f[2]?"bad":"ok"})">${esc(f[0])}<b>${"+".repeat(f[1])}</b></span>`).join("")
               || `<span style="color:var(--dim)">—</span>`}
