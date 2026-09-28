@@ -1,6 +1,6 @@
 // Work animation selection is presentation-only and never consumes game RNG.
 function reportWorkMotion(scene, student, index){
-  if(!["paladin","priest","spellsword","gunner"].includes(student.job) || student.state==="rest" || student.state==="failed") return null;
+  if(!["paladin","priest","spellsword","gunner","ninja","forcemage","monk","archer","wizard","darkpriest"].includes(student.job) || student.state==="rest" || student.state==="failed") return null;
   if(scene.job){
     const choices={farm:["weed"],church:["dust","scrub"],inn:["dust","scrub","carry"],salon:["dust","scrub"],tavern:["dust","scrub","carry"]}[scene.job];
     return choices ? choices[(index+(scene.day||0))%choices.length] : null;
