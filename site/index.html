@@ -2776,24 +2776,25 @@ function makeRelic(grade){
 /* ============================================================
    시설 · 아이템 · 트레이닝
    ============================================================ */
-const FACIL_VER = 4;          // 시설 등급 체계 판번호 (옛 세이브 환산용)
+const FACIL_VER = 5;          // 시설 등급 체계 판번호 (옛 세이브 환산용)
 /* 훈련 시설 — Lv.0 에서 시작해 70 까지, 한 단계마다 효율 +2% (만렙 ×2.4)
    base 는 첫 한 단계의 값이고 이후 단계^pw 로 늘어난다. 만렙 총액은 장서고 약 8만 · 나머지 약 6.5만 */
 const FAC_TRAIN = {start:0, max:70, step:.02, pw:.6};
 /* 학원 증축 — 등급이 오를 때마다 부지를 넓힌다.
-   ex 는 그 시설·물품을 들이는 데 필요한 증축 단계다. */
-const EXPAND_COST = [1000, 3000, 5000];   // Lv.0→1 · 1→2 · 2→3
-const EXPAND_TIER = [2, 3, 4];            // 각 단계에 필요한 학원 등급
+   ex 는 그 시설·물품을 들이는 데 필요한 증축 단계다.
+   Lv.1 은 첫 시내 대회를 치른 뒤 열린다 (0929) — 그 전에는 시설 · 구매 탭 자체가 닫혀 있다 */
+const EXPAND_COST = [500, 1000, 3000, 5000];   // Lv.0→1 · 1→2 · 2→3 · 3→4
+const EXPAND_TIER = [0, 2, 3, 4];               // 각 단계에 필요한 학원 등급 (0 = 등급 조건 없음 · 시내 대회 참가)
 const FACILITIES = {
   expand: {n:"학원 증축", d:"부지를 넓혀 새 시설과 물품을 들인다",
-           start:0, max:3, step:0, costs:EXPAND_COST, tierNeed:EXPAND_TIER},
-  library:Object.assign({n:"장서고",   d:"침착성 연구 · 천재성 성장 보정", base:140, ex:0}, FAC_TRAIN),
-  chapel: Object.assign({n:"묵상실",   d:"정신력 수양",               base:115, ex:1},  FAC_TRAIN),
-  infirm: {n:"의무실",   d:"매주 컨디션 자연 회복 (단계당 +1)",   base:1000, start:0, max:7, ex:1},
-  gym:    Object.assign({n:"단련장",   d:"지구력 단련",               base:115, ex:0},  FAC_TRAIN),
-  hall:   Object.assign({n:"수련관",   d:"적극성 · 팀워크 실습",      base:115, ex:2},  FAC_TRAIN),
-  arena:  Object.assign({n:"대련장",   d:"실전 형식 훈련",            base:115, ex:0},  FAC_TRAIN),
-  counsel:{n:"상담실",   d:"상담에서 지도력·정보력·호소력 보정", base:1000, start:0, max:6, ex:3},
+           start:0, max:4, step:0, costs:EXPAND_COST, tierNeed:EXPAND_TIER},
+  library:Object.assign({n:"장서고",   d:"침착성 연구 · 천재성 성장 보정", base:140, ex:1}, FAC_TRAIN),
+  chapel: Object.assign({n:"묵상실",   d:"정신력 수양",               base:115, ex:2},  FAC_TRAIN),
+  infirm: {n:"의무실",   d:"매주 컨디션 자연 회복 (단계당 +1)",   base:1000, start:0, max:7, ex:2},
+  gym:    Object.assign({n:"단련장",   d:"지구력 단련",               base:115, ex:1},  FAC_TRAIN),
+  hall:   Object.assign({n:"수련관",   d:"적극성 · 팀워크 실습",      base:115, ex:3},  FAC_TRAIN),
+  arena:  Object.assign({n:"대련장",   d:"실전 형식 훈련",            base:115, ex:1},  FAC_TRAIN),
+  counsel:{n:"상담실",   d:"상담에서 지도력·정보력·호소력 보정", base:1000, start:0, max:6, ex:4},
   /* 차원 포탈 — 이계에서 온 편지를 받은 뒤, 봄 상반기에만 설치할 수 있다. 편지 전에는 ??? 로만 보인다 */
   portal: {n:"차원 포탈", d:"모든 대회의 난이도 대폭 증가",
            start:0, max:1, costs:[20000], secret:true}
@@ -2820,7 +2821,9 @@ function secretCondHtml(kind, k, tail){
 function itemKnown(k){ return (ITEMS[k] && ITEMS[k].needFac) ? !!(S.facil && S.facil[ITEMS[k].needFac]) : true; }
 /* 봄 상반기(1~6주) 인가 */
 function springEarly(){ return S.phase==="spring" && !isLateHalf(S.week, "spring"); }
-function expandLv(){ return clamp((S.facil && S.facil.expand)|0, 0, 3); }
+function expandLv(){ return clamp((S.facil && S.facil.expand)|0, 0, 4); }
+/* 시설 · 구매 탭 — 첫 시내 대회를 치르면 열린다 (0929) */
+function shopUnlocked(){ return !!(S && S.shopUnlock); }
 /* 이 단계에서 열리는 시설·물품 (표에서 그대로 읽는다) */
 function expandUnlocks(lv){
   return Object.keys(FACILITIES).filter(k=> FACILITIES[k].ex === lv).map(k=> FACILITIES[k].n)
@@ -2835,6 +2838,7 @@ function facLock(k){
     return springEarly() ? null : "봄 상반기에만 설치 가능";
   }
   if(f.tierNeed){
+    if(k==="expand" && !(S.facil[k]|0) && !shopUnlocked()) return "시내 대회 참가 필요";
     const need = f.tierNeed[(S.facil[k]|0)];
     return (need && S.tier < need) ? `${TIERS[need-1].n} 필요` : null;
   }
@@ -2871,15 +2875,15 @@ function cslFacBonus(){
   return {lead: Math.floor((n+2)/3), info: Math.floor((n+1)/3), net: Math.floor(n/3)};
 }
 const ITEMS = {
-  weight:  {n:"중량 조끼", d:"고강도 체력 훈련 해금",     price:900, ex:0},
-  dummy:   {n:"강철 목인", d:"실전 타격 훈련 해금",       price:1100, ex:0},
-  stone:   {n:"명상석",    d:"심층 명상 해금",            price:1000, ex:1},
-  board:   {n:"전술판",    d:"모의전 해금",               price:1400, ex:3},
-  flag:    {n:"진형 깃발",  d:"진형 훈련 해금",            price:1200, ex:2},
-  tonic:   {n:"회복 강장제",d:"휴식 주간·개인 휴식 회복량 +25%", price:2500, ex:1},
-  charm:   {n:"행운의 부적",d:"유물을 얻을 때 25% 확률로 한 개 더 획득", price:1600, ex:0},
-  scope:   {n:"관측경",    d:"대회 정찰 정보 1단계 상승", price:1800, ex:1},
-  banner:  {n:"학원기",    d:"대회 승리 명성 +25%",       price:2200, ex:2},
+  weight:  {n:"중량 조끼", d:"고강도 체력 훈련 해금",     price:900, ex:1},
+  dummy:   {n:"강철 목인", d:"실전 타격 훈련 해금",       price:1100, ex:1},
+  stone:   {n:"명상석",    d:"심층 명상 해금",            price:1000, ex:2},
+  board:   {n:"전술판",    d:"모의전 해금",               price:1400, ex:4},
+  flag:    {n:"진형 깃발",  d:"진형 훈련 해금",            price:1200, ex:3},
+  tonic:   {n:"회복 강장제",d:"휴식 주간·개인 휴식 회복량 +25%", price:2500, ex:2},
+  charm:   {n:"행운의 부적",d:"유물을 얻을 때 25% 확률로 한 개 더 획득", price:1600, ex:1},
+  scope:   {n:"관측경",    d:"대회 정찰 정보 1단계 상승", price:1800, ex:2},
+  banner:  {n:"학원기",    d:"대회 승리 명성 +25%",       price:2200, ex:3},
   /* 진형 강화의 서 — 차원 포탈을 설치해야 보인다. 모든 진형에 두 자리가 더 열리고 이름 뒤에 ·改 가 붙는다 */
   formbook:{n:"진형 강화의 서", d:"진형 배치 가능 인원 수 +2 — 모든 진형이 ·改 로 강화된다 (출전 최소 인원 3명은 그대로)",
             price:40000, ex:0, secret:true, needFac:"portal"},
@@ -4640,10 +4644,10 @@ function newGame(name){
   S = {
     v:1, acadName: name || (pick(ACAD)+" 용사 학원"),
     master:{name:"마스터", lead:0, info:0, net:0, pts:6},
-    tier:1, fame:0, gold:5000, sp:0, debt:DEBT_START, debtV:1, bank:{repay:0}, jobUnlock:0, actUnlock:0,
+    tier:1, fame:0, gold:5000, sp:0, debt:DEBT_START, debtV:1, bank:{repay:0}, jobUnlock:0, actUnlock:0, jobN:{}, jobEv:{}, diet:"plain",
     year:1, phase:"spring", week:0,
     students:[], graduates:[], log:[],
-    facil:{expand:0,gym:0,hall:0,chapel:0,infirm:0,library:0,arena:0,counsel:0}, facilV:FACIL_VER,
+    facil:{expand:0,gym:0,hall:0,chapel:0,infirm:0,library:0,arena:0,counsel:0}, facilV:FACIL_VER, shopUnlock:0,
     items:{}, church:{}, epiUsed:[], epiLog:[], focusPrev:null, focusHist:[], books:0, scouts:null, incoming:[], history:[], opts:{report:true, fxA:FX_A_DEFAULT}, mission:newMission(), relicPool:[], skillPool:[],
     lastTour:null
   };
@@ -4977,6 +4981,88 @@ const JOB_LIST = [
 function jobPay(){ return jobGrade().pay; }
 function jobDef(k){ return JOB_LIST.find(j=> j.k===k) || JOB_LIST[0]; }
 function mentName(k){ return (MENTAL.find(m=>m.k===k)||{n:k}).n; }
+/* ══════ 의뢰처별 누적 · 단골 이벤트 (0929) ══════
+   학생 한 명이 하루 그 의뢰를 마칠 때마다 1회. 10회 · 200회에 의뢰인이 찾아와 무언가를 열어 준다 (그 주가 끝날 때 팝업) */
+const JOB_EV_AT = [10, 200];
+function jobN(k){ return (S.jobN && S.jobN[k])|0; }
+function jobEvLv(k){ return (S.jobEv && S.jobEv[k])|0; }
+function churchLv(){ return jobEvLv("church"); }          // 1 — 기부 · 치유 / 2 — 거액 기부 · 신비한 성수 · 예지의 서
+const JOB_EV = {
+  church:[
+    {t:"교회의 손길", unlock:["교회 상점이 해금되었다!", "기부 · 치유를 구매할 수 있다."],
+     x:"예배당 청소를 마치고 나오는 길, 교회 수녀님이 조용히 다가와 말을 건넸다. \u201c요즘 학생들이 오는 날이면 예배당이 반짝반짝해요. 투정 한 번 없이 열심히 하는 모습이 참 보기 좋더군요. 저희도 어떤 방식으로든 학원을 돕고 싶어요. 필요하실 때 언제든 교회에 들러 주세요.\u201d"},
+    {t:"교회의 축복", unlock:["거액 기부 · 신비한 성수 · 예지의 서를 구매할 수 있다!"],
+     x:"수녀님이 이번에는 작은 꾸러미를 안고 다가왔다. \u201c벌써 이백 번이나 저희 교회를 돌봐 주셨네요. 학생들 덕분에 예배당을 찾는 분들도 부쩍 늘었답니다. 이제는 저희가 더 큰 힘이 되어 드리고 싶어요. 교회에 오래 전해 내려오는 것들도 나눠 드릴게요.\u201d"}],
+  tavern:[
+    {t:"주점 주인의 제안", unlock:["식단에 균형 잡힘이 추가되었다!", "학생 당 40 G · 훈련 효율 +10%"],
+     x:"서빙을 마친 학생들이 주방 뒤에서 딱딱한 빵을 씹고 있자, 주점 주인이 팔짱을 끼고 다가왔다. \u201c이봐, 그렇게 먹어서야 힘이 나겠어? 내가 이래 봬도 왕년엔 꽤 이름난 요리사였거든. 녀석들 먹는 건 이제부터 내가 책임지지.\u201d"},
+    {t:"주점 주인의 특별 식단", unlock:["식단에 화려함이 추가되었다!", "학생 당 80 G · 훈련 효율 +30%"],
+     x:"주점 주인이 앞치마를 풀며 다가왔다. \u201c덕분에 가게가 요즘 제법 잘 돌아가. 고마워서 말인데, 여유도 좀 생겼으니 이제 제대로 된 식단을 짜 주지. 재료부터 조리법까지 하나하나 따져서 말이야. 대회에 나갈 녀석들이라면 그 정도는 먹어야지.\u201d"}],
+  farm:[
+    {t:"밭의 인심", unlock:["식단의 기본 가격이 5% 감소했다!"],
+     x:"제초를 마치고 흙을 털고 있는데, 밭주인 할아버지가 바구니를 들고 다가왔다. \u201c덕분에 올해 밭이 아주 깨끗해. 고마워서 그러니 여기 채소 좀 가져가. 애들 한창 클 때 아니냐.\u201d"},
+    {t:"밭의 풍년", unlock:["식단의 기본 가격이 10% 더 감소했다!"],
+     x:"밭주인 할아버지가 수레를 끌고 와 껄껄 웃었다. \u201c자네 학생들 덕에 올해는 풍년이야! 창고에 다 들어가지도 않으니 이번엔 작물을 넉넉히 실어 가게. 앞으로도 모자라면 말만 해.\u201d"}],
+  hunt:[
+    {t:"사냥꾼의 몫", unlock:["식단의 기본 가격이 5% 감소했다!"],
+     x:"몰이를 마치고 돌아오는 길, 마을 사냥꾼이 어깨에 멘 사냥감을 내려놓았다. \u201c너희 덕에 오늘 사냥이 수월했어. 이건 너희 몫이다. 가져가서 애들 든든히 먹여.\u201d"},
+    {t:"사냥꾼의 약속", unlock:["식단의 기본 가격이 10% 더 감소했다!"],
+     x:"사냥꾼이 활을 내려놓고 학생들의 어깨를 두드렸다. \u201c이제 너희 없으면 몰이가 안 될 지경이야. 앞으로 잡는 것 중에 넉넉히 떼어 줄 테니 가져가. 사냥꾼끼리는 몫을 나누는 법이거든.\u201d"}]
+};
+function tryJobEvents(){
+  Object.keys(JOB_EV).forEach(k=>{
+    let lv = jobEvLv(k);
+    while(lv < JOB_EV_AT.length && jobN(k) >= JOB_EV_AT[lv]){
+      lv++;
+      (S.jobEv = S.jobEv || {})[k] = lv;
+      const E = JOB_EV[k][lv-1];
+      logE(`<b>${esc(E.t)}</b> — ${jobDef(k).n} 누적 ${fmt(JOB_EV_AT[lv-1])}회. ${E.unlock.map(esc).join(" ")}`, "big");
+      queueCeremony({type:"jobev", k, lv, year:S.year, phase:S.phase, week:S.week+1});
+    }
+  });
+}
+function jobEvCeremony(c){
+  const E = (JOB_EV[c.k]||[])[c.lv-1], J = jobDef(c.k);
+  if(!E) return "";
+  return `<div class="cerhead">
+      <div class="eyebrow">${yrName(c.year)} ${(PHASES[c.phase]||PHASES.spring).n} ${c.week}주를 마치고 · ${esc(J.n)} 누적 ${fmt(JOB_EV_AT[c.lv-1])}회</div>
+      <h2 style="font-size:24px;margin-top:2px">${esc(E.t)}</h2></div>
+    <div class="opt" style="cursor:default;margin-top:12px;padding:16px 20px;display:flex;gap:16px;align-items:flex-start">
+      <div style="flex:none;width:84px;height:84px;border-radius:10px;overflow:hidden;background:var(--surface2)">${jobFaceHTML(J)}</div>
+      <div style="flex:1;min-width:0"><div class="eyebrow" style="margin-bottom:4px">${esc(J.who)}</div>
+        <div style="font-size:14px;line-height:1.9;color:var(--text)">${esc(E.x)}</div></div></div>
+    <div class="opt" style="cursor:default;margin-top:10px;border-color:var(--brass);padding:14px 20px">
+      <div style="font-size:14px;line-height:2">${E.unlock.map((u,i)=> i? `<span style="color:var(--muted)">${esc(u)}</span>` : `<b>${esc(u)}</b>`).join("<br>")}</div></div>
+    <div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">확인</button></div>`;
+}
+/* ══════ 식단 (0929) ══════
+   진행 탭의 버튼을 누를 때마다 열린 식단 사이를 돈다. 학생 수 × 한 끼 값을 매 주 진행할 때 낸다.
+   eff — 훈련 효율(멘탈리티 성장) 배율에 더한다. 의뢰로 오르는 멘탈리티에는 붙지 않는다 */
+const DIETS = [
+  {k:"plain",    n:"평범",      price:20, eff:0},
+  {k:"balanced", n:"균형 잡힘", price:40, eff:.10, need:["tavern",1]},
+  {k:"lavish",   n:"화려함",    price:80, eff:.30, need:["tavern",2]}
+];
+function dietOpen(d){ return !d.need || jobEvLv(d.need[0]) >= d.need[1]; }
+function dietDef(){ const d = DIETS.find(x=> x.k===S.diet); return (d && dietOpen(d)) ? d : DIETS[0]; }
+/* 밭 · 사냥 단골 — 기본 가격 할인 (누적) */
+function dietDisc(){
+  let d = 0;
+  ["farm","hunt"].forEach(k=>{ const lv = jobEvLv(k); if(lv >= 1) d += .05; if(lv >= 2) d += .10; });
+  return d;
+}
+function dietPrice(d){ return Math.round((d||dietDef()).price * (1 - dietDisc())); }
+function dietCostWeek(){ return dietPrice() * (S.students||[]).length; }
+function dietMul(){ return 1 + dietDef().eff; }
+function dietCycle(){
+  const open = DIETS.filter(dietOpen);
+  if(open.length < 2){ toast("아직 고를 수 있는 다른 식단이 없다."); return; }
+  const i = open.indexOf(dietDef());
+  S.diet = open[(i+1) % open.length].k;
+  save(); render();
+}
+/* 화면에 적는 훈련 효율 — 컨디션 효율 × 식단 */
+function effPct(st){ return Math.round(condEff(st.cond).pct * dietMul()); }
 /* 이번 주 의뢰 — 처음 의뢰가 나온 순간 정한다. 배경은 시설 배경 중 하나 (보여주기용이라 게임 난수는 쓰지 않는다) */
 function weekJob(day){
   const R = UI.wrun;
@@ -4992,6 +5078,7 @@ function doJob(st, J){
   trainStudent(st, {id:"job", n:J.n, fac:null, cond:0, gains:{[J.up]:jobUp()}}, true, {noExp:true, noRecover:true});
   st.ment[J.down] = Math.max(1, (st.ment[J.down]||0) - 2.4*jobDown()*rnd(.7,1.35));
   S.jobCount = jobCount() + 1;
+  (S.jobN = S.jobN || {})[J.k] = jobN(J.k) + 1;
   setCond(st, st.cond - JOB_COND);
   const g0 = S.gold; addGold(jobPay());
   return S.gold - g0;
@@ -5021,12 +5108,13 @@ function trainStudent(st, tr, success, opt){
   const leadM = 1 + S.master.lead*.035;
   const fM = facMul(tr.fac);
   const partM = success ? 1 : TRAIN_FAIL_MUL;
+  const dietM = tr.id === "job" ? 1 : dietMul();      // 식단 (0929) — 의뢰는 훈련이 아니다
   let notable = null;
   for(const k in gains){
     const top = mentCapOf(st, k);         // 이 학생의 이 항목 한계
     const cur = st.ment[k];
     const room = cur >= top ? 0 : clamp(1 - (cur-10)/mentGrowCap(st, k), .09, 1);
-    let d = 2.4*gains[k]*potM*condM*leadM*fM*partM*room*rnd(.7,1.35)*(opt.mul||1);
+    let d = 2.4*gains[k]*potM*condM*leadM*fM*partM*dietM*room*rnd(.7,1.35)*(opt.mul||1);
     if(cur >= MENT_SOFT) d *= MENT_OVER_G;   // 한계를 넘어선 구간은 더디다
     st.ment[k] = clamp(st.ment[k] + d, 1, top);
     if(d>.9 && (!notable || d>notable.d)) notable={k,d};
@@ -5301,6 +5389,8 @@ function weekRunGo(quick){
   UI.wrun = {quick:!!quick, day:0, days:S.slots.slice(),
     snap:snapStudents(), startWeek:S.week, startPhase:S.phase, startYear:S.year,
     g0:S.gold, f0:S.fame, r0:(S.relicPool||[]).length};
+  { const dc = dietCostWeek();                      // 식단 — 주를 시작할 때 한 번에 낸다 (0929)
+    if(dc){ S.gold -= dc; UI.wrun.diet = dc; UI.wrun.dietN = dietDef().n; } }
   if(isCampWeek()) dlog(`<b>합숙 기간</b> — 이번 주 훈련 효과가 크게 오르지만 컨디션 소모도 크다.`, "note");
   weekRunStep();
 }
@@ -5345,6 +5435,7 @@ function weekRunEnd(){
   tryPortalLetter();
   tryGuildJob();
   tryJobGrade();
+  tryJobEvents();
   tryValentine();
   trySparkler();
   tryFriendly();
@@ -5355,7 +5446,7 @@ function weekRunEnd(){
     tryMarkTut();
     levelReport(S.students.map(s=>({s:s, n:s._up||0})));
     const acts = R.days.map(c=> (TR[c.t]||TR.free).n);
-    logE(`${R.startWeek+1}주 — ${acts.join(" · ")}${R.cost? ` · 훈련 비용 <b>-${fmt(R.cost)} G</b>`:""}`, "");
+    logE(`${R.startWeek+1}주 — ${acts.join(" · ")}${R.cost? ` · 훈련 비용 <b>-${fmt(R.cost)} G</b>`:""}${R.diet? ` · 식단(${esc(R.dietN||"")}) <b>-${fmt(R.diet)} G</b>`:""}`, "");
     if(!R.quick) weekReport(R);
     else if(!UI.pendingTour && (UI.ceremonies||[]).length) showCeremony();
     save();
@@ -5375,8 +5466,8 @@ function weekRunEnd(){
 function weekReport(R){
   const ranTo = (S.phase===R.startPhase && S.year===R.startYear) ? S.week : PHASES[R.startPhase].weeks;
   const F = FIN || {upkeep:0, interest:0};
-  const fin = {g0:R.g0, train:R.cost||0, job:R.jobPay||0, upkeep:F.upkeep, interest:F.interest, g1:S.gold};
-  fin.other = fin.g1 - fin.g0 - (fin.job - fin.train - fin.upkeep - fin.interest);   // 원정 수입 · 구매 등
+  const fin = {g0:R.g0, train:R.cost||0, diet:R.diet||0, job:R.jobPay||0, upkeep:F.upkeep, interest:F.interest, g1:S.gold};
+  fin.other = fin.g1 - fin.g0 - (fin.job - fin.train - fin.diet - fin.upkeep - fin.interest);   // 원정 수입 · 구매 등
   FIN = null;
   showReport({snap:R.snap, startWeek:R.startWeek, ranTo:ranTo, startPhase:R.startPhase, startYear:R.startYear,
     acts: R.days.map(c=>({n:(TR[c.t]||TR.free).n})),
@@ -5744,6 +5835,7 @@ function finPopupShow(){
   const rows = [
     {n:"주 시작 자금", v:fin.g0, base:true},
     {n:"훈련 비용", v:-fin.train},
+    {n:"식단 비용", v:-(fin.diet||0)},
     {n:"의뢰 보수", v:fin.job},
     {n:"유지비", v:-fin.upkeep},
     {n:"이자 상환", v:-fin.interest}
@@ -6812,6 +6904,7 @@ function finishLadder(t){
   if(champ) missionProgress(t.step);
   if(champ && t.step==="city") missionProgress("debut");   // 우승은 4강을 포함한다
   if(champ && t.step==="final") S.finalWins = (S.finalWins|0) + 1;   // 이계에서의 편지 조건
+  if(t.step==="city" && !shopUnlocked()){ S.shopUnlock = S.year; queueCeremony({type:"shopopen", year:S.year}); }   // 시설 · 구매 해금 (0929)
   fame = Math.round(bannerFame(fame));
   if(fame) addFame(fame);
   if(gold) addGold(gold);
@@ -8044,7 +8137,7 @@ function studentCard(s, sel){
       <div class="n2">${persTag(s)}${gradeTag(s.grade)}${roleTag(s.job)}
         <span class="tag yr">${s.year}학년</span><span class="lv num">Lv.${s.level}</span></div>
       <div class="bars">
-        <div class="barlab"><span>컨디션 <b style="color:var(--${condEff(s.cond).tone})">효율 ${condEff(s.cond).pct}%</b></span><span class="num">${Math.round(s.cond)}</span></div>
+        <div class="barlab"><span>컨디션 <b style="color:var(--${condEff(s.cond).tone})">효율 ${effPct(s)}%</b></span><span class="num">${Math.round(s.cond)}</span></div>
         <div class="bar cond ${condClass(s.cond)}"><i style="width:${s.cond}%"></i></div>
       </div>
       <div class="sfoot">
@@ -8181,7 +8274,7 @@ function studentDetail(s, opt){
         </div>
         <div class="kv" style="margin-top:8px"><span class="k">의식 유지선</span><span class="v num">체력 ${Math.round(consThr(s.ment.stam))}% 이상</span></div>
         <div class="kv"><span class="k">의식 저하 경감</span><span class="v num">${Math.round((1-clamp(1-s.ment.will/100*.7,.3,1))*100)}%</span></div>
-        ${G? "" : `<div class="kv"><span class="k">컨디션</span><span class="v num">${Math.round(s.cond)} <span style="color:var(--${condEff(s.cond).tone})">효율 ${condEff(s.cond).pct}%</span></span></div>
+        ${G? "" : `<div class="kv"><span class="k">컨디션</span><span class="v num">${Math.round(s.cond)} <span style="color:var(--${condEff(s.cond).tone})">효율 ${effPct(s)}%</span></span></div>
         <div class="kv"><span class="k">훈련 성공률</span><span class="v num" style="color:var(--${isInjured(s)?"bad":trainSuccessP(s,false)>=1?"ok":"warn"})">${Math.round(trainSuccessP(s,false)*100)}%</span></div>
         ${isInjured(s)? `<div class="kv"><span class="k">부상</span><span class="v" style="color:var(--bad)">회복까지 <b class="num">${injWeeks(s)}주</b> · 잠재력 외 멘탈리티 50%</span></div>`:""}
         ${actUnlocked()? `<div class="kv"><span class="k">개인 행동</span><span class="v">${actName(actOf(s))}</span></div>` : ""}`}
@@ -8345,10 +8438,12 @@ function viewPlanClassic(){
         return `${left? `${left}주 후` : "계절 종료 시"} 차감 예정 자금: <b style="color:var(--bad)">${fmt(due)} G</b>`; })()}</span>
       <span class="btnpair runpair">
         <button class="btn sm" id="btnAuto">자동 배치</button>
+        ${(()=>{ const d = dietDef(), open = DIETS.filter(dietOpen).length;
+          return `<button class="btn sm" id="btnDiet" title="${open>1? "누르면 다음 식단으로 바꾼다 · " : ""}${d.eff? `훈련 효율 +${Math.round(d.eff*100)}% · ` : ""}이번 주 ${fmt(dietCostWeek())} G (${(S.students||[]).length}명)">식단: ${esc(d.n)} (학생 당 ${fmt(dietPrice(d))} G)</button>`; })()}
         <button class="btn sm" id="btnClearSlots">전부 비우기</button>
         ${SHOW_BULKRUN? `<button class="btn sm" id="btnRest" ${S.week>=ph.weeks?"disabled":""}>남은 주 일괄 진행</button>` : ""}
         <button class="btn primary bigrun" id="btnWeek" ${((S.week>=ph.weeks && UI.pendingTour) || (S.week<ph.weeks && left>0))?"disabled":""}>${
-          S.week>=ph.weeks? "시즌 마무리" : left>0? `카드를 ${left}장 더 놓는다` : `진행(${fmt(weekCardCost(slots))} G 소모)`}</button>
+          S.week>=ph.weeks? "시즌 마무리" : left>0? `카드를 ${left}장 더 놓는다` : `진행(${fmt(weekCardCost(slots) + dietCostWeek())} G 소모)`}</button>
       </span></div>
     ${camp? `<p style="font-size:11.5px;margin:-4px 0 12px;color:var(--brass)"><b>합숙 기간 — 훈련·집중 훈련 효과 ×${CAMP_GAIN}, 컨디션 소모 ×${CAMP_COND}, 휴식 회복도 ×${CAMP_COND}. 원정 카드는 나오지 않는다.</b></p>`:""}
     <div class="dayrow">
@@ -8362,9 +8457,9 @@ function viewPlanClassic(){
       }).join("")}
     </div>
     <div class="eyebrow" style="margin:18px 0 0;display:flex;align-items:center;gap:10px">손패 ${hand.length}장
-      <button class="btn sm" id="btnBookUse" ${bookCount()>0 && hand.length? "" : "disabled"}
-        title="손패를 통째로 새로 뽑는다 — 월~금에 올려둔 카드는 그대로 둔다">예지의 서 (손패 교체)${bookCount()>0? ` ×${bookCount()}`:""}</button>
-      ${(()=>{ const pr = foresightPrice(), done = churchBought("book");
+      ${(churchLv() >= 2 || bookCount() > 0)? `<button class="btn sm" id="btnBookUse" ${bookCount()>0 && hand.length? "" : "disabled"}
+        title="손패를 통째로 새로 뽑는다 — 월~금에 올려둔 카드는 그대로 둔다">예지의 서 (손패 교체)${bookCount()>0? ` ×${bookCount()}`:""}</button>` : ""}
+      ${churchLv() < 2? "" : (()=>{ const pr = foresightPrice(), done = churchBought("book");
         return `<button class="btn sm ghost" id="btnBook2" ${done||S.gold<pr?"disabled":""}
           title="교회에 가지 않고 바로 산다 · ${esc(churchLeftLabel("book"))}">예지의 서 구매 · ${done? "이번 계절 소진" : fmt(pr)+" G"}</button>`; })()}</div>
     <div class="handrow handzone" data-handzone="1">
@@ -8404,7 +8499,7 @@ function viewPlanClassic(){
     <div class="rule"></div>
 ` : ""}
     <div class="eyebrow" style="margin-bottom:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">컨디션
-      ${(()=>{ const done = churchBought("water"), c = holyWaterCost();
+      ${churchLv() < 2? "" : (()=>{ const done = churchBought("water"), c = holyWaterCost();
         return `<button class="btn sm ghost" id="btnWater2" ${done||S.gold<c?"disabled":""}
           title="교회에 가지 않고 바로 쓴다 · 전 학생 컨디션 +${HOLY_WATER_COND} · ${esc(churchLeftLabel("water"))}">신비한 성수 (전원 +${HOLY_WATER_COND}) · ${done? "이번 계절 소진" : fmt(c)+" G"}</button>`; })()}</div>
     <div class="condbox">
@@ -8414,7 +8509,7 @@ function viewPlanClassic(){
           <span class="cn">${dnH(s)}${actTag(s)}${injTag(s)}</span>
           <span class="cbar"><i class="${condClass(s.cond)}" style="width:${clamp(s.cond,0,100)}%"></i></span>
           <span class="cv num" style="color:var(--${e.tone})">${Math.round(s.cond)}</span>
-          <span class="ce" style="color:var(--${e.tone})">효율 ${e.pct}%</span>
+          <span class="ce" style="color:var(--${e.tone})">효율 ${effPct(s)}%</span>
           <span class="cf"></span>
         </div>`;
       }).join("")}
@@ -8976,8 +9071,8 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0929-0339";
-const BUILD_TS = 1790620761943;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
+const BUILD = "0929-0556";
+const BUILD_TS = 1790628960299;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -10356,6 +10451,7 @@ function churchBought(k){ return churchLeft(k) <= 0; }
 function churchMark(k){ churchTake(k); }
 function bookCount(){ return S.books|0; }
 function buyHolyWater(){
+  if(churchLv() < 2) return;
   if(churchBought("water")){ toast("이번 계절에는 더 받아 갈 수 없다."); return; }
   const cost = holyWaterCost();
   if(S.gold < cost){ toast("자금이 모자란다."); return; }
@@ -10366,6 +10462,7 @@ function buyHolyWater(){
   save(); render(); toast(`전원 컨디션 +${HOLY_WATER_COND}`);
 }
 function buyForesight(){
+  if(churchLv() < 2) return;
   if(churchBought("book")){ toast("이번 계절에는 더 받아 갈 수 없다."); return; }
   const price = foresightPrice();
   if(S.gold < price){ toast("자금이 모자란다."); return; }
@@ -10399,6 +10496,7 @@ function churchLeftLabel(k){ const l = churchLeft(k), m = CHURCH_LIMIT[k]|0;
   return l>0 ? `이번 계절 ${l}/${m}회 남음` : "이번 계절 소진"; }
 function churchDonated(){ return churchLeft("don") <= 0; }
 function doDonate(){
+  if(churchLv() < 1) return;
   if(churchDonated()){ toast("이번 계절에는 이미 기부했다."); return; }
   if(S.gold < CHURCH_DONATE){ toast("자금이 모자란다."); return; }
   S.gold -= CHURCH_DONATE;
@@ -10410,6 +10508,7 @@ function doDonate(){
   toast(had.length? `업보 -${CHURCH_KARMA} (${had.length}명)` : "씻을 업보가 없었다.");
 }
 function doBigDonate(){
+  if(churchLv() < 2) return;
   if(churchLeft("big") <= 0){ toast("이번 계절에는 이미 거액을 헌금했다."); return; }
   if(S.gold < CHURCH_BIG){ toast("자금이 모자란다."); return; }
   S.gold -= CHURCH_BIG;
@@ -10421,6 +10520,7 @@ function doBigDonate(){
   toast(had.length? `업보 -${CHURCH_BIG_KARMA} (${had.length}명)` : "씻을 업보가 없었다.");
 }
 function doHeal(sid){
+  if(churchLv() < 1) return;
   const st = S.students.find(x=>x.id===sid);
   if(!st || !isInjured(st)) return;
   if(S.gold < CHURCH_HEAL){ toast("자금이 모자란다."); return; }
@@ -10446,7 +10546,7 @@ function viewChurch(){
         <div class="od">모든 학생의 업보가 <b style="color:var(--ok)">${CHURCH_KARMA}</b> 감소한다.</div>
         <div class="od" style="color:var(--dim)">${churchLeftLabel("don")} · 현재 ${yrName(S.year)} ${PHASES[S.phase].n}</div>
       </button>
-      ${(()=>{ const bd = churchLeft("big")<=0;
+      ${churchLv() < 2? "" : (()=>{ const bd = churchLeft("big")<=0;
         return `<button class="opt ${bd?"locked":""}" id="btnBigDonate" ${bd||S.gold<CHURCH_BIG?"disabled":""}>
         <div class="on">거액 기부<span class="price">${bd? "이번 계절 소진" : fmt(CHURCH_BIG)+" G"}</span></div>
         <div class="od">모든 학생의 업보가 <b style="color:var(--ok)">${CHURCH_BIG_KARMA}</b> 감소한다.</div>
@@ -10457,12 +10557,12 @@ function viewChurch(){
         <div class="od">부상을 즉시 낫게 하고 컨디션을 <b style="color:var(--ok)">100</b>까지 올린다.</div>
         <div class="od" style="color:var(--dim)">${hurt.length? `치료 대상 ${hurt.length}명` : "지금은 다친 학생이 없다"}</div>
       </div>
-      <button class="opt ${churchBought("water")?"locked":""}" id="btnWater" ${churchBought("water")||S.gold<holyWaterCost()?"disabled":""}>
+      ${churchLv() < 2? "" : `<button class="opt ${churchBought("water")?"locked":""}" id="btnWater" ${churchBought("water")||S.gold<holyWaterCost()?"disabled":""}>
         <div class="on">신비한 성수<span class="price">${churchBought("water")? "이번 계절 소진" : fmt(holyWaterCost())+" G"}</span></div>
         <div class="od">전 학생의 컨디션이 그 자리에서 <b style="color:var(--ok)">${HOLY_WATER_COND}</b> 회복된다.</div>
         <div class="od" style="color:var(--dim)">${churchLeftLabel("water")} · 현재 ${yrName(S.year)} ${PHASES[S.phase].n}</div>
-      </button>
-      ${(()=>{ const pr = foresightPrice(), done = churchBought("book"), nx = Math.min(pr+FORESIGHT_STEP, FORESIGHT_MAX);
+      </button>`}
+      ${churchLv() < 2? "" : (()=>{ const pr = foresightPrice(), done = churchBought("book"), nx = Math.min(pr+FORESIGHT_STEP, FORESIGHT_MAX);
         return `<button class="opt ${done?"locked":""}" id="btnBook" ${done||S.gold<pr?"disabled":""}>
         <div class="on">예지의 서<span class="price">${done? "이번 계절 소진" : fmt(pr)+" G"}</span></div>
         <div class="od">진행 탭에서 펼치면 <b>손패를 통째로</b> 새로 뽑는다. 월~금에 올려둔 카드는 그대로 둔다.</div>
@@ -10554,9 +10654,11 @@ function payUpkeep(){
   return total;
 }
 const FAC_TABS = [{k:"fac", n:"시설"}, {k:"item", n:"구매"}, {k:"church", n:"교회"}, {k:"bank", n:"은행"}];
+function facTabs(){ return FAC_TABS.filter(t=> (shopUnlocked() || (t.k!=="fac" && t.k!=="item")) && (t.k!=="church" || churchLv() >= 1)); }
 function viewFacil(){
-  const tab = FAC_TABS.some(t=> t.k===UI.facTab) ? UI.facTab : "fac";
-  const tabs = `<div class="teamtabs" style="margin-bottom:12px">${FAC_TABS.map(t=>`<button class="ttab ${tab===t.k?"on":""}" data-factab="${t.k}">${t.n}</button>`).join("")}</div>`;
+  const TB = facTabs();
+  const tab = TB.some(t=> t.k===UI.facTab) ? UI.facTab : TB[0].k;
+  const tabs = `<div class="teamtabs" style="margin-bottom:12px">${TB.map(t=>`<button class="ttab ${tab===t.k?"on":""}" data-factab="${t.k}">${t.n}</button>`).join("")}</div>`;
   return tabs + (tab==="item" ? viewItemShop() : tab==="church" ? viewChurch() : tab==="bank" ? viewBank() : viewFacShop());
 }
 function viewFacShop(){
@@ -11102,6 +11204,18 @@ const GUILD_PAGES = {
   3:{btn:"…", t:"해가 질 무렵 학원 정문으로 돌아왔을 때, 외투는 군데군데 찢기고 온몸은 붕대로 엉성하게 말려있다. 그 위로 번져있는 핏자국들이 상상도 못할 사투를 연상하게 한다. 하지만 손에 꼭 쥔 봉투의 내용물이 적어도 이번 계절을 넘길 수 있도록 도와줄 수 있다 생각하니 조금은 힘이 났다."},
   4:{btn:"편지를 접는다", t:"사흘 뒤 아침, 책상 위에 봉투 하나와 편지가 놓여 있었다. 학생들이 몰래 마을로 내려가 가게마다 사정사정해서 얻어 낸 잡일 — 밭일, 짐 나르기, 설거지 — 을 해내고 받은 돈이었다. 편지에는 서툰 글씨로 한 줄이 적혀 있었다."}
 };
+/* 대회의 문턱 (0929) — 처음 시내 대회를 치른 뒤. 시설 · 구매 탭이 열린다 */
+const SHOP_OPEN_TEXT = "참가해보니 가을 대회의 문턱은 높았다. 지금까지 단순한 훈련으로는 다가올 대회들은 버티기 힘들다. 이 문제를 해결하기 위해서는 훈련 시설들을 개선하고 훈련 도구들을 구입해 더욱 더 체계적으로 훈련을 시킬 수 밖에 없다.";
+function shopOpenCeremony(c){
+  return `<div class="cerhead">
+      <div class="eyebrow">${yrName(c.year)} 가을 · 시내 대회를 마치고</div>
+      <h2 style="font-size:26px;margin-top:2px">대회의 문턱</h2></div>
+    <div class="opt" style="cursor:default;margin-top:12px;padding:16px 20px">
+      <div style="font-size:14px;line-height:1.9;color:var(--text)">${esc(SHOP_OPEN_TEXT)}</div></div>
+    <div class="opt" style="cursor:default;margin-top:10px;border-color:var(--brass);padding:14px 20px">
+      <div style="font-size:14px;line-height:2"><b>시설 기능이 해금되었다!</b><br><b>구매 기능이 해금되었다!</b></div></div>
+    <div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">확인</button></div>`;
+}
 function guildCeremony(c){
   const head = `<div class="cerhead">
       <div class="eyebrow">${yrName(c.year)} 가을 · 1주차를 마치고</div>
@@ -11613,7 +11727,7 @@ function setRestFocus(thr){
       <table class="tb"><thead><tr><th>학생</th><th>컨디션</th><th>훈련 효율</th><th>이전 개인 행동</th></tr></thead><tbody>
       ${who.slice().sort((a,b)=>a.cond-b.cond).map(s=>{ const e=condEff(s.cond);
         return `<tr><td>${dnH(s)}</td><td class="num" style="color:var(--${e.tone})">${Math.round(s.cond)}</td>
-          <td class="num" style="color:var(--${e.tone})">${e.pct}%</td>
+          <td class="num" style="color:var(--${e.tone})">${effPct(s)}%</td>
           <td>${actName(s._prevFocus)}</td></tr>`;
       }).join("")}</tbody></table></div>
     <div class="btnrow" style="margin-top:14px">
@@ -12396,6 +12510,7 @@ function bindView(){
   const bbk = $("#btnBook");    if(bbk) bbk.onclick = ()=> buyForesight();
   /* 진행 탭의 바로 구매 버튼 — 교회와 같은 함수·같은 계절 한도를 쓴다 */
   const bhw2 = $("#btnWater2"); if(bhw2) bhw2.onclick = ()=> buyHolyWater();
+  const bdt = $("#btnDiet"); if(bdt) bdt.onclick = ()=> dietCycle();
   const bbk2 = $("#btnBook2");  if(bbk2) bbk2.onclick = ()=> buyForesight();
   const bbu = $("#btnBookUse"); if(bbu) bbu.onclick = ()=> useForesight();
   v.querySelectorAll("[data-heal]").forEach(b=> b.onclick=()=> doHeal(b.dataset.heal));
@@ -12658,6 +12773,8 @@ function showCeremony(){
     : c.type==="evolve" ? evolveCeremony(c)
     : c.type==="sparkler" ? sparklerCeremony(c)
     : c.type==="guild" ? guildCeremony(c)
+    : c.type==="shopopen" ? shopOpenCeremony(c)
+    : c.type==="jobev" ? jobEvCeremony(c)
     : c.type==="rivalintro" ? rivalIntroCeremony(c)
     : c.type==="jobgrade" ? jobGradeCeremony(c)
     : enrollCeremony(c);
@@ -12717,6 +12834,7 @@ function showCeremony(){
       if(c.type==="camp" && S.phase==="summer") UI.view = "plan";
       if(c.type==="fall" && S.phase==="fall") UI.view = "plan";
       if(c.type==="portal") UI.view = "facil";
+      if(c.type==="shopopen"){ UI.view = "facil"; UI.facTab = "fac"; }
       if(c.type==="friendly"){
         const F = friendlyState(c.phase||"spring"); F.answered=true; UI.fsel=null;
         const n = F.slots.filter(x=>x!=null).length;
@@ -14798,6 +14916,11 @@ function boot(){
   const had = load();
   if(!had) newGame();
   if(!S.debtV){ S.debt = (S.debt|0) + DEBT_START; S.debtV = 1; bankState(); }
+  if(!S.jobN){   // 의뢰처별 누적이 생기기 전 세이브 (0929) — 교회는 이미 쓰던 것이니 열어 둔다
+    S.jobN = {}; S.jobEv = Object.assign({church:2}, S.jobEv||{});
+  }
+  if(!S.jobEv) S.jobEv = {};
+  if(!S.diet) S.diet = "plain";
   if(S.actUnlock === undefined){   // 옛 세이브 — 1년차 봄 2주차를 지났으면 열어 둔다
     S.actUnlock = (S.year > 1 || S.phase !== "spring" || S.week >= 2) ? S.year : 0;
   }
@@ -14829,9 +14952,15 @@ function boot(){
   /* 학원 증축이 생기기 전 세이브는 이미 지은 시설이 있다 —
      지금 등급으로 살 수 있는 단계까지는 그냥 인정한다 */
   if((S.facilV|0) < 4){
+    const OLD_TIER = [2, 3, 4];      // 그때의 증축 표 (Lv.1~3)
     let lv = 0;
-    while(lv < 3 && (S.tier|0) >= EXPAND_TIER[lv]) lv++;
+    while(lv < 3 && (S.tier|0) >= OLD_TIER[lv]) lv++;
     S.facil.expand = Math.max(S.facil.expand|0, lv);
+  }
+  /* 증축 Lv.1 이 앞에 새로 생겼다 (0929) — 옛 세이브는 한 칸씩 밀고, 시설 · 구매 탭은 이미 쓰던 것이니 열어 둔다 */
+  if((S.facilV|0) < 5){
+    S.facil.expand = clamp((S.facil.expand|0) + 1, 0, 4);
+    S.shopUnlock = S.shopUnlock || S.year || 1;
   }
   if((S.facilV|0) < FACIL_VER) S.facilV = FACIL_VER;
   /* 잠재력 구간이 넓어졌다 — 재학생·신입 예정자·졸업생을 모두 옮긴다 */
