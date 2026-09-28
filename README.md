@@ -2,9 +2,9 @@
 
 쓰러진 아버지의 용사 학원을 물려받아, 학생 세 명으로 시작해 3년간 학원을 키우는
 한국어 웹 운영 시뮬레이션입니다. 라이브러리 없이 바닐라 JS·HTML·CSS로 만들었고,
-**HTML 파일 하나로 완결**됩니다. 서버도 빌드 도구도 필요 없습니다.
+서버도 빌드 도구도 필요 없습니다. 게임 코드는 HTML 파일 하나, 그림·효과음은 `assets/` 폴더에 있습니다.
 
-👉 **[바로 플레이](site/index.html)** — 또는 `heroschool.html` 을 브라우저로 열기
+👉 **[바로 플레이](site/index.html)** — 또는 `heroschool.html` 을 브라우저로 열기 (`assets/` · `bgm/` 폴더가 옆에 있어야 합니다)
 
 ---
 
@@ -30,8 +30,11 @@
 | 경로 | 설명 |
 |---|---|
 | `game.html` | **원본 소스.** 게임 로직 전체가 여기 있습니다. `<!doctype>`·`<html>`·`<body>` 가 없는 조각 파일입니다 |
-| `heroschool.html` | `wrap.py` 가 만든 단독 실행 파일 |
-| `site/index.html` | `wrap_site.py` 가 만든 배포용 파일 (메타 태그·파비콘·OG 이미지 포함) |
+| `assets/` | 그림 · 효과음. `split_assets.py` 가 `game.html` 에서 빼낸 파일들 (게임과 **같이 커밋**해야 합니다) |
+| `assets/**/*.js` | 캔버스에서 픽셀을 읽는 그림(스프라이트 · 전투 이펙트)을 data: 로 감싼 파일 — 파일로 열어도 머리색 치환이 되게 |
+| `split_assets.py` | `game.html` 에 박힌 data: 그림 · 효과음을 `assets/` 로 빼고 경로(`assets/…?v=해시`)로 바꾼다. wrap 두 개가 먼저 부른다 |
+| `heroschool.html` | `wrap.py` 가 만든 실행 파일 (테스트 기능 제외 · `assets/` 를 같이 씀) |
+| `site/index.html` | `wrap_site.py` 가 만든 배포용 파일 (메타 태그·파비콘·OG 이미지 포함 · `../assets/` · `../bgm/` 을 씀) |
 | `index.html` | 저장소 루트에서 `site/` 로 넘겨주는 페이지 (GitHub Pages 용) |
 | `site/og.png` | 링크 미리보기 이미지 |
 | `site/README.md` | Netlify / GitHub Pages / Vercel 배포 안내 |
@@ -56,6 +59,10 @@
 python wrap.py        # game.html → heroschool.html
 python wrap_site.py   # game.html → site/index.html
 ```
+
+두 스크립트 모두 먼저 `split_assets.py` 를 돌립니다. pack 스크립트(`sprites/pack.py` 등)가 `game.html` 에
+data: 그림을 다시 넣어도 여기서 `assets/` 로 빠지고, 이름이 같은 파일은 덮어씁니다. 그림이 바뀌면 경로 뒤
+`?v=` 값이 바뀌어 브라우저가 새로 받습니다. 쓰지 않게 된 그림 파일은 자동으로 지우지 않으니 가끔 정리하세요.
 
 ### 회귀 테스트
 
@@ -91,7 +98,8 @@ python test.py
 저장소를 GitHub Pages 로 켜면 (Settings → Pages → Deploy from a branch → `main` / `/ (root)`)
 루트의 `index.html` 이 `site/` 로 넘겨주므로 `https://<아이디>.github.io/heroschool/` 에서 바로 열립니다.
 
-Netlify·Vercel 등 다른 호스팅은 `site/` 폴더를 그대로 올리면 됩니다.
+`site/index.html` 은 저장소 맨 위의 `assets/` · `bgm/` 을 `../` 로 읽습니다. Netlify·Vercel 등 다른 호스팅에는
+`site/` 만이 아니라 저장소 전체(최소 `site/` · `assets/` · `bgm/`)를 올려야 합니다.
 자세한 절차는 [`site/README.md`](site/README.md) 에 정리해 뒀습니다.
 
 ---

@@ -1,5 +1,6 @@
 import datetime, re
-src=open('game.html',encoding='utf-8').read()
+from split_assets import split_file
+src=split_file('game.html')   # 박혀 있는 그림 · 효과음은 assets/ 로 뺀다 (0928)
 from build_guard import validate_game_source
 validate_game_source(src)
 STAMP=datetime.datetime.now().strftime('%m%d-%H%M')
@@ -10,6 +11,10 @@ src=re.sub(r'const BUILD_TS = \d+;', 'const BUILD_TS = %d;' % TS, src, count=1)
 RULES=int(re.search(r'const RULES_VER = (\d+);', src).group(1))
 from build_strip import strip_dev
 src = strip_dev(src)   # 배포 빌드에서는 테스트 기능(진행 페이지 테스트 모드 · 애니메이션 테스트)을 뺀다
+# site/index.html 은 한 칸 아래 폴더에 있다 — 그림(assets/) · 배경음(bgm/) 은 저장소 맨 위의 것을 같이 쓴다
+from split_assets import relink
+src = relink(src, '../')
+src = src.replace('const BGM_DIR = "bgm/";', 'const BGM_DIR = "../bgm/";', 1)
 i=src.index('<div id="app">')
 head=src[:i]; body=src[i:]
 from build_boot import boot_split

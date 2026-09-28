@@ -1,5 +1,6 @@
 import datetime, re
-src=open('game.html',encoding='utf-8').read()
+from split_assets import split_file
+src=split_file('game.html')   # 박혀 있는 그림 · 효과음은 assets/ 로 뺀다 (0928)
 from build_guard import validate_game_source
 validate_game_source(src)
 STAMP=datetime.datetime.now().strftime('%m%d-%H%M')
