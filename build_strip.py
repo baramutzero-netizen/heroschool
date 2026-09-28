@@ -20,7 +20,7 @@ AVATAR_STUB = ("/* AVATAR_LAB_START */\n"
 
 
 def _cut(src, start, end, repl, name):
-    pat = re.compile(re.escape(start) + r".*?" + re.escape(end) + ("\n" if end.endswith("*/") and name == "chron-js" else ""), re.S)
+    pat = re.compile(re.escape(start) + r".*?" + re.escape(end) + (r"\r?\n" if end.endswith("*/") and name == "chron-js" else ""), re.S)
     new, n = pat.subn(lambda _: repl, src, count=1)
     if n != 1:
         raise RuntimeError(f"build_strip: {name} 블록을 찾지 못했다")
