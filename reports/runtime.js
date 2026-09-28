@@ -1,3 +1,12 @@
+// Work animation selection is presentation-only and never consumes game RNG.
+function reportWorkMotion(scene, student, index){
+  if(!["paladin","priest","spellsword","gunner"].includes(student.job) || student.state==="rest" || student.state==="failed") return null;
+  if(scene.job){
+    const choices={farm:["weed"],church:["dust","scrub"],inn:["dust","scrub","carry"],salon:["dust","scrub"],tavern:["dust","scrub","carry"]}[scene.job];
+    return choices ? choices[(index+(scene.day||0))%choices.length] : null;
+  }
+  return {chapel:"meditate",library:"read"}[scene.facility] || null;
+}
 /* Weekly scenes are immutable presentation records. Playback never runs training. */
 function reportRecord(day, tr, bonus, phase, before, members, status, logStart, extra){
   if(!UI.wrun) return;
@@ -180,7 +189,8 @@ function reportSceneBind(records){
     $("#drStudents").innerHTML=visible.map((x,i)=>{
       const studying=!s.job && s.facility==="hall" && !!REPORT_STUDY[x.job];
       const resting=!s.job && (s.facility==="infirm" || (s.facility==="beach" && x.state==="rest"));
-      const motion=resting?"down":x.state==="rest"?"idle":x.state==="failed"?"hit":["gym","hall","arena"].includes(x.trainingFacility || s.facility)?"attack":"idle";
+      const workMotion=reportWorkMotion(s,x,i);
+      const motion=workMotion || (resting?"down":x.state==="rest"?"idle":x.state==="failed"?"hit":["gym","hall","arena"].includes(x.trainingFacility || s.facility)?"attack":"idle");
       const cond=x.condition?.from ?? 100;
       return `<button class="dr-student ${studying?"studying":""} ${resting?"resting":""} ${pos[i][1]<48?"low-bubble":""}" data-dr-student="${i}" style="left:${pos[i][0]}%;top:${pos[i][1]}%;z-index:${Math.round(pos[i][1])}" aria-label="${esc(x.name)} 성장 내역"><span class="dr-shadow"></span><span class="dr-avatar">${studying?`<span class="dr-study-sprite" data-study-job="${x.job}" style="background-image:url(${REPORT_STUDY[x.job]})"></span>`:sprHTML(x.job,motion,1,{p:x.palette,flip:resting?i!==2:i%2===1,t0:resting?0:performance.now()})}</span><span class="dr-name">${esc(x.name)}</span><span class="dr-condition ${reportConditionColor(cond)}" role="meter" aria-label="컨디션" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${cond}"><span class="dr-condition-fill" style="width:${clamp(cond,0,100)}%"></span><span class="dr-condition-number">${cond}</span></span><span class="dr-bubbles" hidden></span></button>`;
     }).join("");
