@@ -66,18 +66,30 @@ button{cursor:pointer}
 .acad-name{font-size:19px;line-height:1.1}
 .acad-sub{font-size:11.5px;color:var(--dim);letter-spacing:.05em}
 .meters{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
-.fbbtn{flex:none;align-self:center;padding:0;border:1px solid var(--line-soft);border-radius:4px;background:var(--surface);
+.fbbtn{flex:none;align-self:center;padding:0;border:0;border-radius:4px;background:none;
   cursor:pointer;overflow:hidden;line-height:0;height:52px;transition:transform .12s,border-color .12s}
-.fbbtn:hover{border-color:var(--brass);transform:translateY(-1px)}
+.fbbtn:hover{transform:translateY(-1px)}
 .fbbtn img{display:block;height:100%;width:auto}
 /* 폰 — 피드백 아이콘이 셋째 줄을 혼자 차지하지 않게, 학생 옆(둘째 줄 오른쪽)에 붙인다 */
-@media(max-width:820px){.fbbtn{height:auto;align-self:stretch;margin-left:auto;width:76px;position:relative}
+@media(max-width:820px){.fbbtn{height:44px;align-self:center;margin-left:auto;width:76px;position:relative;order:2}
+  .crestrow > .meters{order:3}
+  .crestrow > .acadblk{flex:1 1 0;min-width:0}
   .fbbtn img{position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);height:100%;width:auto}}
 .meter{background:var(--surface);border:1px solid var(--line-soft);border-radius:3px;padding:4px 10px;min-width:76px}
 .meter .k{font-size:10px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase}
 .meter .v{font-size:15px;font-weight:600;line-height:1.2}
 .meter .sub{font-size:10px;color:var(--brass);font-weight:600;letter-spacing:.02em;margin-top:-1px}
 .meter.date .v{color:var(--brass)}
+/* 자금이 모자란 상품 — 누를 수는 있고(누르면 '자금이 부족하다') 값만 붉게 (0929) */
+.opt.poor .price{color:var(--bad)!important}
+.btn.poor{color:var(--bad)}
+/* 지침 타일 (0929) — 누르면 지침 팝업. 예전 오른쪽 지침 상자는 이 팝업으로 옮겼다 */
+button.meter.mis{font:inherit;color:inherit;text-align:left;cursor:pointer;max-width:130px;transition:border-color .12s,transform .12s}
+button.meter.mis:hover{border-color:var(--brass);transform:translateY(-1px)}
+button.meter.mis .sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.missionpop .panel-h h2{font-size:20px!important}
+.missionpop .mtitle{font-size:19px}
+.missionpop .mdesc{font-size:13.5px}
 nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:thin;margin-top:8px}
 nav button{background:none;border:0;border-bottom:2px solid transparent;padding:8px 12px;color:var(--muted);font-weight:500;white-space:nowrap}
 nav button:hover{color:var(--text)}
@@ -1254,6 +1266,7 @@ table.tb tr:hover td{background:var(--surface2)}
   .meters{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;width:100%;margin-left:0;margin-top:8px}
   .meter{min-width:0;padding:4px 8px}
   .meter .v{font-size:14px}
+  button.meter.mis{max-width:none}
   .btn{min-height:40px}
   .btn.sm{min-height:36px;padding:7px 10px}
   .btnrow{gap:7px}
@@ -1561,7 +1574,7 @@ html[data-ui-concept="journal"] :focus-visible{outline:3px solid #ad782e;outline
         <path d="M20 10 V30 M14 15 L20 12 L26 15" fill="none" stroke="var(--brass)" stroke-width="1.4"/>
         <path d="M13 21 H27" stroke="var(--brass)" stroke-width="1.4"/>
       </svg>
-      <div>
+      <div class="acadblk">
         <h1 class="acad-name" id="acadName">—</h1>
         <div class="acad-sub" id="acadSub">—</div>
       </div>
@@ -1571,8 +1584,9 @@ html[data-ui-concept="journal"] :focus-visible{outline:3px solid #ad782e;outline
         <div class="meter"><div class="k">자금(빚)</div><div class="v num" id="mGold">0</div><div class="sub" id="mDebt" style="color:var(--bad)"></div></div>
         <div class="meter"><div class="k">SP</div><div class="v num" id="mSp">0</div><div class="sub">리그</div></div>
         <div class="meter"><div class="k">학생</div><div class="v num" id="mCnt">0</div></div>
-        <button class="fbbtn" id="btnFeed" title="피드백" hidden></button>
+        <button type="button" class="meter mis" id="mMis" title="지침 보기" aria-haspopup="dialog"><div class="k">지침</div><div class="v num" id="mMisV">—</div><div class="sub" id="mMisT"></div></button>
       </div>
+      <button class="fbbtn" id="btnFeed" title="피드백" hidden></button>
     </div>
     <nav id="nav"></nav>
     <nav id="navm" aria-label="메뉴 (폰)"></nav>
@@ -1582,7 +1596,6 @@ html[data-ui-concept="journal"] :focus-visible{outline:3px solid #ad782e;outline
   <div class="layout">
     <main id="view"></main>
     <aside>
-      <div class="missionbox" id="missionBox"></div>
       <div class="logbox fold" id="logBox">
         <div class="panel-h"><h2 style="font-size:13px">학원 일지</h2>
           <span class="log-peek" id="logPeek" title="펼치기"></span>
@@ -7937,7 +7950,7 @@ function modalEscape(){
    렌더링 — 공통
    ============================================================ */
 const VIEWS = [
-  {id:"home", n:"학원"},
+  {id:"home", n:"마스터 노트"},
   {id:"roster", n:"학생"},
   {id:"team", n:"팀 편성"},
   {id:"plan", n:"진행", hot:true},
@@ -8013,11 +8026,11 @@ function render(){
   $("#mDate").textContent = `${yrName(S.year)} ${PHASES[S.phase].n} ${Math.min(S.week+1,PHASES[S.phase].weeks)}주`;
   $("#mFame").textContent = fmt(S.fame);
   $("#mTitle").textContent = fameTitle(S.fame).n;
-  $("#mGold").textContent = fmt(S.gold);
+  $("#mGold").textContent = `${fmt(S.gold)} G`;
   $("#mGold").style.color = S.gold < 0 ? "var(--bad)" : "";
-  { const md = $("#mDebt"); if(md){ md.textContent = debtOf() ? `(${fmt(debtOf())})` : ""; md.hidden = !debtOf(); } }
+  { const md = $("#mDebt"); if(md){ md.textContent = debtOf() ? `(${fmt(debtOf())} G)` : ""; md.hidden = !debtOf(); } }
   $("#mSp").textContent = fmt(spOf());
-  $("#mCnt").textContent = S.students.length;
+  $("#mCnt").textContent = `${S.students.length}명`;
 
   const tabs = VIEWS.map(v=> Object.assign({}, v));
   { // 학생 — 스킬 강화 포인트를 가진 학생 수
@@ -8082,8 +8095,21 @@ function render(){
   audBase(S && PHASES[S.phase] ? S.phase : null);
 }
 function renderMission(){
-  const box = $("#missionBox"); if(!box) return;
   if(!S.mission) S.mission = newMission();
+  const html = missionHtml();
+  const c = missionCur();
+  { const v = $("#mMisV"), t = $("#mMisT");
+    if(v) v.textContent = c ? `${S.mission.idx+1} / ${MISSIONS.length}` : "완수";
+    if(t) t.textContent = c ? c.n : "모든 지침"; }
+  const pop = $("#misPop"); if(pop) pop.innerHTML = html;
+  const mb = $("#mMis"); if(mb && !mb.dataset.on){ mb.dataset.on = "1"; mb.onclick = ()=> missionModal(); }
+}
+function missionModal(){
+  showModal(`<div class="missionpop" id="misPop">${missionHtml()}</div>
+    <div class="btnrow" style="margin-top:16px"><button class="btn primary" data-close>닫기</button></div>`);
+}
+function missionHtml(){
+  const box = {set innerHTML(v){ this.h = v; }, h:""};
   S.skillPool = S.skillPool||[];
   S.students.forEach(x=>{ if(!x.skMod) x.skMod = {}; if(typeof x.sp!=="number") x.sp = 0; x.cond = Math.round(clamp(x.cond||0,0,100)); });
   const c = missionCur(), dl = missionDeadline(), done = S.mission.done||[];
@@ -8100,7 +8126,7 @@ function renderMission(){
     box.innerHTML = `<div class="panel-h"><h2 style="font-size:13px">지침</h2><span class="hint">완수</span></div>
       <div class="mdone">모든 지침을 완수했다. 이제 학원이 어디까지 갈지는 당신이 정한다.</div>
       ${done.map(d=>`<div class="mrowdone">✓ ${esc(d.n)} <span>${yrName(d.year)}</span></div>`).join("")}${debtMis}`;
-    return;
+    return box.h;
   }
   const over = dl && S.year > dl;
   const left = dl ? (dl - S.year) : null;
@@ -8113,6 +8139,7 @@ function renderMission(){
     <div class="mhint" hidden>${esc(c.hint)}</div>
     ${debtMis}
     ${done.length? `<div class="rule" style="margin:10px 0 6px"></div>${done.map(d=>`<div class="mrowdone">✓ ${esc(d.n)} <span>${yrName(d.year)}</span></div>`).join("")}`:""}`;
+  return box.h;
 }
 /* 학원 일지 — 기본은 한 줄로 접어 두고 가장 최근 기록만 보여준다 (0924). 펼침 여부는 이번 접속 동안만 기억한다 */
 function logFoldPaint(){
@@ -8155,12 +8182,10 @@ function viewHome(){
     <div class="homegrid">
       <div>
         <div class="kv"><span class="k">현재</span><span class="v">${yrName(S.year)} ${next.n} ${S.week+1}주차</span></div>
-        <div class="kv"><span class="k">시즌 잔여</span><span class="v num">${remain}주</span></div>
-        <div class="kv"><span class="k">다음 행사</span><span class="v">${nextEvent}</span></div>
         <div class="kv"><span class="k">학년 구성</span><span class="v num">1학년 ${byYear[0]} / 2학년 ${byYear[1]} / 3학년 ${byYear[2]}</span></div>
         <div class="kv" title="${esc(fameTitle(S.fame).d)}"><span class="k">학원 유명도</span><span class="v" style="color:var(--brass)">${fameTitle(S.fame).n}</span></div>
         <div class="kv"><span class="k">다음 유명도</span><span class="v num">${fameNext(S.fame)? `${fameNext(S.fame).n}까지 ${fmt(fameNext(S.fame).min-S.fame)}` : "최고 단계"}</span></div>
-        <div class="kv" title="유명도가 한 등급 오를 때마다 겨울 스카우트 시도가 1회 늘어난다"><span class="k">겨울 스카우트 시도</span><span class="v num">${scoutTriesMax()}회${fameNext(S.fame)? ` <span style="color:var(--dim)">→ ${scoutTriesMax()+1}회</span>`:""}</span></div>
+        <div class="kv" title="유명도가 한 등급 오를 때마다 겨울 스카우트 시도가 1회 늘어난다"><span class="k">겨울 스카우트 시도</span><span class="v num">${scoutTriesMax()}회</span></div>
       </div>
       <div>
         <div class="eyebrow" style="margin-bottom:6px">마스터 육성 (잔여 ${mpAvail()}pt)</div>
@@ -8545,7 +8570,7 @@ function viewPlanClassic(){
       ${(churchLv() >= 2 || bookCount() > 0)? `<button class="btn sm" id="btnBookUse" ${bookCount()>0 && hand.length? "" : "disabled"}
         title="일과를 통째로 새로 뽑는다 — 월~금에 올려둔 카드는 그대로 둔다">예지의 서 (일과 교체)${bookCount()>0? ` ×${bookCount()}`:""}</button>` : ""}
       ${churchLv() < 2? "" : (()=>{ const pr = foresightPrice(), done = churchBought("book");
-        return `<button class="btn sm ghost" id="btnBook2" ${done||S.gold<pr?"disabled":""}
+        return `<button class="btn sm ghost ${S.gold<pr?"poor":""}" id="btnBook2" ${done?"disabled":""}
           title="교회에 가지 않고 바로 산다 · ${esc(churchLeftLabel("book"))}">예지의 서 구매 · ${done? "이번 계절 소진" : fmt(pr)+" G"}</button>`; })()}</div>
     <div class="handrow handzone" data-handzone="1">
       ${hand.length? hand.map(c=> cardHtml(c)).join("") : `<div class="empty" style="grid-column:1/-1">일과가 비었다.</div>`}
@@ -8585,7 +8610,7 @@ function viewPlanClassic(){
 ` : ""}
     <div class="eyebrow" style="margin-bottom:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">컨디션
       ${churchLv() < 2? "" : (()=>{ const done = churchBought("water"), c = holyWaterCost();
-        return `<button class="btn sm ghost" id="btnWater2" ${done||S.gold<c?"disabled":""}
+        return `<button class="btn sm ghost ${S.gold<c?"poor":""}" id="btnWater2" ${done?"disabled":""}
           title="교회에 가지 않고 바로 쓴다 · 전 학생 컨디션 +${HOLY_WATER_COND} · ${esc(churchLeftLabel("water"))}">신비한 성수 (전원 +${HOLY_WATER_COND}) · ${done? "이번 계절 소진" : fmt(c)+" G"}</button>`; })()}</div>
     <div class="condbox">
       ${S.students.slice().sort((a,b)=> a.cond-b.cond).map(s=>{
@@ -9156,8 +9181,8 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0929-0700";
-const BUILD_TS = 1790632850610;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
+const BUILD = "0929-0738";
+const BUILD_TS = 1790635137828;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -10540,7 +10565,7 @@ function buyHolyWater(){
   if(churchLv() < 2) return;
   if(churchBought("water")){ toast("이번 계절에는 더 받아 갈 수 없다."); return; }
   const cost = holyWaterCost();
-  if(S.gold < cost){ toast("자금이 모자란다."); return; }
+  if(S.gold < cost){ toast("자금이 부족하다."); return; }
   S.gold -= cost; churchMark("water");
   let n = 0;
   S.students.forEach(s=>{ const b=s.cond; setCond(s, s.cond + HOLY_WATER_COND); if(s.cond>b) n++; });
@@ -10551,7 +10576,7 @@ function buyForesight(){
   if(churchLv() < 2) return;
   if(churchBought("book")){ toast("이번 계절에는 더 받아 갈 수 없다."); return; }
   const price = foresightPrice();
-  if(S.gold < price){ toast("자금이 모자란다."); return; }
+  if(S.gold < price){ toast("자금이 부족하다."); return; }
   S.gold -= price; churchMark("book");
   const c = churchState(); c.bookN = foresightBought() + 1;
   S.books = bookCount() + 1;
@@ -10584,7 +10609,7 @@ function churchDonated(){ return churchLeft("don") <= 0; }
 function doDonate(){
   if(churchLv() < 1) return;
   if(churchDonated()){ toast("이번 계절에는 이미 기부했다."); return; }
-  if(S.gold < CHURCH_DONATE){ toast("자금이 모자란다."); return; }
+  if(S.gold < CHURCH_DONATE){ toast("자금이 부족하다."); return; }
   S.gold -= CHURCH_DONATE;
   churchTake("don");
   const had = S.students.filter(s=> karmaOf(s) > 0);
@@ -10596,7 +10621,7 @@ function doDonate(){
 function doBigDonate(){
   if(churchLv() < 2) return;
   if(churchLeft("big") <= 0){ toast("이번 계절에는 이미 거액을 헌금했다."); return; }
-  if(S.gold < CHURCH_BIG){ toast("자금이 모자란다."); return; }
+  if(S.gold < CHURCH_BIG){ toast("자금이 부족하다."); return; }
   S.gold -= CHURCH_BIG;
   churchTake("big");
   const had = S.students.filter(s=> karmaOf(s) > 0);
@@ -10609,7 +10634,7 @@ function doHeal(sid){
   if(churchLv() < 1) return;
   const st = S.students.find(x=>x.id===sid);
   if(!st || !isInjured(st)) return;
-  if(S.gold < CHURCH_HEAL){ toast("자금이 모자란다."); return; }
+  if(S.gold < CHURCH_HEAL){ toast("자금이 부족하다."); return; }
   S.gold -= CHURCH_HEAL;
   const w = injWeeks(st);
   st.injured = 0; delete st._injNew;
@@ -10627,13 +10652,13 @@ function viewChurch(){
   return `<section class="panel">
     <div class="panel-h"><h2>교회</h2><span class="hint">학원 전체 업보 <b style="color:var(--${km?"bad":"dim"})">${fmt(km)}</b></span></div>
     <div class="grid2">
-      <button class="opt ${done?"locked":""}" id="btnDonate" ${done||S.gold<CHURCH_DONATE?"disabled":""}>
+      <button class="opt ${done?"locked":""} ${S.gold<CHURCH_DONATE?"poor":""}" id="btnDonate" ${done?"disabled":""}>
         <div class="on">기부<span class="price">${done? "이번 계절 소진" : fmt(CHURCH_DONATE)+" G"}</span></div>
         <div class="od">모든 학생의 업보가 <b style="color:var(--ok)">${CHURCH_KARMA}</b> 감소한다.</div>
         <div class="od" style="color:var(--dim)">${churchLeftLabel("don")} · 현재 ${yrName(S.year)} ${PHASES[S.phase].n}</div>
       </button>
       ${churchLv() < 2? "" : (()=>{ const bd = churchLeft("big")<=0;
-        return `<button class="opt ${bd?"locked":""}" id="btnBigDonate" ${bd||S.gold<CHURCH_BIG?"disabled":""}>
+        return `<button class="opt ${bd?"locked":""} ${S.gold<CHURCH_BIG?"poor":""}" id="btnBigDonate" ${bd?"disabled":""}>
         <div class="on">거액 기부<span class="price">${bd? "이번 계절 소진" : fmt(CHURCH_BIG)+" G"}</span></div>
         <div class="od">모든 학생의 업보가 <b style="color:var(--ok)">${CHURCH_BIG_KARMA}</b> 감소한다.</div>
         <div class="od" style="color:var(--dim)">${churchLeftLabel("big")} · 현재 ${yrName(S.year)} ${PHASES[S.phase].n}</div>
@@ -10643,13 +10668,13 @@ function viewChurch(){
         <div class="od">부상을 즉시 낫게 하고 컨디션을 <b style="color:var(--ok)">100</b>까지 올린다.</div>
         <div class="od" style="color:var(--dim)">${hurt.length? `치료 대상 ${hurt.length}명` : "지금은 다친 학생이 없다"}</div>
       </div>
-      ${churchLv() < 2? "" : `<button class="opt ${churchBought("water")?"locked":""}" id="btnWater" ${churchBought("water")||S.gold<holyWaterCost()?"disabled":""}>
+      ${churchLv() < 2? "" : `<button class="opt ${churchBought("water")?"locked":""} ${S.gold<holyWaterCost()?"poor":""}" id="btnWater" ${churchBought("water")?"disabled":""}>
         <div class="on">신비한 성수<span class="price">${churchBought("water")? "이번 계절 소진" : fmt(holyWaterCost())+" G"}</span></div>
         <div class="od">전 학생의 컨디션이 그 자리에서 <b style="color:var(--ok)">${HOLY_WATER_COND}</b> 회복된다.</div>
         <div class="od" style="color:var(--dim)">${churchLeftLabel("water")} · 현재 ${yrName(S.year)} ${PHASES[S.phase].n}</div>
       </button>`}
       ${churchLv() < 2? "" : (()=>{ const pr = foresightPrice(), done = churchBought("book"), nx = Math.min(pr+FORESIGHT_STEP, FORESIGHT_MAX);
-        return `<button class="opt ${done?"locked":""}" id="btnBook" ${done||S.gold<pr?"disabled":""}>
+        return `<button class="opt ${done?"locked":""} ${S.gold<pr?"poor":""}" id="btnBook" ${done?"disabled":""}>
         <div class="on">예지의 서<span class="price">${done? "이번 계절 소진" : fmt(pr)+" G"}</span></div>
         <div class="od">진행 탭에서 펼치면 <b>일과를 통째로</b> 새로 뽑는다. 월~금에 올려둔 카드는 그대로 둔다.</div>
         <div class="od" style="color:var(--dim)">${churchLeftLabel("book")} · 지금 가진 책 <b style="color:var(--brass)">${bookCount()}권</b></div>
@@ -10657,7 +10682,7 @@ function viewChurch(){
     </div>
     ${hurt.length? `<div class="rule"></div><div class="eyebrow" style="margin-bottom:6px">치유 대상</div>
       <div class="grid2">${hurt.slice().sort((a,b)=>injWeeks(b)-injWeeks(a)).map(st=>`
-        <button class="opt" data-heal="${st.id}" ${S.gold<CHURCH_HEAL?"disabled":""} style="border-color:var(--bad)">
+        <button class="opt ${S.gold<CHURCH_HEAL?"poor":""}" data-heal="${st.id}" style="border-color:var(--bad)">
           <div class="on">${dnH(st)} ${roleTag(st.job)}<span class="price" style="color:var(--bad)">부상 ${injWeeks(st)}주</span></div>
           <div class="od">컨디션 ${Math.round(st.cond)} → <b style="color:var(--ok)">100</b> · 부상 해제</div>
           <div class="od" style="color:var(--dim)">${fmt(CHURCH_HEAL)} G 지불</div>
@@ -10721,7 +10746,7 @@ function buyRepay(){
   const B = bankState();
   if(B.repay >= REPAY_MAX){ toast("더 상환할 수 있는 원금 상품이 없다."); return; }
   if(debtOf() <= 0){ toast("갚을 빚이 없다."); return; }
-  if(S.gold < REPAY_PRICE){ toast("자금이 모자라다."); return; }
+  if(S.gold < REPAY_PRICE){ toast("자금이 부족하다."); return; }
   const cut = Math.min(REPAY_AMOUNT, debtOf());
   S.gold -= REPAY_PRICE; S.debt = debtOf() - cut; B.repay++;
   logE(`원금 상환 ${B.repay}단계 — <b>${fmt(REPAY_PRICE)} G</b>를 내고 빚이 <b style="color:var(--ok)">${fmt(cut)} G</b> 줄었다 (남은 빚 ${fmt(debtOf())} G)`, "good");
@@ -10764,7 +10789,7 @@ function viewFacShop(){
           : k==="portal" ? (full ? "이계와 이어져 있다" : "봄 상반기(1~6주)에만 설치할 수 있다 · 설치 후에는 되돌릴 수 없다")
           : k==="infirm" ? `현재 매주 +${lv}` : `현재 효율 ×${facEff(k).toFixed(2)}`;
         const tag = k==="portal" ? (full ? "설치 완료" : "미설치") : `Lv.${lv} / ${mx}`;
-        return `<button class="opt ${lock?"locked":""}" data-fac="${k}" ${lock||S.gold<c||full?"disabled":""}>
+        return `<button class="opt ${lock?"locked":""} ${!lock&&!full&&S.gold<c?"poor":""}" data-fac="${k}" ${lock||full?"disabled":""}>
           <div class="on">${f.n} <span class="tag">${tag}</span><span class="price" style="${
             lock?"color:var(--bad)":""}">${full?(k==="portal"?"":"최대"):lock||fmt(c)+" G"}</span></div>
           <div class="od">${facDesc(k)} · ${eff}</div>
@@ -10783,7 +10808,7 @@ function viewItemShop(){
         if(it.secret && !has && !itemKnown(k)) return `<button class="opt locked" disabled title="조건을 채우면 드러난다">
           <div class="on" style="color:var(--dim)">??? <span class="price" style="color:var(--dim)">???</span></div>
           <div class="od">???</div>${secretCondHtml("item", k)}</button>`;
-        return `<button class="opt ${has||lock?"locked":""}" data-item="${k}" ${has||lock||S.gold<it.price?"disabled":""}>
+        return `<button class="opt ${has||lock?"locked":""} ${!has&&!lock&&S.gold<it.price?"poor":""}" data-item="${k}" ${has||lock?"disabled":""}>
           <div class="on">${it.n}<span class="price" style="${lock?"color:var(--bad)":""}">${
             has?"보유 중":lock||fmt(it.price)+" G"}</span></div>
           <div class="od">${it.d}</div>
@@ -10800,7 +10825,7 @@ function viewBank(){
     <div class="kv"><span class="k">남은 빚</span><span class="v num" style="color:var(--${d? "bad" : "ok"})">${fmt(d)} G</span></div>
     <div class="kv" hidden><span class="k">이자</span><span class="v">빚의 ${Math.round(DEBT_RATE*100)}% · 계절이 끝날 때 자금에서 빠진다</span></div>
     <div class="grid2" style="margin-top:12px">
-      <button class="opt ${full?"locked":""}" id="btnRepay" ${full||S.gold<REPAY_PRICE?"disabled":""}>
+      <button class="opt ${full?"locked":""} ${!full&&S.gold<REPAY_PRICE?"poor":""}" id="btnRepay" ${full?"disabled":""}>
         <div class="on">원금 상환 <span class="tag">Lv.${B.repay} / ${REPAY_MAX}</span><span class="price">${full? (d? "최대" : "완납") : fmt(REPAY_PRICE)+" G"}</span></div>
         <div class="od" hidden>빚이 <b style="color:var(--ok)">${fmt(REPAY_AMOUNT)} G</b> 줄어든다 · 이자도 계절 당 ${fmt(Math.round(REPAY_AMOUNT*DEBT_RATE))} G 줄어든다</div>
       </button>
@@ -12423,7 +12448,8 @@ function bindView(){
   { const br = $("#btnRepay"); if(br) br.onclick = ()=> buyRepay(); }
   v.querySelectorAll("[data-fac]").forEach(b=> b.onclick=()=>{
     const k=b.dataset.fac, c=facCost(k);
-    if(facLock(k) || S.gold<c || (S.facil[k]||0) >= facMax(k)) return;
+    if(facLock(k) || (S.facil[k]||0) >= facMax(k)) return;
+    if(S.gold < c){ toast("자금이 부족하다."); return; }
     if(k==="portal"){ portalConfirmModal(()=> facBuyNow(k)); return; }   // 되돌릴 수 없는 선택 — 한 번 더 묻는다
     facBuyNow(k);
   });
@@ -12611,7 +12637,8 @@ function bindView(){
   v.querySelectorAll("[data-heal]").forEach(b=> b.onclick=()=> doHeal(b.dataset.heal));
   v.querySelectorAll("[data-item]").forEach(b=> b.onclick=()=>{
     const k=b.dataset.item, it=ITEMS[k];
-    if(S.items[k] || itemLock(k) || S.gold<it.price) return;
+    if(S.items[k] || itemLock(k)) return;
+    if(S.gold < it.price){ toast("자금이 부족하다."); return; }
     S.gold-=it.price; S.items[k]=1;
     logE(k==="formbook"
       ? `<b>${it.n}</b> 구비 — 모든 진형에 두 자리가 더 열렸다 (${formPlusText()}). 진형 이름 뒤에 ${FORM_PLUS_SUFFIX} 가 붙는다.`
