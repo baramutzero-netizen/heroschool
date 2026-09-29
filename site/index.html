@@ -126,8 +126,9 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
   border:1px solid color-mix(in srgb,var(--brass) 45%,transparent);border-radius:2px;padding:0 4px}
 @keyframes hotdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.72)}}
 
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 288px;gap:20px;margin-top:18px;align-items:start}
-@media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}}
+.layout{display:grid;grid-template-columns:minmax(0,1fr);gap:20px;margin-top:18px;align-items:start}
+/* 학원 일지 탭 (0929) — 옆 칸에 있던 일지를 탭 하나로 옮겼다 */
+.loglist.full{max-height:none;overflow:visible;font-size:13px;gap:8px}
 
 .panel{background:var(--surface);border:1px solid var(--line-soft);border-radius:4px;padding:16px}
 /* 계절 배경 — 스케줄 패널 뒤에 은은하게 깔린다 */
@@ -1009,10 +1010,10 @@ table.tb tr:hover td{background:var(--surface2)}
 .etm-mem{display:grid;gap:2px;margin-top:5px}
 .etm-m{display:flex;align-items:center;gap:5px;flex-wrap:wrap;color:var(--text)}
 .etm-m .num{color:var(--dim)}
-/* 락커룸 — 폰에서는 출전 팀/상대 카드를 접고, 정보력 문구를 짧게 */
+/* 락커룸 — 출전 팀/상대 카드는 숨긴다(1001). 폰에서는 정보력 문구를 짧게 */
+.mt-cards{display:none}
 .lk-mob{display:none}
 @media (max-width:640px){
-  .mt-cards:not(.keep){display:none}
   .lk-pc{display:none}.lk-mob{display:inline}
   .lkrow{grid-template-columns:repeat(3,1fr);gap:6px}
   .lkcard{padding:7px 7px}
@@ -1650,15 +1651,6 @@ html[data-ui-concept="journal"] :focus-visible{outline:3px solid #ad782e;outline
 
   <div class="layout">
     <main id="view"></main>
-    <aside>
-      <div class="logbox fold" id="logBox">
-        <div class="panel-h"><h2 style="font-size:13px">학원 일지</h2>
-          <span class="log-peek" id="logPeek" title="펼치기"></span>
-          <span class="hint"><button class="btn sm ghost" id="btnLogFold" aria-expanded="false" aria-controls="logList">펼치기</button></span>
-        </div>
-        <div class="loglist" id="logList"></div>
-      </div>
-    </aside>
   </div>
 </div>
 <div id="modalRoot"></div>
@@ -2929,7 +2921,7 @@ const FAC_TRAIN = {start:0, max:70, step:.02, pw:.6};
 const EXPAND_COST = [500, 1000, 3000, 5000];   // Lv.0→1 · 1→2 · 2→3 · 3→4
 const EXPAND_TIER = [0, 2, 3, 4];               // 각 단계에 필요한 학원 등급 (0 = 등급 조건 없음 · 시내 대회 참가)
 const FACILITIES = {
-  expand: {n:"학원 증축", d:"부지를 넓혀 새 시설과 물품을 들인다",
+  expand: {n:"학원 증축", d:"부지를 넓혀 새 시설과 물품을 들인다.",
            start:0, max:4, step:0, costs:EXPAND_COST, tierNeed:EXPAND_TIER},
   library:Object.assign({n:"장서고",   d:"침착성 연구 · 천재성 성장 보정", base:140, ex:1}, FAC_TRAIN),
   chapel: Object.assign({n:"묵상실",   d:"정신력 수양",               base:115, ex:2},  FAC_TRAIN),
@@ -5591,7 +5583,7 @@ function weekRunGo(quick){
     if(quick) autoFillSlots();
     else { toast("월요일부터 금요일까지 다섯 칸을 모두 채워야 한다."); return; }
   }
-  /* 훈련 비용이 모자라도 진행한다 — 자금은 마이너스(빚)로 내려갈 수 있다 (0926) */
+  /* 주는 자금이 모자라도 시작한다 — 그날 일과 비용을 낼 수 없으면 오전 일과만 휴식으로 바뀐다 (weekRunStepGo · 0929) */
   if(!quick && S.master.pts>0 && !UI.skipPtWarn){ masterPointModal(1); return; }
   if(!quick && !UI.skipRestWarn && restWasteList().length){ restWasteModal(); return; }
   /* 원정 카드를 처음 넣고 주를 돌리는 순간 — 원정 안내를 한 장 띄우고 이어서 진행한다 */
@@ -5628,6 +5620,15 @@ function weekRunStepGo(){
        원정은 떠난 인원만큼 (expedDone), 나머지는 dayRun 안에서 아침에 할 일이 정해진 뒤에 낸다 */
     const bonus = chainOf(R.days, R.day);
     const mark = markOf(card);
+    /* 자금 부족 (0929) — 그날 일과 비용(나올 학생 수 × 카드 값)을 낼 수 없으면 오전은 휴식으로 대신한다. 원정도 떠나지 않는다 */
+    const due = card ? cardCostAll(card) : 0;
+    if(due > 0 && S.gold < due){
+      dayRun(TR.rest, 0, R.day, {head:`${DAY_N[R.day]}요일 오전 — 자금이 모자라 <b>${tr.n}</b> 대신 <b>휴식</b>을 가졌다.`});
+      (R.noFund = R.noFund || []).push(R.day);
+      dlog("", "gap");
+      R.day++;
+      continue;
+    }
     if(tr.special==="exped"){ expedDay(R, bonus); return; }   // 팝업으로 넘어간다
     dayRun(tr, bonus, R.day, {mark:mark, charge:card});
     dlog("", "gap");
@@ -5658,7 +5659,7 @@ function weekRunEnd(){
   const finish = ()=>{
     tryMarkTut();
     levelReport(S.students.map(s=>({s:s, n:s._up||0})));
-    const acts = R.days.map(c=> (TR[c.t]||TR.free).n);
+    const acts = R.days.map((c,i)=> (R.noFund||[]).includes(i)? "휴식(자금 부족)" : ((c && TR[c.t])||TR.free).n);
     logE(`${R.startWeek+1}주 — ${acts.join(" · ")}${R.cost? ` · 훈련 비용 <b>-${fmt(R.cost)} G</b>`:""}${R.diet? ` · 식단(${esc(R.dietN||"")}) <b>-${fmt(R.diet)} G</b>`:""}`, "");
     if(!R.quick) weekReport(R);
     else if(!UI.pendingTour && (UI.ceremonies||[]).length) showCeremony();
@@ -8086,6 +8087,7 @@ const VIEWS = [
   {id:"facil", n:"시설 · 상점"},
   {id:"relic", n:"유물 · 스킬"},
   {id:"record", n:"기록"},
+  {id:"log", n:"학원 일지"},
   {id:"league", n:"졸업생 리그"},
   {id:"lgentry", n:"리그 등록"},
   {id:"rank", n:"순위표"},
@@ -8215,6 +8217,7 @@ function render(){
   else if(UI.view==="spshop") v.innerHTML = viewSpShop();
   else if(UI.view==="opt") v.innerHTML = viewOpt();
   else if(UI.view==="scout") v.innerHTML = viewScout();
+  else if(UI.view==="log") v.innerHTML = viewLog();
   else v.innerHTML = viewHome();
   bindView();
   bindChronicle();
@@ -8270,23 +8273,19 @@ function missionHtml(){
     ${done.length? `<div class="rule" style="margin:10px 0 6px"></div>${done.map(d=>`<div class="mrowdone">✓ ${esc(d.n)} <span>${yrName(d.year)}</span></div>`).join("")}`:""}`;
   return box.h;
 }
-/* 학원 일지 — 기본은 한 줄로 접어 두고 가장 최근 기록만 보여준다 (0924). 펼침 여부는 이번 접속 동안만 기억한다 */
-function logFoldPaint(){
-  const box = $("#logBox"), btn = $("#btnLogFold"), peek = $("#logPeek");
-  if(!box) return;
-  const open = !!UI.logOpen;
-  box.classList.toggle("fold", !open);
-  if(btn){ btn.textContent = open ? "접기" : "펼치기"; btn.setAttribute("aria-expanded", open ? "true" : "false"); }
-  if(peek){
-    const e = S.log && S.log[0];
-    if(e){ const d = document.createElement("div"); d.innerHTML = e.h; peek.textContent = `${e.t} · ${d.textContent.replace(/\s+/g," ").trim()}`; }
-    else peek.textContent = "아직 기록이 없다.";
-  }
+/* 학원 일지 — 탭 하나에 모두 펼쳐 보여 준다 (0929, 전에는 옆 칸에 접어 두었다) */
+function logListHtml(){
+  return S.log.length? S.log.map(e=>`<div class="le ${e.c}"><div class="t">${e.t}</div>${e.h}</div>`).join("")
+    : `<div class="empty">아직 기록이 없다.</div>`;
+}
+function viewLog(){
+  return `<section class="panel logtab">
+    <div class="panel-h"><h2>학원 일지</h2><span class="hint">최근 기록부터 · ${S.log.length}건</span></div>
+    <div class="loglist full" id="logList">${logListHtml()}</div>
+  </section>`;
 }
 function renderLog(){
-  logFoldPaint();
-  $("#logList").innerHTML = S.log.length? S.log.map(e=>`<div class="le ${e.c}"><div class="t">${e.t}</div>${e.h}</div>`).join("")
-    : `<div class="empty">아직 기록이 없다.</div>`;
+  const l = $("#logList"); if(l) l.innerHTML = logListHtml();
 }
 
 /* ---------- 학원 ---------- */
@@ -8478,7 +8477,7 @@ function studentDetail(s, opt){
       <span>${G? `<span class="tag" style="color:var(--brass);border-color:var(--brass)">${yrName(G.year)} 졸업</span>` : teamTag(s)} ${gradeTag(s.grade)} ${roleTag(s.job)} <span class="tag" style="white-space:normal">${ROLE_LABEL[J.role]}${J.sub? " · "+J.sub:""}</span> ${G? "" : `<span class="tag yr">${s.year}학년</span>`} <span class="tag">Lv.${s.level}</span> ${G? "" : bondTags(s)}</span>
       <span class="hint">${esc(J.desc)}</span></div>
     </div>
-    ${s.note? `<div class="cerwhy" style="margin-bottom:12px">입학 당시 — ${esc(s.note)}</div>`:""}
+    ${s.note? `<div class="cerwhy" style="margin:10px 0 12px">입학 당시 — ${esc(s.note)}</div>`:""}
     <div class="grid2">
       <div>
         <div class="eyebrow" style="margin-bottom:6px">성격</div>
@@ -8542,7 +8541,7 @@ function studentDetail(s, opt){
     </div>
     <div class="rule"></div>
     <div class="panel-h" style="margin-bottom:8px"><h2 style="font-size:13px">패시브 · 스킬</h2>
-      ${G? "" : `<span class="hint">${(s.sp||0)>0? `강화 포인트 <b style="color:var(--brass)">${s.sp}</b>점` : "레벨 2마다 강화 포인트 1점"}${s.taught? ` · <b style="color:var(--ok)">전수 완료</b>` : ""}</span>
+      ${G? "" : `<span class="hint">${(s.sp||0)>0? `강화 포인트 <b style="color:var(--brass)">${s.sp}</b>점` : ""}${s.taught? `${(s.sp||0)>0?" · ":""}<b style="color:var(--ok)">전수 완료</b>` : ""}</span>
       <button class="btn sm ${(s.sp||0)>0?"primary":""}" id="btnSkUp" ${(s.sp||0)>0?"":"disabled"}>스킬 강화</button>`}</div>
     <div class="grid2">
       ${(()=>{ const P=passiveOf(passiveJobOf(s)); if(!P) return "";
@@ -8567,7 +8566,7 @@ function studentDetail(s, opt){
       }).join("")}
     </div>
     <div class="rule"></div>
-    <div class="eyebrow" style="margin-bottom:6px">유물 (${(s.relics||[]).filter(Boolean).length}/${slots}칸${G? "" : ` · ${RELIC_SLOT_EVERY}레벨마다 1칸 · 최대 ${RELIC_SLOT_MAX}칸`})</div>
+    <div class="eyebrow" style="margin-bottom:6px">유물 (${(s.relics||[]).filter(Boolean).length}/${slots}칸)</div>
     <div class="grid2">
       ${Array.from({length:slots},(_,i)=>{
         const r = (s.relics||[])[i];
@@ -9334,8 +9333,8 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0929-1027";
-const BUILD_TS = 1790645272790;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
+const BUILD = "0929-1111";
+const BUILD_TS = 1790647886476;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -10946,7 +10945,7 @@ function payUpkeep(){
     S.gold < 0? ` · <b style="color:var(--bad)">자금 ${fmt(S.gold)} G — 빚을 갚기 전에는 아무것도 살 수 없다</b>`:""}`, S.gold < 0 ? "bad" : "");
   return total;
 }
-const FAC_TABS = [{k:"fac", n:"시설"}, {k:"item", n:"구매"}, {k:"church", n:"교회"}, {k:"bank", n:"은행"}];
+const FAC_TABS = [{k:"fac", n:"건설"}, {k:"item", n:"도구"}, {k:"church", n:"교회"}, {k:"bank", n:"은행"}];
 function facTabs(){ return FAC_TABS.filter(t=> (shopUnlocked() || (t.k!=="fac" && t.k!=="item")) && (t.k!=="church" || churchLv() >= 1)); }
 function viewFacil(){
   const TB = facTabs();
@@ -10973,9 +10972,9 @@ function shopKeeperInfo(tab){
   }
   if(tab==="item"){
     const lv = jobEvLv("inn");
-    return {n:"도구상", img:NPC_IMG.tool, lines: lv >= 2 ? ["단골 중의 단골! 제일 좋은 값에 드릴게요!","언니가 학원 자랑을 얼마나 하던지요!","오늘은 뭘 챙겨 드릴까요?"]
-      : lv >= 1 ? ["언니한테 얘기 들었어요! 특별히 싸게 드릴게요.","여관 일 도와준 학생들이죠? 반가워요!","천천히 둘러보세요!","필요 없어진 유물도 삽니다!"]
-      : ["어서 오세요! 천천히 둘러보세요!","필요한 도구, 다 있어요!","오늘은 뭘 찾으세요?","필요 없어진 유물도 삽니다!"]};
+    return {n:"도구상", img:NPC_IMG.tool, lines: lv >= 2 ? ["단골 중의 단골! 제일 좋은 값에 드릴게요!\n필요 없는 유물도 구입합니다!","언니가 학원 자랑을 얼마나 하던지요!\n필요 없는 유물도 구입합니다!","오늘은 뭘 챙겨 드릴까요?\n필요 없는 유물도 구입합니다!"]
+      : lv >= 1 ? ["언니한테 얘기 들었어요! 특별히 싸게 드릴게요.\n필요 없는 유물도 구입합니다!","여관 일 도와준 학생들이죠? 반가워요!\n필요 없는 유물도 구입합니다!","천천히 둘러보세요!\n필요 없는 유물도 구입합니다!"]
+      : ["어서 오세요! 천천히 둘러보세요!\n필요 없는 유물도 구입합니다!","필요한 도구, 다 있어요!\n필요 없는 유물도 구입합니다!","오늘은 뭘 찾으세요?\n필요 없는 유물도 구입합니다!"]};
   }
   if(tab==="church"){
     const img = (typeof REPORT_JOB_FACES!=="undefined" && REPORT_JOB_FACES.church) || "";
@@ -10993,12 +10992,12 @@ function shopKeeper(tab){
   const line = K.lines[(h >>> 0) % K.lines.length];
   return `<div class="npcband">
     <div class="npcport">${K.img? `<img src="${K.img}" alt="${esc(K.n)}">` : ""}</div>
-    <div class="npcbub"><svg class="npctail" viewBox="0 0 32 40" aria-hidden="true"><path d="M29.5 5 C21 8 11 15 2 31 C12 27 21 29 29.5 34"/></svg><span class="npcname">${esc(K.n)}</span>${esc(line)}</div>
+    <div class="npcbub"><svg class="npctail" viewBox="0 0 32 40" aria-hidden="true"><path d="M29.5 5 C21 8 11 15 2 31 C12 27 21 29 29.5 34"/></svg><span class="npcname">${esc(K.n)}</span>${esc(line).replace(/\n/g,"<br>")}</div>
   </div>`;
 }
 function viewFacShop(){
   return `<section class="panel">
-    <div class="panel-h"><h2>시설</h2><span class="hint">계절 당 유지비: <b style="color:var(--bad)">${fmt(upkeepTotal())} G</b>${facDisc()? ` · 목수 할인 <b style="color:var(--ok)">${Math.round(facDisc()*100)}%</b>` : ""}</span></div>
+    <div class="panel-h"><h2>건설</h2><span class="hint">계절 당 유지비: <b style="color:var(--bad)">${fmt(upkeepTotal())} G</b>${facDisc()? ` · 목수 할인 <b style="color:var(--ok)">${Math.round(facDisc()*100)}%</b>` : ""}</span></div>
     <div class="grid2">
       ${facOrder().map(k=>{
         const f=FACILITIES[k], c=facCost(k), lv=S.facil[k]||0, mx=facMax(k), full=lv>=mx;
@@ -11016,7 +11015,7 @@ function viewFacShop(){
         return `<button class="opt ${lock?"locked":""} ${!lock&&!full&&S.gold<c?"poor":""}" data-fac="${k}" ${lock||full?"disabled":""}>
           <div class="on">${f.n} <span class="tag">${tag}</span><span class="price" style="${
             lock?"color:var(--bad)":""}">${full?(k==="portal"?"":"최대"):lock||fmt(c)+" G"}</span></div>
-          <div class="od">${facDesc(k)} · ${eff}</div>
+          <div class="od">${k==="expand"? facDesc(k) : `${facDesc(k)} · ${eff}`}</div>
           ${facUpkeep(k)? `<div class="od" style="color:var(--bad)">유지비 ${fmt(facUpkeep(k))} G / 계절</div>` : ""}
         </button>`;
       }).join("")}
@@ -11025,13 +11024,13 @@ function viewFacShop(){
 }
 function viewItemShop(){
   return `  <section class="panel">
-    <div class="panel-h"><h2>구매</h2>${itemDisc()? `<span class="hint">도구상 할인 <b style="color:var(--ok)">${Math.round(itemDisc()*100)}%</b></span>` : ""}</div>
+    <div class="panel-h"><h2>도구</h2>${itemDisc()? `<span class="hint">도구상 할인 <b style="color:var(--ok)">${Math.round(itemDisc()*100)}%</b></span>` : ""}</div>
     <div class="grid2">
       ${itemOrder().map(k=>{
         const it=ITEMS[k], has=!!S.items[k], lock = has? null : itemLock(k);
         if(it.secret && !has && !itemKnown(k)) return `<button class="opt locked" disabled title="조건을 채우면 드러난다">
           <div class="on" style="color:var(--dim)">??? <span class="price" style="color:var(--dim)">???</span></div>
-          <div class="od">???</div>${secretCondHtml("item", k)}</button>`;
+          <div class="od">???</div><div class="od">조건 — ???</div></button>`;   // 도구 탭 숨은 물품은 조건도 감춘다 (0929)
         return `<button class="opt ${has||lock?"locked":""} ${!has&&!lock&&S.gold<itemPrice(k)?"poor":""}" data-item="${k}" ${has||lock?"disabled":""}>
           <div class="on">${it.n}<span class="price" style="${lock?"color:var(--bad)":""}">${
             has?"보유 중":lock||fmt(itemPrice(k))+" G"}</span></div>
@@ -11562,7 +11561,7 @@ function shopOpenCeremony(c){
     <div class="opt" style="cursor:default;margin-top:12px;padding:16px 20px">
       <div style="font-size:14px;line-height:1.9;color:var(--text)">${esc(SHOP_OPEN_TEXT)}</div></div>
     <div class="opt" style="cursor:default;margin-top:10px;border-color:var(--brass);padding:14px 20px">
-      <div style="font-size:14px;line-height:2"><b>시설 기능이 해금되었다!</b><br><b>구매 기능이 해금되었다!</b></div></div>
+      <div style="font-size:14px;line-height:2"><b>건설 기능이 해금되었다!</b><br><b>도구 기능이 해금되었다!</b></div></div>
     <div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">확인</button></div>`;
 }
 function guildCeremony(c){
@@ -11587,7 +11586,7 @@ function tryPortalLetter(){
   if(S.phase!=="spring" || S.week+1 !== 1) return;   // 1주차를 마친 시점 = 2주차 시작
   if(fameTitleIdx(S.fame) < 4 || (S.finalWins|0) < 1) return;
   S.portalLetter = S.year;
-  logE(`<b>이계에서의 편지</b>가 도착했다 — 시설 탭에 <b>차원 포탈</b>이 드러났다. 봄 상반기에만 설치할 수 있다.`, "big");
+  logE(`<b>이계에서의 편지</b>가 도착했다 — 건설 탭에 <b>차원 포탈</b>이 드러났다. 봄 상반기에만 설치할 수 있다.`, "big");
   queueCeremony({type:"portal", year:S.year});
 }
 /* 발렌타인 — 겨울 4주차를 마치면 졸업을 앞둔 학생들이 초콜릿과 손편지를 남긴다.
@@ -12701,7 +12700,7 @@ function bindView(){
     logE(k==="expand"
       ? `<b>학원 증축</b> Lv.${S.facil[k]} — ${expandUnlocks(S.facil[k]).join(" · ")}${eulr(expandUnlocks(S.facil[k]).slice(-1)[0]||"")} 들일 수 있게 됐다.`
       : k==="portal"
-      ? `<b>차원 포탈</b> 설치 — 이계와 이어졌다. 이제부터 친선전·신인전·가을 대회에 나오는 학원은 모두 유명도 <b>이계</b> 등급이다. 구매 탭에 새 항목이 드러났다.`
+      ? `<b>차원 포탈</b> 설치 — 이계와 이어졌다. 이제부터 친선전·신인전·가을 대회에 나오는 학원은 모두 유명도 <b>이계</b> 등급이다. 도구 탭에 새 항목이 드러났다.`
       : `<b>${FACILITIES[k].n}</b> 확장 — Lv.${S.facil[k]}`, "good"); save(); render();
   }
   {
@@ -13039,8 +13038,6 @@ function bindView(){
     });
   };
 }
-$("#btnLogFold").onclick = ()=>{ UI.logOpen = !UI.logOpen; logFoldPaint(); };
-$("#logPeek").onclick = ()=>{ UI.logOpen = true; logFoldPaint(); };
 
 /* ============================================================
    모달
@@ -13384,7 +13381,7 @@ function portalCeremony(c){
     <div class="grid2" style="margin-top:10px">
       <div class="opt" style="cursor:default">
         <div class="on">차원 포탈<span class="price">${fmt(PORTAL_PRICE)} G</span></div>
-        <div class="od">시설 탭의 <b style="color:var(--text)">???</b> 가 드러났다. <b style="color:var(--text)">봄 상반기(1~6주)</b>에만 설치할 수 있다.</div>
+        <div class="od">건설 탭의 <b style="color:var(--text)">???</b> 가 드러났다. <b style="color:var(--text)">봄 상반기(1~6주)</b>에만 설치할 수 있다.</div>
       </div>
       <div class="opt" style="cursor:default">
         <div class="on">이계 대회<span class="price" style="color:var(--bad)">난이도 증가</span></div>
@@ -14267,20 +14264,11 @@ function lockerHtml(L, my){
       </div>`; }).join("")}</div>
     ${said
       ? `<div class="opt" style="cursor:default;margin-top:10px;border-color:var(--brass)">
-          <div class="on" style="color:var(--brass)">${SPEECH_TYPE[said.type].n}</div>
-          <div class="od">&ldquo;${esc(said.t)}&rdquo;</div></div>`
+          <div class="od" style="color:var(--text);font-size:13px;margin-top:0">&ldquo;${esc(said.t)}&rdquo;</div></div>`
       : `<div class="grid2" style="margin-top:10px">${L.offers.map((o,i)=>`
           <button class="opt" data-say="${i}" style="text-align:left">
-            <div class="on">${SPEECH_TYPE[o.type].n}</div>
-            <div class="od">&ldquo;${esc(o.t)}&rdquo;</div>
-            <div class="od sp-x" style="color:var(--dim)">${SPEECH_TYPE[o.type].d} · ${o.type==="motive"
-            ? `<span style="color:var(--brass)">통한 학생은 신뢰 대폭 증가</span>`
-            : `통한 학생은 신뢰 증가`}</div>
-          </button>`).join("")}</div>
-        <p style="font-size:11.5px;color:var(--dim);margin:8px 0 0">한 마디만 고를 수 있다 · 통하면 기분
-          <b style="color:var(--ok)">+${MOOD_SPEECH}</b>, 빗나가면 <b style="color:var(--bad)">-${MOOD_SPEECH}</b> ·
-          빗나가도 <b style="color:var(--text)">호소력</b>으로 되살릴 확률 <b>${Math.round(moodNetP()*100)}%</b> ·
-          말하지 않고 그대로 내보낼 수도 있다.</p>`}`;
+            <div class="od" style="color:var(--text);font-size:13px;margin-top:0">&ldquo;${esc(o.t)}&rdquo;</div>
+          </button>`).join("")}</div>`}`;
 }
 function bindLocker(t, L, my, rerender){
   const root = $("#modalRoot"); if(!root) return;
@@ -14638,14 +14626,15 @@ function renderLadder(){
     showModal(`<div class="panel-h"><h2 style="font-size:18px">${esc(t.title)}</h2>
         <span class="hint">${ladderMatchLabel(t)}${cfg.kind==="cup"? (ladderUse(t.step)>1? ` · 라운드 ${t.rw}:${t.rl}` : "") : ` · ${t.w}승 ${t.l}패`}</span></div>
       <div style="margin:6px 0 12px">${ladderPath(t.step)}</div>
-      <div class="grid2 mt-cards ${cfg.kind==="league"?"keep":""}">
+      ${cfg.kind==="league"? `<div style="margin:0 0 10px;display:flex;gap:5px;align-items:center;flex-wrap:wrap"><span class="eyebrow" style="margin-right:4px">출전 팀</span>
+            ${t.myTeams.map((_,i)=>`<button class="btn sm ${i===t.useTeam?"primary":""}" data-useteam="${i}">${esc(teamLabel(t.entryTeams[i]||"A"))}</button>`).join("")}
+          </div>` : ""}
+      <div class="grid2 mt-cards">
         <div class="opt" style="cursor:default">
           <div class="on">출전 팀
             <span class="price">${esc(teamLabel(t.entryTeams[ladderTeamIdx(t)]||"A"))}</span></div>
           <div class="od">${ids.map(id=>{const s=S.students.find(x=>x.id===id); return s? `${dnH(s)} <span style="color:${s.cond>=75?"var(--ok)":s.cond>=50?"var(--warn)":"var(--bad)"}">${Math.round(s.cond)}</span>`:"";}).join(" · ")}</div>
-          ${cfg.kind==="league"? `<div style="margin-top:7px;display:flex;gap:5px">
-            ${t.myTeams.map((_,i)=>`<button class="btn sm ${i===t.useTeam?"primary":""}" data-useteam="${i}">${esc(teamLabel(t.entryTeams[i]||"A"))}</button>`).join("")}
-          </div>` : (ladderUse(t.step)>1? `<div class="od" style="margin-top:6px;color:var(--dim)">배치는 대진 확정 화면에서 정한다</div>` : "")}
+          ${cfg.kind==="league"? "" : (ladderUse(t.step)>1? `<div class="od" style="margin-top:6px;color:var(--dim)">배치는 대진 확정 화면에서 정한다</div>` : "")}
         </div>
         <div class="opt" style="cursor:default"><div class="on">${esc(foe.name)}</div>
           ${oppInfo(ladderFoeTeam(t), lvl)}
