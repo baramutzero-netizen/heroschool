@@ -1,0 +1,114 @@
+[
+  {
+    "job": "paladin",
+    "reference": "sprites/paladin-work/combat-source.png",
+    "tool": "built-in image_gen",
+    "source": "C:\\Users\\mjkki\\.codex\\generated_images\\01a0e455-8729-7383-bf9a-07e1e50f85c5\\exec-0c60bffd-bd99-4955-a188-af455e1f2b71.png",
+    "prompt": "Use case: identity-preserve. Create ONE new high-quality square face profile portrait of the SAME female chibi RPG student in the reference battle sprite sheet. Reference defines exact identity, hair/eye colors and accessories, not layout. Draw fresh clean smooth anime game illustration, crisp expressive eyes, refined hair strands, soft cel shading, no enlarged pixels. Single head and tiny shoulder tips, no weapons or hands, no full body, no sheet. Front-facing slight three-quarter toward viewer, both eyes open, gentle confident expression. Head centered, eyes aligned at 55% height, face large enough readable at 48px. Full hairstyle and all characteristic ornaments inside canvas with 8% margin; entire head occupies about 80% square width. Transparent alpha background, no border, no text, no halo. Preserve youthful SD facial proportions, not realistic adult. Job identity: paladin. Preserve the appearance of the top-left idle frame."
+  },
+  {
+    "job": "sword",
+    "reference": "sprites/sword-work/combat-source.png",
+    "tool": "built-in image_gen",
+    "source": "C:\\Users\\mjkki\\.codex\\generated_images\\01a0e455-8729-7383-bf9a-07e1e50f85c5\\exec-14d0a12a-b028-4cce-81e2-12b6f697b2a9.png",
+    "prompt": "Use case: identity-preserve. Create ONE new high-quality square face profile portrait of the SAME female chibi RPG student in the reference battle sprite sheet. Reference defines exact identity, hair/eye colors and accessories, not layout. Draw fresh clean smooth anime game illustration, crisp expressive eyes, refined hair strands, soft cel shading, no enlarged pixels. Single head and tiny shoulder tips, no weapons or hands, no full body, no sheet. Front-facing slight three-quarter toward viewer, both eyes open, gentle confident expression. Head centered, eyes aligned at 55% height, face large enough readable at 48px. Full hairstyle and all characteristic ornaments inside canvas with 8% margin; entire head occupies about 80% square width. Transparent alpha background, no border, no text, no halo. Preserve youthful SD facial proportions, not realistic adult. Job identity: sword. Preserve the appearance of the top-left idle frame."
+  },
+  {
+    "job": "monk",
+    "reference": "sprites/monk-work/combat-source.png",
+    "tool": "built-in image_gen",
+    "source": "C:\\Users\\mjkki\\.codex\\generated_images\\01a0e455-8729-7383-bf9a-07e1e50f85c5\\exec-7affc71c-60d7-4724-831f-1c8ccdcbfd60.png",
+    "prompt": "Use case: identity-preserve. Create ONE new high-quality square face profile portrait of the SAME female chibi RPG student in the reference battle sprite sheet. Reference defines exact identity, hair/eye colors and accessories, not layout. Draw fresh clean smooth anime game illustration, crisp expressive eyes, refined hair strands, soft cel shading, no enlarged pixels. Single head and tiny shoulder tips, no weapons or hands, no full body, no sheet. Front-facing slight three-quarter toward viewer, both eyes open, gentle confident expression. Head centered, eyes aligned at 55% height, face large enough readable at 48px. Full hairstyle and all characteristic ornaments inside canvas with 8% margin; entire head occupies about 80% square width. Transparent alpha background, no border, no text, no halo. Preserve youthful SD facial proportions, not realistic adult. Job identity: monk. Preserve the appearance of the top-left idle frame."
+  },
+  {
+    "job": "druid",
+    "reference": "sprites/druid-work/combat-source.png",
+    "tool": "built-in image_gen",
+    "source": "C:\\Users\\mjkki\\.codex\\generated_images\\01a0e455-8729-7383-bf9a-07e1e50f85c5\\exec-ed5d7ed3-54fb-4f65-a06a-d32bfde6388b.png",
+    "prompt": "Use case: identity-preserve. Create ONE new high-quality square face profile portrait of the SAME female chibi RPG student in the reference battle sprite sheet. Reference defines exact identity, hair/eye colors and accessories, not layout. Draw fresh clean smooth anime game illustration, crisp expressive eyes, refined hair strands, soft cel shading, no enlarged pixels. Single head and tiny shoulder tips, no weapons or hands, no full body, no sheet. Front-facing slight three-quarter toward viewer, both eyes open, gentle confident expression. Head centered, eyes aligned at 55% height, face large enough readable at 48px. Full hairstyle and all characteristic ornaments inside canvas with 8% margin; entire head occupies about 80% square width. Transparent alpha background, no border, no text, no halo. Preserve youthful SD facial proportions, not realistic adult. Job identity: druid. Preserve the appearance of the top-left idle frame."
+  },
+  {
+    "job": "archer",
+    "reference": "sprites/archer-work/combat-source.png",
+    "tool": "built-in image_gen",
+    "source": "C:\\Users\\mjkki\\.codex\\generated_images\\01a0e455-8729-7383-bf9a-07e1e50f85c5\\exec-07fccc2e-5a90-4fa7-851c-ec31b5014527.png",
+    "prompt": "Use case: identity-preserve. Create ONE new high-quality square face profile portrait of the SAME female chibi RPG student in the reference battle sprite sheet. Reference defines exact identity, hair/eye colors and accessories, not layout. Draw fresh clean smooth anime game illustration, crisp expressive eyes, refined hair strands, soft cel shading, no enlarged pixels. Single head and tiny shoulder tips, no weapons or hands, no full body, no sheet. Front-facing slight three-quarter toward viewer, both eyes open, gentle confident expression. Head centered, eyes aligned at 55% height, face large enough readable at 48px. Full hairstyle and all characteristic ornaments inside canvas with 8% margin; entire head occupies about 80% square width. Transparent alpha background, no border, no text, no halo. Preserve youthful SD facial proportions, not realistic adult. Job: archer. Preserve top-left idle identity. "
+  },
+  {
+    "job": "rogue",
+    "reference": "sprites/rogue-work/combat-source.png",
+    "tool": "built-in image_gen",
+    "source": "C:\\Users\\mjkki\\.codex\\generated_images\\01a0e455-8729-7383-bf9a-07e1e50f85c5\\exec-28cd7410-d4c3-4b31-8793-b1005be1067c.png",
+    "prompt": "Use case: identity-preserve. Create ONE new high-quality square face profile portrait of the SAME female chibi RPG student in the reference battle sprite sheet. Reference defines exact identity, hair/eye colors and accessories, not layout. Draw fresh clean smooth anime game illustration, crisp expressive eyes, refined hair strands, soft cel shading, no enlarged pixels. Single head and tiny shoulder tips, no weapons or hands, no full body, no sheet. Front-facing slight three-quarter toward viewer, both eyes open, gentle confident expression. Head centered, eyes aligned at 55% height, face large enough readable at 48px. Full hairstyle and all characteristic ornaments inside canvas with 8% margin; entire head occupies about 80% square width. Transparent alpha background, no border, no text, no halo. Preserve youthful SD facial proportions, not realistic adult. Job: rogue. Preserve top-left idle identity. Keep black lower-face mask and blonde ponytail."
+  },
+  {
+    "job": "wizard",
+    "reference": "sprites/wizard-work/combat-source.png",
+    "tool": "built-in image_gen",
+    "source": "C:\\Users\\mjkki\\.codex\\generated_images\\01a0e455-8729-7383-bf9a-07e1e50f85c5\\exec-d733bcd0-3f15-44f0-ab88-d227cdae7c72.png",
+    "prompt": "Use case: identity-preserve. Create ONE new high-quality square face profile portrait of the SAME female chibi RPG student in the reference battle sprite sheet. Reference defines exact identity, hair/eye colors and accessories, not layout. Draw fresh clean smooth anime game illustration, crisp expressive eyes, refined hair strands, soft cel shading, no enlarged pixels. Single head and tiny shoulder tips, no weapons or hands, no full body, no sheet. Front-facing slight three-quarter toward viewer, both eyes open, gentle confident expression. Head centered, eyes aligned at 55% height, face large enough readable at 48px. Full hairstyle and all characteristic ornaments inside canvas with 8% margin; entire head occupies about 80% square width. Transparent alpha background, no border, no text, no halo. Preserve youthful SD facial proportions, not realistic adult. Job: wizard. Preserve top-left idle identity. "
+  },
+  {
+    "job": "forcemage",
+    "reference": "sprites/forcemage-work/combat-source.png",
+    "tool": "built-in image_gen",
+    "source": "C:\\Users\\mjkki\\.codex\\generated_images\\01a0e455-8729-7383-bf9a-07e1e50f85c5\\exec-6417fa12-693c-4baf-aa87-eb9684ced3b7.png",
+    "prompt": "Use case: identity-preserve. Create ONE new high-quality square face profile portrait of the SAME female chibi RPG student in the reference battle sprite sheet. Reference defines exact identity, hair/eye colors and accessories, not layout. Draw fresh clean smooth anime game illustration, crisp expressive eyes, refined hair strands, soft cel shading, no enlarged pixels. Single head and tiny shoulder tips, no weapons or hands, no full body, no sheet. Front-facing slight three-quarter toward viewer, both eyes open, gentle confident expression. Head centered, eyes aligned at 55% height, face large enough readable at 48px. Full hairstyle and all characteristic ornaments inside canvas with 8% margin; entire head occupies about 80% square width. Transparent alpha background, no border, no text, no halo. Preserve youthful SD facial proportions, not realistic adult. Job: forcemage. Preserve top-left idle identity. Keep BOTH pale pink twin ponytails and red bows."
+  },
+  {
+    "job": "spellsword",
+    "reference": "sprites/spellsword-work/combat-source.png",
+    "tool": "built-in image_gen",
+    "source": "C:\\Users\\mjkki\\.codex\\generated_images\\01a0e455-8729-7383-bf9a-07e1e50f85c5\\exec-989a8948-04f9-4704-8c69-026e68070779.png",
+    "prompt": "Use case: identity-preserve. Create ONE new high-quality square face profile portrait of the SAME female chibi RPG student in the reference battle sprite sheet. Reference defines exact identity, hair/eye colors and accessories, not layout. Draw fresh clean smooth anime game illustration, crisp expressive eyes, refined hair strands, soft cel shading, no enlarged pixels. Single head and tiny shoulder tips, no weapons or hands, no full body, no sheet. Front-facing slight three-quarter toward viewer, both eyes open, gentle confident expression. Head centered, eyes aligned at 55% height, face large enough readable at 48px. Full hairstyle and all characteristic ornaments inside canvas with 8% margin; entire head occupies about 80% square width. Transparent alpha background, no border, no text, no halo. Preserve youthful SD facial proportions, not realistic adult. Job: spellsword. Reference image defines top-left idle identity. "
+  },
+  {
+    "job": "gunner",
+    "reference": "sprites/gunner-work/combat-source.png",
+    "tool": "built-in image_gen",
+    "source": "C:\\Users\\mjkki\\.codex\\generated_images\\01a0e455-8729-7383-bf9a-07e1e50f85c5\\exec-c6f795ca-4515-4151-994e-ff767eea2f27.png",
+    "prompt": "Use case: identity-preserve. Create ONE new high-quality square face profile portrait of the SAME female chibi RPG student in the reference battle sprite sheet. Reference defines exact identity, hair/eye colors and accessories, not layout. Draw fresh clean smooth anime game illustration, crisp expressive eyes, refined hair strands, soft cel shading, no enlarged pixels. Single head and tiny shoulder tips, no weapons or hands, no full body, no sheet. Front-facing slight three-quarter toward viewer, both eyes open, gentle confident expression. Head centered, eyes aligned at 55% height, face large enough readable at 48px. Full hairstyle and all characteristic ornaments inside canvas with 8% margin; entire head occupies about 80% square width. Transparent alpha background, no border, no text, no halo. Preserve youthful SD facial proportions, not realistic adult. Job: gunner. Reference image defines top-left idle identity. "
+  },
+  {
+    "job": "ninja",
+    "reference": "sprites/ninja-work/combat-source.png",
+    "tool": "built-in image_gen",
+    "source": "C:\\Users\\mjkki\\.codex\\generated_images\\01a0e455-8729-7383-bf9a-07e1e50f85c5\\exec-a0e3e1cc-e756-40de-bf5b-3e1bcf6902bd.png",
+    "prompt": "Use case: identity-preserve. Create ONE new high-quality square face profile portrait of the SAME female chibi RPG student in the reference battle sprite sheet. Reference defines exact identity, hair/eye colors and accessories, not layout. Draw fresh clean smooth anime game illustration, crisp expressive eyes, refined hair strands, soft cel shading, no enlarged pixels. Single head and tiny shoulder tips, no weapons or hands, no full body, no sheet. Front-facing slight three-quarter toward viewer, both eyes open, gentle confident expression. Head centered, eyes aligned at 55% height, face large enough readable at 48px. Full hairstyle and all characteristic ornaments inside canvas with 8% margin; entire head occupies about 80% square width. Transparent alpha background, no border, no text, no halo. Preserve youthful SD facial proportions, not realistic adult. Job: ninja. Reference image defines top-left idle identity. "
+  },
+  {
+    "job": "priest",
+    "reference": "sprites/priest-work/combat-source.png",
+    "tool": "built-in image_gen",
+    "source": "C:\\Users\\mjkki\\.codex\\generated_images\\01a0e455-8729-7383-bf9a-07e1e50f85c5\\exec-4134b6a5-23cd-462d-80d9-192f043b50fb.png",
+    "prompt": "Use case: identity-preserve. Create ONE new high-quality square face profile portrait of the SAME female chibi RPG student in the reference battle sprite sheet. Reference defines exact identity, hair/eye colors and accessories, not layout. Draw fresh clean smooth anime game illustration, crisp expressive eyes, refined hair strands, soft cel shading, no enlarged pixels. Single head and tiny shoulder tips, no weapons or hands, no full body, no sheet. Front-facing slight three-quarter toward viewer, both eyes open, gentle confident expression. Head centered, eyes aligned at 55% height, face large enough readable at 48px. Full hairstyle and all characteristic ornaments inside canvas with 8% margin; entire head occupies about 80% square width. Transparent alpha background, no border, no text, no halo. Preserve youthful SD facial proportions, not realistic adult. Job: priest. Reference image defines top-left idle identity. "
+  },
+  {
+    "job": "darkpriest",
+    "reference": "sprites/darkpriest-work/combat-source.png",
+    "tool": "built-in image_gen",
+    "source": "C:\\Users\\mjkki\\.codex\\generated_images\\01a0e455-8729-7383-bf9a-07e1e50f85c5\\exec-a3855ca5-968b-4045-859d-2c8076ed2bd6.png",
+    "prompt": "Use case: identity-preserve. Create ONE new high-quality square face profile portrait of the SAME female chibi RPG student in the reference battle sprite sheet. Reference defines exact identity, hair/eye colors and accessories, not layout. Draw fresh clean smooth anime game illustration, crisp expressive eyes, refined hair strands, soft cel shading, no enlarged pixels. Single head and tiny shoulder tips, no weapons or hands, no full body, no sheet. Front-facing slight three-quarter toward viewer, both eyes open, gentle confident expression. Head centered, eyes aligned at 55% height, face large enough readable at 48px. Full hairstyle and all characteristic ornaments inside canvas with 8% margin; entire head occupies about 80% square width. Transparent alpha background, no border, no text, no halo. Preserve youthful SD facial proportions, not realistic adult. Job: darkpriest. Reference image defines top-left idle identity. "
+  },
+  {
+    "job": "timemage",
+    "reference": "sprites/timemage-work/combat-source.png",
+    "tool": "built-in image_gen",
+    "source": "C:\\Users\\mjkki\\.codex\\generated_images\\01a0e455-8729-7383-bf9a-07e1e50f85c5\\exec-e5f13dbb-761f-43a7-bceb-21a1616a12eb.png",
+    "prompt": "Use case: identity-preserve. Create ONE new high-quality square face profile portrait of the SAME female chibi RPG student in the reference battle sprite sheet. Reference defines exact identity, hair/eye colors and accessories, not layout. Draw fresh clean smooth anime game illustration, crisp expressive eyes, refined hair strands, soft cel shading, no enlarged pixels. Single head and tiny shoulder tips, no weapons or hands, no full body, no sheet. Front-facing slight three-quarter toward viewer, both eyes open, gentle confident expression. Head centered, eyes aligned at 55% height, face large enough readable at 48px. Full hairstyle and all characteristic ornaments inside canvas with 8% margin; entire head occupies about 80% square width. Transparent alpha background, no border, no text, no halo. Preserve youthful SD facial proportions, not realistic adult. Job: timemage. Reference image defines top-left idle identity. Keep BOTH purple twin ponytails and navy bows."
+  },
+  {
+    "job": "enchanter",
+    "reference": "sprites/enchanter-work/combat-source.png",
+    "tool": "built-in image_gen",
+    "source": "C:\\Users\\mjkki\\.codex\\generated_images\\01a0e455-8729-7383-bf9a-07e1e50f85c5\\exec-5ef2bff0-104d-4309-856f-faa91ceffea9.png",
+    "prompt": "Use case: identity-preserve. Create ONE new high-quality square face profile portrait of the SAME female chibi RPG student in the reference battle sprite sheet. Reference defines exact identity, hair/eye colors and accessories, not layout. Draw fresh clean smooth anime game illustration, crisp expressive eyes, refined hair strands, soft cel shading, no enlarged pixels. Single head and tiny shoulder tips, no weapons or hands, no full body, no sheet. Front-facing slight three-quarter toward viewer, both eyes open, gentle confident expression. Head centered, eyes aligned at 55% height, face large enough readable at 48px. Full hairstyle and all characteristic ornaments inside canvas with 8% margin; entire head occupies about 80% square width. Transparent alpha background, no border, no text, no halo. Preserve youthful SD facial proportions, not realistic adult. Job: enchanter. Reference image defines top-left idle identity. "
+  },
+  {
+    "job": "bard",
+    "reference": "sprites/bard-work/combat-source.png",
+    "tool": "built-in image_gen",
+    "source": "C:\\Users\\mjkki\\.codex\\generated_images\\01a0e455-8729-7383-bf9a-07e1e50f85c5\\exec-21152f47-a5d7-4094-83e3-09fcb12c0419.png",
+    "prompt": "Use case: identity-preserve. Create ONE new high-quality square face profile portrait of the SAME female chibi RPG student in the reference battle sprite sheet. Reference defines exact identity, hair/eye colors and accessories, not layout. Draw fresh clean smooth anime game illustration, crisp expressive eyes, refined hair strands, soft cel shading, no enlarged pixels. Single head and tiny shoulder tips, no weapons or hands, no full body, no sheet. Front-facing slight three-quarter toward viewer, both eyes open, gentle confident expression. Head centered, eyes aligned at 55% height, face large enough readable at 48px. Full hairstyle and all characteristic ornaments inside canvas with 8% margin; entire head occupies about 80% square width. Transparent alpha background, no border, no text, no halo. Preserve youthful SD facial proportions, not realistic adult. Job: bard. Reference image defines top-left idle identity. "
+  }
+]
