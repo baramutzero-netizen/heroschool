@@ -1715,6 +1715,7 @@ html[data-ui-concept="journal"] :focus-visible{outline:3px solid #ad782e;outline
 
 
 
+
 <!-- ASSET_SCRIPTS_START -->
 <script>var HS_A = {};</script>
 <script src="assets/spr_img.webp.js?v=0af6ce1e"></script>
@@ -3364,7 +3365,7 @@ function chainOf(list, i){
    던전 (원정)
    ============================================================ */
 const DUNGEONS = [
-  {id:"d1",n:"학원 지하 수련장", tier:1, secs:3, lv:1, goldMul:0,  mon:"mon_dummy",    monK:0.55, evalCap:46, relicP:.15, needFame:0,    fameClear:5,  exp:130, karma:0, relic:{C:.62,B:.12}, d:"입학생도 버틸 만한 곳"},
+  {id:"d1",n:"학원 전투 연습장", tier:1, secs:3, lv:1, goldMul:0,  mon:"mon_dummy",    monK:0.55, evalCap:46, relicP:.15, needFame:0,    fameClear:5,  exp:130, karma:0, relic:{C:.62,B:.12}, d:"입학생도 버틸 만한 곳"},
   {id:"d2",n:"안개 낀 옛 성터",  tier:1, secs:4, lv:6,  mon:"mon_wraith",   monK:0.52, evalCap:58, relicP:.162, needFame:0,    fameClear:10, exp:230, karma:5, relic:{C:.5,B:.26,A:.05}, d:"구 단위 학원의 단골 원정지"},
   {id:"d3",n:"무너진 종탑",      tier:2, secs:5, lv:10, mon:"mon_gargoyle", monK:0.58, evalCap:70, relicP:.166, needFame:400,  fameClear:15, exp:390, karma:10, relic:{C:.34,B:.36,A:.13}, d:"이름이 알려진 학원부터 문이 열린다"},
   {id:"d4",n:"소금 바다의 균열", tier:2, secs:6, lv:14, mon:"mon_brine",    monK:0.27, evalCap:82, relicP:.17, needFame:900,  fameClear:20, exp:620, karma:15, relic:{C:.2,B:.38,A:.24,S:.03}, d:"의식 구간이 길어 지구력을 요구"},
@@ -6390,7 +6391,7 @@ const EXPED_COND = 1;                         // 전투 한 판당 컨디션 소
 function dgExp(d){ return Math.round(d.exp * EXPED_EXP_MUL); }
 function dgFame(d){ return Math.round((d.fameClear||0) * EXPED_RWD_MUL); }
 function dgKarma(d){ return (d.karma||0) * EXPED_RWD_MUL; }
-function dgGold(d){ return (EXPED_GOLD + d.tier*EXPED_GOLD_TIER) * (d.goldMul!=null ? d.goldMul : 1); }   // goldMul 0 = 자금 없음 (학원 지하 수련장)
+function dgGold(d){ return (EXPED_GOLD + d.tier*EXPED_GOLD_TIER) * (d.goldMul!=null ? d.goldMul : 1); }   // goldMul 0 = 자금 없음 (학원 전투 연습장)
 function expedInit(dg, team, TM){
   const avgStam = team.reduce((a,s)=>a+mentEff(s).stam,0)/team.length;
   const avgWill = team.reduce((a,s)=>a+mentEff(s).will,0)/team.length;
@@ -9518,7 +9519,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0929-1927";
+const BUILD = "0930-0518";
 const BUILD_TS = 0;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
@@ -14033,10 +14034,44 @@ function battleCallout(call, seed){
   const index=((seed|0)%variants.length+variants.length)%variants.length;
   return {text:variants[index],tone:p};
 }
+/* Independent compositions and walkable-ground start for each orientation.
+   Add other fields here when both original paintings are ready. */
+const FIELD_VARIANTS = {
+  dummy: {
+    landscape:{src:"assets/battle-fields/training/landscape.png?v=1",aspect:2,ground:.31},
+    portrait:{src:"assets/battle-fields/training/portrait.png?v=1",aspect:9/16,ground:.20}
+  }
+};
+function battleFieldVariant(key,width,height){
+  const orientation=width/Math.max(1,height)<1.2?'portrait':'landscape';
+  const field=FIELD_VARIANTS[key];
+  return field ? {...field[orientation],orientation} : null;
+}
 function alignDemonField(){
   const modal=document.querySelector('.modal.btm'),stage=modal&&modal.querySelector('.bf-stage');
   if(!stage)return;
   const m=modal.getBoundingClientRect(),r=stage.getBoundingClientRect();
+  const variant=battleFieldVariant(modal.dataset.fk,stage.clientWidth,stage.clientHeight);
+  if(variant){
+    modal.dataset.fieldOrientation=variant.orientation;
+    modal.style.setProperty('--btf',`url('${variant.src}')`);
+    modal.style.setProperty('--demon-shift','0px');
+    const sw=stage.clientWidth,sh=stage.clientHeight;
+    let top=sh;
+    stage.querySelectorAll('.bf-slot').forEach(el=>{const b=el.getBoundingClientRect();if(b.height)top=Math.min(top,b.top-r.top-18);});
+    const G=Math.max(0,top),g=variant.ground,A=variant.aspect;
+    const H=Math.max(sh,sw/A,(sh-G)/(1-g));
+    const y=Math.min(0,G-g*H);
+    stage.style.setProperty('--field-left','0px');
+    stage.style.setProperty('--field-top','0px');
+    stage.style.setProperty('--field-width',sw+'px');
+    stage.style.setProperty('--field-height',sh+'px');
+    stage.style.setProperty('--field-clip','0px');
+    stage.style.setProperty('--field-size',`${H*A}px ${H}px`);
+    stage.style.setProperty('--field-pos',`center ${y}px`);
+    return;
+  }
+
   const shift=modal.classList.contains('btm-demon')?Math.max(0,r.left-m.left+r.width*.5-m.width*.5):0;
   modal.style.setProperty('--demon-shift',shift+'px');
   const x=r.left-m.left,y=r.top-m.top,w=modal.clientWidth+shift*2,h=modal.clientHeight;
