@@ -1,5 +1,13 @@
 # Paladin work motion draft
 
+## 2026-09-29 victory frame correction
+
+The combined atlas is integrated into the game with 5 combat and 6 work motions.
+The source down row extended below its nominal y=909 boundary into three victory cells.
+`build-combined.lua` now retains the connected victory silhouette before computing bounds,
+removing these detached down-pose fragments without cropping the raised victory weapon.
+All four exported victory frames were checked for detached components, and runtime rendering passed.
+
 Six actions, four frames each. Original generated sheet: source.png. Native Aseprite draft: paladin-work.aseprite, flattened character/tools layer, six tags. Preview: preview.html.
 
 CORRECTION: PNG alpha was verified: empty background pixels are transparent (alpha 0). The earlier opaque-background warning was a visual inspection error. This is a transparent motion/style draft, not yet integrated into the game. Aseprite cells are 256px.

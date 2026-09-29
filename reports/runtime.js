@@ -1,6 +1,6 @@
 // Work animation selection is presentation-only and never consumes game RNG.
 function reportWorkMotion(scene, student, index){
-  if(!["paladin","priest","spellsword","gunner","ninja","forcemage","monk","archer","wizard","darkpriest"].includes(student.job) || student.state==="rest" || student.state==="failed") return null;
+  if(!["paladin","priest","spellsword","gunner","ninja","forcemage","monk","archer","wizard","darkpriest","bard","enchanter","rogue","druid","timemage","sword"].includes(student.job) || student.state==="rest" || student.state==="failed") return null;
   if(scene.job){
     const choices={farm:["weed"],church:["dust","scrub"],inn:["dust","scrub","carry"],salon:["dust","scrub"],tavern:["dust","scrub","carry"]}[scene.job];
     return choices ? choices[(index+(scene.day||0))%choices.length] : null;
@@ -220,7 +220,7 @@ function reportSceneBind(records){
       <div class="ji-body"><div class="ji-face">${jobFaceHTML(J)}</div>
         <div class="ji-text"><div class="eyebrow">이번 주 의뢰</div><h3>${esc(J.n)}</h3><div class="ji-who">${esc(J.who)}</div>
           <p class="ji-line">“${esc(J.line)}”</p>
-          <div class="ji-meta">${esc(mentName(J.up))} 소폭 증가 · ${esc(mentName(J.down))} 하락 · 컨디션 -${JOB_COND}/일 · 보수 ${fmt(jobPay())} G/일</div></div></div>
+          <div class="ji-meta" hidden>${esc(mentName(J.up))} 소폭 증가 · ${esc(mentName(J.down))} 하락 · 컨디션 -${JOB_COND}/일 · 보수 ${fmt(jobPay())} G/일</div></div></div>
       <div class="ji-btn"><button class="btn primary" id="jiOk">의뢰를 맡는다</button></div></div>`;
     box.appendChild(el);
     const ok=el.querySelector("#jiOk"); ok.focus();

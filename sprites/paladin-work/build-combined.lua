@@ -24,6 +24,32 @@ for row=0,10 do
   end
   local im=Image(math.floor(cw),math.floor(frameEnd-y0),ColorMode.RGB)
   im:drawImage(frameSrc,Point(-math.floor(col*cw),-math.floor(y0)))
+  -- The down row extends past y=909 in three columns. Keep only the
+  -- connected victory silhouette before measuring bounds or positioning it.
+  if row==4 then
+   local seen,largest={},{}
+   for sy=0,im.height-1 do for sx=0,im.width-1 do
+    local key=sy*im.width+sx
+    if not seen[key] and app.pixelColor.rgbaA(im:getPixel(sx,sy))>127 then
+     local queue={key};local head=1;seen[key]=true
+     while head<=#queue do
+      local k=queue[head];head=head+1
+      local x=k%im.width;local y=math.floor(k/im.width)
+      for oy=-1,1 do for ox=-1,1 do
+       local nx,ny=x+ox,y+oy;local nk=ny*im.width+nx
+       if nx>=0 and nx<im.width and ny>=0 and ny<im.height and not seen[nk] and app.pixelColor.rgbaA(im:getPixel(nx,ny))>127 then
+        seen[nk]=true;queue[#queue+1]=nk
+       end
+      end end
+     end
+     if #queue>#largest then largest=queue end
+    end
+   end end
+   local keep={};for _,k in ipairs(largest) do keep[k]=true end
+   for y=0,im.height-1 do for x=0,im.width-1 do
+    if not keep[y*im.width+x] then im:drawPixel(x,y,0) end
+   end end
+  end
   local x0,ymin,x1,ymax=im.width,im.height,0,0
   for y=0,im.height-1 do for x=0,im.width-1 do
    local px=im:getPixel(x,y);local a=app.pixelColor.rgbaA(px)
