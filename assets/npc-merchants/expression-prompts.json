@@ -1,0 +1,35 @@
+{
+  "tool": "Built-in image_gen",
+  "assets": [
+    {
+      "name": "bank-manager",
+      "ref": "bank-manager",
+      "prompt": "Edit this exact game NPC portrait. Preserve same elderly male banker identity, silver swept hairstyle, moustache, round gold glasses, navy gold-trimmed jacket and burgundy waistcoat, exact bust framing and large-head SD proportions, crisp pixel-stepped anime illustration style. Change his default expression to distinctly gloomy, calculating and unwelcoming: narrow half-lidded eyes under low brows, subtle shadow under brow ridge, thin closed unsmiling mouth. Remove rosy cheerful blush and friendly wide eyes. Still readable cute SD game art, not realistic or horror. Single portrait, genuine transparent RGBA background, no text, no border.",
+      "generated": "C:\\Users\\mjkki\\.codex\\generated_images\\01a0e455-8729-7383-bf9a-07e1e50f85c5\\exec-3d49377a-4cc6-43d6-985e-95871b00007d.png"
+    },
+    {
+      "name": "bank-manager-debt",
+      "ref": "bank-manager",
+      "prompt": "Edit this exact elderly male banker game portrait into the DEBT COLLECTION facial expression: an impatient stern creditor silently asking 'When will you pay back your debt?' Narrow piercing eyes looking directly at viewer above low gold spectacles, strongly furrowed lowered silver eyebrows, tight disapproving mouth beneath moustache, gloomy and calculating. Preserve same silver hairstyle, white moustache, round gold spectacles, navy gold-trimmed jacket, burgundy waistcoat, same silhouette and framing and head position. Keep large-head tiny-shoulder SD anime pixel-edged art style exactly, not realistic. No cheerful blush. Single isolated bust portrait with genuine transparent alpha background. No text, symbols, props or border.",
+      "generated": "C:\\Users\\mjkki\\.codex\\generated_images\\01a0e455-8729-7383-bf9a-07e1e50f85c5\\exec-dcb59c0d-5f91-4545-aecb-e7b1786369c9.png"
+    },
+    {
+      "name": "bank-manager-repaid",
+      "ref": "bank-manager",
+      "prompt": "Edit this exact elderly male banker game portrait into the AFTER DEBT REPAYMENT expression: cold dismissive disdain, an icy sideways narrowed glance that says 'Don't come back again.' Asymmetric raised eyebrow, half-closed unimpressed eyes, slight downturned closed mouth under moustache. Gloomy and mercenary rather than kindly. Distinct from angry debt collection: aloof dismissive sideways eye direction, not a frown of rage. Preserve same silver hairstyle, moustache, gold glasses, navy gold-trimmed jacket and burgundy vest, portrait head position, silhouette and bust framing. Exact same SD large-head pixel-edged anime game art. Transparent alpha background, single portrait, no text or border.",
+      "generated": "C:\\Users\\mjkki\\.codex\\generated_images\\01a0e455-8729-7383-bf9a-07e1e50f85c5\\exec-c1d00a14-8053-4326-8963-93181e32e82e.png"
+    },
+    {
+      "name": "bank-manager-deposit",
+      "ref": "bank-manager",
+      "prompt": "Edit this exact elderly male banker game portrait into the DEPOSIT CUSTOMER expression: suddenly obsequious 'my valued customer!' excessively warm ingratiating closed-eye smile, lifted brows and cheeks, a pleased slightly greedy salesman's grin under white moustache. His mercenary change of attitude should be funny and obvious, not evil horror. Preserve exact character identity silver swept hair, gold round glasses, white moustache, navy gold-trimmed suit, burgundy waistcoat, same large-head SD proportions and head placement and bust silhouette. Match crisp pixel-edged anime game portrait style. Single portrait transparent alpha background, no text, no money symbols, no props or border.",
+      "generated": "C:\\Users\\mjkki\\.codex\\generated_images\\01a0e455-8729-7383-bf9a-07e1e50f85c5\\exec-9c1e73ae-4021-4497-a2ea-1b680c0538e8.png"
+    },
+    {
+      "name": "carpenter",
+      "ref": "carpenter",
+      "prompt": "Edit this exact carpenter game portrait to look distinctly more masculine, mature, rugged and solemn. Replace happy open-mouth smile with firmly closed straight mouth and dignified serious expression. Much thicker straighter low-set brows, narrower deep-set eyes without long eyelashes, broader angular jaw underneath full beard, slightly broader neck and shoulders. No cheek blush. Retain chestnut hair, full brown beard, ochre headband, pencil behind ear, cream work shirt and brown leather apron. Preserve cute large-head SD proportions, centered same bust composition, warm clustered shading and pixel-stepped anime game style. Do NOT become photorealistic or gritty realistic. Single transparent RGBA portrait no text no border.",
+      "generated": "C:\\Users\\mjkki\\.codex\\generated_images\\01a0e455-8729-7383-bf9a-07e1e50f85c5\\exec-5d3b8e5f-dd94-485a-9ce6-286e97f9ae3f.png"
+    }
+  ]
+}
