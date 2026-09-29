@@ -16002,6 +16002,54 @@ function boot(){
   UI.view = "home";
   render();
   showTitle(had);
+  preloadStart();
+}
+/* ── 그림 미리 받기 (0929) ──
+   시작 화면이 뜬 뒤, 게임이 쓰는 그림을 뒤에서 조금씩 받아 둔다(브라우저 캐시에 남는다).
+   기다림을 늘리지 않도록 한 번에 두 장씩, 곧 볼 것부터 — 프롤로그 → 얼굴 · 상점 NPC → 튜토리얼 → 전투 배경 → 몬스터 → 보고 장면 → 나머지.
+   전투 배경은 파스텔 필터 설정에 맞는 한 벌만. 데이터 절약 모드면 받지 않는다. 음악 · 효과음은 받지 않는다. */
+const PRELOAD = {busy:false, done:0, total:0, seen:new Set()};
+function preloadList(){
+  const out = [], add = v=>{
+    if(!v) return;
+    if(typeof v === "string"){ if(/assets\/[^"'()\s]+\.(webp|png|jpe?g|gif)(\?|$)/i.test(v) && !PRELOAD.seen.has(v)){ PRELOAD.seen.add(v); out.push(v); } return; }
+    if(typeof v === "object") Object.values(v).forEach(add);
+  };
+  const G = {PROL_IMG:typeof PROL_IMG!=="undefined"?PROL_IMG:null,FACE_IMG:typeof FACE_IMG!=="undefined"?FACE_IMG:null,NPC_IMG:typeof NPC_IMG!=="undefined"?NPC_IMG:null,TUT_ICON:typeof TUT_ICON!=="undefined"?TUT_ICON:null,TUT_IMG:typeof TUT_IMG!=="undefined"?TUT_IMG:null,FIELD_PASTEL:typeof FIELD_PASTEL!=="undefined"?FIELD_PASTEL:null,FIELD_IMG:typeof FIELD_IMG!=="undefined"?FIELD_IMG:null,MON_IMG:typeof MON_IMG!=="undefined"?MON_IMG:null,REPORT_ROOMS:typeof REPORT_ROOMS!=="undefined"?REPORT_ROOMS:null,REPORT_STUDY:typeof REPORT_STUDY!=="undefined"?REPORT_STUDY:null,REPORT_JOB_MAPS:typeof REPORT_JOB_MAPS!=="undefined"?REPORT_JOB_MAPS:null,REPORT_JOB_FACES:typeof REPORT_JOB_FACES!=="undefined"?REPORT_JOB_FACES:null,POPUP_IMG:typeof POPUP_IMG!=="undefined"?POPUP_IMG:null,VICT_IMG:typeof VICT_IMG!=="undefined"?VICT_IMG:null,STORY_ART:typeof STORY_ART!=="undefined"?STORY_ART:null,VALENTINE_ART:typeof VALENTINE_ART!=="undefined"?VALENTINE_ART:null,SPARKLER_ART:typeof SPARKLER_ART!=="undefined"?SPARKLER_ART:null,FB_ICON:typeof FB_ICON!=="undefined"?FB_ICON:null};
+  const g = n=> G[n];
+  const pastel = PREF.fieldPastel !== false;
+  ["PROL_IMG","FACE_IMG","NPC_IMG","TUT_ICON","TUT_IMG", pastel? "FIELD_PASTEL" : "FIELD_IMG", "MON_IMG",
+   "REPORT_ROOMS","REPORT_STUDY","REPORT_JOB_MAPS","REPORT_JOB_FACES","POPUP_IMG","VICT_IMG","STORY_ART",
+   "VALENTINE_ART","SPARKLER_ART","FB_ICON"].forEach(n=> n && add(g(n)));
+  /* 스타일시트에 박힌 그림 (의뢰 장면 소품 등) */
+  for(const sh of document.styleSheets){
+    let list; try{ list = sh.cssRules; }catch(e){ continue; }
+    for(const r of (list||[])){ const t = r.cssText || ""; if(t.indexOf("assets/") < 0) continue;
+      (t.match(/url\(["']?([^"')]+)["']?\)/g)||[]).forEach(u=> add(u.replace(/^url\(["']?|["']?\)$/g,""))); }
+  }
+  document.querySelectorAll("img[src*='assets/']").forEach(im=> add(im.getAttribute("src")));
+  return out;
+}
+function preloadStart(){
+  if(PRELOAD.busy) return;
+  try{ const c = navigator.connection; if(c && (c.saveData || /2g/.test(c.effectiveType||""))) return; }catch(e){}
+  PRELOAD.busy = true;
+  setTimeout(()=>{
+    const q = preloadList();
+    PRELOAD.total = q.length;
+    let run = 0;
+    const next = ()=>{
+      while(run < 2 && q.length){
+        const src = q.shift(), im = new Image();
+        run++;
+        im.decoding = "async";
+        im.onload = im.onerror = ()=>{ run--; PRELOAD.done++; if(window.requestIdleCallback) requestIdleCallback(next, {timeout:600}); else setTimeout(next, 30); };
+        im.src = src;
+      }
+      if(!q.length && !run) PRELOAD.busy = false;
+    };
+    next();
+  }, 1200);
 }
 boot();
 </script>
