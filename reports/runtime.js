@@ -1,6 +1,7 @@
 // Work animation selection is presentation-only and never consumes game RNG.
 function reportWorkMotion(scene, student, index){
   if(!["paladin","priest","spellsword","gunner","ninja","forcemage","monk","archer","wizard","darkpriest","bard","enchanter","rogue","druid","timemage","sword"].includes(student.job) || student.state==="rest" || student.state==="failed") return null;
+  if(scene.job==="inn" || scene.job==="tavern") return ["dust","dust","carry","carry","scrub","scrub"][index%6];
   if(scene.job){
     const choices={farm:["weed"],church:["dust","scrub"],inn:["dust","scrub","carry"],salon:["dust","scrub"],tavern:["dust","scrub","carry"]}[scene.job];
     return choices ? choices[(index+(scene.day||0))%choices.length] : null;
@@ -40,6 +41,8 @@ function reportRecord(day, tr, bonus, phase, before, members, status, logStart, 
 
 // All rooms use the same 3:1 viewport. Only the vertical crop origin differs.
 const REPORT_JOB_LAYOUT = {crop:0, capacity:5, slots:[[18,75],[34,57],[50,80],[66,56],[82,76]]};
+const REPORT_INN_LAYOUT = {crop:0, scale:1400, capacity:6, slots:[[37.5,36],[86,39],[54.8,63],[62.3,63],[28,80],[82,80]]};
+const REPORT_TAVERN_LAYOUT = {crop:0, scale:1400, capacity:6, slots:[[30,29],[89,39],[47.5,55],[63,45],[20,84],[83,77]]};
 const reportRoom = s => s.job && REPORT_JOB_MAPS[s.job] || REPORT_ROOMS[s.facility];
 const REPORT_LAYOUTS = {
   library:{crop:.235, slots:[[12,79],[45,42],[63,47],[79,73],[88,84]]},
@@ -96,7 +99,7 @@ function reportSceneShell(records, dlg){
     }).join("")}</nav>
     <div class="dr-stage" id="drStage"><img class="dr-room" id="drRoom" alt="" draggable="false">
       <div class="dr-top"><div><span class="dr-eyebrow">오늘의 학원</span><h3 id="drFacility"></h3><span id="drActivity"></span></div><span class="dr-chain" id="drChain"></span></div>
-      <div id="drStudents"></div><div class="dr-bottom"><span id="drSceneCount"></span><span>학생을 누르면 성장 내역을 볼 수 있어요</span></div>
+      <img class="dr-inn-guest dr-inn-guest-left" src="assets/guest-props/inn-seated-guest.png" alt="테이블에 앉은 여관 손님" draggable="false"><img class="dr-inn-guest dr-inn-guest-right" src="assets/guest-props/inn-seated-guest.png" alt="테이블에 앉은 여관 손님" draggable="false"><img class="dr-tavern-guest dr-tavern-guest-left" src="assets/guest-props/tavern-seated-guests.png" alt="맥주 테이블의 주점 손님 두 명" draggable="false"><img class="dr-tavern-guest dr-tavern-guest-right" src="assets/guest-props/tavern-seated-guests.png" alt="맥주 테이블의 주점 손님 두 명" draggable="false"><div class="dr-salon-owner" role="img" aria-label="가위를 움직이는 미용실 원장님"></div><div id="drStudents"></div><div class="dr-bottom"><span id="drSceneCount"></span><span>학생을 누르면 성장 내역을 볼 수 있어요</span></div>
     </div>
     <nav class="dr-phases" id="drPhases" aria-label="훈련 장면 선택"></nav>
     <div class="dr-result" aria-live="polite"><div><b id="drResultTitle"></b><span id="drResultHint"></span></div><div id="drResultChips"></div></div>
@@ -153,6 +156,7 @@ function reportSceneBind(records){
     $("#drPrev").disabled=at===0;$("#drNext").disabled=at===scenes.length-1;
     root.querySelectorAll("[data-dr-speed]").forEach(b=>{b.classList.toggle("primary",+b.dataset.drSpeed===speed);b.setAttribute("aria-pressed",String(+b.dataset.drSpeed===speed));});
     $("#drStage").classList.toggle("paused",paused);
+    $("#drStage").style.setProperty("--salon-snip-duration",`${800/speed}ms`);
     if(paused)silence();
     root.querySelectorAll("#drStudents canvas").forEach(c=>{if(paused && +c.dataset.m!==SPR_M.down)c.dataset.still="1";else delete c.dataset.still;});
   }
@@ -164,7 +168,7 @@ function reportSceneBind(records){
   }
   function draw(){
     const s=scenes[at], day=scenes.filter(x=>x.day===s.day), offset=(s.day*3)%Math.max(1,s.students.length);
-    const layout=s.job ? REPORT_JOB_LAYOUT : REPORT_LAYOUTS[s.facility] || REPORT_LAYOUTS.gym;
+    const layout=s.job ? (s.job==="inn" ? REPORT_INN_LAYOUT : s.job==="tavern" ? REPORT_TAVERN_LAYOUT : REPORT_JOB_LAYOUT) : REPORT_LAYOUTS[s.facility] || REPORT_LAYOUTS.gym;
     const visible=s.students.slice(offset).concat(s.students.slice(0,offset)).slice(0,layout.capacity || layout.slots.length);
     displayed=visible;queue=reportStatQueue(visible);lastSound=-1;silence();
     duration=Math.max(2400,leadMs+queue.length*stepMs+cardMs);
@@ -192,7 +196,7 @@ function reportSceneBind(records){
       const workMotion=reportWorkMotion(s,x,i);
       const motion=workMotion || (resting?"down":x.state==="rest"?"idle":x.state==="failed"?"hit":["gym","hall","arena"].includes(x.trainingFacility || s.facility)?"attack":"idle");
       const cond=x.condition?.from ?? 100;
-      return `<button class="dr-student ${studying?"studying":""} ${resting?"resting":""} ${pos[i][1]<48?"low-bubble":""}" data-dr-student="${i}" style="left:${pos[i][0]}%;top:${pos[i][1]}%;z-index:${Math.round(pos[i][1])}" aria-label="${esc(x.name)} 성장 내역"><span class="dr-shadow"></span><span class="dr-avatar">${studying?`<span class="dr-study-sprite" data-study-job="${x.job}" style="background-image:url(${REPORT_STUDY[x.job]})"></span>`:sprHTML(x.job,motion,1,{p:x.palette,flip:resting?i!==2:i%2===1,t0:resting?0:performance.now()})}</span><span class="dr-name">${esc(x.name)}</span><span class="dr-condition ${reportConditionColor(cond)}" role="meter" aria-label="컨디션" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${cond}"><span class="dr-condition-fill" style="width:${clamp(cond,0,100)}%"></span><span class="dr-condition-number">${cond}</span></span><span class="dr-bubbles" hidden></span></button>`;
+      return `<button class="dr-student ${studying?"studying":""} ${resting?"resting":""} ${pos[i][1]<48?"low-bubble":""}" data-dr-student="${i}" style="left:${pos[i][0]}%;top:${pos[i][1]}%;z-index:${Math.round(pos[i][1])}" aria-label="${esc(x.name)} 성장 내역"><span class="dr-shadow"></span><span class="dr-avatar">${studying?`<span class="dr-study-sprite" data-study-job="${x.job}" style="background-image:url(${REPORT_STUDY[x.job]})"></span>`:sprHTML(x.job,motion,1,{p:x.palette,flip:(s.job==="inn" || s.job==="tavern")?[false,true,false,true,false,true][i]:resting?i!==2:i%2===1,t0:resting?0:performance.now()})}</span><span class="dr-name">${esc(x.name)}</span><span class="dr-condition ${reportConditionColor(cond)}" role="meter" aria-label="컨디션" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${cond}"><span class="dr-condition-fill" style="width:${clamp(cond,0,100)}%"></span><span class="dr-condition-number">${cond}</span></span><span class="dr-bubbles" hidden></span></button>`;
     }).join("");
     if(!s.job && s.facility==="hall"){
       $("#drStudents").insertAdjacentHTML("beforeend",pos.slice(visible.length).map(p=>`<div class="dr-student studying empty-seat" aria-hidden="true" style="left:${p[0]}%;top:${p[1]}%;z-index:${Math.round(p[1])}"><span class="dr-avatar"><span class="dr-study-sprite empty" style="background-image:url(${REPORT_STUDY.empty})"></span></span></div>`).join(""));

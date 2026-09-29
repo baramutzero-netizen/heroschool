@@ -16,6 +16,7 @@ assert len(study) == 17, 'Missing study sprite'
 assert set(rooms) == {'library','gym','hall','chapel','infirm','arena','beach'}, 'Missing report room asset'
 jobs = ['farm','church','inn','hunt','salon','tavern']
 job_assets = {kind:{key:'data:image/webp;base64,'+base64.b64encode((ROOT/f'reports/jobs/{key}-{kind}.webp').read_bytes()).decode() for key in jobs} for kind in ['face','map']}
+job_assets['map']['salon'] = 'assets/report_job_maps/salon-guest.png?v=owner1'
 text = block(text, '/* REPORT_SCENE_STYLE_START */', '/* REPORT_SCENE_STYLE_END */',
     (ROOT/'reports/style.css').read_text(encoding='utf-8'), '/* ---------- 주간 일지 ---------- */')
 text = block(text, '/* REPORT_SCENE_RUNTIME_START */', '/* REPORT_SCENE_RUNTIME_END */',
