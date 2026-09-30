@@ -809,6 +809,13 @@ html.modal-open body{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .rswap .opt.rswap-w{cursor:pointer}
 @media (max-width:640px){ .rswap{grid-template-columns:1fr;gap:4px} .rswap-arrow{padding:0;line-height:1} .rswap-arrow span{transform:rotate(90deg)} }
 .opt{border:1px solid var(--line-soft);border-radius:3px;padding:10px 12px;background:var(--bg);text-align:left;width:100%}
+/* 새 시나리오 — 난이도 고르기 (0930) */
+.nsdiff{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:6px}
+@media(max-width:560px){.nsdiff{grid-template-columns:1fr}}
+.nsdiff .nsd{cursor:pointer}
+.nsdiff .nsd.on{border-color:var(--brass)!important;background:var(--brass)!important;color:#fff8ea!important}
+.nsdiff .nsd.on .od{color:#f6e6c8!important}
+.nsdiff .nsd .od{font-size:11.5px;margin-top:3px}
 /* 엔트리 팀 카드 — 누르는 곳이라는 게 보이게 (0930) */
 .etm-hint{font-size:12px;color:var(--muted);margin:2px 0 8px}
 .etm-card:not(:disabled){cursor:pointer}
@@ -2057,7 +2064,8 @@ html:is([data-ui-palette="riso"],[data-ui-palette="mint"]) nav button:hover:not(
   /* 오른쪽 칸 경계선 — 사이드 높이가 아니라 페이지 끝까지 그린다 (0930) */
   #app::after{content:"";position:absolute;top:0;bottom:0;right:284px;border-left:4px double var(--line,#9f7758);pointer-events:none}
   #app>.layout{grid-column:1;grid-row:1;margin-top:16px;min-width:0}
-  #app>.topbar{grid-column:2;grid-row:1;position:sticky;top:0;align-self:start;margin:0 -16px 0 0;padding:14px 12px 16px;
+  /* 삽화처럼 화면에 고정 (0930) — 스크롤해도 움직이지 않는다. 자리(오른쪽 칸)는 격자에 비워 둔다 */
+  #app>.topbar{grid-column:2;grid-row:1;position:fixed;top:0;right:max(0px,calc((100% - 1240px) / 2));width:288px;margin:0;padding:14px 12px 16px;
     height:100vh;overflow-y:auto;scrollbar-width:thin;box-sizing:border-box;display:flex;flex-direction:column;gap:10px;
     border-bottom:0;border-left:4px solid transparent;box-shadow:none;background-clip:padding-box}   /* 투명 테두리 자리로 뒤의 경계선이 비치게 */
   #app>.topbar .crestrow{display:grid;grid-template-columns:1fr;gap:10px;position:relative}
@@ -3163,6 +3171,7 @@ function genMonsterOne(dg, key, lv, kMul){
     ment:{team:M, aggr:M, calm:M, will:M, stam:M, genius:M, pot:55}
   };
   autoSkMod(st, lv);
+  diffFoe(st);                                          // 난이도 — 레벨 · 멘탈리티 가산
   const k = (dg.monK || 1) * (kMul||1);
   st.mul = {hp:k*MON_HP_MUL, atk:Math.pow(k,.7)*MON_ATK_MUL, def:Math.pow(k,.5), spd:Math.pow(k,.12)};
   return st;
@@ -3311,7 +3320,24 @@ function teamRows(t){
 }
 function teamBattleOpt(t){ return {formA: t.form, plusA: formPlusOn(), rowsA: teamRows(t)}; }
 /* 상대 팀 — 진형을 붙이고 전투 옵션으로 변환. plus 면 다섯 자리 강화 진형을 쓴다 */
-function assignFoeForm(arr, fk, plus){
+/* ── 난이도 (0930) — 새 시나리오에서 고른다. 설명(d)은 뭉뚱그려 보여 주고 실제 값은 gold · lv · ment. 자금 획득 배율 · NPC 상대(대회 · 친선전 · 원정 마물)의 레벨 · 멘탈리티 가산.
+   졸업생 리그(다른 학원의 기록)와 마왕은 건드리지 않는다. */
+const DIFFS = {
+  normal:   {n:"보통",       gold:1,  lv:0, ment:0,  d:"기본 난이도"},
+  hard:     {n:"어려움",     gold:.8, lv:1, ment:5,  d:"자금 획득량 감소 · 전투 난이도 증가"},
+  nightmare:{n:"악몽",      gold:.6, lv:2, ment:10, d:"자금 획득량 대폭 감소 · 전투 난이도 대폭 증가"}
+};
+function diffOf(){ return DIFFS[(typeof S!=="undefined" && S && S.diff)] || DIFFS.normal; }
+function diffFoe(st){
+  const D = diffOf();
+  if(!st || st._dif || (!D.lv && !D.ment)) return st;
+  st._dif = 1;
+  if(D.lv){ st.level = Math.max(1, (st.level|0) + D.lv); if(!/^g/.test(String(st.id||""))) autoSkMod(st, st.level); }   // 졸업생으로 세운 보스는 기록된 스킬 그대로
+  if(D.ment && st.ment) MENTAL.forEach(m=>{ if(m.k!=="pot") st.ment[m.k] = clamp((st.ment[m.k]||0) + D.ment, 5, 130); });
+  return st;
+}
+function assignFoeForm(arr, fk, plus, noDiff){
+  if(!noDiff) arr.forEach(diffFoe);                  // NPC 상대 — 난이도 가산 (리그는 noDiff)
   fk = (fk && FORMS[fk]) ? fk : pick(FORM_KEYS);
   const F = formData(fk, !!plus);
   arr.form = fk; arr.plus = !!plus;
@@ -5558,7 +5584,7 @@ function masterConfirmRow(idOk, idNo){
     <button class="btn sm ghost" id="${idNo}" ${n?"":"disabled"}>되돌리기</button>
     <span class="hint" style="font-size:11.5px;color:var(--dim)">잔여 ${mpAvail()}pt</span></div>`;
 }
-function addGold(n){ S.gold += Math.round(n * (1 + S.master.net*.02)); }
+function addGold(n){ S.gold += Math.round(n * (1 + S.master.net*.02) * diffOf().gold); }   // 난이도 — 자금 획득 배율
 function infoMulOf(mi){ return 1 + clamp(mi|0, 0, MASTER_MAX)*.02; }
 function infoBattleMul(){ return infoMulOf(S.master.info); }
 function tierOf(){ return TIERS[S.tier-1]; }
@@ -8985,6 +9011,7 @@ function viewHome(){
         <div class="kv" title="${esc(fameTitle(S.fame).d)}"><span class="k">학원 유명도</span><span class="v" style="color:var(--brass)">${fameTitle(S.fame).n}</span></div>
         <div class="kv"><span class="k">다음 유명도</span><span class="v num">${fameNext(S.fame)? `${fameNext(S.fame).n}까지 ${fmt(fameNext(S.fame).min-S.fame)}` : "최고 단계"}</span></div>
         <div class="kv" title="유명도가 한 등급 오를 때마다 겨울 스카우트 시도가 1회 늘어난다"><span class="k">겨울 스카우트 시도</span><span class="v num">${scoutTriesMax()}회</span></div>
+        <div class="kv" title="${esc(diffOf().d)}"><span class="k">난이도</span><span class="v">${diffOf().n}</span></div>
       </div>
       <div>
         <div class="eyebrow" style="margin-bottom:6px">마스터 육성 (잔여 ${mpAvail()}pt)</div>
@@ -10171,8 +10198,8 @@ function seasonBattle(SE, gi, order, r, i){
      전투에 닿는 값은 전부 기록에서 덮어쓰므로, 시드는 전투에만 박는다. (RULES_VER 3) */
   const ta = leagueTeamUnits(A), tb = leagueTeamUnits(B);
   return withSeed(SE.seed + ":" + SE.n + ":" + gi + ":" + r + ":" + i, ()=>{
-    const ua = assignFoeForm(ta, A.form);
-    const ub = assignFoeForm(tb, B.form);
+    const ua = assignFoeForm(ta, A.form, false, true);
+    const ub = assignFoeForm(tb, B.form, false, true);   // 졸업생 리그 — 다른 학원 기록이라 난이도를 얹지 않는다
     if(!ua.length || !ub.length) return null;
     /* 정보 보정은 각 팀이 등록할 때 올린 마스터 정보(mi)로 건다 (0924).
        비워 두면 runBattle 이 "보고 있는 사람"의 정보 포인트를 A 편에 얹어서, 같은 경기가 브라우저마다 다른 결과가 났다.
@@ -11639,7 +11666,7 @@ function repayDone(){ return debtOf() <= 0; }
 function depOf(){ return bankState().dep; }
 function depInterest(){ return repayDone() ? Math.floor(depOf() * DEP_RATE) : 0; }
 function payDepInterest(){
-  const v = depInterest();
+  const v = Math.round(depInterest() * diffOf().gold);
   if(!v) return 0;
   S.gold += v;
   if(FIN) FIN.depInt = (FIN.depInt||0) + v;
@@ -12285,8 +12312,9 @@ function tryGuildJob(){
   if(jobUnlocked()) return;
   if(S.phase !== "fall" || S.week !== 0) return;      // 1주차를 마친 시점 (주차는 아직 넘어가기 전)
   S.jobUnlock = S.year;
-  S.gold += GUILD_WYVERN + GUILD_CHORES;
-  if(FIN) FIN.later = (FIN.later||0) + GUILD_WYVERN + GUILD_CHORES;   // 이벤트 팝업에서 받는 돈 — 이번 주 자금 상황에는 미리 넣지 않는다 (0929)
+  const gw = Math.round((GUILD_WYVERN + GUILD_CHORES) * diffOf().gold);
+  S.gold += gw;
+  if(FIN) FIN.later = (FIN.later||0) + gw;   // 이벤트 팝업에서 받는 돈 — 이번 주 자금 상황에는 미리 넣지 않는다 (0929)
   logE(`<b>직접 의뢰를 받다</b> — 와이번 토벌 <b style="color:var(--brass)">+${fmt(GUILD_WYVERN)} G</b> · 학생들의 잡일 보수 <b style="color:var(--brass)">+${fmt(GUILD_CHORES)} G</b>. 이제 학생들이 마을의 의뢰를 받을 수 있다.`, "big");
   for(let pg=1; pg<=5; pg++) queueCeremony({type:"guild", page:pg, year:S.year});
 }
@@ -16260,11 +16288,15 @@ function showTitle(canContinue){
 }
 function askAcademyName(){
   let nm = pick(ACAD)+" 용사 학원";
+  UI.newDiff = UI.newDiff && DIFFS[UI.newDiff] ? UI.newDiff : "normal";
   const draw = ()=> showModal(`<div class="cerhead"><div class="eyebrow">새 시나리오</div>
       <h2 style="font-size:24px;margin-top:2px">학원의 이름</h2>
       <p style="color:var(--muted);font-size:13px;margin-top:6px">아버지가 세운 학원의 간판을 다시 건다. 이름은 언제든 바꿀 수 있다.</p></div>
     <input id="nsName" value="${esc(nm)}" maxlength="24"
       style="width:100%;margin-top:14px;background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:10px;font-size:15px">
+    <div class="eyebrow" style="margin-top:16px">난이도</div>
+    <div class="nsdiff" role="radiogroup" aria-label="난이도">${Object.keys(DIFFS).map(k=>`<button type="button" class="opt nsd ${UI.newDiff===k?"on":""}" data-nsd="${k}" role="radio" aria-checked="${UI.newDiff===k}">
+        <div class="on">${UI.newDiff===k?"✓ ":""}${DIFFS[k].n}</div><div class="od">${esc(DIFFS[k].d)}</div></button>`).join("")}</div>
     <div class="btnrow" style="margin-top:12px">
       <button class="btn primary" id="nsOk">이 이름으로 시작</button>
       <button class="btn" id="nsRand">다른 이름 제안</button>
@@ -16272,6 +16304,7 @@ function askAcademyName(){
     </div>`, ()=>{
     $("#nsOk").onclick = ()=>{ const v=$("#nsName").value.trim(); showPrologue(v||nm, 0); };
     $("#nsRand").onclick = ()=>{ nm = pick(ACAD)+" 용사 학원"; draw(); };
+    $("#modalRoot").querySelectorAll("[data-nsd]").forEach(b=> b.onclick = ()=>{ nm = $("#nsName").value.trim() || nm; UI.newDiff = b.dataset.nsd; draw(); });
     $("#nsBack").onclick = ()=> showTitle(hasSave());
   });
   draw();
@@ -16281,7 +16314,8 @@ function showPrologue(name, i){
   audOver("prologue");    // 무음이던 시작 화면을 지나 여기서 처음 음악이 걸린다
   const start = ()=>{
     audOver(null);
-    newGame(name); S.mission = newMission(); save();
+    newGame(name); S.diff = UI.newDiff || "normal"; S.mission = newMission(); save();
+    if(S.diff !== "normal") logE(`난이도 <b>${DIFFS[S.diff].n}</b> — ${DIFFS[S.diff].d}.`, "");
     closeModal(); UI.view="home"; UI.sel=null; render();
     const afterStart = ()=>{ render(); toast("새 학기가 시작되었다."); if(tryMarkTut()) showCeremony(); };
     if(tutHas()) showTutorial(0, {start:true, after:afterStart});
