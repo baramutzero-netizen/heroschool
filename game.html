@@ -549,7 +549,7 @@ html[data-ui-concept="journal"] .npcname{color:#8a6a45}
 .dr-stage[data-job]:not([data-job=""]) .dr-room{width:100%;height:100%;left:0;top:0;object-fit:cover}
 
 /* Salon guest is part of the map; the owner loops independently at its left. */
-.dr-salon-owner{display:none;position:absolute;left:55.3%;top:23%;width:8%;aspect-ratio:1;pointer-events:none;z-index:1;background-image:url("assets/guest-props/salon-owner-snip.png");background-size:400% 100%;animation:salon-snip var(--salon-snip-duration,800ms) steps(4) infinite}
+.dr-salon-owner{display:none;position:absolute;left:55.3%;top:23%;width:8%;aspect-ratio:1;pointer-events:none;z-index:1;background-image:url("assets/guest-props/salon-owner-snip.webp?v=w90");background-size:400% 100%;animation:salon-snip var(--salon-snip-duration,800ms) steps(4) infinite}
 .dr-stage[data-job="salon"] .dr-salon-owner{display:block}
 @keyframes salon-snip{from{background-position:0 0}to{background-position:133.333333% 0}}
 
@@ -6275,7 +6275,7 @@ function dl(v, unit, digits){
 }
 /* REPORT_SCENE_RUNTIME_START */
 const REPORT_JOB_FACES = {"farm": "assets/report_job_faces/farm.webp?v=34b828fd", "church": "assets/report_job_faces/church.webp?v=9fa17d67", "inn": "assets/report_job_faces/inn.webp?v=433847dc", "hunt": "assets/report_job_faces/hunt.webp?v=a0e2c9eb", "salon": "assets/report_job_faces/salon.webp?v=555b7a84", "tavern": "assets/report_job_faces/tavern.webp?v=b7cba2b6"};
-const REPORT_JOB_MAPS = {"farm": "assets/report_job_maps/farm.webp?v=3623e795", "church": "assets/report_job_maps/church.webp?v=01f5fe41", "inn": "assets/report_job_maps/inn.webp?v=e3aaa81a", "hunt": "assets/report_job_maps/hunt.webp?v=b79a0df3", "salon": "assets/report_job_maps/salon-guest.png?v=owner1", "tavern": "assets/report_job_maps/tavern.webp?v=03f9caf8"};
+const REPORT_JOB_MAPS = {"farm": "assets/report_job_maps/farm.webp?v=3623e795", "church": "assets/report_job_maps/church.webp?v=01f5fe41", "inn": "assets/report_job_maps/inn.webp?v=e3aaa81a", "hunt": "assets/report_job_maps/hunt.webp?v=b79a0df3", "salon": "assets/report_job_maps/salon-guest.webp?v=w90", "tavern": "assets/report_job_maps/tavern.webp?v=03f9caf8"};
 const REPORT_STUDY = {"archer": "assets/report_study/archer.webp?v=2ef6dda5", "bard": "assets/report_study/bard.webp?v=6236ad80", "darkpriest": "assets/report_study/darkpriest.webp?v=3140fa10", "druid": "assets/report_study/druid.webp?v=f18ea784", "empty": "assets/report_study/empty.webp?v=16312be1", "enchanter": "assets/report_study/enchanter.webp?v=827a38e3", "forcemage": "assets/report_study/forcemage.webp?v=3b0a7e2f", "gunner": "assets/report_study/gunner.webp?v=24f0f4cb", "monk": "assets/report_study/monk.webp?v=fa322742", "ninja": "assets/report_study/ninja.webp?v=d0529077", "paladin": "assets/report_study/paladin.webp?v=8571be40", "priest": "assets/report_study/priest.webp?v=e87133cc", "rogue": "assets/report_study/rogue.webp?v=93977c5c", "spellsword": "assets/report_study/spellsword.webp?v=8b431b76", "sword": "assets/report_study/sword.webp?v=6d5a51cf", "timemage": "assets/report_study/timemage.webp?v=c310d9ec", "wizard": "assets/report_study/wizard.webp?v=308d9a86"};
 const REPORT_ROOMS = {"arena": "assets/report_rooms/arena.webp?v=e00dd8d8", "beach": "assets/report_rooms/beach.webp?v=6a9e06fa", "chapel": "assets/report_rooms/chapel.webp?v=39341b0e", "gym": "assets/report_rooms/gym.webp?v=0fd3f8c9", "hall": "assets/report_rooms/hall.webp?v=7140b5cc", "infirm": "assets/report_rooms/infirm.webp?v=123cdaa0", "library": "assets/report_rooms/library.webp?v=c590d30d"};
 const REPORT_STATUP = "assets/report_statup.mp3?v=f37807b5";
@@ -6382,7 +6382,7 @@ function reportSceneShell(records, dlg){
     }).join("")}</nav>
     <div class="dr-stage" id="drStage"><img class="dr-room" id="drRoom" alt="" draggable="false">
       <div class="dr-top"><div><span class="dr-eyebrow">오늘의 학원</span><h3 id="drFacility"></h3><span id="drActivity"></span></div><span class="dr-chain" id="drChain"></span></div>
-      <img class="dr-inn-guest dr-inn-guest-left" src="assets/guest-props/inn-seated-guest.png" alt="테이블에 앉은 여관 손님" draggable="false"><img class="dr-inn-guest dr-inn-guest-right" src="assets/guest-props/inn-seated-guest.png" alt="테이블에 앉은 여관 손님" draggable="false"><img class="dr-tavern-guest dr-tavern-guest-left" src="assets/guest-props/tavern-seated-guests.png" alt="맥주 테이블의 주점 손님 두 명" draggable="false"><img class="dr-tavern-guest dr-tavern-guest-right" src="assets/guest-props/tavern-seated-guests.png" alt="맥주 테이블의 주점 손님 두 명" draggable="false"><div class="dr-salon-owner" role="img" aria-label="가위를 움직이는 미용실 원장님"></div><div id="drStudents"></div><div class="dr-bottom"><span id="drSceneCount"></span><span>학생을 누르면 성장 내역을 볼 수 있어요</span></div>
+      <img class="dr-inn-guest dr-inn-guest-left" src="assets/guest-props/inn-seated-guest.webp?v=w90" alt="테이블에 앉은 여관 손님" draggable="false"><img class="dr-inn-guest dr-inn-guest-right" src="assets/guest-props/inn-seated-guest.webp?v=w90" alt="테이블에 앉은 여관 손님" draggable="false"><img class="dr-tavern-guest dr-tavern-guest-left" src="assets/guest-props/tavern-seated-guests.webp?v=w90" alt="맥주 테이블의 주점 손님 두 명" draggable="false"><img class="dr-tavern-guest dr-tavern-guest-right" src="assets/guest-props/tavern-seated-guests.webp?v=w90" alt="맥주 테이블의 주점 손님 두 명" draggable="false"><div class="dr-salon-owner" role="img" aria-label="가위를 움직이는 미용실 원장님"></div><div id="drStudents"></div><div class="dr-bottom"><span id="drSceneCount"></span><span>학생을 누르면 성장 내역을 볼 수 있어요</span></div>
     </div>
     <nav class="dr-phases" id="drPhases" aria-label="훈련 장면 선택"></nav>
     <div class="dr-result" aria-live="polite"><div><b id="drResultTitle"></b><span id="drResultHint"></span></div><div id="drResultChips"></div></div>
@@ -14460,36 +14460,36 @@ function battleCallout(call, seed){
    Add other fields here when both original paintings are ready. */
 const FIELD_VARIANTS = {
   guardian: {
-    landscape:{src:"assets/battle-fields/guardian/landscape.png?v=1",aspect:2,ground:.54},
-    portrait:{src:"assets/battle-fields/guardian/portrait.png?v=1",aspect:9/16,ground:.25}
+    landscape:{src:"assets/battle-fields/guardian/landscape.webp?v=w90",aspect:2,ground:.54},
+    portrait:{src:"assets/battle-fields/guardian/portrait.webp?v=w90",aspect:9/16,ground:.25}
   },
   brine: {
-    landscape:{src:"assets/battle-fields/brine/landscape.png?v=1",aspect:2,ground:.46},
-    portrait:{src:"assets/battle-fields/brine/portrait.png?v=1",aspect:9/16,ground:.24}
+    landscape:{src:"assets/battle-fields/brine/landscape.webp?v=w90",aspect:2,ground:.46},
+    portrait:{src:"assets/battle-fields/brine/portrait.webp?v=w90",aspect:9/16,ground:.24}
   },
   gargoyle: {
-    landscape:{src:"assets/battle-fields/gargoyle/landscape.png?v=1",aspect:2,ground:.49},
-    portrait:{src:"assets/battle-fields/gargoyle/portrait.png?v=1",aspect:9/16,ground:.27}
+    landscape:{src:"assets/battle-fields/gargoyle/landscape.webp?v=w90",aspect:2,ground:.49},
+    portrait:{src:"assets/battle-fields/gargoyle/portrait.webp?v=w90",aspect:9/16,ground:.27}
   },
   wraith: {
-    landscape:{src:"assets/battle-fields/wraith/landscape.png?v=1",aspect:2,ground:.48},
-    portrait:{src:"assets/battle-fields/wraith/portrait.png?v=1",aspect:9/16,ground:.31}
+    landscape:{src:"assets/battle-fields/wraith/landscape.webp?v=w90",aspect:2,ground:.48},
+    portrait:{src:"assets/battle-fields/wraith/portrait.webp?v=w90",aspect:9/16,ground:.31}
   },
   final: {
-    landscape:{src:"assets/battle-fields/final/landscape-trophy.png?v=2",aspect:2,ground:.34},
-    portrait:{src:"assets/battle-fields/final/portrait-stadium.png?v=1",aspect:9/16,ground:.20}
+    landscape:{src:"assets/battle-fields/final/landscape-trophy.webp?v=w90",aspect:2,ground:.34},
+    portrait:{src:"assets/battle-fields/final/portrait-stadium.webp?v=w90",aspect:9/16,ground:.20}
   },
   areatournament: {
-    landscape:{src:"assets/battle-fields/areatournament/landscape-festival.png?v=1",aspect:2,ground:.31},
-    portrait:{src:"assets/battle-fields/areatournament/portrait-deskfix.png?v=2",aspect:9/16,ground:.20}
+    landscape:{src:"assets/battle-fields/areatournament/landscape-festival.webp?v=w90",aspect:2,ground:.31},
+    portrait:{src:"assets/battle-fields/areatournament/portrait-deskfix.webp?v=w90",aspect:9/16,ground:.20}
   },
   citytournament: {
-    landscape:{src:"assets/battle-fields/citytournament/landscape.png?v=1",aspect:2,ground:.44},
-    portrait:{src:"assets/battle-fields/citytournament/portrait-props.png?v=2",aspect:9/16,ground:.19}
+    landscape:{src:"assets/battle-fields/citytournament/landscape.webp?v=w90",aspect:2,ground:.44},
+    portrait:{src:"assets/battle-fields/citytournament/portrait-props.webp?v=w90",aspect:9/16,ground:.19}
   },
   dummy: {
-    landscape:{src:"assets/battle-fields/training/landscape.png?v=1",aspect:2,ground:.31},
-    portrait:{src:"assets/battle-fields/training/portrait.png?v=1",aspect:9/16,ground:.20}
+    landscape:{src:"assets/battle-fields/training/landscape.webp?v=w90",aspect:2,ground:.31},
+    portrait:{src:"assets/battle-fields/training/portrait.webp?v=w90",aspect:9/16,ground:.20}
   }
 };
 function battleFieldVariant(key,width,height){
