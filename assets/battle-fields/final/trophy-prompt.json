@@ -1,0 +1,5 @@
+{
+  "tool": "built-in image_gen",
+  "prompt": "Precise local edit: Image 1 landscape 2:1 is edit target. Image 2 portrait is reference ONLY for trophy table. In Image 1 replace ONLY the bottom-center empty three-chair judges table with a trophy display table matching Image 2: polished dark wood, burgundy tabletop cloth, a prominent upright golden two-handled championship cup on a dark square pedestal in the center, two parchment sheets and small decorative awards at sides. Remove the three chairs at this table so trophy clearly visible. Keep table at same bottom-center footprint, match perspective. Keep EVERYTHING ELSE unchanged: audience, railings, court boundaries, empty arena, far grandstand, dignitary pavilion, palette and pixel rendering. Output landscape 2:1, no text/UI. Trophy stays in foreground below the court boundary and is readable at small size.",
+  "output": "landscape-trophy.png"
+}

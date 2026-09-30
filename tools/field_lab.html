@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>필드 배치 실험실 — 용사 학원 키우기</title>
+<!--
+  필드 배치 실험실 (0929)
+  · 게임(../game.html)을 틀 안에 ?fieldlab 으로 불러서, 실제 전투 화면 그대로 필드와 유닛 배치를 맞춰 본다.
+  · 실험실 쪽 게임은 아무것도 저장하지 않는다 (세이브 · 리그 자리 · 설정 그대로).
+  · '차이점 확인'에 나온 글을 그대로 복사해서 Claude 에게 주면 game.html 의 BATTLE_TUNE 에 옮겨 적는다.
+  · 여는 법: 이 파일을 브라우저로 연다 (heroschool 폴더 안 tools/field_lab.html). game.html 이 한 단계 위 폴더에 있어야 한다.
+-->
+<style>
+:root{--bg:#1d1b22;--panel:#2a2631;--line:#443d4f;--text:#efe7d8;--muted:#b3a894;--gold:#e0b458;--ok:#7cc79a;--bad:#e2837a}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:13px/1.45 system-ui,-apple-system,"Malgun Gothic",sans-serif}
+.app{display:grid;grid-template-columns:340px minmax(0,1fr);height:100vh}
+aside{border-right:1px solid var(--line);overflow:auto;padding:14px 14px 30px;background:var(--panel)}
+h1{font-size:17px;margin:0 0 2px}
+.sub{color:var(--muted);font-size:12px;margin:0 0 12px}
+section{border:1px solid var(--line);border-radius:8px;padding:10px 11px;margin-bottom:10px}
+section h2{font-size:13px;margin:0 0 8px;color:var(--gold);display:flex;justify-content:space-between;align-items:center}
+section h2 small{color:var(--muted);font-weight:400}
+.row{display:flex;align-items:center;gap:6px;margin:6px 0;flex-wrap:wrap}
+.row label{min-width:52px;color:var(--muted)}
+select,input[type=number]{background:#191720;color:var(--text);border:1px solid var(--line);border-radius:5px;padding:5px 6px;font:inherit}
+select{flex:1;min-width:0}
+input[type=number]{width:76px}
+button{background:#3a3344;color:var(--text);border:1px solid #574d64;border-radius:5px;padding:5px 9px;font:inherit;cursor:pointer}
+button:hover{border-color:var(--gold)}
+button.on{background:var(--gold);color:#221a0c;border-color:var(--gold);font-weight:700}
+button.sm{padding:3px 7px;min-width:28px}
+button.wide{width:100%;margin-top:6px}
+button.primary{background:#6b5222;border-color:var(--gold)}
+.seg{display:flex;gap:4px}
+.seg button{flex:1}
+.hint{color:var(--muted);font-size:11.5px;margin:4px 0 0}
+.chk{display:flex;align-items:center;gap:5px;color:var(--muted);cursor:pointer}
+.stagewrap{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#121016}
+.frame{position:absolute;left:0;top:0;transform-origin:0 0;border:0;background:#fff;box-shadow:0 0 0 1px #000,0 10px 40px #0008}
+.badge{position:absolute;left:12px;top:10px;background:#000a;padding:4px 9px;border-radius:12px;font-size:12px;z-index:3}
+.badge b{color:var(--gold)}
+.badge .warn{color:var(--bad)}
+#diffBox{display:none;position:fixed;inset:0;background:#000b;z-index:50;align-items:center;justify-content:center;padding:20px}
+#diffBox .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;max-width:760px;width:100%;padding:16px}
+#diffBox textarea{width:100%;height:340px;background:#15131a;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:10px;font:12px/1.5 ui-monospace,Consolas,monospace}
+.slotgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:4px 0 6px}
+.slotgrid button{padding:4px 2px;font-size:11.5px}
+.slotgrid .team{grid-column:1/-1;color:var(--muted);font-size:11px;margin-top:2px}
+.slotgrid button.mod::after{content:" •";color:var(--gold)}
+.slotgrid button.off{opacity:.45;text-decoration:line-through}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+  <h1>필드 배치 실험실</h1>
+  <p class="sub">실제 게임 전투 화면을 멈춘 채 필드와 유닛 배치를 맞춰 본다. 유닛은 화면에서 끌어서 옮길 수도 있다.</p>
+
+  <section>
+    <h2>화면</h2>
+    <div class="seg"><button id="oLand">가로 (PC)</button><button id="oPort">세로 (폰)</button></div>
+    <div class="row"><label>크기</label><select id="size"></select></div>
+    <p class="hint">가로 · 세로는 따로 저장된다. 게임도 화면 폭으로 둘 중 하나를 고른다.</p>
+  </section>
+
+  <section>
+    <h2>전투 필드 <small id="fieldMod"></small></h2>
+    <div class="row"><label>필드</label><select id="field"></select></div>
+    <div class="row"><label class="chk"><input type="checkbox" id="pastel"> 파스텔 필터</label><label class="chk"><input type="checkbox" id="grid"> 배치 격자</label></div>
+    <div class="row"><label>확대</label><button class="sm" data-f="zoom" data-d="-0.05">－</button><input type="number" id="fZoom" step="0.01" min="0.3" max="4"><button class="sm" data-f="zoom" data-d="0.05">＋</button></div>
+    <div class="row"><label>X (%)</label><button class="sm" data-f="x" data-d="-1">◀</button><input type="number" id="fX" step="0.5"><button class="sm" data-f="x" data-d="1">▶</button></div>
+    <div class="row"><label>Y (%)</label><button class="sm" data-f="y" data-d="-1">▲</button><input type="number" id="fY" step="0.5"><button class="sm" data-f="y" data-d="1">▼</button></div>
+    <button class="wide" id="fReset">이 필드 · 이 화면 기본값으로</button>
+    <p class="hint">확대는 땅이 시작하는 선을 기준으로 커진다. X · Y 는 전투판 크기의 % 만큼 옮긴다. (Alt + 방향키로도 이동)</p>
+  </section>
+
+  <section>
+    <h2>유닛 <small id="slotName"></small></h2>
+    <div class="slotgrid" id="slots"></div>
+    <div class="row"><label>직업</label><select id="job"></select></div>
+    <div class="row"><label class="chk"><input type="checkbox" id="hide"> 이 자리 비우기 (미리보기)</label></div>
+    <div class="row"><label>직업 크기</label><button class="sm" data-j="-0.05">－</button><input type="number" id="uS" step="0.01" min="0.2" max="4"><button class="sm" data-j="0.05">＋</button><small id="jobName" style="color:var(--muted)"></small></div>
+    <div class="row"><label>X (%)</label><button class="sm" data-u="x" data-d="-0.5">◀</button><input type="number" id="uX" step="0.5"><button class="sm" data-u="x" data-d="0.5">▶</button></div>
+    <div class="row"><label>Y (%)</label><button class="sm" data-u="y" data-d="-0.5">▲</button><input type="number" id="uY" step="0.5"><button class="sm" data-u="y" data-d="0.5">▼</button></div>
+    <div class="row"><button id="uAllS" style="flex:1">이 크기를 모든 직업에</button><button id="uReset" style="flex:1">이 자리 위치 기본값</button></div>
+    <p class="hint">크기는 자리가 아니라 직업마다 정해진다 — 같은 직업이면 어느 자리에 서도 같은 크기. 방향키 0.5% · Shift+방향키 2% 이동. 직업 · 비우기는 미리보기용이라 게임에 반영되지 않는다.</p>
+  </section>
+
+  <section>
+    <h2>게임에 반영</h2>
+    <button class="wide" id="resetAll">게임의 기존 세팅으로 돌아가기</button>
+    <button class="wide primary" id="diff">현재 맵에서 게임 기존 세팅과 차이점 확인</button>
+    <p class="hint">차이점 창의 글을 복사해서 Claude 에게 보내면 그대로 게임에 적용한다. 작업 내용은 이 브라우저에 자동 저장된다.</p>
+  </section>
+</aside>
+<main class="stagewrap" id="wrap">
+  <div class="badge" id="badge">게임을 불러오는 중…</div>
+  <iframe class="frame" id="game" title="게임 전투 화면"></iframe>
+</main>
+</div>
+
+<div id="diffBox" role="dialog" aria-modal="true">
+  <div class="card">
+    <h2 style="margin:0 0 8px;font-size:15px">게임 기존 세팅과의 차이점</h2>
+    <textarea id="diffText" readonly></textarea>
+    <div class="row" style="justify-content:flex-end"><button id="copy" class="primary">복사</button><button id="close">닫기</button></div>
+  </div>
+</div>
+
+<script>
+const SIZES = {landscape:[[1400,860,"PC 1400×860"],[1920,1080,"PC 1920×1080"],[1280,800,"노트북 1280×800"],[1024,768,"태블릿 가로 1024×768"]],
+               portrait:[[390,844,"폰 390×844"],[360,740,"폰 360×740"],[430,932,"폰 430×932"],[768,1024,"태블릿 세로 768×1024"]]};
+const SLOT_LABEL = k=>{ const [s,r,c] = k.split("-"); return `${s==="A"?"우리":"상대"} ${r==="front"?"전열":"후열"} ${+c+1}`; };
+const SLOTS = []; ["B","A"].forEach(s=> ["back","front"].forEach(r=> [0,1,2].forEach(c=> SLOTS.push(`${s}-${r}-${c}`))));
+const $ = q=> document.querySelector(q);
+const clone = o=> JSON.parse(JSON.stringify(o));
+const r2 = v=> Math.round(v*100)/100;
+const SAVE_KEY = "heroschool_fieldlab_v1";
+let D = null;   // 게임이 보내 준 기본값
+let st = {orient:"landscape", size:{landscape:0, portrait:0}, field:"spring", pastel:true, grid:true, tune:null, jobs:null, hide:{}, sel:"A-front-0"};
+try{ const sv = JSON.parse(localStorage.getItem(SAVE_KEY)||"null"); if(sv) st = Object.assign(st, sv); }catch(e){}
+function persist(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(st)); }catch(e){} }
+const frame = $("#game");
+frame.src = "../game.html?fieldlab=1";
+
+/* ── 값 읽기 · 쓰기 ── */
+const F0 = {zoom:1, x:0, y:0};
+function fieldDef(f, o){ return Object.assign({}, F0, ((D.tune.field||{})[f]||{})[o]||{}); }
+function fieldCur(f, o){ return Object.assign({}, F0, ((st.tune.field||{})[f]||{})[o]||{}); }
+function setField(prop, v){
+  const f = st.field, o = st.orient, cur = fieldCur(f, o);
+  cur[prop] = r2(v);
+  st.tune.field = st.tune.field || {}; st.tune.field[f] = st.tune.field[f] || {};
+  const same = ["zoom","x","y"].every(k=> cur[k] === F0[k]);
+  if(same && !((D.tune.field||{})[f]||{})[o]) delete st.tune.field[f][o]; else st.tune.field[f][o] = cur;
+  if(!Object.keys(st.tune.field[f]).length) delete st.tune.field[f];
+  push();
+}
+const XY = o=> ({x:o.x, y:o.y});
+function slotDef(k, o){ return XY(Object.assign({}, D.slots[o][k], ((D.tune.slot||{})[o]||{})[k]||{})); }
+function slotCur(k, o){ return XY(Object.assign({}, D.slots[o][k], ((st.tune.slot||{})[o]||{})[k]||{})); }
+/* 직업 크기 — 자리와 상관없이 직업마다 */
+function jobDef(j, o){ return +(((D.tune.job||{})[o]||{})[j]) || 1; }
+function jobCur(j, o){ return +(((st.tune.job||{})[o]||{})[j]) || 1; }
+function setJob(j, v, o){
+  o = o || st.orient; v = r2(Math.max(.2, v));
+  st.tune.job = st.tune.job || {}; st.tune.job[o] = st.tune.job[o] || {};
+  if(v === 1 && !((D.tune.job||{})[o]||{})[j]) delete st.tune.job[o][j]; else st.tune.job[o][j] = v;
+}
+const JOBN = j=> ((D.jobs||[]).find(x=> x.k===j)||{}).n || j;
+function setSlot(k, patch, o){
+  o = o || st.orient;
+  const cur = Object.assign(slotCur(k, o), patch);
+  delete cur.s;
+  ["x","y"].forEach(p=> cur[p] = r2(cur[p]));
+  st.tune.slot = st.tune.slot || {}; st.tune.slot[o] = st.tune.slot[o] || {};
+  const base = D.slots[o][k];
+  const same = ["x","y"].every(p=> cur[p] === base[p]);
+  if(same && !((D.tune.slot||{})[o]||{})[k]) delete st.tune.slot[o][k]; else st.tune.slot[o][k] = cur;
+}
+
+/* ── 게임에 보내기 ── */
+function send(){
+  if(!D) return;
+  frame.contentWindow.postMessage({lab:"field", type:"set", tune:st.tune, jobs:st.jobs, hide:st.hide, grid:st.grid, pastel:st.pastel, field:st.field, sel:st.sel}, "*");
+}
+function push(){ persist(); send(); paint(); }
+
+/* ── 화면 크기 ── */
+function layout(){
+  const [w,h] = SIZES[st.orient][st.size[st.orient]|0] || SIZES[st.orient][0];
+  frame.style.width = w + "px"; frame.style.height = h + "px";
+  const W = $("#wrap"), k = Math.min((W.clientWidth-30)/w, (W.clientHeight-50)/h, 1);
+  frame.style.transform = `translate(${(W.clientWidth - w*k)/2}px, ${(W.clientHeight - h*k)/2 + 12}px) scale(${k})`;
+  $("#badge").dataset.size = `${w}×${h} · ${Math.round(k*100)}%`;
+  badge();
+}
+let gameOrient = null;
+function badge(){
+  const b = $("#badge");
+  if(!D){ b.textContent = "게임을 불러오는 중… (game.html 이 한 단계 위 폴더에 있어야 한다)"; return; }
+  const mis = gameOrient && gameOrient !== st.orient;
+  b.innerHTML = `<b>${st.orient==="landscape"?"가로":"세로"}</b> · ${b.dataset.size||""}${mis? ` · <span class="warn">게임은 이 크기를 ${gameOrient==="landscape"?"가로":"세로"}로 본다</span>`:""}`;
+}
+
+/* ── 패널 그리기 ── */
+function paint(){
+  if(!D) return;
+  $("#oLand").classList.toggle("on", st.orient==="landscape");
+  $("#oPort").classList.toggle("on", st.orient==="portrait");
+  $("#size").innerHTML = SIZES[st.orient].map((s,i)=> `<option value="${i}" ${i===(st.size[st.orient]|0)?"selected":""}>${s[2]}</option>`).join("");
+  $("#field").value = st.field;
+  $("#pastel").checked = !!st.pastel; $("#grid").checked = !!st.grid;
+  const fc = fieldCur(st.field, st.orient), fd = fieldDef(st.field, st.orient);
+  $("#fZoom").value = fc.zoom; $("#fX").value = fc.x; $("#fY").value = fc.y;
+  $("#fieldMod").textContent = JSON.stringify(fc) !== JSON.stringify(fd) ? "● 바뀜" : "";
+  const o = st.orient;
+  $("#slots").innerHTML = ["B","A"].map(s=> `<div class="team">${s==="A"?"우리 (아래)":"상대 (위)"}</div>` +
+    ["back","front"].map(r=> [0,1,2].map(c=>{ const k = `${s}-${r}-${c}`;
+      const mod = JSON.stringify(slotCur(k,o)) !== JSON.stringify(slotDef(k,o));
+      return `<button data-slot="${k}" class="${k===st.sel?"on":""} ${mod?"mod":""} ${st.hide[k]?"off":""}">${r==="front"?"전":"후"}${c+1}</button>`; }).join("")).join("")).join("");
+  $("#slots").querySelectorAll("[data-slot]").forEach(b=> b.onclick = ()=>{ st.sel = b.dataset.slot; push(); });
+  $("#slotName").textContent = SLOT_LABEL(st.sel);
+  $("#job").value = st.jobs[st.sel];
+  $("#hide").checked = !!st.hide[st.sel];
+  const sc = slotCur(st.sel, o), jb = st.jobs[st.sel];
+  $("#uS").value = jobCur(jb, o); $("#uX").value = sc.x; $("#uY").value = sc.y;
+  $("#jobName").textContent = JOBN(jb) + (jobCur(jb,o) !== jobDef(jb,o) ? " ●" : "");
+  badge();
+}
+
+/* ── 차이점 ── */
+function diffText(){
+  const lines = [], patch = {field:{}, slot:{}};
+  const ON = {landscape:"가로", portrait:"세로"};
+  const fields = new Set([...Object.keys(D.tune.field||{}), ...Object.keys(st.tune.field||{})]);
+  fields.forEach(f=> ["landscape","portrait"].forEach(o=>{
+    const a = fieldDef(f,o), b = fieldCur(f,o);
+    if(JSON.stringify(a) === JSON.stringify(b)) return;
+    const ch = [["zoom","확대",""],["x","X","%"],["y","Y","%"]].filter(([k])=> a[k]!==b[k]).map(([k,n,u])=> `${n} ${a[k]}${u} → ${b[k]}${u}`);
+    lines.push(`필드 ${f} · ${ON[o]}: ${ch.join(", ")}`);
+    (patch.field[f] = patch.field[f] || {})[o] = b;
+  }));
+  ["landscape","portrait"].forEach(o=> SLOTS.forEach(k=>{
+    const a = slotDef(k,o), b = slotCur(k,o);
+    if(JSON.stringify(a) === JSON.stringify(b)) return;
+    const ch = [["x","X","%"],["y","Y","%"]].filter(([p])=> a[p]!==b[p]).map(([p,n,u])=> `${n} ${a[p]}${u} → ${b[p]}${u}`);
+    lines.push(`자리 ${ON[o]} · ${SLOT_LABEL(k)} (${k}): ${ch.join(", ")}`);
+    (patch.slot[o] = patch.slot[o] || {})[k] = b;
+  }));
+  ["landscape","portrait"].forEach(o=>{
+    const js = new Set([...Object.keys((D.tune.job||{})[o]||{}), ...Object.keys((st.tune.job||{})[o]||{})]);
+    js.forEach(j=>{ const a = jobDef(j,o), b = jobCur(j,o); if(a === b) return;
+      lines.push(`직업 크기 ${ON[o]} · ${JOBN(j)} (${j}): ${a} → ${b}`);
+      ((patch.job = patch.job || {})[o] = patch.job[o] || {})[j] = b; });
+  });
+  if(!lines.length) return "게임 기존 세팅과 차이가 없다.";
+  if(!Object.keys(patch.field).length) delete patch.field;
+  if(!Object.keys(patch.slot).length) delete patch.slot;
+  return `[필드 배치 실험실] 게임에 반영할 차이점 — ${lines.length}건\n` + lines.map(x=> "· " + x).join("\n")
+    + `\n\nBATTLE_TUNE_PATCH = ${JSON.stringify(patch)}`;
+}
+
+/* ── 입력 연결 ── */
+$("#oLand").onclick = ()=>{ st.orient = "landscape"; layout(); push(); };
+$("#oPort").onclick = ()=>{ st.orient = "portrait"; layout(); push(); };
+$("#size").onchange = e=>{ st.size[st.orient] = +e.target.value; layout(); push(); };
+$("#field").onchange = e=>{ st.field = e.target.value; push(); };
+$("#pastel").onchange = e=>{ st.pastel = e.target.checked; push(); };
+$("#grid").onchange = e=>{ st.grid = e.target.checked; push(); };
+$("#fZoom").onchange = e=> setField("zoom", Math.max(.3, +e.target.value || 1));
+$("#fX").onchange = e=> setField("x", +e.target.value || 0);
+$("#fY").onchange = e=> setField("y", +e.target.value || 0);
+document.querySelectorAll("[data-f]").forEach(b=> b.onclick = ()=>{ const p = b.dataset.f; setField(p, fieldCur(st.field, st.orient)[p] + (+b.dataset.d)); });
+$("#fReset").onclick = ()=>{ const f = st.field, o = st.orient; const d = fieldDef(f,o);
+  st.tune.field = st.tune.field||{}; st.tune.field[f] = st.tune.field[f]||{};
+  if(((D.tune.field||{})[f]||{})[o]) st.tune.field[f][o] = d; else delete st.tune.field[f][o];
+  if(!Object.keys(st.tune.field[f]).length) delete st.tune.field[f]; push(); };
+$("#job").onchange = e=>{ st.jobs[st.sel] = e.target.value; push(); };
+$("#hide").onchange = e=>{ st.hide[st.sel] = e.target.checked; push(); };
+$("#uS").onchange = e=>{ setJob(st.jobs[st.sel], +e.target.value || 1); push(); };
+$("#uX").onchange = e=>{ setSlot(st.sel, {x: +e.target.value || 0}); push(); };
+$("#uY").onchange = e=>{ setSlot(st.sel, {y: +e.target.value || 0}); push(); };
+document.querySelectorAll("[data-u]").forEach(b=> b.onclick = ()=>{ const p = b.dataset.u; setSlot(st.sel, {[p]: slotCur(st.sel, st.orient)[p] + (+b.dataset.d)}); push(); });
+document.querySelectorAll("[data-j]").forEach(b=> b.onclick = ()=>{ const j = st.jobs[st.sel]; setJob(j, jobCur(j, st.orient) + (+b.dataset.j)); push(); });
+$("#uAllS").onclick = ()=>{ const v = jobCur(st.jobs[st.sel], st.orient); (D.jobs||[]).forEach(j=> setJob(j.k, v)); push(); };
+$("#uReset").onclick = ()=>{ setSlot(st.sel, slotDef(st.sel, st.orient)); push(); };
+$("#resetAll").onclick = ()=>{
+  if(!confirm("필드 · 유닛 조정을 모두 지우고 게임의 기존 세팅으로 돌아갈까?")) return;
+  st.tune = clone(D.tune); st.jobs = clone(D.jobs0); st.hide = {}; push(); };
+$("#diff").onclick = ()=>{ $("#diffText").value = diffText(); $("#diffBox").style.display = "flex"; };
+$("#close").onclick = ()=> $("#diffBox").style.display = "none";
+$("#copy").onclick = async ()=>{ const t = $("#diffText"); t.select();
+  try{ await navigator.clipboard.writeText(t.value); }catch(e){ document.execCommand("copy"); }
+  $("#copy").textContent = "복사됨"; setTimeout(()=> $("#copy").textContent = "복사", 1200); };
+addEventListener("keydown", e=>{
+  if(!D || /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) return;
+  const dx = {ArrowLeft:-1, ArrowRight:1}[e.key]||0, dy = {ArrowUp:-1, ArrowDown:1}[e.key]||0;
+  if(!dx && !dy) return;
+  e.preventDefault();
+  if(e.altKey){ const c = fieldCur(st.field, st.orient); if(dx) setField("x", c.x + dx); if(dy) setField("y", c.y + dy); return; }
+  const k = e.shiftKey ? 2 : .5, c = slotCur(st.sel, st.orient);
+  setSlot(st.sel, {x: c.x + dx*k, y: c.y + dy*k}); push();
+});
+addEventListener("resize", layout);
+addEventListener("message", e=>{
+  const d = e.data || {};
+  if(d.lab !== "field") return;
+  if(d.type === "ready"){
+    const first = !D;
+    D = d;
+    if(!st.tune) st.tune = clone(D.tune);
+    st.tune.job = st.tune.job || {landscape:{}, portrait:{}};
+    Object.values(st.tune.slot||{}).forEach(T=> Object.values(T).forEach(v=> delete v.s));   // 예전 판(자리별 크기) 값 정리
+    if(!st.jobs) st.jobs = clone(D.jobs0);
+    $("#field").innerHTML = D.fields.map(f=> `<option value="${f.k}">${f.k}${f.variant?" (가로·세로 전용 그림)":""}</option>`).join("");
+    $("#job").innerHTML = D.jobs.map(j=> `<option value="${j.k}">${j.n}</option>`).join("");
+    if(!D.fields.some(f=> f.k===st.field)) st.field = D.fields[0].k;
+    gameOrient = d.orient;
+    layout(); push();
+  }
+  if(d.type === "orient"){ gameOrient = d.orient; badge(); }
+  if(d.type === "pick"){ st.sel = d.slot; persist(); paint(); }
+  if(d.type === "move"){ setSlot(d.slot, {x:d.x, y:d.y}, d.orient); st.sel = d.slot; paint(); }
+  if(d.type === "moveend"){ setSlot(d.slot, {x:d.x, y:d.y}, d.orient); st.sel = d.slot; push(); }
+});
+layout();
+</script>
+</body>
+</html>

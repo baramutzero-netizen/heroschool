@@ -1,0 +1,9 @@
+{
+  "tool": "built-in image_gen",
+  "prompt": "Edit Image 1 only. Image 2 is reference for foreground prop placement and scale, not location replacement. Preserve Image 1's exact portrait 9:16 framing, upper scenery, floor perspective, style and colors. Add foreground furnishings at the bottom left and bottom right, confined to bottom 25% and outer 25% width on each side, similar to Image 2. Keep center 50% width fully clear, no people, UI or text. Regional stone arena: left corner cropped low stone parapet and wooden equipment chest with rolled canvas; right corner ornate timber railing with navy gold pennant and stone post, tiny greenery. Objects visually frame arena, slightly softer near camera. Do not change upper 70% of image.",
+  "references": [
+    "assets/battle-fields/areatournament/portrait-source.png",
+    "assets/battle-fields/training/portrait-source.png"
+  ],
+  "output": "portrait-props.png"
+}

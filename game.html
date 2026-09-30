@@ -613,6 +613,7 @@ html[data-ui-concept="journal"] .npcname{color:#8a6a45}
 .tahint{margin-top:8px;font-size:11px;color:var(--brass);opacity:.85}
 .prol{max-width:720px;margin:0 auto}
 .prol .ptitle{font-size:26px;margin:4px 0 14px}
+html[data-font="pixel"] .prol .ptitle{font-synthesis:weight;font-weight:700}   /* 도트 폰트에서도 프롤로그 제목은 굵게 (0929) */
 .prol p{font-size:14px;line-height:2;color:var(--muted);margin:0 0 14px;text-align:justify}
 .prol p b{color:var(--brass)}
 .missionbox{background:var(--surface);border:1px solid var(--brass);border-radius:4px;padding:12px;margin-bottom:14px}
@@ -1382,6 +1383,7 @@ html[data-ui-concept="journal"] .prepbar .pb-t{color:#4a3a2a}
 /* 배치 격자 — 설정에서 켤 때만 보인다 (0929 · 기본 꺼짐). 자리는 남겨 둔다(배경 맞춤이 격자 위치를 읽는다) */
 html:not([data-bf-grid="on"]) .bf-slot{opacity:0}
 .bf-stage .bf-unit,.bf-stage .bf-slot{margin-top:20px}
+.bf-stage .bf-unit{scale:var(--us,1)}   /* 직업별 크기 — BATTLE_TUNE.job (0930) */
 .bf-stage .bf-unit{position:absolute;width:110px;height:132px;transform:translate(-50%,-50%);border:0!important;padding:0;background:transparent!important;box-shadow:none!important;overflow:visible}
 .bf-stage .bf-unit:focus-visible{outline:2px solid var(--brass);outline-offset:8px}
 .bf-stage .bf-unit.act::before{content:"";position:absolute;bottom:24px;left:12px;width:84px;height:19px;border-radius:50%;background:#ffd16a50;box-shadow:0 0 18px #ffce7670;z-index:-1}
@@ -1970,6 +1972,7 @@ html[data-ui-concept="journal"] :focus-visible{outline:3px solid #ad782e;outline
 </div>
 <div id="modalRoot"></div>
 <div id="toastRoot"></div>
+
 
 
 
@@ -14382,6 +14385,34 @@ function battleCallout(call, seed){
 /* Independent compositions and walkable-ground start for each orientation.
    Add other fields here when both original paintings are ready. */
 const FIELD_VARIANTS = {
+  guardian: {
+    landscape:{src:"assets/battle-fields/guardian/landscape.png?v=1",aspect:2,ground:.54},
+    portrait:{src:"assets/battle-fields/guardian/portrait.png?v=1",aspect:9/16,ground:.25}
+  },
+  brine: {
+    landscape:{src:"assets/battle-fields/brine/landscape.png?v=1",aspect:2,ground:.46},
+    portrait:{src:"assets/battle-fields/brine/portrait.png?v=1",aspect:9/16,ground:.24}
+  },
+  gargoyle: {
+    landscape:{src:"assets/battle-fields/gargoyle/landscape.png?v=1",aspect:2,ground:.49},
+    portrait:{src:"assets/battle-fields/gargoyle/portrait.png?v=1",aspect:9/16,ground:.27}
+  },
+  wraith: {
+    landscape:{src:"assets/battle-fields/wraith/landscape.png?v=1",aspect:2,ground:.48},
+    portrait:{src:"assets/battle-fields/wraith/portrait.png?v=1",aspect:9/16,ground:.31}
+  },
+  final: {
+    landscape:{src:"assets/battle-fields/final/landscape-trophy.png?v=2",aspect:2,ground:.34},
+    portrait:{src:"assets/battle-fields/final/portrait-stadium.png?v=1",aspect:9/16,ground:.20}
+  },
+  areatournament: {
+    landscape:{src:"assets/battle-fields/areatournament/landscape-festival.png?v=1",aspect:2,ground:.31},
+    portrait:{src:"assets/battle-fields/areatournament/portrait-deskfix.png?v=2",aspect:9/16,ground:.20}
+  },
+  citytournament: {
+    landscape:{src:"assets/battle-fields/citytournament/landscape.png?v=1",aspect:2,ground:.44},
+    portrait:{src:"assets/battle-fields/citytournament/portrait-props.png?v=2",aspect:9/16,ground:.19}
+  },
   dummy: {
     landscape:{src:"assets/battle-fields/training/landscape.png?v=1",aspect:2,ground:.31},
     portrait:{src:"assets/battle-fields/training/portrait.png?v=1",aspect:9/16,ground:.20}
@@ -14414,6 +14445,7 @@ function alignDemonField(){
     stage.style.setProperty('--field-clip','0px');
     stage.style.setProperty('--field-size',`${H*A}px ${H}px`);
     stage.style.setProperty('--field-pos',`center ${y}px`);
+    bfFieldTuneApply(stage, modal.dataset.fk, sw, H*A, H, y, g);
     return;
   }
 
@@ -14437,8 +14469,57 @@ function alignDemonField(){
       const oy = Math.min(y, G - g*Hs);
       stage.style.setProperty('--field-size', `${Math.round(Hs*A)}px ${Math.round(Hs)}px`);
       stage.style.setProperty('--field-pos', `center ${Math.round(oy)}px`);
+      bfFieldTuneApply(stage, modal.dataset.fk, w, Hs*A, Hs, oy, g);
     }
   }
+}
+/* ── 전투 배치 조정값 (0929) ──
+   tools/field_lab.html(필드 배치 실험실)에서 맞춘 값을 여기에 옮겨 적는다. 적지 않은 것은 기본값 그대로.
+   field[필드][landscape|portrait] = {zoom:배경 배율, x:가로 이동(전투판 너비 %), y:세로 이동(전투판 높이 %)}
+     — 배율은 땅이 시작하는 선을 기준으로 키운다(유닛 발밑이 그대로 남게).
+   slot[landscape|portrait]["A-front-0"] = {x:%, y:%} — A 우리 · B 상대, front 전열 · back 후열, 0~2 왼쪽부터.
+   job[landscape|portrait]["paladin"] = 유닛 크기 배율 — 직업마다 (어느 자리에 서도 같은 크기).
+   가로/세로는 화면 폭으로 가른다 (bfOrient). */
+const BATTLE_TUNE = {   /* 0930 — 필드 배치 실험실 결과 반영 (64건) */
+  field:{
+    areatournament:{landscape:{"zoom":1.6,"x":6,"y":-12}, portrait:{"zoom":1.2,"x":0,"y":0}},
+    citytournament:{landscape:{"zoom":1.1,"x":29,"y":-2}, portrait:{"zoom":1.15,"x":0,"y":0}},
+    final:{landscape:{"zoom":1.45,"x":15,"y":-6}, portrait:{"zoom":1.35,"x":0,"y":0}},
+    brine:{landscape:{"zoom":0.95,"x":14,"y":11}, portrait:{"zoom":1.05,"x":0,"y":0}},
+    gargoyle:{landscape:{"zoom":0.85,"x":6,"y":19}, portrait:{"zoom":1.1,"x":0,"y":0}},
+    guardian:{landscape:{"zoom":0.8,"x":0,"y":18}, portrait:{"zoom":1.1,"x":0,"y":0}},
+    wraith:{landscape:{"zoom":0.85,"x":17,"y":20}, portrait:{"zoom":1.1,"x":0,"y":0}},
+    dummy:{landscape:{"zoom":1,"x":0,"y":1}},
+    demonking:{landscape:{"zoom":0.65,"x":18,"y":42}},
+    spring:{landscape:{"zoom":0.85,"x":1,"y":14}}
+  },
+  slot:{
+    landscape:{"B-back-0":{"x":49,"y":9},"B-back-1":{"x":69,"y":19},"B-back-2":{"x":89,"y":29},"B-front-0":{"x":37,"y":26},"B-front-1":{"x":57,"y":36},"B-front-2":{"x":77,"y":46},"A-back-0":{"x":14,"y":61},"A-back-1":{"x":31,"y":71},"A-back-2":{"x":48,"y":81},"A-front-0":{"x":26,"y":44},"A-front-1":{"x":43,"y":54},"A-front-2":{"x":60,"y":64}},
+    portrait:{"B-back-0":{"x":30,"y":16},"B-back-1":{"x":56,"y":18},"B-back-2":{"x":82,"y":20},"B-front-0":{"x":34,"y":32},"B-front-1":{"x":60,"y":34},"B-front-2":{"x":86,"y":36},"A-back-0":{"x":14,"y":68},"A-back-1":{"x":40,"y":70},"A-back-2":{"x":66,"y":72},"A-front-0":{"x":18,"y":52},"A-front-1":{"x":44,"y":54},"A-front-2":{"x":70,"y":56}}
+  },
+  job:{
+    landscape:{"paladin":1.05,"priest":1.1,"darkpriest":0.95,"sword":0.9,"archer":0.9,"rogue":0.9,"timemage":0.9,"wizard":0.95,"enchanter":0.9,"bard":0.85,"spellsword":1.05,"ninja":0.9},
+    portrait:{"ninja":0.9,"rogue":0.9,"archer":0.9,"wizard":0.95,"darkpriest":0.9,"bard":0.85,"sword":0.9,"timemage":0.9,"druid":0.9,"enchanter":0.9,"spellsword":1.05}
+  }
+};
+/* 필드 배치 실험실 — tools/field_lab.html 이 game.html?fieldlab 을 틀에 넣어 부른다. 그때만 켜진다 */
+const FIELD_LAB = /[?&]fieldlab\b/.test(location.search) ? {tune:null, jobs:null, hide:{}, field:"spring", grid:true} : null;
+function bfOrient(){ const w = innerWidth, h = innerHeight; return (w <= 900 || w/Math.max(1,h) < 1.2) ? "portrait" : "landscape"; }
+function bfTune(){ return (FIELD_LAB && FIELD_LAB.tune) || BATTLE_TUNE; }
+function bfSlotDefault(side, row, col){ return {x:24+col*26, y:(side==='A'?(row==='front'?50:66):(row==='front'?32:16))+col*2}; }
+function bfJobScale(job){ const v = (((bfTune().job)||{})[bfOrient()]||{})[job]; return v ? +v : 1; }
+function bfSlotPos(side, row, col){
+  const d = bfSlotDefault(side, row, col), o = (((bfTune().slot)||{})[bfOrient()]||{})[`${side}-${row}-${col}`];
+  return o ? Object.assign({}, d, o) : d;
+}
+/* 배경 이동 · 배율 — 자동 맞춤이 끝난 뒤에 얹는다. cw: 배경 상자 너비, W·H: 그림 크기, oy: 그림 위쪽 위치, g: 땅 비율 */
+function bfFieldTuneApply(stage, fk, cw, W, H, oy, g){
+  const t = (((bfTune().field)||{})[fk]||{})[bfOrient()];
+  if(!t) return;
+  const z = +t.zoom || 1, sw = stage.clientWidth, sh = stage.clientHeight;
+  const W2 = W*z, H2 = H*z, x2 = (cw - W2)/2 + (+t.x||0)*sw/100, y2 = oy + g*H*(1 - z) + (+t.y||0)*sh/100;
+  stage.style.setProperty('--field-size', `${Math.round(W2)}px ${Math.round(H2)}px`);
+  stage.style.setProperty('--field-pos', `${Math.round(x2)}px ${Math.round(y2)}px`);
 }
 /* 전투 배경마다 걸을 수 있는 땅이 시작하는 높이 (그림 높이 기준 비율) */
 const FIELD_GROUND = {citytournament:.40, areatournament:.37, final:.56, jolupseng:.58, spring:.58, summer:.64, fall:.58, winter:.56,
@@ -14552,12 +14633,13 @@ function openBattle(res, opt, onDone){
         const target=c.targets.includes(uids[k]),caster=c.actor===uids[k];
         return target||caster?ultimateEffect(c.job,target?'target':'caster',performance.now()-c.at,n.side==='B'):'';
       }).join('');
-      const x=soloBoss?50:24+col*26;
-      const y=soloBoss?17:(side==='A'?(row==='front'?50:66):(row==='front'?32:16))+col*2;
+      const P=soloBoss?null:bfSlotPos(side,row,col);                          // 자리 — BATTLE_TUNE · 필드 실험실 (0929)
+      const x=soloBoss?50:P.x;
+      const y=soloBoss?17:P.y;
       const talk=speech.get(uids[k]), age=talk?performance.now()-talk.at:Infinity;
       const say=talk&&age<1600&&u.alive?battleCallout(talk.call,talk.frame):null;
       return `<div class="unit bf-unit team-${side} ${boss?'bf-boss':''} ${big?'bf-big':''} ${mobU?'bf-mob':''} ${u.alive?'':'dead'} ${act?'act':''}"
-        style="left:${x}%;top:${y}%;z-index:${Math.round(y)}" tabindex="0"
+        style="left:${x}%;top:${y}%;z-index:${Math.round(y)};--us:${bfJobScale(n.job)}" data-slot="${soloBoss?'boss':`${side}-${row}-${col}`}" tabindex="0"
         aria-label="${esc(n.name)} 체력 ${hideHp? "???" : `${Math.round(u.hp)} / ${u.maxHp}`}, 행동 ${Math.round(u.atb*100)}%, 필살기 ${Math.round(u.ult)}%"
         title="${esc(n.name)} · ${JOBS[n.job].name} · ${row==='front'?'전열':'후열'} / 체력 ${hideHp? "???" : `${fmt(u.hp)} / ${fmt(u.maxHp)}`}${u.sh>0?' · 보호막 '+fmt(u.sh):''} / 행동 ${Math.round(u.atb*100)}% · ${esc(n.ult||ultName(n.job))} ${Math.round(u.ult)}%">
         ${popHtml}${fxc}${spr}${ultFX}
@@ -14572,9 +14654,8 @@ function openBattle(res, opt, onDone){
       </div>`;
     };
     const ground=['A','B'].map(side=>['front','back'].map(row=>[0,1,2].map(col=>{
-      const x=24+col*26;
-      const y=(side==='A'?(row==='front'?50:66):(row==='front'?32:16))+col*2;
-      return `<div class="bf-slot team-${side}" style="left:${x}%;top:${y}%" aria-hidden="true"></div>`;
+      const P=bfSlotPos(side,row,col);
+      return `<div class="bf-slot team-${side}" style="left:${P.x}%;top:${P.y}%" data-slot="${side}-${row}-${col}" aria-hidden="true"></div>`;
     }).join('')).join('')).join('');
     return `<div class="bf-stage">
       <div class="bf-school enemy"><b>${esc(opt.titleB||'상대 학원')}</b>${formTag(res.formB, res.plusB)}</div>
@@ -14637,7 +14718,8 @@ function openBattle(res, opt, onDone){
   const step = ()=>{ if(i<res.frames.length-1){ i++; sfxFrame(res.frames[i]); if(i>=res.frames.length-1) bgmEnd(); draw(); } else { pause(); draw(); } };
   const play = ()=>{ if(timer) return; timer = setInterval(step, speed/SPR_PLAYBACK_RATE); draw(); };
   const pause = ()=>{ if(timer){ clearInterval(timer); timer=null; } };
-  draw(); play();
+  draw();
+  if(opt.lab) UI.labDraw = draw; else play();    // 필드 실험실 — 멈춘 한 장면만 그린다
 }
 
 /* ============================================================
@@ -15778,8 +15860,7 @@ const PROLOGUE = [
     "세상의 가장자리에는 언제나 균열이 있다. 마물이 기어 나오는 골짜기, 지도에 붉게 칠해진 채 이름조차 지워진 땅, 상단의 마차가 일부러 돌아 나가는 고개. 사람들이 살아가는 자리가 넓어질수록 그 경계도 함께 길어졌다.",
     "그 경계 앞에 서는 이들을 사람들은 용사라 불렀다. 용사는 왕이 임명하는 직책이 아니다. 최전방에서 인류의 안녕을 위해 싸우는 전사, 그 일을 실제로 해낸 자에게 사람들이 나중에야 붙여주는 이름이다.",
     "누군가는 국경의 성벽 위에서, 누군가는 이름 없는 던전의 가장 깊은 방에서, 누군가는 자기 고향 마을의 낡은 문 앞에서 그 이름을 얻었다. 쥔 무기도 배운 곳도 제각각이지만 공통점은 하나였다. 물러서도 되는 자리에서 끝내 물러서지 않았다는 것."]},
-  {h:"학원, 그리고 몰락", p:[   /* 0929 — 2페이지 본문 교체 */
-    "나도 그런 용사 지망생 중 한 명.",
+  {h:"나도 용사를 목표로 한 용사 지망생 중 한 명.", p:[   /* 0929 — 2페이지 본문 교체 · 첫 줄을 제목으로 */
     "왕도의 유명한 용사 학원에 수석으로 입학해 엘리트 코스를 밟고 있었다.",
     "2년 차 겨울, 내게 편지가 한 장 도착했다.<br>본가에서 온 편지. 펼쳐서 읽어 내려갈수록 얼굴이 어두워졌다.",
     "사라진 학원 자금과 동업자.<br>남겨진 빚.<br>압류.<br>쓰러진 아버지.",
@@ -15916,6 +15997,7 @@ function bootLoaderDone(){
 }
 function boot(){
   bootLoaderDone();
+  if(FIELD_LAB) return fieldLabBoot();
   const had = load();
   if(!had) newGame();
   if(!S.debtV){ S.debt = (S.debt|0) + DEBT_START; S.debtV = 1; bankState(); }
@@ -16039,6 +16121,97 @@ function boot(){
   render();
   showTitle(had);
   preloadStart();
+}
+/* ══════ 필드 배치 실험실 (0929) ══════
+   tools/field_lab.html 이 이 게임을 틀(iframe) 안에 ?fieldlab 으로 불러서 쓴다. 평소 게임에서는 꺼져 있다.
+   · 저장소(localStorage)에 아무것도 쓰지 않는다 — 원래 세이브 · 리그 자리 · 설정은 그대로.
+   · 우리/상대 각 6자리(전열 3 · 후열 3)에 학생을 세운 전투 한 장면을 멈춘 채 그린다.
+   · 바깥 창과 postMessage 로 주고받는다: ready(기본값) · set(조정값/직업/필드) · pick/move(유닛 클릭·끌기). */
+const LAB_SLOTS = [];
+["A","B"].forEach(sd=> ["front","back"].forEach(rw=> [0,1,2].forEach(c=> LAB_SLOTS.push(`${sd}-${rw}-${c}`))));
+const LAB_JOBS0 = {"A-front-0":"paladin","A-front-1":"sword","A-front-2":"monk","A-back-0":"priest","A-back-1":"wizard","A-back-2":"archer",
+  "B-front-0":"spellsword","B-front-1":"ninja","B-front-2":"rogue","B-back-0":"darkpriest","B-back-1":"bard","B-back-2":"gunner"};
+function labPost(msg){ try{ parent.postMessage(Object.assign({lab:"field"}, msg), "*"); }catch(e){} }
+function labDefaults(){
+  const slots = {};
+  ["landscape","portrait"].forEach(o=>{ slots[o] = {}; LAB_SLOTS.forEach(k=>{ const [sd,rw,c] = k.split("-"); slots[o][k] = bfSlotDefault(sd, rw, +c); }); });
+  const FV = (typeof FIELD_VARIANTS !== "undefined") ? FIELD_VARIANTS : {};
+  return {tune: JSON.parse(JSON.stringify(BATTLE_TUNE)), slots, jobs0: LAB_JOBS0,
+    fields: Object.keys(FIELD_GROUND).map(k=> ({k, variant: !!FV[k]})),
+    jobs: Object.keys(JOBS).filter(k=> sprHas(k)).map(k=> ({k, n: JOBS[k].name})),
+    orient: bfOrient(), pastel: PREF.fieldPastel !== false};
+}
+function fieldLabRender(){
+  const L = FIELD_LAB, jobs = L.jobs || LAB_JOBS0;
+  const mk = k=>{ const job = jobs[k] && JOBS[jobs[k]] ? jobs[k] : "paladin";
+    const st = newStudent(1, "C", job); st.id = "lab-" + k; st.name = ({A:"우리",B:"상대"})[k[0]] + " " + (k.includes("front")?"전열":"후열") + (+k.slice(-1)+1); st.cond = 100; return st; };
+  const A = LAB_SLOTS.filter(k=> k[0]==="A").map(mk), B = LAB_SLOTS.filter(k=> k[0]==="B").map(mk);
+  const rows = {}; A.concat(B).forEach(st=> rows[st.id] = st.id.includes("front") ? "front" : "back");
+  const res = runBattle(A, B, {formA:"__lab", formB:"__lab", rowsA:rows, rowsB:rows, titleA:"우리 학원", titleB:"상대 학원"});
+  res.frames = [res.frames[0]]; res.winner = null;
+  openBattle(res, {field: L.field, head: "필드 배치 실험실 · " + L.field, titleA:"우리 학원", titleB:"상대 학원", lab:true}, ()=>{});
+  labDecorate();
+}
+function labDecorate(){
+  document.documentElement.dataset.bfGrid = FIELD_LAB.grid ? "on" : "off";
+  let st = document.getElementById("labStyle");
+  if(!st){ st = document.createElement("style"); st.id = "labStyle"; document.head.appendChild(st); }
+  const hide = Object.keys(FIELD_LAB.hide||{}).filter(k=> FIELD_LAB.hide[k]);
+  st.textContent = `#verBar,.fbbtn,.bf-legend{display:none!important}
+    .bf-stage .bf-unit{cursor:grab}.bf-stage .bf-unit.lab-sel .sprwrap{filter:drop-shadow(0 0 3px #ffd84a) drop-shadow(0 0 6px #ffb300)}
+    ${hide.map(k=> `[data-slot="${k}"]`).join(",") || "#__none"}{visibility:hidden!important}`;
+  document.querySelectorAll(".bf-stage [data-slot]").forEach(el=> el.classList.toggle("lab-sel", el.dataset.slot === FIELD_LAB.sel));
+  const stage = document.querySelector(".bf-stage");
+  if(!stage || stage.__lab) return;
+  stage.__lab = true;
+  stage.addEventListener("pointerdown", ev=>{
+    const u = ev.target.closest(".bf-unit[data-slot]");
+    if(!u || u.dataset.slot === "boss") return;
+    ev.preventDefault();
+    const k = u.dataset.slot, R = stage.getBoundingClientRect();
+    FIELD_LAB.sel = k; labDecorate(); labPost({type:"pick", slot:k});
+    const x0 = parseFloat(u.style.left), y0 = parseFloat(u.style.top), px = ev.clientX, py = ev.clientY;
+    let moved = false;
+    const mv = e=>{
+      const nx = Math.round((x0 + (e.clientX-px)/R.width*100)*2)/2, ny = Math.round((y0 + (e.clientY-py)/R.height*100)*2)/2;
+      if(Math.abs(e.clientX-px)+Math.abs(e.clientY-py) > 3) moved = true;
+      if(!moved) return;
+      u.style.left = nx + "%"; u.style.top = ny + "%";
+      const sl = stage.querySelector(`.bf-slot[data-slot="${k}"]`); if(sl){ sl.style.left = nx + "%"; sl.style.top = ny + "%"; }
+      labPost({type:"move", slot:k, x:nx, y:ny, orient:bfOrient()});
+    };
+    const up = ()=>{ removeEventListener("pointermove", mv); removeEventListener("pointerup", up);
+      if(moved) labPost({type:"moveend", slot:k, x:parseFloat(u.style.left), y:parseFloat(u.style.top), orient:bfOrient()}); };
+    addEventListener("pointermove", mv); addEventListener("pointerup", up);
+  });
+}
+function fieldLabBoot(){
+  try{ Storage.prototype.setItem = function(){}; Storage.prototype.removeItem = function(){}; }catch(e){}   // 실험실은 아무것도 저장하지 않는다
+  save = function(){};
+  newGame("필드 실험실"); UI.ceremonies = []; UI.view = "home";
+  FORMS.__lab = {n:"실험 배치", sh:"3-3", front:["f1","f2","f3"], back:["b1","b2","b3"], d:"필드 실험실 전용", fx:{}, txt:[]};
+  FIELD_LAB.tune = JSON.parse(JSON.stringify(BATTLE_TUNE));
+  let lastKey = "";
+  addEventListener("message", e=>{
+    const d = e.data || {};
+    if(d.lab !== "field" || d.type !== "set") return;
+    const L = FIELD_LAB;
+    if(d.tune) L.tune = d.tune;
+    if(d.hide) L.hide = d.hide;
+    if(d.grid != null) L.grid = !!d.grid;
+    if(d.sel !== undefined) L.sel = d.sel;
+    if(d.pastel != null) PREF.fieldPastel = !!d.pastel;
+    if(d.field) L.field = d.field;
+    if(d.jobs) L.jobs = d.jobs;
+    const key = JSON.stringify([L.field, L.jobs, PREF.fieldPastel]);
+    if(key !== lastKey || !UI.labDraw){ lastKey = key; fieldLabRender(); }
+    else { UI.labDraw(); labDecorate(); }
+    labPost({type:"orient", orient:bfOrient()});
+  });
+  addEventListener("resize", ()=>{ if(UI.labDraw){ UI.labDraw(); labDecorate(); } labPost({type:"orient", orient:bfOrient()}); });
+  render();
+  fieldLabRender();
+  labPost(Object.assign({type:"ready"}, labDefaults()));
 }
 /* ── 그림 미리 받기 (0929) ──
    시작 화면이 뜬 뒤, 게임이 쓰는 그림을 뒤에서 조금씩 받아 둔다(브라우저 캐시에 남는다).
