@@ -1,4 +1,10 @@
 /* Pixel finish layers over journal colors; no clipping of popup contents. */
+/* Report actors remain interactive without inheriting button chrome. */
+html[data-ui-finish="pixel"] button.dr-student.dr-student.dr-student.dr-student,
+html[data-ui-finish="pixel"] button.dr-student.dr-student.dr-student.dr-student:is(:hover,:active,:disabled){
+ border:0!important;background:none!important;box-shadow:none!important;
+ border-radius:0!important;filter:none;
+}
 html[data-ui-concept="journal"] .navm-grid .morebtn,
 html[data-ui-concept="journal"] .navm-grid .morebtn i {color:#f5e3bf}
 html[data-ui-concept="journal"] nav button .wk {background:#f0d49b;color:#392919;border:1px solid #a47e45;opacity:1}
