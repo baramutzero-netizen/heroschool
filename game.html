@@ -67,6 +67,10 @@ button{cursor:pointer}
   cursor:pointer;overflow:hidden;line-height:0;height:52px;transition:transform .12s,border-color .12s}
 .fbbtn:hover{transform:translateY(-1px)}
 .fbbtn img{display:block;height:100%;width:auto}
+/* 피드백 단추 — 도트 테두리 · 그림자를 씌우지 않는다. 그림 자체가 액자라 주변 바탕이 그대로 비치게 (0930) */
+html body #btnFeed.fbbtn{border:0!important;box-shadow:none!important;background:none!important;background-image:none!important;border-radius:0!important;outline:0}
+.fbbtn img{filter:drop-shadow(0 2px 0 #4a3a2a33)}
+.fbbtn:focus-visible{outline:2px dashed var(--brass)!important;outline-offset:3px}
 /* 폰 — 피드백 아이콘이 셋째 줄을 혼자 차지하지 않게, 학생 옆(둘째 줄 오른쪽)에 붙인다 */
 @media(max-width:820px){.fbbtn{height:44px;align-self:center;margin-left:auto;width:76px;position:relative;order:2}
   .crestrow > .meters{order:3}
@@ -869,6 +873,11 @@ table.tb tr:hover td{background:var(--surface2)}
 .tutbtn:hover{transform:translateY(-2px)}
 .tutbtn:hover{border-color:var(--brass)}
 .tutbtn img{display:block;width:100%;height:auto}
+/* 튜토리얼 단추 — 그림 자체가 액자라 단추 테두리 · 바탕 · 도트 그림자를 걷는다 (0930) */
+html body #btnTut.tutbtn{border:0!important;box-shadow:none!important;background:none!important;background-image:none!important;border-radius:0!important;overflow:visible}
+#btnTut img{filter:drop-shadow(0 3px 0 #2c203033) drop-shadow(0 0 1px #2c203055)}
+#btnTut:hover img{filter:drop-shadow(0 5px 0 #2c203033) drop-shadow(0 0 1px #2c203055)}
+#btnTut:focus-visible{outline:2px dashed var(--brass)!important;outline-offset:3px}
 .victrow{display:flex;justify-content:center;align-items:flex-end;gap:10px;flex-wrap:wrap;margin:14px 0 4px}
 .victu{margin:0;flex:0 1 auto;text-align:center;max-width:32%}
 .victu img{display:block;width:100%;max-width:190px;height:auto;margin:0 auto;
@@ -2233,8 +2242,8 @@ const FX_IMG=HS_A["fx_img.png"];
 const FIELD_IMG={"spring":"assets/field_img/spring.webp?v=66c40f96","summer":"assets/field_img/summer.webp?v=ead0b161","fall":"assets/field_img/fall.webp?v=60a4f20d","winter":"assets/field_img/winter.webp?v=81258736","citytournament":"assets/field_img/citytournament.webp?v=80e84f65","areatournament":"assets/field_img/areatournament.webp?v=9c4db436","final":"assets/field_img/final.webp?v=c2fe6d58","jolupseng":"assets/field_img/jolupseng.webp?v=bb87d046","brine":"assets/field_img/brine.webp?v=a9b2ab8e","dummy":"assets/field_img/dummy.webp?v=c1dae1ec","gargoyle":"assets/field_img/gargoyle.webp?v=0accf091","guardian":"assets/field_img/guardian.webp?v=6d1e1c5e","wraith":"assets/field_img/wraith.webp?v=9a885fc1","demonking":"assets/field_img/demonking.webp?v=3ef553b3"};
 /* 파스텔 필터(ILLUS_FILTER_SPEC §4.1)를 입힌 전투 배경 — tools/bake_field_pastel.py 로 굽는다. 설정에서 끄면 원본(FIELD_IMG) */
 const FIELD_PASTEL={"areatournament":"assets/field_pastel/areatournament.webp?v=f0e68224","brine":"assets/field_pastel/brine.webp?v=77113596","citytournament":"assets/field_pastel/citytournament.webp?v=0e3e2353","demonking":"assets/field_pastel/demonking.webp?v=a20b14a0","dummy":"assets/field_pastel/dummy.webp?v=7f6bb410","fall":"assets/field_pastel/fall.webp?v=c24352d1","final":"assets/field_pastel/final.webp?v=0dc4781c","gargoyle":"assets/field_pastel/gargoyle.webp?v=230f5055","guardian":"assets/field_pastel/guardian.webp?v=ad19bac1","jolupseng":"assets/field_pastel/jolupseng.webp?v=5215b42b","spring":"assets/field_pastel/spring.webp?v=87520ef8","summer":"assets/field_pastel/summer.webp?v=bce21271","winter":"assets/field_pastel/winter.webp?v=e5e7f4ef","wraith":"assets/field_pastel/wraith.webp?v=4240b025"};
-const FB_ICON="assets/fb_icon.webp?v=04ac28be";
-const TUT_ICON="assets/tut_icon.webp?v=9892e207";
+const FB_ICON="assets/fb_icon_a.webp?v=a1";   // 0930 — 검은 바탕을 걷어낸(투명) 판
+const TUT_ICON="assets/tut_icon_a.webp?v=a1";   // 0930 — 둥근 액자 바깥 모서리를 투명하게 한 판
 const TUT_IMG={"1":"assets/tut_img/1.webp?v=5c18ef9f","2":"assets/tut_img/2.webp?v=726ab4c7","3":"assets/tut_img/3.webp?v=7e63bf9a","4":"assets/tut_img/4.webp?v=263eec4a","5":"assets/tut_img/5.webp?v=720735dc","6":"assets/tut_img/6.webp?v=847cc25b","7":"assets/tut_img/7.webp?v=8fd0914b","8":"assets/tut_img/8.webp?v=a946cebf","9":"assets/tut_img/9.webp?v=30bfee6f","10":"assets/tut_img/10.webp?v=d2617b1e","11":"assets/tut_img/11.webp?v=bc305587","12":"assets/tut_img/12.webp?v=42850253"};
 const PROL_IMG={"1":"assets/prol_img/1.webp?v=57d21340","2":"assets/prol_img/2.webp?v=b1ad0ece","3":"assets/prol_img/3.webp?v=230cb97f"};
 const VICT_IMG={"paladin":"assets/vict_img/paladin.webp?v=59b9ae54","rogue":"assets/vict_img/rogue.webp?v=9d21f67b","forcemage":"assets/vict_img/forcemage.webp?v=974e6141","ninja":"assets/vict_img/ninja.webp?v=697d2112","spellsword":"assets/vict_img/spellsword.webp?v=c61cea2c","druid":"assets/vict_img/druid.webp?v=bf940093","sword":"assets/vict_img/sword.webp?v=8410e9aa","gunner":"assets/vict_img/gunner.webp?v=e9318d49","darkpriest":"assets/vict_img/darkpriest.webp?v=e72d0c97","priest":"assets/vict_img/priest.webp?v=e145e946","monk":"assets/vict_img/monk.webp?v=07b36c81","wizard":"assets/vict_img/wizard.webp?v=3a13afae","archer":"assets/vict_img/archer.webp?v=e2f0f613","bard":"assets/vict_img/bard.webp?v=450f51ce","enchanter":"assets/vict_img/enchanter.webp?v=2d160b78","timemage":"assets/vict_img/timemage.webp?v=f6dc5b3f"};
