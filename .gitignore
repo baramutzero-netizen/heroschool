@@ -21,3 +21,8 @@ r[0-9]*.png
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# ── 개인용 (깃헙에 올리지 않는다) ───────────────────
+# 플레이어 현황 — 파일을 더블클릭해 브라우저로 연다
+tools/players.html
+private/

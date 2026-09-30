@@ -8717,6 +8717,7 @@ function enrollAll(){
 const SAVE_KEY = "heroacademy_v1";
 function save(){
   try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){}
+  try{ playerPing(false); }catch(e){}                   // 익명 진행 기록 — 90초에 한 번까지
 }
 function load(){
   try{
@@ -9593,6 +9594,45 @@ async function leagueReq(path, method, body){
     body? {headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)} : {}));
   if(!r.ok) throw new Error("서버 응답 " + r.status);
   return await r.json();
+}
+/* ── 익명 진행 기록 (0930) — 몇 명이 해 봤고 어디까지 갔는지 보기 위한 것.
+   브라우저마다 무작위 ID 하나(pid)를 만들어 players/{pid} 한 칸만 덮어쓴다. 이름 · 기기 정보는 보내지 않는다.
+   보내는 때: 접속(불러오기) · 새 시나리오 · 저장(90초에 한 번까지). 로컬 파일(file:) · localhost · 필드 실험실 · 개발 빌드는 보내지 않는다. */
+const PING_KEY = "heroschool_pid", PING_T_KEY = "heroschool_play_min", PING_RUNS_KEY = "heroschool_runs", PING_FIRST_KEY = "heroschool_first";
+const PING_GAP = 90000;
+let PING_LAST = 0, PING_BUSY = false;
+function pingOn(){
+  try{ return !!LEAGUE_URL && /^https?:$/.test(location.protocol) && !/^(localhost|127\.|\[::1\])/.test(location.hostname) && !FIELD_LAB && BUILD !== "dev"; }catch(e){ return false; }
+}
+function pingLS(k, v){ try{ if(v === undefined) return localStorage.getItem(k); localStorage.setItem(k, String(v)); }catch(e){} return null; }
+function pingPid(){
+  let v = pingLS(PING_KEY);
+  if(!v){ v = "p" + Date.now().toString(36) + Math.random().toString(36).slice(2,8); pingLS(PING_KEY, v); pingLS(PING_FIRST_KEY, Date.now()); }
+  return v;
+}
+/* 플레이 시간 — 화면이 보이는 동안 1분마다 1 */
+setInterval(()=>{ try{ if(document.visibilityState === "visible" && typeof S !== "undefined" && S && S.students) pingLS(PING_T_KEY, (+pingLS(PING_T_KEY)||0) + 1); }catch(e){} }, 60000);
+function pingRecord(){
+  const P = PHASES[S.phase] || {n:S.phase};
+  const lvMax = (S.students||[]).reduce((a,x)=> Math.max(a, x.level|0), 0);
+  return {
+    v: BUILD, last: {".sv":"timestamp"}, first: +pingLS(PING_FIRST_KEY) || Date.now(),
+    runs: +pingLS(PING_RUNS_KEY) || 1, playMin: +pingLS(PING_T_KEY) || 0,
+    mobile: !!(window.matchMedia && matchMedia("(max-width:640px)").matches),
+    run: leagueId(), acad: String(S.acadName||"").slice(0,24), diff: S.diff || "normal",
+    year: S.year|0, phase: S.phase, week: (S.week|0) + 1, when: `${S.year}년차 ${P.n} ${Math.min((S.week|0)+1, P.weeks||99)}주`,
+    fame: Math.round(S.fame||0), tier: S.tier|0, gold: Math.round(S.gold||0), debt: Math.round(typeof debtOf==="function" ? debtOf() : (S.debt||0)),
+    students: (S.students||[]).length, grads: (S.graduates||[]).length, lvMax,
+    mission: S.mission ? (S.mission.idx|0) : 0, fall: (S.fallRun && S.fallRun.step) || null
+  };
+}
+function playerPing(force){
+  if(!pingOn() || typeof S === "undefined" || !S || !S.students || !S.pingOk) return;   // 시작 화면만 보고 나간 사람(임시 학원)은 세지 않는다
+  const now = Date.now();
+  if(PING_BUSY || (!force && now - PING_LAST < PING_GAP)) return;
+  PING_LAST = now; PING_BUSY = true;
+  let rec; try{ rec = pingRecord(); }catch(e){ PING_BUSY = false; return; }
+  leagueReq("players/" + pingPid(), "PATCH", rec).catch(()=>{}).finally(()=>{ PING_BUSY = false; });
 }
 /* 쿼리를 붙여 읽는다 — 실패하면 상태 번호를 달아 던진다 (400 = 규칙에 인덱스가 없다) */
 async function leagueGet(path, query){
@@ -16399,7 +16439,9 @@ function showPrologue(name, i){
   audOver("prologue");    // 무음이던 시작 화면을 지나 여기서 처음 음악이 걸린다
   const start = ()=>{
     audOver(null);
-    newGame(name); S.diff = UI.newDiff || "normal"; S.mission = newMission(); save();
+    newGame(name); S.diff = UI.newDiff || "normal"; S.mission = newMission(); S.pingOk = true;
+    try{ pingLS(PING_RUNS_KEY, (+pingLS(PING_RUNS_KEY)||0) + 1); }catch(e){}
+    save(); try{ playerPing(true); }catch(e){}
     if(S.diff !== "normal") logE(`난이도 <b>${DIFFS[S.diff].n}</b> — ${DIFFS[S.diff].d}.`, "");
     closeModal(); UI.view="home"; UI.sel=null; render();
     const afterStart = ()=>{ render(); toast("새 학기가 시작되었다."); if(tryMarkTut()) showCeremony(); };
@@ -16646,6 +16688,7 @@ function bootMain(){
   render();
   showTitle(had);
   preloadStart();
+  if(had){ S.pingOk = true; setTimeout(()=>{ try{ playerPing(true); }catch(e){} }, 5000); }   // 익명 진행 기록 — 이어 하는 학원이 있을 때만
 }
 /* ══════ 필드 배치 실험실 (0929) ══════
    tools/field_lab.html 이 이 게임을 틀(iframe) 안에 ?fieldlab 으로 불러서 쓴다. 평소 게임에서는 꺼져 있다.
