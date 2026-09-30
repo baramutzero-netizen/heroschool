@@ -8,4 +8,6 @@ if '/* JOURNAL_THEME_START */' in s:
     s=re.sub(r'/\* JOURNAL_THEME_START \*/.*?/\* JOURNAL_THEME_END \*/',lambda _:block,s,flags=re.S)
 else:
     s=s.replace('</style>',block+'\n</style>',1)
+s=s.replace('/* JOURNAL_THEME_END */',(Path(__file__).parent/'mint.css').read_text(encoding='utf-8')+'\n/* JOURNAL_THEME_END */',1)
+s=s.replace('/* JOURNAL_THEME_END */',(Path(__file__).parent/'riso.css').read_text(encoding='utf-8')+'\n/* JOURNAL_THEME_END */',1)
 p.write_text(s,encoding='utf-8')

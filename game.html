@@ -1991,6 +1991,56 @@ html[data-ui-finish="pixel"] :focus-visible {outline:2px dashed #a16b20;outline-
 html[data-ui-finish="pixel"] .ui-concept-picker {gap:10px;flex-wrap:wrap}
 @media(max-width:640px){html[data-ui-finish="pixel"] .ui-concept-picker .btn{min-height:40px}}
 
+/* Mint palette shares the journal surfaces and pixel geometry. */
+html[data-ui-concept="journal"][data-ui-palette="mint"] {
+ --bg:#e7efea;--surface:#f1f6f1;--surface2:#dae8df;--line:#8da99b;--line-soft:#c2d3c8;
+ --text:#304c43;--muted:#49665a;--dim:#526c60;--brass:#226754;--brass-b:#34826a;--brass-soft:#26745c20;
+ --pixel-edge:#8da99b;--pixel-light:#f0fff6;
+ --journal-paper:linear-gradient(105deg,#e7f0e8,#f3f7f1 55%,#eaf2eb);
+}
+html[data-ui-palette="mint"] body{background:#e2ebe4;background-image:none}
+html[data-ui-palette="mint"] .topbar{background:#e8f0e9;color:#304c43;border-color:#b2c5b7;box-shadow:0 2px 0 #8da99b25}
+html[data-ui-palette="mint"] .topbar :is(.acad-sub,.eyebrow){color:#526c60}
+html[data-ui-palette="mint"] :is(.panel,.logbox,.missionbox,.modal:not(.btm),.ji-card,.titlecard,.scard,.slot,.opt,.meter,.gradcard,.syn-card,.errbox,.fxdemo,.prepbar,.npcbub,.moremenu,.dslot){border-color:#8da99b;box-shadow:inset 0 0 0 2px #edfff480,2px 0 #a4b9aa,-2px 0 #a4b9aa,0 2px #a4b9aa,0 -2px #a4b9aa,4px 4px #405b4918!important}
+html[data-ui-palette="mint"] :is(.btn,.ttab,input,select,textarea){color:#304c43;border-color:#8da99b;background-color:#eaf2eb}
+html[data-ui-palette="mint"] :is(.btn,.ttab){background-image:var(--journal-paper)}
+html[data-ui-palette="mint"] :is(button,.btn,.ttab,select,input,textarea){box-shadow:inset 2px 2px #eefff680,inset -2px -2px #728e7928,0 2px #a4b9aa!important}
+html[data-ui-palette="mint"] :is(.btn.primary,.ttab.on){background:#4c7460;color:#f6faf5;border-color:#678f77}
+html[data-ui-palette="mint"] .ttab .tt-sub{color:#49665a}
+html[data-ui-palette="mint"] .ttab.on .tt-sub{color:#c2e9d4}
+html[data-ui-palette="mint"] nav button{color:#49665a}
+html[data-ui-palette="mint"] nav button[aria-current="true"]{background:var(--journal-paper);color:#304c43}
+html[data-ui-palette="mint"] nav button.hot{color:#305d49;background:#d5e7da}
+html[data-ui-palette="mint"] nav button.hot[aria-current="true"]{background:var(--journal-paper);color:#304c43}
+html[data-ui-palette="mint"] nav button .wk{background:#bee6cc;color:#304c43;border-color:#8da99b}
+html[data-ui-palette="mint"] .moremenu button{background:#edf4ec;color:#304c43;border-color:#a4bcab}
+html[data-ui-palette="mint"] .navm-grid .morebtn,html[data-ui-palette="mint"] .navm-grid .morebtn i{color:#49665a}
+html[data-ui-palette="mint"] .navm-grid .morebtn[aria-current="true"],html[data-ui-palette="mint"] .navm-grid .morebtn[aria-current="true"] i{color:#304c43}
+html[data-ui-palette="mint"] :is(.facebox,.ji-face,.npcport){background-color:#dce9df;border-color:#8da99b;box-shadow:inset 0 0 0 2px #e2ffec,2px 0 #a4b9aa,-2px 0 #a4b9aa,0 2px #a4b9aa,0 -2px #a4b9aa!important}
+html[data-ui-palette="mint"] .npcband{--npc-fill:#eefbf2;--npc-stroke:#8da99b;--npc-ink:#304c43}
+html[data-ui-palette="mint"] :is(.npcname,.prepbar .pb-k){color:#49665a}
+html[data-ui-palette="mint"] :is(.prepbar .pb-t,.btn.icon){color:#304c43}
+html[data-ui-palette="mint"] .rule{background:repeating-linear-gradient(90deg,#8da99b 0 6px,transparent 6px 8px)}
+html[data-ui-palette="mint"] [aria-pressed="true"]{outline-color:#6b9880}
+html[data-ui-palette="mint"] :focus-visible{outline-color:#29765a}
+
+/* Printed side wallpaper and a quiet patterned reading surface. */
+html[data-ui-palette="riso"] body{background:#f2c7b5}
+html[data-ui-palette="riso"] body::before,html[data-ui-palette="riso"] body::after{content:"";position:fixed;top:0;bottom:0;width:max(0px,calc((100vw - 1240px)/2));pointer-events:none;background-repeat:no-repeat;background-size:cover;z-index:-1;box-sizing:border-box}
+html[data-ui-palette="riso"] body{isolation:isolate}
+html[data-ui-palette="riso"] body::before{left:0;background-image:url('assets/ui-riso/darkpriest-left.png');background-position:right top;border-right:4px double #9f7758;box-shadow:inset -1px 0 #f9e8c5}
+html[data-ui-palette="riso"] body::after{right:0;background-image:url('assets/ui-riso/paladin-light-v6.png');background-position:left top;border-left:4px double #9f7758;box-shadow:inset 1px 0 #f9e8c5}
+@media(max-width:1240px){html[data-ui-palette="riso"] body::before,html[data-ui-palette="riso"] body::after{display:none}}
+html[data-ui-palette="riso"] #app{min-height:100vh;background-color:#f6f3e9;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cpath d='M28 32h8M32 28v8' stroke='%23c5ac6b' stroke-opacity='.5' stroke-width='1'/%3E%3C/svg%3E");box-shadow:0 0 0 1px #a9836240,0 0 24px #75423520}
+html[data-ui-palette="riso"] .topbar{background:#f6f3e9;color:#493b30;border-bottom-color:#cab78e;box-shadow:0 2px 0 #b8a37d25}
+html[data-ui-palette="riso"] .topbar :is(.acad-sub,.eyebrow){color:#756352}
+html[data-ui-palette="riso"] nav button{color:#66513d}
+html[data-ui-palette="riso"] nav button.hot{color:#765125;background:#decba450}
+html[data-ui-palette="riso"] .navm-grid .morebtn,html[data-ui-palette="riso"] .navm-grid .morebtn i{color:#66513d}
+html[data-ui-palette="riso"] .moremenu{background:#f6f3e9}
+html[data-ui-palette="riso"] .moremenu button{background:#ebddc4;color:#493b30}
+@media(min-width:1400px){html[data-ui-palette="riso"] #app{max-width:1240px}}
+
 /* JOURNAL_THEME_END */
 /* TUTORIAL_RESPONSIVE_STYLE_START */
 /* Live text, not shrunk raster captions. 320px portrait through desktop. */
@@ -2048,6 +2098,18 @@ html[data-ui-finish="pixel"] .ui-concept-picker {gap:10px;flex-wrap:wrap}
 </div>
 <div id="modalRoot"></div>
 <div id="toastRoot"></div>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -4032,7 +4094,7 @@ try{
   const j = JSON.parse(localStorage.getItem(PREF_KEY) || "null");
   if(j && BSPEEDS.indexOf(j.bspeed|0) >= 0) PREF.bspeed = j.bspeed|0;
   if(j && [1,2,6].includes(j.reportSpeed)) PREF.reportSpeed = j.reportSpeed;
-  if(j && (j.uiV|0) >= 3 && ["default","journal","journal-pixel"].includes(j.uiConcept)) PREF.uiConcept = j.uiConcept;
+  if(j && (j.uiV|0) >= 3 && ["default","journal","journal-pixel","mint-pixel","riso-pixel"].includes(j.uiConcept)) PREF.uiConcept = j.uiConcept;
   else if(j && (j.uiV|0) === 2 && ["default","journal-pixel"].includes(j.uiConcept)) PREF.uiConcept = j.uiConcept;
   if(j && typeof j.chronicleTest === "boolean") PREF.chronicleTest = j.chronicleTest;
   if(j && typeof j.lvPopup === "boolean") PREF.lvPopup = j.lvPopup;
@@ -4042,8 +4104,9 @@ try{
   if(j && ["simple","stylish"].includes(j.battleCam)) PREF.battleCam = j.battleCam;   // 0930 — 스타일리시가 기본. 예전 "basic" 저장값은 한 번 무시한다
 }catch(e){}
 function applyUiConcept(){
+  document.documentElement.dataset.uiPalette = PREF.uiConcept === "riso-pixel" ? "riso" : PREF.uiConcept === "mint-pixel" ? "mint" : "parchment";
   document.documentElement.dataset.uiConcept = PREF.uiConcept === "default" ? "default" : "journal";
-  document.documentElement.dataset.uiFinish = PREF.uiConcept === "journal-pixel" ? "pixel" : "classic";
+  document.documentElement.dataset.uiFinish = ["journal-pixel","mint-pixel","riso-pixel"].includes(PREF.uiConcept) ? "pixel" : "classic";
 }
 applyUiConcept();
 /* ── 도트 폰트 (0929) ──
@@ -4114,7 +4177,7 @@ function bfGridApply(){ document.documentElement.dataset.bfGrid = PREF.bfGrid ? 
 bfGridApply();
 try{ const j0 = JSON.parse(localStorage.getItem(PREF_KEY) || "null"); if(!j0 || (j0.uiV|0) < 3) localStorage.setItem(PREF_KEY, JSON.stringify(PREF)); }catch(e){}
 function uiConceptSet(value){
-  if(!["default","journal","journal-pixel"].includes(value)) return;
+  if(!["default","journal","journal-pixel","mint-pixel","riso-pixel"].includes(value)) return;
   PREF.uiConcept=value; prefSave(); applyUiConcept();
   document.querySelectorAll('[data-ui-concept-choice]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.uiConceptChoice===value)));
 }
@@ -11221,7 +11284,7 @@ function openAvatarLab(){showModal(`<div class="panel-h"><h2>애니메이션 테
 /* AVATAR_LAB_END */
 function viewOpt(){
   const a = optFxA();
-  const conceptPanel = `<section class="panel"><div class="panel-h"><h2>UI 컨셉</h2></div><div class="optrow"><div class="optlab"><b>화면 분위기</b><span>양피지 느낌의 일지, 각진 도트 테두리의 일지+픽셀, 장식을 줄인 심플 화면을 선택합니다. 선택은 이 브라우저에 저장됩니다.</span></div><div class="ui-concept-picker" role="group" aria-label="UI 컨셉"><button type="button" class="btn" data-ui-concept-choice="journal" aria-pressed="${PREF.uiConcept==="journal"}">일지</button><button type="button" class="btn" data-ui-concept-choice="journal-pixel" aria-pressed="${PREF.uiConcept==="journal-pixel"}">일지+픽셀 (기본)</button><button type="button" class="btn" data-ui-concept-choice="default" aria-pressed="${PREF.uiConcept==="default"}">심플</button></div></div></section>`;
+  const conceptPanel = `<section class="panel"><div class="panel-h"><h2>UI 컨셉</h2></div><div class="optrow"><div class="optlab"><b>화면 분위기</b><span>양피지 느낌의 일지, 각진 도트 테두리의 일지+픽셀과 산뜻한 민트+픽셀, 장식을 줄인 심플 화면을 선택합니다. 선택은 이 브라우저에 저장됩니다.</span></div><div class="ui-concept-picker" role="group" aria-label="UI 컨셉"><button type="button" class="btn" data-ui-concept-choice="journal" aria-pressed="${PREF.uiConcept==="journal"}">일지</button><button type="button" class="btn" data-ui-concept-choice="journal-pixel" aria-pressed="${PREF.uiConcept==="journal-pixel"}">일지+픽셀 (기본)</button><button type="button" class="btn" data-ui-concept-choice="mint-pixel" aria-pressed="${PREF.uiConcept==="mint-pixel"}">민트+픽셀</button><button type="button" class="btn" data-ui-concept-choice="riso-pixel" aria-pressed="${PREF.uiConcept==="riso-pixel"}">판화+픽셀</button><button type="button" class="btn" data-ui-concept-choice="default" aria-pressed="${PREF.uiConcept==="default"}">심플</button></div></div></section>`;
   const lvPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>레벨업 팝업</b><span>학생의 레벨이 오르면 팝업으로 알려 준다. 팝업의 '이후 보지 않음'을 체크해도 꺼진다.</span></div><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="optLvPop" ${PREF.lvPopup!==false?"checked":""}> 표시</label></div></section>`;
   const fpPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>전투 배경 파스텔 필터</b><span>전투 배경을 채도를 낮춘 파스텔 톤과 옅은 종이 결로 보여 준다. 끄면 원본 그림으로 싸운다.</span></div><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="optFieldPastel" ${PREF.fieldPastel!==false?"checked":""}> 사용</label></div></section>`;
   const pxPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>도트 폰트</b><span>글자를 도트 폰트(물마루)로 보여 준다. 또렷하게 찍히도록 글자 크기를 12 · 24px 로 맞춘다. 끄면 원래 글꼴로 돌아간다.</span></div><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="optPixelFont" ${PREF.pixelFont!==false?"checked":""}> 사용</label></div></section>`;
