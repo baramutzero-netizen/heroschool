@@ -1959,6 +1959,8 @@ html[data-ui-concept="journal"] :is(input:not([type=checkbox]):not([type=radio])
 html[data-ui-concept="journal"] :is(input[type=checkbox],input[type=radio],input[type=range]){accent-color:#80522f}
 html[data-ui-concept="journal"] :is(.facebox,.ji-face){border:2px solid #987448;border-radius:5px;background-color:#d8bd91;box-shadow:0 0 0 1px #4d3c2d,inset 0 0 0 2px #f4dfb9,0 2px 5px #0003}
 html[data-ui-concept="journal"] .card{background:linear-gradient(180deg,var(--cs),transparent 65%),var(--journal-paper);box-shadow:inset 0 0 12px #97632b12,0 2px 4px #0002}
+/* 일과 카드 바탕만 훨씬 옅게 (0930) — 위쪽 색 그라데이션(적 · 녹 · 청 …)이 양피지 바탕에 묻히지 않게 */
+html[data-ui-concept="journal"]:not([data-ui-palette="mint"]) .card{background:linear-gradient(180deg,var(--cs),transparent 65%),linear-gradient(90deg,#fbf6ea,#fffcf5 50%,#fbf6ea)}
 html[data-ui-concept="journal"] .dslot{background:#e8d4ad;border-color:#ab8c61}
 html[data-ui-concept="journal"] .rule{background:linear-gradient(90deg,transparent,#a17d4d,transparent)}
 html[data-ui-concept="journal"] :is(th,td){border-color:#b59a713f}
