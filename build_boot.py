@@ -22,13 +22,17 @@ LOADER = '''<div id="bootLoader" role="status" aria-live="polite">
 #bootLoader .bl-bar i{position:absolute;top:0;bottom:0;left:-40%;width:40%;border-radius:2px;background:var(--brass-b,#B98E23);animation:blRun 1.3s ease-in-out infinite}
 #bootLoader .bl-m{color:var(--muted,#5B5D72);font-size:13px;margin:0}
 @keyframes blRun{0%{left:-40%}100%{left:100%}}
+#bootLoader.bl-prog .bl-bar i{animation:none;left:0;width:0;transition:width .25s ease}
+#bootLoader .bl-m{font-variant-numeric:tabular-nums}
+#bootLoader .bl-skip{margin-top:16px;padding:7px 14px;border-radius:6px;border:1px solid var(--line-soft,#DEDCE8);background:transparent;color:var(--muted,#5B5D72);font:inherit;font-size:12px;cursor:pointer}
+#bootLoader .bl-skip:hover{color:var(--text,#191A24);border-color:var(--brass-b,#B98E23)}
 @media (prefers-reduced-motion:reduce){#bootLoader .bl-bar i{animation-duration:3s}}
 </style>
 <div class="bl-in">
 <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2 L35 7 V20 C35 29 28 35 20 38 C12 35 5 29 5 20 V7 Z" fill="none" stroke="var(--brass,#8A6A15)" stroke-width="1.4"/><path d="M20 10 V30 M14 15 L20 12 L26 15 M13 21 H27" fill="none" stroke="var(--brass,#8A6A15)" stroke-width="1.2"/></svg>
 <p class="bl-t">용사 학원 키우기</p>
 <p class="bl-s">학원이 망했다</p>
-<div class="bl-bar"><i></i></div>
+<div class="bl-bar" role="progressbar" aria-label="리소스 받기" aria-valuemin="0" aria-valuemax="100"><i></i></div>
 <p class="bl-m">불러오는 중…</p>
 </div>
 </div>
