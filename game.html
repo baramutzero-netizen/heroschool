@@ -1885,6 +1885,12 @@ html:not([data-bf-grid="on"]) .bf-slot{opacity:0}
 .bf-stage .bf-unit .bf-name{white-space:nowrap;overflow-wrap:normal;word-break:normal;width:max-content;max-width:none;left:50%;transform:translateX(-50%);margin-left:0;margin-right:0}
 /* JOURNAL_THEME_START */
 /* Independent parchment surfaces; never changes the game layout. */
+/* Opaque subtab surfaces remain legible against the dark shell. */
+html[data-ui-concept="journal"] .ttab{background:#ead6b0;color:#45321f;border-color:#a17d4d}
+html[data-ui-concept="journal"] .ttab .tt-sub{color:#665039}
+html[data-ui-concept="journal"] .ttab:hover{background:#f5e6c8;border-color:#79552d}
+html[data-ui-concept="journal"] .ttab.on{background:#654333;color:#fff0cf;border-color:#d3ae70}
+html[data-ui-concept="journal"] .ttab.on .tt-sub{color:#f2d8a6}
 :root[data-ui-concept="journal"]{
   color-scheme:light;
   --bg:#e2cfaa;--surface:#efdfbf;--surface2:#ddc69e;--line:#ad8c60;--line-soft:#c9ad80;
@@ -2033,6 +2039,7 @@ html[data-ui-finish="pixel"] .ui-concept-picker {gap:10px;flex-wrap:wrap}
 </div>
 <div id="modalRoot"></div>
 <div id="toastRoot"></div>
+
 
 
 
