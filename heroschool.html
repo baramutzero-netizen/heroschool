@@ -101,6 +101,7 @@ nav#navm{display:none}
 @media(max-width:640px){
   nav#nav{display:none}
   nav#navm{display:block;overflow:visible;margin-top:8px}
+  .topbar{padding-bottom:8px}                                /* 상단 바 밑줄이 메뉴 버튼 아래 그림자와 겹치지 않게 (0930) */
   .navm-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px}
   .navm-grid button.navm-sched{grid-row:span 2;flex-direction:column;gap:4px;font-size:14px;font-weight:700}
   .navm-grid button.navm-sched .wk{margin-left:0}
@@ -3905,13 +3906,15 @@ let UI = {view:"home", sel:null, battle:null, modal:null};
 /* ── 전투 화면 설정 — 세이브가 아니라 이 브라우저에 남는다.
       새 시나리오를 시작해도, 창을 닫았다 열어도 그대로다. ── */
 const PREF_KEY = "heroschool_pref_v1";
-const BSPEEDS = [440, 280, 120, 40];          // ×0.5 · ×1 · ×2 · ×6
+const BSPEEDS = [440, 280, 120, 93];          // ×0.5 · ×1 · ×2 · ×3 (0930 — ×6 은 너무 빨라 ×3 으로. 더 빨리는 건너뛰기)
 const PREF = {bspeed: 280, reportSpeed: 2, chronicleTest: false, uiConcept: "riso-pixel", uiV: 4, lvPopup: true, fieldPastel: true, pixelFont: true, bfGrid: false, battleCam: "stylish"};
 /* uiV 4 — 삽화를 기본으로 적용하고 이전 화면 분위기 선택은 숨긴다. */
 try{
   const j = JSON.parse(localStorage.getItem(PREF_KEY) || "null");
+  if(j && (j.bspeed|0) === 40) j.bspeed = 93;                                     // 예전 ×6 → ×3
   if(j && BSPEEDS.indexOf(j.bspeed|0) >= 0) PREF.bspeed = j.bspeed|0;
-  if(j && [1,2,6].includes(j.reportSpeed)) PREF.reportSpeed = j.reportSpeed;
+  if(j && j.reportSpeed === 6) j.reportSpeed = 3;                                  // 경과 보고 ×6 → ×3 (0930)
+  if(j && [1,2,3].includes(j.reportSpeed)) PREF.reportSpeed = j.reportSpeed;
   if(j && (j.uiV|0) >= 4 && j.uiConcept === "riso-pixel") PREF.uiConcept = j.uiConcept;
   if(j && typeof j.chronicleTest === "boolean") PREF.chronicleTest = j.chronicleTest;
   if(j && typeof j.lvPopup === "boolean") PREF.lvPopup = j.lvPopup;
@@ -4004,7 +4007,7 @@ function bspeedSet(v){
   v = (BSPEEDS.indexOf(v|0) >= 0) ? (v|0) : 280;
   UI.bspeed = v; PREF.bspeed = v; prefSave();
 }
-function bspeedLabel(v){ return ({440:"×0.5", 280:"×1", 120:"×2", 40:"×6"})[v|0] || "×1"; }
+function bspeedLabel(v){ return ({440:"×0.5", 280:"×1", 120:"×2", 93:"×3"})[v|0] || "×1"; }
 
 /* 졸업 기록에서 전투에 세울 수 있는 유닛을 되살린다.
    멘탈리티가 안 남아 있는 옛 기록은 되살릴 수 없다 (null). */
@@ -6284,7 +6287,7 @@ function reportSceneShell(records, dlg){
     </div>
     <nav class="dr-phases" id="drPhases" aria-label="훈련 장면 선택"></nav>
     <div class="dr-result" aria-live="polite"><div><b id="drResultTitle"></b><span id="drResultHint"></span></div><div id="drResultChips"></div></div>
-    <div class="dr-controls"><div><button class="btn sm" id="drPlay">일시정지</button><button class="btn sm" id="drPrev" aria-label="이전 장면">‹</button><button class="btn sm" id="drNext" aria-label="다음 장면">›</button>${[1,2,6].map(n=>`<button class="btn sm" data-dr-speed="${n}">×${n}</button>`).join("")}<button class="btn sm" id="dlSkip" hidden style="display:none">한 번에 보기</button></div><span id="drProgress"></span></div>
+    <div class="dr-controls"><div><button class="btn sm" id="drPlay">일시정지</button><button class="btn sm" id="drPrev" aria-label="이전 장면">‹</button><button class="btn sm" id="drNext" aria-label="다음 장면">›</button>${[1,2,3].map(n=>`<button class="btn sm" data-dr-speed="${n}">×${n}</button>`).join("")}<button class="btn sm" id="dlSkip" hidden style="display:none">한 번에 보기</button></div><span id="drProgress"></span></div>
     <details class="dr-details" id="drDetail"><summary>이 장면의 전체 학생 · 성장 내역</summary><div id="drDetailBody"></div></details>
     <div id="drFullLog" hidden><h3>주간 전체 기록</h3><div class="daylog">${dlg.map(x=>`<div class="on ${x.k==="gap"?"dlgap":"dlline "+x.k}">${x.t}</div>`).join("")}</div></div>
   </section>`;
@@ -6318,7 +6321,7 @@ function reportSceneBind(records){
     $("#dlSkip").insertAdjacentElement("afterend",confirm);
     if(oldConfirmRow && !oldConfirmRow.children.length)oldConfirmRow.remove();
   }
-  let at=0, speed=[1,2,6].includes(PREF.reportSpeed)?PREF.reportSpeed:2, paused=reduced, full=false, elapsed=0, last=performance.now(), timer=null, disposed=false;
+  let at=0, speed=[1,2,3].includes(PREF.reportSpeed)?PREF.reportSpeed:2, paused=reduced, full=false, elapsed=0, last=performance.now(), timer=null, disposed=false;
   let duration=2400, queue=[], displayed=[], lastSound=-1, jobShown=false;
   const stepMs=450, leadMs=250, riseMs=900/0.7, cardMs=400+riseMs, fadeMs=100, fadeDelayMs=cardMs-fadeMs;
   const statAudio=new Audio(REPORT_STATUP);
@@ -9769,7 +9772,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "0930-1843";
+const BUILD = "0930-1853";
 const BUILD_TS = 0;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
