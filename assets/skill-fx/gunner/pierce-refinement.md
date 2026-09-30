@@ -1,0 +1,3 @@
+Built-in image_gen edit; final pierce.png.
+
+Edit this isolated transparent ballistic VFX. Correct the shape: the LEFT origin at (12%,50%) must be NARROW like a bullet exit point, then a cone of fine granular spray EXPANDS WIDER toward the RIGHT (maximum width near 70% canvas). Like slow motion ballistic shock wave exiting a target body on the left: narrow entrance, widening particle cone on the right, a thin straight core line right through center. Keep ivory pale gold / amber color. Remove the large round radial burst at the left. Do not taper the whole cone into a needle at the right; right edge should disperse in a broad rounded plume with separated fine flecks. Genuine transparent background, same wide2:1 canvas, no bodies or guns, no blood, no text.
