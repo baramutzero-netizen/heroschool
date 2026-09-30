@@ -26,7 +26,8 @@ html[data-ui-finish="pixel"] :is(.facebox,.ji-face,.npcport) {
   border-radius:0!important;border:2px solid #654a30;
   box-shadow:inset 0 0 0 2px #ffe3a8,2px 0 #30271e,-2px 0 #30271e,0 2px #30271e,0 -2px #30271e!important;
 }
-html[data-ui-finish="pixel"] :is(.facebox img,.ji-face img,.npcport img,button img,.btn img,.icon img) {image-rendering:pixelated}
+/* Portrait artwork uses smooth downsampling even inside pixel-framed buttons. */
+html[data-ui-finish="pixel"] :is(.facebox img,.ji-face img,.npcport img,button img,.btn img,.icon img) {image-rendering:auto}
 html[data-ui-finish="pixel"] :is(.badge,.pill,.tag,.wk,.bar,.bar>i,.bf-stage,.bf-name) {border-radius:0!important}
 html[data-ui-finish="pixel"] .rule {height:2px;background:repeating-linear-gradient(90deg,#947044 0 6px,transparent 6px 8px)}
 html[data-ui-finish="pixel"] :focus-visible {outline:2px dashed #a16b20;outline-offset:4px}

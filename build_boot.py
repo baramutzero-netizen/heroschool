@@ -29,7 +29,15 @@ LOADER = '''<div id="bootLoader" role="status" aria-live="polite">
 @media (prefers-reduced-motion:reduce){#bootLoader .bl-bar i{animation-duration:3s}}
 </style>
 <div class="bl-in">
-<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 2 L35 7 V20 C35 29 28 35 20 38 C12 35 5 29 5 20 V7 Z" fill="none" stroke="var(--brass,#8A6A15)" stroke-width="1.4"/><path d="M20 10 V30 M14 15 L20 12 L26 15 M13 21 H27" fill="none" stroke="var(--brass,#8A6A15)" stroke-width="1.2"/></svg>
+<svg viewBox="0 0 40 40" aria-hidden="true" shape-rendering="crispEdges">
+        <path fill="#30251d" d="M6 4h28v4h4v18h-4v6h-6v4h-6v4h-4v-4h-6v-4H6v-6H2V8h4z"/>
+        <path fill="#c99743" d="M8 6h24v4h4v14h-4v6h-6v4h-6v4h-2v-4h-6v-4H8v-6H4V10h4z"/>
+        <path fill="#f5d58a" d="M8 6h24v2H8zM4 10h2v14H4zM8 24h2v6H8z"/>
+        <path fill="#263f55" d="M10 10h20v2h2v12h-4v6h-6v4h-4v-4h-6v-6H8V12h2z"/>
+        <path fill="#456479" d="M10 12h8v16h-4v-6h-4z"/>
+        <path fill="#fff0be" d="M18 10h4v12h-4zM16 12h2v8h-2z"/>
+        <path fill="#e7b953" d="M12 22h16v4h-6v4h-4v-4h-6zM18 30h4v2h-4zM10 14h2v2h-2zM28 14h2v2h-2z"/>
+      </svg>
 <p class="bl-t">용사 학원 키우기</p>
 <p class="bl-s">학원이 망했다</p>
 <div class="bl-bar" role="progressbar" aria-label="리소스 받기" aria-valuemin="0" aria-valuemax="100"><i></i></div>
