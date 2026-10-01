@@ -2255,6 +2255,7 @@ html:is([data-ui-palette="riso"],[data-ui-palette="mint"]) nav button:hover:not(
 
 
 
+
 <!-- ASSET_SCRIPTS_START -->
 <script>var HS_A = {};</script>
 <script src="assets/spr_img.webp.js?v=0af6ce1e"></script>
@@ -15595,9 +15596,9 @@ function stylishFormation(actor, allies, enemies, side, skillId){
   const positions=[], mirror=x=>side==="B"?100-x:x;
   const lane=(list,left,right)=>list.forEach((uid,i)=>positions.push({uid,
     x:mirror(list.length===1?(left+right)/2:left+(right-left)*i/(list.length-1)),
-    y:list.length>2?(i%2?61:56):58, scale:1.3*Math.max(.62,Math.min(1,2.5/list.length))}));
+    y:58, scale:1.3}));
   if(skillId==="nj_u" && enemies.length===1){lane([actor,...allies],15,25);lane(enemies,43,43);}
-  else if(skillId==="ar_1"){lane([actor,...allies],18,30);lane(enemies,50,82);positions.forEach(p=>p.y=58);}
+  else if(skillId==="ar_1"){lane([actor,...allies],18,30);lane(enemies,50,82);}
   else if(enemies.length){lane([actor,...allies],18,43);lane(enemies,57,82);}
   else {lane([actor,...allies],28,78);}
   return positions;
