@@ -36,9 +36,16 @@ const STYLISH_SKILL_FX = {
     hawkEye: "assets/skill-fx/archer/hawk-outline.png?v=1",
     meteorRain: "assets/skill-fx/archer/meteor-perspective-back.svg?v=1",
     meteorFront: "assets/skill-fx/archer/meteor-perspective-front.svg?v=1",
-    meteorImpact: "assets/skill-fx/archer/meteor-impact.svg?v=1"
+    meteorImpact: "assets/skill-fx/archer/meteor-impact.svg?v=1",
+    wizardCircles: "assets/skill-fx/wizard/triple-circle.svg?v=2",
+    fireExplosion: "assets/skill-fx/wizard/fire-explosion.png?v=1",
+    blizzardBack: "assets/skill-fx/wizard/blizzard-back.svg?v=1",
+    blizzardFront: "assets/skill-fx/wizard/blizzard-front.svg?v=1",
+    gravityCircle: "assets/skill-fx/wizard/gravity-circle.svg?v=2",
+    gravityBeam: "assets/skill-fx/wizard/gravity-beam.svg?v=4",
+    gravityFoot: "assets/skill-fx/wizard/gravity-foot.svg?v=4"
   },
-  casters: {paladin: ["trail"], darkpriest: ["darkEssence"], gunner:["gunMuzzle"], priest:["holyEssence"], bard:["bardMelody"], ninja:["ninjaRipple"], archer:["archerWind"]},
+  casters: {paladin: ["trail"], darkpriest: ["darkEssence"], gunner:["gunMuzzle"], priest:["holyEssence"], bard:["bardMelody"], ninja:["ninjaRipple"], archer:["archerWind"], wizard:["wizardCircles"]},
   targets: {pa_b: ["impact"], pa_1: ["shield"], pa_2: ["beam"], pa_u: ["beam", "shield"],
     dp_b:["darkHit"], dp_1:["redDrain"], dp_2:["curseNail"], dp_u:["redDrain"],
     gn_b:["gunHit"], gn_1:["gunHit"], gn_2:["gunPierce"], gn_u:["gunPierce"],
@@ -46,8 +53,9 @@ const STYLISH_SKILL_FX = {
     pr_b:["impact"], pr_1:["greaterHeal"], pr_2:["blessing"], pr_u:["revival"],
     bd_1:["shadowStep"], bd_2:["dissonance"], bd_u:["spotlight"],
     nj_1:["dissonance"], nj_2:["boundaryWave","waterDragon"], nj_u:["fumaPassed","waterFlower"],
-    ar_1:[], ar_2:["hawkEye"], ar_u:["meteorRain","meteorFront","meteorImpact"]},
-  groups: {dp_u:["bloodRitual"], bd_u:["ensemble"], nj_1:["waterSwamp"], ar_1:["greenPierce"]}
+    ar_1:[], ar_2:["hawkEye"], ar_u:["meteorRain","meteorFront","meteorImpact"],
+    wz_1:["fireExplosion"], wz_2:[], wz_u:[]},
+  groups: {dp_u:["bloodRitual"], bd_u:["ensemble"], nj_1:["waterSwamp"], ar_1:["greenPierce"], wz_2:["blizzardBack","blizzardFront"], wz_u:["gravityBeam","gravityFoot","gravityCircle"]}
 };
 function stylishSkillFxPlan(job, skillId){
   return {caster: STYLISH_SKILL_FX.casters[job] || [], target: STYLISH_SKILL_FX.targets[skillId] || [], group: STYLISH_SKILL_FX.groups[skillId] || []};
@@ -89,6 +97,11 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
     img.style.opacity=kind==="bloodRitual" ? ".6" : kind==="shield" ? ".58" : kind==="beam" ? ".72" : (kind==="darkEssence"||kind==="holyEssence") ? ".66" : kind==="curseNail" ? ".65" : ".9";
     if(kind==="spotlight") img.style.opacity=".46";
     if(kind==="archerWind") img.style.opacity=".72";
+    if(kind==="blizzardBack") img.style.opacity=".66";
+    if(kind==="blizzardFront") img.style.opacity=".82";
+    if(kind==="gravityBeam" || kind==="gravityFoot") img.style.zIndex="1";
+    if(kind==="wizardCircles" && side==="B") img.style.transform="scaleX(-1)";
+    if((kind==="blizzardBack" || kind==="blizzardFront") && side==="B") img.style.transform="scaleX(-1)";
     if(kind==="meteorRain") img.style.opacity=".85";
     if((kind==="meteorRain" || kind==="meteorFront") && side==="B") img.style.transform="scaleX(-1)";
     if(kind==="greenPierce" && side==="B") img.style.transform="scaleX(-1)";
@@ -113,7 +126,7 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
   if(group.length) plan.group.forEach(kind=>{
     add(group[0],kind);const entry=entries[entries.length-1];entry.group=group;
     entry.img.dataset.targets=group.map(el=>el.dataset.uid).join(",");
-    if(!["ensemble","greenPierce","meteorRain"].includes(kind)) ground.append(entry.img);
+    if(!["ensemble","greenPierce","meteorRain","blizzardFront","gravityBeam","gravityFoot"].includes(kind)) ground.append(entry.img);
   });
   if(!entries.length) return ()=>{};
   // Field background is z=-1; the transformed camera is an auto/0 stacking context.
@@ -149,6 +162,12 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
       const cx=(r.left+r.width/2-sr.left)*sx, cy=(r.top-sr.top)*sy+h*.55;
       const throwSize=Math.min(h,Math.max(1,(side==="B"?cx:stage.clientWidth-cx)-12)/3.6);
       let width=h*1.05, height=width, x=cx-width/2, y=cy-height/2;
+      if(kind==="wizardCircles"){
+        height=h*1.15;width=height*550/570;
+        const tipX=cx+(side==="B"?-1:1)*w*.34;
+        x=tipX-width*(side==="B"?.87:.13);y=(r.top-sr.top)*sy+h*.39-height*.52;
+      }
+      if(kind==="fireExplosion"){width=h*.92;height=width;x=cx-width/2;y=(r.top-sr.top)*sy+h*.55-height/2;}
       if(kind==="archerWind"){width=h*1.12;height=width;x=cx-width/2;y=cy-height*.5;}
       if(kind==="meteorRain" || kind==="meteorFront"){
         width=Math.max(h*4.4,stage.clientWidth*.54);y=top-4;height=Math.max(1,bottom-top+8);
@@ -230,6 +249,18 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
         const foot=Math.max(...rs.map(b=>b.top+b.height*.8));
         width=Math.max(h*1.15,(right-left)*sx+h*.35);height=width*.5;
         x=((left+right)/2-sr.left)*sx-width/2;y=(foot-sr.top)*sy-height*.72;
+        if(kind==="blizzardBack" || kind==="blizzardFront"){
+          width=(right-left)*sx+h*1.15;x=((left+right)/2-sr.left)*sx-width/2;
+          y=top-4;height=Math.max(1,bottom-top+8);
+          img.style.maskImage="linear-gradient(to right,transparent,black 7%,black 93%,transparent)";
+        }
+        if(kind==="gravityBeam" || kind==="gravityCircle" || kind==="gravityFoot"){
+          width=(right-left)*sx+h*.7;x=((left+right)/2-sr.left)*sx-width/2;
+          const base=(foot-sr.top)*sy;
+          if(kind==="gravityCircle"){height=width*240/640;y=base-height/2;}
+          else if(kind==="gravityFoot"){height=width*110/640;y=base-.5;}
+          else {y=top-4;height=Math.max(1,base-y);}
+        }
         if(kind==="greenPierce"){
           // Begin just ahead of the first target on the caster-facing side.
           const start=((side==="B"?right:left)-sr.left)*sx+(side==="B"?1:-1)*h*.08;
