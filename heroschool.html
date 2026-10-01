@@ -7078,9 +7078,13 @@ function synthRender(){
           plan.pool.map(o=>{ const [lo,hi] = relicSRange(o.k); return `<div>${esc(o.n)} <span style="color:var(--dim)">${affRangeTxt(o.k, lo, hi)}</span></div>`; }).join("")}</div>` : "");
   const other = U.pick === "a" ? U.b : U.a;
   const cands = U.pick ? synthCands([U.a, U.b].filter(Boolean)) : [];
+  /* 후보 정렬 (1001) — 보관고와 같은 정렬. 후보가 모두 S급이라 등급 정렬은 뺀다 */
+  const synMode = (S.opts && S.opts.synsort) || "score";
+  const synOpts = RELIC_SORT.filter(o=> o.k!=="grade" && o.k!=="gradeAsc");
   const picker = !U.pick ? "" : `<div class="rule"></div>
-    <div class="eyebrow" style="margin-bottom:6px">대상 유물 ${U.pick==="a"?1:2}로 쓸 S급 유물 <span style="color:var(--dim)">— 장착하지 않은 것만</span></div>
-    ${cands.length ? `<div class="grid2 syn-pick">${cands.map(r=> `<button class="opt" data-synpick="${r.id}" style="text-align:left">${relicNameHtml(r)}${relicAffHtml(r)}</button>`).join("")}</div>`
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px"><div class="eyebrow" style="margin:0">대상 유물 ${U.pick==="a"?1:2}로 쓸 S급 유물 <span style="color:var(--dim)">— 장착하지 않은 것만</span></div>
+      ${cands.length > 1 ? `<span style="margin-left:auto">${sortSelect("synSort", synOpts, synMode)}</span>` : ""}</div>
+    ${cands.length ? `<div class="grid2 syn-pick">${sortRelicPool(cands, synMode).map(({r})=> r).map(r=> `<button class="opt" data-synpick="${r.id}" style="text-align:left">${relicNameHtml(r)}${relicAffHtml(r)}</button>`).join("")}</div>`
       : `<div class="empty">고를 수 있는 다른 S급 유물이 없다.</div>`}`;
   showModal(`<div class="cerhead"><div class="eyebrow">유물 합성</div>
       <p style="color:var(--muted);font-size:13px;margin-top:4px;line-height:1.7">장착하지 않은 S급 유물 둘을 하나로 합친다.<br>
@@ -7111,6 +7115,7 @@ function synthRender(){
       synthRender();
     });
     const go = root.querySelector("#synGo"); if(go) go.onclick = ()=> synthDo();
+    const so = root.querySelector("#synSort"); if(so) so.onchange = ()=>{ if(!S.opts) S.opts = {}; S.opts.synsort = so.value; save(); synthRender(); };
   }, true);
 }
 function synthDo(){
@@ -9947,7 +9952,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1001-1817";
+const BUILD = "1001-1820";
 const BUILD_TS = 0;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
