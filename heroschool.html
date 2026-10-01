@@ -4853,19 +4853,20 @@ function runBattle(teamA, teamB, opt){
       uready.sort((a,b)=> eff(b,"spd")-eff(a,"spd"));
       const uu = uready[0];
       const ufoes = uu.side==="A"?B:A, uallies = uu.side==="A"?A:B;
-      uu.ult = 0;
       if(aliveOf(ufoes).length){
         const uSKL = uu.skills || JOBS[uu.job].skills;
         const uSk = uSKL.find(x=>x.kind==="ult");
         if(uSk){
           totalActs++;
           if(totalActs===61 && !fatigueNoted){ fatigueNoted=true; push(`장기전 — 양측 모두 지쳐 주고받는 피해가 커진다`,"sec"); }
-          push(`<b>${epiH(uu.name)}</b> — 필살 게이지 개방`,"ult",uu.uid);
+          push(`<b>${epiH(uu.name)}</b> — 필살 게이지 개방`,"ult",uu.uid);   // 이 줄까지는 게이지가 100 으로 보인다
+          uu.ult = 0;
           resolve(uu, uSk, ufoes, uallies, true);
           if(checkEnd()) break;
           continue;
         }
       }
+      uu.ult = 0;
     }
     // ATB 진행
     let ready = all.filter(u=>u.alive && u.atb>=1000);
@@ -4981,6 +4982,7 @@ function runBattle(teamA, teamB, opt){
         }
       } else chosen = basic;
     }
+    const fAct = frames.length;          // 이 행동의 첫 줄 — 아래 필살 게이지 몫을 여기서부터 보이게 한다
     resolve(u, chosen, foes, allies, isUlt);
     if(chosen !== basic) mirGain(u);
     /* 앙코르 — 같은 기본기·스킬을 한 번 더 (필살기 제외) */
@@ -4994,7 +4996,12 @@ function runBattle(teamA, teamB, opt){
     {
       const Pm = u.pas;
       const bb = (Pm && Pm.ultBasic && chosen && chosen.kind==="basic") ? 1+Pm.ultBasic : 1;
+      const u0 = u.ult;
       u.ult = clamp(u.ult + 17*eff(u,"ultGain")*bb, 0, 100);
+      /* 행동으로 얻는 필살 게이지 (1001) — 예전에는 행동이 다 끝난 뒤에 더해서 다음 사람 차례 줄에야 보였다.
+         행동 첫 줄(외침) 다음부터 이미 오른 값으로 적어 두어, 공격이 들어가는 순간 같이 차오르게 한다 */
+      const add = u.ult - u0, ku = all.indexOf(u);
+      if(add > 0 && ku >= 0) for(let q = fAct+1; q < frames.length; q++){ const s = frames[q].units[ku]; if(s) s.ult = clamp(s.ult + add, 0, 100); }
     }
     if(checkEnd()) break;
   }
@@ -9889,7 +9896,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1001-1522";
+const BUILD = "1001-1528";
 const BUILD_TS = 0;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
@@ -15167,8 +15174,10 @@ function openBattle(res, opt, onDone){
       const a = res.frames[j].actor;
       let p = j; while(p-1 > i && res.frames[p-1].actor === a && !res.frames[p-1].call && res.frames[p-1].cls !== "sec") p--;
       if(i+1 < p){ i++; sfxFrame(res.frames[i]); draw(); if(!await camW(tok, speed*.6)) return; continue; }   // 사이에 낀 줄(지속 피해 · 알림)
-      if(!await camFill(tok, a, res.frames[i], res.frames[j])) return;
-      while(i < j-1){ i++; draw(); if(!await camW(tok, speed*.6)) return; }
+      /* 필살기는 행동 게이지와 상관없이 바로 터진다 (1001) — 게이지 채우기 · 개방 줄 멈춤 없이 곧장 줌인 */
+      const ultNow = res.frames[j].call && res.frames[j].call.kind === "ult";
+      if(!ultNow && !await camFill(tok, a, res.frames[i], res.frames[j])) return;
+      while(i < j-1){ i++; draw(); if(!ultNow && !await camW(tok, speed*.6)) return; }
       let e = j; while(e+1 < res.frames.length && !res.frames[e+1].call && res.frames[e+1].actor === a && res.frames[e+1].cls !== "sec") e++;
       if(!await camTurn(tok, j, e)) return;
       i = e; if(i >= res.frames.length-1) bgmEnd(); camQuiet = true; draw(); camQuiet = false;
