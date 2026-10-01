@@ -9866,10 +9866,10 @@ function leagueState(){
 /* 출전 명단은 자리 순서(진형의 전열→후열 첫 세 자리)대로 든 배열 — 빈 자리는 null */
 function lgIsDemon(L){ return !!(L && S.demon && L === S.demon); }
 /* 명단의 자리 수 — 3인 리그는 셋, 마왕 대항전은 진형 강화의 서가 있으면 다섯 */
-function lgCap(L){ return lgIsDemon(L) ? demonCap() : LEAGUE_TEAM; }
+function lgCap(L){ return lgIsDemon(L) ? demonCap() : lgIs5(L) ? L5_TEAM : LEAGUE_TEAM; }
 /* 리그 등록 탭에서 지금 고치고 있는 명단 */
-function lgEditL(){ return (UI.view==="lgentry" && UI.lgEntryTab==="demon") ? demonState() : leagueState(); }
-function lgOrder(L){ L = L||leagueState(); const F = formData(L.form, lgIsDemon(L) && formPlusOn()); return F.front.concat(F.back).slice(0, lgCap(L)); }
+function lgEditL(){ return (UI.view==="lgentry" && UI.lgEntryTab==="demon") ? demonState() : (UI.view==="lgentry" && UI.lgEntryTab==="five") ? l5State() : leagueState(); }
+function lgOrder(L){ L = L||leagueState(); const F = formData(L.form, (lgIsDemon(L) && formPlusOn()) || lgIs5(L)); return F.front.concat(F.back).slice(0, lgCap(L)); }
 function lgSids(L){ return ((L||leagueState()).sids||[]).filter(Boolean); }
 function lgPlace(L, idx, sid){
   while(L.sids.length < lgCap(L)) L.sids.push(null);
@@ -9901,7 +9901,7 @@ function gradTransfer(sid){
   const g = (S.graduates||[]).find(x=>x.sid===sid);
   if(!g || g.tr) return;
   const L = leagueState();
-  if(L.sids.includes(sid) || demonState().sids.includes(sid)){ toast("출전 명단에 있는 졸업생은 이적시킬 수 없다."); return; }
+  if(L.sids.includes(sid) || demonState().sids.includes(sid) || l5State().sids.includes(sid)){ toast("출전 명단에 있는 졸업생은 이적시킬 수 없다."); return; }
   const fee = gradFee(g);
   g.tr = Date.now(); g.trFee = fee;
   spAdd(fee);
@@ -9953,7 +9953,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1001-1832";
+const BUILD = "1001-1907";
 const BUILD_TS = 0;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
@@ -10344,9 +10344,12 @@ function lgSlotCard(L, idx, k, sel){
 /* 출전 등록 — 졸업생 명부 카드: 얼굴 · 이명 이름 · 직업 · 전투력. 클릭으로 배치, 상세로 능력치 */
 function lgGradCard(g, L, sel){
   const u = gradUnit(g), inTeam = L.sids.includes(g.sid);
-  const inAny = inTeam || leagueState().sids.includes(g.sid) || demonState().sids.includes(g.sid);
+  const in3 = leagueState().sids.includes(g.sid), inD = demonState().sids.includes(g.sid), in5 = l5State().sids.includes(g.sid);
+  const inAny = inTeam || in3 || inD || in5;
+  const block = !inTeam && lgConflict(L, g.sid);        // 5인 리그 ↔ 다른 종목은 한 종목만 (1001)
+  const where = [in3 && "3인 리그", inD && "마왕 대항전", in5 && "5인 리그"].filter(Boolean).join(" · ");
   return `<div class="lgpick">
-    <button class="cercard gradcard lggrad ${inTeam?"sel":""} ${(!inTeam && sel==null)?"":""}" data-lgp="${g.sid}" title="${inTeam? "명단에서 뺀다" : "자리에 넣는다"}">
+    <button class="cercard gradcard lggrad ${inTeam?"sel":""} ${block?"locked":""}" data-lgp="${g.sid}" title="${inTeam? "명단에서 뺀다" : block? `${block}에 출전 중 — 한 종목만 나갈 수 있다` : "자리에 넣는다"}" ${block?'style="opacity:.55"':""}>
       ${gradFace(g,.5)}
       <div class="gradcard-b">
         ${g.epithet? `<div class="gradcard-epi">“${esc(g.epithet)}”</div>`:""}
@@ -10355,7 +10358,7 @@ function lgGradCard(g, L, sel){
       </div>
     </button>
     <div class="lgtr"><button class="btn sm ghost" data-lgdetail="${g.sid}">상세</button>${inAny
-      ? `<span style="color:var(--dim)">${inTeam? "출전 중" : lgIsDemon(L)? "3인 리그 출전 중" : "마왕 대항전 출전 중"} — 이적 불가</span>`
+      ? `<span style="color:var(--dim)">${inTeam? "출전 중" : `${where} 출전 중`} — 이적 불가</span>`
       : `<button class="btn sm" data-lgtr="${g.sid}">이적 · <b style="color:var(--indigo)">SP +${gradFee(g)}</b></button>`}</div>
   </div>`;
 }
@@ -10377,15 +10380,28 @@ function lgUnitCard(g, sel, pick){
 function viewLeague(){
   const L = leagueState(), pool = gradPool(), U = UI.league || {};
   /* 서브 탭 — 지금은 3인 리그 하나. 리그 종류가 늘면 여기에 붙는다 */
-  const D = demonState(), tab = UI.lgTab === "demon" ? "demon" : "trio";
+  const D = demonState(), L5 = l5State(), tab = UI.lgTab === "demon" ? "demon" : UI.lgTab === "five" ? "five" : "trio";
   const sub = `<section class="panel">
     <div class="panel-h"><h2>졸업생 리그</h2></div>
     <div class="teamtabs"><button class="ttab ${tab==="trio"?"on":""}" data-lgtab="trio">3인 리그
       <span class="tt-sub">LP ${fmt(L.lp)} · ${L.w}승 ${L.l}패 · ${L.n}시즌</span></button>
+      <button class="ttab ${tab==="five"?"on":""}" data-lgtab="five">5인 리그
+      <span class="tt-sub">LP ${fmt(L5.lp)} · ${L5.w}승 ${L5.l}패 · ${L5.n}시즌</span></button>
       <button class="ttab ${tab==="demon"?"on":""}" data-lgtab="demon">마왕 대항전
       <span class="tt-sub">최고 피해 ${fmt(D.best|0)} · ${fmt(D.n|0)}판</span></button></div>
   </section>`;
   if(tab === "demon") return sub + viewDemon();
+  if(tab === "five"){
+    if(!leagueOn()) return sub + `<section class="panel"><div class="panel-h"><h2>5인 리그</h2></div><div class="empty">리그 서버 주소가 설정되지 않았다.</div></section>`;
+    return sub + l5SeasonView(UI.league5 || {}, L5) + (L5.hist.length? `<section class="panel">
+    <div class="panel-h"><h2>지난 시즌 — 5인 리그</h2><span class="hint">통산 ${L5.w}승 ${L5.l}패 · ${L5.n}시즌</span></div>
+      <div class="condbox">${L5.hist.map(h=>`<div class="condrow">
+        <span class="cn">시즌 ${h.season}</span>
+        <span class="cv num" style="color:var(--${h.rank<=3?"ok":"muted"})">${h.rank}위 / ${h.size}팀</span>
+        <span class="ce">${h.w}승 ${h.l}패</span>
+        <span class="cf num" style="color:var(--${h.lp>=0?"brass":"bad"})">${h.lp>=0?"+":""}${h.lp} → ${fmt(h.now)}${h.sp? ` · <span style="color:var(--indigo)">SP +${h.sp}</span>`:""}</span></div>`).join("")}</div>
+  </section>` : "");
+  }
   if(!leagueOn()) return sub + `<section class="panel">
     <div class="panel-h"><h2>3인 리그</h2><span class="hint">아직 서버가 연결되지 않았다</span></div>
     <div class="empty">리그 서버 주소가 설정되지 않아 다른 학원과 겨룰 수 없다.</div></section>`;
@@ -10400,7 +10416,8 @@ function viewLeague(){
 }
 /* 출전 등록 탭 — 리그 탭에 있던 출전 등록 박스를 그대로 옮겨 왔다 */
 function viewLgEntry(){
-  const pool = gradPool(), L = lgEditL(), dm = lgIsDemon(L), cap = lgCap(L), D = demonState(), T = leagueState();
+  const pool = gradPool(), L = lgEditL(), dm = lgIsDemon(L), f5 = lgIs5(L), cap = lgCap(L), D = demonState(), T0 = leagueState(), T5 = l5State();
+  const T = f5 ? T5 : T0;
   if(!leagueOn()) return `<section class="panel">
     <div class="panel-h"><h2>리그 등록</h2><span class="hint">아직 서버가 연결되지 않았다</span></div>
     <div class="empty">리그 서버 주소가 설정되지 않아 다른 학원과 겨룰 수 없다.</div></section>`;
@@ -10408,9 +10425,9 @@ function viewLgEntry(){
   return `<section class="panel">
     <div class="panel-h"><h2>리그 등록</h2>
       <span class="btnpair">
-        <button class="btn primary sm" id="lgSync" ${leagueReady()?"":"disabled"}>등록 · 갱신</button></span></div>
+        <button class="btn primary sm" id="lgSync" ${(f5 ? l5Ready() : leagueReady())?"":"disabled"}>${f5? "5인 리그 등록 · 갱신" : "등록 · 갱신"}</button></span></div>
     <div class="lgbar">
-      <div class="lgstat"><span>리그 포인트</span><b class="num">${fmt(T.lp)}</b></div>
+      <div class="lgstat"><span>${f5? "5인 리그 포인트" : "리그 포인트"}</span><b class="num">${fmt(T.lp)}</b></div>
       <div class="lgstat"><span>SP</span><b class="num" style="color:var(--indigo)">${fmt(spOf())}</b></div>
       <div class="lgstat"><span>참가</span><b class="num">${T.n}시즌</b></div>
       <div class="lgstat"><span>통산</span><b class="num">${T.w}승 ${T.l}패</b></div>
@@ -10425,15 +10442,19 @@ function viewLgEntry(){
       const cell = (k)=>{ const idx = order.indexOf(k);
         return idx >= 0 ? lgSlotCard(L, idx, k, sel===idx) : `<div class="slot off"><div class="sempty">사용 안 함</div></div>`; };
       const Fd = formData(D.form, formPlusOn());
-      return `<div class="teamtabs"><button class="ttab ${dm?"":"on"}" data-lgetab="trio">3인 리그
-        <span class="tt-sub">${formData(T.form,false).n} · ${lgSids(T).length}/${LEAGUE_TEAM}</span></button>
+      return `<div class="teamtabs"><button class="ttab ${dm||f5?"":"on"}" data-lgetab="trio">3인 리그
+        <span class="tt-sub">${formData(T0.form,false).n} · ${lgSids(T0).length}/${LEAGUE_TEAM}</span></button>
+        <button class="ttab ${f5?"on":""}" data-lgetab="five">5인 리그
+        <span class="tt-sub">${formData(T5.form,true).n} · ${lgSids(T5).length}/${L5_TEAM}</span></button>
         <button class="ttab ${dm?"on":""}" data-lgetab="demon">마왕 대항전
         <span class="tt-sub">${Fd.n} · ${lgSids(D).length}/${demonCap()}</span></button></div>
+    ${f5? `<p class="opthint" style="margin-top:10px">5인 리그는 <b>강화 진형</b>으로 다섯 자리를 모두 채워 등록한다. ${L5_TIMES_TXT}에 시즌이 열리고, 같은 조의 학원과 두 번씩 싸운다.
+      <span style="color:var(--dim)">5인 리그에 넣은 졸업생은 3인 리그 · 마왕 대항전에 나갈 수 없다 (반대도 마찬가지).</span></p>` : ""}
     ${dm? `<p class="opthint" style="margin-top:10px">마왕 대항전은 <b>등록 없이</b> 이 편성으로 ${demonEveryTxt()} 저절로 출전한다 — 한 명 이상이면 싸운다.${
       formPlusOn()? " 진형 강화의 서로 다섯 자리까지 쓴다." : ` <span style="color:var(--dim)">진형 강화의 서가 있으면 다섯 자리까지 쓸 수 있다 (지금은 ${cap}자리).</span>`}</p>` : ""}
     <div class="eyebrow" style="margin:14px 0 6px">진형</div>
     <div class="formrow">${FORM_KEYS.map(k=>{
-      const f = formOf(k);
+      const f = f5 ? formData(k, true) : formOf(k);
       return `<button class="formcard ${L.form===k?"on":""}" data-lgform="${k}">
         <div class="fmhead">${f.n}<span class="fmsh">${f.sh}</span></div>
         <div class="fmmini">${["f1","f2","f3"].map(x=>`<i class="${f.front.includes(x)?"f":""}"></i>`).join("")}</div>
@@ -10441,14 +10462,15 @@ function viewLgEntry(){
         <div class="fmtxt">${f.txt.map(x=>`<div>${esc(x)}</div>`).join("")}</div>
       </button>`;
     }).join("")}</div>
-    <div class="eyebrow tpw-row" style="margin:16px 0 6px"><span>배치 — ${dm? `마왕 대항전 · 최대 ${cap}인` : "3인 리그"}</span><span class="tpw">총 전투력 <b class="num">${fmt(lgSids(L).reduce((a,id)=>{ const g=(S.graduates||[]).find(x=>x.sid===id); const u=g&&gradUnit(g); return a+(u? power(u) : (g&&g.pw)||0); },0))}</b></span></div>
+    <div class="eyebrow tpw-row" style="margin:16px 0 6px"><span>배치 — ${dm? `마왕 대항전 · 최대 ${cap}인` : f5? "5인 리그" : "3인 리그"}</span><span class="tpw">총 전투력 <b class="num">${fmt(lgSids(L).reduce((a,id)=>{ const g=(S.graduates||[]).find(x=>x.sid===id); const u=g&&gradUnit(g); return a+(u? power(u) : (g&&g.pw)||0); },0))}</b></span></div>
     <div class="field">
       <div class="frow"><div class="frowlab">전열</div>${["f1","f2","f3"].map(cell).join("")}</div>
       <div class="frow"><div class="frowlab">후열</div>${["b1","b2","b3"].map(cell).join("")}</div>
     </div>
     <div class="btnrow" style="margin-top:10px">
-      <span class="hint" style="font-size:12px;color:${(dm? n>0 : n>=LEAGUE_TEAM)?"var(--ok)":"var(--dim)"}">${dm
+      <span class="hint" style="font-size:12px;color:${(dm? n>0 : n>=cap)?"var(--ok)":"var(--dim)"}">${dm
         ? (n>=cap? `편성 완료 (${n}/${cap})` : n? `${n}/${cap} · 이대로도 출전한다` : `0/${cap} · 한 명 이상 넣으면 출전한다`)
+        : f5 ? (n>=cap? `편성 완료 (${n}/${cap})` : `${n}/${cap} · 다섯 자리를 모두 채워야 등록할 수 있다`)
         : n>=LEAGUE_TEAM? `편성 완료 (${n}/${LEAGUE_TEAM})` : `${n}/${LEAGUE_TEAM} · 진형의 앞 ${LEAGUE_TEAM}자리만 쓴다`}</span>
       <button class="btn sm ghost" id="lgClear">비우기</button>
     </div>`; })()}
@@ -10561,6 +10583,441 @@ function lgSeasonView(U, L){
   </section>`;
 }
 
+/* ══════ 5인 리그 (1001) ══════
+   졸업생 리그의 세 번째 종목. 3인 리그와 같은 방식(시즌 문서를 얼리고 같은 시드로 다시 돌린다)이되
+   · 다섯 명 · 진형은 언제나 강화 진형(5자리) · 매일 9시 · 13시 · 20시(한국 시간)에 시즌 · 8팀씩 조 · 조 안에서 모든 상대와 두 번씩 (14라운드)
+   · 리그 포인트 1위 +20 … 꼴찌 −20 (5인 리그 전용 · 순위표도 따로) · SP 는 3인 리그와 같은 폭 (1위 +30 … 꼴찌 +4)
+   · NPC 학원 12곳이 늘 참가한다 (탱커 1 · 힐러 1 · 보조 1 · 딜러 2, 평균 Lv.26~28, 멘탈리티 95~105, 맞춤 EX 1 + S 3, 레벨만큼 스킬 강화)
+     NPC 명단은 시드로 정해져 누가 만들어도 같다. 시즌을 여는 사람이 서버에 없으면 대신 올린다.
+   서버 경로: teams5/<id> (팀) · season5 (시즌 문서). 파베 규칙에 두 경로가 있어야 한다 (teams5 는 ".indexOn": ["lp"]).
+   같은 졸업생은 5인 리그와 다른 종목(3인 리그 · 마왕 대항전)에 동시에 나갈 수 없다. */
+const L5_TEAM  = 5;
+const L5_N     = 8;                         // 한 조의 팀 수
+const L5_MIN   = 4;                         // 시즌이 열리기 위한 최소 팀 수
+const L5_LP0   = 1000;
+const L5_LP_TOP = 20;                       // 1위 +20 · 꼴찌 −20
+/* 시즌 시각 (1001) — 매일 한국 시간 오전 9시 · 오후 1시 · 오후 8시 (UTC 0 · 4 · 11시).
+   시즌 번호 = 날짜 × 3 + 그날의 몇 번째 시각. 번호와 시작 시각이 모두 시계에서 나온다 */
+const L5_DAY = 24 * 60 * 60 * 1000;
+const L5_OFF = [0, 4, 11].map(h=> h * 60 * 60 * 1000);
+const L5_TIMES_TXT = "매일 오전 9시 · 오후 1시 · 오후 8시";
+const L5_STEP  = 5 * 60 * 1000;             // 라운드 간격
+function l5IdxAt(t){
+  const d = Math.floor(t / L5_DAY), r = t - d * L5_DAY;
+  let k = 0; L5_OFF.forEach((o, i)=>{ if(r >= o) k = i; });
+  return d * L5_OFF.length + k;
+}
+const L5_BASE  = l5IdxAt(Date.UTC(2026, 9, 1));
+const L5_NPC_N = 12;
+const L5_NPC_ACAD = ["왕립 근위 학원","북부 검술원","은빛 성기사 학교","황혼 마도원","서풍 사관학교","붉은 매 무관",
+                     "청람 수도원","흑요 전술원","금사자 기사학교","서리늑대 훈련소","상아탑 아카데미","백호 무예원"];
+function l5Due(){ return l5IdxAt(leagueNow()); }
+function l5No(n){ return n - L5_BASE + 1; }
+function l5StartOf(n){ const m = L5_OFF.length; return Math.floor(n / m) * L5_DAY + L5_OFF[((n % m) + m) % m]; }
+function l5SeedOf(n){ return "season5-" + n; }
+function l5NextSeasonAt(){ return l5StartOf(l5Due() + 1); }
+function l5State(){
+  S.league5 = S.league5 || {sids:[], form:"wedge", lp:L5_LP0, w:0, l:0, n:0, hist:[], up:0, lastSeason:0};
+  if(!Array.isArray(S.league5.sids)) S.league5.sids = [];
+  if(!Array.isArray(S.league5.hist)) S.league5.hist = [];
+  if(!FORMS[S.league5.form]) S.league5.form = "wedge";
+  return S.league5;
+}
+function lgIs5(L){ return !!(L && S.league5 && L === S.league5); }
+/* 한 종목만 — 5인 리그와 다른 종목 사이에서 같은 졸업생을 막는다. 막히면 이유를, 아니면 null */
+function lgConflict(L, sid){
+  if(lgIs5(L)){
+    if(leagueState().sids.includes(sid)) return "3인 리그";
+    if(demonState().sids.includes(sid)) return "마왕 대항전";
+    return null;
+  }
+  return l5State().sids.includes(sid) ? "5인 리그" : null;
+}
+function l5Ready(){
+  const L = l5State(), ids = lgSids(L);
+  return ids.length === L5_TEAM && ids.every(id => gradCanFight((S.graduates||[]).find(g=>g.sid===id)));
+}
+/* 순위 → 리그 포인트 (+20 … −20, 조 크기에 맞춰 고르게) · SP (3인 리그와 같은 표) */
+function l5LP(rank, size){ return size < 2 ? 0 : Math.round(L5_LP_TOP - 2*L5_LP_TOP*(rank-1)/(size-1)); }
+function l5SP(rank, size){ return seasonLP(rank, size); }
+/* 두 번씩 — 원형 대진을 한 바퀴 돈 뒤 좌우를 바꿔 한 바퀴 더 */
+function l5RR(n){ const rr = leagueRR(n); return rr.concat(rr.map(p=> p.map(([a,b])=> [b,a]))); }
+function l5Sane(e, tid){
+  if(!e || typeof e !== "object") return null;
+  const t = Array.isArray(e.t) ? e.t : [];
+  if(t.length !== L5_TEAM) return null;
+  const units = t.map((u, ui)=> leagueSaneUnit(u, tid, ui));
+  if(units.some(u=>!u)) return null;
+  return {tid, acad:String(e.acad||"이름 없는 학원").slice(0,24),
+          form: FORMS[e.form]? e.form : "wedge", npc: !!e.npc,
+          lp: clamp(Math.round(+e.lp||L5_LP0), 0, 99999),
+          w:Math.max(0,e.w|0), l:Math.max(0,e.l|0), n:Math.max(0,e.n|0),
+          ts:+e.ts||0, mi:clamp(e.mi|0, 0, MASTER_MAX), units};
+}
+/* ---- NPC 학원 — 시드로 정해진다 (누가 만들어도 같은 명단) ---- */
+function l5NpcId(i){ return "npc5_" + String(i+1).padStart(2, "0"); }
+function l5NpcDoc(i){
+  return withSeed("npc5:" + i, ()=>{
+    const pool = r=> JOB_KEYS.filter(k=> JOBS[k] && !JOBS[k].mon && JOBS[k].role === r);
+    const jobs = [pick(pool("tank")), pick(pool("heal")), pick(pool("supp"))].concat(shuffle(pool("dps").slice()).slice(0, 2));
+    const avg = ri(26, 28), lvs = shuffle([avg-1, avg, avg, avg, avg+1]);
+    const exAll = SP_SHOP.filter(x=> x.aff).map(spRelic);
+    const units = jobs.map((j, ui)=>{
+      const role = JOBS[j].role, lv = clamp(lvs[ui], 1, 30);
+      const st = {job:j, skMod:{}}; autoSkMod(st, lv);
+      const m = {}; MENTAL.forEach(x=>{ m[x.k] = clamp(ri(95, 105), 1, MENT_MAX); });
+      const ex = exAll.slice().sort((a,b)=> relicFitScore(b, role) - relicFitScore(a, role))[0];
+      const ss = Array.from({length:8}, ()=> makeRelic("S")).sort((a,b)=> relicFitScore(b, role) - relicFitScore(a, role)).slice(0, 3);
+      const pk = r=> ({grade:r.grade, name:String(r.name||"").slice(0,20), aff:(r.aff||[]).map(a=>({k:a.k, n:a.n, v:a.v}))});
+      return {n:fantasyName(j), e:null, j, g:"S", lv, p:pick(PERSONA_KEYS), k:0, c:"",
+              m, sm:st.skMod, r:(ex ? [pk(ex)] : []).concat(ss.map(pk))};
+    });
+    /* 진형 자리 순서대로 — 자리마다 어울리는 역할부터 */
+    const form = pick(FORM_KEYS), F = formData(form, true), want = FORM_ROLES[form] || {};
+    const left = units.slice(), t = [];
+    F.front.concat(F.back).forEach(k=>{
+      const roles = want[k] || [];
+      let at = -1;
+      for(const r of roles){ at = left.findIndex(u=> JOBS[u.j].role === r); if(at >= 0) break; }
+      if(at < 0) at = 0;
+      if(left.length) t.push(left.splice(at, 1)[0]);
+    });
+    return {acad:L5_NPC_ACAD[i % L5_NPC_ACAD.length], form, t:t.concat(left).slice(0, L5_TEAM), ts:0, v:1, mi:8,
+            lp:L5_LP0, w:0, l:0, n:0, ls:0, npc:1};
+  });
+}
+/* ---- 시즌 ---- */
+function l5SeasonSane(d){
+  if(!d || typeof d !== "object") return null;
+  const n = d.n|0, start = +d.start||0, step = clamp(+d.step||L5_STEP, 10000, 7*24*3600*1000);
+  const seed = String(d.seed||"").slice(0, 40);
+  if(n < 1 || !start || !seed) return null;
+  if(n !== l5IdxAt(start) || start !== l5StartOf(n)) return null;
+  if(start > leagueNow() + 60000) return null;
+  const t = {};
+  Object.keys(d.t||{}).forEach(k=>{ const T = l5Sane(d.t[k], k); if(T) t[k] = T; });
+  const g = (Array.isArray(d.g) ? d.g : [])
+    .map(x => (Array.isArray(x) ? x : []).map(String))
+    .filter(x => x.length >= 2 && x.length <= L5_N && x.every(id => t[id]));
+  if(!g.length) return null;
+  return {n, seed, start, step, t, g, v: Math.max(0, d.v|0)};
+}
+function l5Rounds(SE, gi){ return l5RR(SE.g[gi].length).length; }
+function l5Open(SE, gi){ return clamp(Math.floor((leagueNow() - SE.start) / SE.step) + 1, 0, l5Rounds(SE, gi)); }
+function l5NextAt(SE, gi){ const o = l5Open(SE, gi); return o >= l5Rounds(SE, gi) ? 0 : SE.start + o * SE.step; }
+function l5Order(SE, gi){ const g = SE.g[gi].slice(); return withSeed(SE.seed + ":order:" + gi, ()=> shuffle(g)); }
+function l5Battle(SE, gi, order, r, i){
+  const rr = l5RR(order.length);
+  if(!rr[r] || !rr[r][i]) return null;
+  const A = SE.t[order[rr[r][i][0]]], B = SE.t[order[rr[r][i][1]]];
+  if(!A || !B) return null;
+  const ta = leagueTeamUnits(A), tb = leagueTeamUnits(B);     // 유닛은 시드 밖에서 (3인 리그와 같은 이유)
+  return withSeed(SE.seed + ":" + SE.n + ":" + gi + ":" + r + ":" + i, ()=>{
+    const ua = assignFoeForm(ta, A.form, true, true);
+    const ub = assignFoeForm(tb, B.form, true, true);
+    if(!ua.length || !ub.length) return null;
+    const b = runBattle(ua, ub, Object.assign({titleA:A.acad, titleB:B.acad, infoM:infoMulOf(A.mi), infoMB:infoMulOf(B.mi)},
+      {formA:ua.form, plusA:true, rowsA:ua.rows}, foeBattleOpt(ub)));
+    return {b, A, B};
+  });
+}
+function l5Compute(SE, gi, upto){
+  const order = l5Order(SE, gi), rr = l5RR(order.length), row = {};
+  order.forEach(tid =>{ row[tid] = {tid, acad:SE.t[tid].acad, npc:SE.t[tid].npc, pts:0, w:0, l:0, gf:0, ga:0}; });
+  const results = [];
+  for(let r=0; r<upto && r<rr.length; r++) for(let i=0; i<rr[r].length; i++){
+    const m = l5Battle(SE, gi, order, r, i);
+    if(!m) continue;
+    const aw = m.b.winner === "A";
+    const alive = [m.b.A.filter(u=>u.alive).length, m.b.B.filter(u=>u.alive).length];
+    const la = row[m.A.tid], lb = row[m.B.tid];
+    if(aw){ la.pts += 3; la.w++; lb.l++; } else { lb.pts += 3; lb.w++; la.l++; }
+    la.gf += alive[0]; la.ga += alive[1]; lb.gf += alive[1]; lb.ga += alive[0];
+    results.push({r, i, a:m.A.acad, b:m.B.acad, at:m.A.tid, bt:m.B.tid, aw, score:alive.join("-")});
+  }
+  const table = order.map(t => row[t]).sort((a,b)=>
+    b.pts - a.pts || (b.gf-b.ga) - (a.gf-a.ga) || b.gf - a.gf || (a.tid < b.tid ? -1 : 1));
+  table.forEach((x,i)=>{ x.rank = i+1; x.lp = l5LP(i+1, table.length); x.sp = l5SP(i+1, table.length); });
+  return {order, rr, table, results};
+}
+function l5Settle(SE, gi, C){
+  const L = l5State();
+  if(L.lastSeason === SE.n) return false;
+  const me = C.table.find(x => x.tid === leagueId());
+  if(!me) return false;
+  L.lastSeason = SE.n;
+  L.lp = Math.max(0, L.lp + me.lp);
+  const sp = spAdd(me.sp);
+  L.w += me.w; L.l += me.l; L.n += 1;
+  L.hist.unshift({ts:Date.now(), season:l5No(SE.n), rank:me.rank, size:C.table.length, lp:me.lp, now:L.lp, w:me.w, l:me.l, sp});
+  if(L.hist.length > 20) L.hist.length = 20;
+  logE(`5인 리그 시즌 ${l5No(SE.n)} — <b>${me.rank}위</b> / ${C.table.length}팀 (${me.w}승 ${me.l}패) · 리그 포인트 <b style="color:var(--${me.lp>=0?"brass":"bad"})">${me.lp>=0?"+":""}${me.lp}</b> → ${L.lp} · SP <b style="color:var(--indigo)">+${sp}</b>`,
+       me.rank <= Math.ceil(C.table.length/3) ? "good" : "");
+  save(); l5Sync();
+  return true;
+}
+/* ---- 서버 ---- */
+async function l5ServerMerge(L){
+  L = L || l5State();
+  let cur;
+  try{ cur = await leagueReq("teams5/" + leagueId()); }catch(e){ return false; }
+  if(cur && typeof cur === "object"){
+    const n = (v, hi)=> clamp(Math.round(+v||0), 0, hi);
+    const before = [L.lp, L.w, L.l, L.n].join("/");
+    /* 5인 리그 포인트는 줄 수도 있다 — 서버가 대신 정산한 시즌(ls)이 내 것보다 앞서면 서버 값을 따른다 */
+    if(n(cur.ls, 1e9) > (L.lastSeason|0)){
+      L.lp = n(cur.lp, 99999); L.w = Math.max(L.w|0, n(cur.w, 999999)); L.l = Math.max(L.l|0, n(cur.l, 999999));
+      L.n = Math.max(L.n|0, n(cur.n, 999999)); L.lastSeason = n(cur.ls, 1e9);
+    }
+    if(before !== [L.lp, L.w, L.l, L.n].join("/")) save();
+  }
+  return true;
+}
+async function l5Sync(){
+  if(!leagueOn()) return false;
+  if(verBlock()){ verBlockToast(); return false; }
+  const L = l5State();
+  if(!(await l5ServerMerge(L))){ toast("5인 리그 서버에 닿지 못했다 — 기록을 덮어쓰지 않도록 올리지 않았다"); return false; }
+  if(!l5Ready()){
+    if(!L.up) return false;
+    try{
+      await leagueReq("teams5/" + leagueId(), "PATCH",
+        {lp:L.lp, w:L.w, l:L.l, n:L.n, ls:L.lastSeason|0, mi:clamp(S.master.info|0, 0, MASTER_MAX)});
+      L.up = Date.now(); save(); if(UI.rank) UI.rank.at = 0;
+      return true;
+    }catch(e){ return false; }
+  }
+  const body = Object.assign(leagueMyPack(L.sids, L.form), {lp:L.lp, w:L.w, l:L.l, n:L.n, ls:L.lastSeason|0});
+  try{
+    await leagueReq("teams5/" + leagueId(), "PUT", body);
+    L.up = Date.now(); save(); if(UI.rank) UI.rank.at = 0;
+    return true;
+  }catch(e){ toast("5인 리그 서버에 올리지 못했다 — " + (e.message||e)); return false; }
+}
+async function l5Load(quiet){
+  if(!leagueOn()) return;
+  const U = UI.league5 = UI.league5 || {};
+  U.loading = true; if(!quiet) render();
+  await leagueClockSync();
+  let raw = null, err = null;
+  try{ raw = await leagueReq("season5"); }catch(e){ err = String(e.message||e); }
+  if(!err) await l5ServerMerge();
+  U.loading = false; U.err = err;
+  U.SE = err ? null : l5SeasonSane(raw);
+  if(!err && (!U.SE || U.SE.n < l5Due()) && !U.making){ l5Auto(U.SE); return; }
+  l5Refresh();
+}
+function l5Refresh(){
+  const U = UI.league5; if(!U) return;
+  const SE = U.SE;
+  if(!SE){ U.gi = -1; U.vg = 0; U.C = null; render(); return; }
+  U.gi = seasonGroupIdx(SE, leagueId());
+  if(!(U.vg >= 0 && U.vg < SE.g.length)) U.vg = U.gi >= 0 ? U.gi : 0;
+  const o = l5Open(SE, U.vg);
+  if(!(U.C && U.upto === o && U.cg === U.vg)){ U.upto = o; U.cg = U.vg; U.C = l5Compute(SE, U.vg, o); }
+  if(seasonVerGap(SE)){ render(); return; }
+  if(U.gi >= 0 && l5Open(SE, U.gi) >= l5Rounds(SE, U.gi)){
+    const mineC = U.vg === U.gi ? U.C : l5Compute(SE, U.gi, l5Rounds(SE, U.gi));
+    l5Settle(SE, U.gi, mineC);
+  }
+  l5SettleOthers(SE);
+  render();
+}
+/* 시즌이 끝나면 NPC · 자리를 비운 학원의 성적도 대신 올린다 (서버 ls 로 중복을 막는다) */
+async function l5SettleOthers(SE){
+  if(!leagueOn() || !SE || !Array.isArray(SE.g) || verBlock() || seasonVerGap(SE)) return;
+  const U = UI.league5 = UI.league5 || {};
+  if(U.setAll === SE.n || U.setting) return;
+  for(let gi=0; gi<SE.g.length; gi++) if(l5Open(SE, gi) < l5Rounds(SE, gi)) return;
+  U.setting = true;
+  let all = null;
+  try{ all = await leagueReq("teams5"); }catch(e){ U.setting = false; return; }
+  const mine = leagueId();
+  let n = 0;
+  for(let gi=0; gi<SE.g.length; gi++){
+    const C = l5Compute(SE, gi, l5Rounds(SE, gi));
+    for(const x of C.table){
+      if(x.tid === mine) continue;
+      const cur = all && all[x.tid];
+      if(!cur || (cur.ls|0) >= SE.n) continue;
+      try{
+        await leagueReq("teams5/" + x.tid, "PATCH", {
+          lp: clamp(Math.round(+cur.lp||L5_LP0) + x.lp, 0, 99999),
+          w: Math.max(0, cur.w|0) + x.w, l: Math.max(0, cur.l|0) + x.l, n: Math.max(0, cur.n|0) + 1, ls: SE.n});
+        n++;
+      }catch(e){}
+    }
+  }
+  U.setAll = SE.n; U.setting = false;
+  if(n && UI.rank) UI.rank.at = 0;
+  if(n) render();
+}
+function l5SeeGroup(gi){ const U = UI.league5; if(!U || !U.SE) return; U.vg = clamp(gi|0, 0, U.SE.g.length - 1); l5Refresh(); }
+/* 시즌 자동 개막 — 8시간마다 먼저 본 사람이 연다. NPC 자리가 서버에 없으면 이때 만든다 */
+async function l5Auto(prev){
+  const U = UI.league5 = UI.league5 || {};
+  if(!leagueOn() || U.making || verBlock()) return l5Refresh();
+  const n = l5Due();
+  if((prev && prev.n >= n) || U.tried === n) return l5Refresh();
+  U.tried = n; U.making = true;
+  let all;
+  try{ all = await leagueReq("teams5"); }catch(e){ U.making = false; U.err = String(e.message||e); return l5Refresh(); }
+  all = all || {};
+  for(let i=0; i<L5_NPC_N; i++){
+    const id = l5NpcId(i);
+    if(l5Sane(all[id], id)) continue;
+    const doc = l5NpcDoc(i);
+    try{ await leagueReq("teams5/" + id, "PUT", doc); all[id] = doc; }catch(e){}
+  }
+  const pool = Object.keys(all).map(k => l5Sane(all[k], k)).filter(Boolean);
+  if(pool.length < L5_MIN){ U.making = false; U.few = true; U.fewN = pool.length; return l5Refresh(); }
+  U.few = false;
+  pool.sort((a,b)=> b.lp - a.lp || (a.tid < b.tid ? -1 : 1));
+  const gn = Math.ceil(pool.length / L5_N);
+  const g = Array.from({length:gn}, ()=> []);
+  pool.forEach((t,i)=> g[Math.min(gn-1, Math.floor(i * gn / pool.length))].push(t.tid));
+  const doc = {n, start: l5StartOf(n), step: L5_STEP, seed: l5SeedOf(n), g, t: {}, v: RULES_VER};
+  pool.forEach(t =>{ doc.t[t.tid] = Object.assign({}, all[t.tid]); });
+  try{ await leagueReq("season5", "PUT", doc); }catch(e){}
+  U.making = false;
+  await l5Load(true);
+}
+function l5Watch(r, i){
+  const U = UI.league5; if(!U || !U.SE || !U.C) return;
+  const rr = U.C.rr;
+  if(!rr[r]) return;
+  if(r >= (U.upto|0)){ toast("아직 열리지 않은 경기다."); return; }
+  if(i == null || i < 0){
+    const mine = leagueId();
+    i = rr[r].findIndex(pr => U.C.order[pr[0]] === mine || U.C.order[pr[1]] === mine);
+    if(i < 0){ toast("이 라운드는 부전승이다."); return; }
+  }
+  const m = l5Battle(U.SE, U.vg, U.C.order, r, i);
+  if(!m){ toast("경기를 불러오지 못했다."); return; }
+  openBattle(m.b, {titleA:m.A.acad, titleB:m.B.acad, field:"final", bgm:"league", jingle:true,
+    head:`5인 리그 시즌 ${l5No(U.SE.n)} · ${r+1}라운드 — ${m.A.acad} 대 ${m.B.acad}`, doneLabel:"닫는다"}, ()=> render());
+}
+let L5_T = 0;
+function l5ClockStop(){ if(L5_T){ clearInterval(L5_T); L5_T = 0; } }
+function l5ClockStart(){
+  l5ClockStop();
+  L5_T = setInterval(()=>{
+    const U = UI.league5;
+    if(UI.view !== "league" || UI.lgTab !== "five" || !U || !U.SE || !U.C){ l5ClockStop(); return; }
+    const el = $("#l5Clock");
+    const at = l5NextAt(U.SE, U.vg);
+    if(!at){
+      const left = Math.max(0, l5NextSeasonAt() - leagueNow());
+      if(el) el.textContent = "다음 시즌까지 " + hhmmss(left);
+      if(left <= 0) l5Load(true);
+      return;
+    }
+    const left = Math.max(0, at - leagueNow());
+    if(el) el.textContent = `다음 라운드까지 ${Math.floor(left/60000)}:${String(Math.floor(left/1000)%60).padStart(2,"0")}`;
+    if(left <= 0) l5Refresh();
+  }, 1000);
+}
+
+/* 5인 리그 시즌 판 (1001) — 3인 리그 화면과 같은 틀 */
+function l5SeasonView(U, L){
+  const head = ()=> `<div class="panel-h"><h2>5인 리그</h2>
+    <span class="hint" id="l5Clock">${U.making? "시즌을 여는 중…" : "모두가 같은 순위표를 본다"}</span>
+    <span class="btnpair">
+      <button class="btn sm" id="l5Load" ${U.loading||U.making?"disabled":""}>${U.loading?"불러오는 중…":"새로고침"}</button></span></div>`;
+  const cycle = `시즌은 <b>${L5_TIMES_TXT}</b>에 저절로 열린다`
+    + (Math.abs(LEAGUE_SKEW) > 60000
+       ? ` <span style="color:var(--warn)">· 이 컴퓨터 시계가 ${Math.round(Math.abs(LEAGUE_SKEW)/60000)}분 ${LEAGUE_SKEW>0?"느려":"빨라"} 서버 시각으로 맞춰 두었다</span>`
+       : "");
+  if((U.loading || U.making) && !U.SE) return `<section class="panel">${head()}
+    <div class="empty">시즌을 불러오는 중…</div></section>`;
+  if(U.err) return `<section class="panel">${head()}
+    <div class="empty">서버에 닿지 못했다 — ${esc(U.err)}</div></section>`;
+  if(U.few && !U.SE) return `<section class="panel">${head()}
+    <div class="empty">등록된 학원이 ${U.fewN|0}곳뿐이라 이번 시즌은 열리지 않았다.
+      ${L5_MIN}곳이 모이면 다음 시각에 저절로 열린다.</div>
+    <p class="opthint">${cycle}. 다음 시즌 ${new Date(l5NextSeasonAt()).toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"})}.</p></section>`;
+  if(!U.SE) return `<section class="panel">${head()}
+    <div class="empty">아직 열린 시즌이 없다.</div>
+    <p class="opthint">${cycle}. 다음 시즌 ${new Date(l5NextSeasonAt()).toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"})}.</p></section>`;
+  const SE = U.SE;
+  const vg = U.vg|0, out = U.gi < 0;
+  const total = l5Rounds(SE, vg), C = U.C, o = U.upto|0, done = o >= total, mine = leagueId();
+  if(!C) return `<section class="panel">${head()}<div class="empty">대진을 펼치는 중…</div></section>`;
+  /* 조가 여럿이면 골라서 볼 수 있다. 1조가 리그 포인트 상위 조다. */
+  const picker = SE.g.length > 1 ? `<div class="btnrow" style="margin-bottom:10px">
+      <span style="font-size:12px;color:var(--muted)">조</span>
+      ${SE.g.map((g,i)=>`<button class="btn sm ${i===vg?"primary":""}" data-l5g="${i}">${i+1}조${
+        i===0? " (상위)":""}${i===U.gi? " · 우리":""}</button>`).join("")}</div>` : "";
+  const gap = seasonVerGap(SE);
+  const verBan = !gap ? "" : gap > 0
+    ? `<div class="empty" style="margin-bottom:10px">게임이 새 판으로 올라갔다 —
+        <b>새로고침</b>을 해야 이 시즌의 경기를 제대로 볼 수 있다.
+        그때까지 아래 순위표는 참고용이고 리그 포인트도 들어오지 않는다.</div>`
+    : `<div class="empty" style="margin-bottom:10px">이 시즌은 예전 판으로 열렸다 —
+        사람마다 순위표가 다르게 나올 수 있어 리그 포인트를 반영하지 않는다.
+        다음 시즌부터는 정상으로 돌아온다.</div>`;
+  const banner = out ? `<div class="empty" style="margin-bottom:10px">이번 시즌 명단에 우리 학원이 없다 —
+      <b>등록 · 갱신</b>을 해 두면 다음 시즌에 자동으로 들어간다.</div>` : "";
+  const acad = tid => SE.t[tid] ? SE.t[tid].acad : "?";
+  const myRows = (vg !== U.gi) ? [] : C.rr.map((pairs, r)=>{
+    const i = pairs.findIndex(pr => C.order[pr[0]]===mine || C.order[pr[1]]===mine);
+    if(i < 0) return {r, bye:true};
+    const res = C.results.find(x => x.r===r && x.i===i);
+    const foeTid = C.order[pairs[i][0]]===mine ? C.order[pairs[i][1]] : C.order[pairs[i][0]];
+    let sc = "";
+    if(res){                                   // 생존 수는 늘 우리 쪽을 앞에 적는다
+      const n = res.score.split("-");
+      sc = res.at===mine ? `${n[0]}-${n[1]}` : `${n[1]}-${n[0]}`;
+    }
+    return {r, i, foe:acad(foeTid), res, sc,
+            win: res ? ((res.at===mine) === res.aw) : null, open:r < o};
+  });
+  const myRank = vg === U.gi ? (C.table.find(x=>x.tid===mine)||{}).rank : 0;
+  return `<section class="panel">
+    ${head()}
+    ${verBan}
+    <div class="lgbar">
+      <div class="lgstat"><span>시즌</span><b class="num">${l5No(SE.n)}</b></div>
+      <div class="lgstat"><span>진행</span><b class="num">${o} / ${total} 라운드</b></div>
+      <div class="lgstat"><span>${out||vg!==U.gi? "보는 조" : "우리 조"}</span><b class="num">${
+        SE.g.length>1? `${vg+1}조 · ` : ""}${C.table.length}팀</b></div>
+      <div class="lgstat"><span>${out? "1위" : "현재 순위"}</span><b class="num" style="color:var(--${!out&&myRank<=3?"ok":"muted"})">${
+        out? esc(C.table[0] ? C.table[0].acad : "-") : (myRank||"-") + "위"}</b></div>
+    </div>
+    ${banner}${picker}
+    <p class="opthint">${done
+      ? `시즌 ${l5No(SE.n)} 이 끝났다. 순위에 따른 리그 포인트가 반영됐다. ${cycle} — 다음 시즌 ${new Date(l5NextSeasonAt()).toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"})}.`
+      : `라운드는 ${Math.round(SE.step/60000)}분마다 하나씩 열린다 · 같은 조의 모든 학원과 두 번씩 싸운다. 모두가 같은 시드로 계산하니 순위표는 어디서 봐도 같다. ${cycle}.`}</p>
+    <table class="tb"><thead><tr><th>순위</th><th>학원</th><th>승점</th><th>승</th><th>패</th><th>생존</th><th>LP</th><th>SP</th></tr></thead><tbody>
+      ${C.table.map(x=>`<tr${x.tid===mine?' style="background:var(--brass-soft)"':""}>
+        <td class="num">${x.rank}</td>
+        <td>${esc(x.acad)}${x.npc? ' <span class="tag" style="color:var(--dim)">NPC</span>':""}${x.tid===mine? ' <span class="tag" style="color:var(--brass);border-color:var(--brass)">우리</span>':""}</td>
+        <td class="num"><b>${x.pts}</b></td><td class="num">${x.w}</td><td class="num">${x.l}</td>
+        <td class="num" style="color:var(--dim)">${x.gf}:${x.ga}</td>
+        <td class="num" style="color:var(--${x.lp>=0?"brass":"bad"})">${x.lp>=0?"+":""}${x.lp}</td><td class="num" style="color:var(--indigo)">+${x.sp}</td></tr>`).join("")}
+    </tbody></table>
+    ${vg !== U.gi ? "" : `<div class="rule"></div><div class="eyebrow" style="margin-bottom:6px">우리 경기</div>
+    <div class="condbox">${myRows.map(m=>{ const al = matchAlive(m.sc);
+      return `<div class="lgrow">
+      <span class="lm">${m.r+1}라운드</span>
+      <span class="lw">${m.bye? "부전승" : "VS " + esc(m.foe)}</span>
+      <span class="lr" style="color:var(--${m.bye?"dim":!m.open?"dim":m.win?"ok":"bad"})">${
+        m.bye? "-" : !m.open? "아직" : m.win? "승리" : "패배"}</span>
+      <span class="lsv num">${(!m.bye && m.open && al.ok)? `생존 ${al.me} : ${al.foe}` : ""}</span>
+      <span class="lbt">${m.bye||!m.open? "" : `<button class="btn sm" data-l5w="${m.r}:${m.i}">관전</button>`}</span></div>`; }).join("")}</div>`}
+    ${C.results.length? `<div class="rule"></div>
+      <div class="eyebrow" style="margin-bottom:6px">${vg+1}조 전체 경기 <span style="color:var(--dim)">— 지금까지 치러진 경기는 모두 볼 수 있다</span></div>
+      <div class="condbox">${C.results.slice().reverse().map(r=>{ const al = matchAlive(r.score);
+        const win = r.aw? r.a : r.b, sv = r.aw? [al.me, al.foe] : [al.foe, al.me];
+        return `<div class="lgrow">
+        <span class="lm" style="color:var(--${r.at===mine||r.bt===mine?"text":"dim"})">${r.r+1}R · ${esc(r.a)} VS ${esc(r.b)}</span>
+        <span class="lw">${esc(win)}</span>
+        <span class="lr" style="color:var(--ok)">승리</span>
+        <span class="lsv num">${al.ok? `생존 ${sv[0]} : ${sv[1]}` : ""}</span>
+        <span class="lbt"><button class="btn sm" data-l5w="${r.r}:${r.i}">관전</button></span></div>`; }).join("")}</div>`:""}
+  </section>`;
+}
+
 /* ══════ 마왕 대항전 ══════
    졸업생 리그의 두 번째 종목. 모든 학원이 같은 시계로 3시간마다 한 판씩 마왕 다크네스와 싸운다.
    게임이 열려 있으면 저절로 싸우고(관전과 상관없이) 입힌 피해량만큼 SP 가 들어온다.
@@ -10571,8 +11028,8 @@ const DEMON_STEP_OLD = 5 * 60 * 1000;      // 예전 저장 — 5분 칸 번호�
 const DEMON_TURNS = 99;                // 이 턴(행동 수)에 닿으면 마왕의 차례
 const DEMON_FINAL = {line:"제법이구나", dmg:99999};
 const DEMON_NAME  = "마왕 다크네스";
-/* 한 판의 피해량 → SP — 닿은 구간을 모두 더한다 (5만 = 1+2 = 3, 100만 = 15) */
-const DEMON_SP = [[1000000,5],[500000,4],[100000,3],[50000,2],[10000,1]];
+/* 한 판의 피해량 → SP — 닿은 구간을 모두 더한다 (5만 = 1+2 = 3, 100만 = 15, 200만 = 21 — 200만 구간 1001 추가) */
+const DEMON_SP = [[2000000,6],[1000000,5],[500000,4],[100000,3],[50000,2],[10000,1]];
 const DEMON_SK = {pow:1.44, proc:0, dur:0, grade:4, up:4};   // Lv.5 · EX — 진화 강화 2회 + 각성 강화 2회 (효과량)
 function demonSpOf(d){ return DEMON_SP.reduce((a,[t,v])=> a + (d >= t ? v : 0), 0); }
 function demonSlot(){ return Math.floor(leagueNow() / DEMON_STEP); }
@@ -10992,10 +11449,29 @@ async function rankFetch(){
     return {lp:all||{}, dm:all||{}, n:0, cut:false};
   }
 }
+/* 5인 리그 순위표 (1001) — teams5 를 리그 포인트 순으로. 인덱스가 없으면(400) 통째로 읽는다 */
+async function rank5Fetch(){
+  const top = `limitToLast=${RANK_TOP}`, ob = `orderBy=${encodeURIComponent(JSON.stringify("lp"))}&${top}`;
+  try{
+    const [lp, sh] = await Promise.all([leagueGet("teams5", ob), leagueGet("teams5", "shallow=true")]);
+    return {lp:lp||{}, n:Object.keys(sh||{}).length, cut:true};
+  }catch(e){
+    if(e.status !== 400) throw e;
+    return {lp:(await leagueReq("teams5"))||{}, n:0, cut:false};
+  }
+}
 async function rankLoad(){
   const R = UI.rank = UI.rank || {};
   if(R.loading) return;
   R.loading = true; R.err = null; render();
+  /* 5인 리그는 따로 받는다 — 경로 규칙이 없어도 3인 리그 순위표는 그대로 보이게 */
+  try{
+    const F5 = await rank5Fetch();
+    const l5 = Object.keys(F5.lp).map(k => l5Sane(F5.lp[k], k)).filter(Boolean);
+    l5.sort((a,b)=> b.lp - a.lp || b.w - a.w || (a.tid < b.tid ? -1 : 1));
+    R.l5All = (F5.cut && l5.length >= RANK_TOP) ? Math.max(l5.length, F5.n) : l5.length;
+    R.l5 = l5.slice(0, RANK_TOP); R.l5Err = null;
+  }catch(e){ R.l5 = []; R.l5All = 0; R.l5Err = String(e.message||e); }
   let F = null;
   try{ F = await rankFetch(); }
   catch(e){ R.loading = false; R.err = String(e.message||e); R.at = Date.now(); render(); return; }
@@ -11024,21 +11500,42 @@ function rankUnitCell(u){
 }
 function viewRank(){
   const R = UI.rank || {}, mine = leagueId();
-  const tab = UI.rankTab === "demon" ? "demon" : "trio";
+  const tab = UI.rankTab === "demon" ? "demon" : UI.rankTab === "five" ? "five" : "trio";
   const tabs = `<div class="teamtabs" style="margin-bottom:12px"><button class="ttab ${tab==="trio"?"on":""}" data-rktab="trio">3인 리그
       <span class="tt-sub">리그 포인트 순</span></button>
+    <button class="ttab ${tab==="five"?"on":""}" data-rktab="five">5인 리그
+      <span class="tt-sub">5인 리그 포인트 순</span></button>
     <button class="ttab ${tab==="demon"?"on":""}" data-rktab="demon">마왕 대항전
       <span class="tt-sub">최고 피해량 순</span></button></div>`;
   if(!leagueOn()) return `<section class="panel">
     <div class="panel-h"><h2>순위표</h2></div>
     <div class="empty">리그 서버 주소가 설정되지 않았다.</div></section>`;
-  const cnt = tab==="demon" ? R.dmAll|0 : R.all|0, more = tab==="demon" && R.dmMore;
+  const cnt = tab==="demon" ? R.dmAll|0 : tab==="five" ? R.l5All|0 : R.all|0, more = tab==="demon" && R.dmMore;
   const head = `<div class="panel-h"><h2>순위표</h2>
     <span class="hint">${R.list? `${tab==="demon"? "기록을 남긴" : "등록된"} 학원 ${cnt}곳${more? " 이상" : ""}${(cnt>RANK_TOP||more)? ` · 상위 ${RANK_TOP}곳` : ""}${rankAge()? ` · ${rankAge()}`:""}` : tab==="demon"? "최고 피해량 순" : "리그 포인트 순"}</span>
     <span class="btnpair"><button class="btn sm" id="rkLoad" ${R.loading?"disabled":""}>${R.loading?"불러오는 중…":"새로고침"}</button></span></div>${tabs}`;
   if(R.err) return `<section class="panel">${head}<div class="empty">서버에 닿지 못했다 — ${esc(R.err)}</div></section>`;
   if(!R.list) return `<section class="panel">${head}<div class="empty">불러오는 중…</div></section>`;
   if(tab === "demon") return `<section class="panel">${head}${demonRankBody(R, mine)}</section>`;
+  if(tab === "five"){
+    if(R.l5Err) return `<section class="panel">${head}<div class="empty">5인 리그 기록을 읽지 못했다 — ${esc(R.l5Err)}</div></section>`;
+    const L5 = R.l5 || [];
+    if(!L5.length) return `<section class="panel">${head}<div class="empty">아직 5인 리그에 등록된 학원이 없다. 첫 시즌이 열리면 NPC 학원 ${L5_NPC_N}곳이 함께 올라온다.</div></section>`;
+    return `<section class="panel">${head}
+    <p class="opthint">5인 리그 전용 포인트 순서다. 시즌은 이 순위를 기준으로 8팀씩 조를 나눈다.</p>
+    <div class="rktable">
+      ${L5.map((t,i)=>`<div class="rkrow${t.tid===mine?" me":""}">
+        <div class="rkno num">${i+1}</div>
+        <div class="rkacad">
+          <div class="rkan">${esc(t.acad)}${t.npc? ' <span class="tag" style="color:var(--dim)">NPC</span>':""}${t.tid===mine? ' <span class="tag" style="color:var(--brass);border-color:var(--brass)">우리</span>':""}</div>
+          <div class="rkad">${t.n? `${t.n}시즌 · ${t.w}승 ${t.l}패` : "아직 시즌 기록 없음"} · ${FORMS[t.form]? formData(t.form, true).n : "진형 미정"}</div>
+        </div>
+        <div class="rklp num">${fmt(t.lp)}<span>LP</span></div>
+        <div class="rkmem">${t.units.map(rankUnitCell).join("")}</div>
+      </div>`).join("")}
+    </div>
+  </section>`;
+  }
   if(!R.list.length) return `<section class="panel">${head}
     <div class="empty">아직 등록된 학원이 없다. 리그 등록 탭에서 <b>등록 · 갱신</b>을 누르면 여기에 올라온다.</div></section>`;
   return `<section class="panel">${head}
@@ -13219,6 +13716,7 @@ function bindView(){
       if(t.classList.contains("lgroster")){ lgRemove(L, pl.id); lgTidy(L); UI.lgSlot=null; save(); render(); return; }
       const i = +t.dataset.lgslot;
       if(pl.kind==="slot" && pl.i===i) return;
+      { const c = pl.kind==="g" && lgConflict(L, pl.id); if(c){ toast(`${c}에 출전 중인 졸업생이다 — 5인 리그와 다른 종목은 한 종목만 나갈 수 있다.`); return; } }
       lgPlace(L, i, pl.id); lgTidy(L); UI.lgSlot=null; save(); render();
     }
   };
@@ -13508,6 +14006,7 @@ function bindView(){
     v.querySelectorAll("[data-lgp]").forEach(b=> b.onclick=()=>{
       const id = b.dataset.lgp;
       if(L.sids.includes(id)){ lgRemove(L, id); lgTidy(L); UI.lgSlot=null; save(); render(); return; }
+      { const c = lgConflict(L, id); if(c){ toast(`${c}에 출전 중인 졸업생이다 — 5인 리그와 다른 종목은 한 종목만 나갈 수 있다.`); return; } }
       let idx = UI.lgSlot;
       if(idx==null){
         idx = -1;
@@ -13530,8 +14029,9 @@ function bindView(){
     const lc = $("#lgClear");  if(lc) lc.onclick = ()=>{ L.sids = []; UI.lgSlot=null; save(); render(); };
     const ls = $("#lgSync");   if(ls) ls.onclick = async ()=>{
       ls.disabled = true; ls.textContent = "올리는 중…";
-      const ok = await leagueSync();
-      render(); if(ok) toast("리그에 등록했다.");
+      const five = lgIs5(lgEditL());
+      const ok = five ? await l5Sync() : await leagueSync();
+      render(); if(ok) toast(five ? "5인 리그에 등록했다." : "리그에 등록했다.");
     };
     const ll = $("#lgLoad");   if(ll) ll.onclick = ()=>{ if(UI.league) UI.league.tried = null; seasonLoad(); };
     const rl = $("#rkLoad");   if(rl) rl.onclick = ()=> rankLoad();
@@ -13558,10 +14058,21 @@ function bindView(){
       const a = String(b.dataset.lgw).split(":");
       seasonWatch(a[0]|0, a.length>1 ? a[1]|0 : null);
     });
-    if(UI.view === "league"){
+    v.querySelectorAll("[data-l5g]").forEach(b=> b.onclick = ()=> l5SeeGroup(b.dataset.l5g|0));
+    v.querySelectorAll("[data-l5w]").forEach(b=> b.onclick = ()=>{
+      const a = String(b.dataset.l5w).split(":");
+      l5Watch(a[0]|0, a.length>1 ? a[1]|0 : null);
+    });
+    { const l5 = $("#l5Load"); if(l5) l5.onclick = ()=>{ if(UI.league5) UI.league5.tried = null; l5Load(); }; }
+    if(UI.view === "league" && UI.lgTab === "five"){
+      lgClockStop();
+      if(!UI.league5 || (UI.league5.SE === undefined && !UI.league5.loading)) l5Load(true);
+      l5ClockStart();
+    } else if(UI.view === "league"){
+      l5ClockStop();
       if(!UI.league || (UI.league.SE === undefined && !UI.league.loading)) seasonLoad(true);
       lgClockStart();
-    } else lgClockStop();
+    } else { lgClockStop(); l5ClockStop(); }
   }
   const bd = $("#btnDonate"); if(bd) bd.onclick = ()=> doDonate();
   const bbd = $("#btnBigDonate"); if(bbd) bbd.onclick = ()=> doBigDonate();
