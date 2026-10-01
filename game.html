@@ -2796,7 +2796,7 @@ function sfxOf(u, sk){
 
 const JOBS = {
   paladin:{ name:"팔라딘", role:"tank", sub:"서브 힐러", tone:"tank",
-    desc:"보호막과 치유를 겸하는 성기사. 전열을 유지하며 아군 생존을 책임진다.",
+    desc:"회복과 보조에 능한 성전사.",
     base:{hp:1280,atk:88,def:98,spd:92,crit:.05,critDmg:1.5,acc:.95,eva:.05,skAcc:.92,skRes:.18,ultGain:1.05,leech:.02},
     grow:{hp:70,atk:4.4,def:5.6,spd:2.0},
     skills:[
@@ -2806,7 +2806,7 @@ const JOBS = {
       {id:"pa_u",fx:"aura",el:"holy",kind:"ult",name:"성역 선포",type:"ult_guard",target:"ally_all",power:.5,proc:1,dur:3,txt:"성역을 펼쳐 전체 회복·보호막·방어 강화"}
     ]},
   sword:{ name:"소드맨", role:"tank", sub:"전열", tone:"tank",
-    desc:"정통 검술로 전선을 붙드는 방패. 도발과 자세 전환에 능하다.",
+    desc:"도발과 반격에 특화된 방패 전사.",
     base:{hp:1380,atk:102,def:106,spd:88,crit:.07,critDmg:1.5,acc:.95,eva:.05,skAcc:.88,skRes:.2,ultGain:1.0,leech:.02},
     grow:{hp:76,atk:5.0,def:5.8,spd:1.8},
     skills:[
@@ -2816,7 +2816,7 @@ const JOBS = {
       {id:"sw_u",fx:"slash",el:"phys",kind:"ult",name:"대지 가르기",type:"ult_aoe",target:"enemy_all",power:1.7,proc:1,dur:2,shieldSelf:1,shieldDef:1,txt:"땅을 가르며 전체 피해와 방어 저하 · 입힌 만큼 + 방어력만큼 자신에게 보호막"}
     ]},
   monk:{ name:"몽크", role:"tank", sub:"서브 딜러", tone:"tank",
-    desc:"맨몸으로 받아내고 되돌려주는 수도자. 흡혈과 연타가 특기.",
+    desc:"흡혈과 피해가 강력한 수도사.",
     base:{hp:1150,atk:118,def:80,spd:102,crit:.11,critDmg:1.62,acc:.96,eva:.09,skAcc:.9,skRes:.16,ultGain:1.1,leech:.06},
     grow:{hp:62,atk:6.2,def:4.2,spd:2.6},
     skills:[
@@ -2825,18 +2825,18 @@ const JOBS = {
       {id:"mo_2",fx:"aura",el:"buff",name:"내공 순환",type:"buff",target:"self",power:.1,pow2:.1,stat2:"def",proc:.16,dur:3,stat:"atk",leech:.1,txt:"공격·방어와 피흡을 끌어올린다"},
       {id:"mo_u",fx:"blunt",el:"phys",kind:"ult",name:"백열권",type:"ult_single",target:"enemy_rand",power:2.8,proc:1,dur:0,heal:.3,txt:"연속 타격 후 자신을 회복"}
     ]},
-  archer:{ name:"아쳐", role:"dps", sub:"원거리", tone:"dps",
-    desc:"거리를 재는 사수. 조준이 길수록 한 발이 무겁다.",
+  archer:{ name:"아처", role:"dps", sub:"원거리", tone:"dps",
+    desc:"후열 저격에 능한 궁수.",
     base:{hp:900,atk:142,def:52,spd:110,crit:.19,critDmg:1.72,acc:1.0,eva:.08,skAcc:.9,skRes:.12,ultGain:1.05,leech:0},
     grow:{hp:44,atk:8.0,def:2.6,spd:3.0},
     skills:[
       {id:"ar_b",fx:"pierce",el:"phys",kind:"basic",name:"조준 사격",type:"dmg",target:"enemy_back",power:1.06,proc:1,dur:0,txt:"후열을 노린 한 발"},
       {id:"ar_1",fx:"pierce",el:"phys",name:"관통 화살",type:"dmg_aoe",target:"enemy_all",power:.82,proc:.2,dur:0,pierce:.25,txt:"적 전체를 꿰뚫는다"},
-      {id:"ar_2",fx:"aura",el:"buff",name:"매의 눈",type:"buff",target:"self",power:.16,proc:.16,dur:3,stat:"crit",txt:"치명타 확률과 명중을 올린다"},
+      {id:"ar_2",fx:"aura",el:"buff",name:"매의 눈",type:"buff",target:"self",power:.16,proc:.16,dur:3,stat:"crit",more:[["acc",.1],["skAcc",.1]],txt:"치명타 확률 · 명중 · 스킬 성공률을 올린다"},
       {id:"ar_u",fx:"pierce",el:"fire",kind:"ult",name:"유성 화살",type:"ult_single",target:"enemy_back",power:3.5,proc:1,dur:0,forceCrit:true,txt:"확정 치명의 일격"}
     ]},
   rogue:{ name:"로그", role:"dps", sub:"암살", tone:"dps",
-    desc:"속도로 먹고사는 단검잡이. 약해진 적을 놓치지 않는다.",
+    desc:"약해진 적을 놓치지 않는 암살자.",
     base:{hp:870,atk:128,def:48,spd:128,crit:.15,critDmg:1.65,acc:.93,eva:.16,skAcc:.9,skRes:.12,ultGain:1.1,leech:.01},
     grow:{hp:42,atk:7.6,def:2.4,spd:4.0},
     skills:[
@@ -2846,7 +2846,7 @@ const JOBS = {
       {id:"ro_u",fx:"slash",el:"dark",kind:"ult",name:"암살",type:"ult_single",target:"enemy_low",power:2.7,proc:1,dur:0,execute:.25,txt:"빈사의 적에게 추가 피해"}
     ]},
   priest:{ name:"프리스트", role:"heal", sub:"회복", tone:"heal",
-    desc:"무너지지 않게 붙드는 사제. 축복과 대치유로 판을 길게 만든다.",
+    desc:"회복에 능한 사제. 축복으로 아군의 전투 능력을 보조한다.",
     base:{hp:960,atk:80,def:58,spd:96,crit:.06,critDmg:1.5,acc:.95,eva:.07,skAcc:1.0,skRes:.22,ultGain:1.1,leech:0},
     grow:{hp:48,atk:4.6,def:3.0,spd:2.2},
     skills:[
@@ -2866,7 +2866,7 @@ const JOBS = {
       {id:"tm_u",fx:"aura",el:"arcane",kind:"ult",name:"시간 정지",type:"ult_time",target:"enemy_all",power:1.0,proc:1,dur:0,txt:"적 전체 행동 초기화, 아군 필살 게이지 충전"}
     ]},
   wizard:{ name:"마법사", role:"dps", sub:"광역 마법", tone:"dps",
-    desc:"원소를 다루는 술사. 한 번에 여러 명을 태우고 얼린다.",
+    desc:"광역 마법에 정통한 마법 사용자.",
     base:{hp:880,atk:148,def:48,spd:98,crit:.12,critDmg:1.75,acc:.97,eva:.06,skAcc:.95,skRes:.15,ultGain:1.05,leech:0},
     grow:{hp:42,atk:8.4,def:2.4,spd:2.4},
     skills:[
@@ -2876,24 +2876,24 @@ const JOBS = {
       {id:"wz_u",fx:"burst",el:"arcane",kind:"ult",name:"중력 반전",type:"ult_aoe",target:"enemy_all",power:2.2,proc:1,dur:2,txt:"중력을 뒤집는 마력으로 적 전체를 압도한다"}
     ]},
   druid:{ name:"드루이드", role:"tank", sub:"서브 딜러 · 서브 힐러", tone:"tank",
-    desc:"숲의 이치를 빌리는 수호자. 버티고, 때리고, 되살린다.",
+    desc:"유지력이 높은 숲의 수호자.",
     base:{hp:1220,atk:100,def:88,spd:94,crit:.08,critDmg:1.55,acc:.95,eva:.07,skAcc:.92,skRes:.2,ultGain:1.0,leech:.05},
     grow:{hp:66,atk:5.4,def:5.0,spd:2.2},
     skills:[
       {id:"dr_b",fx:"slash",el:"poison",kind:"basic",name:"가시 채찍",type:"dmg",target:"enemy_front",power:.96,proc:1,dur:0,txt:"덩굴을 휘둘러 후려친다"},
       {id:"dr_1",fx:"heal",el:"heal",name:"재생의 씨앗",type:"regen",target:"ally_low",power:.03,proc:.2,dur:2,txt:"상처 위에 생명을 틔운다 — 대상이 자기 차례마다 최대 체력의 3%를 회복한다"},
       {id:"dr_2",fx:"aura",el:"buff",name:"야수화",type:"buff",target:"self",power:.3,pow2:.1,stat2:"spd",regen:.06,proc:.2,dur:3,stat:"def",txt:"야수의 몸으로 바뀐다 — 방어·속도 상승, 차례마다 최대 체력의 6% 회복"},
-      {id:"dr_u",fx:"burst",el:"poison",kind:"ult",name:"대자연의 진노",type:"ult_aoe",target:"enemy_all",power:1.8,proc:1,dur:2,heal:.3,txt:"뿌리와 가시가 전장을 휩쓴다"}
+      {id:"dr_u",fx:"burst",el:"poison",kind:"ult",name:"대자연의 진노",type:"ult_aoe",target:"enemy_all",power:1.8,proc:1,dur:2,heal:.3,txt:"전체 피해와 방어 저하 · 회복"}
     ]},
   forcemage:{ name:"배틀메이지", role:"dps", sub:"근접 마력", tone:"dps", row:"front",
-    desc:"마력을 몸에 실어 때리는 전열 마법사. 맞으면서 부순다.",
+    desc:"마력을 신체 능력으로 전환해 싸우는 마법 사용자.",
     base:{hp:1020,atk:138,def:70,spd:96,crit:.14,critDmg:1.7,acc:.96,eva:.07,skAcc:.9,skRes:.18,ultGain:1.1,leech:.04},
     grow:{hp:54,atk:7.6,def:3.6,spd:2.4},
     skills:[
       {id:"fm_b",fx:"blunt",el:"arcane",kind:"basic",name:"마력 강타",type:"dmg",target:"enemy_front",power:1.04,proc:1,dur:0,txt:"마력을 두른 주먹을 꽂는다"},
       {id:"fm_1",fx:"burst",el:"arcane",name:"파쇄격",type:"dmg",target:"enemy_low",power:1.55,proc:.2,dur:0,pierce:.2,txt:"무너지는 적을 짓누른다"},
       {id:"fm_2",fx:"aura",el:"arcane",name:"마력 과충전",type:"charge",target:"self",power:.3,proc:.15,dur:0,ultGive:30,txt:"마력을 끌어모아 봉인을 앞당긴다 — 필살 게이지 +30"},
-      {id:"fm_u",fx:"aura",el:"arcane",kind:"ult",name:"봉인 해제",type:"ult_unseal",target:"self",power:.1,unseal:.1,atbGive:.3,proc:1,dur:2,txt:"몸에 묶어둔 마력을 모두 푼다 — 모든 능력 상승 · 단일 대상 공격 기술이 전체로"}
+      {id:"fm_u",fx:"aura",el:"arcane",kind:"ult",name:"봉인 해제",type:"ult_unseal",target:"self",power:.1,unseal:.1,atbGive:.3,proc:1,dur:2,txt:"자신의 모든 능력 상승 · 단일 대상 공격 기술 전체화"}
     ]},
   enchanter:{ name:"인챈터", role:"supp", sub:"각인 · 봉인", tone:"supp",
     desc:"무기와 갑옷에 글자를 새기는 술사. 팀 전체를 한 단계 끌어올린다.",
@@ -2906,7 +2906,7 @@ const JOBS = {
       {id:"en_u",fx:"aura",el:"holy",kind:"ult",name:"총원 각인",type:"ult_bless",target:"ally_all",power:1.0,proc:1,dur:3,txt:"아군 전체에 공격·속도를 새긴다"}
     ]},
   darkpriest:{ name:"암흑 사제", role:"heal", sub:"서브 딜러", tone:"heal",
-    desc:"남의 피로 아군을 살리는 사제. 오래 끌수록 유리해진다.",
+    desc:"상대의 체력을 아군의 체력으로 전환시키는 어둠의 사제.",
     base:{hp:980,atk:104,def:66,spd:98,crit:.1,critDmg:1.6,acc:.98,eva:.07,skAcc:.98,skRes:.2,ultGain:1.1,leech:.1},
     grow:{hp:55,atk:5.8,def:3.5,spd:2.4},
     skills:[
@@ -2926,7 +2926,7 @@ const JOBS = {
       {id:"bd_u",fx:"aura",el:"holy",kind:"ult",name:"승전의 합주",type:"ult_bless",target:"ally_all",power:1.0,atkMul:.22,spdMul:.28,ultGive:22,proc:1,dur:3,txt:"곡을 끝까지 몰아 아군 전체의 공격·속도와 필살을 끌어올린다"}
     ]},
   spellsword:{ name:"마법검사", role:"dps", sub:"마검 연격", tone:"dps", row:"front",
-    desc:"검에 주문을 실어 휘두르는 검사. 한 번에 여러 번 벤다.",
+    desc:"검에 주문을 실어 휘두르는 마검사.",
     base:{hp:1050,atk:118,def:66,spd:120,crit:.13,critDmg:1.65,acc:.96,eva:.08,skAcc:.95,skRes:.18,ultGain:1.2,leech:.02},
     grow:{hp:52,atk:7.2,def:3.4,spd:2.6},
     skills:[
@@ -2936,24 +2936,24 @@ const JOBS = {
       {id:"ss_u",fx:"slash",el:"arcane",kind:"ult",name:"천검 난무",type:"ult_aoe",target:"enemy_all",power:1.6,proc:1,dur:0,txt:"검기를 흩뿌려 전장을 가른다"}
     ]},
   gunner:{ name:"거너", role:"dps", sub:"연주 · 관통", tone:"dps",
-    desc:"화약과 강철을 다루는 사수. 멀리서 가장 약한 곳을 쏜다.",
+    desc:"마총을 다루는 사수. 갑옷의 틈새를 정확히 노린다.",
     base:{hp:880,atk:126,def:50,spd:108,crit:.16,critDmg:1.7,acc:.97,eva:.09,skAcc:.94,skRes:.14,ultGain:1.15,leech:0},
     grow:{hp:42,atk:8.2,def:2.4,spd:3.0},
     skills:[
       {id:"gn_b",fx:"pierce",el:"phys",kind:"basic",name:"가벼운 인사",type:"dmg",target:"enemy_low",power:.96,proc:1,dur:0,txt:"가장 지쳐 보이는 쪽에게 먼저 인사한다"},
       {id:"gn_1",fx:"pierce",el:"phys",name:"속사 왈츠",type:"dmg_multi",target:"enemy_rand",power:.55,proc:.3,dur:0,hits:4,txt:"네 박자에 맞춰 방아쇠를 당긴다"},
       {id:"gn_2",fx:"pierce",el:"phys",name:"무례한 노크",type:"dmg",target:"enemy_front",power:1.5,proc:.2,dur:0,pierce:.45,txt:"문을 부수고 들어가는 무거운 한 발"},
-      {id:"gn_u",fx:"pierce",el:"fire",kind:"ult",name:"그랜드 피날레",type:"ult_aoe",target:"enemy_all",power:2.0,proc:1,dur:0,pierce:.3,noBreak:true,txt:"탄창을 비워 무대를 닫는다"}
+      {id:"gn_u",fx:"pierce",el:"fire",kind:"ult",name:"그랜드 피날레",type:"ult_aoe",target:"enemy_all",power:2.0,proc:1,dur:0,pierce:.3,noBreak:true,txt:"전체 피해를 입히며 방어를 관통한다"}
     ]},
   ninja:{ name:"닌자", role:"dps", sub:"교란 · 저주", tone:"dps",
-    desc:"그림자에서 판을 흔드는 밀정. 상대를 느리고 무디게 만든다.",
+    desc:"물그림자를 이용해 판을 흔드는 밀정.",
     base:{hp:900,atk:110,def:52,spd:124,crit:.15,critDmg:1.6,acc:.96,eva:.18,skAcc:.97,skRes:.16,ultGain:1.1,leech:0},
     grow:{hp:44,atk:6,def:2.6,spd:4.2},
     skills:[
       {id:"nj_b",fx:"pierce",el:"phys",kind:"basic",name:"쿠나이",type:"dmg",target:"enemy_back",power:.88,proc:1,dur:0,txt:"뒤쪽을 노려 던진다"},
       {id:"nj_1",fx:"aura",el:"debuff",name:"수둔·수렁",type:"slow",target:"enemy_all",power:.22,proc:.2,dur:2,txt:"발밑을 물로 적셔 적 전체를 묶는다"},
       {id:"nj_2",fx:"pierce",el:"arcane",name:"수둔·수룡아",type:"dmg",target:"enemy_rand",power:1.1,proc:.24,dur:0,atbCut:.2,txt:"물의 이빨이 덮쳐 상대의 박자를 끊는다"},
-      {id:"nj_u",fx:"slash",el:"dark",kind:"ult",name:"천류·풍마수리검",type:"ult_single",target:"enemy_low",power:3.0,proc:1,dur:0,mirBonus:.5,txt:"물그림자를 모두 실어 던진다 — 1겹마다 위력이 오른다"}
+      {id:"nj_u",fx:"slash",el:"dark",kind:"ult",name:"천류·풍마수리검",type:"ult_single",target:"enemy_low",power:3.0,proc:1,dur:0,mirBonus:.5,txt:"물그림자의 힘을 실어 강력한 피해를 입힌다"}
     ]}
 };
 const JOB_KEYS = Object.keys(JOBS);
@@ -4218,7 +4218,10 @@ let UI = {view:"home", sel:null, battle:null, modal:null};
       새 시나리오를 시작해도, 창을 닫았다 열어도 그대로다. ── */
 const PREF_KEY = "heroschool_pref_v1";
 const BSPEEDS = [440, 280, 120, 93];          // ×0.5 · ×1 · ×2 · ×3 (0930 — ×6 은 너무 빨라 ×3 으로. 더 빨리는 건너뛰기)
-const PREF = {bspeed: 280, reportSpeed: 2, chronicleTest: false, uiConcept: "riso-pixel", uiV: 4, lvPopup: true, fieldPastel: true, pixelFont: true, bfGrid: false, battleCam: "stylish"};
+/* 설정 화면에서 숨긴 항목 (1001) — true 로 바꾸면 다시 보인다 */
+const OPT_FIELD_PASTEL = false;     // 전투 배경 파스텔 필터 켜고 끄기
+const OPT_XFER_FILE    = false;     // 이어하기 — 파일로 내보내기 · 파일에서 불러오기
+const PREF = {bspeed: 280, reportSpeed: 2, chronicleTest: false, uiConcept: "riso-pixel", uiV: 4, lvPopup: true, fieldPastel: false, pixelFont: true, bfGrid: false, battleCam: "stylish"};
 /* uiV 4 — 삽화를 기본으로 적용하고 이전 화면 분위기 선택은 숨긴다. */
 try{
   const j = JSON.parse(localStorage.getItem(PREF_KEY) || "null");
@@ -4229,7 +4232,7 @@ try{
   if(j && (j.uiV|0) >= 4 && j.uiConcept === "riso-pixel") PREF.uiConcept = j.uiConcept;
   if(j && typeof j.chronicleTest === "boolean") PREF.chronicleTest = j.chronicleTest;
   if(j && typeof j.lvPopup === "boolean") PREF.lvPopup = j.lvPopup;
-  if(j && typeof j.fieldPastel === "boolean") PREF.fieldPastel = j.fieldPastel;
+  if(j && typeof j.fieldPastel === "boolean" && OPT_FIELD_PASTEL) PREF.fieldPastel = j.fieldPastel;   // 설정을 숨긴 동안은 모두 기본값(끔 — 1001)
   if(j && typeof j.pixelFont === "boolean") PREF.pixelFont = j.pixelFont;
   if(j && typeof j.bfGrid === "boolean") PREF.bfGrid = j.bfGrid;
   if(j && ["simple","stylish"].includes(j.battleCam)) PREF.battleCam = j.battleCam;   // 0930 — 스타일리시가 기본. 예전 "basic" 저장값은 한 번 무시한다
@@ -5454,6 +5457,9 @@ function runBattle(teamA, teamB, opt){
                    regen:(sk.regen? sk.regen*(p/sk.power) : 0), src:u.uid});
           if(sk.leech) addFx(t,{name:sk.name+"·피흡",kind:"b",turns:dur+1,stat:"leech",mode:"add",val:sk.leech});
           if(sk.eva) addFx(t,{name:sk.name+"·회피",kind:"b",turns:dur+1,stat:"eva",mode:"add",val:sk.eva});
+          /* 덧붙는 능력치 여럿 (1001) — more:[[능력치, 값], …]. 값은 stat2 · pow2 와 같은 식으로 스킬 강화에 따라 오른다 */
+          if(Array.isArray(sk.more)) sk.more.forEach(([st, v])=>{ const r = RATE_STAT.includes(st);
+            addFx(t,{name:sk.name+"·"+st,kind:"b",turns:dur+1,stat:st,mode:r?"add":"mul",val: r? v*(p/sk.power) : p*(v/sk.power)}); });
           if(sk.stat2 && sk.pow2){ const r2 = RATE_STAT.includes(sk.stat2);
             addFx(t,{name:sk.name+"·"+sk.stat2,kind:"b",turns:dur+1,stat:sk.stat2,mode:r2?"add":"mul",val: r2? sk.pow2*(p/sk.power) : p*(sk.pow2/sk.power)}); }
         });
@@ -11363,14 +11369,14 @@ function xferPanel(){
         <div class="btnrow" style="margin-top:8px"><button class="btn sm" id="xfLoad"${xferOn()?"":" disabled"}>불러오기</button></div>
       </div>
     </div>
-    <div class="opt" style="cursor:default;margin-top:10px">
+    ${OPT_XFER_FILE ? `<div class="opt" style="cursor:default;margin-top:10px">
       <div class="od">서버를 쓰지 않고 파일로 옮길 수도 있다 — 내려받은 파일을 다른 기기에서 들이면 똑같이 이어진다.</div>
       <div class="btnrow" style="margin-top:8px">
         <button class="btn sm" id="xfFileOut">파일로 내보내기</button>
         <button class="btn sm" id="xfFileIn">파일에서 불러오기</button>
       </div>
       <input type="file" id="xfFile" accept="application/json,.json" style="display:none">
-    </div>
+    </div>` : ""}
   </section>`;
 }
 function xferCodeModal(code, bytes){
@@ -11488,7 +11494,7 @@ function viewOpt(){
   const pxPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>도트 폰트</b><span>글자를 도트 폰트(물마루)로 보여 준다. 또렷하게 찍히도록 글자 크기를 12 · 24px 로 맞춘다. 끄면 원래 글꼴로 돌아간다.</span></div><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="optPixelFont" ${PREF.pixelFont!==false?"checked":""}> 사용</label></div></section>`;
   const gridPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>전투 배치 격자</b><span>전투 화면 바닥에 학생이 설 자리(격자)를 표시한다. 기본은 표시하지 않는다.</span></div><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="optBfGrid" ${PREF.bfGrid?"checked":""}> 표시</label></div></section>`;
   const camPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>전투 연출</b><span>스타일리시 모드는 가로 화면에서만 — 행동 게이지가 차오르고, 차례가 온 학생과 스킬 대상을 카메라가 가까이 잡아 보여 준다. 세로 화면에서는 심플 모드로 돈다.</span></div><div class="ui-concept-picker" role="group" aria-label="전투 연출"><button type="button" class="btn" data-battle-cam="simple" aria-pressed="${PREF.battleCam!=="stylish"}">심플 모드</button><button type="button" class="btn" data-battle-cam="stylish" aria-pressed="${PREF.battleCam==="stylish"}">스타일리시 모드</button></div></div></section>`;
-  return conceptPanel + pxPanel + lvPanel + fpPanel + gridPanel + camPanel + errPanel() + xferPanel() + `<section class="panel"><div class="optrow"><div class="optlab"><b>애니메이션 테스트</b><span>공통 몸체와 부위별 착용 레이어의 동작을 확인합니다.</span></div><button class="btn" id="avatarLabOpen">테스트 열기</button></div></section><section class="panel"><div class="optrow"><div class="optlab"><b>진행 페이지 테스트 모드</b><span>양피지 책으로 일정과 학생 집중 훈련을 기록합니다. 기본은 꺼짐이며 다른 페이지는 유지됩니다.</span></div><label><input type="checkbox" id="chronicleToggle" ${PREF.chronicleTest?"checked":""}> 사용</label></div></section><section class="panel">
+  return conceptPanel + pxPanel + lvPanel + (OPT_FIELD_PASTEL ? fpPanel : "") + gridPanel + camPanel + errPanel() + xferPanel() + `<section class="panel"><div class="optrow"><div class="optlab"><b>애니메이션 테스트</b><span>공통 몸체와 부위별 착용 레이어의 동작을 확인합니다.</span></div><button class="btn" id="avatarLabOpen">테스트 열기</button></div></section><section class="panel"><div class="optrow"><div class="optlab"><b>진행 페이지 테스트 모드</b><span>양피지 책으로 일정과 학생 집중 훈련을 기록합니다. 기본은 꺼짐이며 다른 페이지는 유지됩니다.</span></div><label><input type="checkbox" id="chronicleToggle" ${PREF.chronicleTest?"checked":""}> 사용</label></div></section><section class="panel">
     <div class="panel-h"><h2>설정</h2><span class="hint">빌드 ${esc(BUILD)} · 규칙 ${RULES_VER} · 전투 연출과 화면 표시를 조절한다</span></div>
     <div class="optrow">
       <div class="optlab">
@@ -13219,7 +13225,7 @@ function codexJobs(){
           <div class="cxbody">
             <div class="on">${J.name}<span class="tag role-${J.tone}">${ROLE_LABEL[r]}</span>${
               n? `<span class="price">${n}명 재학</span>`:""}</div>
-            <div class="od">${J.sub? `<b style="color:var(--text)">${esc(J.sub)}</b> · `:""}${esc(J.desc)}</div>
+            <div class="od">${esc(J.desc)}</div>
             <div class="od jgrow">${jobGradeRow(k)}</div>
             ${ult? `<div class="od" style="color:var(--brass)">필살 — ${esc(ult.name)} · ${esc(ult.txt)}</div>`:""}
           </div>
