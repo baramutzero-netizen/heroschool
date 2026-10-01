@@ -2781,7 +2781,10 @@ const SFX_TYPE = {
   debuff:"debuff", slow:"debuff", taunt:"debuff", ult_time:"debuff"
 };
 /* 독·흡혈처럼 피해를 주는 기술은 쓰는 사람의 공격 소리를 그대로 낸다 */
+/* 기술 하나에만 따로 붙는 소리 — 종류 · 직업 소리보다 먼저 본다 */
+const SFX_SKILL = {ar_u:"arrowrain"};
 function sfxOf(u, sk){
+  if(sk && SFX_SKILL[sk.id]) return SFX_SKILL[sk.id];
   const t = SFX_TYPE[sk.type];
   if(t) return t;
   return SFX_JOB[u.job] || (sk.el==="phys" ? "punch" : "magic");
@@ -16538,6 +16541,8 @@ const SFX = {
   ninja: {f:"attack_ninja.ogg"},
   bow:   {f:"attack_bow.ogg"},
   bard:  {f:"attack_bard.ogg"},
+  /* 기술 전용 소리 (1001) — SFX_SKILL 이 기술 id 로 고른다 */
+  arrowrain:{f:"ult_arrowrain.ogg"},   // 아처 유성 화살 — 화살 한 발(ult_arrowrain_src.mp3)을 0.10~0.15초 간격으로 9번 겹친 것
   cheer: {f:"tournament_cheer.ogg", v:.85},
   /* 화면 효과음 (0929) — 레벨업 · 시설 공사 · 동전. bgm/ 의 같은 이름 파일을 바꾸면 소리만 갈아 끼울 수 있다 */
   levelup:{f:"sfx_levelup.ogg", v:.8},
