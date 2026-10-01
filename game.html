@@ -2226,6 +2226,15 @@ html:is([data-ui-palette="riso"],[data-ui-palette="mint"]) nav button:hover:not(
 
 
 
+
+
+
+
+
+
+
+
+
 <!-- ASSET_SCRIPTS_START -->
 <script>var HS_A = {};</script>
 <script src="assets/spr_img.webp.js?v=0af6ce1e"></script>
@@ -14866,25 +14875,39 @@ const STYLISH_SKILL_FX = {
     holyEssence: "assets/skill-fx/priest/essence.png?v=1",
     greaterHeal: "assets/skill-fx/priest/heal.png?v=1",
     blessing: "assets/skill-fx/priest/blessing.png?v=1",
-    revival: "assets/skill-fx/priest/revival.png?v=1"
+    revival: "assets/skill-fx/priest/revival.png?v=1",
+    bardMelody: "assets/skill-fx/bard/melody.png?v=1",
+    dissonance: "assets/skill-fx/bard/dissonance.png?v=1",
+    ensemble: "assets/skill-fx/bard/ensemble.png?v=1",
+    spotlight: "assets/skill-fx/bard/spotlight.png?v=1",
+    ninjaRipple: "assets/skill-fx/ninja/ripple.png?v=1",
+    waterSwamp: "assets/skill-fx/ninja/swamp.png?v=1",
+    waterDragon: "assets/skill-fx/ninja/dragon.png?v=1",
+    fumaWave: "assets/skill-fx/ninja/fuma.png?v=1",
+    boundaryWave: "assets/skill-fx/ninja/boundary-wave.png?v=1",
+    fumaPassed: "assets/skill-fx/ninja/fuma-water-spin.png?v=1",
+    waterFlower: "assets/skill-fx/ninja/water-flower.png?v=1"
   },
-  casters: {paladin: ["trail"], darkpriest: ["darkEssence"], gunner:["gunMuzzle"], priest:["holyEssence"]},
+  casters: {paladin: ["trail"], darkpriest: ["darkEssence"], gunner:["gunMuzzle"], priest:["holyEssence"], bard:["bardMelody"], ninja:["ninjaRipple"]},
   targets: {pa_b: ["impact"], pa_1: ["shield"], pa_2: ["beam"], pa_u: ["beam", "shield"],
     dp_b:["darkHit"], dp_1:["redDrain"], dp_2:["curseNail"], dp_u:["redDrain"],
     gn_b:["gunHit"], gn_1:["gunHit"], gn_2:["gunPierce"], gn_u:["gunPierce"],
     ro_1:["poisonDagger"], ro_2:["shadowStep"], ro_u:["assassination"],
-    pr_b:["impact"], pr_1:["greaterHeal"], pr_2:["blessing"], pr_u:["revival"]},
-  groups: {dp_u:["bloodRitual"]}
+    pr_b:["impact"], pr_1:["greaterHeal"], pr_2:["blessing"], pr_u:["revival"],
+    bd_1:["shadowStep"], bd_2:["dissonance"], bd_u:["spotlight"],
+    nj_1:["dissonance"], nj_2:["boundaryWave","waterDragon"], nj_u:["fumaPassed","waterFlower"]},
+  groups: {dp_u:["bloodRitual"], bd_u:["ensemble"], nj_1:["waterSwamp"]}
 };
 function stylishSkillFxPlan(job, skillId){
   return {caster: STYLISH_SKILL_FX.casters[job] || [], target: STYLISH_SKILL_FX.targets[skillId] || [], group: STYLISH_SKILL_FX.groups[skillId] || []};
 }
-function stylishFormation(actor, allies, enemies, side){
+function stylishFormation(actor, allies, enemies, side, skillId){
   const positions=[], mirror=x=>side==="B"?100-x:x;
   const lane=(list,left,right)=>list.forEach((uid,i)=>positions.push({uid,
     x:mirror(list.length===1?(left+right)/2:left+(right-left)*i/(list.length-1)),
     y:list.length>2?(i%2?61:56):58, scale:1.3*Math.max(.62,Math.min(1,2.5/list.length))}));
-  if(enemies.length){lane([actor,...allies],18,43);lane(enemies,57,82);}
+  if(skillId==="nj_u" && enemies.length===1){lane([actor,...allies],15,25);lane(enemies,43,43);}
+  else if(enemies.length){lane([actor,...allies],18,43);lane(enemies,57,82);}
   else {lane([actor,...allies],28,78);}
   return positions;
 }
@@ -14900,17 +14923,24 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
   layer.className="stylish-skill-fx"; layer.setAttribute("aria-hidden","true");
   layer.style.cssText="position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:325";
   const ground=layer.cloneNode();ground.className="stylish-group-fx";ground.style.zIndex="0";
-  const group=[...new Set(groupTargets)].filter(Boolean);
+  const group=[...new Set(skillId==="bd_u"?[caster,...targets]:groupTargets)].filter(Boolean);
   const add=(el, kind)=>{
     if(!el) return;
     const img=document.createElement("img"); img.src=STYLISH_SKILL_FX.assets[kind];
     img.dataset.effect=kind; img.dataset.target=el.dataset.uid; img.alt="";
     img.style.cssText="position:absolute;max-width:none;image-rendering:auto;object-fit:fill;pointer-events:none";
     img.style.opacity=kind==="bloodRitual" ? ".6" : kind==="shield" ? ".58" : kind==="beam" ? ".72" : (kind==="darkEssence"||kind==="holyEssence") ? ".66" : kind==="curseNail" ? ".65" : ".9";
+    if(kind==="spotlight") img.style.opacity=".46";
+    if(kind==="waterSwamp") img.style.opacity=".64";
+    if(kind==="ninjaRipple") img.style.opacity=".8";
+    if(kind==="waterDragon") img.style.maskImage="linear-gradient(to right,transparent 0%,black 16%,black 100%)";
+    if((kind==="waterDragon"||kind==="fumaWave") && side==="B") img.style.transform="scaleX(-1)";
+    if(kind==="waterFlower" && side==="B") img.style.transform="scaleX(-1)";
+    if(kind==="bardMelody" && side==="B") img.style.transform="scaleX(-1)";
     if((kind==="trail" || kind==="darkEssence" || kind==="holyEssence" || kind==="redDrain" || kind==="gunMuzzle" || kind==="gunPierce" || kind==="poisonDagger" || kind==="assassination") && side==="B") img.style.transform="scaleX(-1)";
     if(kind==="gunPierce" && mono) img.style.filter="brightness(.08)";
     layer.append(img); entries.push({el,kind,img});
-    if(kind==="gunPierce") ground.append(img);
+    if(kind==="gunPierce" || kind==="ninjaRipple" || kind==="fumaPassed" || kind==="waterFlower") ground.append(img);
     return entries[entries.length-1];
   };
   plan.caster.forEach(kind=>add(caster,kind));
@@ -14918,10 +14948,11 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
     const el=targets.find(t=>t.dataset.uid===uid);if(!el)return;
     plan.target.forEach(kind=>{const entry=add(el,kind);entry.shot=shot;entry.img.dataset.shot=shot;});
   });
-  else [...new Set(targets)].forEach(el=>plan.target.forEach(kind=>add(el,kind)));
+  else [...new Set(skillId==="bd_u"?[caster,...targets]:targets)].forEach(el=>plan.target.forEach(kind=>add(el,kind)));
   if(group.length) plan.group.forEach(kind=>{
     add(group[0],kind);const entry=entries[entries.length-1];entry.group=group;
-    entry.img.dataset.targets=group.map(el=>el.dataset.uid).join(",");ground.append(entry.img);
+    entry.img.dataset.targets=group.map(el=>el.dataset.uid).join(",");
+    if(kind!=="ensemble") ground.append(entry.img);
   });
   if(!entries.length) return ()=>{};
   // Field background is z=-1; the transformed camera is an auto/0 stacking context.
@@ -14955,6 +14986,7 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
       const sprite=el.querySelector(".spr-anchor") || el.querySelector(".sprwrap") || el;
       const r=sprite.getBoundingClientRect(), h=r.height*sy, w=r.width*sx;
       const cx=(r.left+r.width/2-sr.left)*sx, cy=(r.top-sr.top)*sy+h*.55;
+      const throwSize=Math.min(h,Math.max(1,(side==="B"?cx:stage.clientWidth-cx)-12)/3.6);
       let width=h*1.05, height=width, x=cx-width/2, y=cy-height/2;
       if(kind==="trail") {width=h*1.35;height=width;x=cx-width/2+(side==="B"?-1:1)*w*.12;y=cy-height*.82;}
       if(kind==="shield") {width=h*.88;height=width;x=cx-width/2;y=cy-height/2;}
@@ -14962,7 +14994,43 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
       if(kind==="curseNail") {width=h*.53;height=width/1.2;x=cx-width*.28;y=cy-height*.86;}
       if(kind==="redDrain") {width=h*.95;height=width/1.5;x=cx-width*(side==="B"?.33:.67);y=cy-height*.72;}
       if(kind==="poisonDagger") {width=h*.34;height=width;x=cx-width*(side==="B"?.26:.74);y=(r.top-sr.top)*sy+h*.65-height*.5;}
-      if(kind==="shadowStep") {width=h*1.05;height=width;x=cx-width/2;y=cy-height/2;}
+      if(kind==="shadowStep" || kind==="dissonance") {width=h*1.05;height=width;x=cx-width/2;y=cy-height/2;}
+      if(kind==="dissonance") y=(r.top-sr.top)*sy+h*.8-height*.97;
+      if(kind==="ninjaRipple") {
+        width=h*1.12;height=width/2;x=cx-width/2;y=(r.top-sr.top)*sy+h*.8-height*.5;
+      }
+      if(kind==="waterDragon" || kind==="boundaryWave") {
+        const dir=side==="B"?-1:1, sourceX=cx-dir*h*.95;
+        if(kind==="boundaryWave"){
+          width=h*1.45;height=width/2;x=sourceX-width/2;y=bottom-height*.98;
+        }else{
+          const dx=cx-sourceX,dy=cy-bottom;
+          width=Math.hypot(dx,dy)/.7;height=width/2;x=sourceX;y=bottom-height/2;
+          img.style.transformOrigin="0 50%";
+          img.style.transform=`rotate(${Math.atan2(dy,dx)*180/Math.PI}deg)${side==="B"?" scaleY(-1)":""}`;
+        }
+      }
+      if(kind==="fumaPassed") {
+        width=throwSize*1.8;height=width;
+        const dir=side==="B"?-1:1;
+        x=cx+dir*throwSize*2.6-width/2;y=cy-h*.2-height/2;
+        img.style.transform=`rotate(${-dir*18}deg) scaleY(.65) rotate(${dir*elapsed*.7}deg)`;
+      }
+      if(kind==="waterFlower"){
+        width=throwSize*1.6;height=width/2;
+        x=side==="B"?cx-w*.15-width:cx+w*.15;
+        y=(r.top-sr.top)*sy+h*.62-height*.5;
+      }
+      if(kind==="fumaWave") {width=h*1.25;height=width;x=cx-width/2;y=cy-height*.55;}
+      if(kind==="bardMelody") {
+        width=h*1.1;height=width*.5;
+        x=cx+(side==="B"?-1:1)*w*.24-width*(side==="B"?.9:.1);
+        y=(r.top-sr.top)*sy+h*.59-height*.7;
+      }
+      if(kind==="spotlight") {
+        width=h*.88;height=Math.max(1,(r.top-sr.top)*sy+h*.84-top);
+        x=cx-width/2;y=top;
+      }
       if(kind==="greaterHeal" || kind==="blessing") {width=h; height=h; x=cx-width/2;y=cy-height/2;}
       if(kind==="revival") {
         height=h*1.2;width=height*.5;x=cx-width/2;
@@ -14989,6 +15057,21 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
         const foot=Math.max(...rs.map(b=>b.top+b.height*.8));
         width=Math.max(h*1.15,(right-left)*sx+h*.35);height=width*.5;
         x=((left+right)/2-sr.left)*sx-width/2;y=(foot-sr.top)*sy-height*.72;
+        if(kind==="ensemble") {
+          // Repeat proportionally scaled phrases instead of stretching the notes.
+          const span=width, start=x, ratio=img.naturalWidth/img.naturalHeight || 3;
+          const count=Math.max(1,Math.ceil(span/(h*.95*ratio)));
+          width=span/(count-(count-1)*.08);height=width/ratio;
+          const heads=Math.min(...rs.map(b=>b.top+b.height*.15));
+          y=Math.max(top,(heads-sr.top)*sy-height*.9);
+          const tiles=img._ensembleTiles||(img._ensembleTiles=[]);
+          while(tiles.length<count-1){const tile=img.cloneNode();layer.append(tile);tiles.push(tile);}
+          while(tiles.length>count-1)tiles.pop().remove();
+          [img,...tiles].forEach((tile,i)=>{
+            Object.assign(tile.style,{left:(start+i*width*.92)+"px",top:y+"px",width:width+"px",height:height+"px"});
+            tile.style.maskImage=count===1?"none":`linear-gradient(to right,${i?"transparent 0%,black 8%":"black 0%"},${i<count-1?"black 92%,transparent 100%":"black 100%"})`;
+          });
+        }
       }
       if(kind==="darkEssence" || kind==="holyEssence") {
         // Artwork focus (88%,48%) meets the outstretched staff tip; mirror for side B.
@@ -15267,7 +15350,7 @@ function openBattle(res, opt, onDone){
     cam.classList.add("cam-anim"); stage.classList.add("cam-focus");
     const allies = tg.filter(u=>sideOf(u)===side), enemies = tg.filter(u=>sideOf(u)!==side);
     const place = (el, x, y, k)=>{ if(!el) return; el.dataset.ox = el.style.left; el.dataset.oy = el.style.top; el.classList.add("cam-in"); el.style.left = x + "%"; el.style.top = y + "%"; el.style.setProperty("--cs", k); };
-    stylishFormation(a, allies, enemies, side).forEach(p=>place(uEl(p.uid),p.x,p.y,p.scale));
+    stylishFormation(a, allies, enemies, side, F.fx && F.fx.skillId).forEach(p=>place(uEl(p.uid),p.x,p.y,p.scale));
     ae.classList.add("cam-actor");
     setMot(ae, "attack", 0); tg.forEach(u=> setMot(uEl(u), "idle", 0));
     stage.style.setProperty("--cam", `scale(${CS})`);
