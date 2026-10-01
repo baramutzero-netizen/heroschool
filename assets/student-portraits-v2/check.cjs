@@ -1,3 +1,0 @@
-const {chromium}=require('playwright');
-const root='D:/heroschool';
-(async()=>{const browser=await chromium.launch({channel:'msedge',headless:true});const page=await browser.newPage({viewport:{width:1180,height:1000}});await page.goto('file:///'+root+'/assets/student-portraits-v2/preview.html');await page.evaluate(()=>Promise.all([...document.images].map(i=>i.decode().catch(()=>{}))));await page.screenshot({path:root+'/assets/student-portraits-v2/contact.png',fullPage:true});console.log(await page.evaluate(()=>[...document.querySelectorAll('.large')].map(i=>({name:i.src.split('/').pop(),loaded:i.naturalWidth>0}))));await browser.close()})().catch(e=>{console.error(e);process.exit(1)});

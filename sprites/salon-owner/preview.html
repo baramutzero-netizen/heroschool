@@ -1,4 +1,0 @@
-<!doctype html><meta charset="utf-8"><title>미용실 원장님 · 가위 4프레임</title>
-<style>body{background:#292630;color:#eee;font:16px sans-serif;text-align:center}canvas{background:#c7b7a1;width:384px;height:384px;image-rendering:pixelated}button{margin:16px;padding:8px}img{max-width:100%}</style>
-<h2>미용실 원장님 · 찰칵찰칵</h2><canvas width="256" height="256"></canvas><div><button id="toggle">일시정지</button><button id="next">다음 프레임</button><span id="label"></span></div><img src="snip.png">
-<script>const c=document.querySelector('canvas'),ctx=c.getContext('2d'),im=new Image();let frame=0,play=true;function draw(){ctx.clearRect(0,0,256,256);ctx.drawImage(im,frame*256,0,256,256,0,0,256,256);label.textContent=(frame+1)+' / 4'}im.onload=()=>{draw();setInterval(()=>{if(play){frame=(frame+1)%4;draw()}},200)};im.src='snip.png';toggle.onclick=()=>{play=!play;toggle.textContent=play?'일시정지':'재생'};next.onclick=()=>{play=false;toggle.textContent='재생';frame=(frame+1)%4;draw()};</script>

@@ -1,7 +1,0 @@
-{
-  "tool": "built-in image_gen",
-  "reference": "sprites/src/field_wraith.png",
-  "base": "Create background-only polished detailed pixel art JRPG battle field for 'Foggy Old Castle Ruins'. Preserve reference mood: blue-gray twilight, distant ruined gothic castle and broken aqueduct emerging from mist, ivy-covered shattered arches, bare gnarled trees, mossy stone courtyard, pale weak sun through clouds. Empty combat ground, no characters monsters UI text. Floor dark damp cracked stone with moss and subtle puddles, readable flat combat space, atmospheric mist mainly far background, not opaque covering foreground. Near foreground bottom is a continuous natural ruin edge with irregular broken low masonry, creeping roots and ferns, varied across width, no props from tournament arenas. Not horror gore.",
-  "portrait": "Portrait 9:16. Far scenery in top 20 percent, walkable perspective courtyard from y20% to y83%, bottom17% near ruined parapet and roots across width. Strong depth, long floor extending downward. Keep combat floor unobstructed.",
-  "landscape": "Landscape 2:1. Background ruined arches and distant castle top 30 percent, open courtyard middle 55 percent, near low rubble and roots bottom15%. Wide battle staging ground."
-}

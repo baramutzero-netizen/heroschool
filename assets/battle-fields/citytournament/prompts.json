@@ -1,7 +1,0 @@
-{
-  "tool": "built-in image_gen",
-  "reference": "sprites/src/field_citytournament.png",
-  "base": "Create background-only polished pixel-art JRPG battle arena, matching reference's humble local city tournament dirt court, timber fence and benches, distant mountains. Autumn city tournament in warm clear daylight: orange gold and russet trees at edges, small navy gold pennants at fence, a few fallen leaves only around edges. No characters, no crowds, no UI, no text, no border. Large empty compacted earth battle surface with white chalk rectangular boundary in perspective. Crisp detailed game art, warm readable floor, not photorealistic. Keep props at perimeter.",
-  "portrait": "Portrait 9:16 1080x1920. Rear fence and scenery confined to top 20 percent. Long perspective dirt ground continues all the way to bottom, occupying 80 percent; chalk side lines extend toward lower corners. Camera angled downward. No foreground obstructions.",
-  "landscape": "Landscape 2:1 1920x960. Wide court, rear fence/scenery top 28 percent, open perspective dirt arena lower 72 percent."
-}

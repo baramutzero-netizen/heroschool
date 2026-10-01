@@ -1,9 +1,0 @@
-{
-  "tool": "built-in image_gen",
-  "prompt": "Edit Image 1 only. Image 2 is reference for foreground prop placement and scale, not location replacement. Preserve Image 1's exact portrait 9:16 framing, upper scenery, floor perspective, style and colors. Add foreground furnishings at the bottom left and bottom right, confined to bottom 25% and outer 25% width on each side, similar to Image 2. Keep center 50% width fully clear, no people, UI or text. Humble autumn dirt tournament: left corner cropped timber fence, two small wooden supply crates and a barrel with scattered orange leaves; right corner wooden post with navy gold tournament banner and small bench edge.Objects visually frame arena, slightly softer near camera. Do not change upper 70% of image.",
-  "references": [
-    "assets/battle-fields/citytournament/portrait-source.png",
-    "assets/battle-fields/training/portrait-source.png"
-  ],
-  "output": "portrait-props.png"
-}

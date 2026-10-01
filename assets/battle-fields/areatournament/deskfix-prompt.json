@@ -1,6 +1,0 @@
-{
-  "tool": "built-in image_gen",
-  "prompt": "Precise local edit of this image. Keep entire image and 9:16 composition unchanged except bottom-center commentators desk and two seated commentators. They currently look embedded in tabletop. Fix physically plausible seating: shorten tabletop front-to-back depth by about half (vertical extent on canvas), place the two commentators BEHIND the desk on its near-camera side, facing away toward arena. Move their chairs backward toward camera, away from desk, with clear gap. Their full backs, shoulders, arms and chair backs must be visible IN FRONT OF and occluding near table edge; tabletop must never cross or cut through their torsos. Hands may rest on far tabletop naturally, tabletop lies beyond their bodies toward arena. Two separate chairs. Keep hats/hair and clothes identity. Reduce desk vertical size, preserve width and modest wooden festival design. Keep audience and scenery and floor unchanged. No new text, no HUD.",
-  "reference": "portrait-festival-source.png",
-  "output": "portrait-deskfix.png"
-}

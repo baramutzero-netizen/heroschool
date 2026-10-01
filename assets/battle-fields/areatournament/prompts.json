@@ -1,7 +1,0 @@
-{
-  "tool": "built-in image_gen",
-  "reference": "sprites/src/field_areatournament.png",
-  "base": "Background-only refined detailed pixel-art JRPG regional tournament and qualifying league arena. Reference image establishes same location: broad pale warm limestone tiled court, dark stone rectangular boundary inlay, timber spectator bleachers at rear left and right under ivory canvas awnings, wooden rail fence, lush green trees and distant blue mountains under clear daylight. Add modest navy and gold tournament pennants to railings, polished organized regional competition atmosphere. No people, no characters, no UI, no text, no border, no weapons. Keep all playable central area empty and flat, props only rear and perimeter. Crisp illustrated pixel-art consistent with reference.",
-  "portrait": "Portrait 9:16 1080x1920. Rear bleachers, awnings and landscape occupy only top 20 percent. Perspective paving extends far downward for remaining 80 percent, tiles gradually larger toward bottom. No foreground obstruction.",
-  "landscape": "Landscape exact 2:1 1920x960. Wide panoramic arena, scenery and bleachers in top 30 percent, open tiled combat ground lower 70 percent."
-}
