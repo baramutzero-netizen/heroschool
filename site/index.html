@@ -3337,6 +3337,8 @@ const FACILITIES = {
   hall:   Object.assign({n:"수련관",   d:"적극성 · 팀워크 실습",      base:115, ex:3},  FAC_TRAIN),
   arena:  Object.assign({n:"대련장",   d:"실전 형식 훈련",            base:115, ex:1},  FAC_TRAIN),
   counsel:{n:"상담실",   d:"상담에서 지도력·정보력·호소력 보정", base:1000, start:0, max:6, ex:4},
+  /* 드래프트 홀 (1001) — 한 번 지으면 시설 · 상점에 드래프트 홀 탭이 열린다 (스카우터 고용 · 유망주 탐색) */
+  draft:  {n:"드래프트 홀", d:"드래프트 홀 사용이 가능해진다", start:0, max:1, costs:[5000], ex:4},
   /* 차원 포탈 — 이계에서 온 편지를 받은 뒤, 봄 상반기에만 설치할 수 있다. 편지 전에는 ??? 로만 보인다 */
   portal: {n:"차원 포탈", d:"모든 대회의 난이도 대폭 증가",
            start:0, max:1, costs:[20000], secret:true}
@@ -8450,18 +8452,53 @@ function scoutOpen(){ return !scoutFull() && (S.scoutTries||0) > 0; }
 /* 유명도 단계별 영입 성공률 보정 — 무명 0 · 유명 +5 · 강호 +10 · 명문 +15 · 초명문 +20%p */
 const SCOUT_FAME_BONUS = [0, .05, .10, .15, .20];
 function scoutFameBonus(){ return SCOUT_FAME_BONUS[clamp(fameTitleIdx(S.fame), 0, 4)] || 0; }
+/* ── 드래프트 홀 (1001) ──────────────────────────────────
+   스카우터 고용 Lv.1~5 — 레벨마다 그 값으로 S급 출현 확률이 오른다 (누적 합이 아니라 그 레벨의 값).
+   늘어난 S 몫은 낮은 등급(D → C → B → A) 분포부터 덜어 낸다. Lv.3 부터 후보가 늘고 유망주 탐색이 열린다.
+   유망주 탐색 — 고른 직업은 등장 가중치 2 (다른 직업 1), 고른 직업마다 후보에 최소 1명. 겨울 후보가 나올 때 반영된다 */
+const SCOUTER_COST = [2000, 8000, 15000, 25000, 50000];   // Lv.0→1 … 4→5
+const SCOUTER_S    = [0, .03, .06, .10, .15, .20];
+const SCOUTER_PLUS = [0, 0, 0, 1, 3, 6];
+const SCOUTER_PICK = [0, 0, 0, 1, 2, 3];
+const SCOUT_BASE_N = 8;
+function draftBuilt(){ return !!(S && S.facil && (S.facil.draft|0) >= 1); }
+function draftState(){
+  S.draft = (S.draft && typeof S.draft === "object") ? S.draft : {lv:0, jobs:[]};
+  if(!Array.isArray(S.draft.jobs)) S.draft.jobs = [];
+  S.draft.lv = clamp(S.draft.lv|0, 0, SCOUTER_COST.length);
+  return S.draft;
+}
+function scouterLv(){ return draftBuilt() ? draftState().lv : 0; }
+function draftPicks(){ return SCOUTER_PICK[scouterLv()] || 0; }
+function draftJobs(){ return draftState().jobs.filter(k=> JOB_KEYS.includes(k)).slice(0, draftPicks()); }
+function scoutCount(){ return SCOUT_BASE_N + (SCOUTER_PLUS[scouterLv()] || 0); }
+/* 유명도 단계 ti 의 후보 등급 분포 — 스카우터 S 몫을 얹는다 */
+function scoutDistNow(ti, lv){
+  const d = Object.assign({}, SCOUT_DIST[clamp(ti, 0, SCOUT_DIST.length-1)]);
+  const tot = Object.values(d).reduce((a,b)=> a+b, 0);
+  const want = (SCOUTER_S[lv == null ? scouterLv() : lv] || 0) * tot;
+  let need = want;
+  ["D","C","B","A"].forEach(g=>{ const t = Math.min(d[g]||0, need); d[g] = (d[g]||0) - t; need -= t; });
+  d.S = (d.S||0) + (want - need);
+  return d;
+}
 function scoutRate(g){
   const base = {D:.66,C:.54,B:.40,A:.25,S:.13}[g];
   return clamp(base + S.master.net*.05 + scoutFameBonus() + (S.tier-1)*.04, .08, .95);
 }
 function genScouts(){
   const ti = fameTitleIdx(S.fame);
-  const dist = SCOUT_DIST[ti];
+  const dist = scoutDistNow(ti);
   S.scoutTries = scoutTriesMax();
   const GR = {S:5,A:4,B:3,C:2,D:1};
-  S.scouts = Array.from({length:8},()=>{
+  const n = scoutCount(), want = draftJobs();
+  /* 유망주 — 고른 직업은 최소 1명씩 무작위 자리에, 나머지 자리는 가중치(고른 직업 2 · 다른 직업 1)로 뽑는다 */
+  const jobs = new Array(n).fill(null);
+  shuffle(Array.from({length:n}, (_, i)=> i)).slice(0, want.length).forEach((at, i)=>{ jobs[at] = want[i]; });
+  const W = JOB_KEYS.reduce((a,k)=>{ a[k] = want.includes(k) ? 2 : 1; return a; }, {});
+  S.scouts = jobs.map(jk=>{
     const g = wchoose(dist);
-    const st = newStudent(1, g);
+    const st = newStudent(1, g, jk || (want.length ? wchoose(W) : null));
     return {st, rate:scoutRate(g), state:"open", tried:0};
   }).sort((a,b)=> (GR[b.st.grade]-GR[a.st.grade]) || (b.st.ment.pot-a.st.ment.pot));
   S.incoming = [];
@@ -9905,8 +9942,8 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1001-1528";
-const BUILD_TS = 1790836110974;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
+const BUILD = "1001-1751";
+const BUILD_TS = 1790844690727;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -11520,13 +11557,13 @@ function payUpkeep(){
     S.gold < 0? ` · <b style="color:var(--bad)">자금 ${fmt(S.gold)} G — 빚을 갚기 전에는 아무것도 살 수 없다</b>`:""}`, S.gold < 0 ? "bad" : "");
   return total;
 }
-const FAC_TABS = [{k:"fac", n:"건설"}, {k:"item", n:"도구"}, {k:"church", n:"교회"}, {k:"bank", n:"은행"}];
-function facTabs(){ return FAC_TABS.filter(t=> (shopUnlocked() || (t.k!=="fac" && t.k!=="item")) && (t.k!=="church" || churchLv() >= 1)); }
+const FAC_TABS = [{k:"fac", n:"건설"}, {k:"item", n:"도구"}, {k:"draft", n:"드래프트 홀"}, {k:"church", n:"교회"}, {k:"bank", n:"은행"}];
+function facTabs(){ return FAC_TABS.filter(t=> (shopUnlocked() || (t.k!=="fac" && t.k!=="item")) && (t.k!=="church" || churchLv() >= 1) && (t.k!=="draft" || draftBuilt())); }
 function viewFacil(){
   const TB = facTabs();
   const tab = TB.some(t=> t.k===UI.facTab) ? UI.facTab : TB[0].k;
   const tabs = `<div class="teamtabs" style="margin-bottom:12px">${TB.map(t=>`<button class="ttab ${tab===t.k?"on":""}" data-factab="${t.k}">${t.n}</button>`).join("")}</div>`;
-  return tabs + shopKeeper(tab) + (tab==="item" ? viewItemShop() : tab==="church" ? viewChurch() : tab==="bank" ? viewBank() : viewFacShop());
+  return tabs + shopKeeper(tab) + (tab==="item" ? viewItemShop() : tab==="draft" ? viewDraft() : tab==="church" ? viewChurch() : tab==="bank" ? viewBank() : viewFacShop());
 }
 /* 상점 주인 (0929) — 서브탭 아래 초상화와 인사. 은행장은 빚 · 예금에 따라 표정과 말이 바뀐다 */
 const NPC_IMG = {"bank": "../assets/npc/bank-manager.webp?v=152d7e34", "bankDebt": "../assets/npc/bank-manager-debt.webp?v=ef20a59b", "bankRepaid": "../assets/npc/bank-manager-repaid.webp?v=77a0fdad", "bankDeposit": "../assets/npc/bank-manager-deposit.webp?v=42615480", "carpenter": "../assets/npc/carpenter.webp?v=2bab1c4e", "tool": "../assets/npc/tool-merchant.webp?v=5828c901"};
@@ -11585,11 +11622,12 @@ function viewFacShop(){
           : k==="expand"
           ? (full ? "더 넓힐 곳이 없다" : `다음 단계 — ${expandUnlocks(lv+1).join(" · ")}`)
           : k==="portal" ? (full ? "이계와 이어져 있다" : "봄 상반기(1~6주)에만 설치할 수 있다 · 설치 후에는 되돌릴 수 없다")
+          : k==="draft" ? (full ? "시설 · 상점의 드래프트 홀 탭에서 스카우터를 고용한다" : "스카우터 고용 · 유망주 탐색으로 겨울 스카우트 후보를 바꾼다")
           : k==="infirm" ? `현재 매주 +${lv}` : `현재 효율 ×${facEff(k).toFixed(2)}`;
-        const tag = k==="portal" ? (full ? "설치 완료" : "미설치") : `Lv.${lv} / ${mx}`;
+        const tag = k==="portal" ? (full ? "설치 완료" : "미설치") : k==="draft" ? (full ? "건설 완료" : "미건설") : `Lv.${lv} / ${mx}`;
         return `<button class="opt ${lock?"locked":""} ${!lock&&!full&&S.gold<c?"poor":""}" data-fac="${k}" ${lock||full?"disabled":""}>
           <div class="on">${f.n} <span class="tag">${tag}</span><span class="price" style="${
-            lock?"color:var(--bad)":""}">${full?(k==="portal"?"":"최대"):lock||fmt(c)+" G"}</span></div>
+            lock?"color:var(--bad)":""}">${full?((k==="portal"||k==="draft")?"":"최대"):lock||fmt(c)+" G"}</span></div>
           <div class="od">${k==="expand"? facDesc(k) : `${facDesc(k)} · ${eff}`}</div>
           ${facUpkeep(k)? `<div class="od" style="color:var(--bad)">유지비 ${fmt(facUpkeep(k))} G / 계절</div>` : ""}
         </button>`;
@@ -11614,6 +11652,44 @@ function viewItemShop(){
       }).join("")}
     </div>
   </section>`;
+}
+/* 드래프트 홀 (1001) — 스카우터 고용 · 유망주 탐색 */
+function draftEffText(l){
+  if(!l) return "효과 없음";
+  return [`S급 출현 +${Math.round((SCOUTER_S[l]||0)*100)}%p`]
+    .concat(SCOUTER_PLUS[l] ? [`후보 +${SCOUTER_PLUS[l]}명`] : [])
+    .concat(SCOUTER_PICK[l] ? [l === 3 ? "유망주 탐색 해금 (직업 1개)" : `유망주 탐색 직업 ${SCOUTER_PICK[l]}개`] : []).join(" · ");
+}
+function viewDraft(){
+  const D = draftState(), lv = D.lv, max = SCOUTER_COST.length, full = lv >= max, c = full ? 0 : SCOUTER_COST[lv];
+  const dist = scoutDistNow(fameTitleIdx(S.fame)), tot = Object.values(dist).reduce((a,b)=> a+b, 0) || 1;
+  const pct = g=> `${g} ${(Math.round(dist[g]/tot*1000)/10)}%`;
+  /* 승급 단추에는 지금 레벨의 효과만 적는다 (아직 고용 전이면 고용했을 때의 Lv.1 효과) */
+  const rows = lv ? `<div class="od" style="color:var(--brass)">현재 효과 — ${draftEffText(lv)}</div>`
+                  : `<div class="od">고용하면 — ${draftEffText(1)}</div>`;
+  const n = draftPicks(), sel = draftJobs();
+  const pickPanel = n ? `<section class="panel">
+      <div class="panel-h"><h2>유망주 탐색</h2><span class="hint">선택 <b style="color:var(--brass)">${sel.length}</b> / ${n}</span></div>
+      <p style="font-size:12px;color:var(--dim);margin:-6px 0 10px">선택 직업 출현 확률 증가</p>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">${JOB_KEYS.map(k=>{ const on = sel.includes(k);
+        return `<button class="btn sm ${on?"primary":""}" data-djob="${k}" aria-pressed="${on}">${on?"✓ ":""}${esc(JOBS[k].name)}</button>`; }).join("")}</div>
+    </section>`
+    : "";   // 스카우터 Lv.3 전에는 유망주 탐색을 아예 보이지 않는다
+  return `<section class="panel">
+    <div class="panel-h"><h2>스카우터 고용</h2><span class="hint">Lv.${lv} / ${max}</span></div>
+    <div class="grid2">
+      <button class="opt ${!full&&S.gold<c?"poor":""}" id="btnScouter" ${full?'aria-disabled="true" style="cursor:default"':""}>
+        <div class="on">${lv ? "스카우터 승급" : "스카우터 고용"} <span class="tag">Lv.${lv} / ${max}</span><span class="price">${full ? "최대" : fmt(c)+" G"}</span></div>
+        ${rows}
+      </button>
+      <div class="opt" style="cursor:default">
+        <div class="on">겨울 스카우트 후보 예상<span class="price">${scoutCount()}명</span></div>
+        <div class="od">유명도 <b style="color:var(--brass)">${fameTitle(S.fame).n}</b> 기준 등급 분포</div>
+        <div class="od">${["D","C","B","A","S"].map(pct).join(" · ")}</div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--dim);margin:8px 0 0">고용/승급 후 다음 겨울 스카우트부터 반영</p>
+  </section>` + pickPanel;
 }
 /* 은행 (0926) — 원금 상환 · 이자 */
 function viewBank(){
@@ -13014,7 +13090,8 @@ function viewScout(){
       <div class="od" style="color:var(--dim)">정원이 찼으므로 남은 시도 ${S.scoutTries||0}회는 쓰이지 않고 사라진다. 겨울이 끝나면 이들이 입학한다.</div>
     </div>` : ""}
     <p style="font-size:12px;color:var(--dim);margin:-6px 0 10px">신입생 정원은 현재 <b style="color:var(--brass)">${enrollCap()}명</b>이다 (무명·유명 3 · 강호·명문 4 · 초명문 5). 겨울마다 스카우트 시도는 기본 ${SCOUT_TRIES}회이며, 학원 유명도가 한 등급 오를 때마다 1회씩 늘어난다 (현재 <b style="color:var(--brass)">${fameTitle(S.fame).n}</b> — ${scoutTriesMax()}회). 자금은 들지 않고, 성공하든 실패하든 시도 1회가 소모된다. 처음 실패한 상대는 성공률 +10%p로 한 번 더 설득할 수 있고, 두 번째도 실패하면 그 학생은 떠난다. <b style="color:var(--text)">${enrollCap()}명을 확보하면 남은 시도와 관계없이 스카우트가 끝난다.</b>
-      후보의 등급은 학원 유명도(<b style="color:var(--brass)">${fameTitle(S.fame).n}</b>)를 따른다.</p>
+      후보의 등급은 학원 유명도(<b style="color:var(--brass)">${fameTitle(S.fame).n}</b>)를 따른다.${
+        scouterLv() ? ` <b style="color:var(--text)">드래프트 홀</b> 스카우터 Lv.${scouterLv()} — ${draftEffText(scouterLv())}${draftJobs().length ? ` · 유망주 ${draftJobs().map(k=> JOBS[k].name).join(" · ")}` : ""} (겨울이 시작될 때 반영).` : ""}</p>
     <div class="grid2">
       ${S.scouts.map((c,i)=>{
         const s=c.st;
@@ -13274,6 +13351,24 @@ function bindView(){
     if(k==="portal"){ portalConfirmModal(()=> facBuyNow(k)); return; }   // 되돌릴 수 없는 선택 — 한 번 더 묻는다
     facBuyNow(k);
   });
+  /* 드래프트 홀 — 스카우터 고용 · 유망주 탐색 (1001) */
+  { const bs = $("#btnScouter");
+    if(bs) bs.onclick = ()=>{
+      const D = draftState();
+      if(D.lv >= SCOUTER_COST.length) return;
+      const c = SCOUTER_COST[D.lv];
+      if(S.gold < c){ toast("자금이 부족하다."); return; }
+      S.gold -= c; D.lv++; sfxPlay("coin");
+      logE(`<b>드래프트 홀</b> — 스카우터 Lv.${D.lv} · ${draftEffText(D.lv)}`, "good");
+      save(); render();
+    }; }
+  v.querySelectorAll("[data-djob]").forEach(b=> b.onclick = ()=>{
+    const D = draftState(), k = b.dataset.djob, n = draftPicks(), cur = draftJobs();
+    if(!JOB_KEYS.includes(k)) return;
+    if(cur.includes(k)) D.jobs = cur.filter(x=> x !== k);
+    else { if(cur.length >= n){ toast(`유망주 탐색은 직업 ${n}개까지 고를 수 있다.`); return; } D.jobs = cur.concat([k]); }
+    save(); render();
+  });
   function facBuyNow(k){
     const c=facCost(k);
     S.gold-=c; S.facil[k] = (S.facil[k]||0) + 1;
@@ -13282,6 +13377,8 @@ function bindView(){
       ? `<b>학원 증축</b> Lv.${S.facil[k]} — ${expandUnlocks(S.facil[k]).join(" · ")}${eulr(expandUnlocks(S.facil[k]).slice(-1)[0]||"")} 들일 수 있게 됐다.`
       : k==="portal"
       ? `<b>차원 포탈</b> 설치 — 이계와 이어졌다. 이제부터 친선전·신인전·가을 대회에 나오는 학원은 모두 유명도 <b>이계</b> 등급이다. 도구 탭에 새 항목이 드러났다.`
+      : k==="draft"
+      ? `<b>드래프트 홀</b> 완공 — 시설 · 상점에 <b>드래프트 홀</b> 탭이 열렸다. 스카우터를 고용할 수 있다.`
       : `<b>${FACILITIES[k].n}</b> 확장 — Lv.${S.facil[k]}`, "good"); save(); render();
   }
   {
