@@ -12,12 +12,21 @@ const STYLISH_SKILL_FX = {
     bloodRitual: "assets/skill-fx/darkpriest/ritual.png?v=1",
     gunMuzzle: "assets/skill-fx/gunner/muzzle.png?v=1",
     gunHit: "assets/skill-fx/gunner/hit.png?v=1",
-    gunPierce: "assets/skill-fx/gunner/pierce.png?v=1"
+    gunPierce: "assets/skill-fx/gunner/pierce.png?v=1",
+    poisonDagger: "assets/skill-fx/rogue/dagger-embedded.png?v=1",
+    shadowStep: "assets/skill-fx/rogue/shadow.png?v=1",
+    assassination: "assets/skill-fx/rogue/assassinate.png?v=1",
+    holyEssence: "assets/skill-fx/priest/essence.png?v=1",
+    greaterHeal: "assets/skill-fx/priest/heal.png?v=1",
+    blessing: "assets/skill-fx/priest/blessing.png?v=1",
+    revival: "assets/skill-fx/priest/revival.png?v=1"
   },
-  casters: {paladin: ["trail"], darkpriest: ["darkEssence"], gunner:["gunMuzzle"]},
+  casters: {paladin: ["trail"], darkpriest: ["darkEssence"], gunner:["gunMuzzle"], priest:["holyEssence"]},
   targets: {pa_b: ["impact"], pa_1: ["shield"], pa_2: ["beam"], pa_u: ["beam", "shield"],
     dp_b:["darkHit"], dp_1:["redDrain"], dp_2:["curseNail"], dp_u:["redDrain"],
-    gn_b:["gunHit"], gn_1:["gunHit"], gn_2:["gunPierce"], gn_u:["gunPierce"]},
+    gn_b:["gunHit"], gn_1:["gunHit"], gn_2:["gunPierce"], gn_u:["gunPierce"],
+    ro_1:["poisonDagger"], ro_2:["shadowStep"], ro_u:["assassination"],
+    pr_b:["impact"], pr_1:["greaterHeal"], pr_2:["blessing"], pr_u:["revival"]},
   groups: {dp_u:["bloodRitual"]}
 };
 function stylishSkillFxPlan(job, skillId){
@@ -37,7 +46,7 @@ function stylishSkillFxPreload(){
 }
 function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, groupTargets=[], timing={}){
   const plan=stylishSkillFxPlan(job, skillId), entries=[];
-  const mono=skillId==="gn_u", shots=skillId==="gn_1"?(timing.shots||[]):[];
+  const mono=skillId==="gn_u", inverted=skillId==="ro_u", shots=skillId==="gn_1"?(timing.shots||[]):[];
   const started=performance.now(), duration=timing.duration||1500;
   const shotStep=Math.min(duration/Math.max(1,shots.length),duration*.16);
   const layer=document.createElement("div");
@@ -50,8 +59,8 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
     const img=document.createElement("img"); img.src=STYLISH_SKILL_FX.assets[kind];
     img.dataset.effect=kind; img.dataset.target=el.dataset.uid; img.alt="";
     img.style.cssText="position:absolute;max-width:none;image-rendering:auto;object-fit:fill;pointer-events:none";
-    img.style.opacity=kind==="bloodRitual" ? ".6" : kind==="shield" ? ".58" : kind==="beam" ? ".72" : kind==="darkEssence" ? ".66" : kind==="curseNail" ? ".65" : ".9";
-    if((kind==="trail" || kind==="darkEssence" || kind==="redDrain" || kind==="gunMuzzle" || kind==="gunPierce") && side==="B") img.style.transform="scaleX(-1)";
+    img.style.opacity=kind==="bloodRitual" ? ".6" : kind==="shield" ? ".58" : kind==="beam" ? ".72" : (kind==="darkEssence"||kind==="holyEssence") ? ".66" : kind==="curseNail" ? ".65" : ".9";
+    if((kind==="trail" || kind==="darkEssence" || kind==="holyEssence" || kind==="redDrain" || kind==="gunMuzzle" || kind==="gunPierce" || kind==="poisonDagger" || kind==="assassination") && side==="B") img.style.transform="scaleX(-1)";
     if(kind==="gunPierce" && mono) img.style.filter="brightness(.08)";
     layer.append(img); entries.push({el,kind,img});
     if(kind==="gunPierce") ground.append(img);
@@ -74,8 +83,9 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
   stage.append(layer);
   const oldFilter=stage.style.filter;
   if(mono){stage.style.filter=(oldFilter?oldFilter+" ":"")+"grayscale(1) contrast(1.12)";stage.dataset.skillMonochrome=skillId;}
+  if(inverted){stage.style.filter=(oldFilter?oldFilter+" ":"")+"invert(1)";stage.dataset.skillInverted=skillId;}
   let raf=0, disposed=false;
-  const stop=()=>{disposed=true;cancelAnimationFrame(raf);layer.remove();ground.remove();if(mono){stage.style.filter=oldFilter;delete stage.dataset.skillMonochrome;}};
+  const stop=()=>{disposed=true;cancelAnimationFrame(raf);layer.remove();ground.remove();if(mono||inverted){stage.style.filter=oldFilter;delete stage.dataset.skillMonochrome;delete stage.dataset.skillInverted;}};
   const update=()=>{
     if(disposed || !stage.isConnected || !active()){stop();return;}
     const sr=stage.getBoundingClientRect(), sx=stage.clientWidth/sr.width, sy=stage.clientHeight/sr.height;
@@ -104,6 +114,14 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
       if(kind==="darkHit") {width=h*.9;height=width/1.5;x=cx-width*.51;y=cy-height*.58;}
       if(kind==="curseNail") {width=h*.53;height=width/1.2;x=cx-width*.28;y=cy-height*.86;}
       if(kind==="redDrain") {width=h*.95;height=width/1.5;x=cx-width*(side==="B"?.33:.67);y=cy-height*.72;}
+      if(kind==="poisonDagger") {width=h*.34;height=width;x=cx-width*(side==="B"?.26:.74);y=(r.top-sr.top)*sy+h*.65-height*.5;}
+      if(kind==="shadowStep") {width=h*1.05;height=width;x=cx-width/2;y=cy-height/2;}
+      if(kind==="greaterHeal" || kind==="blessing") {width=h; height=h; x=cx-width/2;y=cy-height/2;}
+      if(kind==="revival") {
+        height=h*1.2;width=height*.5;x=cx-width/2;
+        y=(r.top-sr.top)*sy+h*.82-height*.92;
+      }
+      if(kind==="assassination") {width=h*.8;height=width;x=cx-width*(side==="B"?.84:.16);y=(r.top-sr.top)*sy+h*.56-height*.66;}
       if(kind==="gunHit") {
         width=h*.48;height=width;x=cx-width/2;y=cy-height/2;
         if(shot!=null){x+=([-.06,.05,-.02,.04][shot%4])*h;y+=([-.03,.03,.05,-.05][shot%4])*h;}
@@ -125,7 +143,7 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
         width=Math.max(h*1.15,(right-left)*sx+h*.35);height=width*.5;
         x=((left+right)/2-sr.left)*sx-width/2;y=(foot-sr.top)*sy-height*.72;
       }
-      if(kind==="darkEssence") {
+      if(kind==="darkEssence" || kind==="holyEssence") {
         // Artwork focus (88%,48%) meets the outstretched staff tip; mirror for side B.
         width=h*1.15;height=width;
         const tipX=cx+(side==="B"?-1:1)*w*.46, tipY=(r.top-sr.top)*sy+h*.38;
