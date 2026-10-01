@@ -1649,14 +1649,15 @@ html[data-ui-concept="journal"] :is(.panel,.logbox,.missionbox,.modal:not(.btm),
 html[data-ui-concept="journal"] :is(.panel-h,.logbox>.panel-h){border-bottom:1px solid #9c7b4d80;padding-bottom:9px}
 html[data-ui-concept="journal"] :is(.panel-h h2,.acad-name){letter-spacing:.025em}
 html[data-ui-concept="journal"] :is(.scard,.slot,.opt,.meter,.gradcard,.syn-card,.errbox,.fxdemo){background:var(--journal-paper);color:var(--text);border-color:var(--line);box-shadow:inset 0 0 0 2px #fff2,0 1px 3px #39241220}
-/* 유물 카드 (1001) — 바탕을 유물 등급 색으로 옅게 물들인다. 유물 이름 줄(.rlname)을 품은 카드면 어디서든 */
-html body .opt:has(> .rlname){--rg:var(--muted)}
-html body .opt:has(> .rlname[data-rg="B"]){--rg:var(--tank)}
-html body .opt:has(> .rlname[data-rg="A"]){--rg:var(--supp)}
-html body .opt:has(> .rlname[data-rg="S"]){--rg:var(--brass)}
+/* 유물 · 스킬 카드 (1001) — 바탕을 등급 색으로 옅게 물들인다. 유물 이름 줄(.rlname)을 품은 카드 · 스킬 카드(.skgrade) 어디서든 */
+html body :is(.opt:has(> .rlname), .opt.skgrade){--rg:var(--muted)}
+html body .opt.skgrade[data-rg="D"]{--rg:var(--dim)}
+html body :is(.opt:has(> .rlname[data-rg="B"]), .opt.skgrade[data-rg="B"]){--rg:var(--tank)}
+html body :is(.opt:has(> .rlname[data-rg="A"]), .opt.skgrade[data-rg="A"]){--rg:var(--supp)}
+html body :is(.opt:has(> .rlname[data-rg="S"]), .opt.skgrade[data-rg="S"]){--rg:var(--brass)}
 html body .opt:has(> .rlname[data-rg="S+"]){--rg:#2A9D74}
-html body .opt:has(> .rlname[data-rg="EX"]){--rg:var(--ex)}
-html body .opt:has(> .rlname){background:color-mix(in srgb,var(--rg) 14%,#fffcf5)!important;background-image:none!important;border-color:color-mix(in srgb,var(--rg) 65%,var(--line))!important}
+html body :is(.opt:has(> .rlname[data-rg="EX"]), .opt.skgrade[data-rg="EX"]){--rg:var(--ex)}
+html body :is(.opt:has(> .rlname), .opt.skgrade){background:color-mix(in srgb,var(--rg) 14%,#fffcf5)!important;background-image:none!important;border-color:color-mix(in srgb,var(--rg) 65%,var(--line))!important}
 html[data-ui-concept="journal"] :is(.scard.sel,.slot.on,.opt.sel){border-color:#765026;box-shadow:inset 0 0 0 1px #765026,0 1px 4px #39241230}
 html[data-ui-concept="journal"] .btn{background:var(--journal-paper);border:1px solid #9d7b4d;color:#45321f;border-radius:3px 6px 4px 3px;box-shadow:inset 0 0 0 2px #fff2,0 2px 0 #17131055;font-weight:600}
 html[data-ui-concept="journal"] .btn:hover:not(:disabled){border-color:#614321;filter:brightness(1.045)}
@@ -9124,7 +9125,7 @@ function studentDetail(s, opt){
     <div class="grid2">
       ${(()=>{ const P=passiveOf(passiveJobOf(s)); if(!P) return "";
         const g = skGrade(s,"passive"), k = 1+((s.skMod&&s.skMod.passive||{}).pow||0);
-        return `<div class="opt" style="cursor:default;border-color:${GRADE_COLOR[g]}">
+        return `<div class="opt skgrade" data-rg="${g}" style="cursor:default;border-color:${GRADE_COLOR[g]}">
           <div class="on" style="color:${GRADE_COLOR[g]}">${esc(P.n)} <span class="tag" style="color:${GRADE_COLOR[g]};border-color:${GRADE_COLOR[g]}">${g}</span>
             <span class="tag">패시브</span><span class="price">Lv.${skLevel(s,"passive")}${skLevel(s,"passive")>=SK_LV_MAX?" MAX":""}</span></div>
           <div class="od">${esc(P.d)}</div>
@@ -9134,7 +9135,7 @@ function studentDetail(s, opt){
         const g = skGrade(s, sk.id), kind = sk.kind==="basic"?"일반 공격":sk.kind==="ult"?"필살기":"스킬";
         const pr = sk.kind? "—" : (skProc(s,sk,s.ment.genius)*100).toFixed(1)+"%";
         const d = skDur(s, sk);
-        return `<div class="opt" style="cursor:default;border-color:${GRADE_COLOR[g]}">
+        return `<div class="opt skgrade" data-rg="${g}" style="cursor:default;border-color:${GRADE_COLOR[g]}">
           <div class="on" style="color:${GRADE_COLOR[g]}">${esc(sk.name)}
             <span class="tag" style="color:${GRADE_COLOR[g]};border-color:${GRADE_COLOR[g]}">${g}</span>
             <span class="tag">${kind}</span><span class="price">Lv.${skLevel(s,sk.id)}${skLevel(s,sk.id)>=SK_LV_MAX?" MAX":""}</span></div>
@@ -9961,8 +9962,8 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1001-1820";
-const BUILD_TS = 1790846406077;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
+const BUILD = "1001-1832";
+const BUILD_TS = 1790847160093;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -11744,7 +11745,7 @@ function skillCardHtml(o, sk, kindLabel, gradeIdx, opt){
   opt = opt || {};
   const g = SK_GRADE[clamp(gradeIdx,0,4)];
   const pr = sk.kind? "—" : (skProc(o,sk,50)*100).toFixed(1)+"%";
-  return `<div class="opt ${opt.dim?"locked":""}" style="cursor:default;border-color:${GRADE_COLOR[g]}">
+  return `<div class="opt skgrade ${opt.dim?"locked":""}" data-rg="${g}" style="cursor:default;border-color:${GRADE_COLOR[g]}">
     <div class="on" style="color:${GRADE_COLOR[g]}">${esc(sk.name)}
       <span class="tag" style="color:${GRADE_COLOR[g]};border-color:${GRADE_COLOR[g]}">${g}</span>
       <span class="tag">${kindLabel}</span><span class="price">Lv.${1+(opt.up||0)}</span></div>
@@ -11767,7 +11768,7 @@ function teachCompare(i, sid){
     const cur = passiveOf(passiveJobOf(st)), nw = passiveOf(e.job);
     const cg = skGrade(st,"passive"), ck = 1+((st.skMod&&st.skMod.passive||{}).pow||0);
     const nk = 1+((e.mod&&e.mod.pow)||0);
-    const box = (P,g,k,lv,label)=> P? `<div class="opt" style="cursor:default;border-color:${GRADE_COLOR[SK_GRADE[clamp(g,0,4)]]}">
+    const box = (P,g,k,lv,label)=> P? `<div class="opt skgrade" data-rg="${SK_GRADE[clamp(g,0,4)]}" style="cursor:default;border-color:${GRADE_COLOR[SK_GRADE[clamp(g,0,4)]]}">
         <div class="on" style="color:${GRADE_COLOR[SK_GRADE[clamp(g,0,4)]]}">${esc(P.n)}
           <span class="tag" style="color:${GRADE_COLOR[SK_GRADE[clamp(g,0,4)]]};border-color:${GRADE_COLOR[SK_GRADE[clamp(g,0,4)]]}">${SK_GRADE[clamp(g,0,4)]}</span>
           <span class="tag">패시브</span><span class="price">Lv.${lv}</span></div>
@@ -11873,7 +11874,7 @@ const SKILL_SORT = [
 const RELIC_GRADE_ORD = {D:0, C:1, B:2, A:3, S:4, "S+":4.5, EX:5};
 /* 처분가 — EX 는 SP 로 산 것이라 금화로 되팔 수 없다 */
 const RELIC_SELL = {C:120, B:320, A:800, S:2000, "S+":4000};   // S+ 는 S 의 두 배
-/* 추천 장착 — 역할별로 어울리는 능력치 (앞이 우선). 유물 하나의 점수 = 맞는 옵션 가중치 합, 같으면 등급 */
+/* 추천 장착 — 등급이 높은 유물부터 낀다 (1001). 같은 등급 안에서는 역할에 맞는 옵션(앞이 우선) 가중치 합, 같으면 유물 점수 */
 const RELIC_ROLE_PREF = {
   dps:  ["atk","ultGain","crit","critDmg","acc"],
   tank: ["hp","def","eva","skRes","leech"],
@@ -11884,7 +11885,7 @@ function relicFitScore(r, role){
   const pref = RELIC_ROLE_PREF[role] || RELIC_ROLE_PREF.dps;
   let sc = 0;
   (r.aff||[]).forEach(a=>{ const i = pref.indexOf(a.k); if(i>=0) sc += pref.length - i; });
-  return sc*10 + (RELIC_GRADE_ORD[r.grade]||0);
+  return (RELIC_GRADE_ORD[r.grade]||0)*1e6 + sc*1000 + relicScore(r);
 }
 function relicAutoEquip(){
   S.relicPool = S.relicPool||[];
@@ -11987,7 +11988,7 @@ function viewRelic(){
       const g = SK_GRADE[clamp(e.mod.grade||0,0,4)];
       const catN = {basic:"일반 공격", skill:"스킬", ult:"필살기", passive:"패시브"}[e.cat];
       const src = e.cat==="passive"? (passiveOf(e.job)||{}).d : ((JOBS[e.job].skills||[]).find(x=>x.id===e.skillId)||{}).txt;
-      return `<div class="opt" style="cursor:default;border-color:${GRADE_COLOR[g]}">
+      return `<div class="opt skgrade" data-rg="${g}" style="cursor:default;border-color:${GRADE_COLOR[g]}">
         <div class="on" style="color:${GRADE_COLOR[g]}">${esc(e.name)}
           <span class="tag" style="color:${GRADE_COLOR[g]};border-color:${GRADE_COLOR[g]}">${g}</span>
           <span class="tag">${catN}</span><span class="price">Lv.${1+(e.mod.up||0)}</span></div>
