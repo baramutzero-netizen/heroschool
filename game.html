@@ -1940,6 +1940,14 @@ html[data-ui-concept="journal"] :is(.panel,.logbox,.missionbox,.modal:not(.btm),
 html[data-ui-concept="journal"] :is(.panel-h,.logbox>.panel-h){border-bottom:1px solid #9c7b4d80;padding-bottom:9px}
 html[data-ui-concept="journal"] :is(.panel-h h2,.acad-name){letter-spacing:.025em}
 html[data-ui-concept="journal"] :is(.scard,.slot,.opt,.meter,.gradcard,.syn-card,.errbox,.fxdemo){background:var(--journal-paper);color:var(--text);border-color:var(--line);box-shadow:inset 0 0 0 2px #fff2,0 1px 3px #39241220}
+/* 유물 카드 (1001) — 바탕을 유물 등급 색으로 옅게 물들인다. 유물 이름 줄(.rlname)을 품은 카드면 어디서든 */
+html body .opt:has(> .rlname){--rg:var(--muted)}
+html body .opt:has(> .rlname[data-rg="B"]){--rg:var(--tank)}
+html body .opt:has(> .rlname[data-rg="A"]){--rg:var(--supp)}
+html body .opt:has(> .rlname[data-rg="S"]){--rg:var(--brass)}
+html body .opt:has(> .rlname[data-rg="S+"]){--rg:#2A9D74}
+html body .opt:has(> .rlname[data-rg="EX"]){--rg:var(--ex)}
+html body .opt:has(> .rlname){background:color-mix(in srgb,var(--rg) 14%,#fffcf5)!important;background-image:none!important;border-color:color-mix(in srgb,var(--rg) 65%,var(--line))!important}
 html[data-ui-concept="journal"] :is(.scard.sel,.slot.on,.opt.sel){border-color:#765026;box-shadow:inset 0 0 0 1px #765026,0 1px 4px #39241230}
 html[data-ui-concept="journal"] .btn{background:var(--journal-paper);border:1px solid #9d7b4d;color:#45321f;border-radius:3px 6px 4px 3px;box-shadow:inset 0 0 0 2px #fff2,0 2px 0 #17131055;font-weight:600}
 html[data-ui-concept="journal"] .btn:hover:not(:disabled){border-color:#614321;filter:brightness(1.045)}
@@ -3591,9 +3599,9 @@ const FACILITIES = {
   arena:  Object.assign({n:"대련장",   d:"실전 형식 훈련",            base:115, ex:1},  FAC_TRAIN),
   counsel:{n:"상담실",   d:"상담에서 지도력·정보력·호소력 보정", base:1000, start:0, max:6, ex:4},
   /* 드래프트 홀 (1001) — 한 번 지으면 시설 · 상점에 드래프트 홀 탭이 열린다 (스카우터 고용 · 유망주 탐색) */
-  draft:  {n:"드래프트 홀", d:"드래프트 홀 사용이 가능해진다", start:0, max:1, costs:[5000], ex:4},
+  draft:  {n:"드래프트 홀", d:"드래프트 홀 시설 해금", start:0, max:1, costs:[5000], ex:4},
   /* 차원 포탈 — 이계에서 온 편지를 받은 뒤, 봄 상반기에만 설치할 수 있다. 편지 전에는 ??? 로만 보인다 */
-  portal: {n:"차원 포탈", d:"모든 대회의 난이도 대폭 증가",
+  portal: {n:"차원 포탈", d:"모든 대회의 난이도 대폭 증가, 이계 원정지 해금",
            start:0, max:1, costs:[20000], secret:true}
 };
 const PORTAL_PRICE = 20000;
@@ -7230,7 +7238,13 @@ function relicAffHtml(r){
 }
 function relicAffText(r){ return affSorted(r.aff).map(a=>`${a.n} +${affValTxt(a.v)}`).join(" · "); }
 /* 유물 이름 — 학생 · 스킬처럼 이름 옆에 등급 태그 */
-function relicNameHtml(r){ return `<div class="on" style="color:${GRADE_COLOR[r.grade]}">${esc(r.name)} ${gradeTag(r.grade)}</div>`; }
+/* 유물 점수 (1001) — 전투력 식(PW · 0924 9만 판 시뮬레이션 계수)에 평균 학생(16직업 · Lv.15 · 멘탈리티 60 · 컨디션 100)을 넣고
+   옵션 1 단위가 전투력을 몇 % 올리는지 잰 값. 1점 = 전투력 +0.1%. 옵션 점수를 더한 것이 유물 점수다.
+   비율 옵션(크리 · 명중 등)은 1.0(=100%) 당 점수 — 크리 확률 +5% 면 149 × .05 ≈ 7.5점 */
+const RELIC_SCORE_PER = {atk:1.16, def:.62, hp:.114, spd:2.45, crit:149, critDmg:47.2, acc:386, eva:310,
+                         skAcc:32.1, skRes:21.9, ultGain:178, leech:149, critRes:104};
+function relicScore(r){ return Math.round(((r && r.aff) || []).reduce((t,a)=> t + (RELIC_SCORE_PER[a.k]||0)*(+a.v||0), 0)); }
+function relicNameHtml(r){ return `<div class="on rlname" data-rg="${esc(r.grade||"C")}" style="color:${GRADE_COLOR[r.grade]}">${esc(r.name)} ${gradeTag(r.grade)}<span class="price" style="color:var(--text)" title="전투력 기여 점수 — 1점 = 평균 학생 전투력 +0.1%">${relicScore(r)}점</span></div>`; }
 /* 두 유물의 효과 차이 — 항목별 순증감. 오르는 건 연두색 +, 내리는 건 붉은색 − */
 function relicDiffText(oldR, newR){
   const map = {}, order = [];
@@ -11952,7 +11966,7 @@ function viewFacShop(){
         return `<button class="opt ${lock?"locked":""} ${!lock&&!full&&S.gold<c?"poor":""}" data-fac="${k}" ${lock||full?"disabled":""}>
           <div class="on">${f.n} <span class="tag">${tag}</span><span class="price" style="${
             lock?"color:var(--bad)":""}">${full?((k==="portal"||k==="draft")?"":"최대"):lock||fmt(c)+" G"}</span></div>
-          <div class="od">${k==="expand"? facDesc(k) : `${facDesc(k)} · ${eff}`}</div>
+          <div class="od">${(k==="expand" || k==="draft" || (k==="portal" && full))? facDesc(k) : `${facDesc(k)} · ${eff}`}</div>
           ${facUpkeep(k)? `<div class="od" style="color:var(--bad)">유지비 ${fmt(facUpkeep(k))} G / 계절</div>` : ""}
         </button>`;
       }).join("")}
@@ -12160,9 +12174,12 @@ const RELIC_SORT = [
   {k:"default",  n:"기본 (획득순)"},
   {k:"grade",    n:"등급 높은 순"},
   {k:"gradeAsc", n:"등급 낮은 순"},
-  {k:"stat",     n:"주 능력치"},
-  {k:"name",     n:"이름"}
-];
+  {k:"score",    n:"점수 높은 순"},
+  {k:"stat",     n:"주 능력치"}
+].concat(
+  /* 옵션별 정렬 (1001) — 그 옵션이 붙은 유물을 값이 큰 순으로 앞에 (이름 정렬은 뺐다) */
+  RELIC_AFFIX.map(a=> a.k).concat(["critRes"]).map(k=>({k:"aff:"+k, n:(BATTLE.find(b=> b.k===k)||{}).n || k}))
+);
 const SKILL_SORT = [
   {k:"default", n:"기본 (획득순)"},
   {k:"grade",   n:"등급 높은 순"},
@@ -12218,12 +12235,17 @@ function sortRelicPool(pool, mode){
   const nm = (a,b)=> String(a.r.name||"").localeCompare(String(b.r.name||""),"ko");
   if(mode==="grade")    return L.sort((a,b)=> g(b)-g(a) || nm(a,b));
   if(mode==="gradeAsc") return L.sort((a,b)=> g(a)-g(b) || nm(a,b));
+  if(mode==="score")    return L.sort((a,b)=> relicScore(b.r)-relicScore(a.r) || g(b)-g(a) || nm(a,b));
   if(mode==="stat"){
     // 유물이 가진 옵션 중 기준 목록에서 가장 앞선 능력치로 묶는다
     const ord = x => Math.min.apply(null, ((x.r.aff||[]).map(a=> RELIC_AFFIX.findIndex(z=>z.k===a.k)).filter(i=>i>=0).concat([99])));
     return L.sort((a,b)=> ord(a)-ord(b) || g(b)-g(a) || nm(a,b));
   }
-  if(mode==="name")     return L.sort(nm);
+  if(String(mode).startsWith("aff:")){
+    const k = mode.slice(4);
+    const v = x => (x.r.aff||[]).reduce((t,a)=> t + (a.k===k ? (+a.v||0) : 0), 0);
+    return L.sort((a,b)=> (v(b)>0) - (v(a)>0) || v(b)-v(a) || g(b)-g(a) || nm(a,b));
+  }
   return L;
 }
 function sortSkillPool(pool, mode){
