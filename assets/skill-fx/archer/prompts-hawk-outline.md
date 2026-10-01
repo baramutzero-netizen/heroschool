@@ -1,0 +1,3 @@
+Built-in image_gen edit of hawk.png.
+
+Edit this hawk emblem to STRICT MINIMAL OUTLINE LINE ART. Remove ALL filled colored areas, shading, metallic rendering, gradients inside shapes and ornamental filigree. Draw only about 12 to 20 fine luminous pale mint-green single contour strokes showing hawk head silhouette, two fierce eyes, brow and hooked beak. Most of the canvas including face interior must be completely transparent. Clean sparse recognizable hawk face outline for small buff icon. No solid gold surfaces, no badge, no decoration, no background. Genuine alpha transparent background. Keep square canvas.

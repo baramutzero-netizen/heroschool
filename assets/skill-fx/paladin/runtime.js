@@ -30,17 +30,24 @@ const STYLISH_SKILL_FX = {
     fumaWave: "assets/skill-fx/ninja/fuma.png?v=1",
     boundaryWave: "assets/skill-fx/ninja/boundary-wave.png?v=1",
     fumaPassed: "assets/skill-fx/ninja/fuma-water-spin.png?v=1",
-    waterFlower: "assets/skill-fx/ninja/water-flower.png?v=1"
+    waterFlower: "assets/skill-fx/ninja/water-flower.png?v=1",
+    archerWind: "assets/skill-fx/archer/wind.png?v=1",
+    greenPierce: "assets/skill-fx/archer/pierce-offscreen.png?v=1",
+    hawkEye: "assets/skill-fx/archer/hawk-outline.png?v=1",
+    meteorRain: "assets/skill-fx/archer/meteor-perspective-back.svg?v=1",
+    meteorFront: "assets/skill-fx/archer/meteor-perspective-front.svg?v=1",
+    meteorImpact: "assets/skill-fx/archer/meteor-impact.svg?v=1"
   },
-  casters: {paladin: ["trail"], darkpriest: ["darkEssence"], gunner:["gunMuzzle"], priest:["holyEssence"], bard:["bardMelody"], ninja:["ninjaRipple"]},
+  casters: {paladin: ["trail"], darkpriest: ["darkEssence"], gunner:["gunMuzzle"], priest:["holyEssence"], bard:["bardMelody"], ninja:["ninjaRipple"], archer:["archerWind"]},
   targets: {pa_b: ["impact"], pa_1: ["shield"], pa_2: ["beam"], pa_u: ["beam", "shield"],
     dp_b:["darkHit"], dp_1:["redDrain"], dp_2:["curseNail"], dp_u:["redDrain"],
     gn_b:["gunHit"], gn_1:["gunHit"], gn_2:["gunPierce"], gn_u:["gunPierce"],
     ro_1:["poisonDagger"], ro_2:["shadowStep"], ro_u:["assassination"],
     pr_b:["impact"], pr_1:["greaterHeal"], pr_2:["blessing"], pr_u:["revival"],
     bd_1:["shadowStep"], bd_2:["dissonance"], bd_u:["spotlight"],
-    nj_1:["dissonance"], nj_2:["boundaryWave","waterDragon"], nj_u:["fumaPassed","waterFlower"]},
-  groups: {dp_u:["bloodRitual"], bd_u:["ensemble"], nj_1:["waterSwamp"]}
+    nj_1:["dissonance"], nj_2:["boundaryWave","waterDragon"], nj_u:["fumaPassed","waterFlower"],
+    ar_1:[], ar_2:["hawkEye"], ar_u:["meteorRain","meteorFront","meteorImpact"]},
+  groups: {dp_u:["bloodRitual"], bd_u:["ensemble"], nj_1:["waterSwamp"], ar_1:["greenPierce"]}
 };
 function stylishSkillFxPlan(job, skillId){
   return {caster: STYLISH_SKILL_FX.casters[job] || [], target: STYLISH_SKILL_FX.targets[skillId] || [], group: STYLISH_SKILL_FX.groups[skillId] || []};
@@ -51,6 +58,7 @@ function stylishFormation(actor, allies, enemies, side, skillId){
     x:mirror(list.length===1?(left+right)/2:left+(right-left)*i/(list.length-1)),
     y:list.length>2?(i%2?61:56):58, scale:1.3*Math.max(.62,Math.min(1,2.5/list.length))}));
   if(skillId==="nj_u" && enemies.length===1){lane([actor,...allies],15,25);lane(enemies,43,43);}
+  else if(skillId==="ar_1"){lane([actor,...allies],18,30);lane(enemies,50,82);positions.forEach(p=>p.y=58);}
   else if(enemies.length){lane([actor,...allies],18,43);lane(enemies,57,82);}
   else {lane([actor,...allies],28,78);}
   return positions;
@@ -67,6 +75,11 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
   layer.className="stylish-skill-fx"; layer.setAttribute("aria-hidden","true");
   layer.style.cssText="position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:325";
   const ground=layer.cloneNode();ground.className="stylish-group-fx";ground.style.zIndex="0";
+  if(skillId==="ar_u"){
+    const shade=document.createElement("div");shade.dataset.effect="meteorShade";
+    shade.style.cssText="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,24,15,.78),rgba(0,31,18,.6));pointer-events:none";
+    ground.append(shade);
+  }
   const group=[...new Set(skillId==="bd_u"?[caster,...targets]:groupTargets)].filter(Boolean);
   const add=(el, kind)=>{
     if(!el) return;
@@ -75,6 +88,10 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
     img.style.cssText="position:absolute;max-width:none;image-rendering:auto;object-fit:fill;pointer-events:none";
     img.style.opacity=kind==="bloodRitual" ? ".6" : kind==="shield" ? ".58" : kind==="beam" ? ".72" : (kind==="darkEssence"||kind==="holyEssence") ? ".66" : kind==="curseNail" ? ".65" : ".9";
     if(kind==="spotlight") img.style.opacity=".46";
+    if(kind==="archerWind") img.style.opacity=".72";
+    if(kind==="meteorRain") img.style.opacity=".85";
+    if((kind==="meteorRain" || kind==="meteorFront") && side==="B") img.style.transform="scaleX(-1)";
+    if(kind==="greenPierce" && side==="B") img.style.transform="scaleX(-1)";
     if(kind==="waterSwamp") img.style.opacity=".64";
     if(kind==="ninjaRipple") img.style.opacity=".8";
     if(kind==="waterDragon") img.style.maskImage="linear-gradient(to right,transparent 0%,black 16%,black 100%)";
@@ -84,7 +101,7 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
     if((kind==="trail" || kind==="darkEssence" || kind==="holyEssence" || kind==="redDrain" || kind==="gunMuzzle" || kind==="gunPierce" || kind==="poisonDagger" || kind==="assassination") && side==="B") img.style.transform="scaleX(-1)";
     if(kind==="gunPierce" && mono) img.style.filter="brightness(.08)";
     layer.append(img); entries.push({el,kind,img});
-    if(kind==="gunPierce" || kind==="ninjaRipple" || kind==="fumaPassed" || kind==="waterFlower") ground.append(img);
+    if(kind==="gunPierce" || kind==="ninjaRipple" || kind==="fumaPassed" || kind==="waterFlower" || kind==="meteorRain") ground.append(img);
     return entries[entries.length-1];
   };
   plan.caster.forEach(kind=>add(caster,kind));
@@ -96,7 +113,7 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
   if(group.length) plan.group.forEach(kind=>{
     add(group[0],kind);const entry=entries[entries.length-1];entry.group=group;
     entry.img.dataset.targets=group.map(el=>el.dataset.uid).join(",");
-    if(kind!=="ensemble") ground.append(entry.img);
+    if(!["ensemble","greenPierce","meteorRain"].includes(kind)) ground.append(entry.img);
   });
   if(!entries.length) return ()=>{};
   // Field background is z=-1; the transformed camera is an auto/0 stacking context.
@@ -132,6 +149,18 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
       const cx=(r.left+r.width/2-sr.left)*sx, cy=(r.top-sr.top)*sy+h*.55;
       const throwSize=Math.min(h,Math.max(1,(side==="B"?cx:stage.clientWidth-cx)-12)/3.6);
       let width=h*1.05, height=width, x=cx-width/2, y=cy-height/2;
+      if(kind==="archerWind"){width=h*1.12;height=width;x=cx-width/2;y=cy-height*.5;}
+      if(kind==="meteorRain" || kind==="meteorFront"){
+        width=Math.max(h*4.4,stage.clientWidth*.54);y=top-4;height=Math.max(1,bottom-top+8);
+        x=cx-width*(side==="B"?.45:.55);
+      }
+      if(kind==="meteorImpact"){width=h*.48;height=width;x=cx-width/2;y=(r.top-sr.top)*sy+h*.62-height/2;}
+      if(kind==="hawkEye"){
+        width=h*.46;height=width;x=cx-width/2;y=(r.top-sr.top)*sy+h*.12-height;
+        const speech=el.querySelector(".bf-speech");
+        if(speech)y=Math.min(y,(speech.getBoundingClientRect().top-sr.top)*sy-height-6);
+        y=Math.max(top+4,y);
+      }
       if(kind==="trail") {width=h*1.35;height=width;x=cx-width/2+(side==="B"?-1:1)*w*.12;y=cy-height*.82;}
       if(kind==="shield") {width=h*.88;height=width;x=cx-width/2;y=cy-height/2;}
       if(kind==="darkHit") {width=h*.9;height=width/1.5;x=cx-width*.51;y=cy-height*.58;}
@@ -201,6 +230,15 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
         const foot=Math.max(...rs.map(b=>b.top+b.height*.8));
         width=Math.max(h*1.15,(right-left)*sx+h*.35);height=width*.5;
         x=((left+right)/2-sr.left)*sx-width/2;y=(foot-sr.top)*sy-height*.72;
+        if(kind==="greenPierce"){
+          // Begin just ahead of the first target on the caster-facing side.
+          const start=((side==="B"?right:left)-sr.left)*sx+(side==="B"?1:-1)*h*.08;
+          // Keep the arrowhead (last 25% of the artwork) beyond either screen edge.
+          const visibleLength=side==="B"?start:stage.clientWidth-start;
+          width=(visibleLength+32)/.70;height=h*.65;
+          x=side==="B"?start-width:start;
+          y=(rs.reduce((sum,b)=>sum+b.top+b.height*.57,0)/rs.length-sr.top)*sy-height/2;
+        }
         if(kind==="ensemble") {
           // Repeat proportionally scaled phrases instead of stretching the notes.
           const span=width, start=x, ratio=img.naturalWidth/img.naturalHeight || 3;
