@@ -3325,7 +3325,9 @@ function formData(k, plus){
 function formOf(k){ return formData(k, formPlusOn()); }
 function formSlots(k){ const F=formOf(k); return F.front.concat(F.back); }
 function slotRow(id){ return id.charAt(0)==="f" ? "front" : "back"; }
-const TEAM_NAMES = ["A","B","C","D","E"];
+/* 팀은 A · B · C 셋 (1002) — 강화 진형으로 한 팀이 다섯이 되면서 대회(최대 3팀) · 원정에 D · E 가 쓰일 일이 없어졌다.
+   옛 저장의 D · E 편성은 풀린다 (학생은 그대로 · 소속만 없어진다) */
+const TEAM_NAMES = ["A","B","C"];
 function newTeams(){ return TEAM_NAMES.map(n=>({n, form:"wedge", slots:{}})); }
 /* 편성 가능한 팀 수 — 총원 3명당 1팀. 한 번 늘어난 상한은 인원이 줄어도 내려가지 않는다 */
 const TEAM_MAX = TEAM_NAMES.length;
@@ -3347,7 +3349,7 @@ function bumpTeamCap(){
 function allTeams(){
   if(!Array.isArray(S.teams) || S.teams.length!==TEAM_MAX){
     const old = Array.isArray(S.teams)? S.teams : [];
-    S.teams = TEAM_NAMES.map((n,i)=> old[i] || {n, form:"wedge", slots:{}});
+    S.teams = TEAM_NAMES.map((n,i)=> old[i] || {n, form:"wedge", slots:{}});   // 넘치는 옛 팀(D · E)은 버린다
     S.teams.forEach((t,i)=>{ t.n = TEAM_NAMES[i]; });
   }
   S.teams.forEach(t=>{ if(!FORMS[t.form]) t.form="wedge"; t.slots = t.slots||{}; });
@@ -9175,7 +9177,7 @@ function viewHome(){
       <li><b style="color:var(--text)">겨울 · ${phaseWeeks("winter")}주</b> — <b style="color:var(--text)">겨울 방학</b>. 가을 본선이 끝나면 3학년이 졸업하고(진로가 학원 명성이 된다), ${phaseWeeks("winter")}주 내내 스카우트 후보가 찾아온다. 학원 유명도가 높을수록 상위 등급 신입생이 나타나고, 한 등급 오를 때마다 스카우트 시도가 1회씩 늘어난다 (기본 ${SCOUT_TRIES}회).</li>
       <li><b style="color:var(--text)">겨울 하반기</b> — ${halfWeeks("winter")}주차가 끝나면 다시 <b style="color:var(--text)">친선전</b> 요청이 온다. 받아들인 경기는 하반기 1·2·3주차 뒤에 치른다. 봄 신인전을 준비하는 실전이 된다.</li>
       <li><b style="color:var(--text)">겨울 종료</b> — <b style="color:var(--text)">봄 신인전</b>(1·2학년 3인 1팀, 5개 학원 리그전)을 치른 뒤 신입생이 입학하고 학년이 오른다. 조 1위가 우승이다.</li>
-      <li><b style="color:var(--text)">인원과 팀</b> — 개교 시 1학년 <b style="color:var(--text)">3명</b>. 신입생 정원은 유명도를 따른다(무명·유명 3 · 강호·명문 4 · 초명문 5). 학생이 3명 늘 때마다 팀을 하나씩 더 짤 수 있고(최대 5팀), <b style="color:var(--text)">한 번 늘어난 팀 수는 인원이 줄어도 그대로다</b>.</li>
+      <li><b style="color:var(--text)">인원과 팀</b> — 개교 시 1학년 <b style="color:var(--text)">3명</b>. 신입생 정원은 유명도를 따른다(무명·유명 3 · 강호·명문 4 · 초명문 5). 학생이 3명 늘 때마다 팀을 하나씩 더 짤 수 있고(최대 3팀), <b style="color:var(--text)">한 번 늘어난 팀 수는 인원이 줄어도 그대로다</b>.</li>
     </ol>
     <div class="rule"></div>
     <div style="font-size:12.5px;color:var(--muted)">전투는 3인 1팀 ATB — 속도만큼 행동 게이지가 차고, 행동할 때마다 <b style="color:var(--text)">천재성</b>에 따라 스킬이 출현한다.
@@ -10782,8 +10784,7 @@ function viewLgEntry(){
         <span class="tt-sub">${formData(T5.form,true).n} · ${lgSids(T5).length}/${L5_TEAM}</span></button>
         <button class="ttab ${dm?"on":""}" data-lgetab="demon">마왕 대항전
         <span class="tt-sub">${Fd.n} · ${lgSids(D).length}/${demonCap()}</span></button></div>
-    ${f5? `<p class="opthint" style="margin-top:10px">5인 리그는 <b>강화 진형</b>으로 다섯 자리를 모두 채워 등록한다. ${L5_TIMES_TXT}에 시즌이 열리고, 같은 조의 학원과 두 번씩 싸운다.
-      <span style="color:var(--dim)">5인 리그에 넣은 졸업생은 3인 리그 · 마왕 대항전에 나갈 수 없다 (반대도 마찬가지).</span></p>` : ""}
+    ${f5? `<p class="opthint" style="margin-top:10px">매일 오전 9시, 오후 1시, 오후 8시에 시즌 진행.</p>` : ""}
     ${dm? `<p class="opthint" style="margin-top:10px">마왕 대항전은 <b>등록 없이</b> 이 편성으로 ${demonEveryTxt()} 저절로 출전한다 — 한 명 이상이면 싸운다.${
       formPlusOn()? " 진형 강화의 서로 다섯 자리까지 쓴다." : ` <span style="color:var(--dim)">진형 강화의 서가 있으면 다섯 자리까지 쓸 수 있다 (지금은 ${cap}자리).</span>`}</p>` : ""}
     <div class="eyebrow" style="margin:14px 0 6px">진형</div>
@@ -13508,7 +13509,8 @@ function viewTeam(){
     <div class="roster tmr">${sortRoster(S.students, (S.opts&&S.opts.rsort)||"default").map(st=>{
       const at = teamOfStudent(st.id);
       const mine = at && at.t.n===cur.n;
-      return `<button class="scard drg tm2 ${mine?"sel intm":""} ${!sel?"dimmed":""}" data-assign2="${st.id}">
+      /* 흐리게 — 다른 팀에 들어가 있는 학생만 (1002). 이 팀 학생 · 아무 팀에도 없는 학생은 또렷하게 */
+      return `<button class="scard drg tm2 ${mine?"sel intm":""} ${(at && !mine)?"dimmed":""}" data-assign2="${st.id}">
         ${sprHas(st.job)? `<div class="sprmini">${sprHTML(st.job,"idle",.4,{p:sprPalOf(st), still:true})}</div>`:""}
         <div class="n1"><span class="nm">${dnH(st)}</span>${injTag(st)}
           ${at? `<span class="tag" style="color:var(--brass);border-color:var(--brass)">${esc(teamLabel(at.t))} · ${slotRow(at.slot)==="front"?"전열":"후열"}</span>`:""}</div>
