@@ -10155,7 +10155,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1002-1706";
+const BUILD = "1002-1717";
 const BUILD_TS = 0;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
@@ -12298,14 +12298,14 @@ const NPC_IMG = {"bank": "assets/npc/bank-manager.webp?v=152d7e34", "bankDebt": 
 /* 마을 지도 (1002) — 마을 탭은 서브탭 대신 마을 그림을 띄우고, 열린 시설의 NPC 얼굴이 서브탭 단추가 된다 (누르면 그 탭이 팝업으로).
    그림은 계절과 학원 증축 단계(0·1 → 1단계, 2·3 → 2단계, 4 → 3단계)를 따른다. NPC 자리는 2배 지도(1214×931) 좌표 · 얼굴 아래 가운데.
    밭주인 할아버지 · 미용실 원장 · 주점 주인 · 여관 안주인은 아직 이어진 탭이 없어 그리지 않는다 (얼굴 그림은 NPC_PX 에 있다) */
-const TOWN_IMG = {"spring_lv1": "assets/town/spring_lv1.png?v=35935674", "spring_lv2": "assets/town/spring_lv2.png?v=5a13ff10", "spring_lv3": "assets/town/spring_lv3.png?v=4f92caf9", "summer_lv1": "assets/town/summer_lv1.png?v=cd15bfd1", "summer_lv2": "assets/town/summer_lv2.png?v=98a85384", "summer_lv3": "assets/town/summer_lv3.png?v=d513b3ca", "autumn_lv1": "assets/town/autumn_lv1.png?v=60a00fa3", "autumn_lv2": "assets/town/autumn_lv2.png?v=29a7971a", "autumn_lv3": "assets/town/autumn_lv3.png?v=0d4dba38", "winter_lv1": "assets/town/winter_lv1.png?v=bda3e49e", "winter_lv2": "assets/town/winter_lv2.png?v=46e9d421", "winter_lv3": "assets/town/winter_lv3.png?v=c92f06f3"};
+const TOWN_IMG = {"spring_lv1": "assets/town/spring_lv1.png?v=35935674", "spring_lv2": "assets/town/spring_lv2.png?v=b8340c8b", "spring_lv3": "assets/town/spring_lv3.png?v=bb2bc0ae", "summer_lv1": "assets/town/summer_lv1.png?v=cd15bfd1", "summer_lv2": "assets/town/summer_lv2.png?v=d6acef62", "summer_lv3": "assets/town/summer_lv3.png?v=a60e5c07", "autumn_lv1": "assets/town/autumn_lv1.png?v=60a00fa3", "autumn_lv2": "assets/town/autumn_lv2.png?v=f0954a59", "autumn_lv3": "assets/town/autumn_lv3.png?v=32982f4b", "winter_lv1": "assets/town/winter_lv1.png?v=bda3e49e", "winter_lv2": "assets/town/winter_lv2.png?v=2e5ddfa4", "winter_lv3": "assets/town/winter_lv3.png?v=b69675af"};
 const TOWN_FRAME = "assets/town/frame.png?v=5669214d";
 const NPC_PX = {"bank": "assets/npc_px/bank.png?v=103ca0c1", "bank_debt": "assets/npc_px/bank_debt.png?v=104bb91f", "bank_repaid": "assets/npc_px/bank_repaid.png?v=00d7c5be", "bank_deposit": "assets/npc_px/bank_deposit.png?v=07e0d3dd", "carpenter": "assets/npc_px/carpenter.png?v=01305169", "tool": "assets/npc_px/tool.png?v=530733ca", "church": "assets/npc_px/church.png?v=db589183", "hunt": "assets/npc_px/hunt.png?v=e7b01faa", "farm": "assets/npc_px/farm.png?v=7327162c", "inn": "assets/npc_px/inn.png?v=5050cb73", "salon": "assets/npc_px/salon.png?v=e41f9af2", "tavern": "assets/npc_px/tavern.png?v=5d084273"};
 const TOWN_NPCS = [
   {tab:"bank",   face:"bank",      n:"은행장",      x:684, y:528},
   {tab:"fac",    face:"carpenter", n:"목수",        x:94,  y:492},
   {tab:"item",   face:"tool",      n:"도구상",      x:404, y:618},
-  {tab:"church", face:"church",    n:"수녀님",      x:794, y:348},
+  {tab:"church", face:"church",    n:"수녀님",      x:716, y:354},   // 배치판에서 옮긴 자리 (1002)
   {tab:"draft",  face:"hunt",      n:"마을 사냥꾼", x:100, y:156}
 ];
 function townStage(){ const e = (S && S.facil && S.facil.expand)|0; return e >= 4 ? 3 : e >= 2 ? 2 : 1; }
