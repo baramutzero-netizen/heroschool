@@ -87,7 +87,7 @@ html body #btnFeed.fbbtn{border:0!important;box-shadow:none!important;background
 /* 폰 — 피드백 아이콘이 셋째 줄을 혼자 차지하지 않게, 학생 옆(둘째 줄 오른쪽)에 붙인다 */
 @media(max-width:820px){.fbbtn{height:44px;align-self:center;margin-left:auto;width:76px;position:relative;order:2}
   .crestrow > .meters{order:3}
-  .crestrow > .acadblk{flex:1 1 0;min-width:0}
+  .crestrow .acadblk{flex:1 1 0;min-width:0}
   .fbbtn img{position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);height:100%;width:auto}}
 .meter{background:var(--surface);border:1px solid var(--line-soft);border-radius:3px;padding:4px 10px;min-width:76px}
 .meter .k{font-size:10px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase}
@@ -879,6 +879,13 @@ table.tb tr:hover td{background:var(--surface2)}
 .tutdots i{width:8px;height:8px;border-radius:50%;background:var(--line);display:block}
 .tutdots i.on{background:var(--brass)}
 .homegrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:10px;align-items:start}
+/* 1002 — 마스터 육성은 마스터 노트의 서브탭으로. 서브탭 이름 옆 숫자(남은 포인트)가 한 줄에 붙게 */
+.subnav .ttab{flex-direction:row;align-items:center}
+.mastergrid{max-width:720px}
+.mastergrid .mrow{white-space:normal}
+.mastergrid .mrow .md{white-space:normal;overflow:visible}   /* 짧은 설명이 길어져도 … 로 잘리지 않고 줄을 바꾼다 */
+.subnav .badge{display:inline-block;margin-left:6px;min-width:18px;height:18px;padding:0 3px;box-sizing:border-box;font-size:11px;line-height:14px;text-align:center;
+  background:#b0412c;color:#fff;border:2px solid #4a1d14;border-radius:0;vertical-align:1px}
 @media(max-width:900px){.homegrid{grid-template-columns:minmax(0,1fr)}}
 .tutbtn{display:block;width:150px;max-width:100%;height:150px;margin:0;padding:0;border:1px solid var(--line-soft);border-radius:6px;
   background:var(--surface2);cursor:pointer;overflow:hidden;line-height:0;transition:transform .12s,border-color .12s}
@@ -1830,6 +1837,110 @@ html:is([data-ui-palette="riso"],[data-ui-palette="mint"]) nav button:hover:not(
 }
 
 /* JOURNAL_THEME_END */
+/* MENU_SCENE_START — 메뉴 장면 단추 (1002). 단추마다 58×51 도트 장면(../assets/menu_sc/) + 아래 이름 띠 17px. 고른 단추는 금색 테두리 · 금색 띠.
+   가로 화면 사이드(4열) · 폰 메뉴(6/5/4열). 그 사이 폭의 위쪽 탭(#nav 한 줄)은 그림 · 짧은 이름을 숨기고 예전 글자 탭 그대로 */
+nav#nav button .mi,nav#nav button .ns,nav#nav button.side-only{display:none}
+/* 1002 — 학원 이름 상자: 가로 사이드에서만 상자. 그 밖에서는 상자가 없는 셈이라 휘장 · 이름이 예전처럼 줄에 바로 선다 (글자색도 상자 것이 아니라 상단 바 것) */
+html body .topbar .acadbox{display:contents;color:inherit}
+.meter.date .dsea{white-space:nowrap}   /* 1002 — '겨울 4주' 가 '겨 / 울 4주' 로 갈라지지 않게 */
+/* 1002 — 화면 폭 고정: 긴 화면(유물 · 리그 · 일지 · 설정 등)에서 페이지 스크롤바가 생기면 화면이 15px 좁아지며 사이드가 7.5px 밀렸고,
+   창(지침 · 피드백 등)을 열면 스크롤이 잠겨 스크롤바가 사라지며 잠깐 넓어졌다 돌아왔다. 마우스 화면에서는 페이지 스크롤바를 숨긴다 (휠 · 키보드 스크롤은 그대로) */
+@media (pointer:fine){html{scrollbar-width:none} html::-webkit-scrollbar{display:none;width:0;height:0}}
+@media (min-width:1100px) and (orientation:landscape){
+  /* 1002 — 사이드 바탕을 옅은 황갈색(#e2cfaa)으로 (기본 테마). 흐린 글씨는 바탕 위에서 읽히게 조금 진하게.
+     background 묶음 속성을 쓰면 background-clip 이 풀려 왼쪽 투명 테두리 자리까지 칠해져 분단선(#app::after)이 가렸다 — 색만 바꾼다 */
+  html[data-ui-palette="riso"] body #app>.topbar{background-color:#e2cfaa}
+  html[data-ui-palette="riso"] body #app>.topbar .acad-sub{color:#5a4532}
+  html[data-ui-palette="riso"] body #app>.topbar .side-lab{color:#4f3b28}
+  html[data-ui-palette="riso"] body #app>.topbar .side-sched[aria-current="true"]{filter:drop-shadow(2px 0 0 #7a4f22) drop-shadow(-2px 0 0 #7a4f22) drop-shadow(0 2px 0 #7a4f22) drop-shadow(0 -2px 0 #7a4f22) drop-shadow(0 3px 0 #30271e40)}
+  /* 1002 — 사이드를 상자 하나로: 본문 첫 상자와 같은 높이(16px)에서 시작해 스케줄 단추 아래에서 끝난다 (내용 높이 · 화면보다 길면 안에서 스크롤).
+     도트 액자(바깥 검은 줄 · 진한 테두리 · 밝은 안쪽 줄)는 안쪽 그림자로 그려서 스크롤돼도 제자리. 왼쪽 분단선은 없앤다.
+     폭 288 = 안쪽 여백 14 · 14 + 내용 260 (메뉴 단추 62px × 4 그대로) */
+  html body #app::after{display:none}
+  html body #app>.topbar{top:16px;height:auto;max-height:calc(100vh - 32px);width:288px;border-left:0;padding:14px 14px 16px;
+    box-shadow:inset 0 0 0 2px #30271e,inset 0 0 0 4px var(--pixel-edge,#654a30),inset 0 0 0 6px #fff0c980!important;filter:drop-shadow(4px 4px 0 #0004)}
+  html body #app>.topbar{right:round(down, max(0px, calc((100% - 1240px) / 2)), 1px)}   /* 창 폭이 홀수면 사이드가 반 픽셀에 걸려 도트 단추가 번졌다 — 정수 px 로 */
+  html body #app>.topbar nav#nav{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;flex:none}
+  /* 1002 — 위쪽: [휘장] 학원 이름 / 인가 상자(예전 일정 칸 자리, 조금 크게) · 아래 2×2: 일정 · 자금 / 명성 · 학생. SP 칸은 사이드에서 뺀다 */
+  html body #app>.topbar .acadbox{display:grid;grid-template-columns:60px minmax(0,1fr);align-items:center;column-gap:12px;padding:12px 14px 12px 12px;color:var(--text)}
+  html body #app>.topbar .acadbox .crest{grid-column:1;justify-self:start;width:60px;height:60px;margin:0}
+  html body #app>.topbar .acadbox .acadblk{grid-column:2;text-align:left;min-width:0}
+  html body #app>.topbar .acadbox .acad-name{font-size:20px;line-height:1.25;overflow-wrap:anywhere}
+  /* 도트 글꼴은 12 · 24 · 36 · 48px 에서만 또렷하다 (pixelSnap — 15.5px 미만은 12px, 30px 미만은 24px 로 맞춘다).
+     학원 이름(20px 로 적었지만 실제 24px)보다 작게 — 12px */
+  html body #app>.topbar .acadbox .acad-sub{margin-top:4px;font-size:12px;line-height:1.3}
+  html body #app>.topbar .acad-sub .asub-fame{display:none}
+  html body #app>.topbar .meters .mfame{grid-column:1;grid-row:2}
+  html body #app>.topbar .meters .mgold{grid-column:2;grid-row:1}
+  html body #app>.topbar .meters .meter.date{grid-column:1;grid-row:1}
+  html body #app>.topbar .meters .meter.date .v{color:inherit}   /* 날짜도 다른 칸 값처럼 짙은 글씨 */
+  html body #app>.topbar .meters .mcnt{grid-column:2;grid-row:2}
+  html body #app>.topbar .meters .msp{display:none}
+  html body #app>.topbar .meter.date .dsea{display:block}
+  html body #app>.topbar nav#nav button.side-mis{order:14} html body #app>.topbar nav#nav button.side-fb{order:16}   /* 지침은 일지 뒤 · 피드백은 설정(15) 옆 */
+  html body #app>.topbar button.meter.mis{display:none}                                                           /* 예전 지침 칸 — 사이드에서는 지침 단추가 맡는다 */
+  html body #app>.topbar #btnFeed{display:none!important}                                                         /* 위쪽 피드백 그림 단추 — 사이드에서는 설정 옆 피드백 단추가 맡는다 (폰 · 가운데 폭은 그대로) */
+  html body #app>.topbar nav#nav button{position:relative;display:block;height:72px;min-width:0;padding:0;overflow:hidden;font-size:12px;
+    background:#4a3220!important;border:2px solid #4a3220!important;border-radius:0!important;box-shadow:0 2px 0 #30271e!important;color:#fbefd6!important}
+  /* 그림은 맨 위에 붙인다 — 단추는 안의 내용을 세로 가운데로 놓아서, 그냥 두면 그림 아래 8px 이 이름 띠에 가렸다 (1002) */
+  html body #app>.topbar nav#nav button img.mi{display:block;position:absolute;top:0;left:calc(50% - 29px);width:58px;height:51px;max-width:none;margin:0;image-rendering:pixelated;pointer-events:none}
+  html body #app>.topbar nav#nav button::after{content:"";position:absolute;inset:0 0 17px 0;pointer-events:none;box-shadow:inset 1px 1px 0 #fff4d680,inset -1px -1px 0 #00000059}
+  html body #app>.topbar nav#nav button .nl{display:none}
+  html body #app>.topbar nav#nav button .ns{display:block;position:absolute;left:0;right:0;bottom:0;height:17px;line-height:17px;font-size:12px;letter-spacing:0;text-align:center;
+    white-space:nowrap;overflow:hidden;background:#4a3220;color:#fbefd6}
+  html body #app>.topbar nav#nav button:hover img.mi{filter:brightness(1.12)}
+  html body #app>.topbar nav#nav button:active img.mi{transform:translateY(1px)}
+  html body #app>.topbar nav#nav button[aria-current="true"]{border-color:#e9b949!important;box-shadow:0 0 0 2px #7a4f22,0 2px 0 #30271e!important}
+  html body #app>.topbar nav#nav button[aria-current="true"] .ns{background:#e9b949;color:#3a2a1c}
+  html body #app>.topbar nav#nav button .badge{position:absolute;top:2px;right:2px;z-index:2;margin:0;min-width:18px;height:18px;padding:0 3px;box-sizing:border-box;font-size:12px;line-height:14px;
+    text-align:center;background:#b0412c;color:#fff;border:2px solid #4a1d14;border-radius:0}
+  /* 스케줄 — 도트 양피지 띠 + 지도. 지금 보는 중이면 띠 둘레에 금색 도트 테두리 */
+  html body #app>.topbar .side-sched{position:relative;flex:none;height:76px;margin-top:6px;padding:0 0 0 52px;font-size:24px;color:#3a2a1c;
+    background:url(../assets/menu_sc/banner.png?v=1e5f02ac) 0 0/100% 100% no-repeat!important;image-rendering:pixelated;border:0!important;box-shadow:none!important;
+    filter:drop-shadow(0 3px 0 #30271e40)}
+  html body #app>.topbar .side-sched::before{content:"";position:absolute;left:18px;top:14px;width:48px;height:48px;
+    background:url(../assets/menu_sc/plan48.png?v=5b28c2c2) 0 0/48px 48px no-repeat;image-rendering:pixelated}
+  html body #app>.topbar .side-sched:hover{filter:drop-shadow(0 3px 0 #30271e40) brightness(1.05)}
+  html body #app>.topbar .side-sched:active::before{top:15px}
+  html body #app>.topbar .side-sched b,html body #app>.topbar .side-sched[aria-current="true"] b{color:#8a5a24}
+  html body #app>.topbar .side-sched[aria-current="true"]{color:#3a2a1c;
+    filter:drop-shadow(2px 0 0 #e9b949) drop-shadow(-2px 0 0 #e9b949) drop-shadow(0 2px 0 #e9b949) drop-shadow(0 -2px 0 #e9b949) drop-shadow(0 3px 0 #30271e40)}
+}
+@media(max-width:640px){
+  html body #app>.topbar nav#navm .navm-grid{grid-template-columns:repeat(6,62px);grid-auto-rows:72px;gap:3px;justify-content:center}
+  html body #app>.topbar nav#navm .navm-grid button{position:relative;display:block;width:62px;height:72px;min-width:0;min-height:0;padding:0;overflow:hidden;font-size:12px;font-weight:400;
+    background:#4a3220!important;border:2px solid #4a3220!important;border-radius:0!important;box-shadow:0 2px 0 #30271e!important;color:#fbefd6!important}
+  html body #app>.topbar nav#navm .navm-grid button:not(.navm-sched) img.mi{display:block;position:absolute;top:0;left:calc(50% - 29px);width:58px;height:51px;max-width:none;margin:0;image-rendering:pixelated;pointer-events:none}
+  html body #app>.topbar nav#navm .navm-grid button:not(.navm-sched)::after{content:"";position:absolute;inset:0 0 17px 0;pointer-events:none;box-shadow:inset 1px 1px 0 #fff4d680,inset -1px -1px 0 #00000059}
+  html body #app>.topbar nav#navm .navm-grid button:not(.navm-sched) .ml{position:absolute;left:0;right:0;bottom:0;height:17px;line-height:17px;font-size:12px;letter-spacing:0;text-align:center;white-space:nowrap;overflow:hidden;
+    background:#4a3220;color:#fbefd6}
+  html body #app>.topbar nav#navm .navm-grid button:not(.navm-sched) .ml i{font-style:normal;font-size:10px;margin-left:2px;color:inherit}
+  html body #app>.topbar nav#navm .navm-grid button:hover img.mi{filter:brightness(1.12)}
+  html body #app>.topbar nav#navm .navm-grid button:active img.mi{transform:translateY(1px)}
+  html body #app>.topbar nav#navm .navm-grid button[aria-current="true"],html body #app>.topbar nav#navm .navm-grid button.open{border-color:#e9b949!important;box-shadow:0 0 0 2px #7a4f22,0 2px 0 #30271e!important}
+  html body #app>.topbar nav#navm .navm-grid button:not(.navm-sched)[aria-current="true"] .ml,html body #app>.topbar nav#navm .navm-grid button.open .ml{background:#e9b949;color:#3a2a1c}
+  html body #app>.topbar nav#navm .navm-grid button .badge{position:absolute;top:2px;right:2px;z-index:2;margin:0;min-width:18px;height:18px;padding:0 3px;box-sizing:border-box;font-size:12px;line-height:14px;
+    text-align:center;background:#b0412c;color:#fff;border:2px solid #4a1d14;border-radius:0}
+  /* 스케줄 — 2×2 칸 양피지 + 지도 */
+  html body #app>.topbar nav#navm .navm-grid button.navm-sched{grid-column:span 2;grid-row:span 2;width:auto;height:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    font-size:16px;font-weight:700;background:#f1e1bf!important;border-color:#5b3d24!important;color:#3a2a1c!important;
+    box-shadow:inset 2px 2px 0 #fff6dc,inset -2px -2px 0 #cfab72,0 2px 0 #30271e!important}
+  html body #app>.topbar nav#navm .navm-grid button.navm-sched::before{display:none}
+  html body #app>.topbar nav#navm .navm-grid button.navm-sched img.mi{display:block;width:64px;height:64px;max-width:none;margin-bottom:4px;image-rendering:pixelated;pointer-events:none}
+  html body #app>.topbar nav#navm .navm-grid button.navm-sched img.mi.small{display:none}
+  html body #app>.topbar nav#navm .navm-grid button.navm-sched .wk{margin:0;padding:0;border:0;background:none;color:#8a5a24;font:inherit;opacity:1}
+  html body #app>.topbar nav#navm .navm-grid button.navm-sched[aria-current="true"]{background:#e8c47a!important;border-color:#3d2918!important;box-shadow:inset 2px 2px 0 #b07c38,inset -2px -2px 0 #fbe3a8,0 0 0 2px #7a4f22,0 2px 0 #30271e!important}
+}
+@media(max-width:418px){   /* 6열(387px)이 안 들어가는 폰 — 5열, 스케줄은 1×2 칸 */
+  html body #app>.topbar nav#navm .navm-grid{grid-template-columns:repeat(5,62px)}
+  html body #app>.topbar nav#navm .navm-grid button.navm-sched{grid-column:span 1;font-size:14px}
+  html body #app>.topbar nav#navm .navm-grid button.navm-sched img.mi.big{display:none}
+  html body #app>.topbar nav#navm .navm-grid button.navm-sched img.mi.small{display:block;width:48px;height:48px}
+}
+@media(max-width:353px){   /* 아주 좁은 폰 — 4열 (나머지 두 단추는 셋째 줄) */
+  html body #app>.topbar nav#navm .navm-grid{grid-template-columns:repeat(4,62px)}
+}
+/* MENU_SCENE_END */
 /* TUTORIAL_RESPONSIVE_STYLE_START */
 /* Live text, not shrunk raster captions. 320px portrait through desktop. */
 .modal:has(.tg-guide){width:min(900px,100%);padding:0;overflow:auto;max-height:92dvh;max-height:min(92dvh,1100px)}
@@ -1890,6 +2001,7 @@ html:is([data-ui-palette="riso"],[data-ui-palette="mint"]) nav button:hover:not(
 <div id="app">
   <header class="topbar">
     <div class="crestrow">
+      <div class="meter acadbox">
       <svg class="crest" viewBox="0 0 40 40" aria-hidden="true" shape-rendering="crispEdges">
         <path fill="#30251d" d="M6 4h28v4h4v18h-4v6h-6v4h-6v4h-4v-4h-6v-4H6v-6H2V8h4z"/>
         <path fill="#c99743" d="M8 6h24v4h4v14h-4v6h-6v4h-6v4h-2v-4h-6v-4H8v-6H4V10h4z"/>
@@ -1903,12 +2015,13 @@ html:is([data-ui-palette="riso"],[data-ui-palette="mint"]) nav button:hover:not(
         <h1 class="acad-name" id="acadName">—</h1>
         <div class="acad-sub" id="acadSub">—</div>
       </div>
+      </div>
       <div class="meters">
         <div class="meter date"><div class="k">일정</div><div class="v num" id="mDate">—</div></div>
-        <div class="meter"><div class="k">명성</div><div class="v num" id="mFame">0</div><div class="sub" id="mTitle">무명</div></div>
-        <div class="meter"><div class="k">자금(빚)</div><div class="v num" id="mGold">0</div><div class="sub" id="mDebt" style="color:var(--bad)"></div></div>
-        <div class="meter"><div class="k">SP</div><div class="v num" id="mSp">0</div><div class="sub">리그</div></div>
-        <div class="meter"><div class="k">학생</div><div class="v num" id="mCnt">0</div></div>
+        <div class="meter mfame"><div class="k">명성</div><div class="v num" id="mFame">0</div><div class="sub" id="mTitle">무명</div></div>
+        <div class="meter mgold"><div class="k" id="mGoldK">자금(빚)</div><div class="v num" id="mGold">0</div><div class="sub" id="mDebt" style="color:var(--bad)"></div></div>
+        <div class="meter msp"><div class="k">SP</div><div class="v num" id="mSp">0</div><div class="sub">리그</div></div>
+        <div class="meter mcnt"><div class="k">학생</div><div class="v num" id="mCnt">0</div></div>
         <button type="button" class="meter mis" id="mMis" title="지침 보기" aria-haspopup="dialog"><div class="k">지침</div><div class="v num" id="mMisV">—</div><div class="sub" id="mMisT"></div></button>
       </div>
       <button class="fbbtn" id="btnFeed" title="피드백" hidden></button>
@@ -5385,8 +5498,8 @@ function newGame(name){
 const MASTER_MAX = 10;
 const MASTER_INFO = {
   lead:{n:"지도력", s:"훈련 성장 +3.5%/pt", d:"주간 훈련과 개인 훈련의 성장량이 포인트당 3.5% 증가 · 상담에서 성격에 맞지 않는 답도 받아들일 확률 포인트당 +4%p"},
-  info:{n:"정보력", s:"정찰 · 전투 +2%/pt",  d:"대회 상대 정찰 단계 상승 · 전투 중 우리 학생 체력·공격력·방어력 포인트당 2% 증가 · 상담에서 성격에 맞는 답을 미리 알아볼 확률 포인트당 +6%p"},
-  net: {n:"호소력", s:"스카우트 · 자금",      d:"스카우트 성공률 포인트당 +5%p · 모든 자금 획득량 포인트당 2% 증가 · 상담 멘탈리티 상승폭이 2배가 될 확률 포인트당 +4%p"}
+  info:{n:"정보력", s:"정찰 능력 증가 · 학생의 전투 능력 +2%/pt",  d:"대회 상대 정찰 단계 상승 · 전투 중 우리 학생 체력·공격력·방어력 포인트당 2% 증가 · 상담에서 성격에 맞는 답을 미리 알아볼 확률 포인트당 +6%p"},
+  net: {n:"호소력", s:"스카우트 확률 증가 · 자금 획득량 +2%/pt",      d:"스카우트 성공률 포인트당 +5%p · 모든 자금 획득량 포인트당 2% 증가 · 상담 멘탈리티 상승폭이 2배가 될 확률 포인트당 +4%p"}
 };
 /* 마스터 포인트 — 확정 전까지는 임시 배분 */
 function mpDraft(){ if(!UI.mpDraft) UI.mpDraft = {lead:0, info:0, net:0}; return UI.mpDraft; }
@@ -8010,7 +8123,7 @@ function insightCeremony(c){
     </div>
     <div class="opt" style="cursor:default;margin-top:10px">
       <div class="on">마스터 육성 포인트<b style="color:var(--brass)">+${c.pts}</b></div>
-      <div class="od"><b>마스터 노트</b>에서 배분할 수 있다. 배분한 뒤 <b>확정</b>을 눌러야 반영된다.</div>
+      <div class="od"><b>마스터 노트</b>의 <b>마스터 육성</b> 탭에서 배분할 수 있다. 배분한 뒤 <b>확정</b>을 눌러야 반영된다.</div>
     </div>
     <div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">가을을 맞는다</button></div>`;
 }
@@ -8656,22 +8769,47 @@ function modalEscape(){
 /* ============================================================
    렌더링 — 공통
    ============================================================ */
+/* 1002 — 메뉴 묶기: 팀 편성은 학생 안, 리그 등록 · SP 상점 · 순위표는 리그 안, 기록(졸업생 명부) · 도감은 일지 안의 서브탭으로.
+   시설 · 상점은 '마을'. 서브탭 화면들은 예전 화면(UI.view)을 그대로 쓴다 — 다른 곳에서 UI.view="team" 으로 바로 가도 된다 */
 const VIEWS = [
   {id:"home", n:"마스터 노트"},
   {id:"roster", n:"학생"},
-  {id:"team", n:"팀 편성"},
   {id:"plan", n:"진행", hot:true},
-  {id:"facil", n:"시설 · 상점"},
+  {id:"facil", n:"마을"},
   {id:"relic", n:"유물 · 스킬"},
-  {id:"record", n:"기록"},
-  {id:"log", n:"학원 일지"},
+  {id:"counsel", n:"상담"},
   {id:"league", n:"졸업생 리그"},
-  {id:"lgentry", n:"리그 등록"},
-  {id:"rank", n:"순위표"},
-  {id:"spshop", n:"SP 상점"},
-  {id:"codex",  n:"도감"},
+  {id:"log", n:"일지"},
   {id:"opt", n:"설정"}
 ];
+/* 메뉴 단추 안의 서브탭 — 단추를 누르면 첫 서브탭이 열린다 */
+const VIEW_GROUPS = {
+  home:   [{id:"home", n:"학원 정보"}, {id:"master", n:"마스터 육성"}],
+  roster: [{id:"roster", n:"학생 명부"}, {id:"team", n:"팀 편성"}],
+  relic:  [{id:"relic", n:"유물 보관고"}, {id:"skill", n:"스킬 보관고"}],
+  league: [{id:"league", n:"리그"}, {id:"lgentry", n:"등록"}, {id:"spshop", n:"SP 상점"}, {id:"rank", n:"순위"}],
+  log:    [{id:"log", n:"학원 일지"}, {id:"record", n:"졸업생 명부"}, {id:"codex", n:"도감"}]
+};
+const VIEW_GROUP_OF = {};
+Object.keys(VIEW_GROUPS).forEach(g=> VIEW_GROUPS[g].forEach(t=>{ VIEW_GROUP_OF[t.id] = g; }));
+function viewGroupOf(id){ return VIEW_GROUP_OF[id] || id; }
+function subTabsOpen(g){   // 리그 등록은 4년차 봄부터 · 졸업생 명부는 첫 졸업생이 나온 뒤에야
+  return (VIEW_GROUPS[g]||[]).filter(t=> !(t.id==="lgentry" && (S.year|0) < 4) && !(t.id==="record" && !(S.graduates||[]).length));
+}
+const SUB_BADGE = {master: ()=> (S.master && S.master.pts|0) || 0};   // 서브탭 이름 옆 숫자 (마스터 육성 — 남은 포인트)
+function subTabsHtml(view){
+  const g = VIEW_GROUP_OF[view], L = g ? subTabsOpen(g) : [];
+  if(L.length < 2) return "";
+  return `<div class="teamtabs subnav" role="tablist" style="margin-bottom:12px">${L.map(t=>{
+    const b = SUB_BADGE[t.id] ? SUB_BADGE[t.id]() : 0;
+    return `<button class="ttab ${t.id===view?"on":""}" role="tab" aria-selected="${t.id===view}" data-subview="${t.id}">${t.n}${b? `<span class="badge">${b}</span>` : ""}</button>`; }).join("")}</div>`;
+}
+/* 메뉴 장면 단추 (1002) — 가로 화면 사이드 · 폰 메뉴에서 단추마다 58×51 도트 장면 그림(../assets/menu_sc/) + 아래 짧은 이름 띠.
+   프린세스 메이커 2 메뉴처럼. 그림은 1배 그대로(도트 하나 = 1px) 보여 준다. 그 사이 폭(위쪽 탭)은 예전 글자 탭 그대로 */
+const MENU_SC = {home:"../assets/menu_sc/home.png?v=678c1b28",roster:"../assets/menu_sc/roster.png?v=b0485684",team:"../assets/menu_sc/team.png?v=ea7d99af",counsel:"../assets/menu_sc/counsel.png?v=ce9814d8",facil:"../assets/menu_sc/facil.png?v=862cb670",relic:"../assets/menu_sc/relic.png?v=5754da59",league:"../assets/menu_sc/league.png?v=144123f2",lgentry:"../assets/menu_sc/lgentry.png?v=65d72271",log:"../assets/menu_sc/log.png?v=0147a012",record:"../assets/menu_sc/record.png?v=1caa0424",spshop:"../assets/menu_sc/spshop.png?v=32afbfd6",rank:"../assets/menu_sc/rank.png?v=5606378e",codex:"../assets/menu_sc/codex.png?v=ca7206ac",opt:"../assets/menu_sc/opt.png?v=0bf9a164",scout:"../assets/menu_sc/scout.png?v=0dcc2b34",more:"../assets/menu_sc/more.png?v=6902be6a",feedback:"../assets/menu_sc/feedback.png?v=926b9cf5",plan:"../assets/menu_sc/plan64.png?v=c82944e7",plan48:"../assets/menu_sc/plan48.png?v=5b28c2c2"};
+const MENU_SHORT = {home:"마스터", roster:"학생", team:"팀 편성", counsel:"상담", facil:"마을", relic:"유물", league:"리그", lgentry:"등록", log:"일지",
+  record:"기록", spshop:"SP 상점", rank:"순위", codex:"도감", opt:"설정", scout:"스카우트"};
+function menuArt(id, cls){ const p = MENU_SC[id]; return p? `<img class="mi${cls?" "+cls:""}" src="${p}" alt="" draggable="false">` : ""; }
 function ultName(job){
   const sk = (JOBS[job].skills||[]).find(x=>x.kind==="ult");
   return sk? sk.name : "필살기";
@@ -8730,13 +8868,14 @@ function render(){
   /* 설정에서 곡을 미리 듣던 중 다른 탭으로 넘어가면 멎는다 */
   if(AUD_PV && UI.view !== "opt"){ AUD_PV = 0; audOver(null); }
   $("#acadName").textContent = S.acadName;
-  $("#acadSub").textContent = `${tierOf().n} · ${fameTitle(S.fame).n}`;   // 0930 — 지도 · 정보 · 호소 수치는 숨긴다 (마스터 노트에서 본다)
-  $("#mDate").textContent = `${yrName(S.year)} ${PHASES[S.phase].n} ${Math.min(S.week+1,PHASES[S.phase].weeks)}주`;
+  $("#acadSub").innerHTML = `${esc(tierOf().n)}<span class="asub-fame"> · ${esc(fameTitle(S.fame).n)}</span>`;   // 0930 — 지도 · 정보 · 호소 수치는 숨긴다 (마스터 노트에서 본다)
+  $("#mDate").innerHTML = `${yrName(S.year)} <span class="dsea">${PHASES[S.phase].n} ${Math.min(S.week+1,PHASES[S.phase].weeks)}주</span>`;
   $("#mFame").textContent = fmt(S.fame);
   $("#mTitle").textContent = fameTitle(S.fame).n;
   $("#mGold").textContent = `${fmt(S.gold)} G`;
   $("#mGold").style.color = S.gold < 0 ? "var(--bad)" : "";
   { const md = $("#mDebt"); if(md){ md.textContent = debtOf() ? `(${fmt(debtOf())} G)` : ""; md.hidden = !debtOf(); } }
+  { const mk = $("#mGoldK"); if(mk) mk.textContent = debtOf() ? "자금(빚)" : "자금"; }   // 1002 — 빚을 다 갚으면 (빚) 을 뗀다
   $("#mSp").textContent = fmt(spOf());
   $("#mCnt").textContent = `${S.students.length}명`;
 
@@ -8745,49 +8884,72 @@ function render(){
     const rv = tabs.find(v=>v.id==="roster");
     if(rv) rv.badge = S.students.filter(x=>(x.sp||0)>0).length || null;
   }
-  if(S.phase==="winter" && S.scouts) tabs.splice(2,0,{id:"scout", n:"스카우트", badge: scoutOpen()? (S.scoutTries||0) : null});
-  tabs.splice(tabs.findIndex(v=>v.id==="record"), 0, {id:"counsel", n:"상담", badge: counselState().queue.length || null});
-  if((S.year|0) < 4){                      // 리그 등록 — 첫 졸업생이 나오는 4년차 봄부터 열린다
-    tabs.splice(tabs.findIndex(v=>v.id==="lgentry"), 1);
-    if(UI.view==="lgentry") UI.view = "league";
+  { // 1002 — 마스터 노트: 아직 배분하지 않은 마스터 육성 포인트 (서브탭 숫자와 같다)
+    const hv = tabs.find(v=>v.id==="home");
+    if(hv) hv.badge = SUB_BADGE.master() || null;
   }
-  if(!(S.graduates||[]).length){           // 기록 — 첫 졸업생이 나온 뒤에야 열린다
-    tabs.splice(tabs.findIndex(v=>v.id==="record"), 1);
-    if(UI.view==="record") UI.view = "home";
-  }
+  if(S.phase==="winter" && S.scouts) tabs.splice(2,0,{id:"scout", n:"스카우트", badge: scoutOpen()? (S.scoutTries||0) : null});   // 학생 바로 옆
+  { const cv = tabs.find(v=>v.id==="counsel"); if(cv) cv.badge = counselState().queue.length || null; }
+  if((S.year|0) < 4 && UI.view==="lgentry") UI.view = "league";             // 리그 등록 — 첫 졸업생이 나오는 4년차 봄부터 (서브탭에서도 빠진다)
+  if(!(S.graduates||[]).length && UI.view==="record") UI.view = "log";       // 졸업생 명부 — 첫 졸업생이 나온 뒤에야
+  const curG = viewGroupOf(UI.view);                                        // 서브탭 화면이면 그 묶음의 메뉴 단추가 켜진다
   {  // 스케줄 탭에는 지금 몇 주차인지 붙여둔다
     const pv = tabs.find(v=>v.id==="plan");
     if(pv) pv.side = `${Math.min(S.week+1, PHASES[S.phase].weeks)}주`;
   }
-  $("#nav").innerHTML = tabs.map(v=>`<button data-view="${v.id}" class="${v.hot?"hot":""}" aria-current="${UI.view===v.id}">${v.n}${
-    v.side?`<span class="wk">${v.side}</span>`:""}${v.badge?`<span class="badge">${v.badge}</span>`:""}</button>`).join("");
-  $("#nav").querySelectorAll("button").forEach(b=> b.onclick=()=>{ UI.view=b.dataset.view; render(); });
+  { /* 메뉴 장면 단추 (1002) — 그림 · 긴 이름(.nl) · 짧은 이름(.ns)을 다 넣고, 가로 화면 사이드에서만 그림 + 짧은 이름을 보인다.
+       내용이 같으면 다시 그리지 않는다 (render 마다 그림이 다시 붙어 깜빡이지 않게) */
+    const navH = tabs.map(v=>`<button data-view="${v.id}" class="${v.hot?"hot":""}" aria-current="${curG===v.id}" title="${v.n}">${menuArt(v.id)}<span class="nl">${v.n}</span>${
+      MENU_SHORT[v.id]?`<span class="ns">${MENU_SHORT[v.id]}</span>`:""}${v.side?`<span class="wk">${v.side}</span>`:""}${v.badge?`<span class="badge">${v.badge}</span>`:""}</button>`).join("");
+    /* 1002 — 가로 화면 사이드에만: 지침(예전 등록 그림 · 누르면 지침 창) · 피드백(설정 옆). 예전 지침 칸(#mMis)은 사이드에서 숨긴다 */
+    if(!S.mission) S.mission = newMission();
+    const mc = missionCur(), misT = mc ? `${S.mission.idx+1}/${MISSIONS.length}` : "완수";
+    const sideH = `<button type="button" class="side-only side-mis" data-act="mission" aria-haspopup="dialog" title="지침 ${misT}${mc? " · "+esc(mc.n) : ""}">${menuArt("lgentry")}<span class="nl">지침</span><span class="ns">지침 ${misT}</span></button>`
+      + (typeof feedModal==="function" ? `<button type="button" class="side-only side-fb" data-act="feedback" aria-haspopup="dialog" title="피드백">${menuArt("feedback")}<span class="nl">피드백</span><span class="ns">피드백</span></button>` : "");
+    const nav = $("#nav");
+    if(nav._h !== navH + sideH){
+      nav.innerHTML = navH + sideH; nav._h = navH + sideH;
+      nav.querySelectorAll("button[data-view]").forEach(b=> b.onclick=()=>{ UI.view=b.dataset.view; render(); });
+      nav.querySelectorAll("button[data-act]").forEach(b=> b.onclick=()=> b.dataset.act==="feedback" ? feedModal() : missionModal());
+    }
+  }
   { /* 가로 화면 사이드 — 진행 탭을 맨 아래 큰 '스케줄' 단추로 (0930) */
     const sb = $("#sideSched"), pv = tabs.find(v=>v.id==="plan");
     if(sb && pv){ sb.innerHTML = `스케줄 <b>[${esc(pv.side||"")}]</b>`; sb.setAttribute("aria-current", String(UI.view==="plan")); sb.onclick = ()=>{ UI.view="plan"; render(); }; } }
-  { /* 폰 메뉴 — 4열 2줄(학원·학생·팀 편성·진행 / 시설·유물·상담·더보기), 나머지는 더보기 안에. CSS 가 폭에 따라 #nav 와 바꿔 보여준다 */
-    /* 0930 — 5열 2줄: 맨 왼쪽은 두 줄을 합친 '스케줄', 나머지 7개(마스터 노트 · 학생 · 팀 편성 · 시설 · 유물 · 상담 · 설정) + 더보기 */
-    const MAIN = ["plan","home","roster","team","facil","relic","counsel","opt"], SHORT = {facil:"시설", relic:"유물", plan:"스케줄", home:"마스터"};
+  { /* 폰 메뉴 — CSS 가 폭에 따라 #nav 와 바꿔 보여준다.
+       1002 — 스케줄 포함 8개(스케줄 · 마스터 노트 · 학생 · 마을 · 유물 · 상담 · 설정 · 더보기), 겨울에는 학생 옆에 스카우트가 붙어 9개.
+       더보기 안에는 리그 · 일지 (각자 서브탭) */
+    const MAIN = ["plan","home","roster","scout","facil","relic","counsel","opt"], SHORT = {facil:"마을", relic:"유물", plan:"스케줄", home:"마스터"};
     const mainT = MAIN.map(id=> tabs.find(v=>v.id===id)).filter(Boolean);
     const restT = tabs.filter(v=> !MAIN.includes(v.id));
-    const curRest = restT.find(v=>v.id===UI.view);
+    const curRest = restT.find(v=>v.id===curG);
     const restBadge = restT.reduce((a,v)=> a+(v.badge||0), 0);
-    const tb = (v)=>`<button data-view="${v.id}" class="${v.hot?"hot":""}${v.id==="plan"?" navm-sched":""}" aria-current="${UI.view===v.id}">${SHORT[v.id]||v.n}${
-      v.side?`<span class="wk">${v.side}</span>`:""}${v.badge?`<span class="badge">${v.badge}</span>`:""}</button>`;
-    $("#navm").innerHTML = `<div class="navm-grid">${mainT.map(tb).join("")}
-        <button class="morebtn ${UI.navMore?"open":""}" id="navMore" aria-current="${!!curRest}">${curRest? esc(curRest.n) : "더보기"}<i>${UI.navMore?"▴":"▾"}</i>${
+    /* 1002 — 장면 단추: 6열(스케줄은 2×2 칸) · 좁은 폰은 5열 · 4열(스케줄 1×2 칸). 더보기는 지금 보는 화면이 그 안에 있으면 그 그림 */
+    const tb = (v)=> v.id==="plan"
+      ? `<button data-view="plan" class="${v.hot?"hot":""} navm-sched" aria-current="${UI.view==="plan"}" title="${v.n}">${menuArt("plan","big")}${menuArt("plan48","small")}<span class="sl">스케줄</span>${
+          v.side?`<span class="wk">${v.side}</span>`:""}${v.badge?`<span class="badge">${v.badge}</span>`:""}</button>`
+      : `<button data-view="${v.id}" class="${v.hot?"hot":""}" aria-current="${curG===v.id}" title="${v.n}">${menuArt(v.id)}<span class="ml">${MENU_SHORT[v.id]||SHORT[v.id]||v.n}</span>${
+          v.badge?`<span class="badge">${v.badge}</span>`:""}</button>`;
+    const moreN = curRest? (MENU_SHORT[curRest.id]||curRest.n) : "더보기";
+    const navmH = `<div class="navm-grid">${mainT.map(tb).join("")}
+        <button class="morebtn ${UI.navMore?"open":""}" id="navMore" aria-current="${!!curRest}" aria-expanded="${!!UI.navMore}" title="${curRest? esc(curRest.n) : "더보기"}">${menuArt(curRest? curRest.id : "more")}<span class="ml">${esc(moreN)}<i>${UI.navMore?"▴":"▾"}</i></span>${
           (!UI.navMore && restBadge)? `<span class="badge">${restBadge}</span>`:""}</button></div>
-      <div class="moremenu" ${UI.navMore?"":"hidden"}>${restT.map(v=>`<button data-view="${v.id}" aria-current="${UI.view===v.id}">${v.n}${v.badge?`<span class="badge">${v.badge}</span>`:""}</button>`).join("")}</div>`;
-    $("#navm").querySelectorAll("[data-view]").forEach(b=> b.onclick=()=>{ UI.view=b.dataset.view; UI.navMore=false; render(); });
-    $("#navMore").onclick = ()=>{ UI.navMore=!UI.navMore; render(); };
+      <div class="moremenu" ${UI.navMore?"":"hidden"}>${restT.map(v=>`<button data-view="${v.id}" aria-current="${curG===v.id}">${v.n}${v.badge?`<span class="badge">${v.badge}</span>`:""}</button>`).join("")}</div>`;
+    const nm = $("#navm");
+    if(nm._h !== navmH){
+      nm.innerHTML = navmH; nm._h = navmH;
+      nm.querySelectorAll("[data-view]").forEach(b=> b.onclick=()=>{ UI.view=b.dataset.view; UI.navMore=false; render(); });
+      $("#navMore").onclick = ()=>{ UI.navMore=!UI.navMore; render(); };
+    }
   }
 
   const v = $("#view");
   if(UI.view==="home") v.innerHTML = viewHome();
+  else if(UI.view==="master") v.innerHTML = viewMaster();
   else if(UI.view==="roster") v.innerHTML = viewRoster();
   else if(UI.view==="plan") v.innerHTML = viewPlan();
   else if(UI.view==="facil") v.innerHTML = viewFacil();
-  else if(UI.view==="relic") v.innerHTML = viewRelic();
+  else if(UI.view==="relic" || UI.view==="skill") v.innerHTML = viewRelic();
   else if(UI.view==="team") v.innerHTML = viewTeam();
   else if(UI.view==="counsel") v.innerHTML = viewCounsel();
   else if(UI.view==="codex") v.innerHTML = viewCodex();
@@ -8800,6 +8962,8 @@ function render(){
   else if(UI.view==="scout") v.innerHTML = viewScout();
   else if(UI.view==="log") v.innerHTML = viewLog();
   else v.innerHTML = viewHome();
+  { const sub = subTabsHtml(UI.view);   // 1002 — 학생 · 리그 · 일지 묶음의 서브탭 (마을 서브탭과 같은 모양)
+    if(sub){ v.insertAdjacentHTML("afterbegin", sub); v.querySelectorAll(".subnav [data-subview]").forEach(b=> b.onclick=()=>{ UI.view=b.dataset.subview; render(); }); } }
   bindView();
   bindChronicle();
   renderPrepBar();
@@ -8896,16 +9060,12 @@ function viewHome(){
         <div class="kv"><span class="k">다음 유명도</span><span class="v num">${fameNext(S.fame)? `${fameNext(S.fame).n}까지 ${fmt(fameNext(S.fame).min-S.fame)}` : "최고 단계"}</span></div>
         <div class="kv" title="유명도가 한 등급 오를 때마다 겨울 스카우트 시도가 1회 늘어난다"><span class="k">겨울 스카우트 시도</span><span class="v num">${scoutTriesMax()}회</span></div>
         <div class="kv" title="${esc(diffOf().d)}"><span class="k">난이도</span><span class="v">${diffOf().n}</span></div>
-      </div>
-      <div>
-        <div class="eyebrow" style="margin-bottom:6px">마스터 육성 (잔여 ${mpAvail()}pt)</div>
-        ${["lead","info","net"].map(k=> masterRow(k,"data-mpt")).join("")}
-        ${masterConfirmRow("btnMpOk","btnMpNo")}
-        <div style="margin-top:10px" class="btnrow">
+        <div class="btnrow" style="margin-top:12px">
           <button class="btn sm" id="btnRename">학원 이름 변경</button>
           <button class="btn sm" id="btnNew">새 학원 시작</button>
         </div>
       </div>
+      <div></div>
       ${(typeof TUT_ICON!=="undefined" && TUT_ICON)? `<div><button class="tutbtn" id="btnTut" title="튜토리얼 다시 보기">
         <img src="${TUT_ICON}" alt="튜토리얼"></button></div>`:""}
     </div>
@@ -8946,6 +9106,14 @@ function viewHome(){
     </tbody></table></div>
     <div class="rule"></div><div class="btnrow"><span class="pill">명성 +${fmt(S.lastTour.fame)}</span><span class="pill">자금 +${fmt(S.lastTour.gold)}</span></div></section>`:""}
   `;
+}
+/* 마스터 육성 (1002) — 마스터 노트의 서브탭. 예전 학원 정보 칸 가운데에 있던 것을 옮겼다 (긴 설명은 줄에 마우스를 올리면) */
+function viewMaster(){
+  return `<section class="panel">
+    <div class="panel-h"><h2>마스터 육성</h2></div>
+    <div class="mastergrid">${["lead","info","net"].map(k=> masterRow(k,"data-mpt")).join("")}</div>
+    ${masterConfirmRow("btnMpOk","btnMpNo")}
+  </section>`;
 }
 function studentCard(s, sel, opt){
   /* 얼굴 | 이명·이름 / 성격·등급·직업·학년·레벨 / 컨디션 / 전투력·진로 평가·스킬 강화 */
@@ -9927,7 +10095,7 @@ function gradTransferModal(sid){
   const fee = gradFee(g);
   showModal(`<div class="cerhead"><div class="eyebrow">졸업생 이적</div>
       <h2 style="font-size:23px;margin-top:2px">${epiH(g.name)}${eulr(g.name)} 보낼까?</h2>
-      <p style="color:var(--muted);font-size:13px;margin-top:6px">리그 졸업생 명부에서 사라지고 다시 부를 수 없다. 기록 탭의 졸업생 명부에는 그대로 남는다.</p></div>
+      <p style="color:var(--muted);font-size:13px;margin-top:6px">리그 졸업생 명부에서 사라지고 다시 부를 수 없다. 일지의 졸업생 명부에는 그대로 남는다.</p></div>
     <div class="opt" style="cursor:default;margin-top:14px;border-color:var(--brass)">
       <div class="on">${esc(g.career||"진로 미정")}<span class="price">${yrName(g.year)} 졸업 · Lv.${g.lv}</span></div>
       <div class="od">전투력 <b style="color:var(--text)">${fmt(gradPower(g))}</b> · 이적료 <b style="color:var(--indigo)">SP +${fee}</b>
@@ -9965,8 +10133,8 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1002-0440";
-const BUILD_TS = 1790883601423;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
+const BUILD = "1002-0959";
+const BUILD_TS = 1790902772636;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -10491,7 +10659,7 @@ function viewLgEntry(){
       <span class="hint">${UI.lgSlot!=null? `<b style="color:var(--brass)">${slotRow(lgOrder(L)[UI.lgSlot]||"f1")==="front"?"전열":"후열"}</b> 자리에 넣을 졸업생을 고른다` : "드래그 또는 클릭으로 배치 · 상세로 능력치 확인"}${old? ` · <span style="color:var(--dim)">옛 기록 ${old}명은 전투 정보가 없어 출전 불가</span>`:""}</span></div>
     ${pool.length? `<div class="grid2 lgroster">${pool.map(g=> lgGradCard(g, L, UI.lgSlot)).join("")}</div>`
       : `<div class="empty">아직 졸업생이 없다. 3학년이 졸업하면 여기에 쌓인다.</div>`}
-    <p class="opthint" style="margin-top:10px">출전 중이 아닌 졸업생은 <b>이적</b>으로 내보낼 수 있다 — 기본 <b style="color:var(--indigo)">SP ${TRANSFER_BASE}</b>에 전투력 ${fmt(TRANSFER_PER)}당 <b style="color:var(--indigo)">SP 1</b>이 더해져 들어오고, 기록 탭 명부에는 남는다.</p>
+    <p class="opthint" style="margin-top:10px">출전 중이 아닌 졸업생은 <b>이적</b>으로 내보낼 수 있다 — 기본 <b style="color:var(--indigo)">SP ${TRANSFER_BASE}</b>에 전투력 ${fmt(TRANSFER_PER)}당 <b style="color:var(--indigo)">SP 1</b>이 더해져 들어오고, 일지의 졸업생 명부에는 남는다.</p>
   </section>`;
 }
 /* 시즌 판 — 서버에 얼려 둔 대진을 그대로 펼쳐 보여준다 */
@@ -11214,7 +11382,7 @@ function viewDemon(){
     </div>
     <p class="opthint">모든 학원이 같은 시각에 <b>${demonEveryTxt()}</b> 한 판씩 싸운다. 게임이 열려 있으면 저절로 출전하고,
       관전하지 않아도 입힌 피해량만큼 SP가 들어온다. 편성은 <b>리그 등록</b> 탭의 마왕 대항전에서 바꾼다.</p>
-    ${mem.length? "" : `<div class="empty">마왕 대항전 편성이 비어 있다 — 리그 등록 탭에서 졸업생을 한 명 이상 넣으면 바로 이번 판부터 싸운다.</div>`}
+    ${mem.length? "" : `<div class="empty">마왕 대항전 편성이 비어 있다 — 리그의 등록 탭에서 졸업생을 한 명 이상 넣으면 바로 이번 판부터 싸운다.</div>`}
     ${L? `<div class="rule"></div><div class="eyebrow" style="margin-bottom:6px">지난 마왕전 <span style="color:var(--dim)">— 다음 판이 열리기 전까지 관전할 수 있다</span></div>
       <div class="dmlast">
         <div class="dmlast-v"><b class="num">${fmt(L.dmg)}</b><span>피해</span></div>
@@ -11548,7 +11716,7 @@ function viewRank(){
   </section>`;
   }
   if(!R.list.length) return `<section class="panel">${head}
-    <div class="empty">아직 등록된 학원이 없다. 리그 등록 탭에서 <b>등록 · 갱신</b>을 누르면 여기에 올라온다.</div></section>`;
+    <div class="empty">아직 등록된 학원이 없다. 리그의 등록 탭에서 <b>등록 · 갱신</b>을 누르면 여기에 올라온다.</div></section>`;
   return `<section class="panel">${head}
     <p class="opthint">각 학원이 마지막으로 등록해 둔 졸업생 명단이다. 시즌은 이 순위를 기준으로 조를 나눈다.</p>
     <div class="rktable">
@@ -12141,7 +12309,7 @@ function viewFacShop(){
           : k==="expand"
           ? (full ? "더 넓힐 곳이 없다" : `다음 단계 — ${expandUnlocks(lv+1).join(" · ")}`)
           : k==="portal" ? (full ? "이계와 이어져 있다" : "봄 상반기(1~6주)에만 설치할 수 있다 · 설치 후에는 되돌릴 수 없다")
-          : k==="draft" ? (full ? "시설 · 상점의 드래프트 홀 탭에서 스카우터를 고용한다" : "스카우터 고용 · 유망주 탐색으로 겨울 스카우트 후보를 바꾼다")
+          : k==="draft" ? (full ? "마을의 드래프트 홀 탭에서 스카우터를 고용한다" : "스카우터 고용 · 유망주 탐색으로 겨울 스카우트 후보를 바꾼다")
           : k==="infirm" ? `현재 매주 +${lv}` : `현재 효율 ×${facEff(k).toFixed(2)}`;
         const tag = k==="portal" ? (full ? "설치 완료" : "미설치") : k==="draft" ? (full ? "건설 완료" : "미건설") : `Lv.${lv} / ${mx}`;
         return `<button class="opt ${lock?"locked":""} ${!lock&&!full&&S.gold<c?"poor":""}" data-fac="${k}" ${lock||full?"disabled":""}>
@@ -12452,7 +12620,8 @@ function viewRelic(){
   const pool = S.relicPool||[];
   const rMode = S.opts.rlsort || "default";
   const sMode = S.opts.sksort || "default";
-  return `<section class="panel">
+  /* 1002 — 서브탭으로 나눴다: 유물 보관고(relic) · 스킬 보관고(skill). 버튼 연결(bindView)은 그대로 */
+  const relicSec = ()=> `<section class="panel">
     <div class="panel-h"><h2>유물 보관고</h2><span class="hint">${pool.length}개 보관 · 학생을 선택해 장착한다</span>
       ${pool.length? sortSelect("rlsort", RELIC_SORT, rMode) : ""}</div>
     ${(()=>{ const P=RELIC_SELL;
@@ -12479,8 +12648,8 @@ function viewRelic(){
         </div>
         ${S.students.length? `<div class="od reqpw" data-eqpw="${i}" style="margin-top:5px">${relicEquipPreview(r, S.students[0])}</div>` : ""}
       </div>`).join("")}</div>` : `<div class="empty">보관 중인 유물이 없다. 원정을 통해 획득한다.</div>`}
-  </section>
-  <section class="panel">
+  </section>`;
+  const skillSec = ()=> `<section class="panel">
     <div class="panel-h"><h2>스킬 보관고</h2><span class="hint">학생당 전수는 1회</span>
       ${(S.skillPool||[]).length? sortSelect("sksort", SKILL_SORT, sMode) : ""}</div>
     ${(S.skillPool||[]).length? `<div class="grid2">${sortSkillPool(S.skillPool, sMode).map(({e,i})=>{
@@ -12507,6 +12676,7 @@ function viewRelic(){
     }).join("")}</div>`
     : `<div class="empty">보관 중인 기술이 없다. 졸업생은 가장 깊이 체득한 기술 하나를 남기고 떠난다.</div>`}
   </section>`;
+  return UI.view==="skill" ? skillSec() : relicSec();
 }
 
 /* ============================================================
@@ -13617,9 +13787,6 @@ function viewScout(){
       <div class="od">${(S.incoming||[]).map(x=>`${dnH(x)} (${x.grade}급 ${JOBS[x.job].name})`).join(" · ")}</div>
       <div class="od" style="color:var(--dim)">정원이 찼으므로 남은 시도 ${S.scoutTries||0}회는 쓰이지 않고 사라진다. 겨울이 끝나면 이들이 입학한다.</div>
     </div>` : ""}
-    <p style="font-size:12px;color:var(--dim);margin:-6px 0 10px">신입생 정원은 현재 <b style="color:var(--brass)">${enrollCap()}명</b>이다 (무명·유명 3 · 강호·명문 4 · 초명문 5). 겨울마다 스카우트 시도는 기본 ${SCOUT_TRIES}회이며, 학원 유명도가 한 등급 오를 때마다 1회씩 늘어난다 (현재 <b style="color:var(--brass)">${fameTitle(S.fame).n}</b> — ${scoutTriesMax()}회). 자금은 들지 않고, 성공하든 실패하든 시도 1회가 소모된다. 처음 실패한 상대는 성공률 +10%p로 한 번 더 설득할 수 있고, 두 번째도 실패하면 그 학생은 떠난다. <b style="color:var(--text)">${enrollCap()}명을 확보하면 남은 시도와 관계없이 스카우트가 끝난다.</b>
-      후보의 등급은 학원 유명도(<b style="color:var(--brass)">${fameTitle(S.fame).n}</b>)를 따른다.${
-        scouterLv() ? ` <b style="color:var(--text)">드래프트 홀</b> 스카우터 Lv.${scouterLv()} — ${draftEffText(scouterLv())}${draftJobs().length ? ` · 유망주 ${draftJobs().map(k=> JOBS[k].name).join(" · ")}` : ""} (겨울이 시작될 때 반영).` : ""}</p>
     <div class="grid2">
       ${S.scouts.map((c,i)=>{
         const s=c.st;
@@ -13907,7 +14074,7 @@ function bindView(){
       : k==="portal"
       ? `<b>차원 포탈</b> 설치 — 이계와 이어졌다. 이제부터 친선전·신인전·가을 대회에 나오는 학원은 모두 유명도 <b>이계</b> 등급이다. 도구 탭에 새 항목이 드러났다.`
       : k==="draft"
-      ? `<b>드래프트 홀</b> 완공 — 시설 · 상점에 <b>드래프트 홀</b> 탭이 열렸다. 스카우터를 고용할 수 있다.`
+      ? `<b>드래프트 홀</b> 완공 — 마을에 <b>드래프트 홀</b> 탭이 열렸다. 스카우터를 고용할 수 있다.`
       : `<b>${FACILITIES[k].n}</b> 확장 — Lv.${S.facil[k]}`, "good"); save(); render();
   }
   {
@@ -14320,8 +14487,8 @@ function tutGuideData(k){
     6:{title:"원정에서 얻고, 장착해요",tag:"원정 · 유물",job:"spellsword",lead:"원정 파견 카드를 쓰면 원정지와 팀을 골라 자동 전투를 진행합니다.",visual:"expedition",steps:[["원정지와 팀 선택", "난이도와 팀 상태를 보고 출발하세요. 결과로 건너뛰기를 눌러 전투 결과를 바로 볼 수도 있어요."],["얻은 유물은 장착까지", "원정 보상으로 얻은 유물은 유물 · 스킬 화면에서 확인하고 학생에게 장착하세요."]],tip:"원정에서는 자금·유물·진로 평가와 함께 업보도 얻습니다. 반복 파견 전에 학생의 상태를 확인하세요."},
     7:{title:"친선전, 상대와 날짜를 골라요",tag:"봄 · 친선전",job:"darkpriest",lead:"요청한 학원 중 대결할 상대를 고르고 봄 하반기 일정에 배치합니다.",visual:"friendly",steps:[["상대와 명성 변화 확인", "상대 전력과 승패에 따른 명성 변화를 살펴보고 요청을 수락하세요."],["빈 일정에 배치하고 회신", "학원을 고른 뒤 날짜에 놓습니다. 끌어서 배치하거나 눌러서 고를 수 있어요."]],tip:"모든 요청을 받을 필요는 없습니다. 일정을 비워 두거나 요청을 거절해도 괜찮아요."},
     8:{title:"전투 전, 학생들에게 한마디",tag:"전투 준비 · 라커룸",job:"darkpriest",lead:"우리 팀과 상대의 전력, 학생들의 성격을 보고 말을 고릅니다.",visual:"speech",steps:[["한마디만 선택", "상황에 맞는 말을 고르면 학생의 기분과 신뢰에 도움이 됩니다."],["모두에게 같은 반응은 아니에요", "동기부여는 특히 성격을 살펴보세요. 맞지 않는 말은 기분을 떨어뜨릴 수도 있습니다."]],tip:"예시 수치가 항상 보장되는 보상은 아닙니다. 현재 학생들의 반응을 확인하세요."},
-    9:{title:"졸업 뒤에도, 함께하는 리그",tag:"졸업생 리그 · 리그 등록",job:"paladin",lead:"졸업생이 생기면 더 넓은 무대에서 다른 학원과 모의 대전을 펼칠 수 있어요.",visual:"league",steps:[["졸업생으로 팀 구성", "리그 등록에서 출전할 졸업생과 진형을 확인하고 등록합니다."],["리그와 SP 상점 이용", "리그를 진행하며 SP를 얻고 SP 상점에서 사용하세요. 폰에서는 더보기 메뉴에서 찾을 수 있어요."]],tip:"리그는 온라인 기능입니다. 등록·시즌 정산 조건과 결과는 해당 화면에서 확인하세요."},
-    10:{title:"부지를 넓히고 시설을 들여요",tag:"시설 · 상점 → 학원 증축",job:"enchanter",lead:"명성에 따른 인가와 학원 증축은 별개의 단계입니다.",visual:"expand",steps:[["첫 증축은 시내 대회 참가 뒤", "현재 규칙에서는 첫 시내 대회를 치른 뒤 시설 · 상점과 첫 증축이 열립니다."],["이후에는 인가와 자금 확인", "증축 단계마다 필요한 학원 등급과 비용이 다릅니다. 조건을 채우고 증축하면 추가 시설·물품이 열려요."]],tip:"인가를 받았다고 모든 시설이 바로 열리지는 않습니다. 각 시설에 표시된 증축 조건을 확인하세요."},
+    9:{title:"졸업 뒤에도, 함께하는 리그",tag:"졸업생 리그 · 리그 등록",job:"paladin",lead:"졸업생이 생기면 더 넓은 무대에서 다른 학원과 모의 대전을 펼칠 수 있어요.",visual:"league",steps:[["졸업생으로 팀 구성", "리그의 등록 탭에서 출전할 졸업생과 진형을 확인하고 등록합니다."],["리그와 SP 상점 이용", "리그를 진행하며 SP를 얻고 리그의 SP 상점 탭에서 사용하세요. 폰에서는 더보기 메뉴의 리그에서 찾을 수 있어요."]],tip:"리그는 온라인 기능입니다. 등록·시즌 정산 조건과 결과는 해당 화면에서 확인하세요."},
+    10:{title:"부지를 넓히고 시설을 들여요",tag:"마을 → 학원 증축",job:"enchanter",lead:"명성에 따른 인가와 학원 증축은 별개의 단계입니다.",visual:"expand",steps:[["첫 증축은 시내 대회 참가 뒤", "현재 규칙에서는 첫 시내 대회를 치른 뒤 마을과 첫 증축이 열립니다."],["이후에는 인가와 자금 확인", "증축 단계마다 필요한 학원 등급과 비용이 다릅니다. 조건을 채우고 증축하면 추가 시설·물품이 열려요."]],tip:"인가를 받았다고 모든 시설이 바로 열리지는 않습니다. 각 시설에 표시된 증축 조건을 확인하세요."},
     11:{title:"3학년의 겨울은 진로 준비",tag:"겨울 · 졸업 준비",job:"forcemage",lead:"3학년은 겨울 동안 졸업 이후의 진로를 준비합니다.",visual:"winter",steps:[["겨울 스케줄에서 빠져요", "3학년 학생들이 훈련에 보이지 않아도 오류가 아닙니다. 남은 재학생 중심으로 일정을 준비하세요."],["겨울이 끝나면 졸업식", "그동안 쌓아 온 성장과 기록으로 진로 발표와 졸업을 맞이합니다."]],tip:"학생들의 마지막 가을을 미리 준비해 주세요. 겨울에는 신입생을 맞을 다음 해도 계획할 수 있어요."},
     12:{title:"카드의 작은 표식을 확인해요",tag:"진행 · 카드 표식",job:"timemage",lead:"같은 훈련 카드라도 표식에 따라 사용하는 날의 효과가 달라집니다.",visual:"marks",steps:[["사용하는 날에 적용", "표식은 카드를 들고 있는 동안이 아니라, 해당 요일에 사용했을 때 적용됩니다."]],tip:"카드 왼쪽 위 남은 기간도 확인하세요. 이번 주까지인 카드는 사용하지 않으면 주가 끝날 때 사라집니다."}
   };return data[k]||data[1];
@@ -14343,7 +14510,7 @@ function tutGuideVisual(kind){
     case "friendly":return route([["요청 학원 선택","전력과 명성 변화 확인"],["봄 하반기 일정 배치","빈 날짜에 놓기"],["회신","참가할 일정 확정"]]);
     case "speech":return Object.values(SPEECH_TYPE).map(x=>row(x.n,x.d,"“")).join("");
     case "league":return route([["졸업생","졸업한 학생 확인"],["리그 등록","출전 팀과 진형 선택"],["졸업생 리그","다른 학원과 대전"],["SP 상점","모은 SP 사용"]]);
-    case "expand":return route([["시내 대회 참가","시설 · 상점 개방"],["학원 증축","필요 인가 · 비용 확인"],["시설 · 물품 해금","열린 시설을 구매·강화"]]);
+    case "expand":return route([["시내 대회 참가","마을 개방"],["학원 증축","필요 인가 · 비용 확인"],["시설 · 물품 해금","열린 시설을 구매·강화"]]);
     case "winter":return `<div class="tg-season"><span>가을</span><b>→</b><span>겨울</span><b>→</b><span>졸업</span></div>${row("3학년","진로 준비로 스케줄 불참","❄")}${row("남은 재학생","계속 훈련하고 다음 해 준비","↑")}`;
     case "marks":return `<div class="tg-card-demo tg-mark-card">${tutSampleCard("tact","dbl")}<div><strong>모서리 표식</strong><p>카드의 훈련 이름과 함께 확인해요.</p></div></div>`+Object.values(CARD_MARK).map(m=>row(m.n,m.d,m.i)).join("");
   }return "";
