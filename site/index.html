@@ -2708,8 +2708,8 @@ const JOBS = {
     skills:[
       {id:"sw_b",fx:"slash",el:"phys",kind:"basic",name:"베기",type:"dmg",target:"enemy_front",power:1.02,proc:1,dur:0,txt:"기본에 충실한 종베기"},
       {id:"sw_1",fx:"aura",el:"debuff",name:"도발",type:"taunt",target:"enemy_rand",power:.15,proc:.2,dur:2,noDur:true,txt:"한 명을 걸고 넘어져 시선을 끈다 — 침착성 저하"},
-      {id:"sw_2",fx:"aura",el:"buff",name:"철벽 자세",type:"buff",target:"self",power:.42,pow2:.21,stat2:"atk",proc:.2,dur:2,stat:"def",txt:"자세를 굳혀 방어와 공격을 함께 올린다"},
-      {id:"sw_u",fx:"slash",el:"phys",kind:"ult",name:"대지 가르기",type:"ult_aoe",target:"enemy_all",power:1.7,proc:1,dur:2,shieldSelf:1,shieldDef:1,txt:"땅을 가르며 전체 피해와 방어 저하 · 입힌 만큼 + 방어력만큼 자신에게 보호막"}
+      {id:"sw_2",fx:"aura",el:"buff",name:"철벽 자세",type:"buff",target:"self",power:.30,pow2:.15,stat2:"atk",proc:.2,dur:2,stat:"def",txt:"자세를 굳혀 방어와 공격을 함께 올린다"},   // 1002: 방어 +42% · 공격 +21% → +30% · +15%
+      {id:"sw_u",fx:"slash",el:"phys",kind:"ult",name:"대지 가르기",type:"ult_aoe",target:"enemy_all",power:1.7,proc:1,dur:0,noBreak:true,shieldSelf:1,shieldDef:1,txt:"땅을 가르며 적 전체에 피해 · 입힌 만큼 + 방어력만큼 자신에게 보호막"}   // 1002: 방어 붕괴(2턴) 뺐다
     ]},
   monk:{ name:"몽크", role:"tank", sub:"서브 딜러", tone:"tank",
     desc:"흡혈과 피해가 강력한 수도사.",
@@ -4883,7 +4883,13 @@ const SK_TIER   = [SK_UP, SK_EVO, SK_AWK];
 const SK_TIER_N = ["단순 강화","진화 강화","각성 강화"];
 const SK_TIER_C = ["var(--text)","var(--brass)","var(--ex)"];
 const SK_LV_MAX = 5;                          // 스킬 최대 레벨 — 강화는 4회까지
-function skillsOf(st){ return (st && st.skills) ? st.skills : JOBS[st.job].skills; }
+/* 전수받은 학생은 기술 목록(st.skills)을 세이브에 사본으로 들고 다닌다 —
+   수치를 고치면 낡은 사본이 그대로 남으니, 같은 id 의 지금 원본으로 바꿔 읽는다 (1002) */
+function liveSkill(sk){
+  const j = (sk && sk.id) ? ownerJobOf(sk.id) : null;
+  return (j && (JOBS[j].skills||[]).find(x=> x.id === sk.id)) || sk;
+}
+function skillsOf(st){ return (st && st.skills) ? st.skills.map(liveSkill) : JOBS[st.job].skills; }
 function passiveJobOf(st){ return (st && st.passiveJob) || st.job; }
 function modOf(o, id){
   if(!o.skMod) o.skMod = {};
@@ -4997,6 +5003,8 @@ function runBattle(teamA, teamB, opt){
   const snap = ()=> all.map(u=>({hp:u.hp,maxHp:u.maxHp,sh:u.shield,ult:u.ult,atb:clamp(u.atb/1000,0,1),alive:u.alive,
     cs:consOf(u).lv, dd:u.dDealt|0, dh:u.dHeal|0, dt:u.dTaken|0,
     fx:u.fx.map(f=>({n:f.name,k:f.kind,stat:f.stat||null,regen:!!f.regen,mir:!!f.mir,taunt:!!f.taunt,allT:!!f.allT}))}));
+  /* 쓰러지는 순간의 행동 · 필살 게이지를 적어 둔다 (1003) — 부활하면 0 이 아니라 이 값에서 다시 시작한다 */
+  const downAt = t=>{ t.koAtb = t.atb; t.koUlt = t.ult; };
   /* 누적 기록 — 피해 / 회복 / 받은 피해 */
   const recDmg  = (src, tgt, v)=>{ v=Math.round(v||0); if(v<=0) return; if(src) src.dDealt+=v; if(tgt) tgt.dTaken+=v; };
   const recHeal = (src, v)=>{ v=Math.round(v||0); if(v>0 && src) src.dHeal+=v; };
@@ -5072,7 +5080,7 @@ function runBattle(teamA, teamB, opt){
           if(pp.length) push(`저주가 갉아낸 만큼 아군 전체 ${fmt(h)} 회복`,"heal",sv.uid,null,pp);
         });
       }
-      if(u.hp<=0){ u.alive=false; push(`<b>${epiH(u.name)}</b> 전투 불능`,"die",u.uid); }
+      if(u.hp<=0){ downAt(u); u.alive=false; push(`<b>${epiH(u.name)}</b> 전투 불능`,"die",u.uid); }
     }
     if(!u.alive){ if(checkEnd()) break; continue; }
     {
@@ -5159,7 +5167,7 @@ function runBattle(teamA, teamB, opt){
       const Pm = u.pas;
       const bb = (Pm && Pm.ultBasic && chosen && chosen.kind==="basic") ? 1+Pm.ultBasic : 1;
       const u0 = u.ult;
-      u.ult = clamp(u.ult + 17*eff(u,"ultGain")*bb, 0, 100);
+      if(u.alive) u.ult = clamp(u.ult + 17*eff(u,"ultGain")*bb, 0, 100);   // 행동 중에 쓰러졌으면 (반격 등) 게이지는 쓰러진 순간 그대로 둔다 (1003)
       /* 행동으로 얻는 필살 게이지 (1001) — 예전에는 행동이 다 끝난 뒤에 더해서 다음 사람 차례 줄에야 보였다.
          행동 첫 줄(외침) 다음부터 이미 오른 값으로 적어 두어, 공격이 들어가는 순간 같이 차오르게 한다 */
       const add = u.ult - u0, ku = all.indexOf(u);
@@ -5181,7 +5189,7 @@ function runBattle(teamA, teamB, opt){
         const pop = [];
         tg.forEach(t=>{ t.hp = Math.max(0, t.hp - v); recDmg(boss, t, v); pop.push({u:t.uid, v, k:"dmg"}); });
         push(`회피할 수 없는 일격 — 살아 있던 ${tg.length}명에게 각각 ${fmt(v)} 피해`,"crit",boss.uid,null,pop);
-        tg.forEach(t=>{ if(t.hp<=0){ t.alive=false; t.fx=[]; push(`<b>${epiH(t.name)}</b> 전투 불능`,"die",boss.uid,null,[{u:t.uid,k:"die"}]); } });
+        tg.forEach(t=>{ if(t.hp<=0){ downAt(t); t.alive=false; t.fx=[]; push(`<b>${epiH(t.name)}</b> 전투 불능`,"die",boss.uid,null,[{u:t.uid,k:"die"}]); } });
       }
       if(!aliveOf(A).length) winner = "B";
     }
@@ -5265,11 +5273,11 @@ function runBattle(teamA, teamB, opt){
     if(dmg>0 || !absorbed) pop.push({u:tgt.uid, v:dmg, k:crit?"crit":"dmg"});
     if(leeched>0) pop.push({u:src.uid, v:leeched, k:"heal"});
     push(`<b>${epiH(tgt.name)}</b>에게 ${fmt(dmg)}${absorbed? ` (보호막 ${fmt(absorbed)} 흡수)`:""}${crit?" — 치명타!":""}`, crit?"crit":"", src.uid, null, pop);
-    if(tgt.hp<=0){ tgt.alive=false; tgt.fx=[]; push(`<b>${epiH(tgt.name)}</b> 전투 불능`,"die",src.uid,null,[{u:tgt.uid,k:"die"}]); return dmg; }
+    if(tgt.hp<=0){ downAt(tgt); tgt.alive=false; tgt.fx=[]; push(`<b>${epiH(tgt.name)}</b> 전투 불능`,"die",src.uid,null,[{u:tgt.uid,k:"die"}]); return dmg; }
     if(dmg>0){
       const cs = consOf(tgt);
       if(cs.ko>0 && RNG()<cs.ko){
-        tgt.alive=false; tgt.fx=[]; tgt.hp = Math.max(1, tgt.hp);
+        downAt(tgt); tgt.alive=false; tgt.fx=[]; tgt.hp = Math.max(1, tgt.hp);
         push(`<b>${epiH(tgt.name)}</b> 의식을 잃고 쓰러졌다`,"die",src.uid,null,[{u:tgt.uid,k:"die"}]);
       }
     }
@@ -5445,10 +5453,13 @@ function runBattle(teamA, teamB, opt){
         { const pp=[]; const back=[];
           tg.forEach(t=>{ const h0=t.hp; t.hp=Math.min(t.maxHp,t.hp+h); recHeal(u, t.hp-h0); if(t.hp>h0) pp.push({u:t.uid,v:t.hp-h0,k:"heal"});
             t.fx=t.fx.filter(f=>f.kind!=="d"&&f.kind!=="dot"); });
-          /* 부활 — 쓰러진 아군을 일으킨다 (전투당 1인 1회) */
+          /* 부활 — 쓰러진 아군을 일으킨다 (전투당 1인 1회).
+             행동 · 필살 게이지는 쓰러질 때 적어 둔 값에서 다시 시작한다 (1003 — 전에는 행동 게이지가 0 으로 돌아갔다) */
           if(sk.revive) (allies||[]).forEach(t=>{
             if(t.alive || t.revived) return;
-            t.revived = true; t.alive = true; t.fx = []; t.shield = 0; t.mir = 0; t.atb = 0;
+            t.revived = true; t.alive = true; t.fx = []; t.shield = 0; t.mir = 0;
+            if(t.koAtb != null) t.atb = t.koAtb;
+            if(t.koUlt != null) t.ult = t.koUlt;
             t.hp = Math.min(t.maxHp, h); recHeal(u, t.hp);
             if(!actionFx.t.includes(t.uid)) actionFx.t.push(t.uid);
             pp.push({u:t.uid,v:t.hp,k:"heal"}); back.push(epiH(t.name));
@@ -5497,7 +5508,7 @@ function newGame(name){
   S = {
     v:1, lgid:lgNew || leagueGenId(), acadName: name || (pick(ACAD)+" 용사 학원"),
     master:{name:"마스터", lead:0, info:0, net:0, pts:6},
-    tier:1, fame:0, gold:5000, sp:0, debt:DEBT_START, debtV:1, bank:{repay:0}, jobUnlock:0, actUnlock:0, jobN:{}, jobEv:{}, diet:"plain",
+    tier:1, fame:0, gold:3000, sp:0, debt:DEBT_START, debtV:1, bank:{repay:0}, jobUnlock:0, actUnlock:0, jobN:{}, jobEv:{}, diet:"plain",
     year:1, phase:"spring", week:0,
     students:[], graduates:[], log:[],
     facil:{expand:0,gym:0,hall:0,chapel:0,infirm:0,library:0,arena:0,counsel:0}, facilV:FACIL_VER, shopUnlock:0,
@@ -5835,8 +5846,8 @@ function jobPay(){ return jobGrade().pay; }
 function jobDef(k){ return JOB_LIST.find(j=> j.k===k) || JOB_LIST[0]; }
 function mentName(k){ return (MENTAL.find(m=>m.k===k)||{n:k}).n; }
 /* ══════ 의뢰처별 누적 · 단골 이벤트 (0929) ══════
-   학생 한 명이 하루 그 의뢰를 마칠 때마다 1회. 10회 · 200회에 의뢰인이 찾아와 무언가를 열어 준다 (그 주가 끝날 때 팝업) */
-const JOB_EV_AT = [10, 200];
+   학생 한 명이 하루 그 의뢰를 마칠 때마다 1회. 20회 · 200회에 의뢰인이 찾아와 무언가를 열어 준다 (그 주가 끝날 때 팝업 · 1003 — 첫 단계 10 → 20회) */
+const JOB_EV_AT = [20, 200];
 function jobN(k){ return (S.jobN && S.jobN[k])|0; }
 function jobEvLv(k){ return (S.jobEv && S.jobEv[k])|0; }
 function churchLv(){ return jobEvLv("church"); }          // 1 — 기부 · 치유 / 2 — 거액 기부 · 신비한 성수 · 예지의 서
@@ -5931,12 +5942,17 @@ function dietCycle(){
 }
 /* 화면에 적는 훈련 효율 — 컨디션 효율 × 식단 */
 function effPct(st){ return Math.round(condEff(st.cond).pct * dietMul()); }
-/* 이번 주 의뢰 — 처음 의뢰가 나온 순간 정한다. 배경은 시설 배경 중 하나 (보여주기용이라 게임 난수는 쓰지 않는다) */
+/* 이번 주 의뢰 — 처음 의뢰가 나온 순간 정한다. 배경은 시설 배경 중 하나 (보여주기용이라 게임 난수는 쓰지 않는다)
+   처음 의뢰를 하는 여섯 주 (1003) — 아직 한 번도 해 보지 않은 의뢰처에서만 고른다. 의뢰처 수만큼이라 여섯 곳을 한 번씩 다 돈 뒤로는 무작위.
+   '해 봤다' 는 의뢰처별 누적(jobN)이 1 이상 — 그 주에 아무도 못 했으면 다음에도 새 의뢰처로 남는다 */
+const JOB_FRESH_WEEKS = JOB_LIST.length;
 function weekJob(day){
   const R = UI.wrun;
   if(!R) return JOB_LIST[0];
   if(!R.job){
-    R.job = pick(JOB_LIST).k; R.jobDay = day;
+    const tried = JOB_LIST.filter(j=> jobN(j.k) > 0).length;
+    const fresh = tried < JOB_FRESH_WEEKS ? JOB_LIST.filter(j=> jobN(j.k) === 0) : [];
+    R.job = pick(fresh.length ? fresh : JOB_LIST).k; R.jobDay = day;
     R.jobFac = "job_" + R.job;
   }
   return jobDef(R.job);
@@ -9605,15 +9621,36 @@ async function leagueReq(path, method, body){
    브라우저마다 무작위 ID 하나(pid)를 만들어 players/{pid} 한 칸만 덮어쓴다. 이름 · 기기 정보는 보내지 않는다.
    보내는 때: 접속(불러오기) · 새 시나리오 · 저장(90초에 한 번까지). 로컬 파일(file:) · localhost · 필드 실험실 · 개발 빌드는 보내지 않는다. */
 const PING_KEY = "heroschool_pid", PING_T_KEY = "heroschool_play_min", PING_RUNS_KEY = "heroschool_runs", PING_FIRST_KEY = "heroschool_first";
+const PING_UID_KEY = "heroschool_uid", PING_UID_PREV_KEY = "heroschool_uid_prev";
 const PING_GAP = 90000;
-let PING_LAST = 0, PING_BUSY = false;
+let PING_LAST = 0, PING_BUSY = false, PING_PID = null, PING_UID = null, PING_NO_UID = false;
 function pingOn(){
   try{ return !!LEAGUE_URL && /^https?:$/.test(location.protocol) && !/^(localhost|127\.|\[::1\])/.test(location.hostname) && !FIELD_LAB && BUILD !== "dev"; }catch(e){ return false; }
 }
 function pingLS(k, v){ try{ if(v === undefined) return localStorage.getItem(k); localStorage.setItem(k, String(v)); }catch(e){} return null; }
 function pingPid(){
+  if(PING_PID) return PING_PID;   // 저장소에 못 써도 이번 접속 동안은 한 줄로 (1002)
   let v = pingLS(PING_KEY);
   if(!v){ v = "p" + Date.now().toString(36) + Math.random().toString(36).slice(2,8); pingLS(PING_KEY, v); pingLS(PING_FIRST_KEY, Date.now()); }
+  return PING_PID = v;
+}
+/* 사람 id (1002) — 브라우저 id(pid)와 달리 세이브(S.uid)에도 든다. 이어하기 코드 · 파일로 기록을 옮기면 따라가서
+   현황판의 '유니크 유저' 가 폰 · PC 로 갈라진 줄을 한 사람으로 묶는다. 새 학원은 이 브라우저의 id 를 물려받는다.
+   옮겨 온 기록의 id 를 쓰게 되면 이 브라우저가 쓰던 id 는 uidPrev 로 남겨서, 예전 줄도 같이 묶이게 한다. */
+function pingUidPrev(){
+  let a = []; try{ a = JSON.parse(pingLS(PING_UID_PREV_KEY) || "[]"); }catch(e){}
+  return Array.isArray(a) ? a.filter(x=> typeof x === "string" && x).slice(-8) : [];
+}
+function pingUid(){
+  const s = (S && typeof S.uid === "string" && S.uid) || null;
+  const b = pingLS(PING_UID_KEY) || PING_UID;
+  const v = s || b || ("u" + Date.now().toString(36) + Math.random().toString(36).slice(2,8));
+  if(b !== v){
+    if(b){ const prev = pingUidPrev(); if(prev.indexOf(b) < 0){ prev.push(b); pingLS(PING_UID_PREV_KEY, JSON.stringify(prev.slice(-8))); } }
+    pingLS(PING_UID_KEY, v);
+  }
+  PING_UID = v;
+  if(S && Array.isArray(S.students) && S.uid !== v) S.uid = v;   // 다음 저장에 함께 남는다
   return v;
 }
 /* 플레이 시간 — 화면이 보이는 동안 1분마다 1 */
@@ -9638,7 +9675,15 @@ function playerPing(force){
   if(PING_BUSY || (!force && now - PING_LAST < PING_GAP)) return;
   PING_LAST = now; PING_BUSY = true;
   let rec; try{ rec = pingRecord(); }catch(e){ PING_BUSY = false; return; }
-  leagueReq("players/" + pingPid(), "PATCH", rec).catch(()=>{}).finally(()=>{ PING_BUSY = false; });
+  if(!PING_NO_UID){ try{ rec.uid = pingUid(); const prev = pingUidPrev().filter(x=> x !== rec.uid); if(prev.length) rec.uidPrev = prev; }catch(e){} }
+  const path = "players/" + pingPid();
+  leagueReq(path, "PATCH", rec)
+    .catch(e=>{   // 서버 규칙이 새 칸(uid)을 받지 않으면 예전 칸만 다시 보내고, 이번 접속 동안은 빼고 보낸다
+      if(!("uid" in rec) || !/^서버 응답 4/.test(String(e && e.message))) throw e;
+      PING_NO_UID = true; delete rec.uid; delete rec.uidPrev;
+      return leagueReq(path, "PATCH", rec);
+    })
+    .catch(()=>{}).finally(()=>{ PING_BUSY = false; });
 }
 /* 쿼리를 붙여 읽는다 — 실패하면 상태 번호를 달아 던진다 (400 = 규칙에 인덱스가 없다) */
 async function leagueGet(path, query){
@@ -9934,7 +9979,7 @@ function xferBody(opt){
   /* 피드백에 실어 보내는 사본에는 리그 자리를 담지 않는다 —
      받은 쪽이 그대로 열면 보낸 사람의 리그 자리를 빼앗게 된다 */
   if(!(opt && opt.noLeague)){ try{ lg = leagueId(); }catch(e){} }
-  else return {s:Object.assign({}, S, {lgid:undefined}), lg:null};   // 사본에서는 저장 안의 id 도 뺀다
+  else return {s:Object.assign({}, S, {lgid:undefined, uid:undefined}), lg:null};   // 사본에서는 저장 안의 id 도 뺀다 (사람 id 도)
   return {s:S, lg:lg};
 }
 async function xferPack(obj){
@@ -10164,14 +10209,14 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1002-1717";
-const BUILD_TS = 1790929061936;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
+const BUILD = "1003-0815";
+const BUILD_TS = 1790982958226;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
    그러니 전투 계산이 한 줄이라도 달라지면 같은 시즌인데 순위표가 갈린다.
    전투에 닿는 수치를 고칠 때마다 이 번호를 올린다. 번호가 어긋난 시즌은 정산하지 않는다. */
-const RULES_VER = 4;   // 4 (0929): 여러 명을 치는 스킬의 시전 판정이 맞는 적 전체의 평균 저항으로 · 3 (0924): 리그 정보 보정을 보는 사람이 아니라 각 팀의 등록값(mi)으로 · 유닛을 시드 밖에서 세운다
+const RULES_VER = 6;   // 6 (1003): 부활하면 쓰러질 때의 행동 · 필살 게이지에서 다시 시작 (전에는 행동 0), 행동 중에 쓰러지면 그 행동의 필살 게이지는 오르지 않는다 · 5 (1002):소드맨 철벽 자세 방어 +30% · 공격 +15% (전 42 · 21), 대지 가르기 방어 붕괴 없앰, 전수받은 기술도 지금 수치로 · 4 (0929):여러 명을 치는 스킬의 시전 판정이 맞는 적 전체의 평균 저항으로 · 3 (0924): 리그 정보 보정을 보는 사람이 아니라 각 팀의 등록값(mi)으로 · 유닛을 시드 밖에서 세운다
 /* 시즌 번호와 시작 시각은 시계에서 바로 뽑는다 —
    그래야 서로 상의하지 않아도 모두가 같은 번호, 같은 시작 시각을 말하게 된다. */
 /* ── 서버 시계 ──
@@ -12946,7 +12991,7 @@ function evolveCeremony(c){
 }
 /* 이계에서의 편지 — 초명문에 올라 있고 본선 우승이 한 번이라도 있으면, 그다음 봄 2주차 시작에 한 번 온다.
    편지가 오면 시설 탭의 ??? 가 차원 포탈로 드러난다 */
-/* 직접 의뢰를 받다 (0926) — 처음 맞는 가을의 1주차를 마치면. 와이번 토벌 5,000G + 학생들의 잡일 300G, 개인 행동에 의뢰가 열린다 */
+/* 직접 의뢰를 받다 (0926) — 처음 맞는 봄의 7주차를 마치면 (1003 — 전에는 가을 1주차). 와이번 토벌 5,000G + 학생들의 잡일 300G, 개인 행동에 의뢰가 열린다 */
 /* STORY_ART_START */
 const STORY_ART = {"guild1": "../assets/story_art/guild1.webp?v=1aec02a4", "guild2": "../assets/story_art/guild2.webp?v=2535972a", "guild3": "../assets/story_art/guild3.webp?v=dc25e740", "guild4": "../assets/story_art/guild4.webp?v=a1195867", "rival1": "../assets/story_art/rival1.webp?v=ed0bcf51", "rival2": "../assets/story_art/rival2.webp?v=52a372a1"};
 /* STORY_ART_END */
@@ -12957,17 +13002,25 @@ function storyArt(k, alt){
 const GUILD_WYVERN = 5000, GUILD_CHORES = 300;
 function tryGuildJob(){
   if(jobUnlocked()) return;
-  if(S.phase !== "fall" || S.week !== 0) return;      // 1주차를 마친 시점 (주차는 아직 넘어가기 전)
+  /* 1년차 봄 7주차를 마친 시점 (주차는 아직 넘어가기 전). 가을 1주차 기준일 때 만든 세이브가 이미 그 뒤에 와 있으면
+     다음 주를 마칠 때 바로 받는다 (1003) */
+  if(S.year <= 1 && S.phase === "spring" && S.week < 6) return;
   S.jobUnlock = S.year;
   const gw = Math.round((GUILD_WYVERN + GUILD_CHORES) * diffOf().gold);
   S.gold += gw;
   if(FIN) FIN.later = (FIN.later||0) + gw;   // 이벤트 팝업에서 받는 돈 — 이번 주 자금 상황에는 미리 넣지 않는다 (0929)
   logE(`<b>직접 의뢰를 받다</b> — 와이번 토벌 <b style="color:var(--brass)">+${fmt(GUILD_WYVERN)} G</b> · 학생들의 잡일 보수 <b style="color:var(--brass)">+${fmt(GUILD_CHORES)} G</b>. 이제 학생들이 마을의 의뢰를 받을 수 있다.`, "big");
-  for(let pg=1; pg<=5; pg++) queueCeremony({type:"guild", page:pg, year:S.year});
+  for(let pg=1; pg<=5; pg++) queueCeremony({type:"guild", page:pg, year:S.year, phase:S.phase, week:S.week+1});
+}
+/* 이야기에 들어가는 때 — 받은 계절 · 주차와 그다음 계절 (1003) */
+const NEXT_PHASE = {spring:"summer", summer:"fall", fall:"winter", winter:"spring"};
+function guildWhen(c){
+  const ph = (c && PHASES[c.phase]) ? c.phase : "fall";   // 계절이 안 적힌 팝업은 예전 그대로 가을 1주차
+  return {ph, n:PHASES[ph].n, week:(c && c.week) || 1, next:PHASES[NEXT_PHASE[ph]].n};
 }
 /* 3페이지 삽화 메모 — 정문(게이트) 너머로 학생들의 그림자가 지켜보고 있다 (마스터는 눈치채지 못함) */
 const GUILD_PAGES = {
-  1:{btn:"결심한다", t:"가을 첫 주를 마친 밤, 학원장실 책상 위에 장부를 펼쳤다. 훈련비, 시설 유지비, 은행 이자… 줄마다 빨간 숫자가 늘어서 있다. 마지막 칸의 잔액 앞에는 선명한 마이너스 표시. 이대로라면 겨울을 넘기기 어렵다. 펜을 쥔 채 한참을 고민했다."},
+  1:{btn:"결심한다", t:"{when}를 마친 밤, 학원장실 책상 위에 장부를 펼쳤다. 훈련비, 시설 유지비, 은행 이자… 줄마다 빨간 숫자가 늘어서 있다. 마지막 칸의 잔액 앞에는 선명한 마이너스 표시. 이대로라면 {next}을 넘기기 어렵다. 펜을 쥔 채 한참을 고민했다."},   // {when} · {next} — guildWhen (1003)
   2:{btn:"길을 나선다", t:"다음 날 새벽, 학원을 운영하기 이전 사용하던 낡은 검을 챙겨 마을로 내려갔다. 모험가 길드 게시판 맨 위, 아무도 손대지 않은 의뢰서 한 장—. 말리는 접수원을 뒤로하고 의뢰서를 떼어 냈다."},
   3:{btn:"…", t:"해가 질 무렵 학원 정문으로 돌아왔을 때, 외투는 군데군데 찢기고 온몸은 붕대로 엉성하게 말려있다. 그 위로 번져있는 핏자국들이 상상도 못할 사투를 연상하게 한다. 하지만 손에 꼭 쥔 봉투의 내용물이 적어도 이번 계절을 넘길 수 있도록 도와줄 수 있다 생각하니 조금은 힘이 났다."},
   4:{btn:"편지를 접는다", t:"사흘 뒤 아침, 책상 위에 봉투 하나와 편지가 놓여 있었다. 학생들이 몰래 마을로 내려가 가게마다 사정사정해서 얻어 낸 잡일 — 밭일, 짐 나르기, 설거지 — 을 해내고 받은 돈이었다. 편지에는 서툰 글씨로 한 줄이 적혀 있었다."}
@@ -12985,13 +13038,15 @@ function shopOpenCeremony(c){
     <div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">확인</button></div>`;
 }
 function guildCeremony(c){
+  const W = guildWhen(c);
   const head = `<div class="cerhead">
-      <div class="eyebrow">${yrName(c.year)} 가을 · 1주차를 마치고</div>
+      <div class="eyebrow">${yrName(c.year)} ${W.n} · ${W.week}주차를 마치고</div>
       <h2 style="font-size:24px;margin-top:2px">직접 의뢰를 받다</h2>
     </div>${storyArt("guild"+c.page, "직접 의뢰를 받다 "+c.page+"쪽 삽화")}`;
   const P = GUILD_PAGES[c.page];
+  const txt = P ? P.t.replace("{when}", `${W.n} ${W.week}주차`).replace("{next}", W.next) : "";
   if(P) return head + `<div class="opt" style="cursor:default;margin-top:12px;padding:16px 20px">
-      <div style="font-size:14px;line-height:1.9;color:var(--text)">${esc(P.t)}</div></div>
+      <div style="font-size:14px;line-height:1.9;color:var(--text)">${esc(txt)}</div></div>
     <div class="btnrow" style="margin-top:16px"><span class="hint" style="color:var(--dim)">${c.page} / 5</span><button class="btn primary" id="cerOk">${esc(P.btn)}</button></div>`;
   return head + `<div class="opt" style="cursor:default;margin-top:12px;border-color:var(--brass);padding:16px 20px">
       <div style="font-size:14px;line-height:2">와이번 처리를 완료했다! <b style="color:var(--brass)">(+${fmt(GUILD_WYVERN)} G)</b><br>
