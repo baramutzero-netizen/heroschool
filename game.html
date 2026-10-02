@@ -216,6 +216,25 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 .lvnever{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);cursor:pointer}
 @media (max-width:640px){ .lvrows{grid-template-columns:1fr} }
 /* 상점 주인 (0929) — 초상화와 말풍선. 색은 UI 컨셉(심플 · 일지)을 따른다 */
+/* 마을 (1002) — 액자 두른 지도 · NPC 단추 · 팝업. 지도와 팝업은 같은 칸에 겹쳐 놓는다 (팝업이 길면 칸이 늘어난다) */
+.town{display:grid;align-items:start;position:relative;isolation:isolate}   /* NPC 의 z-index 를 마을 안에 가둔다 — 팝업창(지침 · 피드백) 위로 올라오지 않게 */
+.town>.townmap,.town>.townpop{grid-area:1/1}
+.townmap{position:relative;width:100%;aspect-ratio:1266/984;user-select:none;-webkit-user-select:none}
+.townmap-in{position:absolute;left:calc(26 / 1266 * 100%);top:calc(26 / 984 * 100%);width:calc(1214 / 1266 * 100%);height:calc(931 / 984 * 100%);transition:filter .2s}
+.town-bg,.town-frame{position:absolute;inset:0;display:block;width:100%;height:100%;max-width:none;image-rendering:pixelated;pointer-events:none}
+.town .townnpc{position:absolute;width:calc(124 / 1214 * 100%);padding:0;margin:0;border:0;background:none;cursor:pointer;display:block;line-height:0;min-width:0;min-height:0}
+.town .townnpc img{display:block;width:100%;height:auto;max-width:none;image-rendering:pixelated;transition:transform .12s,filter .12s}
+.town .townnpc:hover img,.town .townnpc:focus-visible img{transform:translateY(-4%);filter:brightness(1.07)}
+.townnpc-tag{position:absolute;left:50%;top:100%;transform:translate(-50%,3px);white-space:nowrap;font-size:12px;line-height:1.35;padding:1px 7px;background:#2a1a11e6;color:#fff0ce;border-radius:3px;pointer-events:none;opacity:0;transition:opacity .12s}
+.town .townnpc:hover .townnpc-tag,.town .townnpc:focus-visible .townnpc-tag{opacity:1}
+.town.popopen .townmap-in{filter:grayscale(.85) brightness(1.03) contrast(.78)}
+.townpop{position:relative;z-index:2;align-self:start;margin:3% 3% 2%;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:5px;box-shadow:var(--shadow);padding:14px}
+.townpop-foot{display:flex;justify-content:flex-end;margin-top:12px}
+html[data-ui-concept="journal"] .townpop{box-shadow:inset 0 0 12px #81532018,0 4px 16px #0005}
+html[data-ui-finish="pixel"] .townpop{border:2px solid var(--pixel-edge);border-radius:0;box-shadow:inset 0 0 0 2px #fff0c980,2px 0 #30271e,-2px 0 #30271e,0 2px #30271e,0 -2px #30271e,4px 4px #0004}
+html body #view .town .townnpc{border:0!important;box-shadow:none!important;background:none!important;outline:0;border-radius:0!important;padding:0!important}
+html body #view .town .townnpc img{image-rendering:pixelated!important}
+@media (prefers-reduced-motion:reduce){.townmap-in,.town .townnpc img,.townnpc-tag{transition:none}}
 .npcband{--npc-fill:var(--bg);--npc-stroke:var(--line);--npc-ink:var(--text);
   display:flex;align-items:center;gap:26px;margin:0 0 14px;padding:14px 16px;border-radius:6px;
   background:var(--surface) radial-gradient(color-mix(in srgb,var(--line) 55%,transparent) 1px, transparent 1.4px) 0 0/16px 16px;
@@ -227,6 +246,7 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
   box-shadow:0 2px 0 color-mix(in srgb,var(--npc-stroke) 35%,transparent)}
 .npctail{position:absolute;left:-29.5px;top:50%;width:32px;height:40px;margin-top:-22px;overflow:visible;pointer-events:none}
 .npctail path{fill:var(--npc-fill);stroke:var(--npc-stroke);stroke-width:3;stroke-linejoin:round;stroke-linecap:butt}
+.npctail rect{fill:var(--npc-fill);stroke:none}   /* 꼬리와 말풍선이 만나는 자리 — 말풍선 테두리 · 안쪽 밝은 줄이 비치지 않게 덮는다 */
 .npcname{display:block;font-size:11px;letter-spacing:.14em;color:var(--dim);font-weight:600;margin-bottom:2px}
 html[data-ui-concept="journal"] .npcband{--npc-fill:#fbf3df;--npc-stroke:#7a5a3a;--npc-ink:#35291f;
   background-color:var(--surface);background-image:var(--journal-paper);background-size:auto;background-position:0 0;border-color:#a1845b;border-radius:5px 8px 6px 4px;
@@ -2012,7 +2032,7 @@ html[data-ui-finish="pixel"] {
   --pixel-light:#fff0c9;
   --journal-paper:repeating-linear-gradient(0deg,#94652a08 0 2px,transparent 2px 6px),linear-gradient(90deg,#e6cfa7,#f2e2c0 50%,#e6cfa7);
 }
-html[data-ui-finish="pixel"] :is(.panel,.logbox,.missionbox,.modal,.ji-card,.titlecard,.scard,.slot,.opt,.meter,.gradcard,.syn-card,.errbox,.fxdemo,.prepbar,.npcbub,.moremenu,.card,.dslot) {
+html[data-ui-finish="pixel"] :is(.panel,.logbox,.missionbox,.modal,.ji-card,.titlecard,.scard,.slot,.opt,.meter,.gradcard,.syn-card,.errbox,.fxdemo,.prepbar,.npcbub,.npcband,.moremenu,.card,.dslot) {
   border:2px solid var(--pixel-edge);border-radius:0!important;
   box-shadow:inset 0 0 0 2px #fff0c980,2px 0 #30271e,-2px 0 #30271e,0 2px #30271e,0 -2px #30271e,4px 4px #0004!important;
 }
@@ -2093,6 +2113,11 @@ html:is([data-ui-palette="riso"],[data-ui-palette="mint"]) nav button:hover:not(
   /* 오른쪽 칸 경계선 — 사이드 높이가 아니라 페이지 끝까지 그린다 (0930) */
   #app::after{content:"";position:absolute;top:0;bottom:0;right:284px;border-left:4px double var(--line,#9f7758);pointer-events:none}
   #app>.layout{grid-column:1;grid-row:1;margin-top:16px;min-width:0}
+  /* 1002 — 마을 지도는 오른쪽 사이드 밑까지 깔리고 사이드가 그 위에 얹힌다. 좌우는 삽화 경계에서 똑같이 16px 씩 떨어지고
+     (사이드 칸 18 + 288 - 16), 위는 사이드보다 살짝 내려 어긋나게 둔다. 팝업은 사이드 왼쪽까지만 */
+  html.town-on #app::after{display:none}
+  .town{width:calc(100% + 290px);margin-top:16px}
+  .town>.townpop{margin:2.4% calc(290px + 1.6%) 2% 2.4%}
   /* 삽화처럼 화면에 고정 (0930) — 스크롤해도 움직이지 않는다. 자리(오른쪽 칸)는 격자에 비워 둔다 */
   #app>.topbar{grid-column:2;grid-row:1;position:fixed;top:0;right:max(0px,calc((100% - 1240px) / 2));width:288px;margin:0;padding:14px 12px 16px;
     height:100vh;overflow-y:auto;scrollbar-width:thin;box-sizing:border-box;display:flex;flex-direction:column;gap:10px;
@@ -9166,7 +9191,7 @@ function render(){
     const nav = $("#nav");
     if(nav._h !== navH + sideH){
       nav.innerHTML = navH + sideH; nav._h = navH + sideH;
-      nav.querySelectorAll("button[data-view]").forEach(b=> b.onclick=()=>{ UI.view=b.dataset.view; render(); });
+      nav.querySelectorAll("button[data-view]").forEach(b=> b.onclick=()=>{ if(b.dataset.view==="facil") UI.facTab = null; UI.view=b.dataset.view; render(); });
       nav.querySelectorAll("button[data-act]").forEach(b=> b.onclick=()=> b.dataset.act==="feedback" ? feedModal() : missionModal());
     }
   }
@@ -9195,12 +9220,14 @@ function render(){
     const nm = $("#navm");
     if(nm._h !== navmH){
       nm.innerHTML = navmH; nm._h = navmH;
-      nm.querySelectorAll("[data-view]").forEach(b=> b.onclick=()=>{ UI.view=b.dataset.view; UI.navMore=false; render(); });
+      nm.querySelectorAll("[data-view]").forEach(b=> b.onclick=()=>{ if(b.dataset.view==="facil") UI.facTab = null; UI.view=b.dataset.view; UI.navMore=false; render(); });
       $("#navMore").onclick = ()=>{ UI.navMore=!UI.navMore; render(); };
     }
   }
 
   const v = $("#view");
+  if(UI.view!=="facil") UI.facTab = null;                     // 1002 — 마을 팝업은 마을을 떠나면 닫힌다
+  document.documentElement.classList.toggle("town-on", UI.view==="facil" && townMode());
   if(UI.view==="home") v.innerHTML = viewHome();
   else if(UI.view==="master") v.innerHTML = viewMaster();
   else if(UI.view==="roster") v.innerHTML = viewRoster();
@@ -12574,14 +12601,54 @@ function payUpkeep(){
 }
 const FAC_TABS = [{k:"fac", n:"건설"}, {k:"item", n:"도구"}, {k:"draft", n:"드래프트 홀"}, {k:"church", n:"교회"}, {k:"bank", n:"은행"}];
 function facTabs(){ return FAC_TABS.filter(t=> (shopUnlocked() || (t.k!=="fac" && t.k!=="item")) && (t.k!=="church" || churchLv() >= 1) && (t.k!=="draft" || draftBuilt())); }
+function facTabView(tab){ return tab==="item" ? viewItemShop() : tab==="draft" ? viewDraft() : tab==="church" ? viewChurch() : tab==="bank" ? viewBank() : viewFacShop(); }
+/* 1002 — 마을 그림 위에 열린 시설의 NPC 만 서브탭 단추로 세운다. 누르면 그 탭이 팝업으로 뜨고, 뒤의 마을은 회색으로 가라앉는다.
+   팝업은 나가기로 닫는다. 오른쪽 사이드(메뉴)는 팝업과 상관없이 늘 누를 수 있다 */
+/* 마을 그림은 가로 화면(사이드가 오른쪽에 붙는 배치)에서만 — 세로 · 좁은 화면은 예전처럼 서브탭 단추 */
+const TOWN_MQ = (typeof matchMedia === "function") ? matchMedia("(min-width:1100px) and (orientation:landscape)") : null;
+function townMode(){ return !TOWN_MQ || TOWN_MQ.matches; }
+if(TOWN_MQ){ const h = ()=>{ if(typeof UI !== "undefined" && UI.view === "facil") render(); };
+  if(TOWN_MQ.addEventListener) TOWN_MQ.addEventListener("change", h); else if(TOWN_MQ.addListener) TOWN_MQ.addListener(h); }
 function viewFacil(){
   const TB = facTabs();
-  const tab = TB.some(t=> t.k===UI.facTab) ? UI.facTab : TB[0].k;
-  const tabs = `<div class="teamtabs" style="margin-bottom:12px">${TB.map(t=>`<button class="ttab ${tab===t.k?"on":""}" data-factab="${t.k}">${t.n}</button>`).join("")}</div>`;
-  return tabs + shopKeeper(tab) + (tab==="item" ? viewItemShop() : tab==="draft" ? viewDraft() : tab==="church" ? viewChurch() : tab==="bank" ? viewBank() : viewFacShop());
+  if(!townMode()){
+    const tab = TB.some(t=> t.k===UI.facTab) ? UI.facTab : TB[0].k;
+    const tabs = `<div class="teamtabs" style="margin-bottom:12px">${TB.map(t=>`<button class="ttab ${tab===t.k?"on":""}" data-factab="${t.k}">${t.n}</button>`).join("")}</div>`;
+    return tabs + shopKeeper(tab) + facTabView(tab);
+  }
+  const open = UI.facTab && TB.some(t=> t.k===UI.facTab) ? UI.facTab : null;
+  if(!open) UI.facTab = null;
+  const key = townSeason() + "_lv" + townStage();
+  const pins = TOWN_NPCS.filter(p=> TB.some(t=> t.k===p.tab)).map(p=>{
+    const t = TB.find(t=> t.k===p.tab), lab = `${p.n} — ${t.n}`;
+    return `<button type="button" class="townnpc" data-factab="${p.tab}" style="left:${((p.x - 62) / 12.14).toFixed(3)}%;top:${((p.y - 104) / 9.31).toFixed(3)}%;z-index:${p.y}" title="${esc(lab)}" aria-label="${esc(lab)}"><img src="${NPC_PX[townNpcFace(p)]}" alt="" draggable="false"><span class="townnpc-tag">${esc(t.n)}</span></button>`;
+  }).join("");
+  const pop = open ? `<div class="townpop" role="dialog" aria-label="${esc(TB.find(t=> t.k===open).n)}">${shopKeeper(open)}${facTabView(open)}<div class="townpop-foot"><button type="button" class="btn primary" data-towndone>나가기</button></div></div>` : "";
+  return `<section class="town${open ? " popopen" : ""}" aria-label="마을"><div class="townmap"${open ? " inert" : ""}><div class="townmap-in"><img class="town-bg" src="${TOWN_IMG[key]}" alt="마을 — ${esc(PHASES[S.phase] ? PHASES[S.phase].n : "")}" draggable="false">${pins}</div><img class="town-frame" src="${TOWN_FRAME}" alt="" draggable="false"></div>${pop}</section>`;
 }
 /* 상점 주인 (0929) — 서브탭 아래 초상화와 인사. 은행장은 빚 · 예금에 따라 표정과 말이 바뀐다 */
 const NPC_IMG = {"bank": "assets/npc/bank-manager.webp?v=152d7e34", "bankDebt": "assets/npc/bank-manager-debt.webp?v=ef20a59b", "bankRepaid": "assets/npc/bank-manager-repaid.webp?v=77a0fdad", "bankDeposit": "assets/npc/bank-manager-deposit.webp?v=42615480", "carpenter": "assets/npc/carpenter.webp?v=2bab1c4e", "tool": "assets/npc/tool-merchant.webp?v=5828c901"};
+/* 마을 지도 (1002) — 마을 탭은 서브탭 대신 마을 그림을 띄우고, 열린 시설의 NPC 얼굴이 서브탭 단추가 된다 (누르면 그 탭이 팝업으로).
+   그림은 계절과 학원 증축 단계(0·1 → 1단계, 2·3 → 2단계, 4 → 3단계)를 따른다. NPC 자리는 2배 지도(1214×931) 좌표 · 얼굴 아래 가운데.
+   밭주인 할아버지 · 미용실 원장 · 주점 주인 · 여관 안주인은 아직 이어진 탭이 없어 그리지 않는다 (얼굴 그림은 NPC_PX 에 있다) */
+const TOWN_IMG = {"spring_lv1": "assets/town/spring_lv1.png?v=35935674", "spring_lv2": "assets/town/spring_lv2.png?v=5a13ff10", "spring_lv3": "assets/town/spring_lv3.png?v=4f92caf9", "summer_lv1": "assets/town/summer_lv1.png?v=cd15bfd1", "summer_lv2": "assets/town/summer_lv2.png?v=98a85384", "summer_lv3": "assets/town/summer_lv3.png?v=d513b3ca", "autumn_lv1": "assets/town/autumn_lv1.png?v=60a00fa3", "autumn_lv2": "assets/town/autumn_lv2.png?v=29a7971a", "autumn_lv3": "assets/town/autumn_lv3.png?v=0d4dba38", "winter_lv1": "assets/town/winter_lv1.png?v=bda3e49e", "winter_lv2": "assets/town/winter_lv2.png?v=46e9d421", "winter_lv3": "assets/town/winter_lv3.png?v=c92f06f3"};
+const TOWN_FRAME = "assets/town/frame.png?v=5669214d";
+const NPC_PX = {"bank": "assets/npc_px/bank.png?v=103ca0c1", "bank_debt": "assets/npc_px/bank_debt.png?v=104bb91f", "bank_repaid": "assets/npc_px/bank_repaid.png?v=00d7c5be", "bank_deposit": "assets/npc_px/bank_deposit.png?v=07e0d3dd", "carpenter": "assets/npc_px/carpenter.png?v=01305169", "tool": "assets/npc_px/tool.png?v=530733ca", "church": "assets/npc_px/church.png?v=db589183", "hunt": "assets/npc_px/hunt.png?v=e7b01faa", "farm": "assets/npc_px/farm.png?v=7327162c", "inn": "assets/npc_px/inn.png?v=5050cb73", "salon": "assets/npc_px/salon.png?v=e41f9af2", "tavern": "assets/npc_px/tavern.png?v=5d084273"};
+const TOWN_NPCS = [
+  {tab:"bank",   face:"bank",      n:"은행장",      x:684, y:528},
+  {tab:"fac",    face:"carpenter", n:"목수",        x:94,  y:492},
+  {tab:"item",   face:"tool",      n:"도구상",      x:404, y:618},
+  {tab:"church", face:"church",    n:"수녀님",      x:794, y:348},
+  {tab:"draft",  face:"hunt",      n:"마을 사냥꾼", x:100, y:156}
+];
+function townStage(){ const e = (S && S.facil && S.facil.expand)|0; return e >= 4 ? 3 : e >= 2 ? 2 : 1; }
+function townSeason(){ const p = S && S.phase; return p === "fall" ? "autumn" : (p === "summer" || p === "winter") ? p : "spring"; }
+/* 은행장 얼굴은 상점 초상화와 같은 표정 (빚 · 예금에 따라) */
+function townNpcFace(p){
+  if(p.tab !== "bank") return p.face;
+  const K = shopKeeperInfo("bank"), img = K && K.img;
+  return img === NPC_IMG.bankDebt ? "bank_debt" : img === NPC_IMG.bankDeposit ? "bank_deposit" : img === NPC_IMG.bankRepaid ? "bank_repaid" : "bank";
+}
 function shopKeeperInfo(tab){
   if(tab==="bank"){
     const d = debtOf(), dep = depOf();
@@ -12619,7 +12686,7 @@ function shopKeeper(tab){
   const line = K.lines[(h >>> 0) % K.lines.length];
   return `<div class="npcband">
     <div class="npcport">${K.img? `<img src="${K.img}" alt="${esc(K.n)}">` : ""}</div>
-    <div class="npcbub"><svg class="npctail" viewBox="0 0 32 40" aria-hidden="true"><path d="M29.5 5 C21 8 11 15 2 31 C12 27 21 29 29.5 34"/></svg><span class="npcname">${esc(K.n)}</span>${esc(line).replace(/\n/g,"<br>")}</div>
+    <div class="npcbub"><svg class="npctail" viewBox="0 0 32 40" aria-hidden="true"><path d="M29.5 5 C21 8 11 15 2 31 C12 27 21 29 29.5 34"/><rect x="27" y="7.5" width="6.5" height="23.5"/></svg><span class="npcname">${esc(K.n)}</span>${esc(line).replace(/\n/g,"<br>")}</div>
   </div>`;
 }
 function viewFacShop(){
@@ -14365,7 +14432,9 @@ function bindView(){
   const brI = $("#btnRestInj"); if(brI) brI.onclick = ()=> setRestInjured();
   const bw = $("#btnWeek"); if(bw) bw.onclick=()=> chronicleAdvance(bw);
   const br = $("#btnRest"); if(br) br.onclick=()=> runWeeks(halfLeft());
-  v.querySelectorAll("[data-factab]").forEach(b=> b.onclick=()=>{ UI.facTab = b.dataset.factab; render(); });
+  v.querySelectorAll("[data-factab]").forEach(b=> b.onclick=()=>{ UI.facTab = b.dataset.factab; render();
+    const pop = $("#view .townpop"); if(pop) pop.scrollIntoView({block:"nearest"}); });
+  v.querySelectorAll("[data-towndone]").forEach(b=> b.onclick=()=>{ UI.facTab = null; render(); });
   { const br = $("#btnRepay"); if(br) br.onclick = ()=> buyRepay(); }
   { const bd = $("#btnDeposit"); if(bd) bd.onclick = ()=> bankDeposit(); const bw = $("#btnWithdraw"); if(bw) bw.onclick = ()=> bankWithdraw(); }
   v.querySelectorAll("[data-fac]").forEach(b=> b.onclick=()=>{
