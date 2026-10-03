@@ -2341,6 +2341,20 @@ html body .topbar .acadbox{display:contents;color:inherit}
 
 .tg-guide{word-break:keep-all}.tg-guide .card .cmark{width:24px!important;height:24px!important;font-size:12px!important;line-height:24px!important;white-space:nowrap;display:block;text-align:center;word-break:normal;overflow-wrap:normal}
 
+/* 1003 — 첫 장 '스케줄 버튼을 눌러 일과 짜기': 가로 화면(오른쪽 사이드에 스케줄 단추가 있는 배치 — 사이드와 같은 조건)에서만.
+   단추 그림은 사이드의 스케줄 단추와 같은 그림 · 크기 (assets/menu_sc/banner.png · plan48.png) */
+.tg-first,.tgn-l{display:none}.tgn-p,.tgn-l{font-style:normal}
+@media (min-width:1100px) and (orientation:landscape){
+  .tg-first{display:flex;align-items:center;gap:20px;margin:0 0 20px;padding:8px 10px 8px 16px;background:var(--surface2,#f0eadf);border:1px solid var(--line-soft,#d8c9ad);border-radius:14px}
+  .tg-first .tg-step{flex:1;min-width:0;margin:0}
+  .tgn-l{display:inline}.tgn-p{display:none}
+}
+.tg-schedbtn{position:relative;flex:none;display:flex;align-items:center;justify-content:center;width:260px;height:76px;padding:0 0 0 52px;
+  background:url(assets/menu_sc/banner.png?v=1e5f02ac) 0 0/100% 100% no-repeat;image-rendering:pixelated;filter:drop-shadow(0 3px 0 #30271e40);
+  font:700 24px/1 "IBM Plex Sans KR",system-ui,-apple-system,"Malgun Gothic",sans-serif;letter-spacing:.02em;color:#3a2a1c;white-space:nowrap;user-select:none}
+.tg-schedbtn::before{content:"";position:absolute;left:18px;top:14px;width:48px;height:48px;background:url(assets/menu_sc/plan48.png?v=5b28c2c2) 0 0/48px 48px no-repeat;image-rendering:pixelated}
+.tg-schedbtn b{color:#8a5a24;font-weight:inherit}
+html[data-font="pixel"] .tg-schedbtn{font-family:"Mulmaru",sans-serif;letter-spacing:0}
 /* TUTORIAL_RESPONSIVE_STYLE_END */
 </style>
 
@@ -15083,7 +15097,7 @@ function tutGuideData(k){
   const chain=Math.round(CHAIN_STEP*100), max=Math.round(CHAIN_STEP*CHAIN_MAX*100);
   const bonus=Math.round((RIVAL_FOCUS_MUL-1)*100);
   const data={
-    1:{title:"월요일부터, 한 주를 채워요",tag:"진행 · 주간 스케줄",job:"timemage",lead:"일과 카드를 다섯 요일에 배치한 뒤 한 주를 진행하세요.",visual:"schedule",steps:[["카드를 눌러 배치", "폰에서는 카드를 누르면 첫 빈 요일에 들어갑니다. 원하는 요일로 끌어 놓아도 됩니다."],["컨디션과 비용 확인", "다섯 칸을 채우고 진행 버튼에 표시된 비용을 확인하세요. 놓은 카드를 누르면 다시 뺄 수 있어요."]],tip:`같은 색이 이어지면 +${chain}%씩, 최대 +${max}%. 원정 카드는 체인이 이어지지 않아요.`},
+    1:{title:"학원의 마스터 부임, 축하합니다!",tag:"진행 · 주간 스케줄",job:"timemage",lead:"일과 카드를 다섯 요일에 배치한 뒤 한 주를 진행하세요.",visual:"schedule",first:["스케줄 버튼을 눌러 일과 짜기", "오른쪽 메뉴 맨 아래 스케줄 버튼을 누르면 학생들의 일과를 짤 수 있어요."],steps:[["카드를 눌러 배치", "폰에서는 카드를 누르면 첫 빈 요일에 들어갑니다. 원하는 요일로 끌어 놓아도 됩니다."],["컨디션과 비용 확인", "다섯 칸을 채우고 진행 버튼에 표시된 비용을 확인하세요. 놓은 카드를 누르면 다시 뺄 수 있어요."]],tip:`같은 색이 이어지면 +${chain}%씩, 최대 +${max}%. 원정 카드는 체인이 이어지지 않아요.`},
     2:{title:"오후에는 무엇을 할까요?",tag:"진행 · 개인 행동",job:"priest",lead:"개인 행동은 임의·훈련·휴식·의뢰 중에서 고릅니다.",visual:"actions",steps:[["훈련은 약점을 보완해요", "그날 가장 약한 멘탈리티를 집중 훈련합니다. 진행 화면이나 학생 화면에서 개인 행동을 바꿀 수 있어요."],["지쳤다면 휴식", "휴식으로 지정한 학생은 학원 스케줄에 참여하지 않고 쉽니다. 의뢰는 열린 뒤에 선택할 수 있고, 여름에는 할 수 없어요."]],tip:"컨디션이 낮아질수록 효율이 떨어집니다. 진행 전에 학생의 컨디션을 살펴보세요."},
     3:{title:"여섯 능력이 용사를 만들어요",tag:"학생 · 멘탈리티",job:"paladin",lead:"훈련으로 키운 멘탈리티는 전투와 성장에 영향을 줍니다.",visual:"mental",steps:[["학생에게 부족한 능력 확인", "학생 화면에서 멘탈리티를 보고 훈련을 계획하세요. 개인 행동을 훈련으로 두면 약점을 보완합니다."]],tip:"잠재력은 입학 등급으로 정해지는 성장 폭과 한계입니다. 여섯 훈련 능력과 구분해 주세요."},
     4:{title:"가을 대회를 향해 한 걸음씩",tag:"대회 · 장기 목표",job:"sword",lead:"학생들을 키우고 팀을 갖춰 학원제 본선 우승에 도전하세요.",visual:"tournament",steps:[["팀 편성부터 준비", "출전 학생과 진형을 확인하고, 컨디션과 유물을 챙겨 주세요."],["대회 성적으로 다음 무대에", "시내 대회부터 차근차근 도전합니다. 다음 대회 초대 조건은 게임의 안내에서 확인하세요."]],tip:"실적뿐 아니라 자금도 관리해야 합니다. 유지비와 빚을 함께 챙기세요."},
@@ -15119,9 +15133,18 @@ function tutGuideVisual(kind){
     case "marks":return `<div class="tg-card-demo tg-mark-card">${tutSampleCard("tact","dbl")}<div><strong>모서리 표식</strong><p>카드의 훈련 이름과 함께 확인해요.</p></div></div>`+Object.values(CARD_MARK).map(m=>row(m.n,m.d,m.i)).join("");
   }return "";
 }
+/* 1003 — 스케줄 단추 그림: 가로 화면 오른쪽 사이드의 단추와 같은 그림 · 크기 · 글 (주차도 지금 것) */
+function tutSchedBtn(){
+  let wk = "1주";
+  try{ wk = `${Math.min((S.week|0)+1, PHASES[S.phase].weeks)}주`; }catch(e){}
+  return `<span class="tg-schedbtn" role="img" aria-label="스케줄 [${wk}] 버튼"><span>스케줄 <b>[${wk}]</b></span></span>`;   // 안쪽 span — 플렉스 칸에서 '스케줄' 뒤 빈칸이 먹히지 않게
+}
 function tutGuideHTML(k){
   const d=tutGuideData(k);
-  return `<article class="tg-guide" data-guide="${esc(String(k))}" aria-label="${esc(d.title)}"><header class="tg-head"><div><span class="tg-kicker">용사 학원 · 운영 안내 ${String(k).padStart(2,"0")}</span><h2>${esc(d.title)}</h2><p class="tg-location">${esc(d.tag)}</p></div><span class="tg-host">${faceHTML(d.job,"")}</span></header><p class="tg-lead">${esc(d.lead)}</p><div class="tg-columns"><section class="tg-visual" aria-label="기능 설명 그림">${tutGuideVisual(d.visual)}</section><section class="tg-instructions" aria-label="사용 방법">${d.steps.map((step,i)=>`<div class="tg-step"><span>${i+1}</span><div><h3>${esc(step[0])}</h3><p>${esc(step[1])}</p></div></div>`).join("")}<aside class="tg-tip"><b>기억해 주세요</b><p>${esc(d.tip)}</p></aside></section></div><footer class="tg-foot">마스터 노트의 튜토리얼 단추에서 다시 볼 수 있어요.</footer></article>`;
+  /* 1003 — d.first: 가로 화면(오른쪽 사이드에 스케줄 단추가 있는 배치)에서만 보이는 맨 앞 단계 + 단추 그림. 그 배치에서는 뒤 단계 번호가 하나씩 밀린다 */
+  const first=d.first?`<div class="tg-first"><div class="tg-step"><span>1</span><div><h3>${esc(d.first[0])}</h3><p>${esc(d.first[1])}</p></div></div>${tutSchedBtn()}</div>`:"";
+  const num=i=>d.first?`<i class="tgn-p">${i+1}</i><i class="tgn-l">${i+2}</i>`:`${i+1}`;
+  return `<article class="tg-guide" data-guide="${esc(String(k))}" aria-label="${esc(d.title)}"><header class="tg-head"><div><span class="tg-kicker">용사 학원 · 운영 안내 ${String(k).padStart(2,"0")}</span><h2>${esc(d.title)}</h2><p class="tg-location">${esc(d.tag)}</p></div><span class="tg-host">${faceHTML(d.job,"")}</span></header><p class="tg-lead">${esc(d.lead)}</p>${first}<div class="tg-columns"><section class="tg-visual" aria-label="기능 설명 그림">${tutGuideVisual(d.visual)}</section><section class="tg-instructions" aria-label="사용 방법">${d.steps.map((step,i)=>`<div class="tg-step"><span>${num(i)}</span><div><h3>${esc(step[0])}</h3><p>${esc(step[1])}</p></div></div>`).join("")}<aside class="tg-tip"><b>기억해 주세요</b><p>${esc(d.tip)}</p></aside></section></div><footer class="tg-foot">마스터 노트의 튜토리얼 단추에서 다시 볼 수 있어요.</footer></article>`;
 }
 
 /* TUTORIAL_RESPONSIVE_RUNTIME_END */
@@ -17906,10 +17929,11 @@ function audUnlock(){
    시작 화면 · 프롤로그
    ============================================================ */
 const PROLOGUE = [
-  {h:"용사라는 이름", p:[
-    "세상의 가장자리에는 언제나 균열이 있다. 마물이 기어 나오는 골짜기, 지도에 붉게 칠해진 채 이름조차 지워진 땅, 상단의 마차가 일부러 돌아 나가는 고개. 사람들이 살아가는 자리가 넓어질수록 그 경계도 함께 길어졌다.",
-    "그 경계 앞에 서는 이들을 사람들은 용사라 불렀다. 용사는 왕이 임명하는 직책이 아니다. 최전방에서 인류의 안녕을 위해 싸우는 전사, 그 일을 실제로 해낸 자에게 사람들이 나중에야 붙여주는 이름이다.",
-    "누군가는 국경의 성벽 위에서, 누군가는 이름 없는 던전의 가장 깊은 방에서, 누군가는 자기 고향 마을의 낡은 문 앞에서 그 이름을 얻었다. 쥔 무기도 배운 곳도 제각각이지만 공통점은 하나였다. 물러서도 되는 자리에서 끝내 물러서지 않았다는 것."]},
+  {h:"왕국은 오랫동안 평화로웠다.", p:[   /* 1003 — 지금 설정(긴 평화 · 국경 너머 마왕군 · 이명 · 학원과 대회)에 맞춘 사용자 문안 · 예전 제목 '용사라는 이름' 대신 첫 줄을 제목으로 */
+    "마왕군은 국경 너머의 소문으로만 전해졌고, 왕국군의 창끝은 무뎌진 지 오래였다. 그래도 세상의 가장자리에는 언제나 균열이 있었다. 마물이 기어 나오는 골짜기, 지도에 붉게 칠해진 채 이름조차 지워진 땅, 상단의 마차가 일부러 돌아 나가는 고개.",
+    "과거. 그 균열 앞에 서는 이들을 사람들은 용사라 불렀다. 용사는 왕이 임명하는 직책이 아니다. 그 자리에서 끝내 누군가를, 무언가를 지켜 낸 자들을 부르는 명칭이다. 그들 중에서도 특출나게 위용을 떨친 이들에게는 저마다의 이명이 따라붙었다.",
+    "평화가 길어지자 용사가 되는 방법도 달라졌다. 왕도를 시작으로 곳곳에 용사 학원이 들어섰고, 지망생들은 그곳에서 검과 마법을 익히고 대회에서 실력을 겨루며 이름을 알렸다. 쥔 무기도 배운 곳도 제각각이지만, 되고 싶은 것은 하나였다. 물러서도 되는 자리에서 끝내 물러서지 않는 사람.",
+    "다만 길게 이어진 평화 속에서, 그 이름이 얼마나 무거운지 아는 이는 아직 없었다."]},
   {h:"나도 용사를 목표로 한 용사 지망생 중 한 명.", p:[   /* 0929 — 2페이지 본문 교체 · 첫 줄을 제목으로 */
     "왕도의 유명한 용사 학원에 수석으로 입학해 엘리트 코스를 밟고 있었다.",
     "2년 차 겨울, 내게 편지가 한 장 도착했다.<br>본가에서 온 편지. 펼쳐서 읽어 내려갈수록 얼굴이 어두워졌다.",
@@ -18352,12 +18376,11 @@ function newScenarioStart(name){
   if(tutHas()) showTutorial(0, {start:true, after:afterStart});
   else afterStart();
 }
-function showPrologue(i){
+function showPrologue(i){   // 1003 — 제목 위 '프롤로그 1 / 3' 쪽수 표시는 뺐다
   const pg = PROLOGUE[i], last = i>=PROLOGUE.length-1;
   audOver("prologue");    // 오프닝의 여신 곡(또는 건너뛴 경우 마왕 곡)에서 프롤로그 곡으로
   showModal(`<div class="prol">
       ${(typeof PROL_IMG!=="undefined" && PROL_IMG[String(i+1)])? `<div class="prolimg"><img src="${PROL_IMG[String(i+1)]}" alt="" draggable="false"></div>`:""}
-      <div class="eyebrow">프롤로그 ${i+1} / ${PROLOGUE.length}</div>
       <h2 class="ptitle">${esc(pg.h)}</h2>
       ${pg.p.map(x=>`<p>${x}</p>`).join("")}
       <div class="btnrow" style="margin-top:18px">
