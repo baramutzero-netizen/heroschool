@@ -563,6 +563,7 @@ html[data-ui-concept="journal"] .npcname{color:#8a6a45}
 .dr-student.studying .dr-avatar{inset:0;width:100%;height:100%;transform:none}
 .dr-study-sprite{display:block;width:100%;height:100%;background-size:400% 100%;background-repeat:no-repeat}
 .dr-study-sprite.empty{background-size:100% 100%}
+.dr-study-sprite.flip{transform:scaleX(-1)}   /* 배치판에서 왼쪽을 보게 한 책상 (1003) */
 .dr-student.studying .dr-shadow{display:none}
 .dr-student.studying .dr-name{top:91%}
 .dr-student.studying .dr-condition{top:106%;width:62%}
@@ -1910,6 +1911,9 @@ html:not([data-bf-grid="on"]) .bf-slot{opacity:0}
 .modal.btm .battle-drawer .blog{background:transparent;color:var(--text)}
 .modal.btm-demon .battle-drawer{background:#191525;color:#fff}
 .modal.btm-demon .battle-drawer .blog{color:#fff}
+/* 전투 배너 (1003) — BATTLE START · VICTORY APNG. 전투 화면(.overlay z 80) 위 · 알림(z 90) 아래, 누르기는 그대로 통과 */
+.bt-banner{position:fixed;left:0;top:0;width:100vw;height:100vh;z-index:85;pointer-events:none;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.bt-banner img{display:block;width:min(100%,1280px);height:auto;max-width:100%;max-height:100%;object-fit:contain;user-select:none;-webkit-user-select:none;-webkit-user-drag:none}
 @media(max-width:640px){
  .overlay:has(.bf-stage){padding:4px;overflow:hidden}
  .modal:has(.bf-stage){height:calc(100dvh - 8px);max-height:calc(100dvh - 8px);padding:7px;width:100%!important}
@@ -6727,28 +6731,45 @@ function reportRecord(day, tr, bonus, phase, before, members, status, logStart, 
   }));
 }
 
-// All rooms use the same 3:1 viewport. Only the vertical crop origin differs.
-const REPORT_JOB_LAYOUT = {crop:0, capacity:5, slots:[[18,75],[34,57],[50,80],[66,56],[82,76]]};
-const REPORT_INN_LAYOUT = {crop:0, scale:1400, capacity:6, slots:[[37.5,36],[86,39],[54.8,63],[62.3,63],[28,80],[82,80]]};
-const REPORT_TAVERN_LAYOUT = {crop:0, scale:1400, capacity:6, slots:[[30,29],[89,39],[47.5,55],[63,45],[20,84],[83,77]]};
-const reportRoom = s => s.job && REPORT_JOB_MAPS[s.job] || REPORT_ROOMS[s.facility];
+// All rooms use the same 3:1 viewport. 배치는 '경과 보고 배치판'에서 정해 내보낸 값이다 (1003).
+// crop 위로 잘린 그림 높이 비율 · zoom 그림 배율 (없으면 1) · panX 왼쪽으로 잘린 그림 폭 비율 (없으면 방 그림 .02 · 3:1 그림 0)
+// scale 인물 크기 기준 폭 (없으면 1050) · face 자리마다 보는 방향 (R 원본 · L 뒤집기) · slots 무대 가로 · 세로 % (앞 번호부터 채운다)
 const REPORT_LAYOUTS = {
-  library:{crop:.235, slots:[[12,79],[45,42],[63,47],[79,73],[88,84]]},
-  gym:{crop:.255, slots:[[14,75],[34,48],[52,29],[77,81],[90,84]]},
-  arena:{crop:.215, slots:[[20,65],[46,25],[72,57],[80,69],[89,81]]},
-  hall:{crop:0, slots:[[53,42],[67.5,57],[82.3,71],[41.2,66],[55.8,78]]},
-  chapel:{crop:.255, slots:[[12,76],[20,63],[27,52],[73,52],[80,63],[88,76]]},
-  infirm:{crop:.195, slots:[[17,63],[36,42],[66,51]]},
-  beach:{crop:0, capacity:5, slots:[[19,75],[35,54],[51,80],[67,55],[83,78],[19,48],[35,80],[51,51],[67,81],[83,51]]}
+  gym:{crop:.238, zoom:1.05, panX:.044, scale:1105, face:"LLRLR", slots:[[13.9,70.9],[36.1,40.2],[57.3,40.1],[47.3,74.6],[75.5,66]]},
+  hall:{crop:0, scale:1105, face:"RRRRR", slots:[[60.2,70.1],[45.6,52.1],[75.1,82.6],[36.6,74.5],[52.2,93.5]]},
+  library:{crop:.235, face:"RLRLR", slots:[[12,79],[45,42],[63,47],[79,73],[88,84]]},
+  arena:{crop:.226, panX:.023, scale:1105, face:"RLRLR", slots:[[20.3,65.8],[32.9,66],[49.8,49.3],[61.3,49.1],[80.4,64.5]]},
+  chapel:{crop:.255, scale:1105, face:"RLRLRL", slots:[[11.1,69],[18.7,57.6],[26.1,46.3],[74.1,46.1],[81.5,57.3],[88.6,69.1]]},
+  infirm:{crop:.195, scale:1082, face:"LLR", slots:[[17.3,55.3],[35.4,34.8],[67.1,44.3]]},
+  beach:{crop:0, scale:1105, capacity:5, face:"RLRLRLRLRL", slots:[[19,75],[35,54],[51,80],[67,55],[83,78],[19,48],[35,80],[51,51],[67,81],[83,51]]}
 };
-function reportBeachPositions(){
+// 의뢰 장면 — salon 의 owner 는 미용실 원장님: 그림 기준 비율 (x · y 왼쪽 위 모서리, w 폭), 그림 크기 · 위치를 따라간다
+const REPORT_JOB_LAYOUTS = {
+  farm:{crop:0, scale:1105, capacity:5, face:"RLRLR", slots:[[25.1,82],[34.1,38.9],[44.2,72],[64.2,29.4],[68.1,77.5]]},
+  church:{crop:0, scale:1105, capacity:5, face:"LRLLR", slots:[[22,39.1],[40,54.4],[32.5,81.3],[64.1,72.1],[71.3,32.7]]},
+  inn:{crop:0, scale:1400, capacity:6, face:"LLLRRL", slots:[[29.2,42.2],[85.3,41.1],[54.8,63],[62.3,63],[28,80],[82,80]]},
+  hunt:{crop:0, scale:1105, capacity:5, face:"RLRLR", slots:[[17.4,58],[36.3,43.6],[45.6,77.4],[65.8,45.2],[83.7,63.3]]},
+  salon:{crop:.043, zoom:1.19, panX:.102, scale:1329, capacity:5, face:"LLRLR", owner:{x:.563, y:.246, w:.088}, slots:[[20.9,45.3],[39,41.3],[37,84.4],[61.3,82.8],[86.7,65.9]]},
+  tavern:{crop:0, scale:1400, capacity:6, face:"LRRLRL", slots:[[29.8,33.1],[89.6,45.5],[50.6,62.7],[57.3,42.9],[17.4,82.2],[83,77]]}
+};
+const REPORT_JOB_LAYOUT = REPORT_JOB_LAYOUTS.farm;   // 목록에 없는 의뢰가 생기면 이 배치를 쓴다
+const reportRoom = s => s.job && REPORT_JOB_MAPS[s.job] || REPORT_ROOMS[s.facility];
+/* 그림 상자 (무대 %) — 방 그림(정사각형)은 무대 폭의 104.17% 가 기준, 3:1 그림(수련관 · 해수욕장 · 의뢰)은 무대에 꼭 맞는 크기가 기준 */
+function reportRoomBox(s, L){
+  const cover = !!s.job || s.facility==="hall" || s.facility==="beach";
+  const z = L.zoom || 1, W = (cover ? 100 : 104.166667) * z, H = (cover ? 100 : 312.5) * z;
+  const px = L.panX != null ? L.panX : (cover ? 0 : .02);
+  return {W, H, left:-px*W, top:-(L.crop||0)*H};
+}
+/* 해수욕장 — 후보 자리 가운데 capacity 곳을 고른다 (자리 번호를 돌려준다) */
+function reportBeachPicks(){
   // Presentation-only randomness; never consume the simulation's random stream.
-  const slots=REPORT_LAYOUTS.beach.slots, keys=crypto.getRandomValues(new Uint32Array(slots.length));
-  const candidates=slots.map((slot,i)=>({slot,key:keys[i]})).sort((a,b)=>a.key-b.key), chosen=[];
-  for(const {slot} of candidates){
+  const L=REPORT_LAYOUTS.beach, slots=L.slots, keys=crypto.getRandomValues(new Uint32Array(slots.length));
+  const order=slots.map((slot,i)=>({i,slot,key:keys[i]})).sort((a,b)=>a.key-b.key), chosen=[];
+  for(const c of order){
     // One position per column keeps sprites and growth labels from overlapping.
-    if(chosen.every(p=>Math.abs(p[0]-slot[0])>=12))chosen.push(slot);
-    if(chosen.length===REPORT_LAYOUTS.beach.capacity)break;
+    if(chosen.every(j=>Math.abs(slots[j][0]-c.slot[0])>=12))chosen.push(c.i);
+    if(chosen.length===(L.capacity||5))break;
   }
   return chosen;
 }
@@ -6856,7 +6877,7 @@ function reportSceneBind(records){
   }
   function draw(){
     const s=scenes[at], day=scenes.filter(x=>x.day===s.day), offset=(s.day*3)%Math.max(1,s.students.length);
-    const layout=s.job ? (s.job==="inn" ? REPORT_INN_LAYOUT : s.job==="tavern" ? REPORT_TAVERN_LAYOUT : REPORT_JOB_LAYOUT) : REPORT_LAYOUTS[s.facility] || REPORT_LAYOUTS.gym;
+    const layout=s.job ? (REPORT_JOB_LAYOUTS[s.job] || REPORT_JOB_LAYOUT) : REPORT_LAYOUTS[s.facility] || REPORT_LAYOUTS.gym;
     const visible=s.students.slice(offset).concat(s.students.slice(0,offset)).slice(0,layout.capacity || layout.slots.length);
     displayed=visible;queue=reportStatQueue(visible);lastSound=-1;silence();
     duration=Math.max(2400,leadMs+queue.length*stepMs+cardMs);
@@ -6867,7 +6888,11 @@ function reportSceneBind(records){
     $("#drStage").dataset.phase=s.phase;
     $("#drStage").dataset.facility=s.facility;
     $("#drStage").dataset.job=s.job || "";
-    $("#drStage").style.setProperty("--crop-top",`${-layout.crop*312.5}%`);
+    { const B=reportRoomBox(s, layout), r=$("#drRoom").style;
+      r.width=B.W+"%"; r.height=B.H+"%"; r.left=B.left+"%"; r.top=B.top+"%";
+      const ow=$("#drStage .dr-salon-owner"), O=layout.owner;      // 미용실 원장님 — 그림을 따라 자리 · 크기가 정해진다
+      if(ow){ if(s.job==="salon" && O){ ow.style.left=(B.left+O.x*B.W)+"%"; ow.style.top=(B.top+O.y*B.H)+"%"; ow.style.width=(O.w*B.W)+"%"; ow.style.transform=O.f==="L"?"scaleX(-1)":""; }
+              else { ow.style.left=ow.style.top=ow.style.width=ow.style.transform=""; } } }
     $("#drStage").style.setProperty("--sprite-unit",`${layout.scale || 1050}px`);
     $("#drFacility").textContent=facilityName;
     $("#drActivity").textContent=`${DAY_N[s.day]}요일 · ${phaseName(s)}${s.phase==="pm"?"":" · "+s.training}`;
@@ -6876,18 +6901,20 @@ function reportSceneBind(records){
     root.querySelectorAll("[data-dr-day]").forEach(b=>{const d=+b.dataset.drDay;b.classList.toggle("current",d===s.day);b.classList.toggle("done",d<s.day);b.setAttribute("aria-current",d===s.day?"step":"false");b.querySelector("i").textContent=d<s.day?"✓":"";});
     $("#drPhases").innerHTML=day.map(x=>`<button class="${x===s?"active":""}" data-dr-scene="${scenes.indexOf(x)}" aria-pressed="${x===s}">${phaseName(x)}${day.length>2?" · "+(FACILITIES[x.facility]?.n||""):""}</button>`).join("");
     root.querySelectorAll("[data-dr-scene]").forEach(b=>b.onclick=()=>seek(+b.dataset.drScene));
-    if(s.facility==="beach" && !placements.has(s))placements.set(s,reportBeachPositions());
-    const pos=placements.get(s) || layout.slots;
+    if(s.facility==="beach" && !placements.has(s))placements.set(s,reportBeachPicks());
+    const idx=placements.get(s) || layout.slots.map((_,j)=>j);                 // 학생 i 가 서는 자리 번호
+    const pos=idx.map(j=>layout.slots[j]);
+    const faceL=j=> layout.face && layout.face[j] ? layout.face[j]==="L" : null; // 배치판에서 정한 보는 방향 (없으면 예전 규칙)
     $("#drStudents").innerHTML=visible.map((x,i)=>{
       const studying=!s.job && s.facility==="hall" && !!REPORT_STUDY[x.job];
       const resting=!s.job && (s.facility==="infirm" || (s.facility==="beach" && x.state==="rest"));
       const workMotion=reportWorkMotion(s,x,i);
       const motion=workMotion || (resting?"down":x.state==="rest"?"idle":x.state==="failed"?"hit":["gym","hall","arena"].includes(x.trainingFacility || s.facility)?"attack":"idle");
       const cond=x.condition?.from ?? 100;
-      return `<button class="dr-student ${studying?"studying":""} ${resting?"resting":""} ${pos[i][1]<48?"low-bubble":""}" data-dr-student="${i}" style="left:${pos[i][0]}%;top:${pos[i][1]}%;z-index:${Math.round(pos[i][1])}" aria-label="${esc(x.name)} 성장 내역"><span class="dr-shadow"></span><span class="dr-avatar">${studying?`<span class="dr-study-sprite" data-study-job="${x.job}" style="background-image:url(${REPORT_STUDY[x.job]})"></span>`:sprHTML(x.job,motion,1,{p:x.palette,flip:(s.job==="inn" || s.job==="tavern")?[false,true,false,true,false,true][i]:resting?i!==2:i%2===1,t0:resting?0:performance.now()})}</span><span class="dr-name">${esc(x.name)}</span><span class="dr-condition ${reportConditionColor(cond)}" role="meter" aria-label="컨디션" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${cond}"><span class="dr-condition-fill" style="width:${clamp(cond,0,100)}%"></span><span class="dr-condition-number">${cond}</span></span><span class="dr-bubbles" hidden></span></button>`;
+      return `<button class="dr-student ${studying?"studying":""} ${resting?"resting":""} ${pos[i][1]<48?"low-bubble":""}" data-dr-student="${i}" style="left:${pos[i][0]}%;top:${pos[i][1]}%;z-index:${Math.round(pos[i][1])}" aria-label="${esc(x.name)} 성장 내역"><span class="dr-shadow"></span><span class="dr-avatar">${studying?`<span class="dr-study-sprite${faceL(idx[i])?" flip":""}" data-study-job="${x.job}" style="background-image:url(${REPORT_STUDY[x.job]})"></span>`:sprHTML(x.job,motion,1,{p:x.palette,flip:faceL(idx[i])!=null?faceL(idx[i]):(s.job==="inn" || s.job==="tavern")?[false,true,false,true,false,true][i]:resting?i!==2:i%2===1,t0:resting?0:performance.now()})}</span><span class="dr-name">${esc(x.name)}</span><span class="dr-condition ${reportConditionColor(cond)}" role="meter" aria-label="컨디션" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${cond}"><span class="dr-condition-fill" style="width:${clamp(cond,0,100)}%"></span><span class="dr-condition-number">${cond}</span></span><span class="dr-bubbles" hidden></span></button>`;
     }).join("");
     if(!s.job && s.facility==="hall"){
-      $("#drStudents").insertAdjacentHTML("beforeend",pos.slice(visible.length).map(p=>`<div class="dr-student studying empty-seat" aria-hidden="true" style="left:${p[0]}%;top:${p[1]}%;z-index:${Math.round(p[1])}"><span class="dr-avatar"><span class="dr-study-sprite empty" style="background-image:url(${REPORT_STUDY.empty})"></span></span></div>`).join(""));
+      $("#drStudents").insertAdjacentHTML("beforeend",pos.slice(visible.length).map((p,e)=>`<div class="dr-student studying empty-seat" aria-hidden="true" style="left:${p[0]}%;top:${p[1]}%;z-index:${Math.round(p[1])}"><span class="dr-avatar"><span class="dr-study-sprite empty${faceL(idx[visible.length+e])?" flip":""}" style="background-image:url(${REPORT_STUDY.empty})"></span></span></div>`).join(""));
     }
     root.querySelectorAll("[data-dr-student]").forEach(b=>b.onclick=()=>details(visible[+b.dataset.drStudent].id));
     $("#drSceneCount").textContent=`${visible.length}명 표시${s.students.length>visible.length?` · 시설 참여 ${s.students.length}명`:""}`;
@@ -7233,7 +7260,8 @@ function expedLoop(E, quick, done){
   };
   if(quick) after();
   else openBattle(bm.b, {titleA:"원정대", titleB:monLabel(bm.mon), field:String(E.dg.mon||"").replace(/^mon_/,""),
-    bgm:"friendly", jingle: E.sec>=E.dg.secs || !!bm.mon.muscle,
+    bgm:"friendly", jingle: E.sec>=E.dg.secs || !!bm.mon.muscle, victory: E.sec>=E.dg.secs,   /* VICTORY 는 마지막 구간을 깼을 때만 (1003) */
+    intro: E.sec===1, defeat: true,                                       /* BATTLE START 는 첫 구간에만 · DEFEAT 는 어느 구간이든 전멸하면 (1003) */
     head:`${E.dg.n} — ${E.sec}/${E.dg.secs}구간${bm.mon.muscle? " · 그뉵이용 출현!":""}`, doneLabel: E.sec>=E.dg.secs? "결과 확정":"다음 구간"}, after);
 }
 function runExpedition(dg, team, TM){
@@ -7988,7 +8016,7 @@ function ladderRun(t, quick){
   const b = runBattle(my, FT, Object.assign({titleA:S.acadName, titleB:foe.name, moodA:L.mood}, teamBattleOpt(TM), foeBattleOpt(FT)));
   const after = ()=> ladderRecord(t, b, foe.name, ids);
   if(quick) after();
-  else openBattle(b, {titleA:S.acadName, titleB:foe.name, field:t.step, bgm:ladderBgm(t), jingle:true,
+  else openBattle(b, {titleA:S.acadName, titleB:foe.name, field:t.step, bgm:ladderBgm(t), jingle:true, victory:true, defeat:true,
     cheer: t.step==="final",
     head:`${t.title} — ${ladderMatchLabel(t)}`, doneLabel:"결과 확정"}, after);
 }
@@ -14882,7 +14910,7 @@ function bindView(){
    모달
    ============================================================ */
 function showModal(html, bind, wide){
-  reportPlayerStop();
+  reportPlayerStop(); battleBannerClear();
   dragCfg($("#modalRoot"), null);   // 새 팝업에는 이전 드래그 설정을 물려주지 않는다
   $("#modalRoot").innerHTML = `<div class="overlay"><div class="modal" style="${wide?"width:min(980px,100%)":""}">${html}</div></div>`;
   modalLockSync();
@@ -14892,7 +14920,7 @@ function showModal(html, bind, wide){
     catch(e){ errPush("modal", e.message, e.stack); modalEscape(); }
   }
 }
-function closeModal(){ reportPlayerStop(); dragCfg($("#modalRoot"), null); $("#modalRoot").innerHTML=""; modalLockSync(); }
+function closeModal(){ reportPlayerStop(); battleBannerClear(); dragCfg($("#modalRoot"), null); $("#modalRoot").innerHTML=""; modalLockSync(); }
 /* 팝업이 떠 있으면 뒷 화면이 스크롤되지 않게 잠근다 */
 let MODAL_LOCK_Y = 0;
 function modalLockSync(){
@@ -16133,10 +16161,97 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
 }
 
 /* STYLISH_SKILL_FX_END */
+/* ══ 전투 배너 (1003) — BATTLE START · VICTORY ══
+   전투 화면이 열리면 필드를 대기 상태로 그려 둔 채 BATTLE START 를 한 번 틀고, 다 돈 뒤에 전투를 시작한다.
+   opt.intro === false 면 BATTLE START 없이 바로 시작한다 — 원정은 첫 구간에만 튼다.
+   VICTORY 는 opt.victory 를 단 전투(대회 · 친선전 · 원정 마지막 구간)를 이겼을 때 마지막 장면에서 한 번.
+   DEFEAT 는 opt.defeat 를 단 전투(대회 · 친선전 · 원정 모든 구간)를 졌을 때 마지막 장면에서 한 번.
+   그림은 한 번만 도는 APNG(1280×720, 마지막 장은 비어 있다). 같은 주소를 다시 쓰면 브라우저가 이미 끝난
+   애니메이션(빈 마지막 장)을 그대로 보여 주므로, 파일을 한 번 받아 두고(Blob) 틀 때마다 새 blob: 주소로 처음부터 돌린다.
+   파일로 연 문서(file://)는 fetch 가 막혀 있어 주소 뒤에 번호를 붙여 새로 읽는다(디스크라 금방이다).
+   길이(ms)는 받은 파일의 장면 정보(fcTL)를 더해 다시 맞춘다 — 그림을 바꿔 끼워도 시간이 따라간다. */
+const BATTLE_BANNER = {
+  start:  {src:"assets/battle-banner/battle_start.png?v=57d917c5", ms:2250},
+  victory:{src:"assets/battle-banner/victory.png?v=c0986dc4", ms:3208},
+  defeat: {src:"assets/battle-banner/defeat.png?v=3ab8ac63", ms:4458}
+};
+const BANNER_BLOB = {};
+var BANNER_SEQ = 0, BANNER_N = 0, BT_SEQ = 0;   // var — closeModal 이 이 줄보다 먼저 불려도 터지지 않게
+function apngMs(buf){
+  try{
+    const d = new DataView(buf); let p = 8, ms = 0, n = 0;
+    while(p + 8 <= d.byteLength){
+      const len = d.getUint32(p), t = String.fromCharCode(d.getUint8(p+4), d.getUint8(p+5), d.getUint8(p+6), d.getUint8(p+7));
+      if(t === "fcTL" && p + 34 <= d.byteLength){ ms += d.getUint16(p+28) * 1000 / (d.getUint16(p+30) || 100); n++; }
+      if(t === "IEND") break;
+      p += 12 + len;
+    }
+    return n ? Math.round(ms) : 0;
+  }catch(e){ return 0; }
+}
+function bannerBlob(k){
+  const B = BATTLE_BANNER[k];
+  if(!B) return Promise.resolve(null);
+  if(!BANNER_BLOB[k]) BANNER_BLOB[k] = (/^https?:$/.test(location.protocol) && typeof fetch === "function")
+    ? fetch(B.src).then(r=> r.ok ? r.blob() : null)
+        .then(b=> (b && b.arrayBuffer) ? b.arrayBuffer().then(buf=>{ const ms = apngMs(buf); if(ms) B.ms = ms; return b; }) : b)
+        .catch(()=> null)
+        .then(b=>{ if(!b) delete BANNER_BLOB[k]; return b; })        // 못 받았으면 다음 전투에서 다시 받아 본다
+    : Promise.resolve(null);
+  return BANNER_BLOB[k];
+}
+/* 전투 화면(.bf-stage)에서 화면 안에 보이는 부분의 한가운데 */
+function bannerPlace(el){
+  const st = document.querySelector("#modalRoot .bf-stage"), vw = innerWidth, vh = innerHeight;
+  let L = 0, T = 0, R = vw, Bt = vh;
+  const r = st && st.getBoundingClientRect();
+  if(r && r.width > 40 && r.height > 40){ L = Math.max(0, r.left); T = Math.max(0, r.top); R = Math.min(vw, r.right); Bt = Math.min(vh, r.bottom); }
+  el.style.left = L + "px"; el.style.top = T + "px";
+  el.style.width = Math.max(0, R - L) + "px"; el.style.height = Math.max(0, Bt - T) + "px";
+}
+window.addEventListener("resize", ()=> document.querySelectorAll(".bt-banner").forEach(bannerPlace));
+function battleBannerClear(){
+  BANNER_SEQ++;
+  document.querySelectorAll(".bt-banner").forEach(el=>{
+    const im = el.querySelector("img");
+    el.remove();
+    if(im && im.dataset.blob) URL.revokeObjectURL(im.src);
+  });
+}
+/* 배너 한 번 — 다 돌면 true. 그림이 wait ms 안에 준비되지 않거나 도중에 지워지면 false */
+function battleBanner(k, wait){
+  battleBannerClear();
+  const tok = BANNER_SEQ, B = BATTLE_BANNER[k];
+  return new Promise(done=>{
+    if(!B){ done(false); return; }
+    let over = false;
+    const fin = ok=>{ if(over) return; over = true; clearTimeout(tw); done(ok); };
+    const tw = setTimeout(()=> fin(false), wait || 1500);          // 그림이 늦으면 배너 없이 넘어간다 — 다음 전투부터는 받아 둔 것으로
+    bannerBlob(k).then(blob=>{
+      if(over || tok !== BANNER_SEQ){ fin(false); return; }
+      const img = new Image();
+      img.alt = ""; img.draggable = false;
+      if(blob){ img.src = URL.createObjectURL(blob); img.dataset.blob = "1"; }
+      else img.src = B.src + (B.src.indexOf("?") < 0 ? "?" : "&") + "r=" + (++BANNER_N);
+      const drop = ()=>{ if(img.dataset.blob) URL.revokeObjectURL(img.src); };
+      const ready = img.decode ? img.decode() : new Promise((ok, no)=>{ img.onload = ok; img.onerror = no; });
+      ready.then(()=>{
+        if(over || tok !== BANNER_SEQ){ drop(); fin(false); return; }
+        clearTimeout(tw);
+        const el = document.createElement("div");
+        el.className = "bt-banner bt-" + k; el.setAttribute("aria-hidden", "true");
+        el.appendChild(img); document.body.appendChild(el); bannerPlace(el);
+        setTimeout(()=>{ if(tok === BANNER_SEQ) battleBannerClear(); fin(true); }, B.ms + 250);
+      }, ()=>{ drop(); fin(false); });
+    });
+  });
+}
 function openBattle(res, opt, onDone){
   stylishSkillFxPreload();
   SPR_BTSCROLL = 0;
   opt = opt||{};
+  const btId = ++BT_SEQ;
+  if(!opt.lab){ if(opt.intro !== false) bannerBlob("start"); if(opt.victory) bannerBlob("victory"); if(opt.defeat) bannerBlob("defeat"); }   // 전투 배너 미리 받기 (1003)
   let i = 0, timer=null, speed = bspeedNow(), ended = false, battlePanel = null;
   if(opt.bgm) audOver(opt.bgm);
   sfxPreload();
@@ -16144,6 +16259,8 @@ function openBattle(res, opt, onDone){
   /* 마지막 프레임에 닿으면 승패 팡파르를 한 번 틀어준다 */
   const bgmEnd = ()=>{
     if(ended) return; ended = true;
+    if(res.winner==="A"){ if(opt.victory) battleBanner("victory", 2500); }   // VICTORY — 대회 · 친선전 승리 · 원정 마지막 구간 (1003)
+    else if(opt.defeat) battleBanner("defeat", 2500);                     // DEFEAT — 대회 · 친선전 · 원정에서 졌을 때 (1003)
     if(!opt.jingle) return;
     audOver(res.winner==="A" ? (opt.bgm==="festFinal" ? "winBig" : "win") : "lose");
   };
@@ -16295,7 +16412,7 @@ function openBattle(res, opt, onDone){
     dragCfg($("#modalRoot"), null);
     const fk = battleFieldKey(opt.field);
     const fi = fieldOf(fk, true);
-    $("#modalRoot").innerHTML = `<div class="overlay"><div class="modal${fi?" btm":""}${fk==="demonking"?" btm-demon":""}" data-fk="${esc(fk)}" style="width:min(1340px,100%)${
+    $("#modalRoot").innerHTML = `<div class="overlay"><div class="modal${fi?" btm":""}${fk==="demonking"?" btm-demon":""}" data-fk="${esc(fk)}" data-bt="${btId}" style="width:min(1340px,100%)${
         fi? `;--btf:url('${fi}');--bta:${fieldAlpha(fk)}` : ""}">
       <div class="panel-h"><h2 style="font-size:16px">${esc(opt.head||"전투")}</h2>
         <span class="hint">${i+1} / ${res.frames.length}</span></div>
@@ -16450,12 +16567,23 @@ function openBattle(res, opt, onDone){
       i = e; if(i >= res.frames.length-1) bgmEnd(); camQuiet = true; draw(); camQuiet = false;
     }
   };
-  const play = ()=>{ if(timer) return;
+  /* BATTLE START 를 트는 동안 — 재생 · 일시정지 · 결과로 건너뛰기를 누르면 배너를 걷고 바로 그쪽으로 (1003) */
+  let introOn = false;
+  const introStop = ()=>{ if(introOn){ introOn = false; battleBannerClear(); } };
+  const play = ()=>{ introStop(); if(timer) return;
     if(camOn()){ timer = {cam:true}; const tok = ++camRun; draw(); camLoop(tok); return; }
     timer = setInterval(step, speed/SPR_PLAYBACK_RATE); draw(); };
-  const pause = ()=>{ if(timer){ if(timer.cam){ camRun++; timer = null; draw(); } else { clearInterval(timer); timer=null; } } };
+  const pause = ()=>{ introStop(); if(timer){ if(timer.cam){ camRun++; timer = null; draw(); } else { clearInterval(timer); timer=null; } } };
   draw();
-  if(opt.lab) UI.labDraw = draw; else play();    // 필드 실험실 — 멈춘 한 장면만 그린다
+  if(opt.lab){ UI.labDraw = draw; return; }    // 필드 실험실 — 멈춘 한 장면만 그린다
+  if(opt.intro === false){ play(); return; }   // BATTLE START 를 건너뛰는 전투 — 원정 둘째 구간부터 (1003)
+  /* 필드를 대기 상태로 그려 둔 채 BATTLE START → 다 돌면 전투 시작 (1003). 전투 화면이 그새 닫혔으면 아무것도 안 한다 */
+  introOn = true;
+  battleBanner("start", 1500).then(()=>{
+    if(!introOn) return;
+    introOn = false;
+    if(document.querySelector(`#modalRoot .modal[data-bt="${btId}"]`)) play();
+  });
 }
 
 /* ============================================================
@@ -16786,7 +16914,7 @@ function friendlyRun(t, quick){
   const b = runBattle(my, FT, Object.assign({titleA:S.acadName, titleB:t.foe.name, moodA:L.mood}, teamBattleOpt(TM), foeBattleOpt(FT)));
   const after = ()=> friendlyRecord(t, b, ids);
   if(quick) after();
-  else openBattle(b, {titleA:S.acadName, titleB:t.foe.name, field:"dummy", bgm:"friendly", jingle:true,   /* 친선전 — 연습장 필드 · 연습장 세팅 (0930) */
+  else openBattle(b, {titleA:S.acadName, titleB:t.foe.name, field:"dummy", bgm:"friendly", jingle:true, victory:true, defeat:true,   /* 친선전 — 연습장 필드 · 연습장 세팅 (0930) */
     head:`${t.title} — 제${i+1}경기`, doneLabel:"결과 확정"}, after);
 }
 function friendlyRecord(t, b, ids){
@@ -17229,7 +17357,7 @@ function renderTournament(){
         const b = runBattle(my, oppTeam, Object.assign({titleA:S.acadName, titleB:oppName, moodA:L2.mood}, teamBattleOpt(TM), foeBattleOpt(oppTeam)));
         const after = ()=> recordMatch(t, b, oppName, myIds);
         if(quick){ after(); }
-        else openBattle(b, {titleA:S.acadName, titleB:oppName, bgm:"tour", jingle:true,
+        else openBattle(b, {titleA:S.acadName, titleB:oppName, bgm:"tour", jingle:true, victory:true, defeat:true,
           head:`${t.title} — ${head}`, doneLabel:"결과 확정"}, after);
       };
       $("#tPlay").onclick=()=>run(false);
