@@ -655,10 +655,73 @@ html[data-ui-concept="journal"] .npcname{color:#8a6a45}
 .tmus.on{border-color:var(--brass);color:var(--brass)}
 .tahint{margin-top:8px;font-size:11px;color:var(--brass);opacity:.85}
 .prol{max-width:720px;margin:0 auto}
+.modal.prol-modal{width:min(700px,100%)}.modal.prol-modal .prol{max-width:none}   /* 프롤로그 세 장 — 폭을 내용에 맞게 (1003) */
 .prol .ptitle{font-size:26px;margin:4px 0 14px}
 html[data-font="pixel"] .prol .ptitle{font-synthesis:weight;font-weight:700}   /* 도트 폰트에서도 프롤로그 제목은 굵게 (0929) */
 .prol p{font-size:14px;line-height:2;color:var(--muted);margin:0 0 14px;text-align:justify}
 .prol p b{color:var(--brass)}
+/* 새 시나리오 오프닝 (1003) — 검은 화면 · 글(APNG) · 붉은빛 · 핏방울 · 대화 · 흰빛 */
+.opening{position:fixed;inset:0;z-index:100;background:#000;color:#f3ede4;overflow:hidden;user-select:none;-webkit-user-select:none;animation:opIn .45s ease both}
+@keyframes opIn{from{opacity:0}to{opacity:1}}
+.opening .op-intro{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(118.35vw,318vh,1600px);height:auto;max-width:none;pointer-events:none}
+.op-flash{position:absolute;inset:0;opacity:0;pointer-events:none;z-index:5}
+.op-skip{position:absolute;top:max(14px,env(safe-area-inset-top,0px));right:16px;z-index:6;background:transparent;border:1px solid #ffffff2e;color:#ffffff8c;border-radius:999px;padding:6px 14px;font-size:12px;cursor:pointer}
+.op-skip:hover,.op-skip:focus-visible{color:#fff;border-color:#ffffff80}
+.op-drops{position:absolute;left:50%;top:42%;width:0;height:0;z-index:1}
+.op-drops>div{position:absolute;left:0;top:0;pointer-events:none}
+.op-drops svg{display:block;overflow:visible}
+.op-talk{position:absolute;left:50%;bottom:max(5vh,22px);transform:translateX(-50%);width:min(920px,calc(100vw - 28px));box-sizing:border-box;z-index:3;display:flex;gap:18px;align-items:flex-start;padding:18px 22px 22px;background:linear-gradient(180deg,rgba(22,17,27,.93),rgba(9,7,11,.96));border:1px solid rgba(206,176,122,.34);border-radius:12px;box-shadow:0 12px 44px #000c;cursor:pointer}
+.op-talk[hidden]{display:none}
+.op-face{flex:none;width:132px;height:132px;border-radius:10px;overflow:hidden;background:radial-gradient(circle at 50% 42%,#3b3446,#141119);border:1px solid rgba(206,176,122,.38)}
+.op-face[hidden]{display:none}
+.op-face img{width:100%;height:100%;object-fit:cover;display:block;max-width:none}
+.op-face.demon{background:radial-gradient(circle at 50% 46%,#4c2373,#110919);border-color:#9b66e0aa;box-shadow:0 0 22px #8a3cff4d}
+.op-face.demon img{filter:drop-shadow(0 0 7px #a565ffb0);transform:scale(1.42);transform-origin:57.5% 50%}   /* 얼굴을 크게 — 눈 · 웃음이 보이게 */
+.op-face.pal img{transform:scale(1.5);transform-origin:73% 70%}   /* 다친 얼굴을 크게 */
+.op-face.wiz img{transform:scale(1.55);transform-origin:70% 66%}  /* 그을린 얼굴을 크게 — 모자 챙 · 얼굴 · 브로치가 보이게 */
+.op-body{flex:1;min-width:0;min-height:96px;position:relative}
+.op-name{font-family:"Gowun Batang","Nanum Myeongjo",serif;font-weight:700;font-size:15px;letter-spacing:.02em;margin:2px 0 9px;color:#e9d9b4}
+.op-name.demon{color:#d79bff}.op-name.pal{color:#ffd77a}.op-name.wiz{color:#f7a8d8}.op-name.you{color:#cfe1ff}
+.op-text{font-size:18px;line-height:1.75;word-break:keep-all;overflow-wrap:anywhere;white-space:pre-wrap;min-height:1.75em}
+.op-text.big{font-size:36px;line-height:1.25;font-weight:700;letter-spacing:.02em}
+.op-next{position:absolute;right:0;bottom:-8px;font-size:12px;color:#e9d9b4;opacity:0;transition:opacity .2s}
+.op-talk.done .op-next{opacity:1;animation:opNext 1s ease-in-out infinite}
+@keyframes opNext{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+/* 1003 — 검은 빛 (가운데서 검은 구가 번져 화면을 삼킨다 · 가장자리에 보랏빛 · 푸른빛이 휘몰아친다) */
+.opening{box-shadow:0 0 0 28px #000}   /* 흔들릴 때 가장자리 틈을 가린다 */
+.op-void{position:absolute;left:50%;top:45%;border-radius:50%;z-index:4;pointer-events:none;transform:scale(.004);
+  background:radial-gradient(circle,#000 0 60%,#06020d 62%,#1d0c40 64.5%,rgba(102,66,255,.8) 67%,rgba(70,140,255,.5) 69.5%,rgba(46,22,110,.25) 72.5%,transparent 76%)}
+.op-void::before{content:"";position:absolute;inset:0;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 0 6%,rgba(160,120,255,.9) 11%,transparent 18% 31%,rgba(96,170,255,.8) 36%,transparent 43% 56%,rgba(180,100,255,.85) 61%,transparent 68% 81%,rgba(120,160,255,.8) 86%,transparent 93%);
+  -webkit-mask:radial-gradient(circle,transparent 0 62%,#000 65.5%,#000 69%,transparent 74%);mask:radial-gradient(circle,transparent 0 62%,#000 65.5%,#000 69%,transparent 74%)}
+.opening .op-rift{width:min(100vw,178vh,1600px)}   /* 시공이 휘몰아치는 글 · '아, 이건 위험...' — 글이 화면 폭 안에 들어오게 */
+.op-date{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100vw,178vh,1600px);height:auto;max-width:none;z-index:121;pointer-events:none}   /* '—왕국력 230년, 가을' — 푸른 빛 위 */
+/* 가운데 작은 푸른 빛 — 여신 */
+.op-wisp{position:absolute;left:50%;top:44%;width:0;height:0;z-index:2;pointer-events:none}
+.op-wisp i{position:absolute;left:-5px;top:-5px;width:10px;height:10px;border-radius:50%;background:radial-gradient(circle,#fff 0 32%,#d6efff 56%,rgba(150,205,255,0) 76%);
+  box-shadow:0 0 14px 5px rgba(150,210,255,.75),0 0 48px 18px rgba(110,180,255,.3);animation:opWispIn 1.1s ease-out both,opWispPulse 2.6s ease-in-out 1.1s infinite}
+.op-wisp::before,.op-wisp::after{content:"";position:absolute;left:-24px;top:-1px;width:48px;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,#eaf7ff 50%,transparent);opacity:0;animation:opWispStar 2.6s ease-in-out .5s infinite}
+.op-wisp::after{animation-name:opWispStar2}
+@keyframes opWispIn{0%{transform:scale(0);opacity:0}40%{transform:scale(1.7);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes opWispPulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.28);filter:brightness(1.3)}}
+@keyframes opWispStar{0%,100%{opacity:.2;transform:scaleX(.55)}50%{opacity:.95;transform:scaleX(1.25)}}
+@keyframes opWispStar2{0%,100%{opacity:.2;transform:rotate(90deg) scaleX(.45)}50%{opacity:.85;transform:rotate(90deg) scaleX(1)}}
+.op-name.goddess{color:#bfe6ff}
+.op-talk.goddess{border-color:rgba(150,205,255,.42);box-shadow:0 12px 44px #000c,0 0 34px rgba(120,190,255,.16)}
+/* 연한 푸른 빛 — 작은 빛이 부풀어 화면을 덮고(.op-bloom → .op-veil.top), 프롤로그 · 학원 이름 동안 창 뒤에 깔린다(.op-veil) */
+.op-bloom{position:fixed;left:50%;top:44%;border-radius:50%;z-index:121;pointer-events:none;transform:scale(.006);
+  background:radial-gradient(circle,#fff 0%,#f4faff 18%,#e3f1ff 40%,#cfe5fc 56%,rgba(196,224,252,.85) 61%,rgba(196,224,252,0) 71%)}
+.op-veil{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 85% 75% at 50% 44%,#f8fcff 0%,#e6f2ff 38%,#cde4fb 72%,#b5d5f6 100%)}
+.op-veil.top{z-index:120}
+.op-veil{z-index:79;overflow:hidden}
+.op-veil::before{content:"";position:absolute;inset:-20%;background:radial-gradient(circle at 30% 35%,rgba(255,255,255,.55),transparent 32%),radial-gradient(circle at 72% 62%,rgba(255,255,255,.4),transparent 30%),radial-gradient(circle at 55% 20%,rgba(214,236,255,.5),transparent 26%);animation:opVeilDrift 22s ease-in-out infinite alternate}
+.op-veil::after{content:"";position:absolute;left:0;top:0;width:100%;height:calc(100% + 660px);opacity:.55;
+  background-image:radial-gradient(circle,#fff 0 1.2px,transparent 2px),radial-gradient(circle,rgba(255,255,255,.85) 0 1px,transparent 1.8px);background-size:180px 220px,260px 220px;background-position:0 0,90px 110px;animation:opVeilMotes 30s linear infinite}
+@keyframes opVeilDrift{from{transform:translate(-3%,-2%)}to{transform:translate(3%,2%)}}
+@keyframes opVeilMotes{from{transform:translateY(0)}to{transform:translateY(-660px)}}
+body.op-veiled .overlay{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}
+@media (prefers-reduced-motion:reduce){.op-veil::before,.op-veil::after,.op-wisp i,.op-wisp::before,.op-wisp::after{animation:none}.op-wisp::before,.op-wisp::after{opacity:.6}}
+@media(max-width:600px){.op-talk{gap:12px;padding:12px 14px 16px}.op-face{width:84px;height:84px}.op-body{min-height:72px}.op-name{font-size:13px;margin-bottom:6px}.op-text{font-size:15px}.op-text.big{font-size:min(30px,6.8vw)}}
 .missionbox{background:var(--surface);border:1px solid var(--brass);border-radius:4px;padding:12px;margin-bottom:14px}
 .mtitle{font-family:"Gowun Batang",serif;font-size:17px;font-weight:700;color:var(--brass);line-height:1.3}
 .mdesc{font-size:12.5px;color:var(--text);margin-top:4px}
@@ -4260,7 +4323,7 @@ function potMigrate(o){
   o.ment.pot = clamp(Math.round(b[0] + t*(b[1]-b[0])), 1, 99);
   if(o.cap) delete o.cap;          // 한계는 새 잠재력으로 다시 정해진다
 }
-function newStudent(year, grade, job){
+function newStudent(year, grade, job, pers){
   grade = grade || wchoose({D:30,C:40,B:22,A:7,S:1});
   job = job || pick(JOB_KEYS);
   const g = {D:0,C:1,B:2,A:3,S:4}[grade];
@@ -4274,7 +4337,7 @@ function newStudent(year, grade, job){
     name: freshName(job), job, year, grade,
     level:1, exp:0, cond:ri(78,96), fame:0, eval:0,
     ment:m, focus:"auto", relics:[], skMod:{}, sp:0, hist:[], injured:0, karma:0, trust:0, epithet:null,
-    pers: wchoose(PERSONA_KEYS.reduce((a,k)=>{ a[k]=PERSONA[k].w; return a; }, {}))
+    pers: PERSONA[pers] ? pers : wchoose(PERSONA_KEYS.reduce((a,k)=>{ a[k]=PERSONA[k].w; return a; }, {}))   // pers 를 주면 그 성격으로 (1003 — 1년차 암흑 사제)
   };
   applyPersona(st);
   rollMentCaps(st);                 // 항목별 한계는 입학할 때 정해진다
@@ -5519,13 +5582,17 @@ function newGame(name){
     items:{}, church:{}, epiUsed:[], epiLog:[], focusPrev:null, focusHist:[], books:0, scouts:null, incoming:[], history:[], opts:{report:true, fxA:FX_A_DEFAULT}, mission:newMission(), relicPool:[], skillPool:[],
     lastTour:null
   };
-  /* 개교 멤버 — 팔라딘 1명은 고정, 딜러 중 1명 · 힐러 중 1명은 무작위 */
-  const byRole = r => JOB_KEYS.filter(j=> JOBS[j].role===r && !JOBS[j].mon);
-  const jobs = shuffle(["paladin", pick(byRole("dps")), pick(byRole("heal"))]);
+  /* 개교 멤버 — 팔라딘(탱커) · 마법사(딜러) · 암흑 사제(힐러)로 고정 (1003, 예전: 팔라딘 + 무작위 딜러 · 힐러). 등급은 그대로 무작위 */
+  const jobs = shuffle(["paladin", "wizard", "darkpriest"]);
   const un=[];
   const startGrade = ()=> wchoose({D:30, C:40, B:23, A:7});   // 개교 시점에는 S급이 오지 않는다
   const startEval = base => Math.max(0, base + ri(-10,10));
-  for(let i=0;i<3;i++){ const st=newStudent(1, startGrade(), jobs[i%jobs.length]); st.note = pickUnique(ENROLL_NOTE, un); S.students.push(st); }
+  for(let i=0;i<3;i++){
+    const job = jobs[i%jobs.length], dp = job === "darkpriest";
+    const st = newStudent(1, startGrade(), job, dp ? "genius" : null);
+    if(dp) st.uniq = "dp1";   // 1년차 암흑 사제 (1003) — 성격 천재적 고정 · 혼자만의 인사 한마디(UNIQ_GREET) · 마스터는 늘 ‘마스터’(masterQ)
+    st.note = pickUnique(ENROLL_NOTE, un); S.students.push(st);
+  }
   S.students.forEach(st=> st.cond = 100);
   handInit();
   S.teams = newTeams();
@@ -6313,12 +6380,30 @@ function weekRunStepGo(){
       R.day++;
       continue;
     }
-    if(tr.special==="exped"){ expedDay(R, bonus); return; }   // 팝업으로 넘어간다
+    if(tr.special==="exped"){
+      if(!R.quick && expedTeams().length && expedAwaitReport(R)) return;   // 경과 보고가 이 요일에 닿으면 파견 (1003)
+      expedDay(R, bonus); return;                                         // 팝업으로 넘어간다
+    }
     dayRun(tr, bonus, R.day, {mark:mark, charge:card});
     dlog("", "gap");
     R.day++;
   }
   weekRunEnd();
+}
+/* ══ 원정은 그 요일에 (1003) ══
+   예전에는 주를 돌리면 원정부터 모두 치르고 나서 경과 보고를 띄웠다. 이제는 원정 요일 앞까지만 계산해 경과 보고로 먼저 보여 주고,
+   재생이 원정 요일에 닿으면(또는 'O요일 원정으로' 를 누르면) 그때 원정 파견 팝업을 띄운다.
+   원정이 끝나면 남은 요일을 계산해 경과 보고를 그 원정 요일부터 이어서 보여 준다 (R.playFrom — 이미 본 요일은 건너뛴다).
+   보여 줄 장면이 아직 없으면(월요일 원정 · 원정 다음 날 또 원정 중 앞 장면이 없을 때) 바로 파견한다. 빠른 진행(quick)은 예전 그대로 */
+function expedAwaitReport(R){
+  const from = R.playFrom|0, day = R.day;
+  if(!(R.scenes||[]).some(s=> s.day >= from && s.day < day)) return false;
+  weekReport(R, {day, onNext:()=>{
+    if(UI.wrun !== R || R.day !== day) return;
+    R.playFrom = day;
+    expedDay(R, chainOf(R.days, day));
+  }});
+  return true;
 }
 function weekRunEnd(){
   const R = UI.wrun; if(!R) return;
@@ -6361,16 +6446,20 @@ function weekRunEnd(){
   if(S.week >= PHASES[S.phase].weeks){ endPhase(); }
   finish();
 }
-function weekReport(R){
+function weekReport(R, part){
   const ranTo = (S.phase===R.startPhase && S.year===R.startYear) ? S.week : PHASES[R.startPhase].weeks;
-  const F = FIN || {upkeep:0, interest:0};
-  const fin = {g0:R.g0, train:R.cost||0, diet:R.diet||0, job:R.jobPay||0, upkeep:F.upkeep, interest:F.interest, depInt:F.depInt||0, g1:S.gold - (F.later||0), repaid:repayDone(), jobOn:!!R.jobOn0};
-  fin.other = fin.g1 - fin.g0 - (fin.job - fin.train - fin.diet - fin.upkeep - fin.interest + fin.depInt);   // 원정 수입 · 구매 등
-  FIN = null;
+  let fin = null;
+  if(!part){                                     // 중간 보고(원정 대기 · 1003)는 결산 없이 — 주가 끝나야 자금 상황이 정해진다
+    const F = FIN || {upkeep:0, interest:0};
+    fin = {g0:R.g0, train:R.cost||0, diet:R.diet||0, job:R.jobPay||0, upkeep:F.upkeep, interest:F.interest, depInt:F.depInt||0, g1:S.gold - (F.later||0), repaid:repayDone(), jobOn:!!R.jobOn0};
+    fin.other = fin.g1 - fin.g0 - (fin.job - fin.train - fin.diet - fin.upkeep - fin.interest + fin.depInt);   // 원정 수입 · 구매 등
+    FIN = null;
+  }
   showReport({snap:R.snap, startWeek:R.startWeek, ranTo:ranTo, startPhase:R.startPhase, startYear:R.startYear,
-    acts: R.days.map(c=>({n:(TR[c.t]||TR.free).n})),
+    acts: R.days.map(c=>({n:(TR[c.t]||TR.free).n, c:cardColor(c).c})),
     daylog: DAYLOG.slice(), scenes: R.scenes || [],
-    gold:S.gold-R.g0, fame:S.fame-R.f0, relics:(S.relicPool||[]).length-R.r0, fin});
+    gold:S.gold-R.g0, fame:S.fame-R.f0, relics:(S.relicPool||[]).length-R.r0, fin,
+    startDay: R.playFrom|0, jobShown: !!R.jobShown, onJob: ()=>{ R.jobShown = true; }, part: part || null});
 }
 function runWeek(){ weekRunGo(true); }
 function runWeeks(n){
@@ -6545,13 +6634,14 @@ function reportScenesForPlayback(records){
   return out;
 }
 
-function reportSceneShell(records, dlg){
+function reportSceneShell(records, dlg, plan){
   const scenes=reportScenesForPlayback(records);
   if(!scenes.length)return dlg.length ? `<div class="daylog">${dlg.map(x=>`<div class="on dlline ${x.k}">${x.t}</div>`).join("")}</div>` : "";
   return `<section class="dr-player" aria-label="요일별 경과 보고">
     <nav class="dr-days" aria-label="요일 선택">${DAY_N.slice(0,5).map((n,d)=>{
       const list=scenes.filter(s=>s.day===d), first=list[0];
-      return `<button type="button" data-dr-day="${d}" style="--day-color:${first?.color||cardColor(first?.trainingId).c}" ${!first?"disabled":""}><span>${n}요일 <i></i></span><strong>${esc(first?.training||"기록 없음")}</strong>${first?.bonus?`<em>+${Math.round(first.bonus*100)}%</em>`:""}</button>`;
+      const pl=!first && plan ? plan[d] : null;   // 아직 오지 않은 요일 (원정 대기 중 · 1003)
+      return `<button type="button" data-dr-day="${d}" style="--day-color:${first?.color||pl?.c||cardColor(first?.trainingId).c}" ${!first?"disabled":""}><span>${n}요일 <i></i></span><strong>${esc(first?.training||pl?.n||"기록 없음")}</strong>${first?.bonus?`<em>+${Math.round(first.bonus*100)}%</em>`:""}</button>`;
     }).join("")}</nav>
     <div class="dr-stage" id="drStage"><img class="dr-room" id="drRoom" alt="" draggable="false">
       <div class="dr-top"><div><span class="dr-eyebrow">오늘의 학원</span><h3 id="drFacility"></h3><span id="drActivity"></span></div><span class="dr-chain" id="drChain"></span></div>
@@ -6582,7 +6672,8 @@ function reportStatQueue(students){
   });
   return queue;
 }
-function reportSceneBind(records){
+function reportSceneBind(records, opt){
+  opt=opt||{};
   const scenes=reportScenesForPlayback(records);
   if(!scenes.length || !$("#drStage"))return;
   const root=$("#modalRoot"), reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -6594,7 +6685,8 @@ function reportSceneBind(records){
     if(oldConfirmRow && !oldConfirmRow.children.length)oldConfirmRow.remove();
   }
   let at=0, speed=[1,2,3].includes(PREF.reportSpeed)?PREF.reportSpeed:2, paused=reduced, full=false, elapsed=0, last=performance.now(), timer=null, disposed=false;
-  let duration=2400, queue=[], displayed=[], lastSound=-1, jobShown=false;
+  let duration=2400, queue=[], displayed=[], lastSound=-1, jobShown=!!opt.jobShown;
+  if(opt.start){ const i=scenes.findIndex(x=>x.day>=opt.start); if(i>0)at=i; }   // 원정 뒤 이어 보기 — 이미 본 요일은 건너뛴다 (1003)
   const stepMs=450, leadMs=250, riseMs=900/0.7, cardMs=400+riseMs, fadeMs=100, fadeDelayMs=cardMs-fadeMs;
   const statAudio=new Audio(REPORT_STATUP);
   const recoveryAudio=new Audio(REPORT_RECOVERY);
@@ -6672,7 +6764,7 @@ function reportSceneBind(records){
     $("#drResultChips").innerHTML=s.reward?`<span>${esc(s.reward)}</span>`:Object.entries(totals).map(([label,value])=>chip({label:`${label} 합계`,value:Math.round(value*10)/10,kind:value<0?"loss":label==="컨디션"?"heal":"gain"})).join("")||`<span class="hint">오늘의 기록을 차곡차곡 쌓았어요.</span>`;
     details();sync();timeline(false);progress();
     if(s.jobIntro && !jobShown){
-      jobShown=true; paused=true; sync();
+      jobShown=true; if(opt.onJob)opt.onJob(); paused=true; sync();
       jobIntroShow(s, ()=>{ paused=false; last=performance.now(); sync(); });
     }
   }
@@ -6743,13 +6835,23 @@ function reportSceneBind(records){
   UI._drPause=()=>{if(disposed)return;paused=true;sync();};
   $("#dlSkip").onclick=()=>{full=!full;paused=true;$("#drFullLog").hidden=!full;$("#dlSkip").textContent=full?"전체 기록 접기":"한 번에 보기";sync();if(full)finPopupShow();if(full)$("#drFullLog").scrollIntoView({block:"start",behavior:reduced?"instant":"smooth"});};
   $("#drDetail").addEventListener("toggle",()=>{if($("#drDetail").open){paused=true;sync();}});
-  timer=setInterval(()=>{const now=performance.now(),dt=Math.min(now-last,60);last=now;if(disposed||paused||document.hidden){if(document.hidden)silence();return;}if(!$("#drStage")){reportPlayerStop();return;}elapsed+=dt*speed;timeline(true);if(elapsed>=duration){if(at<scenes.length-1){seek(at+1);return;}elapsed=duration;paused=true;sync();finPopupShow();}progress();},30);
+  timer=setInterval(()=>{const now=performance.now(),dt=Math.min(now-last,60);last=now;if(disposed||paused||document.hidden){if(document.hidden)silence();return;}if(!$("#drStage")){reportPlayerStop();return;}elapsed+=dt*speed;timeline(true);if(elapsed>=duration){if(at<scenes.length-1){seek(at+1);return;}elapsed=duration;paused=true;sync();reportPlayEnd();}progress();},30);
   draw();
 }
 
 /* REPORT_SCENE_RUNTIME_END */
 /* 이번 주 자금 상황 (0926) — 경과 보고를 끝까지 봤거나 '결산'을 누르면 뜬다 (0927).
    줄마다 차례로 드러나며 멘탈리티 상승 효과음을 쓴다. 다 드러나야 확인(대회로)을 누를 수 있고, 누르면 경과 보고가 닫힌다. */
+/* 경과 보고 재생이 끝까지 왔다 — 원정을 기다리는 중간 보고면 잠깐 뒤 원정 파견으로, 아니면 이번 주 자금 상황 (1003) */
+function reportPlayEnd(){
+  if(UI._repNext){ setTimeout(reportGoNext, 400); return; }
+  finPopupShow();
+}
+function reportGoNext(){
+  const go = UI._repNext; if(!go) return;
+  UI._repNext = null;
+  go();
+}
 function finPopupShow(){
   const fin = UI._fin;
   if(!fin || UI._finShown) return;
@@ -6825,7 +6927,7 @@ function showReport(r){
   const html = `
     <div class="panel-h"><h2 style="font-size:18px">${yrName(r.startYear)} ${ph.n} ${range} 경과 보고</h2>
       <span class="hint">${esc(actLine)}</span></div>
-    ${reportSceneShell(r.scenes || [], dlg)}
+    ${reportSceneShell(r.scenes || [], dlg, r.acts)}
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px" hidden>
       <span class="pill">자금 ${dl(r.gold)}</span>
       <span class="pill">명성 ${dl(r.fame)}</span>
@@ -6864,14 +6966,16 @@ function showReport(r){
         <div class="od">잠재력 ${Math.round(c.ment.pot)} · 전투력 ${fmt(power(c))}</div>
       </div>`).join("")}</div>`:""}
     <div class="btnrow" style="margin-top:14px">
-      <button class="btn primary" id="repOk">${r.fin? "결산" : UI.pendingTour? "대회로" : "확인"}</button>
+      <button class="btn primary" id="repOk">${r.part? `${DAY_N[r.part.day]}요일 원정으로` : r.fin? "결산" : UI.pendingTour? "대회로" : "확인"}</button>
 
     </div>`;
   showModal(html, ()=>{
     UI._fin = r.fin || null; UI._finShown = false; UI._drPause = null;
-    reportSceneBind(r.scenes || []);
+    UI._repNext = r.part ? r.part.onNext : null;     // 원정을 기다리는 중간 보고 (1003) — 끝까지 보거나 단추를 누르면 원정 파견으로
+    reportSceneBind(r.scenes || [], {start:r.startDay|0, jobShown:r.jobShown, onJob:r.onJob});
     if(UI._fin && !$("#drStage")) finPopupShow();      // 재생할 장면이 없으면 바로
     $("#repOk").onclick = ()=>{                        // 결산 — 언제든 누를 수 있다. 자금 상황을 띄우고, 거기서 닫는다
+      if(r.part){ reportGoNext(); return; }
       if(UI._fin){ finPopupShow(); if(document.querySelector(".fin-pop")) return; }
       reportDone();
     };
@@ -8503,20 +8607,38 @@ function trustLine(st){
   let h = 2166136261;
   for(let i=0;i<key.length;i++){ h ^= key.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
   h ^= h >>> 15; h = Math.imul(h, 2246822507) >>> 0; h ^= h >>> 13;   // 낮은 비트까지 고르게
-  return pool[(h >>> 0) % pool.length];
+  return masterQ(pool[(h >>> 0) % pool.length], st);
 }
 function trustFull(st){ return trustOf(st) >= TRUST_MAX; }
 /* 인사 한마디 (0929) — 마스터 노트의 TOP 3 카드. 성격 × 신뢰 단계(0·1·3·5·7·9) 마다 3종, 한 주 동안은 같은 말 */
 const GREET_LINES = {"intro":{"0":["아, 안녕하세요…","저, 저요? 좋은 아침이에요…","오늘도… 잘 부탁드려요."],"1":["안녕하세요, 마스터.","오늘 훈련… 열심히 해볼게요.","인사 드리려고 기다렸어요."],"3":["마스터, 오늘도 오셨네요.","오늘은 먼저 인사할게요!","마스터 보니 좀 안심돼요."],"5":["마스터, 오늘 일정 알려주세요.","오늘은 제가 먼저 해볼게요.","마스터가 계시니 괜찮아요."],"7":["마스터! 기다리고 있었어요.","오늘은 긴장 안 돼요. 정말로요.","마스터랑 얘기하는 게 좋아요."],"9":["오늘도 곁에 있을게요.","이제 크게 인사할게요!","마스터 덕분에 매일이 즐거워요."]},"hot":{"0":["훈련은 언제 합니까!","안녕하십니까! 바로 시작하죠!","오늘도 달려 봅시다!"],"1":["마스터! 오늘 상대는 누굽니까?","몸이 근질근질해요!","오늘은 어제보다 더 세게!"],"3":["오늘도 불태워 봐요!","마스터도 같이 뛰실래요?","오늘은 꼭 이기고 올게요!"],"5":["마스터 작전이면 믿고 갑니다!","오늘 목표, 정해 주세요!","마스터 말대로 하면 이겨요!"],"7":["마스터 앞이면 힘이 나요!","쓰러져도 마스터가 있잖아요!","오늘도 마스터 보고 달립니다!"],"9":["마스터와 함께라면 끝까지!","제 불꽃은 마스터 거예요!","어디든 앞장설게요, 마스터!"]},"stone":{"0":["…왔습니까. 지시를.","오늘 할 일만 말씀해 주십시오.","용건은 짧게 부탁합니다."],"1":["준비는 끝났습니다.","오늘 과제, 바로 들어가죠.","안녕하십니까, 마스터."],"3":["오늘은 어디까지 밀어붙일까요.","마스터 계획, 궁금했습니다.","오늘도 정면으로 갑니다."],"5":["마스터 판단이라면 따릅니다.","작전 들었습니다. 맡겨 주십시오.","오늘은 제가 선두에 서죠."],"7":["마스터 앞에선 말이 많아지네요.","마스터 옆이 편합니다.","…기다렸습니다, 솔직히."],"9":["마스터의 칼이 되겠습니다.","어떤 벽이든 뚫고 가겠습니다.","끝까지 함께 가겠습니다."]},"dilig":{"0":["안녕하세요! 일정 확인했어요.","청소는 끝내 뒀습니다.","시키실 일 있으면 말씀하세요."],"1":["오늘도 잘 부탁드립니다!","준비물 다 챙겨 왔어요!","다른 애들도 깨워 뒀어요."],"3":["마스터, 차 한잔 드릴까요?","오늘 계획표 같이 볼까요?","마스터도 식사는 하셨죠?"],"5":["오늘 일과, 제가 정리해 둘게요.","마스터 몫까지 챙겨 뒀어요.","뭐든 맡겨 주세요, 마스터!"],"7":["마스터가 웃으시니 좋네요.","무리하지 마세요, 마스터.","오늘도 옆에서 도울게요."],"9":["마스터 곁은 제가 지킬게요.","배운 대로 살아갈게요.","언제나 여기 있을게요."]},"tsun":{"0":["…뭐예요, 쳐다보지 마세요.","인사 정도는 해 드릴게요.","흥, 오늘도 오셨네요."],"1":["딱히 기다린 거 아니거든요.","오늘 훈련, 대충은 안 해요.","…안녕하세요. 됐죠?"],"3":["늦으셨네요. 걱정한 건 아니고요.","오늘은 뭐, 봐 드릴게요.","마스터, 옷깃 삐뚤어졌어요."],"5":["마스터 말이니까 듣는 거예요.","…오늘도 기대해요. 조금.","제 실력, 똑똑히 보세요."],"7":["마스터가 없으면 심심해요.","…보고 싶었다면 웃을 거죠?","오늘은 특별히 먼저 인사해요."],"9":["…고마워요. 한 번만 말해요.","마스터 곁은 제 자리예요.","앞으로도 계속 봐 주세요."]},"lively":{"0":["마스터! 좋은 아침이에요!","오늘은 무엇을 할까요!","안녕하세요! 반가워요!"],"1":["마스터! 오늘 날씨 좋죠?","오늘 훈련 뭐예요? 궁금해요!","다들 모였어요, 시작해요!"],"3":["어제 얘기 마저 해요!","오늘도 신나게 가봐요!","마스터도 같이 놀아요!"],"5":["마스터 계획이면 다 좋아요!","분위기는 제가 맡을게요!","오늘 뭐부터 할까요?"],"7":["마스터 보면 기분이 좋아져요!","오늘도 마스터가 최고예요!","비밀 하나 알려 드릴까요?"],"9":["마스터랑 있으면 매일이 축제!","평생 마스터 편이에요!","오늘도 웃게 해 드릴게요!"]},"boast":{"0":["미래의 영웅이 왔습니다!","제 이름, 기억해 두시죠!","오늘도 전설을 써 볼까요?"],"1":["오늘도 제가 제일 빛날 거예요!","훈련? 식은 죽 먹기죠!","마스터, 보는 눈이 있으시네요."],"3":["마스터, 제 활약 보셨죠?","오늘은 두 배로 보여 드리죠!","…사실 어제 좀 힘들었어요."],"5":["이대로면 전설 되겠죠?","큰소리친 만큼 해낼게요!","마스터 앞에선 허세 안 부려요."],"7":["진짜 모습 보여 드릴게요.","무서워도 마스터 보면 버텨요.","제 말, 전부 지켜 볼게요."],"9":["마스터의 제자가 제 자랑이에요.","진짜 영웅이 돼서 올게요.","허세 아니고, 진심이에요."]},"plain":{"0":["안녕하세요, 마스터.","오늘 일정이 어떻게 되나요?","잘 부탁드립니다."],"1":["좋은 아침이에요, 마스터.","오늘도 무난하게 가 볼게요.","오늘은 무엇을 할까요?"],"3":["오늘 기분 좋아 보이세요.","오늘은 조금 더 해 볼래요.","마스터는 뭐 드셨어요?"],"5":["마스터 계획대로 따를게요.","오늘도 믿고 맡겨 주세요.","조언 하나 구해도 될까요?"],"7":["마스터한텐 뭐든 말할 수 있어요.","오늘도 마스터 보러 왔어요.","평범한 하루가 제일 좋아요."],"9":["마스터 덕분에 특별해졌어요.","어디서든 마스터를 자랑할게요.","오늘도 함께해요, 마스터."]},"genius":{"0":["오늘 과제는 이미 봤어요.","안녕하세요. 뭘 하면 되죠?","어려운 거 있으면 주세요."],"1":["오늘은 좀 더 어려운 걸로요.","어제 건 금방 끝났어요.","마스터, 새 과제 있어요?"],"3":["마스터 수업은 재밌어요.","오늘은 뭘 가르쳐 주실 거예요?","마스터 생각이 궁금해요."],"5":["저도 같은 생각이에요.","오늘 전술, 같이 짜 봐요.","마스터 조언은 늘 맞더라고요."],"7":["마스터한테만 모르는 게 생겨요.","혼자선 안 되는 것도 있네요.","오늘도 마스터한테 배울래요."],"9":["마스터를 넘는 게 제 목표예요.","마스터가 제 첫 스승이에요.","어디서든 마스터 이름을 걸게요."]}};
+/* 1년차 암흑 사제 (1003) — 개교 멤버 암흑 사제(st.uniq "dp1")만 쓰는 인사 한마디. 성격은 천재적으로 고정.
+   마스터를 부를 때는 늘 ‘마스터’ — 오프닝에서 마왕이 부르던 그대로 */
+const UNIQ_GREET = {
+  dp1:{
+    0:["‘마스터’라… 좋은 호칭이네요.", "과제요? 이미 다 아는 거예요.", "잘 부탁드려요, ‘마스터’."],
+    1:["이 훈련, 어딘가 익숙하네요.", "‘마스터’, 더 어려운 건 없어요?", "결과는 해 보기 전에 보여요."],
+    3:["‘마스터’는 여전하시네요.", "‘마스터’ 검술, 한번 보고 싶어요.", "저한테 숨기는 거 있죠?"],
+    5:["작전은 제가 짜 볼게요.", "이번엔 순서를 바꿔 보죠.", "제 계산엔 ‘마스터’도 있어요."],
+    7:["가끔 꿈을 꿔요. 끝이 나쁜 꿈.", "이상하네요. 미워지질 않아요.", "‘마스터’ 곁, 생각보다 따뜻해요."],
+    9:["끝까지 곁에 있을게요, ‘마스터’.", "운명은 바뀌는 거였네요.", "‘마스터’의 파멸은 제가 막을게요."]
+  }
+};
+/* 그 학생의 말 속 마스터를 ‘마스터’로. inQuote 면 “ ” 안의 말만 바꾼다 (졸업 사유처럼 서술이 섞인 글) */
+function masterQ(t, who, inQuote){
+  if(!t || !who || who.uniq !== "dp1") return t;
+  const q = s => s.replace(/‘?마스터’?/g, "‘마스터’");
+  return inQuote ? String(t).replace(/“[^”]*”/g, q) : q(String(t));
+}
 function greetLine(st){
   const k = trustLineKey(trustOf(st));
-  const set = (GREET_LINES[(st && st.pers) || "plain"] || GREET_LINES.plain);
+  const set = (st && UNIQ_GREET[st.uniq]) || GREET_LINES[(st && st.pers) || "plain"] || GREET_LINES.plain;
   const pool = set[k] || set[0];
   const key = String(st.id||"") + "@" + (S.weekSeq|0);
   let h = 2166136261;
   for(let i=0;i<key.length;i++){ h ^= key.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
   h ^= h >>> 15; h = Math.imul(h, 2246822507) >>> 0; h ^= h >>> 13;
-  return pool[(h >>> 0) % pool.length];
+  return masterQ(pool[(h >>> 0) % pool.length], st);
 }
 /* 신뢰 증가폭은 숫자 대신 말로 */
 function trustGainWord(n){ return n>=3 ? "크게 증가" : n>=2 ? "대폭 증가" : "증가"; }
@@ -8595,9 +8717,9 @@ function graduateAll(){
     const fame = c.fame>=0 ? Math.round(c.fame*(1+(S.tier-1)*.25)) : c.fame;
     usedReason[c.id] = usedReason[c.id]||[];
     const tr = trustOf(st);
-    const reason = trustFull(st)
+    const reason = masterQ(trustFull(st)
       ? pickUnique(TRUST_FAREWELL, (usedReason._trust = usedReason._trust || []))
-      : pickUnique(CAREER_REASON[c.id]||CAREER_REASON.none, usedReason[c.id]);
+      : pickUnique(CAREER_REASON[c.id]||CAREER_REASON.none, usedReason[c.id]), st, true);   // 1년차 암흑 사제는 “ ” 안에서 ‘마스터’
     const fb = fameGoldBonus(st);                                  // 개인 명성 보정
     const gold = Math.round(c.gold * (1 + tr*TRUST_GRAD_GOLD + fb));
     const rec = {sid:st.id, name:dn(st), job:st.job, year:S.year, career:c.n, epithet:st.epithet||null, careerId:c.id, dark:!!c.dark,
@@ -8620,6 +8742,7 @@ function graduateAll(){
       job: bestA.cat==="passive" ? passiveJobOf(st) : (ownerJobOf(bestA.id)||st.job),
       skillId: bestA.id, mod: Object.assign({}, bestA.m), from: dn(st), year: S.year});
     rec.gift = bestA.name;
+    if(st.uniq) rec.uniq = st.uniq;   // 발렌타인 편지도 그 학생 말투로 (masterQ)
     cer.list.push(rec); cer.fame += fame; cer.gold += gold;
     cer.logs.push({h:`졸업 — <b>${dnH(st)}</b>(${JOBS[st.job].name}) 진로: <b>${c.n}</b>${c.dark? ` <span style="color:var(--bad)">(업보 ${karmaOf(st)})</span>`:""}${tr? ` <span style="color:var(--brass)">신뢰 ${trustBand(tr).step}</span>`:""}. ${reason}`, c: c.dark? (c.id==="lord"?"big":"bad") : (c.fame>=110?"big":(c.fame<20?"bad":"good"))});
     (st.relics||[]).forEach(r=> r && addRelicToPool(r));
@@ -10237,8 +10360,8 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1003-1016";
-const BUILD_TS = 1790990202337;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
+const BUILD = "1003-1730";
+const BUILD_TS = 1791016201937;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -13167,11 +13290,12 @@ function trySparkler(){
   const pers = PERSONA[st.pers] ? st.pers : "plain";
   S.sparkler = S.year;
   const base = {type:"sparkler", year:S.year, sid:st.id, name:dn(st), raw:st.name, pers};
+  if(st.uniq) base.uniq = st.uniq;   // 팔라딘이 없어 1년차 암흑 사제가 오면 ‘마스터’ (masterQ)
   for(let p=1;p<=4;p++) queueCeremony(Object.assign({}, base, {page:p}));
   logE(`학원제 개막식의 밤 — 멀리서 터지는 폭죽을 보고 있을 때, <b>${dnH(st)}</b>${iga(st.name)} 작은 폭죽을 사 왔다.`, "big");
 }
 function sparklerCeremony(c){
-  const M = k => (SPARKLER_MSG[k][c.pers] || SPARKLER_MSG[k].plain);
+  const M = k => masterQ(SPARKLER_MSG[k][c.pers] || SPARKLER_MSG[k].plain, c);
   const art = `<div class="valentine-art"><img src="${SPARKLER_ART[c.page<=2 ? "1" : "2"]}" alt="${c.page<=2 ? "밤하늘을 가득 메운 학원제 폭죽" : "마스터와 학생이 나란히 든 작은 폭죽"}" draggable="false"></div>`;
   const head = `<div class="cerhead">
       <div class="eyebrow">${yrName(c.year)} 여름 · ${SPARKLER_WEEK}주차를 마치고</div>
@@ -13185,7 +13309,7 @@ function sparklerCeremony(c){
     </div>` + btn("하늘을 바라본다");
   if(c.page===2) return head + `<div class="ev-body">
       ${P("과연 나는 학원장으로서 최선을 다한 걸까. 차라리 신입생들에게 다른 학원을 권하는 게 맞지 않았을까. 그런 생각이 머릿속을 맴돈다.")}
-      ${Q("마스터——")}
+      ${Q(masterQ("마스터——", c))}
       ${P(`생각을 끊듯 뒤에서 들려오는 한 학생의 목소리. 돌아보니 <b>${epiH(c.name)}</b>${iga(c.raw)} 종종걸음으로 다가온다.`)}
       ${Q(M("invite"))}
     </div>` + btn("폭죽을 받아 든다");
@@ -13210,7 +13334,7 @@ function tryValentine(){
   S.valentine = S.year;
   const notes = list.map(g=>{
     const pers = PERSONA[g.pers] ? g.pers : "plain";
-    return {name: g.raw || g.name, pers, msg: pick(VALENTINE_MSG[pers] || VALENTINE_MSG.plain)};
+    return {name: g.raw || g.name, pers, msg: masterQ(pick(VALENTINE_MSG[pers] || VALENTINE_MSG.plain), g)};
   });
   logE(`<b>발렌타인</b> — 졸업을 앞둔 ${list.length}명이 책상에 초콜릿과 손편지를 남겼다.`, "good");
   queueCeremony({type:"valentine", page:1, year:S.year, n:list.length});
@@ -14577,7 +14701,7 @@ function bindView(){
     showModal(`<h2 style="font-size:17px;margin-bottom:8px">새 학원을 시작할까?</h2>
       <p style="color:var(--muted);font-size:13px">현재 진행 상황은 사라진다.</p>
       <div class="btnrow" style="margin-top:12px"><button class="btn primary" id="ngOk">새로 시작</button><button class="btn" data-close>취소</button></div>`, ()=>{
-      $("#ngOk").onclick=()=>{ closeModal(); askAcademyName(); };
+      $("#ngOk").onclick=()=>{ closeModal(); openingPlay(); };
     });
   };
 }
@@ -15865,12 +15989,45 @@ function apngMs(buf){
     return n ? Math.round(ms) : 0;
   }catch(e){ return 0; }
 }
-function bannerBlob(k){
-  const B = BATTLE_BANNER[k];
+/* APNG 마지막 장의 길이(ms) — 글이 다 사라진 빈 장이 얼마나 머무는지 */
+function apngTail(buf){
+  try{
+    const d = new DataView(buf); let p = 8, last = 0;
+    while(p + 8 <= d.byteLength){
+      const len = d.getUint32(p), t = String.fromCharCode(d.getUint8(p+4), d.getUint8(p+5), d.getUint8(p+6), d.getUint8(p+7));
+      if(t === "fcTL" && p + 34 <= d.byteLength) last = d.getUint16(p+28) * 1000 / (d.getUint16(p+30) || 100);
+      if(t === "IEND") break;
+      p += 12 + len;
+    }
+    return Math.round(last);
+  }catch(e){ return 0; }
+}
+function bannerBlob(k){ return apngBlob(k, BATTLE_BANNER[k]); }
+/* APNG 한 장 — 받아 둔 Blob 으로 새 blob: 주소를 만들어 처음 장부터 돌게 한다 (file:// 은 주소 뒤 번호).
+   wait ms 안에 그릴 준비가 되면 img, 아니면 null. 다 쓴 img 는 apngDrop 으로 주소를 돌려준다 (오프닝 · 1003) */
+function apngImg(k, B, wait){
+  return new Promise(done=>{
+    if(!B){ done(null); return; }
+    let over = false;
+    const fin = v=>{ if(over){ apngDrop(v); return; } over = true; clearTimeout(tw); done(v); };
+    const tw = setTimeout(()=> fin(null), wait || 1500);
+    apngBlob(k, B).then(blob=>{
+      if(over) return;
+      const img = new Image();
+      img.alt = ""; img.draggable = false;
+      if(blob){ img.src = URL.createObjectURL(blob); img.dataset.blob = "1"; }
+      else img.src = B.src + (B.src.indexOf("?") < 0 ? "?" : "&") + "r=" + (++BANNER_N);
+      const ready = img.decode ? img.decode() : new Promise((ok, no)=>{ img.onload = ok; img.onerror = no; });
+      ready.then(()=> fin(img), ()=>{ apngDrop(img); fin(null); });
+    });
+  });
+}
+function apngDrop(img){ if(img && img.dataset && img.dataset.blob){ try{ URL.revokeObjectURL(img.src); }catch(e){} delete img.dataset.blob; } }
+function apngBlob(k, B){
   if(!B) return Promise.resolve(null);
   if(!BANNER_BLOB[k]) BANNER_BLOB[k] = (/^https?:$/.test(location.protocol) && typeof fetch === "function")
     ? fetch(B.src).then(r=> r.ok ? r.blob() : null)
-        .then(b=> (b && b.arrayBuffer) ? b.arrayBuffer().then(buf=>{ const ms = apngMs(buf); if(ms) B.ms = ms; return b; }) : b)
+        .then(b=> (b && b.arrayBuffer) ? b.arrayBuffer().then(buf=>{ const ms = apngMs(buf); if(ms) B.ms = ms; const tl = apngTail(buf); if(tl) B.tail = tl; return b; }) : b)
         .catch(()=> null)
         .then(b=>{ if(!b) delete BANNER_BLOB[k]; return b; })        // 못 받았으면 다음 전투에서 다시 받아 본다
     : Promise.resolve(null);
@@ -17087,6 +17244,10 @@ const BGM_DIR = "../bgm/";
 const BGM = {
   title:    {intro:"title_intro.ogg", len:27.96,  loop:"title_loop.ogg",  v:1},
   prologue: {loop:"prologue.ogg", v:.95},
+  /* 새 시나리오 오프닝 (1003) — 마왕 곡: 오프닝 첫 화면부터 검은 빛까지 · 여신 곡: 가운데 작은 푸른 빛부터 프롤로그 전까지.
+     free — 다 쓰고 나면 풀어 둔 소리(약 75MB)를 버린다 · xf — 다음 곡으로 넘어갈 때 이 곡이 꺼지는 시간(초) */
+  opDemon:  {loop:"opening_demon.ogg",   v:.75, refade:true, free:true},
+  opGoddess:{loop:"opening_goddess.ogg", v:.95, refade:true, free:true, xf:2.2},
   /* 계절 — 평소 육성 화면 */
   /* refade — 이어 붙이지 않고, 한 바퀴가 끝나갈 때 서서히 꺼진 뒤 잠깐 쉬고 다시 켠다 (이음새 위화감 방지) */
   spring:   {intro:"spring_intro.ogg", len:13.355, loop:"spring_loop.ogg", v:.9, refade:true},
@@ -17154,9 +17315,13 @@ function audPlay(key){ AWANT = key || null; audSync(); }
 function audBase(key){ key = key||null; if(ABASE===key) return; ABASE = key; if(!AOVER) audPlay(ABASE); }
 /* 덮어쓰는 곡(타이틀·프롤로그·전투·졸업) — null 을 주면 밑바닥 곡으로 돌아간다 */
 function audOver(key){ AOVER = key||null; audPlay(AOVER || ABASE); }
+/* 지금 곡이 꺼지는 시간 — 곡마다 xf 를 주면 그만큼 천천히 */
+function audXf(d){ const t = ANOW && BGM[ANOW.key]; return (t && t.xf) || d; }
+/* 지금 곡을 sec 초에 걸쳐 끄고 무음으로 둔다 (오프닝 — 시공에 빨려 들어가듯) */
+function audFadeOut(sec){ AOVER = BGM_NONE; AWANT = BGM_NONE; audStop(sec); }
 function audSync(){
   const key = AWANT;
-  if(!AUD.on || !key || !BGM[key]){ audStop(.8); return; }
+  if(!AUD.on || !key || !BGM[key]){ audStop(audXf(.8)); return; }
   if(ANOW && ANOW.key === key) return;
   if(AWEB === false){ audHtml(key); return; }
   const ctx = audCtx();
@@ -17173,7 +17338,7 @@ function audSync(){
 }
 function audWeb(key){
   const ctx = ACTX, t = BGM[key];
-  audStop(.7);
+  audStop(audXf(.7));
   const g = ctx.createGain(); g.gain.value = 0; g.connect(AMAST);
   const t0 = ctx.currentTime + .06;
   const n = {key:key, g:g, srcs:[]};
@@ -17229,6 +17394,11 @@ function audStop(fade){
     n.g.gain.linearRampToValueAtTime(0, t + f);
     n.srcs.forEach(s=>{ try{ s.stop(t + f + .05); }catch(e){} });
   }catch(e){}
+  const tt = BGM[n.key];
+  if(tt && tt.free) setTimeout(()=>{                       // 한 번 쓰고 마는 긴 곡 — 풀어 둔 소리를 버린다 (다시 틀면 새로 받는다)
+    if(ANOW && ANOW.key === n.key) return;
+    [tt.intro, tt.loop].forEach(x=>{ if(x) delete ABUF[x]; });
+  }, (f + .3) * 1000);
 }
 /* ── WebAudio 를 못 쓰는 환경 — <audio> 두 장으로 이어 붙인다 ── */
 function audHtmlStop(){
@@ -17335,7 +17505,12 @@ const SFX = {
   /* 화면 효과음 (0929) — 레벨업 · 시설 공사 · 동전. bgm/ 의 같은 이름 파일을 바꾸면 소리만 갈아 끼울 수 있다 */
   levelup:{f:"sfx_levelup.ogg", v:.8},
   build:  {f:"sfx_build.ogg", v:.9},
-  coin:   {f:"sfx_coin.ogg", v:.75}
+  coin:   {f:"sfx_coin.ogg", v:.75},
+  /* 새 시나리오 오프닝 (1003) — 베는 소리 · 핏방울 셋(원본 앞 0.48초) · 마왕의 마법 */
+  op_slash:{f:"opening_slash.ogg"},
+  op_drip: {f:"opening_drip.ogg"},
+  op_magic:{f:"opening_magic.ogg"},
+  op_rift: {f:"opening_rift.ogg"}      // 시공이 빨아들이는 소리 — 검은 빛이 번질 때 (원본 opening_rift.mp3, +3dB)
 };
 const SFX_GAP = 55;      // 같은 소리가 이보다 짧은 간격으로 겹치지 않게 막는다 (ms)
 const SFX_VOICE = 8;     // 한꺼번에 울릴 수 있는 소리 개수
@@ -17430,6 +17605,351 @@ const PROLOGUE = [
     "더 이상 누구도 포기하게 하고 싶지 않았다.",
     "신입생들의 해맑은 미소를 보고 있자니, 처음 검을 쥐었던 날이 떠올랐다. 저 아이들도 누군가의 등을 바라보며 이곳까지 왔겠지.<br>적어도 이곳에서는, 빚이나 사라진 간판 때문에 꿈을 접게 하고 싶지 않았다.<br>책상 한편에 검을 세워 두고, 새 장부를 펼쳤다."]}
 ];
+/* ══ 새 시나리오 오프닝 (1003) ══
+   새 시나리오 시작 → (마왕 곡) 검은 화면에 글(APNG, 약 24초) → 베는 소리와 함께 붉은빛 두 번 → 핏방울 셋(소리에 맞춰 떨어진다)
+   → 마왕과의 대화 → 흰빛 두 번 · 마왕의 마법 소리 → 대화 → 검은 빛(시공 소리, 마왕 곡이 꺼진다) → 시공이 휘몰아치는 글(APNG)
+   → '아, 이건 위험...'(APNG) → 5초 칠흑 → 가운데 작은 푸른 빛(여신 곡) → 2초 뒤 여신의 말 → 빛이 화면을 덮고 4초
+   → '—왕국력 230년, 가을'(APNG) → 글이 사라지고 3초 → 프롤로그(연한 푸른 빛 위).
+   학원 이름은 프롤로그 끝에서 정하고, 정하면 빛이 걷히며 게임 화면.
+   팔라딘 — 개교 멤버 팔라딘의 이름을 여기서 미리 뽑아(UI.openPal) newScenarioStart 에서 그 학생에게 붙인다. 얼굴은 상처투성이로 고친 원화(../assets/opening/paladin-face.png).
+   마법사 — 팔라딘과 같이 이름을 미리 뽑는다(UI.openWiz). 얼굴은 눈을 감고 진이 빠진 그을음투성이 원화(../assets/opening/wizard-face.png).
+   마왕 — 따로 그린 얼굴이 없어 마왕의 바탕 캐릭터인 암흑 사제 원화를 고쳐 썼다. 얼굴은 둘이다 (1003):
+     calm — 눈을 감고 옅게 웃는 얼굴 · 입가의 피 (../assets/opening/demon-face-calm.png) — 앞의 세 마디
+     mad  — 눈가 그늘 · 달아오른 붉은 눈 · 가는 세로 동공 · 송곳니가 드러난 웃음 · 입가의 피 (../assets/opening/demon-face.png) — "크하하…" 부터
+   대사는 누르기 · Enter · Space 로 넘긴다(글자가 다 나오기 전이면 먼저 다 보여 준다). 오른쪽 위 '건너뛰기' 는 언제든 프롤로그로. */
+const OPENING = {
+  intro: {src:"../assets/opening/intro.png?v=ba0ed81c", ms:28400},        // 글 — 한 번 도는 APNG (끝 장은 비어 있다)
+  face: {calm:"../assets/opening/demon-face-calm.png?v=e76b29f2", mad:"../assets/opening/demon-face.png?v=f7a78c5f"},
+  pal: "../assets/opening/paladin-face.png?v=188cde31",                   // 팔라딘 — 상처투성이, 왼눈(화면 기준)은 감고 오른눈은 반쯤 떴다
+  wiz: "../assets/opening/wizard-face.png?v=73b0d300",                    // 마법사 — 두 눈을 감고 진이 빠진 얼굴, 그을음투성이 · 입꼬리가 처졌다
+  rift: {src:"../assets/opening/rift.png?v=6244ef4e", ms:19300},          // 시공이 휘몰아치는 글 — 한 번 도는 APNG (끝 장은 비어 있다)
+  danger: {src:"../assets/opening/danger.png?v=b714db17", ms:7000},       // '아, 이건 위험...' — rift 바로 뒤
+  date: {src:"../assets/opening/date.png?v=fab71a79", ms:4700}            // '—왕국력 230년, 가을' — 푸른 빛이 다 덮고 4초 뒤 (글이 사라지고 3초 뒤 프롤로그)
+};
+const OP_DRIP_AT = [42, 196, 340];   // opening_drip.ogg 에서 방울이 닿는 순간 (ms)
+const OP_FALL = 320;                 // 핏방울이 떨어지는 시간 (ms)
+const OP_RIFT_BLANK = 300;           // APNG 마지막 빈 장의 길이를 못 읽었을 때 쓰는 값 (ms) — 보통은 파일에서 읽는다(B.tail)
+const OP_RIFT_DARK = 5000;           // '아, 이건 위험...' 이 사라지고 작은 푸른 빛이 나올 때까지 (ms)
+const OP_WISP_TALK = 2000;           // 작은 푸른 빛이 나오고 여신이 말을 걸 때까지 (ms)
+const OP_DATE_AT = 4000;             // 푸른 빛이 화면을 다 덮은 뒤 '—왕국력 230년, 가을' 이 나올 때까지 (ms)
+const OP_DATE_GAP = 3000;            // 그 글이 사라진 뒤 프롤로그 창이 뜰 때까지 (ms)
+let OP = null;                       // 진행 중인 오프닝 — 건너뛰거나 끝나면 null
+function opLines(){
+  return [
+    {who:"demon", face:"calm", t:"대단하군... 과연 ‘마스터’라 불릴 만한 능력이야."},
+    {who:"demon", face:"calm", t:"죽여라."},
+    {who:"pal",   t:"이대로 끝내야 해요, 마스터!"},
+    {who:"wiz",   t:"마력 전부 쥐어짰어~ 더 이상은 못 버텨~"},
+    {who:"you",   t:"...이미 끝났어. 목숨은 살려주겠다. 마왕군을 전선에서 전부 철수시켜라."},
+    {who:"demon", face:"calm", t:"내게 수치를 줄 셈이냐? 크크크..."},
+    {who:"demon", face:"mad", t:"크하하하하하하!", big:true},
+    {who:"demon", face:"mad", t:"이걸로 끝났다고 생각하나?", then:"magic"},
+    {who:"you",   t:"뭘 하려는 거지!"},
+    {who:"demon", face:"mad", t:"이번에는 패배했지만, 기필코 네놈의 파멸에 도달하겠다."},
+    {who:"demon", face:"mad", t:"언젠가는, 꼭!"},
+    {who:"wiz",   t:"엄청난 중력장이 생겨나고 있어...이건!\n시공간을 뒤흔드는 마력이 느껴져!!"},
+    {who:"pal",   t:"마스터! 위험..", then:"void"},                        // 검은 빛 → 시공이 휘몰아치는 글 → 작은 푸른 빛
+    {who:"goddess", t:"마왕의 군세를 물리친 용사여.\n운명의 커다란 뒤틀림을 느끼고 찾아왔습니다."},
+    {who:"goddess", t:"......그렇군요.\n이래선...지금의 제 힘으로는......."},
+    {who:"goddess", t:"조그마한 가능성을 열어둘 수밖에 없군요."},
+    {who:"goddess", t:"비록 다시 깨어나면 기억 못 할지라도,\n잔혹한 미래가 펼쳐져 있더라도,"},
+    {who:"goddess", t:"부탁드립니다, 당신에게."},
+    {who:"goddess", t:"부디 교차하는 운명들을 올바른 방향으로 이끌어주세요......", then:"blue"}   // 연한 푸른 빛이 덮는다 → 프롤로그
+  ];
+}
+function opReduced(){ try{ return matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){ return false; } }
+function openingPlay(){
+  if(OP) return;
+  UI.openPal = freshName("paladin");
+  UI.openWiz = freshName("wizard");   // 마법사 — 개교 멤버 마법사의 이름 (1003)
+  ["op_slash","op_drip","op_magic","op_rift"].forEach(k=>{ if(SFX[k]) sfxLoad(SFX[k].f); });
+  apngBlob("opening", OPENING.intro); apngBlob("rift", OPENING.rift); apngBlob("danger", OPENING.danger); apngBlob("date", OPENING.date);
+  [...Object.values(OPENING.face), OPENING.pal, OPENING.wiz].forEach(u=>{ const im = new Image(); im.src = u; });   // 얼굴이 바뀌는 순간 빈 칸이 보이지 않게
+  audOver("opDemon");                 // 마왕 곡 — 검은 화면 · 글부터 (1003)
+  const tok = OP = {adv:null, timer:0, key:null, img:null};
+  dragCfg($("#modalRoot"), null);
+  $("#modalRoot").innerHTML = `<div class="opening" id="opRoot" role="dialog" aria-modal="true" aria-label="새 시나리오 오프닝">
+      <div class="op-drops" id="opDrops" aria-hidden="true"></div>
+      <div class="op-talk" id="opTalk" hidden>
+        <div class="op-face" id="opFace"><img alt="" draggable="false"></div>
+        <div class="op-body"><div class="op-name" id="opName"></div><div class="op-text" id="opText" aria-live="polite"></div><span class="op-next" aria-hidden="true">▼</span></div>
+      </div>
+      <div class="op-flash" id="opFlash" aria-hidden="true"></div>
+      <button class="op-skip" id="opSkip" type="button">건너뛰기 ▸</button>
+    </div>`;
+  modalLockSync();
+  const root = $("#opRoot");
+  const live = ()=> OP === tok && root.isConnected;
+  const wait = ms=> new Promise(r=> setTimeout(r, ms)).then(live);
+  $("#opSkip").onclick = e=>{ e.stopPropagation(); openingFinish(true); };
+  root.onclick = ()=>{ if(OP === tok && tok.adv) tok.adv(); };
+  tok.key = e=>{
+    if(OP !== tok || e.repeat) return;
+    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); if(tok.adv) tok.adv(); }
+  };
+  document.addEventListener("keydown", tok.key);
+  (async ()=>{
+    /* 1. 글 — 검은 화면 위에 한 번 */
+    if(!await wait(500)) return;
+    const img = await apngImg("opening", OPENING.intro, 9000);
+    if(!live()){ apngDrop(img); return; }
+    if(img){
+      img.className = "op-intro"; img.setAttribute("aria-hidden", "true");
+      root.prepend(img); tok.img = img;
+      if(!await wait(OPENING.intro.ms + 250)) return;
+      img.remove(); apngDrop(img); tok.img = null;
+    }
+    if(!await wait(450)) return;
+    /* 2. 벤다 — 붉은빛 두 번, 다시 검게 */
+    sfxPlay("op_slash");
+    opFlash("radial-gradient(circle at 50% 45%,#e3141f 0%,#9a000b 58%,#3e0004 100%)", [130, 360], 230, .88);
+    if(!await wait(1500)) return;
+    /* 3. 핏방울 셋 — 소리에 맞춰 떨어진다 */
+    opDrops();
+    if(!await wait(OP_FALL + OP_DRIP_AT[2] - OP_DRIP_AT[0] + 1300)) return;
+    /* 4. 대화 */
+    for(const L of opLines()){
+      if(!await opSay(tok, L)) return;
+      if(L.then === "magic"){
+        $("#opTalk").classList.remove("done");
+        sfxPlay("op_magic");
+        opFlash("radial-gradient(circle at 50% 45%,#fff 0%,#f6f1ff 55%,#ddd0ff 100%)", [110, 520], 300, .95);
+        if(!await wait(1150)) return;
+      }
+      if(L.then === "void" && !await opVoid(tok)) return;
+      if(L.then === "blue"){ openingFinish(false); return; }
+    }
+  })().catch(e=>{ errPush("opening", e.message, e.stack); openingFinish(true); });
+}
+/* 대사 한 줄 — 글자가 하나씩 나온다. 다 나온 뒤 누르면 true */
+function opSay(tok, L){
+  return new Promise(res=>{
+    const box = $("#opTalk"), face = $("#opFace"), nm = $("#opName"), tx = $("#opText");
+    if(OP !== tok || !box){ res(false); return; }
+    const who = L.who, im = face.querySelector("img");
+    face.hidden = who === "you" || who === "goddess";              // 당신 · 여신 — 얼굴 없이 (여신은 화면 가운데 빛)
+    box.classList.toggle("goddess", who === "goddess");
+    face.className = "op-face" + (who === "demon" ? " demon" : who === "pal" ? " pal" : who === "wiz" ? " wiz" : "");
+    const src = who === "demon" ? (OPENING.face[L.face] || OPENING.face.calm) : who === "pal" ? OPENING.pal : who === "wiz" ? OPENING.wiz : "";
+    if(src && im.getAttribute("src") !== src) im.src = src;
+    im.alt = "";                                                   // 말하는 이는 이름 칸이 알려 준다
+    nm.className = "op-name " + who;
+    nm.textContent = who === "demon" ? "마왕" : who === "pal" ? (UI.openPal || "팔라딘") : who === "wiz" ? (UI.openWiz || "마법사") : who === "goddess" ? "여신" : "당신";
+    tx.className = "op-text" + (L.big ? " big" : "");
+    tx.textContent = "";
+    box.classList.remove("done");
+    if(box.hidden){
+      box.hidden = false;
+      box.animate([{opacity:0, transform:"translateX(-50%) translateY(12px)"}, {opacity:1, transform:"translateX(-50%)"}], {duration:380, easing:"ease-out"});
+    }
+    const full = Array.from(L.t), t0 = performance.now();
+    let n = 0;
+    const show = ()=>{ tx.textContent = full.slice(0, n).join(""); };
+    const done = ()=>{ clearInterval(tok.timer); tok.timer = 0; n = full.length; show(); box.classList.add("done"); };
+    clearInterval(tok.timer);
+    tok.timer = setInterval(()=>{ if(OP !== tok){ clearInterval(tok.timer); return; } n++; show(); if(n >= full.length) done(); }, L.big ? 75 : 34);
+    tok.adv = ()=>{
+      if(performance.now() - t0 < 140) return;                     // 앞 줄을 넘긴 누름이 그대로 이어지지 않게
+      if(n < full.length){ done(); return; }
+      tok.adv = null; res(true);
+    };
+  });
+}
+/* 검은 빛이 화면을 삼킨 뒤, 시공이 휘몰아치는 글(APNG) — 끝 무렵 가운데에 작은 푸른 빛 (1003) */
+async function opVoid(tok){
+  const root = $("#opRoot"), box = $("#opTalk");
+  if(OP !== tok || !root) return false;
+  const live = ()=> OP === tok && root.isConnected;
+  const wait = ms=> new Promise(r=> setTimeout(r, ms)).then(live);
+  const reduced = opReduced();
+  sfxPlay("op_rift");                                                    // 시공이 빨아들이는 소리
+  audFadeOut(2.8);                                                       // 마왕 곡도 함께 빨려 들어가듯 꺼진다
+  if(AUD.on && AWEB !== false && BGM.opGoddess) audLoad(BGM.opGoddess.loop).catch(()=>{});   // 여신 곡을 미리 풀어 둔다
+  if(box && !box.hidden){
+    box.classList.remove("done");
+    const f = box.animate([{opacity:1}, {opacity:0}], {duration:260, easing:"ease-in", fill:"forwards"});
+    f.onfinish = ()=>{ box.hidden = true; f.cancel(); };
+  }
+  const v = document.createElement("div");
+  v.className = "op-void"; v.setAttribute("aria-hidden", "true");
+  const R = Math.hypot(innerWidth * .5, innerHeight * .55) / .6;          // 검은 속(60%)이 화면 구석까지 닿는 크기
+  v.style.width = v.style.height = (2 * R) + "px";
+  v.style.marginLeft = v.style.marginTop = (-R) + "px";
+  root.appendChild(v);
+  if(reduced){
+    v.style.transform = "none";
+    v.animate([{opacity:0}, {opacity:1}], {duration:900, easing:"ease-in", fill:"forwards"});
+    if(!await wait(1000)) return false;
+  } else {
+    v.animate([{transform:"scale(.004) rotate(0deg)"}, {transform:"scale(1) rotate(220deg)"}], {duration:1750, easing:"cubic-bezier(.62,0,.86,.38)", fill:"forwards"});
+    const sh = [];                                                         // 흔들림 — 점점 세게
+    for(let i=0;i<=24;i++){ const a = i === 24 ? 0 : 1.5 + 5.5 * i / 24; sh.push({transform:`translate(${((Math.random() * 2 - 1) * a).toFixed(1)}px,${((Math.random() * 2 - 1) * a).toFixed(1)}px)`}); }
+    root.animate(sh, {duration:1750, easing:"linear"});
+    if(!await wait(1800)) return false;
+  }
+  /* 다 덮였다 — 핏자국 · 대화창을 치우고 칠흑만 남긴다 */
+  const dr = $("#opDrops"); if(dr) dr.innerHTML = "";
+  if(box) box.hidden = true;
+  v.remove();
+  if(!await wait(600)) return false;
+  const img = await apngImg("rift", OPENING.rift, 9000);
+  if(!live()){ apngDrop(img); return false; }
+  if(img){
+    img.className = "op-intro op-rift"; img.setAttribute("aria-hidden", "true");
+    root.prepend(img); tok.img = img;
+    if(!await wait(OPENING.rift.ms)) return false;                      // 끝까지 — 마지막 장은 비어 있다
+    img.remove(); apngDrop(img); tok.img = null;
+  }
+  /* 바로 이어서 '아, 이건 위험...' (1003) */
+  const im2 = await apngImg("danger", OPENING.danger, 4000);
+  if(!live()){ apngDrop(im2); return false; }
+  if(im2){
+    im2.className = "op-intro op-rift"; im2.setAttribute("aria-hidden", "true");
+    root.prepend(im2); tok.img = im2;
+    if(!await wait(OPENING.danger.ms)) return false;
+    im2.remove(); apngDrop(im2); tok.img = null;
+  }
+  /* '아, 이건 위험...' 이 사라지고 5초쯤 칠흑 → 가운데 작은 푸른 빛 → 2초쯤 뒤 여신 */
+  const lastB = im2 ? OPENING.danger : img ? OPENING.rift : null;
+  if(!await wait(lastB ? Math.max(0, OP_RIFT_DARK - (lastB.tail || OP_RIFT_BLANK)) : 2000)) return false;
+  const w = document.createElement("div");
+  w.className = "op-wisp"; w.setAttribute("aria-hidden", "true"); w.innerHTML = "<i></i>";
+  root.appendChild(w);
+  audOver("opGoddess");                                                  // 여신 곡 — 빛과 함께
+  return await wait(OP_WISP_TALK);
+}
+/* 화면 번쩍임 — peaks 는 소리 시작부터 밝기가 가장 센 순간(ms) */
+function opFlash(bg, peaks, decay, a){
+  const el = $("#opFlash"); if(!el) return;
+  if(opReduced()) a = Math.min(a, .35);
+  el.style.background = bg;
+  peaks.forEach(p=> el.animate([{opacity:0}, {opacity:a, offset:.16}, {opacity:0}], {duration:decay + 55, delay:Math.max(0, p - 55), easing:"ease-out"}));
+}
+/* 핏방울 하나 — 떨어지는 방울 · 바닥에 퍼진 자국 (i 마다 모양이 조금씩 다르다) */
+function opDropSVG(i){
+  const id = "opg" + i + "_" + Date.now().toString(36);
+  const grad = `<defs><radialGradient id="${id}" cx="42%" cy="38%" r="72%"><stop offset="0" stop-color="#a3111c"/><stop offset=".6" stop-color="#6e0710"/><stop offset="1" stop-color="#360207"/></radialGradient></defs>`;
+  const fall = `<svg width="12" height="18" viewBox="0 0 12 18">${grad}<path d="M6 0C6 0 .4 8.6 .4 12.2a5.6 5.6 0 0 0 11.2 0C11.6 8.6 6 0 6 0Z" fill="url(#${id})"/><ellipse cx="4.2" cy="11.6" rx="1.1" ry="1.8" fill="#fff" opacity=".18"/></svg>`;
+  /* 자국 — 바닥에 납작하게 퍼진 덩어리(가장자리가 왕관처럼 들쭉날쭉) + 둘레로 튄 작은 방울 · 짧은 줄기 */
+  const N = 28, pts = [], ph = i * 1.9;
+  for(let k=0;k<N;k++){
+    const a = k / N * Math.PI * 2;
+    const r = 13 * (1 + .16 * Math.sin(5 * a + ph) + .09 * Math.sin(11 * a + ph * 2.1) + .05 * Math.sin(17 * a + ph * .7));
+    pts.push([Math.cos(a) * r, Math.sin(a) * r * .72]);
+  }
+  let d = "";
+  pts.forEach((p, k)=>{ const q = pts[(k + 1) % N], m = [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2];
+    d += (k ? "" : `M${((pts[N-1][0] + p[0]) / 2).toFixed(2)} ${((pts[N-1][1] + p[1]) / 2).toFixed(2)}`) + `Q${p[0].toFixed(2)} ${p[1].toFixed(2)} ${m[0].toFixed(2)} ${m[1].toFixed(2)}`; });
+  const bits = [0,1,2,3,4,5,6,7].map(k=>{
+    const a = (k * .83 + i * 2.17) % (Math.PI * 2), r = 17 + ((k * 5 + i * 3) % 9), s = .7 + ((k * 3 + i) % 4) * .42;
+    const x = Math.cos(a) * r, y = Math.sin(a) * r * .72;
+    return k % 3 === 0   // 짧은 줄기 — 바깥쪽으로 길쭉하게
+      ? `<ellipse cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="${(s * 2.2).toFixed(2)}" ry="${(s * .7).toFixed(2)}" transform="rotate(${(Math.atan2(y, x) * 180 / Math.PI).toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)})" fill="#5e0610"/>`
+      : `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${s.toFixed(2)}" fill="#64060f"/>`;
+  }).join("");
+  const splat = `<svg width="80" height="60" viewBox="-40 -30 80 60">${grad.replace(id, id + "s")}<path d="${d}Z" fill="url(#${id}s)"/>${bits}<ellipse cx="-4" cy="-3.4" rx="3.6" ry="1.5" fill="#fff" opacity=".12"/></svg>`;
+  return {fall, splat};
+}
+function opDrops(){
+  const box = $("#opDrops"); if(!box) return;
+  const tok = OP;
+  const k = clamp(Math.min(innerWidth / 1280, innerHeight / 720) * 1.45, .95, 2.1);
+  const P = [[-44, 3], [36, -8], [-4, 15]];                // 방울이 닿는 자리 (px · k 배)
+  const fallH = Math.max(140, innerHeight * .3);
+  const reduced = opReduced();
+  setTimeout(()=>{ if(OP === tok) sfxPlay("op_drip"); }, OP_FALL - OP_DRIP_AT[0]);   // 첫 방울이 닿는 순간에 첫 소리
+  OP_DRIP_AT.forEach((at, i)=>{
+    const land = OP_FALL + at - OP_DRIP_AT[0], x = P[i][0] * k, y = P[i][1] * k;
+    const g = opDropSVG(i);
+    setTimeout(()=>{
+      if(OP !== tok || !box.isConnected) return;
+      const f = document.createElement("div"); f.innerHTML = g.fall; f.style.transformOrigin = "0 0";
+      box.appendChild(f);
+      const s = `scale(${k})`;
+      f.animate([{transform:`translate(${x - 6 * k}px, ${y - 18 * k - fallH}px) ${s}`, opacity:.9},
+                 {transform:`translate(${x - 6 * k}px, ${y - 18 * k}px) ${s}`, opacity:1}],
+                {duration:OP_FALL, easing:"cubic-bezier(.55,0,1,.55)", fill:"forwards"});
+      setTimeout(()=>{
+        f.remove();
+        if(OP !== tok || !box.isConnected) return;
+        const sp = document.createElement("div"); sp.innerHTML = g.splat;
+        sp.style.transform = `translate(${x - 40 * k}px, ${y - 30 * k}px)`;
+        box.appendChild(sp);
+        const svg = sp.firstChild; svg.style.width = (80 * k) + "px"; svg.style.height = (60 * k) + "px";
+        if(!reduced) svg.animate([{transform:"scale(.25,.2)", opacity:.6}, {transform:"scale(1.12,1.05)", opacity:1, offset:.55}, {transform:"scale(1)", opacity:1}],
+                                 {duration:300, easing:"ease-out"});
+      }, OP_FALL);
+    }, land - OP_FALL);
+  });
+}
+/* 오프닝을 닫는다 — 연한 푸른 빛이 화면을 덮은 뒤 프롤로그가 드러난다. fast = 건너뛰기 (1003: 흰빛 → 푸른 빛) */
+function openingFinish(fast){
+  const tok = OP; if(!tok) return;
+  OP = null;
+  clearInterval(tok.timer);
+  document.removeEventListener("keydown", tok.key);
+  const v = opVeil(true, true);        // 연한 푸른 빛 — 지금은 오프닝 위를 덮고, 프롤로그 창이 뜨면 그 뒤로 내려간다
+  v.style.opacity = "0";
+  let fin = null;
+  const cover = ms=> (fin = v.animate([{opacity:0}, {opacity:1}], {duration:ms, easing:"ease-out", fill:"forwards"}));
+  const go = ()=>{
+    if(tok.img){ apngDrop(tok.img); tok.img = null; }
+    showPrologue(0);
+    v.classList.remove("top"); v.style.opacity = ""; if(fin) fin.cancel();
+    const ov = $("#modalRoot .overlay");
+    if(ov) ov.animate([{opacity:0}, {opacity:1}], {duration:fast ? 500 : 1300, easing:"ease-out"});
+  };
+  /* 다 덮인 뒤 — 4초쯤 푸른 빛만 → '—왕국력 230년, 가을' → 그 글이 사라지고 3초쯤 → 프롤로그 창 */
+  const afterCover = ()=> setTimeout(async ()=>{
+    const d = await apngImg("date", OPENING.date, 3000);
+    if(d){
+      d.className = "op-date"; d.setAttribute("aria-hidden", "true");
+      document.body.appendChild(d); tok.img = d;
+      await new Promise(r=> setTimeout(r, OPENING.date.ms));
+      d.remove(); apngDrop(d); tok.img = null;
+    }
+    setTimeout(go, Math.max(0, OP_DATE_GAP - (d ? (OPENING.date.tail || OP_RIFT_BLANK) : 0)));
+  }, OP_DATE_AT);
+  if(fast){ cover(380).onfinish = ()=> setTimeout(go, 60); return; }       // 건너뛰기 — 기다리지 않는다
+  if(opReduced() || !document.querySelector("#opRoot .op-wisp")){ cover(1600).onfinish = afterCover; return; }
+  /* 가운데 작은 빛이 부풀어 화면을 덮는다 */
+  const bl = document.createElement("div");
+  bl.className = "op-bloom"; bl.setAttribute("aria-hidden", "true");
+  const R = Math.hypot(innerWidth * .5, innerHeight * .56) / .58;
+  bl.style.width = bl.style.height = (2 * R) + "px";
+  bl.style.marginLeft = bl.style.marginTop = (-R) + "px";
+  document.body.appendChild(bl);
+  const a = bl.animate([{transform:"scale(.006)", opacity:.85}, {transform:"scale(1)", opacity:1}], {duration:2000, easing:"cubic-bezier(.62,0,.8,.45)", fill:"forwards"});
+  a.onfinish = ()=>{                   // 화면이 다 덮였다
+    cover(350).onfinish = ()=> bl.remove();
+    afterCover();
+  };
+}
+/* 연한 푸른 빛을 프롤로그 · 학원 이름 뒤에 깐다 — 이름을 정하면 걷힌다 (1003) */
+var OP_VEIL_MO = null;   // var — 스크립트 읽는 도중 불려도 TDZ 가 나지 않게
+function opVeil(on, top){
+  const cur = document.querySelector(".op-veil:not(.off)");
+  if(on){
+    let v = cur;
+    if(!v){ v = document.createElement("div"); v.className = "op-veil"; v.setAttribute("aria-hidden", "true"); document.body.appendChild(v); }
+    v.classList.toggle("top", !!top);   // top — 오프닝 위를 덮는 동안
+    document.body.classList.add("op-veiled");
+    const mr = $("#modalRoot");
+    if(!OP_VEIL_MO && mr && typeof MutationObserver !== "undefined"){
+      /* 프롤로그 · 학원 이름이 아닌 창으로 바뀌거나 닫히면 함께 걷는다 (안전망) */
+      OP_VEIL_MO = new MutationObserver(()=>{
+        if(document.body.classList.contains("op-veiled") && !mr.querySelector(".prol, #nsName, #opRoot")) opVeil(false);
+      });
+      OP_VEIL_MO.observe(mr, {childList:true});
+    }
+    return v;
+  }
+  document.body.classList.remove("op-veiled");
+  if(!cur) return;
+  cur.classList.add("off");
+  const a = cur.animate([{opacity:1}, {opacity:0}], {duration:opReduced() ? 400 : 1500, easing:"ease-in-out", fill:"forwards"});
+  a.onfinish = ()=> cur.remove();
+}
 function hasSave(){ try{ return !!localStorage.getItem(SAVE_KEY); }catch(e){ return false; } }
 function showTitle(canContinue){
   $("#modalRoot").innerHTML = `<div class="overlay"><div class="titlecard">
@@ -17455,7 +17975,7 @@ function showTitle(canContinue){
     <div class="tahint" id="tAudHint">게임의 몰입감을 높이고 싶다면 음악을 켜고 진행해주세요! (설정에서 변경 가능합니다)</div>
   </div></div>`;
   modalLockSync();
-  audOver(BGM_NONE);      // 시작 화면은 무음 — 음악은 프롤로그부터 흐른다
+  audOver(BGM_NONE);      // 시작 화면은 무음 — 음악은 오프닝(마왕 곡)부터 흐른다
   {
     const ab = $("#tAudBtn");
     if(ab) ab.onclick = ()=>{
@@ -17464,7 +17984,7 @@ function showTitle(canContinue){
     };
     audHintSync(); setTimeout(audHintSync, 200); setTimeout(audHintSync, 800);
   }
-  $("#tNew").onclick = ()=> askAcademyName();
+  $("#tNew").onclick = ()=> openingPlay();          // 오프닝 → 프롤로그 → 학원 이름 (1003)
   const c = $("#tCont");
   if(canContinue && c) c.onclick = ()=>{ audOver(null); closeModal(); UI.view="home"; render(); };
 }
@@ -17484,40 +18004,47 @@ function askAcademyName(){
       <button class="btn" id="nsRand">다른 이름 제안</button>
       <button class="btn ghost" id="nsBack">뒤로</button>
     </div>`, ()=>{
-    $("#nsOk").onclick = ()=>{ const v=$("#nsName").value.trim(); showPrologue(v||nm, 0); };
+    $("#nsOk").onclick = ()=>{ const v=$("#nsName").value.trim(); newScenarioStart(v||nm); };
     $("#nsRand").onclick = ()=>{ nm = pick(ACAD)+" 용사 학원"; draw(); };
     $("#modalRoot").querySelectorAll("[data-nsd]").forEach(b=> b.onclick = ()=>{ nm = $("#nsName").value.trim() || nm; UI.newDiff = b.dataset.nsd; draw(); });
-    $("#nsBack").onclick = ()=> showTitle(hasSave());
+    $("#nsBack").onclick = ()=> showPrologue(PROLOGUE.length-1);   // 프롤로그 마지막 장으로 (1003)
   });
   draw();
 }
-function showPrologue(name, i){
+/* 새 시나리오를 연다 — 프롤로그 끝의 학원 이름 · 난이도에서 (1003) */
+function newScenarioStart(name){
+  audOver(null);
+  opVeil(false);          // 이름을 정했다 — 푸른 빛이 걷히며 게임 화면 (1003)
+  newGame(name); S.diff = UI.newDiff || "normal"; S.mission = newMission(); S.pingOk = true;
+  { const pal = UI.openPal && S.students.find(s=> s.job === "paladin");   // 오프닝에서 이름이 불린 팔라딘 (1003)
+    if(pal) pal.name = UI.openPal; UI.openPal = null; }
+  { const wiz = UI.openWiz && S.students.find(s=> s.job === "wizard");    // 오프닝에서 이름이 불린 마법사 (1003)
+    if(wiz) wiz.name = UI.openWiz; UI.openWiz = null; }
+  try{ pingLS(PING_RUNS_KEY, (+pingLS(PING_RUNS_KEY)||0) + 1); }catch(e){}
+  save(); try{ playerPing(true); }catch(e){}
+  if(S.diff !== "normal") logE(`난이도 <b>${DIFFS[S.diff].n}</b> — ${DIFFS[S.diff].d}.`, "");
+  closeModal(); UI.view="home"; UI.sel=null; render();
+  const afterStart = ()=>{ render(); toast("새 학기가 시작되었다."); if(tryMarkTut()) showCeremony(); };
+  if(tutHas()) showTutorial(0, {start:true, after:afterStart});
+  else afterStart();
+}
+function showPrologue(i){
   const pg = PROLOGUE[i], last = i>=PROLOGUE.length-1;
-  audOver("prologue");    // 무음이던 시작 화면을 지나 여기서 처음 음악이 걸린다
-  const start = ()=>{
-    audOver(null);
-    newGame(name); S.diff = UI.newDiff || "normal"; S.mission = newMission(); S.pingOk = true;
-    try{ pingLS(PING_RUNS_KEY, (+pingLS(PING_RUNS_KEY)||0) + 1); }catch(e){}
-    save(); try{ playerPing(true); }catch(e){}
-    if(S.diff !== "normal") logE(`난이도 <b>${DIFFS[S.diff].n}</b> — ${DIFFS[S.diff].d}.`, "");
-    closeModal(); UI.view="home"; UI.sel=null; render();
-    const afterStart = ()=>{ render(); toast("새 학기가 시작되었다."); if(tryMarkTut()) showCeremony(); };
-    if(tutHas()) showTutorial(0, {start:true, after:afterStart});
-    else afterStart();
-  };
+  audOver("prologue");    // 오프닝의 여신 곡(또는 건너뛴 경우 마왕 곡)에서 프롤로그 곡으로
   showModal(`<div class="prol">
       ${(typeof PROL_IMG!=="undefined" && PROL_IMG[String(i+1)])? `<div class="prolimg"><img src="${PROL_IMG[String(i+1)]}" alt="" draggable="false"></div>`:""}
       <div class="eyebrow">프롤로그 ${i+1} / ${PROLOGUE.length}</div>
       <h2 class="ptitle">${esc(pg.h)}</h2>
       ${pg.p.map(x=>`<p>${x}</p>`).join("")}
       <div class="btnrow" style="margin-top:18px">
-        <button class="btn primary" id="pNext">${last? "장부에 세 학생의 이름을 적는다" : "계속"}</button>
+        <button class="btn primary" id="pNext">${last? "학원 이름 정하기" : "계속"}</button>
         ${last? "" : `<button class="btn ghost" id="pSkip">프롤로그 건너뛰기</button>`}
       </div>
     </div>`, ()=>{
-    $("#pNext").onclick = ()=> last? start() : showPrologue(name, i+1);
-    const sk = $("#pSkip"); if(sk) sk.onclick = start;
-  }, true);
+    const m = $("#modalRoot .modal"); if(m) m.classList.add("prol-modal");
+    $("#pNext").onclick = ()=> last? askAcademyName() : showPrologue(i+1);
+    const sk = $("#pSkip"); if(sk) sk.onclick = ()=> askAcademyName();
+  });
 }
 /* ── 튜토리얼 — 그림 세 장을 넘겨 본다 ── */
 /* 학기 시작에 한꺼번에 넘겨 보지 않고, 그 상황이 와야 열리는 장 */
