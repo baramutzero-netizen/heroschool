@@ -4154,6 +4154,8 @@ const BSPEEDS = [440, 280, 120, 93];          // ×0.5 · ×1 · ×2 · ×3 (093
 /* 설정 화면에서 숨긴 항목 (1001) — true 로 바꾸면 다시 보인다 */
 const OPT_FIELD_PASTEL = false;     // 전투 배경 파스텔 필터 켜고 끄기
 const OPT_XFER_FILE    = false;     // 이어하기 — 파일로 내보내기 · 파일에서 불러오기
+const OPT_PIXEL_FONT   = false;     // 도트 폰트 켜고 끄기 (1004 — 숨긴 동안은 모두 기본값: 켬)
+const OPT_BATTLE_CAM   = false;     // 전투 연출 심플 · 스타일리시 (1004 — 숨긴 동안은 모두 기본값: 스타일리시)
 const PREF = {bspeed: 280, reportSpeed: 2, chronicleTest: false, uiConcept: "riso-pixel", uiV: 4, lvPopup: true, fieldPastel: false, pixelFont: true, bfGrid: false, battleCam: "stylish"};
 /* uiV 4 — 삽화를 기본으로 적용하고 이전 화면 분위기 선택은 숨긴다. */
 try{
@@ -4166,9 +4168,9 @@ try{
   if(j && typeof j.chronicleTest === "boolean") PREF.chronicleTest = j.chronicleTest;
   if(j && typeof j.lvPopup === "boolean") PREF.lvPopup = j.lvPopup;
   if(j && typeof j.fieldPastel === "boolean" && OPT_FIELD_PASTEL) PREF.fieldPastel = j.fieldPastel;   // 설정을 숨긴 동안은 모두 기본값(끔 — 1001)
-  if(j && typeof j.pixelFont === "boolean") PREF.pixelFont = j.pixelFont;
+  if(j && typeof j.pixelFont === "boolean" && OPT_PIXEL_FONT) PREF.pixelFont = j.pixelFont;   // 설정을 숨긴 동안은 모두 기본값(켬 — 1004)
   if(j && typeof j.bfGrid === "boolean") PREF.bfGrid = j.bfGrid;
-  if(j && ["simple","stylish"].includes(j.battleCam)) PREF.battleCam = j.battleCam;   // 0930 — 스타일리시가 기본. 예전 "basic" 저장값은 한 번 무시한다
+  if(j && ["simple","stylish"].includes(j.battleCam) && OPT_BATTLE_CAM) PREF.battleCam = j.battleCam;   // 0930 — 스타일리시가 기본. 예전 "basic" 저장값은 한 번 무시한다 · 설정을 숨긴 동안은 모두 기본값(1004)
 }catch(e){}
 function applyUiConcept(){
   document.documentElement.dataset.uiPalette = PREF.uiConcept === "riso-pixel" ? "riso" : PREF.uiConcept === "mint-pixel" ? "mint" : "parchment";
@@ -10333,8 +10335,8 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1004-2015";
-const BUILD_TS = 1791112554081;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
+const BUILD = "1004-2022";
+const BUILD_TS = 1791112955167;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -12101,7 +12103,7 @@ function viewOpt(){
   const pxPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>도트 폰트</b><span>글자를 도트 폰트(물마루)로 보여 준다. 또렷하게 찍히도록 글자 크기를 12 · 24px 로 맞춘다. 끄면 원래 글꼴로 돌아간다.</span></div><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="optPixelFont" ${PREF.pixelFont!==false?"checked":""}> 사용</label></div></section>`;
   const gridPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>전투 배치 격자</b><span>전투 화면 바닥에 학생이 설 자리(격자)를 표시한다. 기본은 표시하지 않는다.</span></div><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="optBfGrid" ${PREF.bfGrid?"checked":""}> 표시</label></div></section>`;
   const camPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>전투 연출</b><span>스타일리시 모드는 가로 화면에서만 — 행동 게이지가 차오르고, 차례가 온 학생과 스킬 대상을 카메라가 가까이 잡아 보여 준다. 세로 화면에서는 심플 모드로 돈다.</span></div><div class="ui-concept-picker" role="group" aria-label="전투 연출"><button type="button" class="btn" data-battle-cam="simple" aria-pressed="${PREF.battleCam!=="stylish"}">심플 모드</button><button type="button" class="btn" data-battle-cam="stylish" aria-pressed="${PREF.battleCam==="stylish"}">스타일리시 모드</button></div></div></section>`;
-  return conceptPanel + pxPanel + lvPanel + (OPT_FIELD_PASTEL ? fpPanel : "") + gridPanel + camPanel + errPanel() + xferPanel() + `<section class="panel">
+  return conceptPanel + (OPT_PIXEL_FONT ? pxPanel : "") + lvPanel + (OPT_FIELD_PASTEL ? fpPanel : "") + gridPanel + (OPT_BATTLE_CAM ? camPanel : "") + errPanel() + xferPanel() + `<section class="panel">
     <div class="panel-h"><h2>설정</h2><span class="hint">빌드 ${esc(BUILD)} · 규칙 ${RULES_VER} · 전투 연출과 화면 표시를 조절한다</span></div>
     <div class="optrow">
       <div class="optlab">
@@ -18167,14 +18169,14 @@ function titleSettingsOpen(){
     <label>배경 음악<input type="checkbox" id="titleMusic" ${AUD.on?'checked':''}></label>
     ${range('vol','음악 음량',AUD.vol)}${range('sfx','효과음 음량',AUD.sfx)}
     <h3>화면과 알림</h3>
-    ${check('pixelFont','도트 폰트',PREF.pixelFont!==false)}
+    ${OPT_PIXEL_FONT?check('pixelFont','도트 폰트',PREF.pixelFont!==false):''}
     ${check('lvPopup','레벨업 팝업',PREF.lvPopup!==false)}
     ${OPT_FIELD_PASTEL?check('fieldPastel','전투 배경 파스텔 필터',PREF.fieldPastel!==false):''}
     <h3>전투</h3>
     ${check('bfGrid','전투 배치 격자',!!PREF.bfGrid)}
-    <label>전투 연출<select id="titleBattleCam"><option value="simple" ${PREF.battleCam!=='stylish'?'selected':''}>심플</option><option value="stylish" ${PREF.battleCam==='stylish'?'selected':''}>스타일리시</option></select></label>
+    ${OPT_BATTLE_CAM?`<label>전투 연출<select id="titleBattleCam"><option value="simple" ${PREF.battleCam!=='stylish'?'selected':''}>심플</option><option value="stylish" ${PREF.battleCam==='stylish'?'selected':''}>스타일리시</option></select></label>`:''}
     <label>전투 재생 속도<select id="titleBattleSpeed">${BSPEEDS.map(v=>`<option value="${v}" ${bspeedNow()===v?'selected':''}>${bspeedLabel(v)}</option>`).join('')}</select></label>
-    <footer>설정은 자동으로 저장됩니다.<br>음악은 게임을 시작하면 재생됩니다. 스타일리시 전투는 가로 화면에서 적용됩니다.</footer>`;
+    <footer>설정은 자동으로 저장됩니다.<br>음악은 게임을 시작하면 재생됩니다.${OPT_BATTLE_CAM?' 스타일리시 전투는 가로 화면에서 적용됩니다.':''}</footer>`;
   document.querySelector('.title-screen').appendChild(dlg);
   dlg.querySelector('#titleSettingsClose').onclick=()=>dlg.close();
   dlg.addEventListener('close',()=>{dlg.remove(); $('#tSettings')?.focus();});
@@ -18182,7 +18184,7 @@ function titleSettingsOpen(){
   dlg.querySelector('#titleMusic').onchange=e=>{AUD.on=e.target.checked;audSave();audRefresh();};
   dlg.querySelectorAll('[data-title-audio]').forEach(el=>el.oninput=()=>{AUD[el.dataset.titleAudio]=Number(el.value);el.nextElementSibling.textContent=el.value+'%';audSave();audRefresh();});
   dlg.querySelectorAll('[data-title-pref]').forEach(el=>el.onchange=()=>{const key=el.dataset.titlePref;PREF[key]=el.checked;prefSave();if(key==='pixelFont')pixelFontApply(el.checked);if(key==='bfGrid')bfGridApply();});
-  dlg.querySelector('#titleBattleCam').onchange=e=>{PREF.battleCam=e.target.value;prefSave();};
+  const tbc=dlg.querySelector('#titleBattleCam'); if(tbc) tbc.onchange=e=>{PREF.battleCam=e.target.value;prefSave();};
   dlg.querySelector('#titleBattleSpeed').onchange=e=>bspeedSet(Number(e.target.value));
   dlg.showModal();
 }
