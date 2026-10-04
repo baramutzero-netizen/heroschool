@@ -11,7 +11,7 @@ import re
 LOADER = '''<div id="bootLoader" role="status" aria-live="polite">
 <style>
 #bootLoader{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px;
-  background:var(--bg,#EBE9EF);color:var(--text,#191A24);font-family:system-ui,-apple-system,"Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+  background:#F6F3E9;color:var(--text,#191A24);font-family:system-ui,-apple-system,"Malgun Gothic","Apple SD Gothic Neo",sans-serif;
   text-align:center;transition:opacity .25s ease}
 #bootLoader.done{opacity:0;pointer-events:none}
 #bootLoader .bl-in{max-width:360px;width:100%}

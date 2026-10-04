@@ -124,7 +124,8 @@ def asset_tags(src, root=ROOT):
     tags.append("<!-- ASSET_SCRIPTS_END -->\n")
     i = src.index("<div id=\"app\">")
     j = src.index("\n<script>", i) + 1                  # 게임 코드(첫 <script>) 바로 앞
-    return src[:j] + "\n".join(tags) + src[j:]
+    head = src[:j].rstrip("\n") + "\n"                 # 1004 — 예전 윈도우 빌드가 이 자리에 쌓아 둔 빈 줄은 한 줄로
+    return head + "\n".join(tags) + src[j:]
 
 
 def relink(src, prefix):
@@ -133,12 +134,19 @@ def relink(src, prefix):
 
 
 def split_file(path=os.path.join(ROOT, "game.html")):
+    """game.html 을 정리해 제자리에 쓰고(바뀐 게 있을 때만), 줄 끝이 LF 인 글을 돌려준다.
+    1004 — 윈도우의 game.html 은 줄 끝이 CRLF 다. 그대로 다루면 ① 정규식의 \\n 이 \\r\\n 을 못 잡아 빌드할 때마다 빈 줄이 하나씩 쌓이고
+    ② wrap.py · wrap_site.py 가 텍스트 모드로 쓸 때 줄 끝이 \\r\\r\\n 으로 두 번 들어갔다.
+    안에서는 LF 로 다루고, game.html 은 원래 줄 끝(CRLF 면 CRLF)으로 되돌려 쓴다."""
     with open(path, encoding="utf-8", newline="") as f:
-        src = f.read()
+        raw = f.read()
+    crlf = "\r\n" in raw
+    src = raw.replace("\r\n", "\n")
     new = split(src, os.path.dirname(os.path.abspath(path)))
-    if new != src:
+    out = new.replace("\n", "\r\n") if crlf else new
+    if out != raw:
         with open(path, "w", encoding="utf-8", newline="") as f:
-            f.write(new)
+            f.write(out)
     return new
 
 

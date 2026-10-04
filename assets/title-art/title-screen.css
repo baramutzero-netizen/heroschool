@@ -1,0 +1,42 @@
+/* 1004 — 글꼴은 물마루(도트 · 12px 칸이라 12·24·36px 에서만 또렷 — 크기는 그 셋만 쓴다), 삽화는 왼쪽 · 메뉴는 오른쪽, 제목 · 부제는 숨김(showTitle 마크업의 hidden).
+   글자가 흐려지지 않게 메뉴는 transform 대신 flex 로 가운데 맞춘다. 도트 폰트 설정을 꺼도 켜도 시작 화면은 같다(pixelRules 가 title- 규칙은 건너뜀).
+   게임 공통 nav 규칙(overflow-x:auto · margin-top)이 메뉴에도 걸려 ▶ 표시가 잘렸다 — overflow:visible · margin:0. 마우스 올림 색은 #modalRoot 규칙보다 세게.
+   나타나는 차례: 로딩 화면이 걷히고 그림을 받으면 titleReveal() 이 .title-go 를 붙인다 → 삽화 2초 → 메뉴 0.8초. 메뉴는 나타나기 전엔 누를 수도 · 고를 수도 없다(visibility). */
+.title-screen{--title-type:"Mulmaru","Malgun Gothic","Apple SD Gothic Neo",sans-serif;position:fixed;inset:0;z-index:2;overflow:auto;background:#f6f3e9;color:#453b35;color-scheme:light;font-family:var(--title-type)!important;-webkit-font-smoothing:none}
+.title-stage{position:relative;height:100dvh;min-height:360px;isolation:isolate;overflow:hidden}
+.title-heading{position:absolute;top:16%;left:22%;right:10%;text-align:center;animation:title-reveal 1.2s 1.65s both}
+.title-heading h1{font-family:var(--title-type)!important;font-size:48px!important;font-weight:400;letter-spacing:0!important;line-height:1.5;margin:0;color:#423831}
+.title-heading p{font-family:var(--title-type)!important;font-size:24px!important;letter-spacing:0!important;color:#8c7768;margin:12px 0 0}
+.title-menu{position:absolute;left:62%;left:round(62%,1px);top:0;bottom:0;margin:0;overflow:visible;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:24px;z-index:4;opacity:0;visibility:hidden;animation:title-menu-late .8s ease-out 8s forwards}
+#modalRoot .title-menu > button{appearance:none;position:relative;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;padding:6px 0;color:#4c4036;font:400 36px/1.5 var(--title-type)!important;letter-spacing:3px!important;cursor:pointer;transition:color .2s,transform .2s;text-align:left;text-shadow:none!important}
+.title-menu button::before{content:'▶';position:absolute;right:calc(100% + 18px);top:21px;font-size:24px;line-height:1;letter-spacing:0;opacity:0;transition:opacity .2s}
+#modalRoot .title-menu > button:hover:not(:disabled),#modalRoot .title-menu > button:focus-visible{color:#9c6648;transform:translateX(6px);outline:none}
+#modalRoot .title-menu > button:focus-visible{outline:2px dotted #9c6648;outline-offset:6px}
+.title-menu button:hover:not(:disabled)::before,.title-menu button:focus-visible::before{opacity:1}
+.title-menu button:disabled{opacity:.3;cursor:default}
+.title-save{font-family:var(--title-type)!important;font-size:12px!important;line-height:2;letter-spacing:0;word-break:keep-all;color:#998675;max-width:min(23rem,34vw);margin-top:0}
+.title-still-life{position:absolute;left:5%;top:8%;bottom:6%;width:min(44vw,760px);pointer-events:none;z-index:1}
+.title-object{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:50% 100%;image-rendering:auto!important;opacity:0;animation:title-art-late 2s ease-in-out 8s forwards}
+.title-screen.title-go .title-object{animation:title-reveal 2s ease-in-out forwards}
+.title-screen.title-go .title-menu{animation:title-menu-in .8s ease-out 2s forwards}
+@keyframes title-reveal{from{opacity:0}to{opacity:1}}
+@keyframes title-menu-in{from{opacity:0;visibility:visible}to{opacity:1;visibility:visible}}
+/* 만일 .title-go 가 끝내 붙지 않아도 8초 뒤에는 보이게 — 이름이 달라야 .title-go 가 붙는 순간 새로 시작한다 */
+@keyframes title-art-late{from{opacity:0}to{opacity:1}}
+@keyframes title-menu-late{from{opacity:0;visibility:visible}to{opacity:1;visibility:visible}}
+.title-settings{--title-type:"Mulmaru","Malgun Gothic","Apple SD Gothic Neo",sans-serif;color-scheme:light;color:#493d34;background:#f6f3e9;border:1px solid #b6a48d;padding:24px;width:min(560px,calc(100vw - 32px));max-height:85dvh;box-sizing:border-box;box-shadow:0 24px 90px #30241e40;overflow:auto;font-family:var(--title-type)!important;font-size:12px;line-height:2;-webkit-font-smoothing:none}
+.title-settings::backdrop{background:#382d234d;backdrop-filter:blur(5px)}
+.title-settings header{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #cfc1af;padding-bottom:12px;margin-bottom:6px}
+.title-settings h2{font:400 24px/1.5 var(--title-type)!important;margin:0;letter-spacing:2px!important}
+.title-settings h3{font:400 12px/2 var(--title-type)!important;margin:18px 0 0;color:#8b664c;letter-spacing:0}
+.title-settings button{background:transparent;color:#5d4938;border:1px solid #bdac97;padding:4px 10px;font:inherit;cursor:pointer}
+.title-settings label{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;font-size:12px!important;line-height:2}
+.title-settings input,.title-settings select{accent-color:#957352;color:#493d34;font:inherit}
+.title-settings select{background:#fffaf0;border:1px solid #c6b7a3;padding:4px 6px;max-width:55%}
+.title-settings input[type=range]{width:130px;max-width:29vw}
+.title-settings .title-setting-range{display:flex;align-items:center;gap:8px}
+.title-settings output{font-size:12px!important;min-width:2.2rem;text-align:right}
+.title-settings footer{font-size:12px!important;line-height:2;color:#998675;border-top:1px solid #cfc1af;margin-top:16px;padding-top:12px}
+@media(max-width:899px),(max-height:599px){#modalRoot .title-menu > button{font-size:24px!important;letter-spacing:2px!important;padding:4px 0}.title-menu{gap:16px}.title-menu button::before{font-size:12px;right:calc(100% + 12px);top:16px}}
+@media(max-width:650px){.title-stage{min-height:560px}.title-heading{left:5%;right:5%;top:13%}.title-heading h1{font-size:36px!important}.title-menu{left:57%;left:round(57%,1px)}.title-save{max-width:40vw}.title-still-life{left:3%;top:18%;bottom:18%;width:50vw}.title-object{object-position:50% 50%}.title-settings{padding:16px}}
+@media(prefers-reduced-motion:reduce){.title-heading,.title-screen .title-menu,.title-screen.title-go .title-menu,.title-screen .title-object,.title-screen.title-go .title-object{animation:none;opacity:1;visibility:visible}.title-menu button{transition:none}}
