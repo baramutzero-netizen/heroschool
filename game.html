@@ -7871,7 +7871,7 @@ function finishTournament(t){
   UI.tour=null; UI.pendingTour=false;
   closeModal();
   advancePhase();
-  UI.view = "home";
+  UI.view = "plan";   // 1005 — 대회가 끝나면 스케줄 화면으로 (예전: 마스터 노트)
   save();
   tourResultModal(REC, ()=>{ if((UI.ceremonies||[]).length) showCeremony(); else render(); });
 }
@@ -8242,7 +8242,7 @@ function finishLadder(t){
   }
   S.fallRun.pending = null;
   UI.tour=null; UI.pendingTour=false; closeModal();
-  UI.view = "home";
+  UI.view = "plan";   // 1005 — 대회가 끝나면 스케줄 화면으로 (예전: 마스터 노트)
   if(t.step==="final" || !goNext){
     if(S.week >= PHASES.fall.weeks) advancePhase();
   }
@@ -10723,7 +10723,13 @@ function seasonSane(d){
     .map(x => (Array.isArray(x) ? x : []).map(String))
     .filter(x => x.length >= 2 && x.length <= LEAGUE_N && x.every(id => t[id]));
   if(!g.length) return null;
-  return {n, seed, start, step, t, g, v: Math.max(0, d.v|0)};
+  return {n, seed, start, step, t, g, v: Math.max(0, d.v|0), fp: seasonFp(n, seed, g, t)};
+}
+/* 시즌 문서의 지문 (1005) — 번호 · 시드 · 조 편성 · 팀마다 등록 시각. 계산해 둔 순위표(U.C)가 어느 문서의 것인지 가린다.
+   예전에는 '열린 라운드 수 · 보는 조' 만 견줘서, 다 끝난 시즌을 보다가 새 시즌(역시 다 끝남)을 불러오면
+   머리글은 새 시즌인데 순위표 · 우리 경기 · 정산은 예전 시즌 것이 그대로 남았다 */
+function seasonFp(n, seed, g, t){
+  return n + "|" + seed + "|" + g.map(x=> x.join(",")).join("/") + "|" + Object.keys(t).sort().map(k=> k + ":" + (t[k].ts||0)).join(",");
 }
 /* 0 = 맞다 · 1 = 내 게임이 낡았다 · -1 = 시즌이 낡은 판으로 열렸다 */
 function seasonVerGap(SE){
@@ -10849,8 +10855,9 @@ function seasonRefresh(){
   /* 보고 있는 조 — 내가 낀 조가 기본이고, 참가하지 않았으면 1조(리그 포인트 상위)를 본다 */
   if(!(U.vg >= 0 && U.vg < SE.g.length)) U.vg = U.gi >= 0 ? U.gi : 0;
   const o = seasonOpen(SE, U.vg);
-  if(!(U.C && U.upto === o && U.cg === U.vg)){
-    U.upto = o; U.cg = U.vg;
+  const ck = SE.fp + "#" + U.vg + "#" + o;          // 1005 — 시즌 문서가 바뀌어도 다시 계산한다 (seasonFp)
+  if(!(U.C && U.ck === ck)){
+    U.ck = ck; U.upto = o; U.cg = U.vg;
     U.C = seasonCompute(SE, U.vg, o);
   }
   /* 판번호가 어긋나면 이 시즌의 순위표는 사람마다 다르게 나온다 — 점수는 건드리지 않는다 */
@@ -10972,12 +10979,15 @@ function lgClockStart(){
   LG_T = setInterval(()=>{
     const U = UI.league;
     if(UI.view !== "league" || !U || !U.SE || !U.C){ lgClockStop(); return; }
+    /* 1005 — 새 시즌 시각이 지났는데 아직 예전 시즌을 들고 있으면 새로 읽는다.
+       예전에는 'left <= 0' 을 기다렸는데, 경계를 넘는 순간 다음 시즌 시각이 3시간 뒤로 넘어가 버려 거의 불리지 않았다
+       (그래서 화면을 켜 둔 채 시즌이 바뀌면 '새로고침' 전까지 예전 시즌이 남았다). 아직 서버에 새 시즌이 없으면 1분마다 다시 본다 */
+    if(seasonDue() > U.SE.n && Date.now() - (U.autoAt||0) > 60000 && !U.loading && !U.making){ U.autoAt = Date.now(); seasonLoad(true); return; }
     const el = $("#lgClock");
     const at = seasonNextAt(U.SE, U.vg);
     if(!at){
       const left = Math.max(0, seasonNextSeasonAt() - leagueNow());
       if(el) el.textContent = "다음 시즌까지 " + hhmmss(left);
-      if(left <= 0) seasonLoad(true);
       return;
     }
     const left = Math.max(0, at - leagueNow());
@@ -11415,7 +11425,7 @@ function l5SeasonSane(d){
     .map(x => (Array.isArray(x) ? x : []).map(String))
     .filter(x => x.length >= 2 && x.length <= L5_N && x.every(id => t[id]));
   if(!g.length) return null;
-  return {n, seed, start, step, t, g, v: Math.max(0, d.v|0)};
+  return {n, seed, start, step, t, g, v: Math.max(0, d.v|0), fp: seasonFp(n, seed, g, t)};
 }
 function l5Rounds(SE, gi){ return l5RR(SE.g[gi].length).length; }
 function l5Open(SE, gi){ return clamp(Math.floor((leagueNow() - SE.start) / SE.step) + 1, 0, l5Rounds(SE, gi)); }
@@ -11529,7 +11539,8 @@ function l5Refresh(){
   U.gi = seasonGroupIdx(SE, leagueId());
   if(!(U.vg >= 0 && U.vg < SE.g.length)) U.vg = U.gi >= 0 ? U.gi : 0;
   const o = l5Open(SE, U.vg);
-  if(!(U.C && U.upto === o && U.cg === U.vg)){ U.upto = o; U.cg = U.vg; U.C = l5Compute(SE, U.vg, o); }
+  const ck = SE.fp + "#" + U.vg + "#" + o;          // 1005 — 3인 리그와 같다 (seasonFp)
+  if(!(U.C && U.ck === ck)){ U.ck = ck; U.upto = o; U.cg = U.vg; U.C = l5Compute(SE, U.vg, o); }
   if(seasonVerGap(SE)){ render(); return; }
   if(U.gi >= 0 && l5Open(SE, U.gi) >= l5Rounds(SE, U.gi)){
     const mineC = U.vg === U.gi ? U.C : l5Compute(SE, U.gi, l5Rounds(SE, U.gi));
@@ -11619,12 +11630,13 @@ function l5ClockStart(){
   L5_T = setInterval(()=>{
     const U = UI.league5;
     if(UI.view !== "league" || UI.lgTab !== "five" || !U || !U.SE || !U.C){ l5ClockStop(); return; }
+    /* 1005 — 3인 리그와 같다: 새 시즌 시각이 지났는데 예전 시즌을 들고 있으면 새로 읽는다 (1분마다) */
+    if(l5Due() > U.SE.n && Date.now() - (U.autoAt||0) > 60000 && !U.loading && !U.making){ U.autoAt = Date.now(); l5Load(true); return; }
     const el = $("#l5Clock");
     const at = l5NextAt(U.SE, U.vg);
     if(!at){
       const left = Math.max(0, l5NextSeasonAt() - leagueNow());
       if(el) el.textContent = "다음 시즌까지 " + hhmmss(left);
-      if(left <= 0) l5Load(true);
       return;
     }
     const left = Math.max(0, at - leagueNow());
@@ -17252,7 +17264,7 @@ function finishFriendly(t){
     matches:t.results.map(r=>({label:r.label, vs:r.vs, win:r.win, score:r.score})),
     standings:null, rows, next:null};
   UI.tour=null; UI.pendingTour=false; closeModal();
-  UI.view="home"; save();
+  UI.view="plan"; save();   // 1005 — 친선전이 끝나면 스케줄 화면으로 (예전: 마스터 노트)
   tourResultModal(REC, ()=>{
     // 마지막 주차(하반기 6주차) 친선전이면 이 자리에서 시즌이 끝난다
     if(S.week >= PHASES[S.phase].weeks) endPhase();
@@ -17351,7 +17363,7 @@ function tourForfeit(t){
     const F = friendlyState(t.ph||"spring");
     F.done.push({slot:t.slot, name:t.foe.name, tier:t.foe.tier, w:0, l:0, fame:0, forfeit:true});
   }
-  UI.tour = null; UI.pendingTour = false; UI.view = "home";
+  UI.tour = null; UI.pendingTour = false; UI.view = "plan";   // 1005 — 기권해도 스케줄 화면으로 (예전: 마스터 노트)
   closeModal();
   if(S.week >= PHASES[S.phase].weeks) endPhase();
   save();
