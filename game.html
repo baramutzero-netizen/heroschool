@@ -709,6 +709,16 @@ html[data-font="pixel"] .prol .ptitle{font-synthesis:weight;font-weight:700}   /
 @keyframes opWispStar2{0%,100%{opacity:.2;transform:rotate(90deg) scaleX(.45)}50%{opacity:.85;transform:rotate(90deg) scaleX(1)}}
 .op-name.goddess{color:#bfe6ff}
 .op-talk.goddess{border-color:rgba(150,205,255,.42);box-shadow:0 12px 44px #000c,0 0 34px rgba(120,190,255,.16)}
+/* 아버지의 마지막 (1005) — 타자기 제목이 끝나면 바로(opIn 없이) 검은 화면. 대화창 위에 그림(맞잡은 손 · 무덤)이 뜬다.
+   그림은 바탕이 밝은 판화라 검은 화면에 네모 테두리가 도드라지지 않게 네 가장자리만 부드럽게 흐린다(가로 · 세로 mask 를 겹침 — 그림은 다 보인다).
+   아래 여백 = 대화창 자리(아래 여백 + 창 높이 약 136px) + 18px */
+.opening.op-father{animation:none}
+.op-still{position:absolute;left:50%;top:max(5vh,18px);bottom:calc(max(5vh,22px) + 154px);transform:translateX(-50%);width:min(calc(100vw - 28px),1200px);display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:1;opacity:0}
+.op-still img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent),linear-gradient(180deg,transparent,#000 9%,#000 91%,transparent);-webkit-mask-composite:source-in;
+  mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent),linear-gradient(180deg,transparent,#000 9%,#000 91%,transparent);mask-composite:intersect}
+.op-name.dad{color:#f1cf9a}
+.op-black{position:fixed;inset:0;background:#000;z-index:122;pointer-events:none}   /* 아버지의 마지막 → 프롤로그: 검은 막이 걷히며 푸른 빛 · 프롤로그 창이 드러난다 */
 /* 연한 푸른 빛 — 작은 빛이 부풀어 화면을 덮고(.op-bloom → .op-veil.top), 프롤로그 · 학원 이름 동안 창 뒤에 깔린다(.op-veil) */
 .op-bloom{position:fixed;left:50%;top:44%;border-radius:50%;z-index:121;pointer-events:none;transform:scale(.006);
   background:radial-gradient(circle,#fff 0%,#f4faff 18%,#e3f1ff 40%,#cfe5fc 56%,rgba(196,224,252,.85) 61%,rgba(196,224,252,0) 71%)}
@@ -722,7 +732,7 @@ html[data-font="pixel"] .prol .ptitle{font-synthesis:weight;font-weight:700}   /
 @keyframes opVeilMotes{from{transform:translateY(0)}to{transform:translateY(-660px)}}
 body.op-veiled .overlay{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}
 @media (prefers-reduced-motion:reduce){.op-veil::before,.op-veil::after,.op-wisp i,.op-wisp::before,.op-wisp::after{animation:none}.op-wisp::before,.op-wisp::after{opacity:.6}}
-@media(max-width:600px){.op-talk{gap:12px;padding:12px 14px 16px}.op-face{width:84px;height:84px}.op-body{min-height:72px}.op-name{font-size:13px;margin-bottom:6px}.op-text{font-size:15px}.op-text.big{font-size:min(30px,6.8vw)}}
+@media(max-width:600px){.op-talk{gap:12px;padding:12px 14px 16px}.op-face{width:84px;height:84px}.op-body{min-height:72px}.op-name{font-size:13px;margin-bottom:6px}.op-text{font-size:15px}.op-text.big{font-size:min(30px,6.8vw)}.op-still{bottom:calc(max(5vh,22px) + 150px)}}
 .missionbox{background:var(--surface);border:1px solid var(--brass);border-radius:4px;padding:12px;margin-bottom:14px}
 .mtitle{font-family:"Gowun Batang",serif;font-size:17px;font-weight:700;color:var(--brass);line-height:1.3}
 .mdesc{font-size:12.5px;color:var(--text);margin-top:4px}
@@ -17686,11 +17696,14 @@ function recordMatch(t, b, oppName, myIds){
 const BGM_DIR = "bgm/";
 const BGM = {
   title:    {intro:"title_intro.ogg", len:27.96,  loop:"title_loop.ogg",  v:1},
-  prologue: {loop:"prologue.ogg", v:.95},
-  /* 새 시나리오 오프닝 (1003) — 마왕 곡: 오프닝 첫 화면부터 검은 빛까지 · 여신 곡: 가운데 작은 푸른 빛부터 빛이 화면을 덮을 때까지(1004 — 그 뒤 프롤로그 전까지는 효과음만).
-     free — 다 쓰고 나면 풀어 둔 소리(약 75MB)를 버린다 · xf — 다음 곡으로 넘어갈 때 이 곡이 꺼지는 시간(초) */
+  /* 1005 — 프롤로그 곡(prologue.ogg)은 쓰지 않는다: 프롤로그는 아버지 곡(opFather)이 이어진다. 파일은 bgm/ 에 그대로 두었다 —
+     되살리려면 여기에 prologue: {loop:"prologue.ogg", v:.95} 를 넣고 showPrologue 의 audOver 를 바꾼다 (표에 두면 첫 접속 때 미리 받으므로 뺐다) */
+  /* 새 시나리오 오프닝 (1003) — 마왕 곡: 오프닝 첫 화면부터 검은 빛까지 · 여신 곡: 가운데 작은 푸른 빛부터 빛이 화면을 덮을 때까지(1004 — 그 뒤 아버지가 손을 잡기 전까지는 효과음만).
+     free — 다 쓰고 나면 풀어 둔 소리(약 75MB)를 버린다 · xf — 다음 곡으로 넘어갈 때 이 곡이 꺼지는 시간(초) · fin — 켤 때 서서히 커지는 시간(초, 없으면 0.9) */
   opDemon:  {loop:"opening_demon.ogg",   v:.75, refade:true, free:true},
   opGoddess:{loop:"opening_goddess.ogg", v:.95, refade:true, free:true, xf:2.2},
+  /* 아버지 곡 (1005) — 아버지가 손을 잡을 때부터 서서히 · 프롤로그 · 학원 이름까지 그대로 (원본 opening_father.mp3 · 178.8초, 끝이 잦아든다) */
+  opFather: {loop:"opening_father.ogg",  v:.95, refade:true, free:true, fin:2.5},
   /* 계절 — 평소 육성 화면 */
   /* refade — 이어 붙이지 않고, 한 바퀴가 끝나갈 때 서서히 꺼진 뒤 잠깐 쉬고 다시 켠다 (이음새 위화감 방지) */
   spring:   {intro:"spring_intro.ogg", len:13.355, loop:"spring_loop.ogg", v:.9, refade:true},
@@ -17821,7 +17834,7 @@ function audWeb(key){
     if(t.once) L.onended = ()=>{ if(ANOW === n) ANOW = null; };   // 다시 틀 수 있게 비워 둔다
   }
   g.gain.setValueAtTime(0, t0);
-  g.gain.linearRampToValueAtTime(vol, t0 + .9);
+  g.gain.linearRampToValueAtTime(vol, t0 + (t.fin || .9));
   ANOW = n;
   if(ctx.state === "suspended") ctx.resume().catch(()=>{});
 }
@@ -17893,11 +17906,11 @@ function audHtml(key){
     list.unshift(it); head = it;
   }
   AHTML = list; ANOW = {key:key, html:true};
-  const vol = (t.v == null ? 1 : t.v) * audGain();
+  const vol = (t.v == null ? 1 : t.v) * audGain(), steps = t.fin ? Math.max(1, Math.round(t.fin * 25)) : 14;   // 40ms 마다 — fin 초에 걸쳐
   let v = 0;
   const iv = setInterval(()=>{
     if(AHTML !== list){ clearInterval(iv); return; }
-    v = Math.min(vol, v + Math.max(vol, .02)/14);
+    v = Math.min(vol, v + Math.max(vol, .02)/steps);
     list.forEach(e=>{ try{ e.volume = v; }catch(x){} });
     if(v >= vol - 1e-4) clearInterval(iv);
   }, 40);
@@ -17956,7 +17969,11 @@ const SFX = {
   op_rift: {f:"opening_rift.ogg"},     // 시공이 빨아들이는 소리 — 검은 빛이 번질 때 (원본 opening_rift.mp3, +3dB)
   /* 1004 — 빛이 다 퍼진 뒤 시간이 되감기는 소리(원본 opening_rewind.mp3 · 끝의 무음을 잘라 3.85초) · 타자기 제목 글자마다 타자 소리(원본 opening_type.mp3 · 0.36초) */
   op_rewind:{f:"opening_rewind.ogg"},
-  op_type:  {f:"opening_type.ogg"}
+  op_type:  {f:"opening_type.ogg"},
+  /* 1005 — 아버지의 마지막: 주인공이 달려오는 소리(5.93초) · 문을 여는 소리(1.71초) · 손을 잡는 소리(2.41초 · 원본이 작아 +6dB). 원본 mp3 도 bgm/ 에 */
+  op_run:   {f:"opening_run.ogg"},
+  op_door:  {f:"opening_door.ogg"},
+  op_hand:  {f:"opening_hand.ogg"}
 };
 const SFX_GAP = 55;      // 같은 소리가 이보다 짧은 간격으로 겹치지 않게 막는다 (ms)
 const SFX_VOICE = 8;     // 한꺼번에 울릴 수 있는 소리 개수
@@ -18054,38 +18071,36 @@ const PROLOGUE = [
     "과거. 그 균열 앞에 서는 이들을 사람들은 용사라 불렀다. 용사는 왕이 임명하는 직책이 아니다. 그 자리에서 끝내 누군가를, 무언가를 지켜 낸 자들을 부르는 명칭이다. 그들 중에서도 특출나게 위용을 떨친 이들에게는 저마다의 이명이 따라붙었다.",
     "평화가 길어지자 용사가 되는 방법도 달라졌다. 왕도를 시작으로 곳곳에 용사 학원이 들어섰고, 지망생들은 그곳에서 검과 마법을 익히고 대회에서 실력을 겨루며 이름을 알렸다. 쥔 무기도 배운 곳도 제각각이지만, 되고 싶은 것은 하나였다. 물러서도 되는 자리에서 끝내 물러서지 않는 사람.",
     "다만 길게 이어진 평화 속에서, 그 이름이 얼마나 무거운지 아는 이는 아직 없었다."]},
-  {h:"나도 용사를 목표로 한 용사 지망생 중 한 명.", p:[   /* 0929 — 2페이지 본문 교체 · 첫 줄을 제목으로 */
-    "왕도의 유명한 용사 학원에 수석으로 입학해 엘리트 코스를 밟고 있었다.",
-    "2년 차 겨울, 내게 편지가 한 장 도착했다.<br>본가에서 온 편지. 펼쳐서 읽어 내려갈수록 얼굴이 어두워졌다.",
-    "사라진 학원 자금과 동업자.<br>남겨진 빚.<br>압류.<br>쓰러진 아버지.",
-    "짐을 챙겨서 바로 본가로 향했다.<br>다른 누구도 아닌 아버지는 나의 영웅이었으니까.<br>침대에 누워있는 아버지는 이미 초췌해진 상태였다.<br>얼굴은 이미 뼈와 가죽만 남아있었다.<br>힘겹게 뜨신 눈 사이로 나를 보고 내 손을 잡으셨다.<br>그리고 여느 때보다 눈부신 미소를 지어주셨다.",
-    "그렇게 눈을 감으셨다.",
-    "내게 남겨진 건 텅 비어있는 학원과 빚.<br>그리고 영문을 모르고 찾아온 세 명의 용사 지망생.",
-    "돌려보내려고 했지만 그들의 입에서 아버지의 이름이 새어나왔다.<br>아버지를 동경해서 용사가 되고 싶다고 했다."]},
-  {h:"그래서, 검을 내려놓았다.", p:[
-    "용사 학원에 다닌 지 2년. 졸업까지는 아직 1년이 남아 있었다.<br>나는 그 시간을 채우지 못한 채 돌아와, 아버지가 운영하던 학원을 이어받았다.",
-    "포기하고 싶지는 않았다.",
-    "동경이었고, 존경이었고, 꿈이었다. 언제나 한 걸음 뒤에서 바라보던 아버지의 등은 한없이 커 보였다. 나도 용사가 되어, 아버지가 걸었던 길을 따라 걷고 싶었다.",
-    "하지만 내게 남은 1년을, 이 학원은 기다려 줄 수 없었다.<br>검을 내려놓은 손에 펜을 들었다.",
-    "해결해야 하는 문제는 먼저 두 가지. 실적과 빚.",
-    "용사 학원의 인가는 실적으로 유지된다. 대회 성적을 내지 못하면 다음 갱신 때 간판을 내려야 한다. 이제 막 입학한 학생들도 배울 곳을 잃게 된다.",
-    "빚 역시 기다려 주지 않는다. 인가를 지켜 내더라도, 빚을 갚지 못하면 학원의 문은 닫힌다.",
-    "더 이상 누구도 포기하게 하고 싶지 않았다.",
-    "신입생들의 해맑은 미소를 보고 있자니, 처음 검을 쥐었던 날이 떠올랐다. 저 아이들도 누군가의 등을 바라보며 이곳까지 왔겠지.<br>적어도 이곳에서는, 빚이나 사라진 간판 때문에 꿈을 접게 하고 싶지 않았다.<br>책상 한편에 검을 세워 두고, 새 장부를 펼쳤다."]}
+  {h:"왕국력 231년 봄,", p:[   /* 1005 — 2쪽 본문 교체(아버지의 마지막 바로 뒤 · 첫 줄을 제목으로) */
+    "평생처럼 느껴졌던 겨울이 끝났다.",
+    "대부분의 시설과 도구는<br>크게 불어난 빚의 이자를 갚기 위해 헐값에 처분했다.",
+    "얼마 전까지만 해도 용사 지망생이었던 내게<br>학원장이라는 짐은 너무나도 무겁게 느껴졌다.",
+    "학원을 닫고 돈을 벌어 빚부터 해결해야 하나,<br>밤을 지새우며 고민했다.",
+    "그래서 신입생들이 찾아왔을 때 돌려보낼까도 생각했지만,<br>그 아이들은 아버지를 동경해서 용사가 되고 싶다고 했다.",
+    "차마 그 아이들을 돌려보낼 수 없었다."]},
+  {h:"그래서, 검을 내려놓았다.", p:[   /* 1005 — 3쪽 본문 교체 */
+    "신입생들의 해맑은 미소를 보고 있자니, 처음 검을 쥐었던 날이 떠올랐다.",
+    "어린 시절, 검을 휘두르던 아버지의 등은 한없이 커 보였다. 그렇게 나도 목검을 쥐고 아버지를 흉내 내기 시작했다.<br>저 아이들도 누군가의 등을 바라보며 이곳까지 왔겠지.<br>적어도 이곳에서만큼은, 빚이나 내려갈지도 모를 간판 때문에 꿈을 접게 하고 싶지 않았다.",
+    "당장 해결해야 할 문제는 두 가지. 실적과 빚.<br>용사 학원의 인가는 실적으로 유지된다. 대회에서 성적을 내지 못하면 다음 갱신 때 간판을 내려야 한다. 그러면 이제 막 입학한 학생들도 배울 곳을 잃게 된다.",
+    "빚 역시 기다려 주지 않는다. 인가를 지켜 내더라도 빚을 갚지 못하면 학원의 문은 닫힌다.",
+    "책상 한편에 검을 세워 두고, 새 장부를 펼쳤다."]}
 ];
+/* 1005 — 프롤로그는 2쪽부터 (1쪽 '왕국은 오랫동안 평화로웠다.' 는 건너뛴다 · 글은 남겨 두어 PROL_IMG 의 쪽 번호가 그대로 맞는다) */
+const PROL_FROM = 1;
 /* ══ 새 시나리오 오프닝 (1003) ══
    새 시나리오 시작 → (마왕 곡) 검은 화면에 글(APNG, 약 24초) → 베는 소리와 함께 붉은빛 두 번 → 핏방울 셋(소리에 맞춰 떨어진다)
    → 마왕과의 대화 → 흰빛 두 번 · 마왕의 마법 소리 → 대화 → 검은 빛(시공 소리, 마왕 곡이 꺼진다) → 시공이 휘몰아치는 글(APNG)
    → '아, 이건 위험...'(APNG) → 5초 칠흑 → 가운데 작은 푸른 빛(여신 곡) → 2초 뒤 여신(이름은 '???')의 말 → 빛이 화면을 덮는 동안 여신 곡이 꺼진다
-   → 시간 리와인드 소리 → '—왕국력 230년, 가을'(APNG) → 글이 사라지고 0.5초 → 타자기 '용사 학원 키우기'(APNG · 글자마다 타자 소리)
-   → 프롤로그(연한 푸른 빛 위, 프롤로그 곡) (1004).
+   → 시간 리와인드 소리 → '—왕국력 230년, 가을'(APNG) → 글이 사라지고 0.5초 → 타자기 '용사 학원 키우기'(APNG · 글자마다 타자 소리) (1004)
+   → 곧바로 검은 화면 — 아버지의 마지막(opFather · 1005): 달려오는 소리 → 문 여는 소리 → 대화 → 손을 잡는 소리 · 맞잡은 손 그림 · 아버지 곡
+   → 대화와 APNG 셋이 번갈아 → '—왕국력 230년, 겨울'(APNG) → 무덤 그림 · 대화 → 검은 막이 걷히며 프롤로그 2쪽(연한 푸른 빛 위, 아버지 곡 그대로).
    학원 이름은 프롤로그 끝에서 정하고, 정하면 빛이 걷히며 게임 화면.
    팔라딘 — 개교 멤버 팔라딘의 이름을 여기서 미리 뽑아(UI.openPal) newScenarioStart 에서 그 학생에게 붙인다. 얼굴은 상처투성이로 고친 원화(assets/opening/paladin-face.png).
    마법사 — 팔라딘과 같이 이름을 미리 뽑는다(UI.openWiz). 얼굴은 눈을 감고 진이 빠진 그을음투성이 원화(assets/opening/wizard-face.png).
    마왕 — 따로 그린 얼굴이 없어 마왕의 바탕 캐릭터인 암흑 사제 원화를 고쳐 썼다. 얼굴은 둘이다 (1003):
      calm — 눈을 감고 옅게 웃는 얼굴 · 입가의 피 (assets/opening/demon-face-calm.png) — 앞의 세 마디
      mad  — 눈가 그늘 · 달아오른 붉은 눈 · 가는 세로 동공 · 송곳니가 드러난 웃음 · 입가의 피 (assets/opening/demon-face.png) — "크하하…" 부터
-   대사는 누르기 · Enter · Space 로 넘긴다(글자가 다 나오기 전이면 먼저 다 보여 준다). 오른쪽 위 '건너뛰기' 는 언제든 프롤로그로. */
+   대사는 누르기 · Enter · Space 로 넘긴다(글자가 다 나오기 전이면 먼저 다 보여 준다). 오른쪽 위 '건너뛰기' 는 언제든 프롤로그(2쪽)로 — 아버지의 마지막에도 따로 있다. */
 const OPENING = {
   intro: {src:"assets/opening/intro.png?v=65b0cb1e", ms:29250},        // 글 — 한 번 도는 APNG (끝 장은 비어 있다) · 1004 사용자 새 글(‘왕국력 236년—’ … ‘모든 직업을 마스터한 인류 최강의 영웅’)
   face: {calm:"assets/opening/demon-face-calm.png?v=e76b29f2", mad:"assets/opening/demon-face.png?v=f7a78c5f"},
@@ -18094,7 +18109,14 @@ const OPENING = {
   rift: {src:"assets/opening/rift.png?v=6244ef4e", ms:19300},          // 시공이 휘몰아치는 글 — 한 번 도는 APNG (끝 장은 비어 있다)
   danger: {src:"assets/opening/danger.png?v=b714db17", ms:7000},       // '아, 이건 위험...' — rift 바로 뒤
   date: {src:"assets/opening/date.png?v=fab71a79", ms:4700},           // '—왕국력 230년, 가을' — 빛이 다 덮이고 시간 리와인드 소리가 끝난 뒤
-  typer: {src:"assets/opening/title-type.png?v=33597bb9", ms:5950}       // '용사 학원 키우기 / 학원이 망했다' 타자기 — 위 글이 사라지고 0.5초 뒤, 끝나면 프롤로그 (1004)
+  typer: {src:"assets/opening/title-type.png?v=33597bb9", ms:5950},      // '용사 학원 키우기 / 학원이 망했다' 타자기 — 위 글이 사라지고 0.5초 뒤, 끝나면 아버지의 마지막 (1004 · 1005)
+  /* 아버지의 마지막 (1005) — 그림 둘(사용자 원본 1536x1024 PNG → WebP q78) · 한 번 도는 APNG 넷(사용자 원본 그대로 · 1280x720 · 끝 장은 비어 있다) */
+  hands: "assets/opening/father-hands.webp?v=ed41aae8",                 // 맞잡은 손 — 손을 잡을 때부터 대화창 위에
+  grave: "assets/opening/father-grave.webp?v=8c23de1d",                 // 무덤 — '—왕국력 230년, 겨울' 뒤
+  dontsay: {src:"assets/opening/dad-dontsay.png?v=cb2c912c", ms:5050},  // '그런 말 하지마.'
+  dream: {src:"assets/opening/dad-dream.png?v=2c357636", ms:5050},      // '내 꿈은...'
+  hero: {src:"assets/opening/dad-hero.png?v=1a0cae56", ms:5100},        // '자랑스러운 아빠 같은 영웅이 되고 싶은 거니까......'
+  winter: {src:"assets/opening/date-winter.png?v=41f7a14d", ms:7400}    // '—왕국력 230년, 겨울 / 아버지가 돌아가셨다.'
 };
 const OP_DRIP_AT = [42, 196, 340];   // opening_drip.ogg 에서 방울이 닿는 순간 (ms)
 const OP_FALL = 320;                 // 핏방울이 떨어지는 시간 (ms)
@@ -18107,7 +18129,13 @@ const OP_TYPER_GAP = 500;            // '—왕국력 230년, 가을' 이 사라
    제목(오른쪽부터): 기 0.10 · 우 0.55 · 키 1.00 · 원 1.40 · (1.70~1.80 흔들림) · 학 1.85 · 사 2.25 · 용 2.70
    부제(오른쪽부터): 다 2.50 · 했 2.55 · 망 2.60 · 이 2.65 · 원 2.70 · 학 2.75 — 작은 글씨라 조금 작게 */
 const OP_TYPE_AT = [[100,1],[550,1],[1000,1],[1400,1],[1850,1],[2250,1],[2500,.7],[2550,.7],[2600,.7],[2650,.7],[2700,1],[2750,.7]];
-let OP = null;                       // 진행 중인 오프닝 — 건너뛰거나 끝나면 null
+/* 아버지의 마지막 (1005) — 때(ms)
+   dark 검은 화면 → 달려오는 소리 · run 달려오는 소리 길이(소리를 못 받았을 때만 — 보통은 받아 둔 소리 길이, 끝나는 즉시 문 소리)
+   door 문 소리 → '아버지!' · hand 손을 잡는 소리(그림 · 곡이 함께 켜진다) → 다음 대사 · still 손 그림이 나타나는 시간
+   hide APNG 앞에서 대화창 · 그림이 사라지는 시간 · back APNG 뒤 그림이 다시 나타나는 시간 · hold '자랑스러운…' 뒤 칠흑(사용자 3초)
+   grave '—왕국력 230년, 겨울' 뒤 무덤 그림까지(사용자 1초) · graveIn 무덤 그림이 나타나는 시간 · out 마지막에 그림이 천천히 사라지는 시간 */
+const OP_FATHER = {dark:500, run:5900, door:1000, hand:1300, still:1600, hide:600, back:900, hold:3000, grave:1000, graveIn:2200, out:3200};
+let OP = null;                       // 진행 중인 오프닝 — 건너뛰거나 끝나면 null (아버지의 마지막도 같은 자리를 쓴다)
 function opLines(){
   return [
     {who:"demon", face:"calm", t:"대단하군... 과연 ‘마스터’라 불릴 만한 능력이야."},
@@ -18131,14 +18159,35 @@ function opLines(){
     {who:"goddess", t:"부디 교차하는 운명들을 올바른 방향으로 이끌어주세요......", then:"blue"}   // 연한 푸른 빛이 덮는다 → 프롤로그
   ];
 }
+/* 아버지의 마지막 대사 (1005 · 사용자 문안) — then: hand 손을 잡는다 · dontsay/dream/hero 대화창 · 그림을 숨기고 그 APNG · end 그림이 천천히 사라지고 프롤로그 */
+function opFatherLines(){
+  return [
+    {who:"you", t:"아버지!"},
+    {who:"dad", t:"쿨럭....여긴 무슨 일이냐...학교는 어쩌고...?"},
+    {who:"you", t:"휴학계 내고 왔어! 몸은 좀 어때?"},
+    {who:"dad", t:"...미안하구나. 설마 그 녀석이 그렇게 사라질 줄은. 절대 그럴 친구가 아닌데..."},
+    {who:"dad", t:"너한테 남기는 게 빚더미와 텅 빈 학원뿐이구나..."},
+    {who:"you", t:"신경 쓰지 마! 학원쯤이야 다시 일으켜 세우면 되지!"},
+    {who:"dad", t:"...어려서부터 너는 타인에게 너무 상냥한 게 문제야...쿨럭", then:"hand"},
+    {who:"dad", t:"도움이 안 되는 아빠라 미안하다.", then:"dontsay"},
+    {who:"dad", t:"넌 네 꿈을 향해 나아가면 돼. 용사가 되고 싶다고 했었지?", then:"dream"},
+    {who:"dad", t:"네가 내 아들이라 자랑스럽다.", then:"hero"},      // '자랑스러운…' → 3초 → '—왕국력 230년, 겨울' → 1초 → 무덤
+    {who:"you", t:"미안해...아버지. 돈이 없어서 제대로 된 장례도 치르지 못했네."},
+    {who:"you", t:"그래도 학원이 바로 내려다 보이는 곳이야."},
+    {who:"you", t:"...아버지의 꿈, 내가 이어받을게.\n여기서 지켜봐 줘."},
+    {who:"you", t:"이제 곧 봄이네! 신입생 맞이할 준비를 해야겠다!"},
+    {who:"you", t:"......그럼 또 올게!", then:"end"}
+  ];
+}
 function opReduced(){ try{ return matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){ return false; } }
 function openingPlay(){
   if(OP) return;
   UI.openPal = freshName("paladin");
   UI.openWiz = freshName("wizard");   // 마법사 — 개교 멤버 마법사의 이름 (1003)
-  ["op_slash","op_drip","op_magic","op_rift","op_rewind","op_type"].forEach(k=>{ if(SFX[k]) sfxLoad(SFX[k].f); });
+  ["op_slash","op_drip","op_magic","op_rift","op_rewind","op_type","op_run","op_door","op_hand"].forEach(k=>{ if(SFX[k]) sfxLoad(SFX[k].f); });
   apngBlob("opening", OPENING.intro); apngBlob("rift", OPENING.rift); apngBlob("danger", OPENING.danger); apngBlob("date", OPENING.date); apngBlob("typer", OPENING.typer);
-  [...Object.values(OPENING.face), OPENING.pal, OPENING.wiz].forEach(u=>{ const im = new Image(); im.src = u; });   // 얼굴이 바뀌는 순간 빈 칸이 보이지 않게
+  ["dontsay","dream","hero","winter"].forEach(k=> apngBlob("dad_" + k, OPENING[k]));   // 아버지의 마지막 APNG 넷 (1005)
+  [...Object.values(OPENING.face), OPENING.pal, OPENING.wiz, OPENING.hands, OPENING.grave].forEach(u=>{ const im = new Image(); im.src = u; });   // 얼굴 · 그림이 바뀌는 순간 빈 칸이 보이지 않게
   audOver("opDemon");                 // 마왕 곡 — 검은 화면 · 글부터 (1003)
   const tok = OP = {adv:null, timer:0, key:null, img:null};
   dragCfg($("#modalRoot"), null);
@@ -18207,14 +18256,14 @@ function opSay(tok, L){
     const box = $("#opTalk"), face = $("#opFace"), nm = $("#opName"), tx = $("#opText");
     if(OP !== tok || !box){ res(false); return; }
     const who = L.who, im = face.querySelector("img");
-    face.hidden = who === "you" || who === "goddess";              // 당신 · 여신 — 얼굴 없이 (여신은 화면 가운데 빛)
+    face.hidden = who === "you" || who === "goddess" || who === "dad";   // 당신 · 여신 · 아버지 — 얼굴 없이 (여신은 화면 가운데 빛 · 아버지는 얼굴 그림이 없다)
     box.classList.toggle("goddess", who === "goddess");
     face.className = "op-face" + (who === "demon" ? " demon" : who === "pal" ? " pal" : who === "wiz" ? " wiz" : "");
     const src = who === "demon" ? (OPENING.face[L.face] || OPENING.face.calm) : who === "pal" ? OPENING.pal : who === "wiz" ? OPENING.wiz : "";
     if(src && im.getAttribute("src") !== src) im.src = src;
     im.alt = "";                                                   // 말하는 이는 이름 칸이 알려 준다
     nm.className = "op-name " + who;
-    nm.textContent = who === "demon" ? "마왕" : who === "pal" ? (UI.openPal || "팔라딘") : who === "wiz" ? (UI.openWiz || "마법사") : who === "goddess" ? "???" : "당신";   // 1004 — 여신은 이름을 밝히지 않는다
+    nm.textContent = who === "demon" ? "마왕" : who === "pal" ? (UI.openPal || "팔라딘") : who === "wiz" ? (UI.openWiz || "마법사") : who === "goddess" ? "???" : who === "dad" ? "아버지" : "당신";   // 1004 — 여신은 이름을 밝히지 않는다
     tx.className = "op-text" + (L.big ? " big" : "");
     tx.textContent = "";
     box.classList.remove("done");
@@ -18373,16 +18422,25 @@ function openingFinish(fast){
   let fin = null;
   const cover = ms=> (fin = v.animate([{opacity:0}, {opacity:1}], {duration:ms, easing:"ease-out", fill:"forwards"}));
   let went = false;
-  const go = ()=>{
+  const veilDown = ()=>{ v.classList.remove("top"); v.style.opacity = ""; if(fin) fin.cancel(); };   // 푸른 빛을 창 뒤(z 79)로 — 덮을 때 건 애니메이션은 거둔다
+  const drop = ()=>{ if(tok.img){ tok.img.remove(); apngDrop(tok.img); tok.img = null; } };
+  const go = ()=>{                     // 곧장 프롤로그 (건너뛰기 · 오류)
     if(went) return; went = true;
-    if(tok.img){ tok.img.remove(); apngDrop(tok.img); tok.img = null; }
-    showPrologue(0);
-    v.classList.remove("top"); v.style.opacity = ""; if(fin) fin.cancel();
+    drop();
+    showPrologue(PROL_FROM);
+    veilDown();
     const ov = $("#modalRoot .overlay");
     if(ov) ov.animate([{opacity:0}, {opacity:1}], {duration:fast ? 500 : 1300, easing:"ease-out"});
   };
+  const father = ()=>{                 // 끝까지 봤다 — 타자기 제목이 끝나자마자 검은 화면 · 아버지의 마지막 (1005)
+    if(went) return; went = true;
+    drop();
+    try{ opFather(); }                 // 검은 화면(z 100)을 먼저 깔고
+    catch(e){ errPush("opening", e.message, e.stack); OP = null; went = false; go(); return; }
+    veilDown();                        // 같은 순간 푸른 빛을 그 밑으로 — 한 장면도 비치지 않는다
+  };
   /* 다 덮인 뒤 (1004) — 시간 리와인드 소리 → 끝나면 '—왕국력 230년, 가을' → 그 글이 사라지고 0.5초 → 타자기 '용사 학원 키우기'
-     (글자가 찍힐 때마다 타자 소리 · OP_TYPE_AT) → 다 끝나면 프롤로그 창 */
+     (글자가 찍힐 때마다 타자 소리 · OP_TYPE_AT) → 다 끝나면 아버지의 마지막 (1005 — 프롤로그 곡은 틀지 않는다) */
   const sleep = ms=> new Promise(r=> setTimeout(r, ms));
   const show = async (k, B)=>{                       // APNG 한 장을 빛 위에 한 번 돌리고 치운다
     const im = await apngImg(k, B, 3000);
@@ -18401,7 +18459,7 @@ function openingFinish(fast){
     const d = await show("date", OPENING.date);
     await sleep(Math.max(0, OP_TYPER_GAP - (d ? (OPENING.date.tail || OP_RIFT_BLANK) : 0)));
     await show("typer", OPENING.typer);
-    go();
+    father();
   })().catch(e=>{ errPush("opening", e.message, e.stack); go(); });
   if(fast){ cover(380).onfinish = ()=> setTimeout(go, 60); return; }       // 건너뛰기 — 기다리지 않는다
   audFadeOut(opReduced() ? 1.6 : 2.3);              // 여신 곡 — 빛이 퍼지는 동안 꺼진다 (1004)
@@ -18418,6 +18476,120 @@ function openingFinish(fast){
     cover(350).onfinish = ()=> bl.remove();
     afterCover();
   };
+}
+/* 아버지의 마지막 (1005 · 사용자 연출) — 타자기 제목이 끝나자마자 검은 화면(opIn 없이).
+   달려오는 소리 → 끝나는 즉시 문 여는 소리 → 대화 일곱 마디 → 손을 잡는 소리 · 맞잡은 손 그림(대화창 위) · 아버지 곡이 서서히
+   → '도움이 안 되는 아빠라 미안하다.' → 대화창 · 그림을 숨기고 '그런 말 하지마.'(APNG) → 그림이 다시 · '넌 네 꿈을…'
+   → 숨기고 '내 꿈은...'(APNG) → 다시 · '네가 내 아들이라 자랑스럽다.' → 숨기고 '자랑스러운 아빠 같은 영웅이 되고 싶은 거니까......'(APNG)
+   → 3초 칠흑 → '—왕국력 230년, 겨울 / 아버지가 돌아가셨다.'(APNG) → 1초 → 무덤 그림 · 대화 다섯 마디
+   → 그림이 천천히 사라지고 검은 막이 걷히며 프롤로그 2쪽(아버지 곡 그대로). 오른쪽 위 '건너뛰기' 는 곧장 프롤로그 2쪽으로.
+   대사는 오프닝과 같이 opSay (OP 자리에 새 토큰) — 누르기 · Enter · Space */
+function opFather(){
+  const tok = OP = {adv:null, timer:0, key:null, img:null};
+  if(AUD.on && AWEB !== false && BGM.opFather) audLoad(BGM.opFather.loop).catch(()=>{});   // 아버지 곡을 미리 풀어 둔다 — 손을 잡는 순간 바로 나오게
+  const mr = $("#modalRoot");
+  mr.replaceChildren();
+  mr.insertAdjacentHTML("beforeend", `<div class="opening op-father" id="opRoot" role="dialog" aria-modal="true" aria-label="아버지의 마지막">
+      <div class="op-still" id="opStill" aria-hidden="true"><img alt="" draggable="false" src="${OPENING.hands}"></div>
+      <div class="op-talk" id="opTalk" hidden>
+        <div class="op-face" id="opFace" hidden><img alt="" draggable="false"></div>
+        <div class="op-body"><div class="op-name" id="opName"></div><div class="op-text" id="opText" aria-live="polite"></div><span class="op-next" aria-hidden="true">▼</span></div>
+      </div>
+      <button class="op-skip" id="opSkip" type="button">건너뛰기 ▸</button>
+    </div>`);
+  modalLockSync();
+  const root = $("#opRoot"), st = $("#opStill"), pic = st.querySelector("img"), box = $("#opTalk");
+  const live = ()=> OP === tok && root.isConnected;
+  const wait = ms=> new Promise(r=> setTimeout(r, ms)).then(live);
+  const fade = (el, to, ms)=>{                       // 지금 불투명도에서 to 까지
+    const from = +getComputedStyle(el).opacity;
+    (el.getAnimations ? el.getAnimations() : []).forEach(a=> a.cancel());
+    el.style.opacity = String(to);
+    if(ms > 0 && from !== to) el.animate([{opacity:from}, {opacity:to}], {duration:ms, easing:"ease-in-out"});
+  };
+  const boxOut = ms=>{                               // 대화창을 숨긴다 — 다음 opSay 가 다시 띄운다
+    if(box.hidden) return;
+    box.classList.remove("done");
+    const f = box.animate([{opacity:1}, {opacity:0}], {duration:ms, easing:"ease-in", fill:"forwards"});
+    f.onfinish = ()=>{ box.hidden = true; f.cancel(); };
+  };
+  const play = async k=>{                            // APNG 한 장을 검은 화면 가운데서 한 번 — 못 받았으면 건너뛴다
+    const B = OPENING[k];
+    const im = await apngImg("dad_" + k, B, 4000);
+    if(!live()){ apngDrop(im); return false; }
+    if(!im) return true;
+    im.className = "op-intro op-rift"; im.setAttribute("aria-hidden", "true");
+    root.prepend(im); tok.img = im;
+    const ok = await wait(B.ms);
+    im.remove(); apngDrop(im); if(tok.img === im) tok.img = null;
+    return ok;
+  };
+  $("#opSkip").onclick = e=>{ e.stopPropagation(); opFatherEnd(tok, true); };
+  root.onclick = ()=>{ if(OP === tok && tok.adv) tok.adv(); };
+  tok.key = e=>{
+    if(OP !== tok || e.repeat) return;
+    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); if(tok.adv) tok.adv(); }
+  };
+  document.addEventListener("keydown", tok.key);
+  (async ()=>{
+    if(!await wait(OP_FATHER.dark)) return;
+    sfxPlay("op_run");                                           // 달려오는 소리
+    const rb = ASBUF[SFX.op_run.f];
+    if(!await wait(rb ? Math.max(0, Math.round(rb.duration * 1000) - 40) : OP_FATHER.run)) return;
+    sfxPlay("op_door");                                          // 끝나는 즉시 문을 연다
+    if(!await wait(OP_FATHER.door)) return;
+    for(const L of opFatherLines()){
+      if(!await opSay(tok, L)) return;
+      if(L.then === "hand"){                                     // 손을 잡는다 — 소리 · 그림 · 곡이 함께
+        box.classList.remove("done");
+        sfxPlay("op_hand");
+        fade(st, 1, OP_FATHER.still);
+        audOver("opFather");
+        if(!await wait(OP_FATHER.hand)) return;
+      } else if(L.then === "dontsay" || L.then === "dream" || L.then === "hero"){
+        boxOut(OP_FATHER.hide); fade(st, 0, OP_FATHER.hide);     // 대화창 · 그림을 숨기고 APNG
+        if(!await wait(OP_FATHER.hide + 150)) return;
+        if(L.then === "hero") pic.src = OPENING.grave;           // 다음에 나올 그림은 무덤 — 보이지 않는 동안 바꿔 둔다
+        if(!await play(L.then)) return;
+        if(L.then === "hero"){
+          if(!await wait(OP_FATHER.hold)) return;               // 3초 칠흑
+          if(!await play("winter")) return;                      // '—왕국력 230년, 겨울 / 아버지가 돌아가셨다.'
+          if(!await wait(OP_FATHER.grave)) return;
+          fade(st, 1, OP_FATHER.graveIn);                        // 무덤
+          if(!await wait(OP_FATHER.graveIn - 400)) return;
+        } else {
+          fade(st, 1, OP_FATHER.back);                           // 맞잡은 손이 다시 — 다음 대사와 함께
+          if(!await wait(Math.round(OP_FATHER.back / 2))) return;
+        }
+      } else if(L.then === "end"){
+        boxOut(500);
+        fade(st, 0, OP_FATHER.out);                              // 그림이 천천히 사라진다
+        if(!await wait(OP_FATHER.out + 600)) return;
+        opFatherEnd(tok, false);
+        return;
+      }
+    }
+  })().catch(e=>{ errPush("opening", e.message, e.stack); opFatherEnd(tok, true); });
+}
+function opFatherEnd(tok, fast){
+  if(!tok || OP !== tok) return;
+  OP = null;
+  clearInterval(tok.timer); tok.adv = null;
+  document.removeEventListener("keydown", tok.key);
+  if(tok.img){ tok.img.remove(); apngDrop(tok.img); tok.img = null; }
+  opToPrologue(fast);
+}
+/* 검은 화면에서 프롤로그로 (1005) — 검은 막(.op-black)이 걷히며 푸른 빛과 프롤로그 창이 드러난다. 긴 겨울이 끝나고 봄 */
+function opToPrologue(fast){
+  const k = document.createElement("div");
+  k.className = "op-black"; k.setAttribute("aria-hidden", "true");
+  document.body.appendChild(k);
+  opVeil(true);                                       // 푸른 빛 — 창 뒤(z 79)
+  showPrologue(PROL_FROM);
+  const a = k.animate([{opacity:1}, {opacity:0}], {duration:fast ? 600 : 2000, easing:"ease-in-out", fill:"forwards"});
+  a.onfinish = a.oncancel = ()=> k.remove();
+  const ov = $("#modalRoot .overlay");
+  if(ov) ov.animate([{opacity:0}, {opacity:1}], {duration:fast ? 500 : 1300, delay:fast ? 0 : 700, easing:"ease-out", fill:"backwards"});
 }
 /* 연한 푸른 빛을 프롤로그 · 학원 이름 뒤에 깐다 — 이름을 정하면 걷힌다 (1003) */
 var OP_VEIL_MO = null;   // var — 스크립트 읽는 도중 불려도 TDZ 가 나지 않게
@@ -18555,7 +18727,7 @@ function newScenarioStart(name){
 }
 function showPrologue(i){   // 1003 — 제목 위 '프롤로그 1 / 3' 쪽수 표시는 뺐다
   const pg = PROLOGUE[i], last = i>=PROLOGUE.length-1;
-  audOver("prologue");    // 오프닝을 끝까지 보면 무음에서, 건너뛰면 마왕 · 여신 곡에서 프롤로그 곡으로
+  audOver("opFather");    // 1005 — 아버지 곡이 그대로 이어진다(끝까지 봤으면 이미 나오는 중) · 건너뛰면 마왕 · 여신 곡에서, 손을 잡기 전에 건너뛰면 무음에서 아버지 곡으로
   showModal(`<div class="prol">
       ${(typeof PROL_IMG!=="undefined" && PROL_IMG[String(i+1)])? `<div class="prolimg"><img src="${PROL_IMG[String(i+1)]}" alt="" draggable="false"></div>`:""}
       <h2 class="ptitle">${esc(pg.h)}</h2>
