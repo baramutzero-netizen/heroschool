@@ -2978,7 +2978,7 @@ const SFX_TYPE = {
 };
 /* 독·흡혈처럼 피해를 주는 기술은 쓰는 사람의 공격 소리를 그대로 낸다 */
 /* 기술 하나에만 따로 붙는 소리 — 종류 · 직업 소리보다 먼저 본다 */
-const SFX_SKILL = {ar_u:"arrowrain"};
+const SFX_SKILL = {ar_u:"arrowrain", sw_u:"earthsplit", mo_1:"monkChi", mo_b:"monkPunch", mo_u:"monkPunch"};
 function sfxOf(u, sk){
   if(sk && SFX_SKILL[sk.id]) return SFX_SKILL[sk.id];
   const t = SFX_TYPE[sk.type];
@@ -16123,6 +16123,14 @@ window.addEventListener('resize',alignDemonField);
 /* One still image per effect. Routing is independent of character sprite sheets. */
 const STYLISH_SKILL_FX = {
   assets: {
+    monkPressure:"assets/skill-fx/monk/pressure.svg?v=1",
+    chiHit:"assets/skill-fx/monk/chi.png?v=1",
+    fistRush:"assets/skill-fx/monk/fists-oval.png?v=2",
+    oraText:"assets/skill-fx/monk/du.svg?v=1",
+    swordSwing:"assets/skill-fx/sword/swing.svg?v=1",
+    tauntCall:"assets/skill-fx/sword/taunt-call.svg?v=2",
+    tauntAnger:"assets/skill-fx/sword/taunt-anger.svg?v=2",
+    earthWave:"assets/skill-fx/sword/earth-wave.png?v=1",
     trail: "assets/skill-fx/paladin/trail-particles.webp?v=w90",
     impact: "assets/skill-fx/paladin/impact.webp?v=w90",
     shield: "assets/skill-fx/paladin/shield.webp?v=w90",
@@ -16167,8 +16175,8 @@ const STYLISH_SKILL_FX = {
     gravityBeam: "assets/skill-fx/wizard/gravity-beam.svg?v=4",
     gravityFoot: "assets/skill-fx/wizard/gravity-foot.svg?v=4"
   },
-  casters: {paladin: ["trail"], darkpriest: ["darkEssence"], gunner:["gunMuzzle"], priest:["holyEssence"], bard:["bardMelody"], ninja:["ninjaRipple"], archer:["archerWind"], wizard:["wizardCircles"]},
-  targets: {pa_b: ["impact"], pa_1: ["shield"], pa_2: ["beam"], pa_u: ["beam", "shield"],
+  casters: {monk:["monkPressure"], sword:["swordSwing"], paladin: ["trail"], darkpriest: ["darkEssence"], gunner:["gunMuzzle"], priest:["holyEssence"], bard:["bardMelody"], ninja:["ninjaRipple"], archer:["archerWind"], wizard:["wizardCircles"]},
+  targets: {mo_b:[], mo_1:["chiHit"], mo_2:["shadowStep"], mo_u:["fistRush","oraText"], sw_b:[], sw_1:["tauntAnger"], sw_2:["shadowStep"], sw_u:[], pa_b: ["impact"], pa_1: ["shield"], pa_2: ["beam"], pa_u: ["beam", "shield"],
     dp_b:["darkHit"], dp_1:["redDrain"], dp_2:["curseNail"], dp_u:["redDrain"],
     gn_b:["gunHit"], gn_1:["gunHit"], gn_2:["gunPierce"], gn_u:["gunPierce"],
     ro_1:["poisonDagger"], ro_2:["shadowStep"], ro_u:["assassination"],
@@ -16177,10 +16185,11 @@ const STYLISH_SKILL_FX = {
     nj_1:["dissonance"], nj_2:["boundaryWave","waterDragon"], nj_u:["fumaPassed","waterFlower"],
     ar_1:[], ar_2:["hawkEye"], ar_u:["meteorRain","meteorFront","meteorImpact"],
     wz_1:["fireExplosion"], wz_2:[], wz_u:[]},
-  groups: {dp_u:["bloodRitual"], bd_u:["ensemble"], nj_1:["waterSwamp"], ar_1:["greenPierce"], wz_2:["blizzardBack","blizzardFront"], wz_u:["gravityBeam","gravityFoot","gravityCircle"]}
+  skillCasters: {sw_1:["tauntCall"]},
+  groups: {sw_u:["earthWave"], dp_u:["bloodRitual"], bd_u:["ensemble"], nj_1:["waterSwamp"], ar_1:["greenPierce"], wz_2:["blizzardBack","blizzardFront"], wz_u:["gravityBeam","gravityFoot","gravityCircle"]}
 };
 function stylishSkillFxPlan(job, skillId){
-  return {caster: STYLISH_SKILL_FX.casters[job] || [], target: STYLISH_SKILL_FX.targets[skillId] || [], group: STYLISH_SKILL_FX.groups[skillId] || []};
+  return {caster: [...(STYLISH_SKILL_FX.casters[job] || []), ...(STYLISH_SKILL_FX.skillCasters[skillId] || [])], target: STYLISH_SKILL_FX.targets[skillId] || [], group: STYLISH_SKILL_FX.groups[skillId] || []};
 }
 function stylishFormation(actor, allies, enemies, side, skillId){
   const positions=[], mirror=x=>side==="B"?100-x:x;
@@ -16235,6 +16244,10 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
     if(kind==="bardMelody" && side==="B") img.style.transform="scaleX(-1)";
     if((kind==="trail" || kind==="darkEssence" || kind==="holyEssence" || kind==="redDrain" || kind==="gunMuzzle" || kind==="gunPierce" || kind==="poisonDagger" || kind==="assassination") && side==="B") img.style.transform="scaleX(-1)";
     if(kind==="gunPierce" && mono) img.style.filter="brightness(.08)";
+    if((kind==="swordSwing" || kind==="tauntCall" || kind==="earthWave") && side==="B") img.style.transform="scaleX(-1)";
+    if(kind==="chiHit" && side==="A") img.style.transform="scaleX(-1)";
+    if((kind==="monkPressure" || kind==="fistRush") && side==="B") img.style.transform="scaleX(-1)";
+    if(kind==="oraText" && side==="B") img.src="assets/skill-fx/monk/du-reverse.svg?v=1";
     layer.append(img); entries.push({el,kind,img});
     if(kind==="gunPierce" || kind==="ninjaRipple" || kind==="fumaPassed" || kind==="waterFlower" || kind==="meteorRain") ground.append(img);
     return entries[entries.length-1];
@@ -16248,7 +16261,7 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
   if(group.length) plan.group.forEach(kind=>{
     add(group[0],kind);const entry=entries[entries.length-1];entry.group=group;
     entry.img.dataset.targets=group.map(el=>el.dataset.uid).join(",");
-    if(!["ensemble","greenPierce","meteorRain","blizzardFront","gravityBeam","gravityFoot"].includes(kind)) ground.append(entry.img);
+    if(!["ensemble","greenPierce","meteorRain","blizzardFront","gravityBeam","gravityFoot","earthWave"].includes(kind)) ground.append(entry.img);
   });
   if(!entries.length) return ()=>{};
   // Field background is z=-1; the transformed camera is an auto/0 stacking context.
@@ -16284,6 +16297,13 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
       const cx=(r.left+r.width/2-sr.left)*sx, cy=(r.top-sr.top)*sy+h*.55;
       const throwSize=Math.min(h,Math.max(1,(side==="B"?cx:stage.clientWidth-cx)-12)/3.6);
       let width=h*1.05, height=width, x=cx-width/2, y=cy-height/2;
+      if(kind==="monkPressure") {width=h*.95;height=width*.55;x=cx-width*(side==="B"?.85:.15);y=(r.top-sr.top)*sy+h*.57-height*.5;}
+      if(kind==="chiHit") {width=h*.9;height=width;x=cx-width*(side==="B"?.28:.72);y=(r.top-sr.top)*sy+h*.57-height*.5;}
+      if(kind==="fistRush") {width=h*1.65;height=width*2/3;x=cx-width*(side==="B"?.12:.88)+(side==="B"?1:-1)*h*.35;y=(r.top-sr.top)*sy+h*.5-height*.5;}
+      if(kind==="oraText") {width=h*1.95;height=width*200/700;x=cx-width*(side==="B"?.12:.88)+(side==="B"?1:-1)*h*.35;y=Math.max(top+4,(r.top-sr.top)*sy+h*.02-height*.6);}
+      if(kind==="swordSwing") {width=h*1.18;height=width;x=cx-width/2+(side==="B"?-1:1)*w*.2;y=cy-height*.61;}
+      if(kind==="tauntCall") {width=h*.43;height=width;x=cx+(side==="B"?-1:1)*w*.59-width*(side==="B"?1:0);y=(r.top-sr.top)*sy+h*.43-height*.45;}
+      if(kind==="tauntAnger") {width=h*.36;height=width;x=cx-width/2;y=Math.max(top+4,(r.top-sr.top)*sy+h*.12-height);}
       if(kind==="wizardCircles"){
         height=h*1.15;width=height*550/570;
         const tipX=cx+(side==="B"?-1:1)*w*.34;
@@ -16309,7 +16329,7 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
       if(kind==="redDrain") {width=h*.95;height=width/1.5;x=cx-width*(side==="B"?.33:.67);y=cy-height*.72;}
       if(kind==="poisonDagger") {width=h*.34;height=width;x=cx-width*(side==="B"?.26:.74);y=(r.top-sr.top)*sy+h*.65-height*.5;}
       if(kind==="shadowStep" || kind==="dissonance") {width=h*1.05;height=width;x=cx-width/2;y=cy-height/2;}
-      if(kind==="dissonance") y=(r.top-sr.top)*sy+h*.8-height*.97;
+      if(kind==="dissonance" || (kind==="shadowStep" && (skillId==="sw_2" || skillId==="mo_2"))) y=(r.top-sr.top)*sy+h*.8-height*.97;
       if(kind==="ninjaRipple") {
         width=h*1.12;height=width/2;x=cx-width/2;y=(r.top-sr.top)*sy+h*.8-height*.5;
       }
@@ -16382,6 +16402,10 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
           if(kind==="gravityCircle"){height=width*240/640;y=base-height/2;}
           else if(kind==="gravityFoot"){height=width*110/640;y=base-.5;}
           else {y=top-4;height=Math.max(1,base-y);}
+        }
+        if(kind==="earthWave"){
+          width=Math.max(h*1.6,(right-left)*sx+h*.8);height=Math.min(h*1.2,width*2/3);
+          x=((left+right)/2-sr.left)*sx-width/2;y=(foot-sr.top)*sy-height*.85+h*.08;
         }
         if(kind==="greenPierce"){
           // Begin just ahead of the first target on the caster-facing side.
@@ -16818,7 +16842,7 @@ function openBattle(res, opt, onDone){
     setMot(ae, "attack", 1); if(!await camW(tok, 110)) return false;
     setMot(ae, "attack", 2);
     /* 맞는 순간 */
-    for(let q=j; q<=e; q++) sfxFrame(res.frames[q]);
+    for(let q=j; q<=e; q++) sfxFrame(res.frames[q], camSf(), ()=>camRun===tok && stage.classList.contains("cam-focus"));
     tg.forEach(u=> setMot(uEl(u), hit.has(u) ? "hit" : "idle", 0));
     setTimeout(()=>{ if(camRun === tok) tg.forEach(u=>{ if(hit.has(u)) setMot(uEl(u), "hit", 1); }); }, 110 / camSf());   // 맞은 쪽 — 피격 1 · 2장 뒤 멈춤
     const skillId = F.fx && F.fx.skillId;
@@ -17956,6 +17980,8 @@ function audHintSync(){
    효과음 — 짧은 소리 여러 개가 겹쳐 난다. 배경 음악과 음량이 따로 논다.
    ============================================================ */
 const SFX = {
+  monkChi:{f:"monk_chi.mp3"},
+  monkPunch:{f:"monk_punch.mp3"},
   buff:  {f:"magic_buff.ogg"},
   debuff:{f:"magic_debuff.ogg"},
   heal:  {f:"magic_heal.ogg"},
@@ -17968,6 +17994,7 @@ const SFX = {
   bow:   {f:"attack_bow.ogg"},
   bard:  {f:"attack_bard.ogg"},
   /* 기술 전용 소리 (1001) — SFX_SKILL 이 기술 id 로 고른다 */
+  earthsplit:{f:"ult_earthsplit.mp3"},
   arrowrain:{f:"ult_arrowrain.ogg"},   // 아처 유성 화살 — 화살 한 발(ult_arrowrain_src.mp3)을 0.10~0.15초 간격으로 9번 겹친 것
   cheer: {f:"tournament_cheer.ogg", v:.85},
   /* 화면 효과음 (0929) — 레벨업 · 시설 공사 · 동전. bgm/ 의 같은 이름 파일을 바꾸면 소리만 갈아 끼울 수 있다 */
@@ -18060,7 +18087,11 @@ function sfxSeq(key, list){
   });
 }
 /* 한 프레임에 실린 소리 */
-function sfxFrame(f){ if(f && f.fx && f.fx.s) sfxPlay(f.fx.s); }
+function sfxFrame(f, rate=1, active=()=>true){
+  if(!f || !f.fx || !f.fx.s)return;
+  const id=f.fx.skillId, beats=id==="mo_b"?[0,160]:id==="mo_u"?[0,110,220,330,440,550,660,770,880,990]:[0];
+  beats.forEach(ms=>{if(!ms){if(active())sfxPlay(f.fx.s);}else setTimeout(()=>{if(active())sfxPlay(f.fx.s);},ms/Math.max(.1,rate));});
+}
 
 /* 브라우저는 사용자가 한 번 누르기 전에는 소리를 내주지 않는다 */
 function audUnlock(){
