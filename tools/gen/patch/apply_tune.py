@@ -1,5 +1,6 @@
 """필드 배치 실험실(tools/field_lab.html)이 낸 BATTLE_TUNE_PATCH 를 game.html 의 BATTLE_TUNE 에 합친다 (1007).
 몇 번을 돌려도 같은 결과 — 패치에 적힌 값만 바꾸고 나머지는 그대로 둔다.
+묶음: field(필드 확대 · 위치) · slot(유닛 자리) · job(직업 크기) · quarter(대회 쿼터뷰 경기 이름 · 진영 칸 — apply_tqui.py 가 만든다)
 
     python3 apply_tune.py <game.html> <패치 파일> ["메모"]
 
@@ -11,7 +12,8 @@ import json, re, sys
 HEAD = re.compile(r"^const BATTLE_TUNE = \{   /\* (.*) \*/$")
 ORIENT = re.compile(r"^    (landscape|portrait):(\{.*\})$")
 FIELD = re.compile(r"^    ([A-Za-z_]\w*):\{(.*)\}$")
-FIELD_OR = re.compile(r"(landscape|portrait):(\{[^{}]*\})")
+FIELD_OR = re.compile(r"(landscape|portrait|quarter):(\{[^{}]*\})")   # quarter — 가로 화면 쿼터뷰 지도 (apply_tqfield.py)
+QROW = re.compile(r"^    (title|enemy|ally):(\{.*\})$")
 
 
 def read_patch(path):
@@ -39,7 +41,7 @@ def merge(src, patch, memo=None):
     i = a + 1
     while i < b:
         l = lines[i]
-        s = re.match(r"^  (field|slot|job):\{$", l)
+        s = re.match(r"^  (field|slot|job|quarter):\{(\s*/\*.*\*/)?$", l)
         if not s:
             out.append(l); i += 1; continue
         sec = s.group(1); out.append(l); i += 1
@@ -61,6 +63,18 @@ def merge(src, patch, memo=None):
                     if new != old: changes.append(f"field {fk} {o}: {js(old)} → {js(new)}")
                     cur[fk][o] = new
             rows = ["    %s:{%s}" % (fk, ", ".join(f"{o}:{js(v)}" for o, v in d.items())) for fk, d in cur.items()]
+        elif sec == "quarter":                            # 요소 → 값 (경기 이름 · 상대 진영 · 우리 진영)
+            cur = {}
+            for l2 in body:
+                q = QROW.match(l2)
+                if not q: raise RuntimeError("quarter 줄을 못 읽었다: " + l2[:80])
+                cur[q.group(1)] = json.loads(q.group(2))
+            for k, v in P.items():
+                old = cur.get(k)
+                new = dict(old or {}, **v)
+                if new != old: changes.append(f"quarter {k}: {js(old) if old is not None else '없음'} → {js(new)}")
+                cur[k] = new
+            rows = ["    %s:%s" % (k, js(v)) for k, v in cur.items()]
         else:
             cur = {}
             for l2 in body:

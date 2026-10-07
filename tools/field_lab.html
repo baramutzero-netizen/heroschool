@@ -10,6 +10,8 @@
   · 실험실 쪽 게임은 아무것도 저장하지 않는다 (세이브 · 리그 자리 · 설정 그대로).
   · '차이점 확인'에 나온 글을 그대로 복사해서 Claude 에게 주면 game.html 의 BATTLE_TUNE 에 옮겨 적는다.
   · 여는 법: 이 파일을 브라우저로 연다 (heroschool 폴더 안 tools/field_lab.html). game.html 이 한 단계 위 폴더에 있어야 한다.
+  · 쿼터뷰 화면 · 가로 (1007) — 대회 쿼터뷰의 경기 이름 · 상대 진영 칸 · 우리 진영 칸을 끌어 옮기고 크기를 바꾼다 (BATTLE_TUNE.quarter).
+    쿼터뷰 필드를 가로로 볼 때 '전투 필드'의 확대 · X · Y 는 쿼터뷰 지도를 움직인다 (BATTLE_TUNE.field[필드].quarter).
 -->
 <style>
 :root{--bg:#1d1b22;--panel:#2a2631;--line:#443d4f;--text:#efe7d8;--muted:#b3a894;--gold:#e0b458;--ok:#7cc79a;--bad:#e2837a}
@@ -50,6 +52,9 @@ button.primary{background:#6b5222;border-color:var(--gold)}
 .slotgrid .team{grid-column:1/-1;color:var(--muted);font-size:11px;margin-top:2px}
 .slotgrid button.mod::after{content:" •";color:var(--gold)}
 .slotgrid button.off{opacity:.45;text-decoration:line-through}
+.seg button.mod::after{content:" •";color:var(--gold)}
+.seg button.on.mod::after{color:#221a0c}
+#tqHint .warn{color:var(--bad)}
 </style>
 </head>
 <body>
@@ -66,14 +71,14 @@ button.primary{background:#6b5222;border-color:var(--gold)}
   </section>
 
   <section>
-    <h2>전투 필드 <small id="fieldMod"></small></h2>
+    <h2>전투 필드 <small><span id="fieldWhich"></span> <span id="fieldMod"></span></small></h2>
     <div class="row"><label>필드</label><select id="field"></select></div>
     <div class="row"><label class="chk"><input type="checkbox" id="pastel"> 파스텔 필터</label><label class="chk"><input type="checkbox" id="grid"> 배치 격자</label></div>
     <div class="row"><label>확대</label><button class="sm" data-f="zoom" data-d="-0.05">－</button><input type="number" id="fZoom" step="0.01" min="0.3" max="4"><button class="sm" data-f="zoom" data-d="0.05">＋</button></div>
     <div class="row"><label>X (%)</label><button class="sm" data-f="x" data-d="-1">◀</button><input type="number" id="fX" step="0.5"><button class="sm" data-f="x" data-d="1">▶</button></div>
     <div class="row"><label>Y (%)</label><button class="sm" data-f="y" data-d="-1">▲</button><input type="number" id="fY" step="0.5"><button class="sm" data-f="y" data-d="1">▼</button></div>
     <button class="wide" id="fReset">이 필드 · 이 화면 기본값으로</button>
-    <p class="hint">확대는 땅이 시작하는 선을 기준으로 커진다. X · Y 는 전투판 크기의 % 만큼 옮긴다. (Alt + 방향키로도 이동)</p>
+    <p class="hint" id="fieldHint">확대는 땅이 시작하는 선을 기준으로 커진다. X · Y 는 전투판 크기의 % 만큼 옮긴다. (Alt + 방향키로도 이동)</p>
   </section>
 
   <section>
@@ -86,6 +91,19 @@ button.primary{background:#6b5222;border-color:var(--gold)}
     <div class="row"><label>Y (%)</label><button class="sm" data-u="y" data-d="-0.5">▲</button><input type="number" id="uY" step="0.5"><button class="sm" data-u="y" data-d="0.5">▼</button></div>
     <div class="row"><button id="uAllS" style="flex:1">이 크기를 모든 직업에</button><button id="uReset" style="flex:1">이 자리 위치 기본값</button></div>
     <p class="hint">크기는 자리가 아니라 직업마다 정해진다 — 같은 직업이면 어느 자리에 서도 같은 크기. 방향키 0.5% · Shift+방향키 2% 이동. 직업 · 비우기는 미리보기용이라 게임에 반영되지 않는다.</p>
+  </section>
+
+  <section id="tqSec">
+    <h2>쿼터뷰 화면 · 가로 <small id="tqMod"></small></h2>
+    <div class="seg" id="tqEls"><button data-tq="title">경기 이름</button><button data-tq="enemy">상대 진영</button><button data-tq="ally">우리 진영</button></div>
+    <div class="row"><label>X</label><button class="sm" data-q="x" data-d="-2">◀</button><input type="number" id="qX" step="1"><button class="sm" data-q="x" data-d="2">▶</button></div>
+    <div class="row"><label>Y</label><button class="sm" data-q="y" data-d="-2">▲</button><input type="number" id="qY" step="1"><button class="sm" data-q="y" data-d="2">▼</button></div>
+    <div class="row qbox"><label>너비</label><button class="sm" data-q="w" data-d="-4">－</button><input type="number" id="qW" step="1" min="40"><button class="sm" data-q="w" data-d="4">＋</button></div>
+    <div class="row qbox"><label>높이</label><button class="sm" data-q="h" data-d="-4">－</button><input type="number" id="qH" step="1" min="24"><button class="sm" data-q="h" data-d="4">＋</button></div>
+    <div class="row"><label>글자 크기</label><button class="sm" data-q="size" data-d="-1">－</button><input type="number" id="qS" step="1" min="8" max="96"><button class="sm" data-q="size" data-d="1">＋</button></div>
+    <div class="row"><button id="qBan" style="flex:1.5">BATTLE START 틀기</button><button id="qReset" style="flex:1">이 요소 기본값</button></div>
+    <div class="row"><label class="chk"><input type="checkbox" id="qLong"> 긴 학원 이름으로 보기 (미리보기)</label></div>
+    <p class="hint" id="tqHint"></p>
   </section>
 
   <section>
@@ -119,7 +137,8 @@ const clone = o=> JSON.parse(JSON.stringify(o));
 const r2 = v=> Math.round(v*100)/100;
 const SAVE_KEY = "heroschool_fieldlab_v1";
 let D = null;   // 게임이 보내 준 기본값
-let st = {orient:"landscape", size:{landscape:0, portrait:0}, field:"spring", pastel:true, grid:true, tune:null, jobs:null, hide:{}, sel:"A-front-0"};
+let st = {orient:"landscape", size:{landscape:0, portrait:0}, field:"spring", pastel:true, grid:true, tune:null, jobs:null, hide:{}, sel:"A-front-0",
+          tqSel:"title", focus:"unit", longName:false};   // focus — 방향키가 옮기는 것: 유닛(unit) · 쿼터뷰 요소(tq)
 try{ const sv = JSON.parse(localStorage.getItem(SAVE_KEY)||"null"); if(sv) st = Object.assign(st, sv); }catch(e){}
 function persist(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(st)); }catch(e){} }
 const frame = $("#game");
@@ -127,10 +146,13 @@ frame.src = "../game.html?fieldlab=1";
 
 /* ── 값 읽기 · 쓰기 ── */
 const F0 = {zoom:1, x:0, y:0};
+/* '전투 필드' 칸이 고치는 묶음 (1007) — 쿼터뷰 필드를 가로로 볼 때는 쿼터뷰 지도(quarter), 그 밖은 화면 방향(landscape · portrait) */
+const isQuarter = ()=> st.orient === "landscape" && ((D && D.quarter) || []).includes(st.field);
+const fieldO = ()=> isQuarter() ? "quarter" : st.orient;
 function fieldDef(f, o){ return Object.assign({}, F0, ((D.tune.field||{})[f]||{})[o]||{}); }
 function fieldCur(f, o){ return Object.assign({}, F0, ((st.tune.field||{})[f]||{})[o]||{}); }
 function setField(prop, v){
-  const f = st.field, o = st.orient, cur = fieldCur(f, o);
+  const f = st.field, o = fieldO(), cur = fieldCur(f, o);
   cur[prop] = r2(v);
   st.tune.field = st.tune.field || {}; st.tune.field[f] = st.tune.field[f] || {};
   const same = ["zoom","x","y"].every(k=> cur[k] === F0[k]);
@@ -160,11 +182,26 @@ function setSlot(k, patch, o){
   const same = ["x","y"].every(p=> cur[p] === base[p]);
   if(same && !((D.tune.slot||{})[o]||{})[k]) delete st.tune.slot[o][k]; else st.tune.slot[o][k] = cur;
 }
+/* 쿼터뷰 요소 (1007) — 편집기 좌표 px. 경기 이름은 글 가운데 x · y + 글자 크기, 진영 칸은 x · y · 너비 · 높이 + 이름 글자 크기 */
+const TQ_EL = ["title","enemy","ally"];
+const TQN = {title:"경기 이름", enemy:"상대 진영", ally:"우리 진영"};
+const TQP = [["x","X"],["y","Y"],["w","너비"],["h","높이"],["size","글자 크기"]];
+const TQ_MIN = {w:40, h:24, size:8};
+function qDef(k){ return Object.assign({}, ((D.tune.quarter)||{})[k]); }
+function qCur(k){ return Object.assign(qDef(k), ((st.tune.quarter)||{})[k]||{}); }
+function setQ(k, patch){
+  const cur = Object.assign(qCur(k), patch);
+  Object.keys(cur).forEach(p=> cur[p] = Math.max(TQ_MIN[p] || -9999, Math.round(+cur[p] || 0)));
+  st.tune.quarter = st.tune.quarter || {};
+  if(JSON.stringify(cur) === JSON.stringify(qDef(k))) delete st.tune.quarter[k]; else st.tune.quarter[k] = cur;
+}
+const qMod = k=> JSON.stringify(qCur(k)) !== JSON.stringify(qDef(k));
 
 /* ── 게임에 보내기 ── */
 function send(){
   if(!D) return;
-  frame.contentWindow.postMessage({lab:"field", type:"set", tune:st.tune, jobs:st.jobs, hide:st.hide, grid:st.grid, pastel:st.pastel, field:st.field, sel:st.sel}, "*");
+  frame.contentWindow.postMessage({lab:"field", type:"set", tune:st.tune, jobs:st.jobs, hide:st.hide, grid:st.grid, pastel:st.pastel, field:st.field, sel:st.sel,
+    tqSel: st.focus === "tq" ? st.tqSel : null, longName: !!st.longName}, "*");
 }
 function push(){ persist(); send(); paint(); }
 
@@ -193,30 +230,54 @@ function paint(){
   $("#size").innerHTML = SIZES[st.orient].map((s,i)=> `<option value="${i}" ${i===(st.size[st.orient]|0)?"selected":""}>${s[2]}</option>`).join("");
   $("#field").value = st.field;
   $("#pastel").checked = !!st.pastel; $("#grid").checked = !!st.grid;
-  const fc = fieldCur(st.field, st.orient), fd = fieldDef(st.field, st.orient);
+  const fc = fieldCur(st.field, fieldO()), fd = fieldDef(st.field, fieldO());
   $("#fZoom").value = fc.zoom; $("#fX").value = fc.x; $("#fY").value = fc.y;
   $("#fieldMod").textContent = JSON.stringify(fc) !== JSON.stringify(fd) ? "● 바뀜" : "";
+  $("#fieldWhich").textContent = isQuarter() ? "쿼터뷰 지도" : "";
+  $("#fieldHint").textContent = isQuarter()
+    ? "쿼터뷰 지도 — 확대는 전투판 가운데를 기준으로 커진다. X · Y 는 전투판 크기의 % 만큼 옮긴다. 클로즈업 가운데(바닥 문장)도 같이 따라간다. (Alt + 방향키로도 이동)"
+    : "확대는 땅이 시작하는 선을 기준으로 커진다. X · Y 는 전투판 크기의 % 만큼 옮긴다. (Alt + 방향키로도 이동)";
   const o = st.orient;
   $("#slots").innerHTML = ["B","A"].map(s=> `<div class="team">${s==="A"?"우리 (아래)":"상대 (위)"}</div>` +
     ["back","front"].map(r=> [0,1,2].map(c=>{ const k = `${s}-${r}-${c}`;
       const mod = JSON.stringify(slotCur(k,o)) !== JSON.stringify(slotDef(k,o));
       return `<button data-slot="${k}" class="${k===st.sel?"on":""} ${mod?"mod":""} ${st.hide[k]?"off":""}">${r==="front"?"전":"후"}${c+1}</button>`; }).join("")).join("")).join("");
-  $("#slots").querySelectorAll("[data-slot]").forEach(b=> b.onclick = ()=>{ st.sel = b.dataset.slot; push(); });
+  $("#slots").querySelectorAll("[data-slot]").forEach(b=> b.onclick = ()=>{ st.sel = b.dataset.slot; st.focus = "unit"; push(); });
   $("#slotName").textContent = SLOT_LABEL(st.sel);
   $("#job").value = st.jobs[st.sel];
   $("#hide").checked = !!st.hide[st.sel];
   const sc = slotCur(st.sel, o), jb = st.jobs[st.sel];
   $("#uS").value = jobCur(jb, o); $("#uX").value = sc.x; $("#uY").value = sc.y;
   $("#jobName").textContent = JOBN(jb) + (jobCur(jb,o) !== jobDef(jb,o) ? " ●" : "");
+  paintTq();
   badge();
+}
+function paintTq(){
+  const has = !!(D.tune && D.tune.quarter);
+  $("#tqSec").style.display = has ? "" : "none";
+  if(!has) return;
+  if(!TQ_EL.includes(st.tqSel)) st.tqSel = "title";
+  const k = st.tqSel, q = qCur(k), box = k !== "title";
+  document.querySelectorAll("#tqEls [data-tq]").forEach(b=>{ b.classList.toggle("on", b.dataset.tq === k); b.classList.toggle("mod", qMod(b.dataset.tq)); });
+  $("#qLong").checked = !!st.longName;
+  $("#qX").value = q.x; $("#qY").value = q.y; $("#qW").value = box ? q.w : ""; $("#qH").value = box ? q.h : ""; $("#qS").value = q.size;
+  document.querySelectorAll(".qbox").forEach(r=> r.style.display = box ? "" : "none");
+  $("#tqMod").textContent = TQ_EL.some(qMod) ? "● 바뀜" : "";
+  const qf = D.quarter || [], on = st.orient === "landscape" && qf.includes(st.field);
+  $("#tqHint").innerHTML = (on ? "" : `<span class="warn">지금 필드 · 화면은 쿼터뷰가 아니다.</span> ${qf.join(" · ")} 중 하나를 가로로 고르면 보인다.<br>`)
+    + "좌표는 전투 화면 편집기와 같은 px (전투 영역 왼쪽 위가 250, 158). 경기 이름의 X · Y 는 글 가운데."
+    + " 게임에서 경기 이름은 BATTLE START 가 도는 동안만 보이고, 실험실에서는 늘 보인다."
+    + " 화면에서 끌어 옮기고, 고른 요소의 노란 모서리를 끌면 크기가 바뀐다. 고른 뒤 방향키 1px · Shift+방향키 10px."
+    + " 진영 칸의 너비 · 높이는 가장 작은 크기 — 학원 이름이 길면 칸이 늘어난다 (오른쪽 칸은 왼쪽으로, 아래쪽 칸은 위로 · 전투판 너비의 45% 를 넘으면 두 줄)."
+    + " 물마루 글자는 12 · 24 · 36px 에서 가장 또렷하다.";
 }
 
 /* ── 차이점 ── */
 function diffText(){
   const lines = [], patch = {field:{}, slot:{}};
-  const ON = {landscape:"가로", portrait:"세로"};
+  const ON = {landscape:"가로", portrait:"세로", quarter:"가로 쿼터뷰 지도"};
   const fields = new Set([...Object.keys(D.tune.field||{}), ...Object.keys(st.tune.field||{})]);
-  fields.forEach(f=> ["landscape","portrait"].forEach(o=>{
+  fields.forEach(f=> ["landscape","portrait","quarter"].forEach(o=>{
     const a = fieldDef(f,o), b = fieldCur(f,o);
     if(JSON.stringify(a) === JSON.stringify(b)) return;
     const ch = [["zoom","확대",""],["x","X","%"],["y","Y","%"]].filter(([k])=> a[k]!==b[k]).map(([k,n,u])=> `${n} ${a[k]}${u} → ${b[k]}${u}`);
@@ -236,6 +297,13 @@ function diffText(){
       lines.push(`직업 크기 ${ON[o]} · ${JOBN(j)} (${j}): ${a} → ${b}`);
       ((patch.job = patch.job || {})[o] = patch.job[o] || {})[j] = b; });
   });
+  if(D.tune.quarter) TQ_EL.forEach(k=>{
+    if(!qMod(k)) return;
+    const a = qDef(k), b = qCur(k);
+    const ch = TQP.filter(([p])=> b[p] != null && a[p] !== b[p]).map(([p,n])=> `${n} ${a[p]} → ${b[p]}`);
+    lines.push(`쿼터뷰 · ${TQN[k]}: ${ch.join(", ")}`);
+    (patch.quarter = patch.quarter || {})[k] = b;
+  });
   if(!lines.length) return "게임 기존 세팅과 차이가 없다.";
   if(!Object.keys(patch.field).length) delete patch.field;
   if(!Object.keys(patch.slot).length) delete patch.slot;
@@ -253,8 +321,8 @@ $("#grid").onchange = e=>{ st.grid = e.target.checked; push(); };
 $("#fZoom").onchange = e=> setField("zoom", Math.max(.3, +e.target.value || 1));
 $("#fX").onchange = e=> setField("x", +e.target.value || 0);
 $("#fY").onchange = e=> setField("y", +e.target.value || 0);
-document.querySelectorAll("[data-f]").forEach(b=> b.onclick = ()=>{ const p = b.dataset.f; setField(p, fieldCur(st.field, st.orient)[p] + (+b.dataset.d)); });
-$("#fReset").onclick = ()=>{ const f = st.field, o = st.orient; const d = fieldDef(f,o);
+document.querySelectorAll("[data-f]").forEach(b=> b.onclick = ()=>{ const p = b.dataset.f; setField(p, fieldCur(st.field, fieldO())[p] + (+b.dataset.d)); });
+$("#fReset").onclick = ()=>{ const f = st.field, o = fieldO(); const d = fieldDef(f,o);
   st.tune.field = st.tune.field||{}; st.tune.field[f] = st.tune.field[f]||{};
   if(((D.tune.field||{})[f]||{})[o]) st.tune.field[f][o] = d; else delete st.tune.field[f][o];
   if(!Object.keys(st.tune.field[f]).length) delete st.tune.field[f]; push(); };
@@ -267,8 +335,15 @@ document.querySelectorAll("[data-u]").forEach(b=> b.onclick = ()=>{ const p = b.
 document.querySelectorAll("[data-j]").forEach(b=> b.onclick = ()=>{ const j = st.jobs[st.sel]; setJob(j, jobCur(j, st.orient) + (+b.dataset.j)); push(); });
 $("#uAllS").onclick = ()=>{ const v = jobCur(st.jobs[st.sel], st.orient); (D.jobs||[]).forEach(j=> setJob(j.k, v)); push(); };
 $("#uReset").onclick = ()=>{ setSlot(st.sel, slotDef(st.sel, st.orient)); push(); };
+/* 쿼터뷰 요소 (1007) */
+document.querySelectorAll("#tqEls [data-tq]").forEach(b=> b.onclick = ()=>{ st.tqSel = b.dataset.tq; st.focus = "tq"; push(); });
+[["qX","x"],["qY","y"],["qW","w"],["qH","h"],["qS","size"]].forEach(([id,p])=> $("#"+id).onchange = e=>{ st.focus = "tq"; setQ(st.tqSel, {[p]: +e.target.value || 0}); push(); });
+document.querySelectorAll("[data-q]").forEach(b=> b.onclick = ()=>{ const p = b.dataset.q; st.focus = "tq"; setQ(st.tqSel, {[p]: (qCur(st.tqSel)[p] || 0) + (+b.dataset.d)}); push(); });
+$("#qReset").onclick = ()=>{ if(st.tune.quarter) delete st.tune.quarter[st.tqSel]; st.focus = "tq"; push(); };
+$("#qBan").onclick = ()=>{ if(D) frame.contentWindow.postMessage({lab:"field", type:"banner"}, "*"); };
+$("#qLong").onchange = e=>{ st.longName = e.target.checked; push(); };   // 1008 — 미리보기 전용 (게임에 반영되지 않는다)
 $("#resetAll").onclick = ()=>{
-  if(!confirm("필드 · 유닛 조정을 모두 지우고 게임의 기존 세팅으로 돌아갈까?")) return;
+  if(!confirm("필드 · 유닛 · 쿼터뷰 조정을 모두 지우고 게임의 기존 세팅으로 돌아갈까?")) return;
   st.tune = clone(D.tune); st.jobs = clone(D.jobs0); st.hide = {}; push(); };
 $("#diff").onclick = ()=>{ $("#diffText").value = diffText(); $("#diffBox").style.display = "flex"; };
 $("#close").onclick = ()=> $("#diffBox").style.display = "none";
@@ -280,7 +355,8 @@ addEventListener("keydown", e=>{
   const dx = {ArrowLeft:-1, ArrowRight:1}[e.key]||0, dy = {ArrowUp:-1, ArrowDown:1}[e.key]||0;
   if(!dx && !dy) return;
   e.preventDefault();
-  if(e.altKey){ const c = fieldCur(st.field, st.orient); if(dx) setField("x", c.x + dx); if(dy) setField("y", c.y + dy); return; }
+  if(e.altKey){ const c = fieldCur(st.field, fieldO()); if(dx) setField("x", c.x + dx); if(dy) setField("y", c.y + dy); return; }
+  if(st.focus === "tq"){ const s = e.shiftKey ? 10 : 1, q = qCur(st.tqSel); setQ(st.tqSel, {x: q.x + dx*s, y: q.y + dy*s}); push(); return; }   // 쿼터뷰 요소 (1007)
   const k = e.shiftKey ? 2 : .5, c = slotCur(st.sel, st.orient);
   setSlot(st.sel, {x: c.x + dx*k, y: c.y + dy*k}); push();
 });
@@ -295,16 +371,20 @@ addEventListener("message", e=>{
     st.tune.job = st.tune.job || {landscape:{}, portrait:{}};
     Object.values(st.tune.slot||{}).forEach(T=> Object.values(T).forEach(v=> delete v.s));   // 예전 판(자리별 크기) 값 정리
     if(!st.jobs) st.jobs = clone(D.jobs0);
-    $("#field").innerHTML = D.fields.map(f=> `<option value="${f.k}">${f.k}${f.variant?" (가로·세로 전용 그림)":""}</option>`).join("");
+    $("#field").innerHTML = D.fields.map(f=> `<option value="${f.k}">${f.k}${f.variant?" (가로·세로 전용 그림)":""}${(D.quarter||[]).includes(f.k)?" · 가로 쿼터뷰":""}</option>`).join("");
     $("#job").innerHTML = D.jobs.map(j=> `<option value="${j.k}">${j.n}</option>`).join("");
     if(!D.fields.some(f=> f.k===st.field)) st.field = D.fields[0].k;
     gameOrient = d.orient;
     layout(); push();
   }
   if(d.type === "orient"){ gameOrient = d.orient; badge(); }
-  if(d.type === "pick"){ st.sel = d.slot; persist(); paint(); }
+  if(d.type === "pick"){ st.sel = d.slot; st.focus = "unit"; persist(); paint(); }
   if(d.type === "move"){ setSlot(d.slot, {x:d.x, y:d.y}, d.orient); st.sel = d.slot; paint(); }
   if(d.type === "moveend"){ setSlot(d.slot, {x:d.x, y:d.y}, d.orient); st.sel = d.slot; push(); }
+  /* 쿼터뷰 요소 (1007) — 게임 화면에서 고르기 · 끌기 */
+  if(d.type === "tqpick"){ st.tqSel = d.el; st.focus = "tq"; persist(); paint(); }
+  if(d.type === "tqmove"){ setQ(d.el, d.v); st.tqSel = d.el; paint(); }
+  if(d.type === "tqmoveend"){ setQ(d.el, d.v); st.tqSel = d.el; st.focus = "tq"; push(); }
 });
 layout();
 </script>
