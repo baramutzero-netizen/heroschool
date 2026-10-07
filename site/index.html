@@ -11385,8 +11385,8 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1008-0641";
-const BUILD_TS = 1791409263584;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
+const BUILD = "1008-0754";
+const BUILD_TS = 1791413668385;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -16814,7 +16814,7 @@ function alignDemonField(){
    slot[landscape|portrait]["A-front-0"] = {x:%, y:%} — A 우리 · B 상대, front 전열 · back 후열, 0~2 왼쪽부터.
    job[landscape|portrait]["paladin"] = 유닛 크기 배율 — 직업마다 (어느 자리에 서도 같은 크기).
    가로/세로는 화면 폭으로 가른다 (bfOrient). */
-const BATTLE_TUNE = {   /* 0930 — 필드 배치 실험실 결과 반영 (64건) · 1007 — 가로 자리 12 · 직업 크기 16 (28건) · 1008 — 쿼터뷰 지도 4 · 쿼터뷰 요소 3 (7건) */
+const BATTLE_TUNE = {   /* 0930 — 필드 배치 실험실 결과 반영 (64건) · 1007 — 가로 자리 12 · 직업 크기 16 (28건) · 1008 — 쿼터뷰 지도 4 · 쿼터뷰 요소 3 (7건) · 1008 — 경기 이름 왼쪽 맞춤 */
   field:{
     areatournament:{landscape:{"zoom":1.6,"x":6,"y":-12}, portrait:{"zoom":1.2,"x":0,"y":0}},
     citytournament:{landscape:{"zoom":1.1,"x":7,"y":-2}, portrait:{"zoom":1.15,"x":0,"y":0}},
@@ -16835,8 +16835,8 @@ const BATTLE_TUNE = {   /* 0930 — 필드 배치 실험실 결과 반영 (64건
     landscape:{"paladin":0.8,"priest":0.8,"darkpriest":0.75,"sword":0.65,"archer":0.7,"rogue":0.7,"timemage":0.7,"wizard":0.75,"enchanter":0.7,"bard":0.65,"spellsword":0.8,"ninja":0.75,"monk":0.75,"druid":0.7,"forcemage":0.75,"gunner":0.75},
     portrait:{"ninja":0.9,"rogue":0.9,"archer":0.9,"wizard":0.95,"darkpriest":0.9,"bard":0.85,"sword":0.9,"timemage":0.9,"druid":0.9,"enchanter":0.9,"spellsword":1.05}
   },
-  quarter:{   /* 1007 — 대회 쿼터뷰(가로) 경기 이름 · 진영 칸 — 편집기 좌표 px. title 은 글 가운데 x · y 와 글자 크기 · enemy / ally 는 칸 x · y · w · h 와 이름 글자 크기 */
-    title:{"x":578,"y":207,"size":24},
+  quarter:{   /* 1007 — 대회 쿼터뷰(가로) 경기 이름 · 진영 칸 — 편집기 좌표 px. title 은 x · y(글 가운데) · 글자 크기 · align(1008 — left 면 x 가 글 왼쪽 끝 · right 면 오른쪽 끝 · 없으면 가운데) · enemy / ally 는 칸 x · y · w · h(가장 작은 크기) 와 이름 글자 크기 */
+    title:{"x":380,"y":207,"size":24,"align":"left"},
     enemy:{"x":1312,"y":163,"w":243,"h":32,"size":20},
     ally:{"x":309,"y":906,"w":216,"h":34,"size":20}
   }
@@ -17301,7 +17301,9 @@ function bannerPlace(el){
   const st = document.querySelector("#modalRoot .bf-stage"), vw = innerWidth, vh = innerHeight;
   let L = 0, T = 0, R = vw, Bt = vh;
   const r = st && st.getBoundingClientRect();
-  if(r && r.width > 40 && r.height > 40){ L = Math.max(0, r.left); T = Math.max(0, r.top); R = Math.min(vw, r.right); Bt = Math.min(vh, r.bottom); }
+  if(r && r.width > 40 && r.height > 40){
+    const dx = st.closest(".tournament-quarter") ? tqFrameDx() * (r.width / (st.offsetWidth || r.width)) : 0;   // 1008 — 쿼터뷰는 나무 테두리 가운데로
+    L = Math.max(0, r.left + dx); T = Math.max(0, r.top); R = Math.min(vw, r.right + dx); Bt = Math.min(vh, r.bottom); }
   el.style.left = L + "px"; el.style.top = T + "px";
   el.style.width = Math.max(0, R - L) + "px"; el.style.height = Math.max(0, Bt - T) + "px";
 }
@@ -17466,11 +17468,20 @@ function tqTune(){
   ["title","enemy","ally"].forEach(k=> o[k] = Object.assign({}, d[k], t[k]));
   return o;
 }
+const TQ_TITLE_M = 60;   // 1008 — 경기 이름이 늘어나는 한계: 전투판 가장자리에서 이만큼 안쪽 (나무 테두리 · 용 장식)
 function tqPlace(el, k, v){
   if(!el || !v) return;
   const F = TOURNAMENT_LAYOUT.field, set = (p, x)=> el.style.setProperty(p, x, "important");
-  if(k === "title"){ set("left", (v.x - F.x) + "px"); set("top", (v.y - F.y) + "px");
-    set("font-size", v.size + "px"); set("--tq-o", Math.max(2, Math.round(v.size / 12)) + "px"); set("max-width", (F.w - 40) + "px"); return; }
+  if(k === "title"){
+    /* 1008 — 맞춤(align): left 는 x 가 글 왼쪽 끝 · right 는 오른쪽 끝 · 그 밖은 가운데 (y 는 늘 글 가운데).
+       길면 전투판 안쪽(가장자리에서 TQ_TITLE_M 안)까지만 늘어나고 줄을 바꾼다 — 테두리 밖으로 삐져나가지 않게 */
+    const a = v.align === "left" || v.align === "right" ? v.align : "center", lo = F.x + TQ_TITLE_M, hi = F.x + F.w - TQ_TITLE_M;
+    const room = a === "left" ? hi - v.x : a === "right" ? v.x - lo : 2 * Math.min(v.x - lo, hi - v.x);
+    set("left", (v.x - F.x) + "px"); set("top", (v.y - F.y) + "px");
+    set("transform", a === "left" ? "translate(0,-50%)" : a === "right" ? "translate(-100%,-50%)" : "translate(-50%,-50%)");
+    set("text-align", a);
+    set("max-width", Math.round(Math.max(160, Math.min(F.w - 2 * TQ_TITLE_M, room))) + "px");
+    set("font-size", v.size + "px"); set("--tq-o", Math.max(2, Math.round(v.size / 12)) + "px"); return; }
   /* 1008 — 진영 칸은 학원 이름 길이만큼 늘어난다 (w · h 는 가장 작은 크기). 전투판 가장자리 쪽을 붙잡고 안쪽으로 —
      오른쪽에 있는 칸은 왼쪽으로, 아래쪽에 있는 칸은 위로 늘어난다. 전투판 너비의 45% 를 넘으면 두 줄 */
   const toL = v.x + v.w/2 > F.x + F.w/2, toU = v.y + v.h/2 > F.y + F.h/2;
@@ -17526,7 +17537,12 @@ function tournamentLayoutApply(fk){
  tournamentLayoutFit();
  tournamentCharacterSetup(stage,L.map);
 }
-function tournamentLayoutFit(){const m=document.querySelector('.tournament-quarter');if(m)m.style.setProperty('transform','scale('+Math.min(1,(innerWidth-16)/1800,(innerHeight-16)/1120)+')','important');}
+/* 1008 — 쿼터뷰 나무 테두리 가운데가 전투판 가운데보다 오른쪽으로 치우친 만큼 (편집기 px · 왼쪽 용보다 오른쪽 기사 장식이 넓다).
+   전투 화면 전체를 그만큼 왼쪽으로 옮기고(tournamentLayoutFit), 배너는 그만큼 오른쪽으로 놓아(bannerPlace) 둘 다 화면 가운데에 온다 */
+function tqFrameDx(){ const L = TOURNAMENT_LAYOUT; return (L.frame.x + L.frame.w/2) - (L.field.x + L.field.w/2); }
+function tournamentLayoutFit(){const m=document.querySelector('.tournament-quarter');if(!m)return;const s=Math.min(1,(innerWidth-16)/1800,(innerHeight-16)/1120);
+ m.style.setProperty('transform','translateX('+(-tqFrameDx()*s).toFixed(1)+'px) scale('+s+')','important');   // 1008 — 테두리 가운데를 화면 가운데로
+ document.querySelectorAll('.bt-banner').forEach(bannerPlace);}   // 창 크기가 바뀌면 배너도 새 자리로
 addEventListener('resize',tournamentLayoutFit);
 
 function openBattle(res, opt, onDone){
@@ -20019,7 +20035,8 @@ function fieldLabRender(){
   const res = runBattle(A, B, {formA:"__lab", formB:"__lab", rowsA:rows, rowsB:rows, titleA:"우리 학원", titleB:"상대 학원"});
   res.frames = [res.frames[0]]; res.winner = null;
   const nA = L.longName ? "성벽 너머 푸른 언덕 왕립 용사 양성 학원" : "우리 학원", nB = L.longName ? "북쪽 바다 끝 등대 마을 견습 기사 학원" : "상대 학원";   // 1008 — 긴 학원 이름으로 보기
-  openBattle(res, {field: L.field, head: "필드 배치 실험실 · " + L.field, titleA:nA, titleB:nB, lab:true}, ()=>{});
+  const head = L.longName ? `5인 리그 시즌 21 · 14라운드 — ${nA} 대 ${nB}` : "필드 배치 실험실 · " + L.field;   // 1008 — 긴 이름이면 경기 이름도 길게
+  openBattle(res, {field: L.field, head, titleA:nA, titleB:nB, lab:true}, ()=>{});
   labDecorate();
 }
 function labDecorate(){

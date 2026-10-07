@@ -96,13 +96,14 @@ button.primary{background:#6b5222;border-color:var(--gold)}
   <section id="tqSec">
     <h2>쿼터뷰 화면 · 가로 <small id="tqMod"></small></h2>
     <div class="seg" id="tqEls"><button data-tq="title">경기 이름</button><button data-tq="enemy">상대 진영</button><button data-tq="ally">우리 진영</button></div>
+    <div class="row" id="qAlignRow"><label>맞춤</label><div class="seg" style="flex:1"><button data-qa="left">왼쪽</button><button data-qa="center">가운데</button><button data-qa="right">오른쪽</button></div></div>
     <div class="row"><label>X</label><button class="sm" data-q="x" data-d="-2">◀</button><input type="number" id="qX" step="1"><button class="sm" data-q="x" data-d="2">▶</button></div>
     <div class="row"><label>Y</label><button class="sm" data-q="y" data-d="-2">▲</button><input type="number" id="qY" step="1"><button class="sm" data-q="y" data-d="2">▼</button></div>
     <div class="row qbox"><label>너비</label><button class="sm" data-q="w" data-d="-4">－</button><input type="number" id="qW" step="1" min="40"><button class="sm" data-q="w" data-d="4">＋</button></div>
     <div class="row qbox"><label>높이</label><button class="sm" data-q="h" data-d="-4">－</button><input type="number" id="qH" step="1" min="24"><button class="sm" data-q="h" data-d="4">＋</button></div>
     <div class="row"><label>글자 크기</label><button class="sm" data-q="size" data-d="-1">－</button><input type="number" id="qS" step="1" min="8" max="96"><button class="sm" data-q="size" data-d="1">＋</button></div>
     <div class="row"><button id="qBan" style="flex:1.5">BATTLE START 틀기</button><button id="qReset" style="flex:1">이 요소 기본값</button></div>
-    <div class="row"><label class="chk"><input type="checkbox" id="qLong"> 긴 학원 이름으로 보기 (미리보기)</label></div>
+    <div class="row"><label class="chk"><input type="checkbox" id="qLong"> 긴 이름으로 보기 — 학원 · 경기 이름 (미리보기)</label></div>
     <p class="hint" id="tqHint"></p>
   </section>
 
@@ -185,13 +186,14 @@ function setSlot(k, patch, o){
 /* 쿼터뷰 요소 (1007) — 편집기 좌표 px. 경기 이름은 글 가운데 x · y + 글자 크기, 진영 칸은 x · y · 너비 · 높이 + 이름 글자 크기 */
 const TQ_EL = ["title","enemy","ally"];
 const TQN = {title:"경기 이름", enemy:"상대 진영", ally:"우리 진영"};
-const TQP = [["x","X"],["y","Y"],["w","너비"],["h","높이"],["size","글자 크기"]];
+const TQP = [["align","맞춤"],["x","X"],["y","Y"],["w","너비"],["h","높이"],["size","글자 크기"]];
+const TQA = {left:"왼쪽", center:"가운데", right:"오른쪽"};   // 경기 이름 맞춤 (1008) — left 면 X 가 글 왼쪽 끝 · right 면 오른쪽 끝
 const TQ_MIN = {w:40, h:24, size:8};
-function qDef(k){ return Object.assign({}, ((D.tune.quarter)||{})[k]); }
+function qDef(k){ const d = Object.assign({}, ((D.tune.quarter)||{})[k]); if(k === "title" && !TQA[d.align]) d.align = "center"; return d; }
 function qCur(k){ return Object.assign(qDef(k), ((st.tune.quarter)||{})[k]||{}); }
 function setQ(k, patch){
   const cur = Object.assign(qCur(k), patch);
-  Object.keys(cur).forEach(p=> cur[p] = Math.max(TQ_MIN[p] || -9999, Math.round(+cur[p] || 0)));
+  Object.keys(cur).forEach(p=>{ if(p === "align") cur[p] = TQA[cur[p]] ? cur[p] : "center"; else cur[p] = Math.max(TQ_MIN[p] || -9999, Math.round(+cur[p] || 0)); });
   st.tune.quarter = st.tune.quarter || {};
   if(JSON.stringify(cur) === JSON.stringify(qDef(k))) delete st.tune.quarter[k]; else st.tune.quarter[k] = cur;
 }
@@ -262,10 +264,13 @@ function paintTq(){
   $("#qLong").checked = !!st.longName;
   $("#qX").value = q.x; $("#qY").value = q.y; $("#qW").value = box ? q.w : ""; $("#qH").value = box ? q.h : ""; $("#qS").value = q.size;
   document.querySelectorAll(".qbox").forEach(r=> r.style.display = box ? "" : "none");
+  $("#qAlignRow").style.display = box ? "none" : "";
+  document.querySelectorAll("[data-qa]").forEach(b=> b.classList.toggle("on", b.dataset.qa === (q.align || "center")));
   $("#tqMod").textContent = TQ_EL.some(qMod) ? "● 바뀜" : "";
   const qf = D.quarter || [], on = st.orient === "landscape" && qf.includes(st.field);
   $("#tqHint").innerHTML = (on ? "" : `<span class="warn">지금 필드 · 화면은 쿼터뷰가 아니다.</span> ${qf.join(" · ")} 중 하나를 가로로 고르면 보인다.<br>`)
-    + "좌표는 전투 화면 편집기와 같은 px (전투 영역 왼쪽 위가 250, 158). 경기 이름의 X · Y 는 글 가운데."
+    + "좌표는 전투 화면 편집기와 같은 px (전투 영역 왼쪽 위가 250, 158). 경기 이름의 Y 는 글 가운데, X 는 맞춤에 따라 글 왼쪽 끝 · 가운데 · 오른쪽 끝"
+    + " — 이름이 길어지면 왼쪽 맞춤은 오른쪽으로, 오른쪽 맞춤은 왼쪽으로 늘어나고, 전투판 안쪽 끝에 닿으면 줄을 바꾼다."
     + " 게임에서 경기 이름은 BATTLE START 가 도는 동안만 보이고, 실험실에서는 늘 보인다."
     + " 화면에서 끌어 옮기고, 고른 요소의 노란 모서리를 끌면 크기가 바뀐다. 고른 뒤 방향키 1px · Shift+방향키 10px."
     + " 진영 칸의 너비 · 높이는 가장 작은 크기 — 학원 이름이 길면 칸이 늘어난다 (오른쪽 칸은 왼쪽으로, 아래쪽 칸은 위로 · 전투판 너비의 45% 를 넘으면 두 줄)."
@@ -300,7 +305,7 @@ function diffText(){
   if(D.tune.quarter) TQ_EL.forEach(k=>{
     if(!qMod(k)) return;
     const a = qDef(k), b = qCur(k);
-    const ch = TQP.filter(([p])=> b[p] != null && a[p] !== b[p]).map(([p,n])=> `${n} ${a[p]} → ${b[p]}`);
+    const ch = TQP.filter(([p])=> b[p] != null && a[p] !== b[p]).map(([p,n])=> p === "align" ? `${n} ${TQA[a[p]]||a[p]} → ${TQA[b[p]]||b[p]}` : `${n} ${a[p]} → ${b[p]}`);
     lines.push(`쿼터뷰 · ${TQN[k]}: ${ch.join(", ")}`);
     (patch.quarter = patch.quarter || {})[k] = b;
   });
@@ -342,6 +347,7 @@ document.querySelectorAll("[data-q]").forEach(b=> b.onclick = ()=>{ const p = b.
 $("#qReset").onclick = ()=>{ if(st.tune.quarter) delete st.tune.quarter[st.tqSel]; st.focus = "tq"; push(); };
 $("#qBan").onclick = ()=>{ if(D) frame.contentWindow.postMessage({lab:"field", type:"banner"}, "*"); };
 $("#qLong").onchange = e=>{ st.longName = e.target.checked; push(); };   // 1008 — 미리보기 전용 (게임에 반영되지 않는다)
+document.querySelectorAll("[data-qa]").forEach(b=> b.onclick = ()=>{ st.tqSel = "title"; st.focus = "tq"; setQ("title", {align: b.dataset.qa}); push(); });   // 1008 — 경기 이름 맞춤 (X 는 그 기준점 그대로)
 $("#resetAll").onclick = ()=>{
   if(!confirm("필드 · 유닛 · 쿼터뷰 조정을 모두 지우고 게임의 기존 세팅으로 돌아갈까?")) return;
   st.tune = clone(D.tune); st.jobs = clone(D.jobs0); st.hide = {}; push(); };
@@ -370,6 +376,8 @@ addEventListener("message", e=>{
     if(!st.tune) st.tune = clone(D.tune);
     st.tune.job = st.tune.job || {landscape:{}, portrait:{}};
     Object.values(st.tune.slot||{}).forEach(T=> Object.values(T).forEach(v=> delete v.s));   // 예전 판(자리별 크기) 값 정리
+    { const q = st.tune.quarter, t = q && q.title, d = ((D.tune.quarter)||{}).title;          // 예전 판(맞춤 없던 때) 경기 이름 값 정리 (1008)
+      if(t && t.align == null && d && d.align != null) delete q.title; }
     if(!st.jobs) st.jobs = clone(D.jobs0);
     $("#field").innerHTML = D.fields.map(f=> `<option value="${f.k}">${f.k}${f.variant?" (가로·세로 전용 그림)":""}${(D.quarter||[]).includes(f.k)?" · 가로 쿼터뷰":""}</option>`).join("");
     $("#job").innerHTML = D.jobs.map(j=> `<option value="${j.k}">${j.n}</option>`).join("");
