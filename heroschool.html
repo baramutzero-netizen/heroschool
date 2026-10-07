@@ -11356,7 +11356,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1007-2010";
+const BUILD = "1007-2024";
 const BUILD_TS = 0;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
@@ -16783,7 +16783,7 @@ function alignDemonField(){
    slot[landscape|portrait]["A-front-0"] = {x:%, y:%} — A 우리 · B 상대, front 전열 · back 후열, 0~2 왼쪽부터.
    job[landscape|portrait]["paladin"] = 유닛 크기 배율 — 직업마다 (어느 자리에 서도 같은 크기).
    가로/세로는 화면 폭으로 가른다 (bfOrient). */
-const BATTLE_TUNE = {   /* 0930 — 필드 배치 실험실 결과 반영 (64건) */
+const BATTLE_TUNE = {   /* 0930 — 필드 배치 실험실 결과 반영 (64건) · 1007 — 가로 자리 12 · 직업 크기 16 (28건) */
   field:{
     areatournament:{landscape:{"zoom":1.6,"x":6,"y":-12}, portrait:{"zoom":1.2,"x":0,"y":0}},
     citytournament:{landscape:{"zoom":1.1,"x":7,"y":-2}, portrait:{"zoom":1.15,"x":0,"y":0}},
@@ -16797,11 +16797,11 @@ const BATTLE_TUNE = {   /* 0930 — 필드 배치 실험실 결과 반영 (64건
     spring:{landscape:{"zoom":0.85,"x":1,"y":14}}
   },
   slot:{
-    landscape:{"B-back-0":{"x":49,"y":9},"B-back-1":{"x":69,"y":19},"B-back-2":{"x":89,"y":29},"B-front-0":{"x":37,"y":26},"B-front-1":{"x":57,"y":36},"B-front-2":{"x":77,"y":46},"A-back-0":{"x":14,"y":61},"A-back-1":{"x":31,"y":71},"A-back-2":{"x":48,"y":81},"A-front-0":{"x":26,"y":44},"A-front-1":{"x":43,"y":54},"A-front-2":{"x":60,"y":64}},
+    landscape:{"B-back-0":{"x":57.5,"y":14},"B-back-1":{"x":73,"y":20.5},"B-back-2":{"x":84.5,"y":29.5},"B-front-0":{"x":47,"y":24},"B-front-1":{"x":61.5,"y":29.5},"B-front-2":{"x":73,"y":42},"A-back-0":{"x":21.5,"y":46},"A-back-1":{"x":33.5,"y":61},"A-back-2":{"x":49,"y":68.5},"A-front-0":{"x":34,"y":34.5},"A-front-1":{"x":43,"y":48.5},"A-front-2":{"x":58.5,"y":56.5}},
     portrait:{"B-back-0":{"x":30,"y":16},"B-back-1":{"x":56,"y":18},"B-back-2":{"x":82,"y":20},"B-front-0":{"x":34,"y":32},"B-front-1":{"x":60,"y":34},"B-front-2":{"x":86,"y":36},"A-back-0":{"x":14,"y":68},"A-back-1":{"x":40,"y":70},"A-back-2":{"x":66,"y":72},"A-front-0":{"x":18,"y":52},"A-front-1":{"x":44,"y":54},"A-front-2":{"x":70,"y":56}}
   },
   job:{
-    landscape:{"paladin":1.05,"priest":1.1,"darkpriest":0.95,"sword":0.9,"archer":0.9,"rogue":0.9,"timemage":0.9,"wizard":0.95,"enchanter":0.9,"bard":0.85,"spellsword":1.05,"ninja":0.9},
+    landscape:{"paladin":0.8,"priest":0.8,"darkpriest":0.75,"sword":0.65,"archer":0.7,"rogue":0.7,"timemage":0.7,"wizard":0.75,"enchanter":0.7,"bard":0.65,"spellsword":0.8,"ninja":0.75,"monk":0.75,"druid":0.7,"forcemage":0.75,"gunner":0.75},
     portrait:{"ninja":0.9,"rogue":0.9,"archer":0.9,"wizard":0.95,"darkpriest":0.9,"bard":0.85,"sword":0.9,"timemage":0.9,"druid":0.9,"enchanter":0.9,"spellsword":1.05}
   }
 };
