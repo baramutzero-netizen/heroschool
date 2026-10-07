@@ -2231,6 +2231,39 @@ html body .skwrap .skfit .skstage .sk-ripple{position:absolute;border:2px solid 
 html body .skwrap .skfit .skstage .sk-hold{position:absolute;inset:0;z-index:40;cursor:none;touch-action:none}
 @media (prefers-reduced-motion:reduce){html body .skwrap .skfit .skstage .sk-quill.nudge,html body .skwrap .skfit .skstage .sk-quill.dip img,html body .skwrap .skfit .skstage .sk-ripple,html body .skwrap .skfit .skstage .sk-appr.inked::after{animation:none}html body .skwrap .skfit .skstage .sk-quill.glint img,html body .skwrap .skfit .skstage .sk-inkfx.on img{animation:none;filter:drop-shadow(2px 0 0 #ffeca0) drop-shadow(-2px 0 0 #ffeca0) drop-shadow(0 2px 0 #ffeca0) drop-shadow(0 -2px 0 #ffeca0)}html body .skwrap .skfit .skstage .sk-quill.glint .sk-tw,html body .skwrap .skfit .skstage .sk-inkfx.on .sk-tw{animation:none;display:none}}
 /* SCHED_SCROLL_CSS_END */
+/* MDESK_CSS_START — 마스터 노트 책상 (1006) · 마을 지도(.town · .townmap · .townpop)와 같은 틀 위에 얹는다 */
+.mdesk .mdesk-in{overflow:hidden}
+.mdesk .mdesk-art{position:absolute;left:0;top:0;width:100%;height:calc(100% * 932 / 931)}
+.mdesk .mdl{position:absolute;left:0;top:0;width:100%;height:100%;display:block;max-width:none;margin:0;image-rendering:pixelated;pointer-events:none;-webkit-user-select:none;user-select:none}
+.mdesk .md-light{mix-blend-mode:screen}
+.mdesk .md-items{transition:opacity .26s ease-in}
+/* 누를 수 있는 소품 — 마우스를 올리면(키보드로 고르면) 테두리 빛 + 이름표 */
+.mdesk .mdh{opacity:0;transition:opacity .12s}
+.mdesk[data-hot="1"] .mdh[data-g="1"],.mdesk[data-hot="2"] .mdh[data-g="2"],.mdesk[data-hot="3"] .mdh[data-g="3"],
+.mdesk[data-hot="4"] .mdh[data-g="4"],.mdesk[data-hot="5"] .mdh[data-g="5"]{opacity:1}
+html body #view .mdesk .mdk{position:absolute;display:block;margin:0!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;
+  border-radius:0!important;outline:0!important;min-width:0!important;min-height:0!important;pointer-events:none;color:inherit;transform:none!important}
+.mdesk .mdtag{position:absolute;left:50%;bottom:100%;transform:translate(-50%,-4px);white-space:nowrap;font-size:12px;line-height:1.35;padding:1px 7px;
+  background:#2a1a11e6;color:#fff0ce;border-radius:3px;pointer-events:none;opacity:0;transition:opacity .12s;z-index:4}
+.mdesk .mdk.below .mdtag{top:100%;bottom:auto;transform:translate(-50%,4px)}
+.mdesk[data-hot="1"] .mdk[data-g="1"] .mdtag,.mdesk[data-hot="2"] .mdk[data-g="2"] .mdtag,.mdesk[data-hot="3"] .mdk[data-g="3"] .mdtag,
+.mdesk[data-hot="4"] .mdk[data-g="4"] .mdtag,.mdesk[data-hot="5"] .mdk[data-g="5"] .mdtag{opacity:1}
+/* 남은 마스터 육성 포인트 — 책 더미 오른쪽 위에 -15도 (사이드 메뉴의 숫자 표식과 같은 결) */
+.mdesk .mdbadge{position:absolute;z-index:3;transform:translate(-50%,-50%) rotate(-15deg);min-width:24px;height:24px;padding:0 5px;box-sizing:border-box;
+  font-size:14px;line-height:20px;font-weight:700;text-align:center;color:#fff;background:#b0412c;border:2px solid #4a1d14;border-radius:0;
+  box-shadow:2px 2px 0 #2a120c80;pointer-events:none;transition:opacity .15s}
+/* 두루마리 → 스케줄 */
+.mdesk.mdesk-go .md-items,.mdesk.mdesk-go .mdh,.mdesk.mdesk-go .mdbadge,.mdesk.mdesk-go .mdtag{opacity:0!important}
+.mdesk.mdesk-go .mdesk-art{pointer-events:none}
+.mdesk .mdesk-frame.mf-top{top:0;bottom:auto;clip-path:inset(0 0 50% 0)}
+.mdesk .mdesk-frame.mf-bot{top:auto;bottom:0;clip-path:inset(50% 0 0 0)}
+.mdesk-ghost{position:absolute;z-index:30;opacity:0;pointer-events:none}                 /* 사이드 메뉴(z 40) 아래 */
+.mdesk-ghost img{position:absolute;left:0;top:0;width:100%;height:100%;max-width:none;display:block;margin:0;image-rendering:pixelated}
+html body .skwrap.mdesk-wait .sk-paper{opacity:0}
+html body .skwrap.mdesk-intro .sk-paper{animation:mdeskIn .42s ease-out both}
+@keyframes mdeskIn{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.mdesk .mdh,.mdesk .mdtag,.mdesk .md-items{transition:none}}
+/* MDESK_CSS_END */
 </style>
 
 <link rel="stylesheet" href="../assets/title-art/title-screen.css?v=7">
@@ -9250,7 +9283,7 @@ function render(){
     const nav = $("#nav");
     if(nav._h !== navH + sideH){
       nav.innerHTML = navH + sideH; nav._h = navH + sideH;
-      nav.querySelectorAll("button[data-view]").forEach(b=> b.onclick=()=>{ if(b.dataset.view==="facil") UI.facTab = null; UI.view=b.dataset.view; render(); });
+      nav.querySelectorAll("button[data-view]").forEach(b=> b.onclick=()=>{ if(b.dataset.view==="facil") UI.facTab = null; if(b.dataset.view==="home") UI.mdeskPop = null; UI.view=b.dataset.view; render(); });
       nav.querySelectorAll("button[data-act]").forEach(b=> b.onclick=()=> b.dataset.act==="feedback" ? feedModal() : missionModal());
     }
   }
@@ -9286,8 +9319,10 @@ function render(){
 
   const v = $("#view");
   if(UI.view!=="facil") UI.facTab = null;                     // 1002 — 마을 팝업은 마을을 떠나면 닫힌다
-  document.documentElement.classList.toggle("town-on", UI.view==="facil" && townMode());
-  if(UI.view==="home") v.innerHTML = viewHome();
+  if(UI.view==="master" && mdeskOn()){ UI.view = "home"; UI.mdeskPop = "master"; }   // 1006 — 책상에서는 마스터 육성이 책 더미 팝업
+  if(UI.view!=="home") UI.mdeskPop = null;                   // 책상 팝업은 마스터 노트를 떠나면 닫힌다
+  document.documentElement.classList.toggle("town-on", (UI.view==="facil" || UI.view==="home") && townMode());   // 1006 — 마스터 노트 책상도 마을 지도처럼
+  if(UI.view==="home") v.innerHTML = mdeskOn() ? viewHomeDesk() : viewHome();   // 마스터 노트 책상 (1006) — 가로 화면
   else if(UI.view==="master") v.innerHTML = viewMaster();
   else if(UI.view==="roster") v.innerHTML = viewRoster();
   else if(UI.view==="plan") v.innerHTML = schedScrollOn() ? viewPlanScroll() : viewPlan();   // 두루마리 스케줄 (1006)
@@ -9305,7 +9340,7 @@ function render(){
   else if(UI.view==="scout") v.innerHTML = viewScout();
   else if(UI.view==="log") v.innerHTML = viewLog();
   else v.innerHTML = viewHome();
-  { const sub = subTabsHtml(UI.view);   // 1002 — 학생 · 리그 · 일지 묶음의 서브탭 (마을 서브탭과 같은 모양)
+  { const sub = (UI.view==="home" && mdeskOn()) ? "" : subTabsHtml(UI.view);   // 1006 — 책상에는 서브탭 대신 소품   // 1002 — 학생 · 리그 · 일지 묶음의 서브탭 (마을 서브탭과 같은 모양)
     if(sub){ v.insertAdjacentHTML("afterbegin", sub); v.querySelectorAll(".subnav [data-subview]").forEach(b=> b.onclick=()=>{ UI.view=b.dataset.subview; render(); }); } }
   bindView();
   bindChronicle();
@@ -9381,7 +9416,163 @@ function renderLog(){
 const SHOW_YEARFLOW = false;   // 학원 탭 · 연간 흐름 안내 박스
 const SHOW_BULKRUN  = false;   // 스케줄 탭 · 남은 주 일괄 진행 버튼
 const SHOW_FOCUSHELP= false;   // 개인 집중 훈련 · 일괄 지정 안내 문단
-function viewHome(){
+/* MDESK_START — 마스터 노트 책상 (1006)
+   책상 소품 배치판(2판)으로 사용자가 정한 배치(desk_layout.json)를 배치판 자신의 그리기 코드로 구운 그림(MDESK_ART · 1배 607×466)을
+   마을 지도와 같은 액자 안에 띄운다. 가로 화면(townMode)에서만 — 세로 · 좁은 화면은 예전 마스터 노트(학원 정보 · 마스터 육성 서브탭) 그대로.
+   누를 수 있는 소품: 말린 지도(튜토리얼) · 책 더미(마스터 육성 팝업) · 안경 + 회중시계(학원 정보 팝업) · 펼친 책(학생) · 두루마리(스케줄).
+   누르는 자리는 그림 픽셀 그대로(MDESK_GEO.hit — 줄마다 [시작, 길이, 묶음]) — 위에 얹힌 다른 소품(잉크병 · 깃펜 등)은 누르지 않는다.
+   남은 마스터 육성 포인트가 있으면 책 더미 오른쪽 위에 -15도로 기운 표식.
+   두루마리를 누르면(mdeskGo) — 두루마리 위 내용이 사라지고, 책상이 두루마리로 다가가며 액자가 스케줄 크기로 줄어든 뒤
+   스케줄 그림이 겹쳐 나타나고, 스케줄 내용이 두루마리 위로 떠오른다 */
+const MDESK_ART = {"base":"../assets/mdesk_art/base.png?v=a4e77c48","items":"../assets/mdesk_art/items.png?v=1ce40016","props":"../assets/mdesk_art/props.png?v=45776d32","vig":"../assets/mdesk_art/vig.png?v=95eb0186","light":"../assets/mdesk_art/light.png?v=b6203bf4","hl_map":"../assets/mdesk_art/hl_map.png?v=0db5487b","hl_books":"../assets/mdesk_art/hl_books.png?v=fa20dede","hl_info":"../assets/mdesk_art/hl_info.png?v=928aacdf","hl_book":"../assets/mdesk_art/hl_book.png?v=d24cb432","hl_scroll":"../assets/mdesk_art/hl_scroll.png?v=6c137e9c"};
+const MDESK_GEO = {"size":[607,466],"light":{"x":15,"y":0,"w":123,"h":98},"groups":[{"k":"map","n":"튜토리얼","bb":[313,28,394,93],"hl":[311,26,85,69]},{"k":"books","n":"마스터 육성","bb":[80,355,188,443],"hl":[78,353,112,92]},{"k":"info","n":"학원 정보","bb":[335,394,410,450],"hl":[333,392,79,60]},{"k":"book","n":"학생","bb":[224,372,304,431],"hl":[222,370,84,63]},{"k":"scroll","n":"스케줄","bb":[57,112,420,353],"hl":[55,110,367,245]}],"scroll":{"x":57,"y":112,"w":363,"h":241},"books":{"x":157,"y":355,"bb":[80,355,180,437],"bx":167,"by":360},"hit":";;;;;;;;;;;;;;;;;;;;;;;;;;;;378,4,1;376,7,1;375,9,1;373,12,1;372,14,1;370,17,1;369,18,1;367,21,1;366,23,1;364,25,1;363,26,1;361,28,1;360,30,1;358,33,1;357,35,1;356,37,1;354,40,1;351,43,1;348,46,1;347,46,1;346,47,1;344,49,1;343,48,1;342,48,1;342,46,1;341,46,1;339,46,1;338,46,1;336,46,1;335,46,1;333,46,1;332,46,1;330,46,1;329,46,1;327,46,1;326,46,1;324,46,1;323,46,1;322,45,1;320,46,1;319,47,1;317,48,1;316,45,1,363,2,1;314,46,1;313,46,1;313,44,1;313,44,1;313,43,1;313,40,1,354,1,1;313,38,1;314,36,1;314,34,1;315,32,1;316,29,1;317,27,1;318,24,1;319,22,1;320,19,1;321,17,1;322,14,1;323,12,1;324,9,1;325,7,1;326,4,1;327,2,1;;;;;;;;;;;;;;;;;;;;63,3,5,408,3,5;62,5,5,407,5,5;60,9,5,405,9,5;58,13,5,403,13,5;57,15,5,402,15,5;57,15,5,402,15,5;57,17,5,402,17,5;57,18,5,402,18,5;57,18,5,402,18,5;58,17,5,403,17,5;58,17,5,403,17,5;58,17,5,403,17,5;58,17,5,403,17,5;58,17,5,403,17,5;58,17,5,403,17,5;58,20,5,79,9,5,91,2,5,95,3,5,100,18,5,120,3,5,124,4,5,130,3,5,136,2,5,141,2,5,144,14,5,161,2,5,165,3,5,171,12,5,184,9,5,194,14,5,210,3,5,215,3,5,221,2,5,225,3,5,229,4,5,235,8,5,245,3,5,250,13,5,265,3,5,271,2,5,275,8,5,286,12,5,299,4,5,306,2,5,310,8,5,321,2,5,324,24,5,351,2,5,356,22,5,381,2,5,385,3,5,389,4,5,396,2,5,401,18,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,303,5,389,30,5;58,302,5,390,29,5;58,301,5,391,28,5;58,301,5,391,28,5;58,300,5,392,27,5;58,300,5,392,27,5;58,300,5,392,27,5;58,300,5,392,27,5;58,300,5,392,27,5;58,300,5,392,27,5;58,300,5,392,27,5;58,300,5,394,25,5;58,300,5,396,23,5;58,300,5,398,21,5;58,300,5,398,21,5;58,300,5,399,20,5;58,300,5,399,20,5;58,300,5,399,20,5;58,300,5,399,20,5;58,300,5,399,20,5;58,300,5,399,18,5;58,300,5,399,16,5;58,300,5,399,13,5;58,300,5,399,11,5;58,300,5,399,9,5;58,300,5,399,7,5;58,300,5,399,5,5;58,300,5,399,3,5;58,300,5,399,2,5;58,300,5;58,300,5;58,301,5;58,301,5;58,302,5;58,303,5;58,304,5;58,305,5;58,306,5;58,307,5;58,308,5,418,1,5;58,309,5,417,2,5;58,310,5,415,4,5;58,325,5,414,5,5;58,325,5,412,7,5;58,324,5,411,8,5;58,323,5,409,10,5;58,23,5,82,9,5,93,3,5,97,4,5,104,7,5,113,3,5,118,13,5,133,8,5,142,9,5,153,3,5,158,8,5,167,9,5,179,2,5,183,8,5,193,3,5,199,2,5,202,4,5,208,3,5,214,2,5,217,9,5,228,13,5,244,7,5,253,3,5,259,7,5,268,23,5,294,17,5,314,7,5,323,18,5,343,3,5,349,12,5,364,7,5,372,8,5,407,12,5;58,16,5,406,13,5;58,16,5,404,15,5;58,16,5,403,16,5;57,17,5,402,17,5;57,17,5,402,17,5;57,17,5,402,17,5;57,18,5,402,18,5;57,18,5,402,18,5;58,17,5,403,17,5;59,16,5,404,16,5;60,15,5,405,15,5;60,15,5,405,15,5;61,14,5,406,14,5;63,11,5,408,11,5;64,9,5,409,9,5;65,5,5,410,5,5;67,1,5,412,1,5;;;157,1,2;154,5,2;150,10,2;146,14,2;142,19,2;138,24,2;135,28,2;131,32,2;127,37,2;123,41,2;120,44,2;116,48,2;112,52,2;106,59,2;100,66,2;93,73,2;86,81,2;85,82,2,291,4,4;84,84,2,285,11,4;84,86,2,278,21,4;84,88,2,266,34,4;84,88,2,230,70,4;84,89,2,229,72,4;84,90,2,225,76,4;84,90,2,224,77,4;85,89,2,224,77,4;85,90,2,224,77,4;83,92,2,224,77,4;81,94,2,224,77,4;80,96,2,224,77,4;80,96,2,225,76,4;80,96,2,225,76,4;80,97,2,225,76,4;80,97,2,225,76,4;80,97,2,225,76,4;81,97,2,225,77,4;81,97,2,225,77,4;81,98,2,225,77,4;82,97,2,225,77,4;82,97,2,225,77,4,344,1,3,358,2,3;83,97,2,225,77,4,343,19,3;83,97,2,225,77,4,342,25,3;83,97,2,226,76,4,341,27,3;84,97,2,226,76,4,341,28,3;84,97,2,226,76,4,340,11,3,361,10,3;85,96,2,226,76,4,339,13,3,363,10,3;85,97,2,226,76,4,338,15,3,365,10,3;85,97,2,226,77,4,337,17,3,367,10,3;86,96,2,226,77,4,337,18,3,367,12,3;86,97,2,226,77,4,336,20,3,364,16,3,382,4,3;87,96,2,226,77,4,336,25,3,362,26,3;87,96,2,226,77,4,335,54,3;87,97,2,226,77,4,335,55,3;88,96,2,226,77,4,335,56,3;88,97,2,226,77,4,335,23,3,359,22,3,386,6,3;89,96,2,227,76,4,335,46,3,387,5,3;89,96,2,227,76,4,335,46,3,388,5,3;89,97,2,227,76,4,335,46,3,388,5,3;90,96,2,227,76,4,336,45,3,389,4,3;90,96,2,227,77,4,336,20,3,357,24,3,389,9,3;91,96,2,227,77,4,337,18,3,356,25,3,389,10,3;91,96,2,227,77,4,338,16,3,356,26,3,390,10,3;91,96,2,227,77,4,339,14,3,354,28,3,390,10,3;92,96,2,227,77,4,340,38,3,379,3,3,389,6,3,396,5,3;92,95,2,227,77,4,341,16,3,358,20,3,379,3,3,389,12,3;93,94,2,227,76,4,344,11,3,359,18,3,379,3,3,390,11,3;93,94,2,227,76,4,360,16,3,378,4,3,390,10,3;93,93,2,228,53,4,295,8,4,361,14,3,376,6,3,391,9,3;93,94,2,228,36,4,265,5,4,362,19,3,390,10,3;94,93,2,228,23,4,265,5,4,363,16,3,388,14,3;95,91,2,229,2,4,237,7,4,265,5,4,366,11,3,386,18,3;95,87,2,238,1,4,265,6,4,371,1,3,385,20,3;95,83,2,265,6,4,384,22,3;96,78,2,265,6,4,383,24,3;96,75,2,265,6,4,382,26,3;97,70,2,266,4,4,382,26,3;97,66,2,381,28,3;97,62,2,381,28,3;98,57,2,381,28,3;98,54,2,381,29,3;98,50,2,380,30,3;99,45,2,380,30,3;101,39,2,381,29,3;102,35,2,381,29,3;103,6,2,114,19,2,381,29,3;105,1,2,115,14,2,381,29,3;116,9,2,382,28,3;117,4,2,382,27,3;383,26,3;384,24,3;385,23,3;386,21,3;388,18,3;390,14,3;392,10,3;;;;;;;;;;;;;;;;","zoom":{"m":[63.0,408.0,229.5],"s":[25.5,587.5,243.0]}};
+const MDESK_TAG = {map:"튜토리얼", books:"마스터 육성", info:"학원 정보", book:"학생 명부", scroll:"스케줄"};
+let MDESK_ROWS = null, MDESK_GOING = false;
+function mdeskOn(){ return typeof townMode === "function" && townMode(); }
+/* 책상 1배 좌표 → 묶음 번호(1부터 · 0 = 누를 수 없는 곳) */
+function mdeskHit(x, y){
+  if(!MDESK_ROWS) MDESK_ROWS = MDESK_GEO.hit.split(";").map(r=> r ? r.split(",").map(Number) : []);
+  const r = MDESK_ROWS[y];
+  if(!r || x < 0) return 0;
+  for(let i = 0; i < r.length; i += 3) if(x >= r[i] && x < r[i] + r[i+1]) return r[i+2];
+  return 0;
+}
+function mdeskBox(x, y, w, h){
+  const [W, H] = MDESK_GEO.size, p = (v, d)=> (v / d * 100).toFixed(3) + "%";
+  return `left:${p(x, W)};top:${p(y, H)};width:${p(w, W)};height:${p(h, H)}`;
+}
+/* 팝업 — 마을 상점처럼 책상 위에 뜬다 (책상은 흐려진다). 학원 정보 = 예전 '학원 정보' 서브탭 (튜토리얼 단추는 말린 지도가 맡는다) */
+function mdeskPop(k){
+  const body = k === "info" ? viewHome({desk:true}) : viewMaster();
+  return `<div class="townpop mdesk-pop" role="dialog" aria-label="${k === "info" ? "학원 정보" : "마스터 육성"}">${body}`
+    + `<div class="townpop-foot"><button type="button" class="btn primary" data-deskdone>닫기</button></div></div>`;
+}
+function viewHomeDesk(){
+  const G = MDESK_GEO, A = MDESK_ART, L = G.light;
+  const pop = UI.mdeskPop === "info" || UI.mdeskPop === "master" ? UI.mdeskPop : null;
+  const pts = (S.master && S.master.pts|0) || 0;
+  const img = (src, cls, st)=> `<img class="mdl${cls ? " " + cls : ""}" src="${src}" alt="" draggable="false"${st ? ` style="${st}"` : ""}>`;
+  const hl = G.groups.map((g, i)=> `<img class="mdl mdh" data-g="${i + 1}" src="${A["hl_" + g.k]}" style="${mdeskBox(...g.hl)}" alt="" draggable="false">`).join("");
+  const btn = G.groups.map((g, i)=>{
+    const [x0, y0, x1, y1] = g.bb, below = g.k === "map";
+    const tag = MDESK_TAG[g.k] + (g.k === "books" && pts ? ` · ${pts}pt` : "");
+    return `<button type="button" class="mdk${below ? " below" : ""}" data-g="${i + 1}" data-mdesk="${g.k}" style="${mdeskBox(x0, y0, x1 - x0, y1 - y0)}" aria-label="${esc(tag)}">`
+      + `<span class="mdtag" aria-hidden="true">${esc(tag)}</span></button>`;
+  }).join("");
+  const B = G.books;
+  const badge = pts > 0 ? `<span class="mdbadge" style="left:${(B.bx / G.size[0] * 100).toFixed(3)}%;top:${(B.by / G.size[1] * 100).toFixed(3)}%" title="남은 마스터 육성 포인트">${pts}</span>` : "";
+  return `<section class="town mdesk${pop ? " popopen" : ""}" aria-label="마스터 노트">`
+    + `<div class="townmap mdesk-map"${pop ? " inert" : ""}><div class="townmap-in mdesk-in"><div class="mdesk-art">`
+    + img(A.base) + img(A.items, "md-items") + img(A.props) + img(A.vig) + img(A.light, "md-light", mdeskBox(L.x, L.y, L.w, L.h))
+    + hl + badge + btn
+    + `</div></div><img class="town-frame mdesk-frame" src="${TOWN_FRAME}" alt="" draggable="false"></div>`
+    + (pop ? mdeskPop(pop) : "") + `</section>`;
+}
+function mdeskAct(k){
+  if(MDESK_GOING) return;
+  if(k === "map"){ showTutorial(0, {}); return; }
+  if(k === "books"){ UI.mdeskPop = "master"; render(); return; }
+  if(k === "info"){ UI.mdeskPop = "info"; render(); return; }
+  if(k === "book"){ UI.view = "roster"; render(); return; }
+  if(k === "scroll") mdeskGo();
+}
+function bindMasterDesk(v){
+  const sec = v.querySelector(".mdesk");
+  if(!sec) return;
+  v.querySelectorAll("[data-deskdone]").forEach(b=> b.onclick = ()=>{ UI.mdeskPop = null; render(); });
+  const art = sec.querySelector(".mdesk-art");
+  if(!art || sec.classList.contains("popopen")) return;
+  const hot = (g)=>{
+    const s = g ? String(g) : "";
+    if((sec.dataset.hot || "") === s) return;
+    if(s) sec.dataset.hot = s; else delete sec.dataset.hot;
+    art.style.cursor = g ? "pointer" : "";
+  };
+  const at = (e)=>{
+    const r = art.getBoundingClientRect();
+    if(!r.width || !r.height) return 0;
+    return mdeskHit(Math.floor((e.clientX - r.left) / r.width * MDESK_GEO.size[0]), Math.floor((e.clientY - r.top) / r.height * MDESK_GEO.size[1]));
+  };
+  art.addEventListener("pointermove", e=>{ if(!MDESK_GOING) hot(at(e)); });
+  art.addEventListener("pointerleave", ()=> hot(0));
+  art.addEventListener("click", e=>{ const g = at(e); if(g) mdeskAct(MDESK_GEO.groups[g - 1].k); });
+  sec.querySelectorAll(".mdk").forEach(b=>{
+    b.onclick = (e)=>{ e.stopPropagation(); mdeskAct(b.dataset.mdesk); };
+    b.onfocus = ()=> hot(+b.dataset.g);
+    b.onblur = ()=> hot(0);
+  });
+}
+/* ── 두루마리 → 스케줄 (1006) ──
+   ① 두루마리 위 내용(띠 · 카드 · 서명)이 사라진다 ② 책상이 두루마리로 다가간다 — 두 축(가운데)과 종이 가운데를 스케줄 두루마리에 맞춘다
+   (MDESK_GEO.zoom — m: 책상 1배 [왼쪽 축, 오른쪽 축, 종이 세로 가운데] · s: 스케줄 무대 1배). 그동안 액자는 스케줄 무대 높이로 줄어든다
+   (액자 그림을 위 · 아래 반쪽으로 나눠 아래쪽이 따라 올라온다 — 모서리가 찌그러지지 않게) ③ 끝무렵 스케줄 그림(내용 없이)이 겹쳐 나타나고
+   ④ 스케줄 화면으로 바꾼 뒤 두루마리 위 내용(.sk-paper)이 떠오른다. 움직임 줄이기 설정이면 바로 넘어간다 */
+function mdeskGo(){
+  const go = ()=>{ UI.view = "plan"; render(); };
+  const sec = document.querySelector("#view .mdesk"), map = sec && sec.querySelector(".mdesk-map");
+  const reduce = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(!map || reduce || !(typeof schedScrollOn === "function" && schedScrollOn()) || typeof SCHED_ART === "undefined" || typeof SCHED_GEO === "undefined"){ go(); return; }
+  if(MDESK_GOING) return;
+  const inn = map.querySelector(".mdesk-in"), art = map.querySelector(".mdesk-art"), fr = map.querySelector(".mdesk-frame");
+  const R = map.getBoundingClientRect(), W = R.width, H0 = R.height, H1 = W * 1008 / 1544;
+  if(!inn || !art || !fr || !W){ go(); return; }
+  MDESK_GOING = true;
+  delete sec.dataset.hot; art.style.cursor = "";
+  const b = W * 26 / 1266, km = W * 2 / 1266, ks = W / 772, Z = MDESK_GEO.zoom;
+  const s = (Z.s[1] - Z.s[0]) * ks / ((Z.m[1] - Z.m[0]) * km);
+  const tx = (Z.s[0] + Z.s[1]) / 2 * ks - b - (Z.m[0] + Z.m[1]) / 2 * km * s;
+  const ty = Z.s[2] * ks - b - Z.m[2] * km * s;
+  const aw = W - 2 * b, ah = aw * MDESK_GEO.size[1] / MDESK_GEO.size[0];
+  sec.classList.add("mdesk-go");
+  /* 액자 — 위 반쪽은 그대로, 아래 반쪽은 상자 바닥에 붙어 올라온다 */
+  const bot = fr.cloneNode();
+  fr.classList.add("mf-top"); bot.classList.add("mf-bot");
+  fr.style.height = bot.style.height = H0 + "px";
+  fr.after(bot);
+  map.style.aspectRatio = "auto"; map.style.height = H0 + "px";
+  inn.style.cssText = `left:${b}px;top:${b}px;width:${aw}px;height:${H0 - 2 * b}px`;
+  art.style.cssText = `left:0;top:0;width:${aw}px;height:${ah}px`;
+  /* 스케줄 그림 (내용 없이) — 바뀌기 직전에 겹쳐 나타난다. 무대(1544×1008)와 같은 자리 · 크기 */
+  const SG = SCHED_GEO, Q = SG.quill, P = (x, y, w, h)=> `left:${(x / 772 * 100).toFixed(3)}%;top:${(y / 504 * 100).toFixed(3)}%;width:${(w / 772 * 100).toFixed(3)}%;height:${(h / 504 * 100).toFixed(3)}%`;
+  /* 문서 위에 따로 띄운다(사이드 메뉴 아래) — 화면이 스케줄로 바뀐 뒤 그 그림이 다 그려질 때까지 덮어 둔다
+     (file:// 에서는 새 그림 요소가 그림을 다시 읽느라 한두 장면 비어 보인다) */
+  const gh = document.createElement("div");
+  gh.className = "mdesk-ghost"; gh.setAttribute("aria-hidden", "true");
+  gh.style.cssText = `left:${R.left + scrollX}px;top:${R.top + scrollY}px;width:${W}px;height:${H1}px`;
+  gh.innerHTML = `<img src="${SCHED_ART.under}" alt=""><img src="${SCHED_ART.over1}" alt="">`
+    + (Q ? `<img src="${SCHED_ART.quill}" alt="" style="${P(Q.x - Q.px, Q.y - Q.py, Q.w, Q.h)}">` : "")
+    + `<img src="${SCHED_ART.over2}" alt="">`;
+  document.body.append(gh);
+  const FADE = 260, ZOOM = 820, T0 = performance.now();
+  const ease = t=> t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const step = (now)=>{
+    if(!map.isConnected){ MDESK_GOING = false; gh.remove(); if(UI.view === "home") go(); return; }   // 그새 화면이 다시 그려졌다
+    const t = Math.min(1, Math.max(0, (now - T0 - FADE) / ZOOM)), e = ease(t), k = 1 + (s - 1) * e, H = H0 + (H1 - H0) * e;
+    map.style.height = H + "px";
+    inn.style.height = (H - 2 * b) + "px";
+    art.style.left = (tx * e) + "px"; art.style.top = (ty * e) + "px";
+    art.style.width = (aw * k) + "px"; art.style.height = (ah * k) + "px";
+    gh.style.opacity = String(Math.min(1, Math.max(0, (t - .58) / .36)));
+    if(t < 1){ requestAnimationFrame(step); return; }
+    MDESK_GOING = false;
+    if(UI.view !== "home"){ gh.remove(); return; }
+    go();
+    /* 스케줄 그림이 다 그려지면 덮개를 걷고 두루마리 위 내용을 띄운다 */
+    const w = document.querySelector("#view .skwrap");
+    if(!w){ gh.remove(); return; }
+    w.classList.add("mdesk-wait");
+    const ready = (i)=> (i.complete && i.naturalWidth) ? Promise.resolve() : (i.decode ? i.decode().catch(()=>{}) : new Promise(r=>{ i.addEventListener("load", r); i.addEventListener("error", r); }));
+    const imgs = [...w.querySelectorAll(".skstage > img, .sk-quill img")];
+    Promise.race([Promise.all(imgs.map(ready)), new Promise(r=> setTimeout(r, 1500))]).then(()=> requestAnimationFrame(()=>{
+      gh.remove();
+      w.classList.remove("mdesk-wait"); w.classList.add("mdesk-intro");
+      setTimeout(()=> w.classList.remove("mdesk-intro"), 800);
+    }));
+  };
+  requestAnimationFrame(step);
+}
+/* MDESK_END */
+function viewHome(o){   // o.desk — 마스터 노트 책상의 학원 정보 팝업 (튜토리얼 단추는 말린 지도가 맡는다 · 1006)
   const next = PHASES[S.phase];
   const remain = next.weeks - S.week;
   const fallNext = (()=>{
@@ -9409,7 +9600,7 @@ function viewHome(){
         </div>
       </div>
       <div></div>
-      ${(typeof TUT_ICON!=="undefined" && TUT_ICON)? `<div><button class="tutbtn" id="btnTut" title="튜토리얼 다시 보기">
+      ${(!(o && o.desk) && typeof TUT_ICON!=="undefined" && TUT_ICON)? `<div><button class="tutbtn" id="btnTut" title="튜토리얼 다시 보기">
         <img src="${TUT_ICON}" alt="튜토리얼"></button></div>`:""}
     </div>
   </section>
@@ -11128,8 +11319,8 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1006-2006";
-const BUILD_TS = 1791284777132;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
+const BUILD = "1007-0915";
+const BUILD_TS = 1791332113860;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -13260,7 +13451,7 @@ function facTabView(tab){ return tab==="item" ? viewItemShop() : tab==="draft" ?
 /* 마을 그림은 가로 화면(사이드가 오른쪽에 붙는 배치)에서만 — 세로 · 좁은 화면은 예전처럼 서브탭 단추 */
 const TOWN_MQ = (typeof matchMedia === "function") ? matchMedia("(min-width:1100px) and (orientation:landscape)") : null;
 function townMode(){ return !TOWN_MQ || TOWN_MQ.matches; }
-if(TOWN_MQ){ const h = ()=>{ if(typeof UI !== "undefined" && UI.view === "facil") render(); };
+if(TOWN_MQ){ const h = ()=>{ if(typeof UI !== "undefined" && (UI.view === "facil" || UI.view === "home" || UI.view === "master")) render(); };   // 1006 — 마스터 노트 책상도
   if(TOWN_MQ.addEventListener) TOWN_MQ.addEventListener("change", h); else if(TOWN_MQ.addListener) TOWN_MQ.addListener(h); }
 function viewFacil(){
   const TB = facTabs();
@@ -15001,6 +15192,7 @@ function bindView(){
   { const lp = $("#optLvPop"); if(lp) lp.onchange = ()=>{ PREF.lvPopup = lp.checked; prefSave(); toast(lp.checked? "레벨업 팝업을 켰다." : "레벨업 팝업을 껐다."); }; }
   document.querySelectorAll('[data-ui-concept-choice]').forEach(b=>b.onclick=()=>uiConceptSet(b.dataset.uiConceptChoice));
   const v = $("#view");
+  if(UI.view==="home" && typeof bindMasterDesk === "function") bindMasterDesk(v);   // 마스터 노트 책상 (1006)
   v.querySelectorAll("[data-sid]").forEach(b=> b.onclick=()=>{ UI.sel = (UI.sel===b.dataset.sid?null:b.dataset.sid); UI.view="roster"; render();
     /* 상세 보기가 명부 아래에 붙는다 — 그 자리까지 내려 준다 (상단 바에 가리지 않게) (0929) */
     const el = UI.sel && $("#stuDetail");
