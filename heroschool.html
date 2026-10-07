@@ -2263,7 +2263,23 @@ html body .skwrap.mdesk-intro .sk-paper{animation:mdeskIn .42s ease-out both}
 @keyframes mdeskIn{from{opacity:0}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){.mdesk .mdh,.mdesk .mdtag,.mdesk .md-items{transition:none}}
 /* MDESK_CSS_END */
-</style>
+
+/* Quarter-view tournament frame and controls */
+.modal.tournament-quarter{flex:none!important;overflow:visible!important;max-width:none!important;transform-origin:center}
+.modal.tournament-quarter::before,.modal.tournament-quarter::after,.tournament-quarter .bf-stage::before{display:none!important}
+.tournament-quarter .btscroll,.tournament-quarter .bf-layout{height:100%!important;overflow:visible!important;margin:0!important;padding:0!important}
+.tournament-quarter .bf-stage{width:100%!important;height:100%!important;min-height:0!important;overflow:visible!important;border:0!important;background:transparent!important;box-shadow:none!important;isolation:isolate}
+.tq-map{position:absolute;inset:0;overflow:hidden;z-index:-1;pointer-events:none}.tq-map img{max-width:none!important;transform:none!important}
+.tq-frame{z-index:100;pointer-events:none;max-width:none!important;object-fit:fill}
+.tournament-quarter .bf-unit{z-index:101}.tournament-quarter .bf-school,.tournament-quarter .bf-legend,.tq-title{z-index:610!important}
+.tq-title{padding:7px 12px;background:#18202eee;color:white;border:1px solid #d8c79b99;border-radius:7px;font-size:18px!important}
+.tournament-quarter .btbar{z-index:610;display:block!important;padding:0!important;border:0!important;background:transparent!important;overflow:visible!important}
+.tq-control-skin{z-index:-1;pointer-events:none;max-width:none!important}
+.tournament-quarter .btbar .btn{min-height:0!important;padding:4px 6px!important;white-space:nowrap;font-size:12px!important;background:#b68b50!important;color:#281b0e!important;border:1px solid #66441f!important;border-radius:3px!important;box-shadow:none!important}
+.tournament-quarter .btbar .btn.primary{background:#65401f!important;color:#ffe3a7!important;border-color:#ceaa63!important}
+.tournament-quarter .battle-drawer{left:auto;right:0;bottom:calc(100% + 20px);width:500px;max-height:400px;z-index:700}
+
+.tournament-quarter .bf-legend{font-size:11px!important;padding:4px!important;gap:4px!important;white-space:nowrap!important}.tournament-quarter .bf-school>b{font-size:18px!important}.tournament-quarter .bf-school{box-shadow:none!important;text-shadow:none!important}</style>
 
 <link rel="stylesheet" href="assets/title-art/title-screen.css?v=7">
 </head>
@@ -2636,6 +2652,7 @@ function sprTick(){
     cx.drawImage(cell, 0, 0);
   }
   fxTick(now);
+  tournamentCharacterTick(now);
 }
 // 개별 프레임의 상대 시간을 보존하면서 전투 속도(ms)는 기존과 동일하게 맞춘다.
 function sprFrameAt(j, m, elapsed, ms, ended, loop){
@@ -11339,7 +11356,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1007-1254";
+const BUILD = "1007-2010";
 const BUILD_TS = 0;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
@@ -17305,6 +17322,67 @@ function popCritFit(root){
     if(up > room) p.style.marginTop = -Math.max(0, room) + "px";
   });
 }
+
+/* Quarter-view tournament layout, approved editor coordinates. */
+const TOURNAMENT_LAYOUT={"field":{"name":"전투 영역","x":250,"y":158,"w":1298,"h":804,"visible":true,"label":null},"map":{"name":"맵","x":171.28015564202332,"y":68.00389105058366,"w":1500,"h":999.9927226681642,"visible":true,"label":null,"outline":{"enabled":true,"width":1.6},"shadow":{"enabled":true,"direction":180,"length":73,"opacity":0.31}},"frame":{"name":"나무 테두리","x":166,"y":85,"w":1520,"h":940.6174040865549,"visible":true,"label":null},"controls":{"name":"버튼 박스","x":1371,"y":775,"w":240,"h":98,"visible":true,"label":null},"button0":{"name":"재생","x":1383,"y":787,"w":68,"h":34,"visible":true,"label":"재생"},"button1":{"name":"×1","x":1457,"y":787,"w":68,"h":34,"visible":true,"label":"×1"},"button2":{"name":"×2","x":1531,"y":787,"w":68,"h":34,"visible":true,"label":"×2"},"button3":{"name":"로그 ▴","x":1383,"y":827,"w":68,"h":34,"visible":true,"label":"로그 ▴"},"button4":{"name":"상세 기록 ▴","x":1494,"y":827,"w":105,"h":34,"visible":false,"label":"상세 기록 ▴"},"button5":{"name":"확인","x":1457,"y":827,"w":142,"h":34,"visible":true,"label":"확인"},"info0":{"name":"전투 제목","x":326,"y":194,"w":71.890625,"h":53.1875,"visible":true,"label":null},"info1":{"name":"범례","x":326,"y":254,"w":167,"h":35.046875,"visible":true,"label":null},"info2":{"name":"진영 정보 1","x":1292.296875,"y":194,"w":236.703125,"h":99.1875,"visible":true,"label":null},"info3":{"name":"진영 정보 2","x":326,"y":807,"w":189.28125,"h":99.1875,"visible":true,"label":null},"controlSkin":{"name":"버튼 박스 배경·테두리만","x":1359,"y":756,"w":264,"h":139,"visible":true,"label":null}};
+const TOURNAMENT_REGIONAL_MAP={"name":"맵","x":-133.77821011673151,"y":-2.5953307392996123,"w":2035,"h":1356.65679375314,"visible":true,"label":null,"outline":{"enabled":true,"width":1.6},"shadow":{"enabled":true,"direction":180,"length":73,"opacity":0.31}};
+// Render the editor's map lighting against live sprite frames.
+let tournamentFinishStage=null,tournamentFinishAt=0;
+const tournamentShadowCache=new Map();
+function tournamentCharacterSetup(stage,cfg){
+ tournamentFinishStage=stage;stage._finishConfig=cfg;tournamentFinishAt=0;
+ const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.setAttribute('width','0');svg.setAttribute('height','0');svg.style.cssText='position:absolute;pointer-events:none';svg.setAttribute('aria-hidden','true');stage.append(svg);
+ const defs=document.createElementNS(ns,'defs');svg.append(defs);
+ stage.querySelectorAll('canvas.spr').forEach((c,i)=>{
+  const anchor=c.closest('.spr-anchor');if(!anchor)return;
+  const f=document.createElementNS(ns,'filter');f.id='tq-outline-'+i;f.setAttribute('x','-15%');f.setAttribute('y','-15%');f.setAttribute('width','130%');f.setAttribute('height','130%');
+  f.innerHTML='<feMorphology in="SourceAlpha" operator="dilate" radius="1.6" result="expanded"/><feComposite in="expanded" in2="SourceAlpha" operator="out" result="edge"/><feFlood flood-color="#111111" result="ink"/><feComposite in="ink" in2="edge" operator="in" result="outline"/><feMerge><feMergeNode in="outline"/><feMergeNode in="SourceGraphic"/></feMerge>';defs.append(f);
+  const wrap=document.createElement('span');wrap.className='tq-sprite-outline';wrap.style.cssText='position:absolute;inset:0;pointer-events:none;overflow:visible';anchor.append(wrap);wrap.append(c);if(cfg.outline?.enabled)wrap.style.filter='url(#'+f.id+')';c._tqMorph=f.firstElementChild;
+ });
+ const cv=document.createElement('canvas');cv.className='tq-character-shadows';cv.width=stage.clientWidth;cv.height=stage.clientHeight;cv.style.cssText='position:absolute;inset:0;z-index:0;pointer-events:none';stage.prepend(cv);stage._shadowCanvas=cv;
+}
+function tournamentCharacterTick(now){
+ const stage=tournamentFinishStage;if(!stage)return;if(!stage.isConnected){tournamentFinishStage=null;return}if(now-tournamentFinishAt<32)return;tournamentFinishAt=now;
+ const cfg=stage._finishConfig,shadow=cfg.shadow,cv=stage._shadowCanvas,ctx=cv.getContext('2d');ctx.clearRect(0,0,cv.width,cv.height);
+ const sr=stage.getBoundingClientRect(),scale=sr.width/stage.offsetWidth;if(!scale)return;
+ const angle=(shadow?.direction||0)*Math.PI/180,length=shadow?.length||0,dx=Math.cos(angle)*length,dy=Math.sin(angle)*length;
+ for(const c of stage.querySelectorAll('canvas.spr')){
+  const r=c.getBoundingClientRect(),sx=r.width/scale/c.width,sy=r.height/scale/c.height;
+  if(c._tqMorph)c._tqMorph.setAttribute('radius',String((cfg.outline?.width||1.6)/(r.width/scale/c.offsetWidth||1)));
+  if(!shadow?.enabled||c.__f==null)continue;
+  const unit=c.closest('.bf-unit'),us=unit&&getComputedStyle(unit);if(!unit||us.display==='none'||Number(us.opacity)===0)continue;
+  const flipped=c.classList.contains('flip'),key=c.__key+'|'+c.__f+'|'+flipped;let src=tournamentShadowCache.get(key);
+  if(!src){const mask=document.createElement('canvas');mask.width=c.width;mask.height=c.height;const mc=mask.getContext('2d');if(flipped){mc.translate(c.width,0);mc.scale(-1,1)}mc.drawImage(c,0,0);mc.setTransform(1,0,0,1,0,0);const pixels=mc.getImageData(0,0,c.width,c.height).data;let left=c.width,top=c.height,right=0,bottom=0;for(let y=0;y<c.height;y++)for(let x=0;x<c.width;x++)if(pixels[(y*c.width+x)*4+3]>40){left=Math.min(left,x);right=Math.max(right,x);top=Math.min(top,y);bottom=Math.max(bottom,y)}if(right<=left)continue;mc.globalCompositeOperation='source-in';mc.fillStyle='#30251c';mc.fillRect(0,0,c.width,c.height);src={mask,left,top,width:right-left+1,height:bottom-top+1,bottom};tournamentShadowCache.set(key,src);if(tournamentShadowCache.size>180)tournamentShadowCache.delete(tournamentShadowCache.keys().next().value);}
+  const footX=(r.left-sr.left)/scale+(src.left+src.width/2)*sx,footY=(r.top-sr.top)/scale+(src.bottom+1)*sy;
+  ctx.save();ctx.globalAlpha=shadow.opacity*Number(us.opacity);ctx.fillStyle='#30251c';ctx.beginPath();ctx.ellipse(footX,footY,src.width*sx*.28,4,0,0,Math.PI*2);ctx.fill();
+  if(length>0){const ax=-Math.sin(angle)*sx*.8,ay=Math.cos(angle)*sx*.4;ctx.imageSmoothingEnabled=false;ctx.setTransform(ax,ay,-dx/src.height,-dy/src.height,footX+dx-ax*src.width/2,footY+dy-ay*src.width/2);ctx.drawImage(src.mask,src.left,src.top,src.width,src.height,0,0,src.width,src.height);}ctx.restore();
+ }
+}
+
+function tournamentLayoutApply(fk){
+ if(!['citytournament','areatournament'].includes(fk)||bfOrient()!=='landscape')return;
+ const modal=document.querySelector('#modalRoot .modal'),stage=modal&&modal.querySelector('.bf-stage');if(!stage)return;
+ modal.classList.add('tournament-quarter');
+ const set=(e,p,v)=>e.style.setProperty(p,v,'important');
+ const place=(e,v,parent)=>{if(!e)return;set(e,'position','absolute');set(e,'left',(v.x-parent.x)+'px');set(e,'top',(v.y-parent.y)+'px');set(e,'right','auto');set(e,'bottom','auto');set(e,'width',v.w+'px');set(e,'height',v.h+'px');set(e,'margin','0');set(e,'box-sizing','border-box');};
+ const L=fk==='areatournament'?{...TOURNAMENT_LAYOUT,map:TOURNAMENT_REGIONAL_MAP}:TOURNAMENT_LAYOUT,F=L.field;
+ set(modal,'width',F.w+'px');set(modal,'height',F.h+'px');set(modal,'max-height','none');set(modal,'padding','0');set(modal,'background','transparent');set(modal,'border','0');set(modal,'box-shadow','none');
+ const head=modal.querySelector('.panel-h');if(head){const title=head.querySelector('h2');title.classList.add('tq-title');stage.append(title);place(title,L.info0,F);head.remove();}
+ let bg=stage.querySelector('.tq-map');if(!bg){bg=document.createElement('div');bg.className='tq-map';const im=document.createElement('img');im.src=fk==='citytournament'?'assets/battle-fields/quarter/city.png':'assets/battle-fields/quarter/regional.png';bg.append(im);stage.prepend(bg);place(im,L.map,F);}
+ if(!stage.querySelector('.tq-frame')){const im=document.createElement('img');im.className='tq-frame';im.src='assets/battle-fields/quarter/frame.png';stage.append(im);place(im,L.frame,F);}
+ place(stage.querySelector('.bf-legend'),L.info1,F);const schools=stage.querySelectorAll('.bf-school');schools.forEach((e,i)=>place(e,L['info'+(i+2)],F));
+ const bar=modal.querySelector('.btbar');stage.append(bar);place(bar,L.controls,F);
+ bar.querySelectorAll('[data-sp]').forEach(e=>e.hidden=!['280','120'].includes(e.dataset.sp));
+ const log=bar.querySelector('[data-bpanel="log"]');log.textContent='로그 '+(log.getAttribute('aria-expanded')==='true'?'▾':'▴');
+ bar.querySelector('[data-bpanel="stats"]').hidden=true;
+ const buttons=[bar.querySelector('#bPlay'),bar.querySelector('[data-sp="280"]'),bar.querySelector('[data-sp="120"]'),log,bar.querySelector('[data-bpanel="stats"]'),bar.querySelector('#bDone')];buttons.forEach((e,i)=>place(e,L['button'+i],L.controls));
+ if(!bar.querySelector('.tq-control-skin')){const im=document.createElement('img');im.className='tq-control-skin';im.src='assets/battle-fields/quarter/controls.png';bar.prepend(im);place(im,L.controlSkin,L.controls);}
+ tournamentLayoutFit();
+ tournamentCharacterSetup(stage,L.map);
+}
+function tournamentLayoutFit(){const m=document.querySelector('.tournament-quarter');if(m)m.style.setProperty('transform','scale('+Math.min(1,(innerWidth-16)/1800,(innerHeight-16)/1120)+')','important');}
+addEventListener('resize',tournamentLayoutFit);
+
 function openBattle(res, opt, onDone){
   stylishSkillFxPreload();
   SPR_BTSCROLL = 0;
@@ -17495,6 +17573,7 @@ function openBattle(res, opt, onDone){
     </div></div>`;
     modalLockSync();
     alignDemonField();
+    tournamentLayoutApply(fk);
     popCritFit($("#modalRoot"));                                          // 치명타 숫자 — 맨 윗줄은 덜 올린다 (1006)
     const bs = $("#btscroll"); if(bs) bs.scrollTop = SPR_BTSCROLL||0;
     $("#modalRoot").querySelectorAll('[data-effect-label]').forEach(el=>el.onclick=ev=>{ev.stopPropagation();toast(el.dataset.effectLabel);});
