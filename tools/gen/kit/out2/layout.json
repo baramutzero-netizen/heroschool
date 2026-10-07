@@ -1,0 +1,640 @@
+{
+ "version": 2,
+ "size": [
+  607,
+  466
+ ],
+ "note": "x, y = 기준점(돌리는 중심 — 3D 소품은 책상에 닿는 점, 2D 는 그림 가운데 · 깃펜은 펜촉)의 책상 1배 좌표. 2배 화면에서는 2를 곱한다. angle = 화면에서 시계 방향 각도(도). 3D 소품은 15도마다 그린 프레임(kit.json 의 frames · step)에서 가까운 것을 고르고 남은 각만 돌린다. 그리는 순서 = 목록 순서. 불빛(blend: screen)은 가장자리 그늘 위에 화면 섞기로 얹는다.",
+ "objects": [
+  {
+   "id": "runner",
+   "name": "남색 천",
+   "x": 236,
+   "y": 233,
+   "angle": 0
+  },
+  {
+   "id": "scroll",
+   "name": "빈 두루마리",
+   "x": 236,
+   "y": 230,
+   "angle": 0
+  },
+  {
+   "id": "sep_line",
+   "name": "점선",
+   "x": 128,
+   "y": 217,
+   "angle": 0
+  },
+  {
+   "id": "sep_line",
+   "name": "점선",
+   "x": 182,
+   "y": 217,
+   "angle": 0
+  },
+  {
+   "id": "sep_line",
+   "name": "점선",
+   "x": 236,
+   "y": 217,
+   "angle": 0
+  },
+  {
+   "id": "sep_line",
+   "name": "점선",
+   "x": 290,
+   "y": 217,
+   "angle": 0
+  },
+  {
+   "id": "sep_line",
+   "name": "점선",
+   "x": 344,
+   "y": 217,
+   "angle": 0
+  },
+  {
+   "id": "ribbon_red",
+   "name": "적 띠",
+   "x": 101,
+   "y": 146,
+   "angle": 0
+  },
+  {
+   "id": "label_red",
+   "name": "글자 적",
+   "x": 101,
+   "y": 147,
+   "angle": 0
+  },
+  {
+   "id": "card_red",
+   "name": "빈 카드 적",
+   "x": 101,
+   "y": 182,
+   "angle": 0
+  },
+  {
+   "id": "icon_swords",
+   "name": "아이콘 칼 두 자루",
+   "x": 101,
+   "y": 176,
+   "angle": 0
+  },
+  {
+   "id": "text_spar",
+   "name": "글자 대련",
+   "x": 101,
+   "y": 193,
+   "angle": 0
+  },
+  {
+   "id": "card_red",
+   "name": "빈 카드 적",
+   "x": 101,
+   "y": 228,
+   "angle": 0
+  },
+  {
+   "id": "icon_shield",
+   "name": "아이콘 방패",
+   "x": 101,
+   "y": 222,
+   "angle": 0
+  },
+  {
+   "id": "text_mock",
+   "name": "글자 모의전",
+   "x": 101,
+   "y": 239,
+   "angle": 0
+  },
+  {
+   "id": "card_red",
+   "name": "빈 카드 적",
+   "x": 101,
+   "y": 274,
+   "angle": 0
+  },
+  {
+   "id": "icon_cup",
+   "name": "아이콘 찻잔",
+   "x": 101,
+   "y": 268,
+   "angle": 0
+  },
+  {
+   "id": "text_rest_red",
+   "name": "글자 휴식 (적)",
+   "x": 101,
+   "y": 285,
+   "angle": 0
+  },
+  {
+   "id": "ribbon_green",
+   "name": "녹 띠",
+   "x": 155,
+   "y": 146,
+   "angle": 0
+  },
+  {
+   "id": "label_green",
+   "name": "글자 녹",
+   "x": 155,
+   "y": 147,
+   "angle": 0
+  },
+  {
+   "id": "card_green",
+   "name": "빈 카드 녹",
+   "x": 155,
+   "y": 182,
+   "angle": 0
+  },
+  {
+   "id": "icon_dumbbell",
+   "name": "아이콘 아령",
+   "x": 155,
+   "y": 176,
+   "angle": 0
+  },
+  {
+   "id": "text_basic",
+   "name": "글자 기초 체력",
+   "x": 155,
+   "y": 193,
+   "angle": 0
+  },
+  {
+   "id": "card_green",
+   "name": "빈 카드 녹",
+   "x": 155,
+   "y": 228,
+   "angle": 0
+  },
+  {
+   "id": "icon_barbell",
+   "name": "아이콘 역기",
+   "x": 155,
+   "y": 222,
+   "angle": 0
+  },
+  {
+   "id": "text_heavy",
+   "name": "글자 고강도 단련",
+   "x": 155,
+   "y": 239,
+   "angle": 0
+  },
+  {
+   "id": "card_green",
+   "name": "빈 카드 녹",
+   "x": 155,
+   "y": 274,
+   "angle": 0
+  },
+  {
+   "id": "icon_cup",
+   "name": "아이콘 찻잔",
+   "x": 155,
+   "y": 268,
+   "angle": 0
+  },
+  {
+   "id": "text_rest_green",
+   "name": "글자 휴식 (녹)",
+   "x": 155,
+   "y": 285,
+   "angle": 0
+  },
+  {
+   "id": "ribbon_blue",
+   "name": "청 띠",
+   "x": 209,
+   "y": 146,
+   "angle": 0
+  },
+  {
+   "id": "label_blue",
+   "name": "글자 청",
+   "x": 209,
+   "y": 147,
+   "angle": 0
+  },
+  {
+   "id": "card_blue",
+   "name": "빈 카드 청",
+   "x": 209,
+   "y": 182,
+   "angle": 0
+  },
+  {
+   "id": "icon_book",
+   "name": "아이콘 책",
+   "x": 209,
+   "y": 176,
+   "angle": 0
+  },
+  {
+   "id": "text_tact",
+   "name": "글자 전술 연구",
+   "x": 209,
+   "y": 193,
+   "angle": 0
+  },
+  {
+   "id": "card_blue",
+   "name": "빈 카드 청",
+   "x": 209,
+   "y": 228,
+   "angle": 0
+  },
+  {
+   "id": "icon_flag",
+   "name": "아이콘 깃발",
+   "x": 209,
+   "y": 222,
+   "angle": 0
+  },
+  {
+   "id": "text_form",
+   "name": "글자 진형 훈련",
+   "x": 209,
+   "y": 239,
+   "angle": 0
+  },
+  {
+   "id": "card_blue",
+   "name": "빈 카드 청",
+   "x": 209,
+   "y": 274,
+   "angle": 0
+  },
+  {
+   "id": "icon_cup",
+   "name": "아이콘 찻잔",
+   "x": 209,
+   "y": 268,
+   "angle": 0
+  },
+  {
+   "id": "text_rest_blue",
+   "name": "글자 휴식 (청)",
+   "x": 209,
+   "y": 285,
+   "angle": 0
+  },
+  {
+   "id": "ribbon_sky",
+   "name": "하늘 띠",
+   "x": 263,
+   "y": 146,
+   "angle": 0
+  },
+  {
+   "id": "label_sky",
+   "name": "글자 하늘",
+   "x": 263,
+   "y": 147,
+   "angle": 0
+  },
+  {
+   "id": "card_sky",
+   "name": "빈 카드 하늘",
+   "x": 263,
+   "y": 182,
+   "angle": 0
+  },
+  {
+   "id": "icon_leaf",
+   "name": "아이콘 잎",
+   "x": 263,
+   "y": 176,
+   "angle": 0
+  },
+  {
+   "id": "text_medit",
+   "name": "글자 명상",
+   "x": 263,
+   "y": 193,
+   "angle": 0
+  },
+  {
+   "id": "card_sky",
+   "name": "빈 카드 하늘",
+   "x": 263,
+   "y": 228,
+   "angle": 0
+  },
+  {
+   "id": "icon_lotus",
+   "name": "아이콘 연꽃",
+   "x": 263,
+   "y": 222,
+   "angle": 0
+  },
+  {
+   "id": "text_deep",
+   "name": "글자 심층 명상",
+   "x": 263,
+   "y": 239,
+   "angle": 0
+  },
+  {
+   "id": "card_sky",
+   "name": "빈 카드 하늘",
+   "x": 263,
+   "y": 274,
+   "angle": 0
+  },
+  {
+   "id": "icon_cup",
+   "name": "아이콘 찻잔",
+   "x": 263,
+   "y": 268,
+   "angle": 0
+  },
+  {
+   "id": "text_rest_sky",
+   "name": "글자 휴식 (하늘)",
+   "x": 263,
+   "y": 285,
+   "angle": 0
+  },
+  {
+   "id": "ribbon_gold",
+   "name": "황 띠",
+   "x": 317,
+   "y": 146,
+   "angle": 0
+  },
+  {
+   "id": "label_gold",
+   "name": "글자 황",
+   "x": 317,
+   "y": 147,
+   "angle": 0
+  },
+  {
+   "id": "card_gold",
+   "name": "빈 카드 황",
+   "x": 317,
+   "y": 182,
+   "angle": 0
+  },
+  {
+   "id": "icon_target",
+   "name": "아이콘 과녁",
+   "x": 317,
+   "y": 176,
+   "angle": 0
+  },
+  {
+   "id": "text_free",
+   "name": "글자 자율 훈련",
+   "x": 317,
+   "y": 193,
+   "angle": 0
+  },
+  {
+   "id": "card_gold",
+   "name": "빈 카드 황",
+   "x": 317,
+   "y": 228,
+   "angle": 0
+  },
+  {
+   "id": "icon_arrow",
+   "name": "아이콘 과녁과 화살",
+   "x": 317,
+   "y": 222,
+   "angle": 0
+  },
+  {
+   "id": "text_strike",
+   "name": "글자 실전 타격",
+   "x": 317,
+   "y": 239,
+   "angle": 0
+  },
+  {
+   "id": "card_gold",
+   "name": "빈 카드 황",
+   "x": 317,
+   "y": 274,
+   "angle": 0
+  },
+  {
+   "id": "icon_cup",
+   "name": "아이콘 찻잔",
+   "x": 317,
+   "y": 268,
+   "angle": 0
+  },
+  {
+   "id": "text_rest_gold",
+   "name": "글자 휴식 (황)",
+   "x": 317,
+   "y": 285,
+   "angle": 0
+  },
+  {
+   "id": "ribbon_none",
+   "name": "무 띠",
+   "x": 371,
+   "y": 146,
+   "angle": 0
+  },
+  {
+   "id": "label_none",
+   "name": "글자 무",
+   "x": 371,
+   "y": 147,
+   "angle": 0
+  },
+  {
+   "id": "card_none",
+   "name": "빈 카드 무",
+   "x": 371,
+   "y": 182,
+   "angle": 0
+  },
+  {
+   "id": "icon_map",
+   "name": "아이콘 지도",
+   "x": 371,
+   "y": 176,
+   "angle": 0
+  },
+  {
+   "id": "text_exped",
+   "name": "글자 원정 파견",
+   "x": 371,
+   "y": 193,
+   "angle": 0
+  },
+  {
+   "id": "signature",
+   "name": "서명",
+   "x": 133,
+   "y": 316,
+   "angle": 0
+  },
+  {
+   "id": "wax_seal",
+   "name": "봉랍 인장",
+   "x": 371,
+   "y": 244,
+   "angle": 0
+  },
+  {
+   "id": "vase_flowers",
+   "name": "꽃병",
+   "x": 32,
+   "y": 76,
+   "angle": 0
+  },
+  {
+   "id": "lamp",
+   "name": "유리 등잔",
+   "x": 100,
+   "y": 88,
+   "angle": 0
+  },
+  {
+   "id": "envelope",
+   "name": "편지",
+   "x": 178,
+   "y": 62,
+   "angle": 0
+  },
+  {
+   "id": "rolled_map",
+   "name": "말린 지도",
+   "x": 332,
+   "y": 58,
+   "angle": 0
+  },
+  {
+   "id": "candle",
+   "name": "촛대",
+   "x": 432,
+   "y": 90,
+   "angle": 0
+  },
+  {
+   "id": "book_stack",
+   "name": "책 더미",
+   "x": 62,
+   "y": 418,
+   "angle": 0
+  },
+  {
+   "id": "pouch",
+   "name": "동전 주머니",
+   "x": 146,
+   "y": 406,
+   "angle": 0
+  },
+  {
+   "id": "coin_stack",
+   "name": "동전 더미",
+   "x": 184,
+   "y": 432,
+   "angle": 0
+  },
+  {
+   "id": "coin",
+   "name": "동전",
+   "x": 170,
+   "y": 448,
+   "angle": 0
+  },
+  {
+   "id": "coin",
+   "name": "동전",
+   "x": 199,
+   "y": 410,
+   "angle": 0
+  },
+  {
+   "id": "coin",
+   "name": "동전",
+   "x": 206,
+   "y": 448,
+   "angle": 0
+  },
+  {
+   "id": "spectacles",
+   "name": "안경",
+   "x": 240,
+   "y": 390,
+   "angle": 0
+  },
+  {
+   "id": "pocket_watch",
+   "name": "회중시계",
+   "x": 290,
+   "y": 444,
+   "angle": 0
+  },
+  {
+   "id": "teacup",
+   "name": "찻잔",
+   "x": 338,
+   "y": 406,
+   "angle": 0
+  },
+  {
+   "id": "inkwell",
+   "name": "잉크병",
+   "x": 408,
+   "y": 392,
+   "angle": 0
+  },
+  {
+   "id": "quill",
+   "name": "깃펜",
+   "x": 410,
+   "y": 381,
+   "angle": 0
+  },
+  {
+   "id": "hourglass",
+   "name": "모래시계",
+   "x": 422,
+   "y": 442,
+   "angle": 0
+  },
+  {
+   "id": "globe",
+   "name": "지구의",
+   "x": 548,
+   "y": 386,
+   "angle": 0
+  },
+  {
+   "id": "open_book",
+   "name": "펼친 책",
+   "x": 538,
+   "y": 440,
+   "angle": 0
+  },
+  {
+   "id": "lamp_glow",
+   "name": "등잔 불빛",
+   "x": 100,
+   "y": 74,
+   "angle": 0
+  },
+  {
+   "id": "candle_glow",
+   "name": "촛불 빛",
+   "x": 432,
+   "y": 74,
+   "angle": 0
+  }
+ ]
+}

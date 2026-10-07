@@ -1,0 +1,82 @@
+{
+ "version": 3,
+ "desk": [
+  746,
+  478
+ ],
+ "menu": {
+  "w": 288,
+  "h": 616,
+  "top": 16,
+  "right": 16,
+  "screen": 1208,
+  "unit": "css"
+ },
+ "note": "x, y = 기준점(돌리는 중심 — 3D 소품은 책상에 닿는 점, 2D 는 그림 가운데 · 깃펜은 펜촉 · 두루마리는 종이 가운데)의 책상 1배 좌표. 화면(2배)에서는 2를 곱한다. angle = 화면에서 시계 방향 각도(도). 3D 소품은 15도마다 그린 그림에서 가까운 것을 고르고 남은 각만 돌린다. 그리는 순서 = 목록 순서. 불빛(blend: screen)은 가장자리 그늘 위에 화면 섞기로 얹는다. desk = 책상(액자 안쪽) 크기. menu = 메뉴판 — 게임 화면 CSS px: 폭 w · 높이 h, 액자 바깥 모서리에서 위로 나온 만큼 top · 오른쪽으로 나온 만큼 right, screen = 액자가 화면에서 차지하는 폭. 1배로는 k = screen / (desk 폭 + 26) 으로 나눠 그린다. knob_bottom · knob_top = 축 끝 마개 — 두루마리 그림 밖으로 잘린 금 마개 · 꼭지. 기준점(잘린 줄 바로 바깥 한 줄의 축 가운데)을 두루마리 기준점 + ends(props.json) 자리에 놓으면 이음매 없이 붙는다.",
+ "objects": [
+  {
+   "id": "runner",
+   "name": "남색 천",
+   "x": 292,
+   "y": 240,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "scroll_late",
+   "name": "두루마리 — 3년차 가을 (15명 · 의뢰)",
+   "x": 296,
+   "y": 231,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "knob_bottom",
+   "name": "축 끝 마개 — 아래",
+   "x": 15,
+   "y": 464,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "knob_bottom",
+   "name": "축 끝 마개 — 아래",
+   "x": 577,
+   "y": 464,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "inkwell",
+   "name": "잉크 단지",
+   "x": 621,
+   "y": 431,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "paperweight",
+   "name": "문진",
+   "x": 77,
+   "y": 434,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "paperweight",
+   "name": "문진",
+   "x": 509,
+   "y": 437,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "quill",
+   "name": "깃펜",
+   "x": 657,
+   "y": 467,
+   "angle": 0,
+   "blend": "normal"
+  }
+ ]
+}

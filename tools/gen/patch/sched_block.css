@@ -1,0 +1,128 @@
+/* SCHED_SCROLL_CSS_START — 두루마리 스케줄 (1006). 무대는 1배 그림의 2배(1544×1008) 좌표로 그리고 화면 폭에 맞춰 통째로 줄인다(--sk-s).
+   글자는 물마루 12 · 24px — 목업(schedule_mock2)과 같은 자리 · 같은 크기. 색은 두루마리 그림 색 그대로(화면 분위기와 상관없이) */
+.skwrap{position:relative;isolation:isolate;user-select:none;-webkit-user-select:none}
+@media (min-width:1100px) and (orientation:landscape){.skwrap{width:calc(100% + 290px);margin-top:16px}}
+.skfit{position:relative;width:100%;aspect-ratio:1544/1008;overflow:hidden;contain:layout paint}
+.skstage{position:absolute;left:0;top:0;width:1544px;height:1008px;transform-origin:0 0;transform:scale(var(--sk-s,.78))}
+.skstage>img{position:absolute;left:0;top:0;width:1544px;height:1008px;max-width:none;display:block;image-rendering:pixelated;pointer-events:none}
+.sk-paper{position:absolute;width:1214px;height:932px;font:400 12px/12px "Mulmaru",sans-serif;color:#3a2a20;letter-spacing:0;text-align:left}
+.sk-paper *{box-sizing:border-box}
+.sk-spr{position:absolute;display:block;background-image:var(--sk-sheet);background-size:var(--sk-ss);background-repeat:no-repeat;image-rendering:pixelated;pointer-events:none}
+.sk-t{position:absolute;white-space:nowrap;line-height:12px}
+.sk-h{font-size:24px;line-height:24px;color:#5c4733;white-space:nowrap}
+.sk-title{position:absolute;margin:0;font:inherit;font-size:24px;line-height:24px;color:#3a2a20;white-space:nowrap}
+.sk-fade{color:#a48d6c}.sk-ink2{color:#5c4733}.sk-red{color:#a3302a}.sk-grn{color:#3b6b33}.sk-brass{color:#8a5e1c}
+.sk-row{position:absolute;display:flex;align-items:flex-start;white-space:nowrap}
+.sk-row.r{justify-content:flex-end}
+/* 종이 꼬리표 단추 — 높이 12칸 · 1칸 테두리 · 위 밝은 줄 · 아래 그늘 줄 · 오른쪽 아래 그림자.
+   글자는 단추가 세로 가운데로 놓는다 — 위 여백을 주면 그만큼 아래로 처진다 (1006, 예전 padding-top 4) */
+.skb{position:relative;display:inline-block;height:24px;margin:0;padding:0 10px;border:2px solid #5c4733;border-radius:2px!important;
+  background:linear-gradient(#f8eed4 0 2px,#ecdcb4 2px calc(100% - 2px),#cdb488 calc(100% - 2px));box-shadow:4px 4px 0 rgba(60,36,20,.27)!important;
+  font:400 12px/12px "Mulmaru",sans-serif;color:#3a2a20;letter-spacing:0;white-space:nowrap;cursor:pointer;-webkit-appearance:none;appearance:none;text-align:left;vertical-align:top}
+.skb.ic{padding-left:27px}
+.skb>.sk-spr{left:6px;top:2px;width:16px;height:16px}
+.skb:hover:not(:disabled){filter:brightness(1.05)}
+.skb:active:not(:disabled){transform:translate(2px,2px);box-shadow:2px 2px 0 rgba(60,36,20,.27)!important}
+.skb:disabled{cursor:default;border-color:#ad987a;color:#a48d6c;background:linear-gradient(#f8eed4 0 2px,#e4d6b6 2px calc(100% - 2px),#cdb488 calc(100% - 2px))}
+.skb.bad{border-color:#a3302a;color:#a3302a}.skb.brass{border-color:#8a5e1c;color:#8a5e1c}.skb.poor{color:#a3302a}
+.sk-paper button:focus-visible,.sk-quill:focus-visible{outline:3px solid #2d6fd6;outline-offset:2px}
+/* 요일 띠 · 칸 */
+.sk-rib{position:absolute;width:200px;text-align:center;font-size:24px;line-height:24px;color:#fffaf0;white-space:nowrap;pointer-events:none}
+.sk-day{position:absolute;width:112px;height:164px}
+.sk-day.sk-on,.sk-hand.sk-on{outline:4px solid #e6b84a;outline-offset:2px}
+.sk-empty{position:absolute;left:0;top:0;width:112px;height:164px;background-image:var(--sk-sheet);background-size:var(--sk-ss);background-repeat:no-repeat;image-rendering:pixelated}
+.sk-empty b{position:absolute;left:0;width:112px;text-align:center;font-weight:400;color:#8f7856}
+.sk-chain{position:absolute;height:14px;background-image:var(--sk-chain);background-size:20px 14px;background-repeat:repeat-x;image-rendering:pixelated;pointer-events:none}
+.sk-badge{position:absolute;transform:translateX(-50%);height:22px;padding:4px 4px 0;border:2px solid #8a5e1c;background:#f4e3b4;color:#8a5e1c;white-space:nowrap;pointer-events:none}
+/* 카드 — 바탕 그림(그림자 포함 59×85) 위에 그림 · 글자. 남은 기간 꼬리표는 카드 왼쪽 선, 표식은 오른쪽 선(112)에 맞춘다 (1006) */
+.sk-card{position:absolute;width:118px;height:170px;background-image:var(--sk-sheet);background-size:var(--sk-ss);background-repeat:no-repeat;image-rendering:pixelated;cursor:grab;touch-action:none}
+.sk-card:hover{filter:brightness(1.04)}
+.sk-card.sk-lift{opacity:.35}
+.sk-card .sk-spr.ic{left:40px;top:10px;width:32px;height:28px}
+/* 훈련 이름 — 무대를 얼마나 줄이든 화면에서 12px (1006). 글자 그림자도 화면 1px. 색 머리(그림 2~29) 안 아이콘 아래 칸(40~60)에 */
+.sk-cn{position:absolute;left:0;top:43px;width:112px;text-align:center;color:#fffaf0;white-space:nowrap;--o:calc(1px / var(--sk-s,.78238));font-size:min(calc(12px / var(--sk-s,.78238)),18px);line-height:min(calc(12px / var(--sk-s,.78238)),18px)}
+.sk-cc{position:absolute;left:8px;top:64px;color:#5c4733;white-space:nowrap}
+.sk-fx{position:absolute;left:8px;width:96px;display:flex;justify-content:space-between;white-space:nowrap}
+.sk-fx b{font-weight:400;color:#3b6b33}.sk-fx.bad,.sk-fx.bad b{color:#a3302a}
+.sk-ck{position:absolute;left:8px;top:146px;width:96px;display:flex;justify-content:space-between;color:#5c4733}
+.sk-ck b{font-weight:400}
+.sk-life{position:absolute;left:0;top:-14px;height:16px;padding:1px 6px 0 13px;border:2px solid #5c4733;border-bottom:0;
+  background:linear-gradient(#fbf4de 0 2px,#f3e6c4 2px);color:#5c4733;white-space:nowrap}
+.sk-life::before{content:"";position:absolute;left:2px;top:4px;width:6px;height:6px;background:var(--lc)}
+.sk-mark{position:absolute;right:6px;top:-8px;height:18px;padding:2px 3px 0;border:2px solid #8a5e1c;background:linear-gradient(#fff4cc 0 2px,#f6e3a8 2px);color:#8a5e1c;white-space:nowrap}
+.sk-ghost{position:absolute;z-index:50;pointer-events:none;filter:drop-shadow(8px 10px 0 rgba(24,12,8,.3));transform:rotate(-3deg)}
+.sk-hand{position:absolute}
+/* 개인 행동 · 부상 · 컨디션 명부 */
+.sk-inj{position:absolute;height:40px;border:2px solid #a3302a;background:linear-gradient(#fbeedd 0 2px,#f3dfc8 2px)}
+.sk-inj .sk-spr{left:8px;top:6px;width:12px;height:12px}
+.sk-inj .skb{position:absolute;right:6px;top:6px}
+.sk-ros{position:absolute;transform-origin:0 0}
+.sk-r{position:absolute;width:384px;height:20px}
+.sk-r::after{content:"";position:absolute;left:-2px;bottom:0;width:372px;height:2px;background:linear-gradient(90deg,rgba(179,150,104,.67) 50%,transparent 50%) 0 0/4px 2px repeat-x}
+.sk-r.empty::after{opacity:.88}
+.sk-r.rest::before{content:"";position:absolute;left:-4px;top:0;width:380px;height:20px;background:rgba(207,226,176,.31)}
+.sk-r>*{position:absolute;top:3px;white-space:nowrap}
+.sk-r .nm{left:0;width:60px;overflow:hidden;color:#3a2a20}
+.sk-chip{position:absolute;top:0!important;left:62px;width:30px;height:18px;padding:0;border:0;margin:0;box-shadow:none!important;border-radius:0!important;background:var(--sk-sheet) no-repeat;background-size:var(--sk-ss);image-rendering:pixelated;
+  font:400 12px/12px "Mulmaru",sans-serif;text-align:left;cursor:pointer;-webkit-appearance:none;appearance:none}
+/* 행동 칸 글자 — 칸(18) 안쪽 2~16 에 잉크 11칸: 위 1 · 아래 2 띄운다. 단추 안 세로 가운데 맞춤을 피해 절대 자리로 (1006) */
+.sk-chip>b{position:absolute;left:0;top:3px;width:30px;font-weight:400;line-height:12px;text-align:center;pointer-events:none}
+.sk-chip:disabled{cursor:default}
+.sk-chip:hover:not(:disabled){filter:brightness(1.06)}
+.sk-r .sk-spr{top:2px;left:96px;width:12px;height:12px}
+.sk-r .iw{left:111px;color:#a3302a}
+.sk-bar{top:4px!important;width:160px;height:10px;border:2px solid #8c7353;background:#e8d8b2}
+.sk-bar i{position:absolute;left:0;top:0;bottom:0;display:block;box-shadow:inset 0 2px 0 var(--hc)}
+.sk-r .cv{font-family:"Mulmaru Mono","Mulmaru",monospace;text-align:right;width:40px}
+.sk-div{position:absolute;width:2px;background:repeating-linear-gradient(rgba(160,134,96,.78) 0 4px,transparent 4px 8px)}
+.sk-pager{display:inline-flex;gap:4px;margin-left:8px}
+.sk-pager .skb{padding:0 6px}
+/* 결재 — 위 '결재' · 가운데 진행 비용 · 아래쪽 서명 줄(그림 y 58)과 '학원장' (1006, 예전엔 서명 줄이 위 · 그 밑에 안내 글) */
+.sk-appr{position:absolute;width:256px;height:148px;margin:0;padding:0;border:0;box-shadow:none!important;border-radius:0!important;background:var(--sk-sheet) no-repeat;background-size:var(--sk-ss);image-rendering:pixelated;
+  font:400 12px/12px "Mulmaru",sans-serif;color:#3a2a20;text-align:left;cursor:pointer;-webkit-appearance:none;appearance:none}
+.sk-appr:disabled{cursor:default}
+.sk-appr>span{position:absolute;white-space:nowrap}
+.sk-appr .lab{left:14px;top:12px;color:#5c4733}
+.sk-appr .how{right:22px;top:120px;color:#a48d6c}
+.sk-appr .who{left:24px;top:120px;color:#a48d6c}
+.sk-appr .big{left:14px;top:34px;font-size:24px;line-height:24px}
+.sk-appr .sub{left:16px}
+.sk-sig{position:absolute;left:18px;top:78px;width:214px;height:40px;image-rendering:pixelated;pointer-events:none}   /* 서명 줄(116)이 캔버스 끝에서 두 번째 줄 */
+/* 잉크를 찍으면 결재란이 빛난다 (1006) — 금빛 테두리(그림 한 칸) · 바깥 빛이 숨 쉬듯. 서명을 마치면 끈다 */
+.sk-appr::after{content:"";position:absolute;left:-2px;top:-2px;width:256px;height:148px;box-sizing:border-box;border:2px solid #eeae34;box-shadow:0 0 0 2px rgba(255,247,212,.95),0 0 18px 6px rgba(238,164,36,.55),inset 0 0 16px 4px rgba(255,210,100,.5);opacity:0;pointer-events:none;transition:opacity .25s}
+.sk-appr.inked::after{opacity:1;animation:skBoxGlow 1.1s ease-in-out infinite alternate}
+.sk-appr.inked{filter:brightness(1.05)}
+.sk-appr.signed::after{animation:none;opacity:0}
+@keyframes skBoxGlow{from{opacity:.55}to{opacity:1}}
+/* 의뢰 쪽지 — 결재란 위 (1006). 이번 주 의뢰를 미리 보인다 */
+.sk-slip{position:absolute;width:254px;height:130px;background-image:var(--sk-sheet);background-size:var(--sk-ss);background-repeat:no-repeat;image-rendering:pixelated}
+.sk-slip>*{position:absolute;white-space:nowrap}
+.sk-slip .gr{height:18px;padding:2px 3px 0;border:2px solid #8a5e1c;background:#f6e3a8;color:#8a5e1c}
+.sk-slip .hd{display:flex;align-items:center;gap:8px}   /* 의뢰 이름(이번 주 의뢰) · 등급 (1006) */
+.sk-slip .bar{height:8px;border:2px solid #8c7353;background:#e8d8b2}
+.sk-slip .bar i{position:absolute;left:0;top:0;bottom:0;display:block;background:#c3922c;box-shadow:inset 0 2px 0 #e6c262}
+/* 깃펜 · 잉크 · 서명 */
+.sk-quill{position:absolute;width:186px;height:118px;padding:0;margin:0;border:0;box-shadow:none!important;border-radius:0!important;background:none;cursor:grab;touch-action:none;
+  filter:drop-shadow(6px 4px 0 rgba(24,12,8,.37))}
+.sk-quill img{position:absolute;left:0;top:0;width:186px;height:118px;max-width:none;image-rendering:pixelated;pointer-events:none}
+.sk-quill .tip{position:absolute;width:4px;height:4px;background:#1d2433;opacity:0;transition:opacity .4s}
+.sk-quill.inked .tip{opacity:var(--ink,1)}
+.sk-quill.held{cursor:none;filter:drop-shadow(14px 14px 0 rgba(24,12,8,.24));z-index:2}
+.sk-quill.nudge{animation:skNudge .55s ease-in-out}
+@keyframes skNudge{0%,100%{translate:0 0}20%{translate:-4px -6px}45%{translate:3px 2px}70%{translate:-2px -3px}}
+.sk-quill.dip img{animation:skDip .32s ease-in-out}
+@keyframes skDip{0%,100%{translate:0 0}45%{translate:0 8px}}
+/* 반짝임 (1006) — 다섯 칸이 차면 깃펜 · 깃펜을 들면 잉크 단지. 그림 한 칸(2) 테두리가 숨 쉬듯 빛나고 별(.sk-tw)이 번갈아 반짝인다 */
+.sk-quill.glint img,.sk-inkfx.on img{animation:skGlint 1.3s ease-in-out infinite}
+@keyframes skGlint{0%,100%{filter:drop-shadow(2px 0 0 rgba(255,236,160,0)) drop-shadow(-2px 0 0 rgba(255,236,160,0)) drop-shadow(0 2px 0 rgba(255,236,160,0)) drop-shadow(0 -2px 0 rgba(255,236,160,0)) brightness(1)}50%{filter:drop-shadow(2px 0 0 rgba(255,236,160,.95)) drop-shadow(-2px 0 0 rgba(255,236,160,.95)) drop-shadow(0 2px 0 rgba(255,236,160,.95)) drop-shadow(0 -2px 0 rgba(255,236,160,.95)) brightness(1.14)}}
+.sk-inkfx{position:absolute;pointer-events:none}
+.sk-inkfx img{position:absolute;left:0;top:0;width:100%;height:100%;max-width:none;image-rendering:pixelated;opacity:0;transition:opacity .2s}
+.sk-inkfx.on img{opacity:1}
+.sk-tw{position:absolute;width:4px;height:4px;margin:-1px 0 0 -1px;pointer-events:none;display:none}   /* 별 한 칸 = 그림 두 칸 — 작으면 안 보인다 */
+.sk-quill.glint .sk-tw,.sk-inkfx.on .sk-tw{display:block;animation:skTw 2.2s steps(1,end) infinite;animation-delay:var(--d,0s)}
+@keyframes skTw{0%{background:#fff3c4;box-shadow:none}6%{background:#fff;box-shadow:4px 0px #fff2b8,-4px 0px #fff2b8,0px 4px #fff2b8,0px -4px #fff2b8}12%{background:#fff;box-shadow:4px 0px #fffbe6,-4px 0px #fffbe6,0px 4px #fffbe6,0px -4px #fffbe6,8px 0px #ffd65c,-8px 0px #ffd65c,0px 8px #ffd65c,0px -8px #ffd65c}18%{background:#fff;box-shadow:4px 0px #ffffff,-4px 0px #ffffff,0px 4px #ffffff,0px -4px #ffffff,8px 0px #ffe7a0,-8px 0px #ffe7a0,0px 8px #ffe7a0,0px -8px #ffe7a0,12px 0px #ffc845,-12px 0px #ffc845,0px 12px #ffc845,0px -12px #ffc845,4px 4px #ffe7a0cc,-4px 4px #ffe7a0cc,4px -4px #ffe7a0cc,-4px -4px #ffe7a0cc}24%{background:#fff;box-shadow:4px 0px #ffffff,-4px 0px #ffffff,0px 4px #ffffff,0px -4px #ffffff,8px 0px #ffe7a0,-8px 0px #ffe7a0,0px 8px #ffe7a0,0px -8px #ffe7a0,12px 0px #ffc845,-12px 0px #ffc845,0px 12px #ffc845,0px -12px #ffc845,4px 4px #ffe7a0cc,-4px 4px #ffe7a0cc,4px -4px #ffe7a0cc,-4px -4px #ffe7a0cc}30%{background:#fff;box-shadow:4px 0px #fffbe6,-4px 0px #fffbe6,0px 4px #fffbe6,0px -4px #fffbe6,8px 0px #ffd65c,-8px 0px #ffd65c,0px 8px #ffd65c,0px -8px #ffd65c}36%{background:#fff;box-shadow:4px 0px #fff2b8,-4px 0px #fff2b8,0px 4px #fff2b8,0px -4px #fff2b8}42%{background:#fff3c4;box-shadow:none}48%,100%{background:transparent;box-shadow:none}}
+.sk-ripple{position:absolute;border:2px solid rgba(110,140,190,.85);border-radius:50%;pointer-events:none;animation:skRipple .5s ease-out forwards}
+@keyframes skRipple{from{transform:scale(.3);opacity:1}to{transform:scale(1.25);opacity:0}}
+.sk-hold{position:absolute;inset:0;z-index:40;cursor:none;touch-action:none}
+@media (prefers-reduced-motion:reduce){.sk-quill.nudge,.sk-quill.dip img,.sk-ripple,.sk-appr.inked::after{animation:none}.sk-quill.glint img,.sk-inkfx.on img{animation:none;filter:drop-shadow(2px 0 0 #ffeca0) drop-shadow(-2px 0 0 #ffeca0) drop-shadow(0 2px 0 #ffeca0) drop-shadow(0 -2px 0 #ffeca0)}.sk-quill.glint .sk-tw,.sk-inkfx.on .sk-tw{animation:none;display:none}}
+/* SCHED_SCROLL_CSS_END */

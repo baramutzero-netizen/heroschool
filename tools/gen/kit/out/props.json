@@ -1,0 +1,232 @@
+{
+ "scroll": {
+  "id": "scroll",
+  "name": "일정 두루마리",
+  "w": 363,
+  "h": 241,
+  "ax": 180,
+  "ay": 118,
+  "blend": "normal",
+  "cat": "paper"
+ },
+ "runner": {
+  "id": "runner",
+  "name": "남색 천",
+  "w": 98,
+  "h": 466,
+  "ax": 49,
+  "ay": 233,
+  "blend": "normal",
+  "cat": "cloth"
+ },
+ "lamp": {
+  "id": "lamp",
+  "name": "유리 등잔",
+  "w": 49,
+  "h": 47,
+  "ax": 20,
+  "ay": 29,
+  "blend": "normal",
+  "cat": "prop"
+ },
+ "candle": {
+  "id": "candle",
+  "name": "촛대",
+  "w": 49,
+  "h": 39,
+  "ax": 20,
+  "ay": 21,
+  "blend": "normal",
+  "cat": "prop"
+ },
+ "globe": {
+  "id": "globe",
+  "name": "지구의",
+  "w": 64,
+  "h": 73,
+  "ax": 24,
+  "ay": 38,
+  "blend": "normal",
+  "cat": "prop"
+ },
+ "vase_flowers": {
+  "id": "vase_flowers",
+  "name": "꽃병",
+  "w": 50,
+  "h": 63,
+  "ax": 16,
+  "ay": 33,
+  "blend": "normal",
+  "cat": "prop"
+ },
+ "hourglass": {
+  "id": "hourglass",
+  "name": "모래시계",
+  "w": 60,
+  "h": 48,
+  "ax": 25,
+  "ay": 25,
+  "blend": "normal",
+  "cat": "prop"
+ },
+ "book_stack": {
+  "id": "book_stack",
+  "name": "책 더미",
+  "w": 98,
+  "h": 75,
+  "ax": 45,
+  "ay": 39,
+  "blend": "normal",
+  "cat": "prop"
+ },
+ "book_pair": {
+  "id": "book_pair",
+  "name": "책 두 권",
+  "w": 91,
+  "h": 65,
+  "ax": 42,
+  "ay": 35,
+  "blend": "normal",
+  "cat": "prop"
+ },
+ "open_book": {
+  "id": "open_book",
+  "name": "펼친 책",
+  "w": 80,
+  "h": 59,
+  "ax": 40,
+  "ay": 28,
+  "blend": "normal",
+  "cat": "prop"
+ },
+ "inkwell": {
+  "id": "inkwell",
+  "name": "잉크병",
+  "w": 41,
+  "h": 42,
+  "ax": 17,
+  "ay": 22,
+  "blend": "normal",
+  "cat": "prop"
+ },
+ "quill": {
+  "id": "quill",
+  "name": "깃펜",
+  "w": 83,
+  "h": 53,
+  "ax": 1,
+  "ay": 50,
+  "blend": "normal",
+  "cat": "prop"
+ },
+ "envelope": {
+  "id": "envelope",
+  "name": "편지",
+  "w": 68,
+  "h": 43,
+  "ax": 34,
+  "ay": 22,
+  "blend": "normal",
+  "cat": "prop"
+ },
+ "wax_seal": {
+  "id": "wax_seal",
+  "name": "봉랍 인장",
+  "w": 25,
+  "h": 35,
+  "ax": 12,
+  "ay": 12,
+  "blend": "normal",
+  "cat": "prop"
+ },
+ "rolled_map": {
+  "id": "rolled_map",
+  "name": "말린 지도",
+  "w": 93,
+  "h": 34,
+  "ax": 44,
+  "ay": 18,
+  "blend": "normal",
+  "cat": "prop"
+ },
+ "teacup": {
+  "id": "teacup",
+  "name": "찻잔",
+  "w": 55,
+  "h": 47,
+  "ax": 26,
+  "ay": 24,
+  "blend": "normal",
+  "cat": "prop"
+ },
+ "spectacles": {
+  "id": "spectacles",
+  "name": "안경",
+  "w": 48,
+  "h": 30,
+  "ax": 23,
+  "ay": 21,
+  "blend": "normal",
+  "cat": "prop"
+ },
+ "pocket_watch": {
+  "id": "pocket_watch",
+  "name": "회중시계",
+  "w": 64,
+  "h": 46,
+  "ax": 49,
+  "ay": 33,
+  "blend": "normal",
+  "cat": "prop"
+ },
+ "pouch": {
+  "id": "pouch",
+  "name": "동전 주머니",
+  "w": 48,
+  "h": 56,
+  "ax": 17,
+  "ay": 29,
+  "blend": "normal",
+  "cat": "prop"
+ },
+ "coin_stack": {
+  "id": "coin_stack",
+  "name": "동전 더미",
+  "w": 21,
+  "h": 24,
+  "ax": 8,
+  "ay": 12,
+  "blend": "normal",
+  "cat": "prop"
+ },
+ "coin": {
+  "id": "coin",
+  "name": "동전",
+  "w": 14,
+  "h": 13,
+  "ax": 7,
+  "ay": 7,
+  "blend": "normal",
+  "cat": "prop"
+ },
+ "lamp_glow": {
+  "id": "lamp_glow",
+  "name": "등잔 불빛",
+  "w": 183,
+  "h": 160,
+  "ax": 91,
+  "ay": 79,
+  "blend": "screen",
+  "cat": "light"
+ },
+ "candle_glow": {
+  "id": "candle_glow",
+  "name": "촛불 빛",
+  "w": 123,
+  "h": 107,
+  "ax": 61,
+  "ay": 52,
+  "blend": "screen",
+  "cat": "light"
+ }
+}

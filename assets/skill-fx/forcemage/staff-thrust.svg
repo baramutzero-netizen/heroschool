@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300">
+<defs>
+ <filter id="glow" x="-40%" y="-100%" width="180%" height="300%"><feGaussianBlur stdDeviation="7"/></filter>
+ <linearGradient id="wind"><stop stop-color="#e6dcbd" stop-opacity="0"/><stop offset=".38" stop-color="#f7e7bf" stop-opacity=".4"/><stop offset=".7" stop-color="#fffdf0" stop-opacity=".9"/><stop offset="1" stop-color="#e1ebff" stop-opacity="0"/></linearGradient>
+ <linearGradient id="blue" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#244ba9" stop-opacity=".1"/><stop offset=".25" stop-color="#458dff"/><stop offset=".46" stop-color="#c9f1ff"/><stop offset=".53" stop-color="#ffffff"/><stop offset=".7" stop-color="#599cff"/><stop offset="1" stop-color="#233eae" stop-opacity=".15"/></linearGradient>
+ <linearGradient id="red" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#9b1743" stop-opacity="0"/><stop offset=".3" stop-color="#f14969"/><stop offset=".5" stop-color="#fff2d3"/><stop offset=".62" stop-color="#ff9a85"/><stop offset="1" stop-color="#bd1949" stop-opacity="0"/></linearGradient>
+ <path id="w1" d="M76 8 C185 75 224 213 119 287 C194 192 161 80 76 8Z"/>
+ <path id="w2" d="M249 25 C336 69 348 167 300 230 C322 153 298 72 249 25Z"/>
+ <path id="w3" d="M361 83 C421 132 414 238 335 281 C389 213 395 143 361 83Z"/>
+ <path id="w4" d="M182 102 C226 132 238 181 210 215 C221 165 206 132 182 102Z"/>
+ <path id="w5" d="M444 8 C485 52 490 105 465 139 C472 88 461 42 444 8Z"/>
+</defs>
+<g fill="url(#wind)"><g filter="url(#glow)" opacity=".6"><use href="#w1"/><use href="#w2"/><use href="#w3"/><use href="#w4"/><use href="#w5"/></g><use href="#w1"/><use href="#w2"/><use href="#w3"/><use href="#w4"/><use href="#w5"/></g>
+</svg>

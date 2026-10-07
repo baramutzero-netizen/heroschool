@@ -9228,7 +9228,7 @@ function render(){
   if(UI.pendingTour && UI.tour && !(UI.tour.stage==="prep" && !UI.tour._prepOpen)){ renderTournament(); }
   /* 설정에서 곡을 미리 듣던 중 다른 탭으로 넘어가면 멎는다 */
   if(AUD_PV && UI.view !== "opt"){ AUD_PV = 0; audOver(null); }
-  $("#acadName").textContent = S.acadName;
+  $("#acadName").textContent = S.acadName; acadNameFit();   // 1007 — 두 줄을 넘으면 글자를 줄인다
   $("#acadSub").innerHTML = `${esc(tierOf().n)}<span class="asub-fame"> · ${esc(fameTitle(S.fame).n)}</span>`;   // 0930 — 지도 · 정보 · 호소 수치는 숨긴다 (마스터 노트에서 본다)
   $("#mDate").innerHTML = `${yrName(S.year)} <span class="dsea">${PHASES[S.phase].n} ${Math.min(S.week+1,PHASES[S.phase].weeks)}주</span>`;
   $("#mFame").textContent = fmt(S.fame);
@@ -9340,6 +9340,27 @@ function render(){
   renderLog();
   audBase(S && PHASES[S.phase] ? S.phase : null);
 }
+/* 학원 이름 (1007) — 두 줄을 넘으면 두 줄에 들어가는 크기까지 글자를 비례로 줄인다
+   (가로 화면 사이드가 길어져 스케줄의 잉크 단지 · 깃펜을 가리지 않게). 도트 폰트도 같은 방식 — 12 · 24px 사이 크기는 조금 흐리게 보인다.
+   이름 · 글꼴 · 칸 폭이 그대로면 다시 재지 않는다 */
+const ACAD_FIT = {key:"", t:0};
+function acadNameFit(){
+  const el = $("#acadName"); if(!el) return;
+  const px = document.documentElement.dataset.font === "pixel", key = el.textContent + "|" + px + "|" + el.clientWidth;
+  if(key === ACAD_FIT.key) return;
+  el.style.removeProperty("font-size"); el.style.removeProperty("line-height");
+  if(!el.clientWidth){ ACAD_FIT.key = ""; return; }                  // 숨겨진 화면 — 보일 때 다시
+  ACAD_FIT.key = key;
+  const cs = getComputedStyle(el), f0 = parseFloat(cs.fontSize), r = (parseFloat(cs.lineHeight) || f0 * 1.25) / f0;
+  const fits = (f)=> el.scrollHeight <= f * r * 2 + 2;
+  if(fits(f0)) return;
+  const set = (f)=>{ el.style.setProperty("font-size", f + "px", "important"); el.style.setProperty("line-height", (f * r) + "px", "important"); };
+  let lo = 10, hi = f0;                                              // 두 줄에 드는 가장 큰 크기 (반 px 단위)
+  for(let i = 0; i < 9 && hi - lo > .25; i++){ const m = (lo + hi) / 2; set(m); if(fits(m)) lo = m; else hi = m; }
+  set(Math.floor(lo * 2) / 2);
+}
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(()=>{ ACAD_FIT.key = ""; acadNameFit(); });   // 글꼴을 다 받은 뒤 다시 잰다
+addEventListener("resize", ()=>{ clearTimeout(ACAD_FIT.t); ACAD_FIT.t = setTimeout(()=>{ ACAD_FIT.key = ""; acadNameFit(); }, 150); });
 function renderMission(){
   if(!S.mission) S.mission = newMission();
   const html = missionHtml();
@@ -11310,7 +11331,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1007-0915";
+const BUILD = "1007-1231";
 const BUILD_TS = 0;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
@@ -15941,6 +15962,24 @@ function tutOverPage(k, after){
   const b = box.querySelector("[data-tutok]");
   if(b) b.onclick = ()=>{ box.remove(); after && after(); };
 }
+/* 친선전 전부 거절 — 한 번 더 묻는다 (1007). 친선전 팝업은 그대로 두고 그 위에 겹쳐 띄운다 — 취소하면 고르던 그대로 */
+function friendlyDeclineAsk(onYes){
+  const root = $("#modalRoot");
+  if(!root || !root.firstChild){ onYes(); return; }
+  if(root.querySelector(".fdecl")) return;                       // 이미 묻는 중
+  const box = document.createElement("div");
+  box.className = "overlay tutover fdecl";
+  box.innerHTML = `<div class="modal" style="width:min(560px,100%)">
+      <h2 style="font-size:18px;margin-bottom:14px;word-break:keep-all">이번 계절에 친선전을 진행하지 않겠습니까?</h2>
+      <div class="btnrow"><button class="btn primary" data-fdno>취소</button>
+        <button class="btn" data-fdyes style="border-color:var(--bad);color:var(--bad)">전부 거절</button></div>
+    </div>`;
+  root.appendChild(box);
+  const no = box.querySelector("[data-fdno]");
+  no.onclick = ()=> box.remove();
+  box.querySelector("[data-fdyes]").onclick = ()=>{ box.remove(); onYes(); };
+  no.focus();                                                    // 키보드 — Enter 를 한 번 더 눌러도 거절되지 않게
+}
 function showCeremony(){
   const c = (UI.ceremonies||[]).shift();
   if(!c){ audOver(null); render(); return; }
@@ -16011,9 +16050,9 @@ function showCeremony(){
           UI.fsel = null; save(); redraw();
         }
       });
-      $("#fDecline").onclick = ()=>{ F.slots=[null,null,null]; UI.fsel=null; F.answered=true;
+      $("#fDecline").onclick = ()=> friendlyDeclineAsk(()=>{ F.slots=[null,null,null]; UI.fsel=null; F.answered=true;   // 1007 — 한 번 더 묻는다
         logE(`친선전 — 세 학원의 요청을 모두 거절했다.`,"");
-        save(); closeModal(); showCeremony(); };
+        save(); closeModal(); showCeremony(); });
     }
     const cok = $("#cerOk");
     if(!cok) modalEscape();                 // 확인 버튼이 없는 팝업 — 빠져나갈 길은 남긴다
@@ -16768,6 +16807,15 @@ window.addEventListener('resize',alignDemonField);
 /* One still image per effect. Routing is independent of character sprite sheets. */
 const STYLISH_SKILL_FX = {
   assets: {
+    staffThrust:"assets/skill-fx/forcemage/staff-thrust.svg?v=3",
+    unseal0:"assets/skill-fx/rogue/shadow.webp?v=w90",
+    unseal1:"assets/skill-fx/rogue/shadow.webp?v=w90",
+    unseal2:"assets/skill-fx/rogue/shadow.webp?v=w90",
+    unseal3:"assets/skill-fx/rogue/shadow.webp?v=w90",
+    unseal4:"assets/skill-fx/rogue/shadow.webp?v=w90",
+    unseal5:"assets/skill-fx/rogue/shadow.webp?v=w90",
+    unseal6:"assets/skill-fx/rogue/shadow.webp?v=w90",
+
     druidCircle:"assets/skill-fx/druid/hand-circle.svg?v=2",
     regenSeed:"assets/skill-fx/druid/regen.svg?v=1",
     bearSign:"assets/skill-fx/druid/bear-outline.png?v=3",
@@ -16824,8 +16872,8 @@ const STYLISH_SKILL_FX = {
     gravityBeam: "assets/skill-fx/wizard/gravity-beam.svg?v=4",
     gravityFoot: "assets/skill-fx/wizard/gravity-foot.svg?v=4"
   },
-  casters: {druid:["druidCircle"], monk:["monkPressure"], sword:["swordSwing"], paladin: ["trail"], darkpriest: ["darkEssence"], gunner:["gunMuzzle"], priest:["holyEssence"], bard:["bardMelody"], ninja:["ninjaRipple"], archer:["archerWind"], wizard:["wizardCircles"]},
-  targets: {dr_b:[],dr_1:["regenSeed"],dr_2:["bearSign"],dr_u:[],mo_b:[], mo_1:["chiHit"], mo_2:["shadowStep"], mo_u:["fistRush","oraText"], sw_b:[], sw_1:["tauntAnger"], sw_2:["shadowStep"], sw_u:[], pa_b: ["impact"], pa_1: ["shield"], pa_2: ["beam"], pa_u: ["beam", "shield"],
+  casters: {forcemage:["staffThrust"],druid:["druidCircle"], monk:["monkPressure"], sword:["swordSwing"], paladin: ["trail"], darkpriest: ["darkEssence"], gunner:["gunMuzzle"], priest:["holyEssence"], bard:["bardMelody"], ninja:["ninjaRipple"], archer:["archerWind"], wizard:["wizardCircles"]},
+  targets: {fm_b:[],fm_1:[],fm_2:["shadowStep"],fm_u:["unseal0","unseal1","unseal2","unseal3","unseal4","unseal5","unseal6"],dr_b:[],dr_1:["regenSeed"],dr_2:["bearSign"],dr_u:[],mo_b:[], mo_1:["chiHit"], mo_2:["shadowStep"], mo_u:["fistRush","oraText"], sw_b:[], sw_1:["tauntAnger"], sw_2:["shadowStep"], sw_u:[], pa_b: ["impact"], pa_1: ["shield"], pa_2: ["beam"], pa_u: ["beam", "shield"],
     dp_b:["darkHit"], dp_1:["redDrain"], dp_2:["curseNail"], dp_u:["redDrain"],
     gn_b:["gunHit"], gn_1:["gunHit"], gn_2:["gunPierce"], gn_u:["gunPierce"],
     ro_1:["poisonDagger"], ro_2:["shadowStep"], ro_u:["assassination"],
@@ -16896,6 +16944,7 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
     if((kind==="swordSwing" || kind==="tauntCall" || kind==="earthWave") && side==="B") img.style.transform="scaleX(-1)";
     if(kind==="chiHit" && side==="A") img.style.transform="scaleX(-1)";
     if((kind==="monkPressure" || kind==="fistRush") && side==="B") img.style.transform="scaleX(-1)";
+    if(kind==="staffThrust" && side==="B") img.style.transform="scaleX(-1)";
     if(kind==="oraText" && side==="B") img.src="assets/skill-fx/monk/du-reverse.svg?v=1";
     layer.append(img); entries.push({el,kind,img});
     if(kind==="gunPierce" || kind==="ninjaRipple" || kind==="fumaPassed" || kind==="waterFlower" || kind==="meteorRain") ground.append(img);
@@ -16920,7 +16969,7 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
   const oldFilter=stage.style.filter;
   if(mono){stage.style.filter=(oldFilter?oldFilter+" ":"")+"grayscale(1) contrast(1.12)";stage.dataset.skillMonochrome=skillId;}
   if(inverted){stage.style.filter=(oldFilter?oldFilter+" ":"")+"invert(1)";stage.dataset.skillInverted=skillId;}
-  let raf=0, disposed=false;
+  let raf=0, disposed=false, unsealSoundPhase=-1;
   const stop=()=>{disposed=true;cancelAnimationFrame(raf);layer.remove();ground.remove();if(mono||inverted){stage.style.filter=oldFilter;delete stage.dataset.skillMonochrome;delete stage.dataset.skillInverted;}};
   const update=()=>{
     if(disposed || !stage.isConnected || !active()){stop();return;}
@@ -16932,6 +16981,8 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
     layer.style.clipPath=`inset(${top}px 0 ${Math.max(0,stage.clientHeight-bottom)}px 0)`;
     ground.style.clipPath=layer.style.clipPath;
     const elapsed=performance.now()-started;
+    const unsealPhase=Math.min(6,Math.floor(elapsed/(duration/7)));
+    if(skillId==="fm_u" && unsealPhase!==unsealSoundPhase){unsealSoundPhase=unsealPhase;if(typeof sfxPlay==="function")sfxPlay("unseal"+unsealPhase);}
     entries.forEach(({el,kind,img,group,shot})=>{
       if(shot!=null){
         const end=shot===shots.length-1?duration:(shot+.6)*shotStep;
@@ -16946,6 +16997,8 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
       const cx=(r.left+r.width/2-sr.left)*sx, cy=(r.top-sr.top)*sy+h*.55;
       const throwSize=Math.min(h,Math.max(1,(side==="B"?cx:stage.clientWidth-cx)-12)/3.6);
       let width=h*1.05, height=width, x=cx-width/2, y=cy-height/2;
+      if(kind==="staffThrust") {width=h*1.3;height=width*.5;x=cx-width*(side==="B"?.86:.14);y=(r.top-sr.top)*sy+h*.53-height*.5;}
+      if(kind.startsWith("unseal")){width=h*1.05;height=width;x=cx-width/2;y=(r.top-sr.top)*sy+h*.8-height*.97;img.style.filter=`hue-rotate(${[155,185,215,280,0,35,75][Number(kind.slice(6))]}deg)`;img.style.visibility=Number(kind.slice(6))===unsealPhase?"visible":"hidden";}
       if(kind==="druidCircle") {width=h*.48;height=width;x=cx+(side==="B"?-1:1)*w*.37-width*.5;y=(r.top-sr.top)*sy+h*.38-height*.5;}
       if(kind==="regenSeed") {width=h*1.05;height=width;x=cx-width/2;y=(r.top-sr.top)*sy+h*.47-height*.5;}
       if(kind==="bearSign") {width=h*.58;height=width;x=cx-width/2;y=Math.max(top+4,(r.top-sr.top)*sy+h*.12-height);}
@@ -16982,7 +17035,7 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
       if(kind==="redDrain") {width=h*.95;height=width/1.5;x=cx-width*(side==="B"?.33:.67);y=cy-height*.72;}
       if(kind==="poisonDagger") {width=h*.34;height=width;x=cx-width*(side==="B"?.26:.74);y=(r.top-sr.top)*sy+h*.65-height*.5;}
       if(kind==="shadowStep" || kind==="dissonance") {width=h*1.05;height=width;x=cx-width/2;y=cy-height/2;}
-      if(kind==="dissonance" || (kind==="shadowStep" && (skillId==="sw_2" || skillId==="mo_2"))) y=(r.top-sr.top)*sy+h*.8-height*.97;
+      if(kind==="dissonance" || (kind==="shadowStep" && (skillId==="sw_2" || skillId==="mo_2" || skillId==="fm_2"))) y=(r.top-sr.top)*sy+h*.8-height*.97;
       if(kind==="ninjaRipple") {
         width=h*1.12;height=width/2;x=cx-width/2;y=(r.top-sr.top)*sy+h*.8-height*.5;
       }

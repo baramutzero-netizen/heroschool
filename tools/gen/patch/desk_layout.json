@@ -1,0 +1,426 @@
+{
+ "version": 2,
+ "size": [
+  607,
+  466
+ ],
+ "note": "x, y = 기준점(돌리는 중심 — 3D 소품은 책상에 닿는 점, 2D 는 그림 가운데 · 깃펜은 펜촉)의 책상 1배 좌표. 2배 화면에서는 2를 곱한다. angle = 화면에서 시계 방향 각도(도). 3D 소품은 15도마다 그린 프레임(kit.json 의 frames · step)에서 가까운 것을 고르고 남은 각만 돌린다. 그리는 순서 = 목록 순서. 불빛(blend: screen)은 가장자리 그늘 위에 화면 섞기로 얹는다.",
+ "objects": [
+  {
+   "id": "runner",
+   "name": "남색 천",
+   "x": 237,
+   "y": 233,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "scroll",
+   "name": "빈 두루마리",
+   "x": 237,
+   "y": 230,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "sep_line",
+   "name": "점선",
+   "x": 129,
+   "y": 217,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "sep_line",
+   "name": "점선",
+   "x": 183,
+   "y": 217,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "sep_line",
+   "name": "점선",
+   "x": 237,
+   "y": 217,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "sep_line",
+   "name": "점선",
+   "x": 291,
+   "y": 217,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "sep_line",
+   "name": "점선",
+   "x": 345,
+   "y": 217,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "ribbon_red",
+   "name": "적 띠",
+   "x": 102,
+   "y": 146,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "card_red",
+   "name": "빈 카드 적",
+   "x": 104,
+   "y": 200,
+   "angle": 15,
+   "blend": "normal"
+  },
+  {
+   "id": "ribbon_green",
+   "name": "녹 띠",
+   "x": 156,
+   "y": 146,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "card_green",
+   "name": "빈 카드 녹",
+   "x": 154,
+   "y": 227,
+   "angle": -15,
+   "blend": "normal"
+  },
+  {
+   "id": "icon_dumbbell",
+   "name": "아이콘 아령",
+   "x": 152,
+   "y": 221,
+   "angle": -15,
+   "blend": "normal"
+  },
+  {
+   "id": "ribbon_blue",
+   "name": "청 띠",
+   "x": 210,
+   "y": 146,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "card_blue",
+   "name": "빈 카드 청",
+   "x": 204,
+   "y": 195,
+   "angle": 11,
+   "blend": "normal"
+  },
+  {
+   "id": "icon_book",
+   "name": "아이콘 책",
+   "x": 205,
+   "y": 189,
+   "angle": 11,
+   "blend": "normal"
+  },
+  {
+   "id": "card_blue",
+   "name": "빈 카드 청",
+   "x": 216,
+   "y": 251,
+   "angle": -13,
+   "blend": "normal"
+  },
+  {
+   "id": "icon_cup",
+   "name": "아이콘 찻잔",
+   "x": 215,
+   "y": 245,
+   "angle": -13,
+   "blend": "normal"
+  },
+  {
+   "id": "ribbon_sky",
+   "name": "하늘 띠",
+   "x": 264,
+   "y": 146,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "card_sky",
+   "name": "빈 카드 하늘",
+   "x": 261,
+   "y": 216,
+   "angle": 15,
+   "blend": "normal"
+  },
+  {
+   "id": "icon_lotus",
+   "name": "아이콘 연꽃",
+   "x": 263,
+   "y": 210,
+   "angle": 15,
+   "blend": "normal"
+  },
+  {
+   "id": "card_gold",
+   "name": "빈 카드 황",
+   "x": 310,
+   "y": 188,
+   "angle": -15,
+   "blend": "normal"
+  },
+  {
+   "id": "icon_target",
+   "name": "아이콘 과녁",
+   "x": 308,
+   "y": 182,
+   "angle": -15,
+   "blend": "normal"
+  },
+  {
+   "id": "card_gold",
+   "name": "빈 카드 황",
+   "x": 313,
+   "y": 253,
+   "angle": 2,
+   "blend": "normal"
+  },
+  {
+   "id": "icon_cup",
+   "name": "아이콘 찻잔",
+   "x": 313,
+   "y": 247,
+   "angle": 2,
+   "blend": "normal"
+  },
+  {
+   "id": "ribbon_none",
+   "name": "무 띠",
+   "x": 372,
+   "y": 146,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "card_none",
+   "name": "빈 카드 무",
+   "x": 374,
+   "y": 213,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "icon_map",
+   "name": "아이콘 지도",
+   "x": 374,
+   "y": 207,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "signature",
+   "name": "서명",
+   "x": 134,
+   "y": 316,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "vase_flowers",
+   "name": "꽃병",
+   "x": 559,
+   "y": 422,
+   "angle": 1,
+   "blend": "normal"
+  },
+  {
+   "id": "envelope",
+   "name": "편지",
+   "x": 213,
+   "y": 53,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "rolled_map",
+   "name": "말린 지도",
+   "x": 351,
+   "y": 61,
+   "angle": -30,
+   "blend": "normal"
+  },
+  {
+   "id": "candle",
+   "name": "촛대",
+   "x": 74,
+   "y": 62,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "pouch",
+   "name": "동전 주머니",
+   "x": 22,
+   "y": 386,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "coin_stack",
+   "name": "동전 더미",
+   "x": 43,
+   "y": 416,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "coin",
+   "name": "동전",
+   "x": 19,
+   "y": 433,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "coin",
+   "name": "동전",
+   "x": 63,
+   "y": 383,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "coin",
+   "name": "동전",
+   "x": 68,
+   "y": 423,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "pocket_watch",
+   "name": "회중시계",
+   "x": 395,
+   "y": 437,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "teacup",
+   "name": "찻잔",
+   "x": 469,
+   "y": 401,
+   "angle": 30,
+   "blend": "normal"
+  },
+  {
+   "id": "inkwell",
+   "name": "잉크병",
+   "x": 375,
+   "y": 311,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "quill",
+   "name": "깃펜",
+   "x": 362,
+   "y": 353,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "hourglass",
+   "name": "모래시계",
+   "x": 557,
+   "y": 350,
+   "angle": -45,
+   "blend": "normal"
+  },
+  {
+   "id": "globe",
+   "name": "지구의",
+   "x": 474,
+   "y": 46,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "open_book",
+   "name": "펼친 책",
+   "x": 264,
+   "y": 400,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "spectacles",
+   "name": "안경",
+   "x": 357,
+   "y": 415,
+   "angle": 15,
+   "blend": "normal"
+  },
+  {
+   "id": "ribbon_gold",
+   "name": "황 띠",
+   "x": 318,
+   "y": 146,
+   "angle": 0,
+   "blend": "normal"
+  },
+  {
+   "id": "icon_swords",
+   "name": "아이콘 칼 두 자루",
+   "x": 104,
+   "y": 195,
+   "angle": 15,
+   "blend": "normal"
+  },
+  {
+   "id": "card_red",
+   "name": "빈 카드 적",
+   "x": 113,
+   "y": 258,
+   "angle": -6,
+   "blend": "normal"
+  },
+  {
+   "id": "icon_shield",
+   "name": "아이콘 방패",
+   "x": 112,
+   "y": 252,
+   "angle": -5,
+   "blend": "normal"
+  },
+  {
+   "id": "book_stack",
+   "name": "책 더미",
+   "x": 130,
+   "y": 401,
+   "angle": -15,
+   "blend": "normal"
+  },
+  {
+   "id": "wax_seal",
+   "name": "봉랍 인장",
+   "x": 130,
+   "y": 384,
+   "angle": -15,
+   "blend": "normal"
+  },
+  {
+   "id": "candle_glow",
+   "name": "촛불 빛",
+   "x": 76,
+   "y": 44,
+   "angle": 0,
+   "blend": "screen"
+  }
+ ]
+}

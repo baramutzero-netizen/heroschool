@@ -1,0 +1,1000 @@
+<title>스케줄 배치판</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<style>
+@font-face { font-family: "Mulmaru"; src: url("__MULMARU__") format("woff2"); font-display: swap; }
+/* 레벨 편집기처럼 — 왼쪽 무대(액자에 든 책상, 2배 그림) · 오른쪽 손잡이 레일(고른 소품 · 소품 상자 · 놓인 소품 · 책상과 메뉴판 · 내보내기) */
+:root {
+  --bg: #e8ebf0;
+  --panel: #f8f9fb;
+  --panel-2: #eef1f5;
+  --ink: #1c2233;
+  --muted: #586074;
+  --line: #cdd3dd;
+  --brass: #94661f;
+  --brass-ink: #ffffff;
+  --brass-soft: #f4e6c8;
+  --warn: #b0402b;
+  --warn-soft: #f8e0d9;
+  --stage: #2b211b;
+  --focus: #2d6fd6;
+  --font-ui: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", system-ui, sans-serif;
+  --font-px: "Mulmaru", "IBM Plex Sans KR", "Malgun Gothic", monospace;
+  --font-num: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --r: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11141c; --panel: #191d28; --panel-2: #212635; --ink: #e5e8f0; --muted: #9aa2b6; --line: #2d3346;
+    --brass: #e1b35a; --brass-ink: #1b1408; --brass-soft: #3a2f1c; --warn: #f08468; --warn-soft: #3a1f19; --stage: #0b0908; --focus: #79a8ff;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11141c; --panel: #191d28; --panel-2: #212635; --ink: #e5e8f0; --muted: #9aa2b6; --line: #2d3346;
+  --brass: #e1b35a; --brass-ink: #1b1408; --brass-soft: #3a2f1c; --warn: #f08468; --warn-soft: #3a1f19; --stage: #0b0908; --focus: #79a8ff;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.5 var(--font-ui); }
+.app { min-height: 100%; display: flex; flex-direction: column; gap: 12px; padding-block: 14px; padding-inline: 16px; }
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+.top h1 { margin: 0; font: 400 24px/1 var(--font-px); letter-spacing: 0; }
+.top .sub { margin: 0; color: var(--muted); font-size: 12.5px; }
+.top .sub b { font-family: var(--font-num); font-weight: 500; color: var(--ink); }
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin-left: auto; }
+.group { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.group .lab { font-size: 12px; color: var(--muted); margin-right: 2px; }
+button, .btn {
+  font: 500 13px/1 var(--font-ui); color: var(--ink); background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--r); padding: 7px 10px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+}
+button:hover, .btn:hover { border-color: var(--brass); }
+button:focus-visible, .chip:focus-within, input:focus-visible, select:focus-visible, textarea:focus-visible, .stage:focus-visible, .item:focus-visible, .row:focus-visible, summary:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+button[aria-pressed="true"] { background: var(--brass-soft); border-color: var(--brass); }
+button.primary { background: var(--brass); color: var(--brass-ink); border-color: var(--brass); }
+button.danger { color: var(--warn); }
+button:disabled { opacity: .45; cursor: default; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; padding: 5px 9px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); cursor: pointer; user-select: none; }
+.chip input { margin: 0; accent-color: var(--brass); }
+.work { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 14px; align-items: start; }
+.stagebox { min-width: 0; display: flex; flex-direction: column; gap: 6px; position: sticky; top: env(safe-area-inset-top, 0px); }
+.stage { background: var(--stage); border-radius: var(--r); overflow: auto; max-height: calc(100vh - 120px); min-height: 240px; padding: 10px; outline: none; }
+.canvas-wrap { position: relative; margin: 0 auto; }
+.canvas-wrap canvas { position: absolute; left: 0; top: 0; display: block; }
+#art { image-rendering: pixelated; }
+#ui { cursor: default; touch-action: none; }
+.status { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--muted); }
+.status b { font: 500 12px var(--font-num); color: var(--ink); font-variant-numeric: tabular-nums; }
+.keys { margin-left: auto; }
+kbd { font: 11px var(--font-num); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; background: var(--panel); color: var(--ink); }
+.rail { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.panel h2 { margin: 0; font: 400 12px/1.2 var(--font-px); letter-spacing: 0; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.panel h2 b { font: 400 24px/1 var(--font-px); }
+.panel h2 small { font: 12px var(--font-ui); color: var(--muted); letter-spacing: 0; }
+.hint { margin: 0; font-size: 12.5px; color: var(--muted); }
+.sel { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 10px; align-items: center; }
+.thumb { width: 64px; height: 64px; display: grid; place-items: center; background: var(--panel-2); border-radius: 4px; overflow: hidden; }
+.thumb canvas { image-rendering: pixelated; max-width: 100%; max-height: 100%; }
+.sel .nm { font-weight: 600; }
+.sel .id { font: 12px var(--font-num); color: var(--muted); }
+.xy { display: grid; grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr); gap: 6px 8px; align-items: center; font-size: 12.5px; }
+input[type="number"], select { width: 100%; min-width: 0; font: 13px var(--font-num); font-variant-numeric: tabular-nums; padding: 5px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--ink); }
+select { font-family: var(--font-ui); }
+.rot { display: grid; grid-template-columns: auto minmax(0, 1fr) 64px; gap: 6px 8px; align-items: center; font-size: 12.5px; }
+.rot input[type="range"], .op input[type="range"] { width: 100%; accent-color: var(--brass); }
+.note { font-size: 12px; color: var(--muted); margin: 0; }
+.note b { font: 500 12px var(--font-num); color: var(--ink); }
+.btns { display: flex; flex-wrap: wrap; gap: 6px; }
+.btns button { padding: 6px 8px; font-size: 12.5px; }
+.catbox { max-height: 430px; overflow: auto; display: flex; flex-direction: column; gap: 4px; padding-right: 2px; }
+details.cg { border-top: 1px solid var(--line); padding-top: 4px; }
+details.cg:first-child { border-top: 0; padding-top: 0; }
+details.cg summary { cursor: pointer; font-size: 12.5px; color: var(--muted); padding: 3px 0; user-select: none; }
+details.cg summary b { color: var(--ink); font-weight: 600; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 6px; padding: 4px 0 6px; }
+.item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 4px; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); cursor: grab; font-size: 11.5px; line-height: 1.3; text-align: center; color: var(--ink); min-width: 0; }
+.item:hover { border-color: var(--brass); }
+.item .ti { width: 64px; height: 44px; display: grid; place-items: center; }
+.item canvas { image-rendering: pixelated; max-width: 64px; max-height: 44px; pointer-events: none; }
+.item span:last-child { overflow-wrap: anywhere; }
+.filters { display: flex; flex-wrap: wrap; gap: 4px; }
+.filters button { padding: 4px 9px; font-size: 12px; border-radius: 999px; }
+.list { display: flex; flex-direction: column; gap: 2px; max-height: 300px; overflow: auto; }
+.row { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 12.5px; }
+.row:hover { background: var(--panel-2); }
+.row[aria-selected="true"] { background: var(--brass-soft); }
+.row canvas { width: 26px; height: 22px; object-fit: contain; image-rendering: pixelated; }
+.row .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row .pos { font: 11.5px var(--font-num); color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tag { font-size: 11px; color: var(--warn); background: var(--warn-soft); border-radius: 999px; padding: 0 6px; margin-left: 4px; }
+.mz { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.mz.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.mz label { display: flex; flex-direction: column; gap: 2px; font-size: 11.5px; color: var(--muted); }
+.op { display: grid; grid-template-columns: auto minmax(0, 1fr) 40px; gap: 6px 8px; align-items: center; font-size: 12.5px; }
+.op output { font: 12px var(--font-num); color: var(--muted); text-align: right; }
+.sub2 { font-size: 12px; color: var(--muted); margin: 2px 0 -4px; }
+.exp { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.exp button { justify-content: center; }
+.exp .wide { grid-column: 1 / -1; }
+.box { position: fixed; inset: 0; background: rgb(0 0 0 / .45); display: grid; place-items: center; padding: 16px; z-index: 10; }
+.box .card { width: min(560px, 100%); background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.box textarea { width: 100%; min-height: 220px; font: 12px/1.45 var(--font-num); padding: 8px; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--ink); resize: vertical; }
+.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 8px 14px; border-radius: 999px; font-size: 13px; z-index: 20; max-width: calc(100% - 32px); }
+@media (max-width: 900px) {
+  .work { grid-template-columns: minmax(0, 1fr); }
+  .stagebox { position: static; }
+  .stage { max-height: 70vh; }
+  .toolbar { margin-left: 0; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="app">
+  <header class="top">
+    <h1>스케줄 배치판</h1>
+    <p class="sub">두루마리를 가까이 본 책상 · 책상 <b id="hdSize">—</b> (2배 <b id="hdSize2">—</b>) · 액자 안쪽 <b>13</b>px · 메뉴판 자리 포함</p>
+    <div class="toolbar">
+      <div class="group" role="group" aria-label="확대">
+        <span class="lab">보기</span>
+        <button type="button" id="zFit" aria-pressed="false">맞춤</button>
+        <button type="button" id="z1" aria-pressed="false" title="그림 1칸 = 화면 1px (글자는 반으로 줄어 보인다)">1배</button>
+        <button type="button" id="z15" aria-pressed="false">1.5배</button>
+        <button type="button" id="z2" aria-pressed="false" title="게임과 같은 2배 — 글자가 또렷하다">2배</button>
+      </div>
+      <div class="group" role="group" aria-label="보이기">
+        <label class="chip"><input type="checkbox" id="tFrame" checked> 액자</label>
+        <label class="chip"><input type="checkbox" id="tMenu" checked> 메뉴판</label>
+        <label class="chip"><input type="checkbox" id="tVig" checked> 가장자리 그늘</label>
+        <label class="chip"><input type="checkbox" id="tLight" checked> 불빛</label>
+        <label class="chip"><input type="checkbox" id="tGrid"> 격자</label>
+        <label class="chip"><input type="checkbox" id="tFoot"> 기준점</label>
+      </div>
+      <div class="group" role="group" aria-label="되돌리기">
+        <button type="button" id="undo" title="되돌리기 (Ctrl+Z)">되돌리기</button>
+        <button type="button" id="redo" title="다시 하기 (Ctrl+Shift+Z)">다시 하기</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="work">
+    <section class="stagebox" aria-label="책상">
+      <div class="stage" id="stage" tabindex="0" aria-label="책상 — 소품을 눌러 고르고 끌어 옮깁니다. 화살표로 1픽셀, Q와 E로 15도씩 돌립니다.">
+        <div class="canvas-wrap" id="wrap">
+          <canvas id="art" width="1544" height="1008"></canvas>
+          <canvas id="ui"></canvas>
+        </div>
+      </div>
+      <div class="status">
+        <span>책상 좌표 <b id="sPos">—</b></span>
+        <span>고른 소품 <b id="sSel">없음</b></span>
+        <span class="keys"><kbd>←↑↓→</kbd> 1px · <kbd>Q</kbd> <kbd>E</kbd> 15° (<kbd>Shift</kbd> 1°) · <kbd>Alt</kbd>+끌기 혼자 옮기기(붙이지 않기) · <kbd>[</kbd> <kbd>]</kbd> 순서 · <kbd>Ctrl</kbd>+<kbd>D</kbd> 복제 · <kbd>Del</kbd> 삭제</span>
+      </div>
+    </section>
+
+    <aside class="rail">
+      <section class="panel" id="inspect" aria-live="polite">
+        <h2><b>고른 소품</b></h2>
+        <div id="selBody"></div>
+      </section>
+
+      <section class="panel">
+        <h2><b>소품 상자</b> <small>누르면 추가 · 책상으로 끌어 놓기</small></h2>
+        <div class="catbox" id="catalog"></div>
+      </section>
+
+      <section class="panel">
+        <h2><b>놓인 소품</b> <small id="cnt"></small></h2>
+        <div class="filters" role="group" aria-label="목록 거르기" id="filters"></div>
+        <div class="btns">
+          <button type="button" id="sortFoot" title="천 · 두루마리 아래에 깔고, 소품은 책상에 닿는 점이 아래쪽일수록 앞에 그린다">바닥 기준 정렬</button>
+        </div>
+        <div class="list" id="layers" role="listbox" aria-label="놓인 소품 — 앞에 있는 것부터"></div>
+      </section>
+
+      <section class="panel">
+        <h2><b>책상 · 메뉴판</b></h2>
+        <p class="sub2">책상 (액자 안쪽 · 1배 픽셀)</p>
+        <div class="mz two">
+          <label for="dkW">폭<input type="number" id="dkW" step="2" min="400"></label>
+          <label for="dkH">높이<input type="number" id="dkH" step="2" min="300"></label>
+        </div>
+        <p class="sub2">메뉴판 — 게임 화면 CSS px (마을 화면에서 잰 값)</p>
+        <div class="mz">
+          <label for="mzW">폭<input type="number" id="mzW" step="1" min="0"></label>
+          <label for="mzH">높이<input type="number" id="mzH" step="1" min="0"></label>
+          <label for="mzT">위로 나옴<input type="number" id="mzT" step="1"></label>
+          <label for="mzR">오른쪽 나옴<input type="number" id="mzR" step="1"></label>
+        </div>
+        <div class="mz two">
+          <label for="mzS">액자 화면 폭<input type="number" id="mzS" step="1" min="200"></label>
+          <p class="note" id="mzInfo" aria-live="polite"></p>
+        </div>
+        <div class="mz two">
+          <label for="mzMode">메뉴판 보이기<select id="mzMode"><option value="img">게임 메뉴 그림</option><option value="box">자리만 (빗금)</option></select></label>
+          <div class="op"><label for="mzA">불투명</label><input type="range" id="mzA" min="20" max="100" step="5"><output id="mzAo"></output></div>
+        </div>
+        <div class="btns">
+          <button type="button" id="dkReset" title="책상 746×478 · 메뉴판은 마을 화면에서 잰 자리">기본 크기 · 메뉴 자리로</button>
+        </div>
+        <p class="hint">메뉴판은 실제 마을 화면에서 잰 자리입니다. 폭 288 · 높이 616이고, 액자 바깥 모서리에서 위와 오른쪽으로 16씩 나옵니다(CSS px). 스케줄 액자도 마을 지도처럼 화면 폭 1208에 맞춰 보인다고 보고 1배 픽셀로 바꿔 그립니다. 책상을 넓히면 액자가 그만큼 작게 보여서 메뉴판이 상대적으로 커집니다. 메뉴판에 걸친 소품은 목록에 <span class="tag">가려짐</span>이 붙습니다.</p>
+      </section>
+
+      <section class="panel">
+        <h2><b>내보내기</b></h2>
+        <label class="chip" style="align-self:flex-start"><input type="checkbox" id="eMenu" checked> PNG에 메뉴판 그림 넣기</label>
+        <div class="exp">
+          <button type="button" id="eJson" class="primary">배치 JSON 저장</button>
+          <button type="button" id="eCopy">JSON 복사</button>
+          <button type="button" id="ePngF">액자 포함 PNG 2배</button>
+          <button type="button" id="ePng2">책상만 PNG 2배</button>
+          <button type="button" id="eImport">JSON 불러오기</button>
+          <button type="button" id="eReset" class="danger">처음 배치로</button>
+        </div>
+        <p class="hint">x, y는 기준점의 책상 좌표(1배)입니다. 3D 소품은 책상에 닿는 점, 납작한 것은 그림 가운데, 깃펜은 펜촉, 두루마리는 종이 가운데, 축 끝 마개는 축 끝 가운데가 기준점입니다. angle은 시계 방향 각도입니다.</p>
+      </section>
+    </aside>
+  </main>
+</div>
+
+<div class="box" id="importBox" hidden>
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="ibTitle">
+    <h2 id="ibTitle" style="margin:0;font:400 24px var(--font-px)">JSON 불러오기</h2>
+    <p class="hint" id="ibHint">배치 JSON을 붙여 넣거나 파일을 고르세요.</p>
+    <textarea id="ibText" spellcheck="false" aria-label="배치 JSON"></textarea>
+    <div class="btns">
+      <label class="btn" for="ibFile">파일 고르기<input type="file" id="ibFile" accept=".json,application/json" hidden></label>
+      <button type="button" id="ibApply" class="primary">불러오기</button>
+      <button type="button" id="ibClose">닫기</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const KIT = /*__KIT__*/null;
+(() => {
+  "use strict";
+  const IN = KIT.inset, SC = 2, MAXW = KIT.desk.max[0], MAXH = KIT.desk.max[1];
+  let DW = KIT.desk.w, DH = KIT.desk.h, FW = DW + IN * 2, FH = DH + IN * 2;
+  const LS_LAYOUT = "sched-placer:v3:layout", LS_PREFS = "sched-placer:v3:prefs";
+  const $ = (id) => document.getElementById(id);
+  const art = $("art"), ui = $("ui"), wrap = $("wrap"), stage = $("stage");
+  const actx = art.getContext("2d");
+  const K = (id) => KIT.objects[id];
+  const isLight = (o) => K(o.id).blend === "screen";
+  const noRot = (o) => !!K(o.id).norot;
+
+  // ── 상태 ──
+  let objs = [];                       // {uid, id, x, y, a} — x, y = 기준점(1배 책상 좌표), a = 시계 방향 각도
+  const PAD = 16;                      // 편집 화면 — 액자 밖 여백 (메뉴판이 액자 위 · 오른쪽으로 나온 자리까지 보이게)
+  let mz = { ...KIT.menu };            // 메뉴판 {w, h, top, right, screen} — 게임 화면 CSS px. top · right = 액자 바깥 모서리에서 위 · 오른쪽으로 나온 만큼, screen = 액자가 화면에서 차지하는 폭
+  const menuK = () => mz.screen / FW;  // 1배 한 칸 = CSS px (액자 바깥 폭을 화면 폭에 맞춘다)
+  const menuRect = () => { const k = menuK(); return { x: DW + IN + mz.right / k - mz.w / k, y: -IN - mz.top / k, w: mz.w / k, h: mz.h / k }; };   // 1배 책상 좌표
+  let selUid = null, hoverUid = null, uidSeq = 1, filter = "all";
+  const prefs = { zoom: "fit", frame: true, menu: true, vig: true, light: true, grid: false, foot: false, menuMode: "img", menuAlpha: 100, exportMenu: true };
+  const hist = [], fut = [];
+  function load(k) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } }
+  function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* 저장소를 못 쓰는 보기 */ } }
+
+  // ── 그림 ──
+  const sheet = {}; let bgImg, frameImg, menuImg, vigC = null, frameC = null;
+  const frameData = {};               // id|k → ImageData (1배 프레임)
+  function loadImg(src) { return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; }); }
+  async function loadAll() {
+    const jobs = [loadImg(KIT.deskbg).then(i => bgImg = i), loadImg(KIT.frame).then(i => frameImg = i), loadImg(KIT.menuimg).then(i => menuImg = i)];
+    for (const id of KIT.order) jobs.push(loadImg(K(id).src).then(i => { sheet[id] = i; }));
+    await Promise.all(jobs);
+  }
+  function frameOf(id, k) {
+    const key = id + "|" + k; if (frameData[key]) return frameData[key];
+    const d = K(id), c = document.createElement("canvas"); c.width = d.cw; c.height = d.ch;
+    const g = c.getContext("2d"); g.drawImage(sheet[id], k * d.cw, 0, d.cw, d.ch, 0, 0, d.cw, d.ch);
+    return (frameData[key] = g.getImageData(0, 0, d.cw, d.ch));
+  }
+
+  // 가장자리 그늘 — 책상 크기에 맞춰 1배로 만든다 (4단 · 경계 체크무늬 · 45%)
+  function makeVig(W, H) {
+    const c = document.createElement("canvas"); c.width = W; c.height = H;
+    const g = c.getContext("2d"), img = g.createImageData(W, H), d = img.data;
+    const AL = [0, 26, 52, 80, 110].map(a => Math.round(a * .45)), E = [.12, .3, .5, .72];
+    const band = (a) => { let b = 0; for (const e of E) if (a >= e) b++; return b; };
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const v = ((x - W * .42) / (W * .62)) ** 2 + ((y - H * .48) / (H * .62)) ** 2;
+      const a = Math.min(1, Math.max(0, (v - .55) / 1.1));
+      let b = band(a);
+      if (band(Math.min(1, a + .03)) !== b && (x + y) % 2 === 0) b = Math.min(4, b + 1);
+      const i = (y * W + x) * 4; d[i] = 24; d[i + 1] = 12; d[i + 2] = 8; d[i + 3] = AL[b];
+    }
+    g.putImageData(img, 0, 0); return c;
+  }
+  // 액자 — 마을 액자(1배 633×492)를 아홉 조각으로 나눠 어떤 크기든 두른다. 모서리 24 · 테두리는 가운데 결을 이어 붙인다
+  function makeFrame(W, H) {
+    const SW = frameImg.width, SH = frameImg.height, Cn = 24, fw = W + IN * 2, fh = H + IN * 2;
+    const c = document.createElement("canvas"); c.width = fw; c.height = fh; const g = c.getContext("2d"); g.imageSmoothingEnabled = false;
+    const run = (sx, sy, sw, sh, dx, dy, len, horiz) => {               // 가운데 조각을 길이 len 만큼 이어 붙인다
+      const seg = horiz ? sw : sh; let p = 0;
+      while (p < len) { const n = Math.min(seg, len - p); if (horiz) g.drawImage(frameImg, sx, sy, n, sh, dx + p, dy, n, sh); else g.drawImage(frameImg, sx, sy, sw, n, dx, dy + p, sw, n); p += n; }
+    };
+    run(Cn, 0, SW - Cn * 2, Cn, Cn, 0, fw - Cn * 2, true);                 // 위
+    run(Cn, SH - Cn, SW - Cn * 2, Cn, Cn, fh - Cn, fw - Cn * 2, true);     // 아래
+    run(0, Cn, Cn, SH - Cn * 2, 0, Cn, fh - Cn * 2, false);                // 왼쪽
+    run(SW - Cn, Cn, Cn, SH - Cn * 2, fw - Cn, Cn, fh - Cn * 2, false);    // 오른쪽
+    g.drawImage(frameImg, 0, 0, Cn, Cn, 0, 0, Cn, Cn); g.drawImage(frameImg, SW - Cn, 0, Cn, Cn, fw - Cn, 0, Cn, Cn);
+    g.drawImage(frameImg, 0, SH - Cn, Cn, Cn, 0, fh - Cn, Cn, Cn); g.drawImage(frameImg, SW - Cn, SH - Cn, Cn, Cn, fw - Cn, fh - Cn, Cn, Cn);
+    return c;                                                              // 원본 안쪽은 투명 — 조각에 딸려 온 안쪽 줄도 투명 그대로
+  }
+  function setDesk(w, h) {
+    DW = Math.max(400, Math.min(MAXW, Math.round(w / 2) * 2)); DH = Math.max(300, Math.min(MAXH, Math.round(h / 2) * 2));
+    FW = DW + IN * 2; FH = DH + IN * 2;
+    art.width = (FW + PAD * 2) * SC; art.height = (FH + PAD * 2) * SC;
+    if (bgImg) { vigC = makeVig(DW, DH); frameC = makeFrame(DW, DH); }
+    $("hdSize").textContent = DW + "×" + DH; $("hdSize2").textContent = DW * SC + "×" + DH * SC;
+    $("dkW").value = DW; $("dkH").value = DH; syncMenuInputs();
+    applyZoom();
+  }
+
+  // ── 도트 돌리기 (RotSprite: Scale2x 세 번으로 8배 → 돌려 표본 → 1배) ──
+  function scale2x(src, w, h) {
+    const W2 = w * 2, out = new Uint32Array(w * h * 4);
+    for (let y = 0; y < h; y++) {
+      const ym = y > 0 ? y - 1 : y, yp = y < h - 1 ? y + 1 : y;
+      for (let x = 0; x < w; x++) {
+        const P = src[y * w + x], A = src[ym * w + x], D = src[yp * w + x], C = src[y * w + (x > 0 ? x - 1 : x)], B = src[y * w + (x < w - 1 ? x + 1 : x)];
+        let e1 = P, e2 = P, e3 = P, e4 = P;
+        if (C === A && C !== D && A !== B) e1 = A;
+        if (A === B && A !== C && B !== D) e2 = B;
+        if (D === C && D !== B && C !== A) e3 = C;
+        if (B === D && B !== A && D !== C) e4 = D;
+        const o = (y * 2) * W2 + x * 2; out[o] = e1; out[o + 1] = e2; out[o + W2] = e3; out[o + W2 + 1] = e4;
+      }
+    }
+    return out;
+  }
+  const big = new Map();               // id|k → {d: Uint32Array 8배, w, h}
+  function big8(id, k, src) {
+    const key = id + "|" + k; let v = big.get(key);
+    if (v) { big.delete(key); big.set(key, v); return v; }
+    let d = new Uint32Array(src.data.buffer.slice(0)), w = src.width, h = src.height;
+    for (let i = 0; i < 3; i++) { d = scale2x(d, w, h); w *= 2; h *= 2; }
+    v = { d, w, h }; big.set(key, v);
+    if (big.size > 16) big.delete(big.keys().next().value);
+    return v;
+  }
+  function rotate(id, k, src, px, py, deg) {
+    const b = big8(id, k, src), th = deg * Math.PI / 180, c = Math.cos(th), s = Math.sin(th);
+    const cs = [[-px, -py], [src.width - px, -py], [-px, src.height - py], [src.width - px, src.height - py]].map(([x, y]) => [x * c - y * s, x * s + y * c]);
+    const x0 = Math.floor(Math.min(...cs.map(p => p[0]))), x1 = Math.ceil(Math.max(...cs.map(p => p[0])));
+    const y0 = Math.floor(Math.min(...cs.map(p => p[1]))), y1 = Math.ceil(Math.max(...cs.map(p => p[1])));
+    const w = x1 - x0, h = y1 - y0, out = new ImageData(w, h), o32 = new Uint32Array(out.data.buffer);
+    for (let oy = 0; oy < h; oy++) for (let ox = 0; ox < w; ox++) {
+      const rx = ox + .5 + x0, ry = oy + .5 + y0;
+      const sx = (rx * c + ry * s + px) * 8, sy = (-rx * s + ry * c + py) * 8;
+      const ix = Math.floor(sx), iy = Math.floor(sy);
+      if (ix >= 0 && iy >= 0 && ix < b.w && iy < b.h) o32[oy * w + ox] = b.d[iy * b.w + ix];
+    }
+    return { img: out, px: -x0, py: -y0 };
+  }
+
+  // ── 자세(돌린 그림 + 그림자) — 캐시 ──
+  const poses = new Map();
+  const norm = (a) => { a = ((a % 360) + 360) % 360; return a > 180 ? a - 360 : a; };
+  function pose2x(id) {                                            // 2배 그림 그대로 (두루마리 — 글자가 2배 화면에 있다)
+    const d = K(id), c = document.createElement("canvas"); c.width = d.cw; c.height = d.ch;
+    const g = c.getContext("2d"); g.drawImage(sheet[id], 0, 0);
+    const w = d.cw / SC, h = d.ch / SC, src = g.getImageData(0, 0, d.cw, d.ch).data, m = new Uint8Array(w * h), solid = new Uint8Array(w * h);
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const a = src[((y * SC + 1) * d.cw + x * SC + 1) * 4 + 3]; m[y * w + x] = a > 40 ? 1 : 0; solid[y * w + x] = a === 255 ? 1 : 0; }
+    return { c, w, h, px: d.px, py: d.py, m, solid, k2: true };
+  }
+  function poseOf(o) {
+    const d = K(o.id);
+    if (d.kind === "2x") { const key = o.id + "|2x"; let p = poses.get(key); if (!p) { p = pose2x(o.id); poses.set(key, p); } return p; }
+    const a = d.norot ? 0 : norm(o.a || 0);
+    let k = 0, r = a;
+    if (d.frames > 1) { k = ((Math.round(a / d.step) % d.frames) + d.frames) % d.frames; r = a - Math.round(a / d.step) * d.step; }
+    r = Math.round(r * 4) / 4;
+    const key = o.id + "|" + k + "|" + r;
+    let p = poses.get(key); if (p) return p;
+    const src = frameOf(o.id, k);
+    let img = src, px = d.px, py = d.py;
+    if (Math.abs(r) >= .25 && d.blend !== "screen") { const t = rotate(o.id, k, src, d.px, d.py, r); img = t.img; px = t.px; py = t.py; }
+    let w = img.width, h = img.height;
+    if (d.shadow) {                                                // 납작한 것의 그림자 — 불투명한 몸을 빛 반대쪽으로 민다
+      const [dx, dy, al] = d.shadow, W2 = w + dx, H2 = h + dy, out = new ImageData(W2, H2), s32 = new Uint32Array(img.data.buffer), o32 = new Uint32Array(out.data.buffer);
+      const sh = (al << 24) | (8 << 16) | (12 << 8) | 24;            // RGBA little-endian → 0xAABBGGRR
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if ((s32[y * w + x] >>> 24) === 255) o32[(y + dy) * W2 + x + dx] = sh;
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const v = s32[y * w + x]; if ((v >>> 24) === 0) continue; const i = y * W2 + x; if ((v >>> 24) === 255 || !o32[i]) o32[i] = v; else o32[i] = blend(v, o32[i]); }
+      img = out; w = W2; h = H2;
+    }
+    const c = document.createElement("canvas"); c.width = w; c.height = h; c.getContext("2d").putImageData(img, 0, 0);
+    const m = new Uint8Array(w * h), dd = img.data;
+    for (let i = 0; i < m.length; i++) m[i] = dd[i * 4 + 3] > 40 ? 1 : 0;
+    p = { c, w, h, px, py, m, solid: maskSolid(img) };
+    poses.set(key, p); if (poses.size > 600) poses.delete(poses.keys().next().value);
+    return p;
+  }
+  function blend(top, bot) {                                       // 반투명 위에 반투명 — 보통 섞기
+    const ta = (top >>> 24) / 255, ba = (bot >>> 24) / 255, a = ta + ba * (1 - ta);
+    const ch = (sh) => Math.round((((top >>> sh) & 255) * ta + ((bot >>> sh) & 255) * ba * (1 - ta)) / a);
+    return ((Math.round(a * 255) << 24) | (ch(16) << 16) | (ch(8) << 8) | ch(0)) >>> 0;
+  }
+  function maskSolid(img) { const m = new Uint8Array(img.width * img.height), d = img.data; for (let i = 0; i < m.length; i++) m[i] = d[i * 4 + 3] === 255 ? 1 : 0; return m; }
+  function tl(o, p) { p = p || poseOf(o); return { x: Math.round(o.x) - p.px, y: Math.round(o.y) - p.py }; }
+  function bbox(o) { const p = poseOf(o), t = tl(o, p); return { x: t.x, y: t.y, w: p.w, h: p.h }; }
+
+  // ── 기록 ──
+  const snapshot = () => JSON.stringify({ d: [DW, DH], m: [mz.w, mz.h, mz.top, mz.right, mz.screen], o: objs.map(o => [o.id, o.x, o.y, o.a || 0]) });
+  function fromSnap(s) {
+    const v = JSON.parse(s);
+    objs = v.o.map(([id, x, y, a]) => ({ uid: uidSeq++, id, x, y, a }));
+    mz = { w: v.m[0], h: v.m[1], top: v.m[2], right: v.m[3], screen: v.m[4] }; syncMenuInputs();
+    if (v.d[0] !== DW || v.d[1] !== DH) setDesk(v.d[0], v.d[1]);
+  }
+  let lastSnap = "";
+  function commit() { hist.push(lastSnap); if (hist.length > 150) hist.shift(); fut.length = 0; lastSnap = snapshot(); saveLayout(); syncUndo(); }
+  function saveLayout() { store(LS_LAYOUT, layoutJSON()); }
+  function syncUndo() { $("undo").disabled = !hist.length; $("redo").disabled = !fut.length; }
+  function undo() { if (!hist.length) return; fut.push(snapshot()); fromSnap(hist.pop()); lastSnap = snapshot(); selUid = null; saveLayout(); syncUndo(); refresh(); }
+  function redo() { if (!fut.length) return; hist.push(snapshot()); fromSnap(fut.pop()); lastSnap = snapshot(); selUid = null; saveLayout(); syncUndo(); refresh(); }
+  const r1 = (v) => Math.round(v * 10) / 10;
+  function layoutJSON() {
+    return { version: 3, desk: [DW, DH], menu: { ...mz, unit: "css" }, note: KIT.note,
+      objects: objs.map(o => ({ id: o.id, name: K(o.id).name, x: Math.round(o.x), y: Math.round(o.y), angle: noRot(o) ? 0 : r1(norm(o.a || 0)), blend: K(o.id).blend })) };
+  }
+  function applyLayout(L) {
+    if (!L || !Array.isArray(L.objects)) throw new Error("objects 목록이 없습니다.");
+    const bad = L.objects.filter(o => !K(o.id)).map(o => o.id);
+    if (bad.length) throw new Error("모르는 소품: " + [...new Set(bad)].join(", ") + (L.version === 2 ? " (책상 전체 배치판 2판의 JSON입니다)" : ""));
+    objs = L.objects.map(o => ({ uid: uidSeq++, id: o.id, x: +o.x || 0, y: +o.y || 0, a: +o.angle || 0 }));
+    if (Array.isArray(L.desk)) setDesk(+L.desk[0] || KIT.desk.w, +L.desk[1] || KIT.desk.h);
+    const M = L.menu; let oldMenu = false;
+    if (M && M.unit === "css") mz = { w: +M.w || 0, h: +M.h || 0, top: +M.top || 0, right: +M.right || 0, screen: +M.screen || KIT.menu.screen };
+    else if (M) { mz = { ...KIT.menu }; oldMenu = true; }       // 앞선 판의 메뉴판 자리(어림값)는 버리고 실제 자리로
+    syncMenuInputs();
+    return { oldMenu };
+  }
+
+  // ── 그리기 ──
+  let zoom = 1, drawQueued = false, ready = false;
+  const HOFF = 18, RH = 26;                                        // 불빛 손잡이 비킴 · 돌리기 손잡이 높이(화면 px)
+  function requestDraw() { if (!ready) return; if (!drawQueued) { drawQueued = true; requestAnimationFrame(() => { drawQueued = false; drawArt(); drawUI(); }); } }
+  function drawPose(ctx, ox, oy, o) {                              // ox, oy = 책상 왼쪽 위 (2배 px)
+    const p = poseOf(o), t = tl(o, p);
+    if (p.k2) ctx.drawImage(p.c, ox + t.x * SC, oy + t.y * SC);
+    else ctx.drawImage(p.c, ox + t.x * SC, oy + t.y * SC, p.w * SC, p.h * SC);
+  }
+  function compose(ctx, ox, oy, opt) {
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(bgImg, 0, 0, DW, DH, ox, oy, DW * SC, DH * SC);
+    for (const o of objs) if (!isLight(o)) drawPose(ctx, ox, oy, o);
+    if (opt.vig) ctx.drawImage(vigC, ox, oy, DW * SC, DH * SC);
+    if (opt.light) {
+      ctx.save(); ctx.globalCompositeOperation = "screen";
+      for (const o of objs) if (isLight(o)) drawPose(ctx, ox, oy, o);
+      ctx.restore();
+    }
+  }
+  function drawMenuImg(ctx, alpha, P) {                            // 게임 메뉴판 그림 (참고용 — 보내 준 마을 화면에서 오린 것) · P = 캔버스 여백(1배)
+    const m = menuRect(); if (m.w <= 0 || m.h <= 0) return;
+    ctx.save(); ctx.globalAlpha = alpha; ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(menuImg, (P + IN + m.x) * SC, (P + IN + m.y) * SC, m.w * SC, m.h * SC); ctx.restore();
+  }
+  function drawFramed(ctx, opt) {                                  // opt.pad = 액자 밖 여백(1배) · opt.bg = 여백 색 (없으면 투명)
+    const P = opt.pad || 0, o = P * SC, TW = (FW + P * 2) * SC, TH = (FH + P * 2) * SC;
+    ctx.imageSmoothingEnabled = false;
+    if (opt.bg) { ctx.fillStyle = opt.bg; ctx.fillRect(0, 0, TW, TH); } else ctx.clearRect(0, 0, TW, TH);
+    ctx.fillStyle = "#000"; ctx.fillRect(o, o, FW * SC, FH * SC);
+    ctx.save(); ctx.beginPath(); ctx.rect(o + IN * SC, o + IN * SC, DW * SC, DH * SC); ctx.clip();
+    compose(ctx, o + IN * SC, o + IN * SC, opt); ctx.restore();
+    if (opt.frame) ctx.drawImage(frameC, o, o, FW * SC, FH * SC);
+    else { ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--stage").trim() || "#2b211b"; const b = IN * SC; ctx.fillRect(o, o, FW * SC, b); ctx.fillRect(o, o + (IN + DH) * SC, FW * SC, b); ctx.fillRect(o, o, b, FH * SC); ctx.fillRect(o + (IN + DW) * SC, o, b, FH * SC); }
+    if (opt.menuImg) drawMenuImg(ctx, opt.menuAlpha, P);
+  }
+  function drawArt() {
+    actx.setTransform(1, 0, 0, 1, 0, 0);
+    drawFramed(actx, { vig: prefs.vig, light: prefs.light, frame: prefs.frame, menuImg: prefs.menu && prefs.menuMode === "img", menuAlpha: prefs.menuAlpha / 100, pad: PAD });
+  }
+  function inMenu(o) {
+    if (isLight(o)) return false;
+    const b = bbox(o), m = menuRect();
+    return b.x < m.x + m.w && b.x + b.w > m.x && b.y < m.y + m.h && b.y + b.h > m.y;
+  }
+  function rotHandle(o) { const b = bbox(o); return { x: (b.x + b.w / 2 + PAD + IN) * zoom, y: (b.y + PAD + IN) * zoom - RH }; }
+  function drawUI() {
+    const dpr = window.devicePixelRatio || 1, cw = Math.round((FW + PAD * 2) * zoom), ch = Math.round((FH + PAD * 2) * zoom);
+    if (ui.width !== Math.round(cw * dpr) || ui.height !== Math.round(ch * dpr)) { ui.width = Math.round(cw * dpr); ui.height = Math.round(ch * dpr); }
+    const g = ui.getContext("2d"); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, cw, ch);
+    const S = (v) => (v + PAD + IN) * zoom, font = getComputedStyle(document.body).fontFamily;
+    if (prefs.grid) {
+      g.strokeStyle = "rgba(255,255,255,.13)"; g.lineWidth = 1; g.beginPath();
+      for (let x = 0; x <= DW; x += 8) { g.moveTo(Math.round(S(x)) + .5, S(0)); g.lineTo(Math.round(S(x)) + .5, S(DH)); }
+      for (let y = 0; y <= DH; y += 8) { g.moveTo(S(0), Math.round(S(y)) + .5); g.lineTo(S(DW), Math.round(S(y)) + .5); }
+      g.stroke();
+    }
+    if (prefs.menu) {
+      const m = menuRect(), x = S(m.x), y = S(m.y), w = m.w * zoom, h = m.h * zoom;
+      if (prefs.menuMode === "box") {
+        g.save(); g.beginPath(); g.rect(x, y, w, h); g.clip();
+        g.fillStyle = "rgba(20,24,40,.5)"; g.fillRect(x, y, w, h);
+        g.strokeStyle = "rgba(255,236,190,.22)"; g.lineWidth = 6;
+        for (let k = -h; k < w; k += 22) { g.beginPath(); g.moveTo(x + k, y + h); g.lineTo(x + k + h, y); g.stroke(); }
+        g.restore();
+        g.font = "600 " + Math.max(11, 7 * zoom) + "px " + font; g.fillStyle = "rgba(255,240,206,.95)"; g.textAlign = "center"; g.fillText("메뉴판", x + w / 2, y + Math.min(h / 2, 40 * zoom));
+      }
+      g.strokeStyle = "rgba(255,236,190,.85)"; g.setLineDash([6, 4]); g.lineWidth = 1.5; g.strokeRect(x + .75, y + .75, w - 1.5, h - 1.5); g.setLineDash([]);
+    }
+    for (const o of objs) {
+      if (!prefs.menu || !inMenu(o) || K(o.id).cat === "cloth" || K(o.id).cat === "paper") continue;
+      const b = bbox(o); g.strokeStyle = "rgba(240,110,90,.95)"; g.lineWidth = 2; g.setLineDash([4, 3]);
+      g.strokeRect(S(b.x) + 1, S(b.y) + 1, b.w * zoom - 2, b.h * zoom - 2); g.setLineDash([]);
+    }
+    if (prefs.foot) for (const o of objs) {
+      const fx = S(Math.round(o.x)), fy = S(Math.round(o.y));
+      g.strokeStyle = "rgba(0,0,0,.7)"; g.lineWidth = 3; g.beginPath(); g.moveTo(fx - 5, fy); g.lineTo(fx + 5, fy); g.moveTo(fx, fy - 5); g.lineTo(fx, fy + 5); g.stroke();
+      g.strokeStyle = "#7fe0ff"; g.lineWidth = 1.5; g.stroke();
+    }
+    if (prefs.light) for (const o of objs) {                         // 불빛 손잡이 — 빛 가운데에서 오른쪽 위로 비켜
+      if (!isLight(o)) continue;
+      const cx = S(Math.round(o.x)), cy = S(Math.round(o.y)), hx = cx + HOFF, hy = cy - HOFF, r = 6;
+      g.globalAlpha = (o.uid === selUid || o.uid === hoverUid) ? 1 : .8;
+      g.strokeStyle = "rgba(40,20,0,.85)"; g.lineWidth = 1; g.setLineDash([2, 2]); g.beginPath(); g.moveTo(cx, cy); g.lineTo(hx, hy); g.stroke(); g.setLineDash([]);
+      g.fillStyle = "rgba(255,214,120,.95)"; g.lineWidth = 1.5; g.beginPath(); g.arc(hx, hy, r, 0, Math.PI * 2); g.fill(); g.stroke();
+      for (let k = 0; k < 8; k++) { const a = k * Math.PI / 4; g.beginPath(); g.moveTo(hx + Math.cos(a) * (r + 2), hy + Math.sin(a) * (r + 2)); g.lineTo(hx + Math.cos(a) * (r + 5), hy + Math.sin(a) * (r + 5)); g.stroke(); }
+      g.globalAlpha = 1;
+    }
+    const pz = drag && drag.mode === "move" ? objs.find(o => o.uid === drag.uid) : sel();
+    if (pz && isPiece(pz)) for (const a of allAnchors(K(pz.id).attach)) {   // 마개를 고르거나 끄는 동안 — 붙일 수 있는 축 끝
+      const x = S(a.x), y = S(a.y), on = atAnchor(pz, a), taken = !on && objs.some(c => c !== pz && c.id === pz.id && atAnchor(c, a));
+      g.lineWidth = 3; g.strokeStyle = "rgba(0,0,0,.65)"; g.beginPath(); g.arc(x, y, 7, 0, Math.PI * 2); g.stroke();
+      g.lineWidth = 1.5; g.strokeStyle = taken ? "rgba(255,255,255,.45)" : "#7fe0ff"; if (!on) g.setLineDash([3, 3]); g.stroke(); g.setLineDash([]);
+      if (on) { g.fillStyle = "#7fe0ff"; g.beginPath(); g.arc(x, y, 3.5, 0, Math.PI * 2); g.fill(); }
+    }
+    const hv = objs.find(o => o.uid === hoverUid);
+    if (hv && hv.uid !== selUid && !isLight(hv)) { const b = bbox(hv); g.strokeStyle = "rgba(255,255,255,.55)"; g.lineWidth = 1; g.strokeRect(S(b.x) + .5, S(b.y) + .5, b.w * zoom - 1, b.h * zoom - 1); }
+    const s = sel();
+    if (s) {
+      const b = bbox(s), x = S(b.x), y = S(b.y), w = b.w * zoom, hh = b.h * zoom;
+      g.lineWidth = 3; g.strokeStyle = "rgba(0,0,0,.75)"; g.strokeRect(x - 1, y - 1, w + 2, hh + 2);
+      g.lineWidth = 1.5; g.strokeStyle = "#ffffff"; g.setLineDash([6, 4]); g.strokeRect(x - 1, y - 1, w + 2, hh + 2); g.setLineDash([]);
+      for (const c of carried(s)) { const cb = bbox(c); g.strokeStyle = "rgba(127,224,255,.6)"; g.lineWidth = 1; g.strokeRect(S(cb.x) + .5, S(cb.y) + .5, cb.w * zoom - 1, cb.h * zoom - 1); }
+      const px = S(Math.round(s.x)), py = S(Math.round(s.y));
+      g.fillStyle = "#ffffff"; g.strokeStyle = "rgba(0,0,0,.8)"; g.lineWidth = 1.5; g.beginPath(); g.arc(px, py, 3, 0, Math.PI * 2); g.fill(); g.stroke();
+      if (!isLight(s) && !noRot(s)) {                              // 돌리기 손잡이
+        const h = rotHandle(s);
+        g.strokeStyle = "rgba(0,0,0,.75)"; g.lineWidth = 3; g.beginPath(); g.moveTo(h.x, y - 1); g.lineTo(h.x, h.y + 6); g.stroke();
+        g.strokeStyle = "#ffffff"; g.lineWidth = 1.5; g.stroke();
+        g.fillStyle = "#ffd36a"; g.strokeStyle = "rgba(40,20,0,.9)"; g.beginPath(); g.arc(h.x, h.y, 6, 0, Math.PI * 2); g.fill(); g.stroke();
+        g.beginPath(); g.arc(h.x, h.y, 3, -Math.PI * .9, Math.PI * .4); g.stroke();
+      }
+      const ang = r1(norm(s.a || 0)), label = K(s.id).name + "  " + Math.round(s.x) + ", " + Math.round(s.y) + (ang && !noRot(s) ? "  " + ang + "°" : "");
+      g.font = "500 12px " + font; const tw = g.measureText(label).width + 12;
+      let ly = y + hh + 4; if (ly + 18 > ch) ly = Math.max(2, y + 4);
+      let lx = Math.max(2, Math.min(x - 1, cw - tw - 2));
+      g.fillStyle = "rgba(14,16,24,.9)"; g.fillRect(lx, ly, tw, 18); g.fillStyle = "#fff"; g.textAlign = "left"; g.fillText(label, lx + 6, ly + 13);
+    }
+  }
+
+  // ── 축 끝 마개 — 두루마리 그림 밖으로 잘린 금 마개 · 꼭지. 두루마리의 ends 자리에 붙인다 ──
+  const isPiece = (o) => !!K(o.id).attach;
+  function anchorsOf(s, kind) {                                    // 두루마리 s 에서 kind(bottom · top) 마개를 붙일 자리 — 책상 1배 좌표
+    const e = K(s.id).ends; if (!e || !e[kind]) return [];
+    return e[kind].map(([dx, dy], i) => ({ x: Math.round(s.x) + dx, y: Math.round(s.y) + dy, side: i, kind, s }));
+  }
+  const allAnchors = (kind) => objs.flatMap(s => anchorsOf(s, kind));
+  const atAnchor = (o, a) => Math.round(o.x) === a.x && Math.round(o.y) === a.y;
+  const attachedTo = (o) => isPiece(o) ? allAnchors(K(o.id).attach).find(a => atAnchor(o, a)) || null : null;
+  const SNAP = () => Math.max(6, 14 / zoom);                       // 이만큼(1배 px) 가까우면 붙는다
+  function snapNear(o, x, y, r) {                                  // (x, y) 둘레 r 안에서 가장 가까운 빈 자리 (같은 마개가 이미 붙은 자리는 건너뛴다)
+    let best = null, bd = r;
+    for (const a of allAnchors(K(o.id).attach)) {
+      if (objs.some(c => c !== o && c.id === o.id && atAnchor(c, a))) continue;
+      const dd = Math.hypot(a.x - x, a.y - y); if (dd <= bd) { bd = dd; best = a; }
+    }
+    return best;
+  }
+  const sideName = (a) => (a.side === 0 ? "왼쪽" : "오른쪽") + " 축 " + (a.kind === "bottom" ? "아래" : "위") + " 끝";
+
+  // ── 함께 움직이는 것 ──
+  function carried(o) {
+    const d = K(o.id), res = [];
+    const lid = (KIT.follow || {})[o.id];
+    if (lid) { const b = bbox(o); for (const l of objs) if (l.id === lid && l.x >= b.x - 16 && l.x <= b.x + b.w + 16 && l.y >= b.y - 16 && l.y <= b.y + b.h + 16) res.push(l); }
+    if (d.carry > 0) {
+      const p = poseOf(o), t = tl(o, p), i = objs.indexOf(o);
+      for (const c of objs.slice(i + 1)) {
+        const cd = K(c.id); if (cd.blend === "screen" || cd.level >= d.carry) continue;
+        const lx = Math.round(c.x) - t.x, ly = Math.round(c.y) - t.y;
+        if (lx >= 0 && ly >= 0 && lx < p.w && ly < p.h && p.solid[ly * p.w + lx]) res.push(c);
+      }
+    }
+    if (d.ends) for (const kind of Object.keys(d.ends)) for (const a of anchorsOf(o, kind))      // 축 끝에 붙인 마개
+      for (const c of objs) if (c !== o && K(c.id).attach === kind && atAnchor(c, a) && !res.includes(c)) res.push(c);
+    return res;
+  }
+
+  // ── 크기 ──
+  function applyZoom() {
+    let z = prefs.zoom;
+    if (z === "fit") {
+      const aw = stage.clientWidth - 20, narrow = window.matchMedia("(max-width: 900px)").matches;
+      const ah = narrow ? Infinity : Math.max(240, window.innerHeight - 140);
+      const f = Math.min(aw / (FW + PAD * 2), ah / (FH + PAD * 2));
+      z = f >= 1 ? Math.max(1, Math.min(2, Math.floor(f * 4) / 4)) : Math.max(.4, f);
+    }
+    zoom = z;
+    const cw = Math.round((FW + PAD * 2) * zoom), ch = Math.round((FH + PAD * 2) * zoom);
+    wrap.style.width = cw + "px"; wrap.style.height = ch + "px";
+    art.style.width = cw + "px"; art.style.height = ch + "px"; ui.style.width = cw + "px"; ui.style.height = ch + "px";
+    art.style.imageRendering = zoom === SC ? "pixelated" : "auto";       // 2배일 때만 도트 그대로 — 그 밖에는 부드럽게 줄여 글자가 깨지지 않게
+    for (const [id, v] of [["zFit", "fit"], ["z1", 1], ["z15", 1.5], ["z2", 2]]) $(id).setAttribute("aria-pressed", String(prefs.zoom === v));
+    $("zFit").textContent = prefs.zoom === "fit" ? "맞춤 " + (Math.round(zoom * 100) / 100) + "배" : "맞춤";
+    requestDraw();
+  }
+  new ResizeObserver(() => { if (prefs.zoom === "fit") applyZoom(); }).observe(stage);
+  window.addEventListener("resize", () => { if (prefs.zoom === "fit") applyZoom(); });
+
+  // ── 고르기 · 옮기기 · 돌리기 ──
+  const sel = () => objs.find(o => o.uid === selUid);
+  function toDesk(ev) { const r = ui.getBoundingClientRect(); return { x: (ev.clientX - r.left) / zoom - PAD - IN, y: (ev.clientY - r.top) / zoom - PAD - IN, sx: ev.clientX - r.left, sy: ev.clientY - r.top }; }
+  function hit(d) {
+    if (prefs.light) for (let i = objs.length - 1; i >= 0; i--) {
+      const o = objs[i]; if (!isLight(o)) continue;
+      if (Math.hypot((d.x - Math.round(o.x)) * zoom - HOFF, (d.y - Math.round(o.y)) * zoom + HOFF) <= 11) return o;
+    }
+    for (let i = objs.length - 1; i >= 0; i--) {
+      const o = objs[i]; if (isLight(o)) continue;
+      const p = poseOf(o), t = tl(o, p), lx = Math.floor(d.x - t.x), ly = Math.floor(d.y - t.y);
+      if (lx < 0 || ly < 0 || lx >= p.w || ly >= p.h) continue;
+      if (p.m[ly * p.w + lx]) return o;
+    }
+    return null;
+  }
+  function rotateBy(o, delta, group) {                             // 시계 방향 delta 도 — 딸린 것은 기준점 둘레로 함께 돈다
+    if (noRot(o)) return;
+    const th = delta * Math.PI / 180, c = Math.cos(th), s = Math.sin(th);
+    for (const g of group || []) {
+      const dx = g.x - o.x, dy = g.y - o.y; g.x = o.x + dx * c - dy * s; g.y = o.y + dx * s + dy * c;
+      if (!isLight(g) && !noRot(g)) g.a = norm((g.a || 0) + delta);
+    }
+    o.a = norm((o.a || 0) + delta);
+  }
+  let drag = null;
+  ui.addEventListener("pointerdown", (ev) => {
+    stage.focus({ preventScroll: true });
+    const d = toDesk(ev), s = sel();
+    if (s && !isLight(s) && !noRot(s)) {                            // 돌리기 손잡이
+      const h = rotHandle(s);
+      if (Math.hypot(d.sx - h.x, d.sy - h.y) <= 10) {
+        drag = { mode: "rot", uid: s.uid, group: ev.altKey ? [] : carried(s), start: s.a || 0, m0: Math.atan2(d.y - s.y, d.x - s.x) * 180 / Math.PI };
+        ui.setPointerCapture(ev.pointerId); return;
+      }
+    }
+    const o = hit(d);
+    selUid = o ? o.uid : null; refreshSel();
+    if (o) {
+      const group = ev.altKey ? [] : carried(o);
+      drag = { mode: "move", uid: o.uid, ox: d.x - o.x, oy: d.y - o.y, sx: o.x, sy: o.y, group: group.map(g => [g, g.x, g.y]) };
+      ui.setPointerCapture(ev.pointerId); ui.style.cursor = "grabbing";
+    }
+    requestDraw();
+  });
+  ui.addEventListener("pointermove", (ev) => {
+    const d = toDesk(ev);
+    $("sPos").textContent = (d.x >= 0 && d.y >= 0 && d.x < DW && d.y < DH) ? Math.floor(d.x) + ", " + Math.floor(d.y) : "—";
+    if (drag && drag.mode === "move") {
+      const o = objs.find(x => x.uid === drag.uid);
+      let dx = Math.round(d.x - drag.ox - drag.sx), dy = Math.round(d.y - drag.oy - drag.sy);
+      dx = Math.max(-60 - drag.sx, Math.min(DW + 60 - drag.sx, dx)); dy = Math.max(-60 - drag.sy, Math.min(DH + 60 - drag.sy, dy));
+      o.x = drag.sx + dx; o.y = drag.sy + dy;
+      if (isPiece(o) && !ev.altKey) { const a = snapNear(o, o.x, o.y, SNAP()); if (a) { o.x = a.x; o.y = a.y; } }   // 축 끝 가까이면 붙는다
+      for (const [g, gx, gy] of drag.group) { g.x = gx + dx; g.y = gy + dy; }
+      refreshSel(true); requestDraw(); return;
+    }
+    if (drag && drag.mode === "rot") {
+      const o = objs.find(x => x.uid === drag.uid);
+      let ang = drag.start + norm(Math.atan2(d.y - o.y, d.x - o.x) * 180 / Math.PI - drag.m0);
+      ang = ev.shiftKey ? Math.round(ang / 15) * 15 : Math.round(ang);
+      const delta = norm(ang - (o.a || 0)); if (delta) rotateBy(o, delta, drag.group);
+      refreshSel(true); requestDraw(); return;
+    }
+    const s = sel(); let cur = "default";
+    if (s && !isLight(s) && !noRot(s)) { const h = rotHandle(s); if (Math.hypot(d.sx - h.x, d.sy - h.y) <= 10) cur = "alias"; }
+    const o = hit(d), u = o ? o.uid : null;
+    if (cur === "default" && o) cur = "grab";
+    ui.style.cursor = cur;
+    if (u !== hoverUid) { hoverUid = u; requestDraw(); }
+  });
+  function endDrag() {
+    if (!drag) return;
+    const o = objs.find(x => x.uid === drag.uid);
+    if (o && (drag.mode === "rot" ? (o.a || 0) !== drag.start : (o.x !== drag.sx || o.y !== drag.sy))) commit();
+    drag = null; ui.style.cursor = "default"; refresh();
+  }
+  ui.addEventListener("pointerup", endDrag); ui.addEventListener("pointercancel", endDrag);
+  ui.addEventListener("pointerleave", () => { $("sPos").textContent = "—"; if (hoverUid !== null) { hoverUid = null; requestDraw(); } });
+
+  stage.addEventListener("dragover", (ev) => { if (ev.dataTransfer.types.includes("text/x-sched-prop")) { ev.preventDefault(); ev.dataTransfer.dropEffect = "copy"; } });
+  stage.addEventListener("drop", (ev) => {
+    const id = ev.dataTransfer.getData("text/x-sched-prop"); if (!id || !K(id)) return;
+    ev.preventDefault(); const d = toDesk(ev); addProp(id, Math.round(d.x), Math.round(d.y));
+  });
+  let addN = 0;
+  function addProp(id, fx, fy) {
+    if (K(id).attach) {                                            // 축 끝 마개 — 누르면 빈 축 끝(왼쪽부터)에, 끌어 놓으면 가까운 축 끝에 붙인다
+      const all = allAnchors(K(id).attach), free = all.filter(a => !objs.some(c => c.id === id && atAnchor(c, a)));
+      const a = fx === undefined ? free[0] : snapNear({ id, x: fx, y: fy }, fx, fy, SNAP());
+      if (a) { fx = a.x; fy = a.y; toast(sideName(a) + "에 붙였습니다."); }
+      else if (fx === undefined) toast(all.length ? "축 끝마다 이미 붙어 있어 책상에 따로 놓았습니다." : "두루마리가 없어 책상에 따로 놓았습니다. 두루마리 축 끝 가까이 끌면 붙습니다.");
+    }
+    if (fx === undefined) {                                        // 메뉴판 밑 빈 책상 가운데쯤 (없으면 책상 가운데)
+      const m = menuRect(), below = m.y + m.h < DH - 40 && m.x < DW;
+      fx = below ? Math.round(Math.max(m.x, 0) + Math.min(m.w, DW - Math.max(m.x, 0)) / 2) : Math.round(DW / 2);
+      fy = below ? Math.round((m.y + m.h + DH) / 2) : Math.round(DH / 2);
+      fx += (addN % 5) * 6 - 12; fy += (addN % 5) * 4 - 8; addN++;
+    }
+    const o = { uid: uidSeq++, id, x: fx, y: fy, a: 0 }, cat = K(id).cat;
+    if (isLight(o)) objs.push(o);
+    else if (cat === "cloth" || cat === "paper") {                 // 천 · 두루마리는 소품 아래로
+      const k = objs.findIndex(x => K(x.id).cat === "prop" || isLight(x)); k < 0 ? objs.push(o) : objs.splice(k, 0, o);
+    } else { const k = objs.findIndex(isLight); k < 0 ? objs.push(o) : objs.splice(k, 0, o); }
+    selUid = o.uid; commit(); refresh();
+  }
+
+  // ── 키보드 ──
+  let nudgeTimer = null, nudgeStart = null;
+  function batch(fn) { if (!nudgeStart) nudgeStart = snapshot(); fn(); refreshSel(true); requestDraw(); clearTimeout(nudgeTimer); nudgeTimer = setTimeout(() => { hist.push(nudgeStart); fut.length = 0; nudgeStart = null; lastSnap = snapshot(); saveLayout(); syncUndo(); refresh(); }, 500); }
+  document.addEventListener("keydown", (ev) => {
+    const t = ev.target; if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT")) return;
+    if (!$("importBox").hidden) { if (ev.key === "Escape") closeImport(); return; }
+    const mod = ev.ctrlKey || ev.metaKey, k = ev.key;
+    if (mod && (k === "z" || k === "Z")) { ev.preventDefault(); ev.shiftKey ? redo() : undo(); return; }
+    if (mod && (k === "y" || k === "Y")) { ev.preventDefault(); redo(); return; }
+    const s = sel(); if (!s) return;
+    if (mod && (k === "d" || k === "D")) { ev.preventDefault(); duplicate(); return; }
+    if (k === "Delete" || k === "Backspace") { ev.preventDefault(); remove(); return; }
+    if (k === "Escape") { selUid = null; refresh(); return; }
+    if (k === "[") { ev.preventDefault(); move(-1); return; }
+    if (k === "]") { ev.preventDefault(); move(1); return; }
+    if ((k === "q" || k === "Q" || k === "e" || k === "E") && !mod && !isLight(s) && !noRot(s)) {
+      ev.preventDefault(); const dir = (k === "e" || k === "E") ? 1 : -1, step = ev.shiftKey ? 1 : 15;
+      const group = ev.altKey ? [] : carried(s);
+      batch(() => rotateBy(s, dir * step, group)); return;
+    }
+    const step = ev.shiftKey ? 10 : 1, dir = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[k];
+    if (dir) {
+      ev.preventDefault(); const group = ev.altKey ? [] : carried(s);
+      batch(() => { for (const g of group) { g.x += dir[0] * step; g.y += dir[1] * step; } s.x += dir[0] * step; s.y += dir[1] * step; });
+    }
+  });
+
+  // ── 순서 · 복제 · 삭제 ──
+  function move(d, edge) {
+    const s = sel(); if (!s) return;
+    const group = objs.filter(o => isLight(o) === isLight(s)); const i = group.indexOf(s);
+    let j = edge === "front" ? group.length - 1 : edge === "back" ? 0 : i + d;
+    j = Math.max(0, Math.min(group.length - 1, j)); if (j === i) return;
+    group.splice(i, 1); group.splice(j, 0, s);
+    objs = isLight(s) ? objs.filter(o => !isLight(o)).concat(group) : group.concat(objs.filter(isLight));
+    commit(); refresh();
+  }
+  function duplicate() {
+    const s = sel(); if (!s) return;
+    const o = { uid: uidSeq++, id: s.id, x: s.x + 6, y: s.y + 6, a: s.a || 0 }; objs.splice(objs.indexOf(s) + 1, 0, o);
+    selUid = o.uid; commit(); refresh();
+  }
+  function remove() { const s = sel(); if (!s) return; objs = objs.filter(o => o !== s); selUid = null; commit(); refresh(); }
+  function swapVariant(s, id) { if (!K(id) || s.id === id) return; s.id = id; commit(); refresh(); }
+  $("sortFoot").addEventListener("click", () => {
+    const RANK = { cloth: 0, paper: 1, prop: 5 };
+    const base = objs.filter(o => !isLight(o)).map((o, i) => [o, i]);
+    base.sort((a, b) => (RANK[K(a[0].id).cat] ?? 5) - (RANK[K(b[0].id).cat] ?? 5) || ((K(a[0].id).cat === "prop") ? a[0].y - b[0].y : 0) || a[1] - b[1]);
+    objs = base.map(x => x[0]).concat(objs.filter(isLight)); commit(); refresh();
+    toast("천 · 두루마리를 아래에 깔고, 소품은 바닥이 아래쪽인 것을 앞으로 정렬했습니다.");
+  });
+
+  // ── 레일 ──
+  function el(tag, attrs, kids) { const e = document.createElement(tag); for (const k in attrs || {}) { if (k === "text") e.textContent = attrs[k]; else if (k.startsWith("on")) e.addEventListener(k.slice(2), attrs[k]); else e.setAttribute(k, attrs[k]); } (kids || []).forEach(c => e.append(c)); return e; }
+  function thumb(id, maxW, maxH) {                                 // 0도 그림 하나 — 정수 배로 키워 또렷하게 (2배 그림은 줄여서)
+    const d = K(id);
+    if (d.kind === "2x") {
+      const f = Math.min(maxW / d.cw, maxH / d.ch), c = document.createElement("canvas"); c.width = Math.max(1, Math.round(d.cw * f)); c.height = Math.max(1, Math.round(d.ch * f));
+      const g = c.getContext("2d"); g.imageSmoothingEnabled = true; g.imageSmoothingQuality = "high"; g.drawImage(sheet[id], 0, 0, c.width, c.height); return c;
+    }
+    const fr = frameOf(id, 0), fit = Math.min(maxW / d.cw, maxH / d.ch);
+    const t = document.createElement("canvas"); t.width = d.cw; t.height = d.ch; t.getContext("2d").putImageData(fr, 0, 0);
+    if (fit < 1) { const c = document.createElement("canvas"); c.width = Math.max(1, Math.round(d.cw * fit)); c.height = Math.max(1, Math.round(d.ch * fit)); const g = c.getContext("2d"); g.imageSmoothingEnabled = true; g.drawImage(t, 0, 0, c.width, c.height); return c; }
+    const s = Math.max(1, Math.min(4, Math.floor(fit)));
+    const c = document.createElement("canvas"); c.width = d.cw * s; c.height = d.ch * s;
+    const g = c.getContext("2d"); g.imageSmoothingEnabled = false; g.drawImage(t, 0, 0, d.cw * s, d.ch * s); return c;
+  }
+  function buildCatalog() {
+    const box = $("catalog"); box.textContent = "";
+    for (const grp of KIT.groups) {
+      const ids = KIT.order.filter(id => K(id).group === grp);
+      const det = el("details", { class: "cg" }); if (grp === "두루마리" || grp === "필기구" || grp === "소품") det.open = true;
+      det.append(el("summary", {}, [el("b", { text: grp }), document.createTextNode(" · " + ids.length)]));
+      const grid = el("div", { class: "grid" });
+      for (const id of ids) {
+        const d = K(id);
+        const how = d.attach ? " · 누르면 빈 축 끝에 붙고, 끌어 놓으면 가까운 축 끝에 붙습니다" : " · 누르면 추가, 책상으로 끌어 놓기";
+        const it = el("div", { role: "button", tabindex: "0", class: "item", draggable: "true", title: d.name + (d.frames > 1 ? " — 15°마다 그린 " + d.frames + "장" : "") + how,
+          onclick: () => addProp(id), onkeydown: (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); addProp(id); } } }, [
+          el("span", { class: "ti" }, [thumb(id, 64, 44)]), el("span", { text: d.name })]);
+        it.addEventListener("dragstart", (ev) => { ev.dataTransfer.setData("text/x-sched-prop", id); ev.dataTransfer.effectAllowed = "copy"; });
+        grid.append(it);
+      }
+      det.append(grid); box.append(det);
+    }
+  }
+  function refreshSel(quick) {
+    const s = sel(), box = $("selBody");
+    const ang = s ? r1(norm(s.a || 0)) : 0;
+    $("sSel").textContent = s ? K(s.id).name + " (" + Math.round(s.x) + ", " + Math.round(s.y) + (ang && !noRot(s) ? ", " + ang + "°" : "") + ")" : "없음";
+    if (quick && s && $("selX")) { $("selX").value = Math.round(s.x); $("selY").value = Math.round(s.y); if ($("selA")) { $("selA").value = ang; $("selAR").value = ang; } return; }
+    box.textContent = "";
+    if (!s) { box.append(el("p", { class: "hint", text: "책상 위 소품을 누르면 여기서 위치 · 각도 · 순서를 바꿀 수 있습니다. 새 소품은 아래 소품 상자에서 누르거나 끌어다 놓으세요." })); return; }
+    const d = K(s.id), group = carried(s);
+    const xi = el("input", { type: "number", id: "selX", step: "1", value: Math.round(s.x) }), yi = el("input", { type: "number", id: "selY", step: "1", value: Math.round(s.y) });
+    const onNum = () => { const nx = Math.round(+xi.value), ny = Math.round(+yi.value); if (Number.isFinite(nx) && Number.isFinite(ny) && (nx !== Math.round(s.x) || ny !== Math.round(s.y))) { const dx = nx - s.x, dy = ny - s.y; for (const g of carried(s)) { g.x += dx; g.y += dy; } s.x = nx; s.y = ny; commit(); refresh(); } };
+    xi.addEventListener("change", onNum); yi.addEventListener("change", onNum);
+    const kids = [
+      el("div", { class: "sel" }, [el("div", { class: "thumb" }, [thumb(s.id, 64, 64)]), el("div", {}, [el("div", { class: "nm", text: d.name }),
+        el("div", { class: "id", text: s.id + (d.frames > 1 ? " · 3D " + d.frames + "장" : "") + (d.kind === "2x" ? " · 2배 그림" : "") + (d.blend === "screen" ? " · 화면 섞기" : "") })])]),
+      el("div", { class: "xy" }, [el("label", { for: "selX", text: "x" }), xi, el("label", { for: "selY", text: "y" }), yi])
+    ];
+    if (d.variant) {                                               // 같은 자리에서 시기 바꾸기
+      const opts = KIT.order.filter(id => K(id).variant === d.variant);
+      const sv = el("select", { id: "selV", "aria-label": "두루마리 시기" }, opts.map(id => { const op = el("option", { value: id, text: K(id).name }); if (id === s.id) op.selected = true; return op; }));
+      sv.addEventListener("change", () => swapVariant(s, sv.value));
+      kids.push(el("label", { for: "selV", class: "note", text: "시기 — 같은 자리에서 바꾸기" }), sv);
+    }
+    if (!isLight(s) && !noRot(s)) {
+      const ai = el("input", { type: "number", id: "selA", step: "1", value: ang, "aria-label": "각도(도)" });
+      const ar = el("input", { type: "range", id: "selAR", min: "-180", max: "180", step: "1", value: ang, "aria-label": "각도 밀대" });
+      const setA = (v, live) => { v = Math.round(+v * 10) / 10; if (!Number.isFinite(v)) return; const delta = norm(v - (s.a || 0)); if (!delta) return;
+        if (live) batch(() => rotateBy(s, delta, carried(s))); else { rotateBy(s, delta, carried(s)); commit(); refresh(); } };
+      ai.addEventListener("change", () => setA(ai.value, false)); ar.addEventListener("input", () => setA(ar.value, true));
+      kids.push(el("div", { class: "rot" }, [el("label", { for: "selAR", text: "각도" }), ar, ai]));
+      kids.push(el("div", { class: "btns" }, [
+        el("button", { type: "button", text: "⟲ 15°", title: "Q", onclick: () => { rotateBy(s, -15, carried(s)); commit(); refresh(); } }),
+        el("button", { type: "button", text: "⟳ 15°", title: "E", onclick: () => { rotateBy(s, 15, carried(s)); commit(); refresh(); } }),
+        el("button", { type: "button", text: "0°로", onclick: () => { const delta = norm(-(s.a || 0)); if (delta) { rotateBy(s, delta, carried(s)); commit(); refresh(); } } })]));
+      if (d.frames > 1) kids.push(el("p", { class: "note", text: "15°마다 다시 그린 3D 그림을 쓰고, 그 사이 각도는 가까운 그림을 도트째로 돌립니다." }));
+    } else if (isPiece(s)) {                                       // 축 끝 마개 — 붙었는지 · 가까운 축 끝에 붙이기
+      const a = attachedTo(s), near = a ? null : snapNear(s, s.x, s.y, Infinity);
+      kids.push(el("p", { class: "note", text: a ? sideName(a) + "에 붙어 있습니다. 두루마리를 옮기면 함께 움직입니다." : "두루마리 축 끝 가까이 끌어 놓으면 붙습니다 (Alt를 누른 채 끌면 붙지 않습니다). 돌리지 않는 조각입니다." }));
+      if (near) kids.push(el("div", { class: "btns" }, [el("button", { type: "button", text: "가까운 축 끝에 붙이기 (" + sideName(near) + ")",
+        onclick: () => { s.x = near.x; s.y = near.y; commit(); refresh(); toast(sideName(near) + "에 붙였습니다."); } })]));
+    } else if (noRot(s)) kids.push(el("p", { class: "note", text: d.kind === "2x" ? "글자가 2배 화면에 그려진 그림이라 돌리지 않습니다." : "돌리지 않는 소품입니다." }));
+    if (group.length) kids.push(el("p", { class: "note" }, [document.createTextNode("함께 움직이는 것 "), el("b", { text: group.length + "개" }), document.createTextNode(" — 위에 얹은 소품 · 불빛 · 축 끝 마개. Alt를 누른 채 끌면 혼자 옮깁니다.")]));
+    kids.push(el("div", { class: "btns" }, [
+      el("button", { type: "button", text: "맨 앞", onclick: () => move(0, "front") }), el("button", { type: "button", text: "앞으로", onclick: () => move(1) }),
+      el("button", { type: "button", text: "뒤로", onclick: () => move(-1) }), el("button", { type: "button", text: "맨 뒤", onclick: () => move(0, "back") }),
+      el("button", { type: "button", text: "복제", onclick: duplicate }), el("button", { type: "button", class: "danger", text: "삭제", onclick: remove })]));
+    box.append(...kids);
+  }
+  const FILTERS = [["all", "전체"], ["prop", "소품"], ["base", "두루마리 · 천"], ["light", "불빛"]];
+  function buildFilters() {
+    const f = $("filters"); f.textContent = "";
+    for (const [k, label] of FILTERS) f.append(el("button", { type: "button", "aria-pressed": String(filter === k), text: label, onclick: () => { filter = k; buildFilters(); refreshLayers(); } }));
+  }
+  const thumbs = new Map();
+  function rowThumb(id) { if (!thumbs.has(id)) thumbs.set(id, thumb(id, 26, 22)); const c = thumbs.get(id), n = document.createElement("canvas"); n.width = c.width; n.height = c.height; n.getContext("2d").drawImage(c, 0, 0); return n; }
+  function refreshLayers() {
+    const box = $("layers"); box.textContent = "";
+    const pass = (o) => { const c = K(o.id).cat; return filter === "all" || (filter === "prop" && c === "prop") || (filter === "base" && (c === "paper" || c === "cloth")) || (filter === "light" && c === "light"); };
+    const rows = objs.slice().reverse().filter(pass);
+    $("cnt").textContent = objs.length + "개 · 앞에 있는 것부터";
+    for (const o of rows) {
+      const d = K(o.id), warn = prefs.menu && d.cat === "prop" && inMenu(o), ang = r1(norm(o.a || 0));
+      box.append(el("div", { class: "row", role: "option", tabindex: "0", "aria-selected": String(o.uid === selUid), onclick: () => { selUid = o.uid; refresh(); },
+        onkeydown: (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); selUid = o.uid; refresh(); } } }, [
+        rowThumb(o.id), el("span", { class: "nm" }, [document.createTextNode(d.name), ...(warn ? [el("span", { class: "tag", text: "가려짐" })] : [])]),
+        el("span", { class: "pos", text: Math.round(o.x) + ", " + Math.round(o.y) + (ang && !noRot(o) ? " · " + ang + "°" : "") })]));
+    }
+  }
+  function refresh() { refreshSel(); refreshLayers(); requestDraw(); }
+
+  // ── 보이기 · 책상 · 메뉴판 ──
+  const TOG = { tFrame: "frame", tMenu: "menu", tVig: "vig", tLight: "light", tGrid: "grid", tFoot: "foot", eMenu: "exportMenu" };
+  for (const [id, k] of Object.entries(TOG)) $(id).addEventListener("change", (ev) => { prefs[k] = ev.target.checked; store(LS_PREFS, prefs); const s = sel(); if (k === "light" && !prefs.light && s && isLight(s)) selUid = null; refresh(); });
+  for (const [id, v] of [["zFit", "fit"], ["z1", 1], ["z15", 1.5], ["z2", 2]]) $(id).addEventListener("click", () => { prefs.zoom = v; store(LS_PREFS, prefs); applyZoom(); });
+  function syncMenuInputs() {
+    $("mzW").value = mz.w; $("mzH").value = mz.h; $("mzT").value = mz.top; $("mzR").value = mz.right; $("mzS").value = mz.screen;
+    menuInfo();
+  }
+  function menuInfo() {                                            // 지금 책상 크기에서 메뉴판이 1배로 얼마인지
+    const k = menuK(), m = menuRect(), f = (v) => Math.round(v * 10) / 10;
+    $("mzInfo").textContent = "지금 책상에서는 1배 " + f(m.w) + "×" + f(m.h) + " · 위 " + f(mz.top / k) + " · 오른쪽 " + f(mz.right / k) + " 나옴 (1배 한 칸 = " + k.toFixed(2) + " CSS px)";
+  }
+  let mzT = null;
+  for (const [id, k] of [["mzW", "w"], ["mzH", "h"], ["mzT", "top"], ["mzR", "right"], ["mzS", "screen"]]) $(id).addEventListener("input", (ev) => {
+    const v = Math.round(+ev.target.value); if (!Number.isFinite(v)) return;
+    if (k === "screen" && v < 200) return;
+    if (!mzT) mzT = snapshot(); mz[k] = k === "w" || k === "h" ? Math.max(0, v) : v;
+    menuInfo(); refreshLayers(); requestDraw();
+    clearTimeout(nudgeTimer); nudgeTimer = setTimeout(() => { hist.push(mzT); fut.length = 0; mzT = null; lastSnap = snapshot(); saveLayout(); syncUndo(); }, 500);
+  });
+  function deskInput() {
+    const w = Math.round(+$("dkW").value), h = Math.round(+$("dkH").value); if (!Number.isFinite(w) || !Number.isFinite(h)) return;
+    const before = snapshot(); setDesk(w, h); if (snapshot() !== before) { hist.push(before); fut.length = 0; lastSnap = snapshot(); saveLayout(); syncUndo(); refresh(); }
+  }
+  $("dkW").addEventListener("change", deskInput); $("dkH").addEventListener("change", deskInput);
+  $("dkReset").addEventListener("click", () => {
+    const before = snapshot(); mz = { ...KIT.menu }; syncMenuInputs(); setDesk(KIT.desk.w, KIT.desk.h);
+    if (snapshot() !== before) { hist.push(before); fut.length = 0; lastSnap = snapshot(); saveLayout(); syncUndo(); }
+    refresh(); toast("책상 " + KIT.desk.w + "×" + KIT.desk.h + " · 메뉴판 자리를 기본으로 돌렸습니다.");
+  });
+  $("mzMode").addEventListener("change", (ev) => { prefs.menuMode = ev.target.value; store(LS_PREFS, prefs); requestDraw(); });
+  $("mzA").addEventListener("input", (ev) => { prefs.menuAlpha = +ev.target.value; $("mzAo").textContent = prefs.menuAlpha + "%"; store(LS_PREFS, prefs); requestDraw(); });
+  $("undo").addEventListener("click", undo); $("redo").addEventListener("click", redo);
+
+  // ── 내보내기 ──
+  let dl = null; (async () => { try { if (window.claude && window.claude.use) dl = await window.claude.use("downloads"); } catch (e) { dl = null; } })();
+  async function saveFile(name, data) {
+    if (dl) {
+      try { await dl.save({ filename: name, data }); toast(name + " 저장"); }
+      catch (e) { const c = e && e.code; if (c === "declined") return; if (c === "rate_limited") { toast("저장 창이 이미 열려 있습니다. 잠시 뒤 다시 누르세요."); return; } toast("저장하지 못했습니다: " + ((e && e.message) || "알 수 없는 오류")); }
+      return;
+    }
+    if (window.self !== window.top) { toast("이 보기에서는 파일로 저장할 수 없습니다. JSON은 'JSON 복사'로 옮기세요."); return; }
+    const blob = data instanceof Blob ? data : new Blob([data], { type: "application/json" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.append(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000); toast(name + " 저장");
+  }
+  function pngBlob(c) { return new Promise((res) => c.toBlob(res, "image/png")); }
+  function render(kind) {
+    if (kind === "desk") { const c = document.createElement("canvas"); c.width = DW * SC; c.height = DH * SC; compose(c.getContext("2d"), 0, 0, { vig: prefs.vig, light: prefs.light }); return c; }
+    const P = prefs.exportMenu ? PAD : 0, c = document.createElement("canvas"); c.width = (FW + P * 2) * SC; c.height = (FH + P * 2) * SC;
+    drawFramed(c.getContext("2d"), { vig: prefs.vig, light: prefs.light, frame: true, menuImg: prefs.exportMenu, menuAlpha: 1, pad: P, bg: "#f6f3e9" }); return c;
+  }
+  $("eJson").addEventListener("click", () => saveFile("schedule_layout.json", JSON.stringify(layoutJSON(), null, 1)));
+  $("eCopy").addEventListener("click", async () => {
+    const s = JSON.stringify(layoutJSON(), null, 1);
+    try { await navigator.clipboard.writeText(s); toast("배치 JSON을 복사했습니다."); }
+    catch (e) { openImport(s, "복사가 막혀 있어 아래 글을 골라 두었습니다. Ctrl+C로 복사하세요."); const t = $("ibText"); t.focus(); t.select(); }
+  });
+  $("ePng2").addEventListener("click", async () => saveFile("schedule_desk_2x.png", await pngBlob(render("desk"))));
+  $("ePngF").addEventListener("click", async () => saveFile("schedule_framed_2x.png", await pngBlob(render("framed"))));
+  function openImport(text, hint) { $("ibText").value = text || ""; $("ibHint").textContent = hint || "배치 JSON(3판)을 붙여 넣거나 파일을 고르세요."; $("importBox").hidden = false; $("ibText").focus(); }
+  function closeImport() { $("importBox").hidden = true; stage.focus({ preventScroll: true }); }
+  $("eImport").addEventListener("click", () => openImport("", null));
+  $("ibClose").addEventListener("click", closeImport);
+  $("importBox").addEventListener("click", (ev) => { if (ev.target === $("importBox")) closeImport(); });
+  $("ibFile").addEventListener("change", (ev) => { const f = ev.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { $("ibText").value = String(r.result || ""); }; r.readAsText(f); });
+  $("ibApply").addEventListener("click", () => {
+    try { const before = snapshot(), r = applyLayout(JSON.parse($("ibText").value)); hist.push(before); fut.length = 0; lastSnap = snapshot(); saveLayout(); syncUndo(); selUid = null; closeImport(); refresh(); toast(r.oldMenu ? "배치를 불러왔습니다. 메뉴판은 마을 화면에서 잰 실제 자리로 두었습니다." : "배치를 불러왔습니다."); }
+    catch (e) { $("ibHint").textContent = "불러오지 못했습니다 — " + e.message + " JSON 형식을 확인하세요."; }
+  });
+  let resetArm = null;
+  $("eReset").addEventListener("click", (ev) => {
+    const b = ev.currentTarget;
+    if (!resetArm) { b.textContent = "한 번 더 누르면 되돌립니다"; resetArm = setTimeout(() => { b.textContent = "처음 배치로"; resetArm = null; }, 3000); return; }
+    clearTimeout(resetArm); resetArm = null; b.textContent = "처음 배치로";
+    const before = snapshot(); applyLayout(KIT.layout); hist.push(before); fut.length = 0; lastSnap = snapshot(); saveLayout(); syncUndo(); selUid = null; refresh(); toast("처음 배치로 되돌렸습니다.");
+  });
+  let toastT = null;
+  function toast(msg) { const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 2600); }
+
+  // ── 시작 ──
+  (async () => {
+    const pp = load(LS_PREFS); if (pp) Object.assign(prefs, pp);
+    for (const [id, k] of Object.entries(TOG)) $(id).checked = !!prefs[k];
+    $("mzMode").value = prefs.menuMode; $("mzA").value = prefs.menuAlpha; $("mzAo").textContent = prefs.menuAlpha + "%";
+    syncMenuInputs(); setDesk(DW, DH); buildFilters();
+    await loadAll();
+    vigC = makeVig(DW, DH); frameC = makeFrame(DW, DH);
+    const saved = load(LS_LAYOUT);
+    let moved = false;                                             // 첫 판에 저장된 메뉴판 자리(액자 모서리 위 · 1배 x, y)는 버리고 마을 배치판 자리로 — 소품 배치는 그대로
+    if (saved && saved.menu && saved.menu.unit !== "css") { delete saved.menu; moved = true; }
+    try { applyLayout(saved || KIT.layout); } catch (e) { applyLayout(KIT.layout); moved = false; }
+    lastSnap = snapshot(); syncUndo();
+    buildCatalog(); ready = true; refresh();
+    if (moved) { saveLayout(); toast("메뉴판을 마을 화면에서 잰 실제 자리로 옮겼습니다. 놓아 둔 소품은 그대로입니다."); }
+  })();
+})();
+</script>
