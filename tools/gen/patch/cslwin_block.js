@@ -4,7 +4,8 @@
    · 답을 고르는 순간 게임에 반영한다 (answerCounsel · answerDefy 의 win 모드 — 화면을 다시 그리지 않고 결과를 돌려준다).
      연출 중에 창을 닫아도 결과는 남는다. 창을 닫으면 화면을 다시 그린다 (메뉴 숫자 등)
    · 무대 560 × 360 = 1배 280 × 180 도트를 2배로. CSL_ART.bg 배경(강당 뒷벽을 흐리게) · CSL_ART.front 책상 + 소품(상담 책상 배치판의 배치를 구운 것)
-   · 학생 — 전투 idle 도트 네 장(학생마다 머리색 치환 · sprCellCv)을 128 칸으로 잘라 전투처럼 #111 테두리를 둘러 쓴다 (화면에서는 2배의 0.95배). 도트가 없으면 얼굴 그림
+   · 학생 — 전투 idle 도트 네 장(학생마다 머리색 치환 · sprCellCv)을 128 칸으로 잘라 전투처럼 #111 테두리를 둘러 쓴다.
+     크기 · 자리는 직업마다 (CSL_SPR — 상담 책상 배치판의 학생 도트, 기본 2배의 0.95배). 도트가 없으면 얼굴 그림
    · 학생 말 상자 머리 — 이름 · 성격 (직업은 그림으로 보여서 뺐다)
    · 좁은 화면(창을 0.8배보다 줄여야 할 때) — 무대만 폭에 맞춰 줄이고 학생 말 · 답변 구름은 무대 아래로 (글자는 그대로)
    · 키: 스페이스 · 엔터로 넘기기(글자가 찍히는 중이면 바로 끝까지) · 1 · 2 · 3 으로 구름 고르기 · Esc 닫기
@@ -12,6 +13,9 @@
      학생 / 마스터의 말이 한 글자씩 찍힐 때마다(cwBlip — 빈칸 · 말줄임표 …… 에서는 울리지 않는다). 학생 · 마스터의 말은 같은 빠르기(CSLW_CPS)
    · 상담 기록은 일지의 '상담 기록' 서브탭 (viewCslLog) */
 const CSL_ART = __CSL_ART__;
+/* 학생 도트 — 직업마다 크기 s(게임 화면 2배 = 1) · 자리 x, y(무대 1배로 옮기는 양). 상담 책상 배치판의 '학생 도트'(배치 JSON 의 sprites)를 apply_cslwin 이 넣는다 */
+const CSL_SPR = __CSL_SPR__;
+const CSL_SPR_DEF = {s:.95, x:0, y:0};
 /* 학생이 들어오는 모습 — 성격마다 */
 const CSL_ENTER = {intro:"쭈뼛거리며 들어와 책상 앞에 섰다.", hot:"성큼성큼 들어와 책상 앞에 섰다.", stone:"조용히 들어와 책상 앞에 섰다.",
   dilig:"꾸벅 인사하고 책상 앞에 섰다.", tsun:"팔짱을 낀 채 책상 앞에 섰다.", lively:"문을 벌컥 열고 들어와 손을 흔들었다.",
@@ -20,7 +24,7 @@ const CSL_DEFY_ENTER = {intro:"머뭇거리며", hot:"씩씩하게", stone:"담�
   lively:"멋쩍게 웃으며", boast:"가슴을 펴고", plain:"조금 멋쩍은 얼굴로", genius:"태연한 얼굴로"};
 /* 답변 구름 자리 (무대 560 × 360 · 책상 윗변 y 232) · 제자리 원을 그리는 주기 */
 const CSLW_POS = [{l:10, t:26, od:"6.8s", odl:"-1.2s"}, {l:4, t:140, od:"7.6s", odl:"-4.1s"}, {r:6, t:150, od:"6.2s", odl:"-2.7s"}];
-const CSLW = {run:0, el:null, list:[], i:0, cur:null, phase:"", typing:null, skipAt:0, spr:{}, popTop:92, compact:false, fitKey:""};
+const CSLW = {run:0, el:null, list:[], i:0, cur:null, phase:"", typing:null, skipAt:0, spr:{}, popTop:92, popX:280, compact:false, fitKey:""};
 const CSLW_CPS = 32;                                             // 학생 · 마스터의 말이 찍히는 빠르기 (글자 / 초)
 const CSLW_SFX = ["csl_tap", "csl_pick", "csl_ok", "csl_ng", "csl_stu", "csl_mst"];
 const CW_QUIET = /[\s….‥]/;                                       // 이 글자가 찍힐 때는 소리를 내지 않는다 (빈칸 · 말줄임표)
@@ -111,7 +115,7 @@ function cslwHtml(){
     <div class="cw-mid">
       <div class="cw-stage"><div class="cw-scene">
         <div class="cw-bg" style="background-image:url(${CSL_ART.bg})"></div>
-        <div class="cw-stu"><div class="cw-spr"></div><img class="cw-face" alt="" draggable="false"></div>
+        <div class="cw-stu"><div class="cw-spr"></div><img class="cw-face" alt="" draggable="false"><div class="cw-hit"></div></div>
         <div class="cw-dots" aria-hidden="true">…</div>
         <div class="cw-front" style="background-image:url(${CSL_ART.front})"></div>
       </div></div>
@@ -239,7 +243,7 @@ async function cslwEnter(run){
   const stu = cwq(".cw-stu");
   stu.onclick = null; stu.classList.remove("in", "click");
   const look = await cslwLook(s.st, run); if(!cwLive(run)) return;
-  cslwSetLook(look);
+  cslwSetLook(look, s.st);
   CSLW.phase = "enter";
   stu.classList.remove("out"); void stu.offsetWidth; stu.classList.add("in");
   await cwWait(650); if(!cwLive(run)) return;
@@ -374,7 +378,7 @@ function cslwPops(r){
   fx.forEach((f, j)=> setTimeout(()=>{
     if(!cwLive(run)) return;
     const p = document.createElement("div"); p.className = "cw-pop" + (f[1] ? " " + f[1] : "");
-    p.textContent = f[0]; p.style.top = (CSLW.popTop + j*30) + "px";
+    p.textContent = f[0]; p.style.left = CSLW.popX + "px"; p.style.top = (CSLW.popTop + j*30) + "px";
     sc.appendChild(p); setTimeout(()=> p.remove(), 2100);
   }, j*260));
 }
@@ -421,21 +425,42 @@ function cslwSprUrl(st){
     if(on){ d[i*4] = 17; d[i*4+1] = 17; d[i*4+2] = 17; d[i*4+3] = 255; }
   }
   g.putImageData(im, 0, 0);
-  return (CSLW.spr[key] = cv.toDataURL());
+  const top = new Int16Array(W).fill(W);                         // 칸 x 마다 가장 위 그림 줄 (네 장 합 · 테두리 포함) — 머리 위 말줄임 자리
+  for(let f = 0; f < 4; f++) for(let x = 0; x < W; x++) for(let y = 0; y < top[x]; y++){ if(d[(y*w4 + f*W + x)*4 + 3] > 0){ top[x] = y; break; } }
+  return (CSLW.spr[key] = {url: cv.toDataURL(), top});
 }
 async function cslwLook(st, run){
   for(let t = 0; t < 30 && sprHas(st.job); t++){                // 도트 시트를 기다린다 (최대 3초)
-    const u = cslwSprUrl(st); if(u) return {spr:u};
+    const u = cslwSprUrl(st); if(u) return {spr:u.url, top:u.top};
     await cwWait(100); if(!cwLive(run)) return {};
   }
   return faceHas(st.job) ? {face:FACE_IMG[st.job]} : {};
 }
-function cslwSetLook(L){
+function cslwTune(job){                                          // 직업의 크기 · 자리 — 없거나 이상하면 기본값
+  const t = (CSL_SPR && CSL_SPR[job]) || {}, n = (v, d, lo, hi)=> (typeof v === "number" && isFinite(v)) ? clamp(v, lo, hi) : d;
+  return {s: n(t.s, CSL_SPR_DEF.s, .5, 1.6), x: n(t.x, CSL_SPR_DEF.x, -60, 60), y: n(t.y, CSL_SPR_DEF.y, -60, 60)};
+}
+function cslwSetLook(L, st){
   const sc = cwq(".cw-scene"); if(!sc) return;
-  sc.classList.toggle("face", !L.spr && !!L.face);
-  cwq(".cw-spr").style.backgroundImage = L.spr ? `url(${L.spr})` : "";
-  const img = cwq(".cw-face"); if(L.face && !L.spr) img.src = L.face; else img.removeAttribute("src");
-  CSLW.popTop = (!L.spr && L.face) ? 80 : 92;
+  const face = !L.spr && !!L.face, spr = cwq(".cw-spr"), hit = cwq(".cw-hit"), dots = cwq(".cw-dots");
+  const box = (el, l, t, w, h)=>{ el.style.left = l + "px"; el.style.top = t + "px"; el.style.width = Math.max(0, w) + "px"; el.style.height = Math.max(0, h) + "px"; };
+  sc.classList.toggle("face", face);
+  spr.style.backgroundImage = L.spr ? `url(${L.spr})` : "";
+  const img = cwq(".cw-face"); if(face) img.src = L.face; else img.removeAttribute("src");
+  if(face || !L.spr){                                              // 얼굴 그림 (또는 그림 없음) — 예전 자리 그대로
+    box(hit, 162, 58, 236, 174); dots.style.left = "300px"; dots.style.top = "50px"; CSLW.popTop = 80; CSLW.popX = 280; return;
+  }
+  // 무대 2배 — 128 칸(무대 152 ~ 408 · 60 ~ 316)을 발끝(280, 288)을 축으로 s 배 하고 (2x, 2y) 옮긴다
+  const T = cslwTune(st && st.job), X = 2*T.x, Y = 2*T.y, k = T.s;
+  spr.style.scale = String(k); spr.style.translate = `${X}px ${Y}px`;
+  const L0 = 280 + k*(152 - 280) + X, R0 = 280 + k*(408 - 280) + X, T0 = 288 + k*(60 - 288) + Y;
+  box(hit, Math.round(L0), Math.round(T0), Math.round(R0 - L0), Math.round(232 - T0));   // 누르는 자리 — 책상 윗변까지
+  // 머리 꼭대기 — 가운데(칸 x 64)부터 말줄임 오른쪽 끝(무대 340)까지에서 가장 위 그림 줄. 띠를 못 읽었으면 칸 y 69 즈음
+  let cy = 13;
+  if(L.top){ let m = 128; for(let x = 64, b = Math.min(127, Math.ceil(64 + 60/(2*k))); x <= b; x++) m = Math.min(m, L.top[x]); if(m < 128) cy = m; }
+  const head = 288 + Y + 2*k*(cy - 114);
+  dots.style.left = Math.round(300 + X) + "px"; dots.style.top = Math.round(head - 32) + "px";   // 꼬리 끝이 머리에 살짝 닿게
+  CSLW.popTop = Math.round(head - 16); CSLW.popX = Math.round(280 + X);
 }
 /* 도트 구름 — 캔버스로 굽는다 (2px 도트 · 글 길이에 맞춰 높이가 바뀐다). special = 금빛 */
 function cslwCloudArt(wc, hc, special){

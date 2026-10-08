@@ -102,11 +102,14 @@ python wrap_site.py
   연출 중에 창을 닫아도 결과는 남고, 고르기 전에 닫으면 그 상담은 그대로 남는다. 일지 문구 · 저장은 예전과 같다.
 - 학생이 들어오는 모습은 성격마다 (`CSL_ENTER` · 지침 무시는 `CSL_DEFY_ENTER`). 대사는 apply_cslpers 의 표 그대로.
 - 학생 그림 — 전투 idle 도트 네 장(학생마다 머리색 치환 · `sprCellCv`)을 128 칸으로 잘라 전투처럼 `#111` 테두리를 둘러 쓴다 (`cslwSprUrl` — 그림 파일은 따로 없다). 도트가 없는 직업은 얼굴 그림.
-  화면에서는 2배의 0.95배 — 발끝(칸 y 170)을 축으로 줄였다 (`.cw-spr` 의 `scale`). 학생 말 상자 머리는 이름 · 성격만 (직업은 그림으로 보여서 뺐다).
+  크기 · 자리는 직업마다 — 상담 책상 배치판의 **학생 도트**(배치 JSON 의 `sprites`)를 apply_cslwin 이 `CSL_SPR` 로 넣는다 (없는 직업은 2배의 0.95배 · 0, 0).
+  발끝(무대 2배 280, 288)을 축으로 `scale` 하고 (2x, 2y) 옮긴다 — 누르는 자리(`.cw-hit`)도 같은 셈으로 따라간다 (`cslwSetLook`).
+  머리 위 말줄임 · 효과 숫자는 도트의 실제 머리 꼭대기(말줄임 밑 열들에서 가장 높은 칸 — `cslwSprUrl` 의 `top`)를 재서 그 위에 둔다 — 배치판의 말줄임 자리도 같은 셈.
+  도트를 자르는 틀(`.cw-stu`)은 무대 윗부분 전체(책상 윗변 y 232 까지)라 옆으로 옮겨도 잘리지 않는다. 학생 말 상자 머리는 이름 · 성격만 (직업은 그림으로 보여서 뺐다).
 - 게임의 도트 마감 테마(`html[data-ui-finish="pixel"]`)와 팔레트가 모든 button 에 붙이는 네모 테두리 · 입체 그림자(`!important`)는 이 창에서 걷는다 —
   답변 구름은 구름 그림만, 닫기 · 넘어가기는 창의 모양 그대로 (`cslwin_block.css` 의 더 센 선택자).
 - 그림 `CSL_ART` — `bg` 배경(목업의 `art/bg.webp`) · `front` 책상 + 소품(1배 280 × 180 · 무손실 WebP — `art/desk.png` 위에 `art/desk_layout.json` 배치를 `src/compose_desk.py` 로 구운 것).
-  상담 책상 배치를 바꿨으면 배치판(`mockups/counsel-window/counsel_desk_placer.html`)에서 저장한 `desk_layout.json` 을 `mockups/counsel-window/art/` 에 덮어쓰고 apply_cslwin → wrap.
+  상담 책상 배치(소품 · 직업별 학생 도트)를 바꿨으면 배치판(`mockups/counsel-window/counsel_desk_placer.html`)에서 저장한 `desk_layout.json` 을 `mockups/counsel-window/art/` 에 덮어쓰고 apply_cslwin → wrap.
 - 좁은 화면(창을 0.8배보다 줄여야 할 때 — 세로 폰 · 가로 폰) — 무대만 폭에 맞춰 줄이고 학생 말 · 답변 구름은 무대 아래로 (글자 크기는 그대로). 그보다 넓으면 창을 통째로 줄인다.
 - 키: 스페이스 · 엔터 넘기기(글자가 찍히는 중이면 바로 끝까지) · 1 · 2 · 3 구름 고르기 · Esc 닫기.
 - 효과음 — `SFX` 표 끝의 `csl_tap`(학생을 누를 때) · `csl_pick`(답변 구름을 고를 때) · `csl_ok` · `csl_ng`(반응 성공 · 실패 — 학생의 대답이 다 찍히고 효과 숫자가 뜰 때) ·

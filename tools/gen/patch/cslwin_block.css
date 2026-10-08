@@ -50,21 +50,22 @@
 .cw-bg{position:absolute;inset:0;background:#2a211b center/cover no-repeat}
 /* 책상 + 소품 — 1배 280 × 180 을 2배로. 학생 앞, 누르기는 통과 */
 .cw-front{position:absolute;inset:0;z-index:3;pointer-events:none;image-rendering:pixelated;background:0 0/560px 360px no-repeat}
-/* 학생 — 책상 뒤에 선다. 전투 idle 도트(128 칸 네 장 · 2배 — 그 0.95배)를 허리 즈음까지만 책상 위로. 누르는 자리 = 캐릭터 둘레 */
-.cw-stu{position:absolute;left:168px;top:76px;width:224px;height:156px;z-index:2;overflow:hidden;opacity:0;transform:translateY(10px);
+/* 학생 — 책상 뒤에 선다. 무대 윗부분(책상 윗변 y 232 까지)을 잘라 보이는 틀 · 누르는 자리(.cw-hit)는 캐릭터 둘레 — 직업마다 크기 · 자리에 맞춰 JS 가 놓는다 */
+.cw-stu{position:absolute;left:0;top:0;width:560px;height:232px;z-index:2;overflow:hidden;pointer-events:none;opacity:0;transform:translateY(10px);
   transition:opacity .7s ease,transform .7s ease,filter .25s}
 .cw-stu.in{opacity:1;transform:none}
 .cw-stu.out{opacity:0;transform:translateY(6px)}
-.cw-stu.click{cursor:pointer}
+.cw-hit{position:absolute;left:158px;top:72px;width:244px;height:160px;pointer-events:auto}
+.cw-stu.click .cw-hit{cursor:pointer}
 .cw-stu.click:hover{filter:drop-shadow(0 0 2px #fff7d6) drop-shadow(0 0 6px rgba(255,226,150,.7)) brightness(1.05)}
-/* idle 네 장을 상담에 맞게 느리게 — 숨 쉬기(0 → 1 → 3 → 0) 사이에 가끔 눈을 감는다(2) */
-.cw-spr{position:absolute;left:-16px;top:-16px;width:256px;height:256px;image-rendering:pixelated;background:0 0/1024px 256px no-repeat;
-  scale:.95;transform-origin:128px 228px;animation:cwCalm 2.8s step-end infinite}   /* 1008 — 5% 작게: 발끝(칸 y 170)을 축으로 줄인다 */
+/* 전투 idle 도트(128 칸 네 장)를 2배로 — 직업마다 크기(기본 0.95배) · 자리 (상담 책상 배치판의 학생 도트 → CSL_SPR). 발끝(무대 280, 288)을 축으로.
+   idle 네 장을 상담에 맞게 느리게 — 숨 쉬기(0 → 1 → 3 → 0) 사이에 가끔 눈을 감는다(2) */
+.cw-spr{position:absolute;left:152px;top:60px;width:256px;height:256px;image-rendering:pixelated;background:0 0/1024px 256px no-repeat;
+  scale:.95;transform-origin:128px 228px;animation:cwCalm 2.8s step-end infinite}
 @keyframes cwCalm{0%{background-position:0 0}22%{background-position:-256px 0}44%{background-position:-768px 0}66%{background-position:0 0}86%{background-position:-512px 0}91%,100%{background-position:0 0}}
 /* 도트가 없는 직업 — 얼굴 그림 (어깨 아래는 책상에 가린다) */
-.cw-face{display:none;width:100%;height:100%;object-fit:contain;scale:.95;animation:cwBreath 3.4s ease-in-out infinite;transform-origin:50% 100%}
+.cw-face{display:none;position:absolute;left:162px;top:58px;width:236px;height:236px;object-fit:contain;scale:.95;animation:cwBreath 3.4s ease-in-out infinite;transform-origin:50% 100%}
 @keyframes cwBreath{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.012) translateY(-1px)}}
-.cw-scene.face .cw-stu{left:162px;top:58px;width:236px;height:236px;overflow:visible}
 .cw-scene.face .cw-spr{display:none}
 .cw-scene.face .cw-face{display:block}
 /* 할 말이 있다 — 머리 위 말줄임 */
@@ -72,7 +73,6 @@
   background:#fffaf0;border:2px solid #4a3524;box-shadow:2px 2px 0 rgba(0,0,0,.25);text-align:center;line-height:18px;letter-spacing:1px}
 .cw-dots::after{content:"";position:absolute;left:6px;bottom:-8px;border:6px solid transparent;border-top-color:#4a3524;border-bottom:0}
 .cw-dots.on{opacity:1;animation:cwBob 1.4s ease-in-out infinite}
-.cw-scene.face .cw-dots{top:50px}
 @keyframes cwBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 /* 학생 말 · 답변 구름 — 무대 위에 겹친다 */
 .cw-over{position:absolute;left:2px;top:2px;width:560px;height:360px;z-index:5;pointer-events:none}

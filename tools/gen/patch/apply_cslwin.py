@@ -7,7 +7,8 @@
 · 그림 — mockups/counsel-window/art 의 배경(bg.webp) · 책상(desk.png, 러너를 끈 배치면 desk_plain.png) 위에 배치(art/desk_layout.json)대로
   소품을 구워(src/compose_desk.py — 배치판 · 목업과 같은 규칙) 1배 280 × 180 한 장(front · 무손실 WebP)으로.
   CSL_ART 에 data: 로 넣고, wrap.py · wrap_site.py 의 split_assets 가 assets/csl_art/ 로 뺀다
-· 학생 — 게임 안에서 전투 idle 도트(머리색 치환)를 잘라 #111 테두리를 둘러 쓴다 (그림 파일은 따로 없다)
+· 학생 — 게임 안에서 전투 idle 도트(머리색 치환)를 잘라 #111 테두리를 둘러 쓴다 (그림 파일은 따로 없다).
+  직업마다 크기 · 자리는 배치(art/desk_layout.json)의 sprites — 상담 책상 배치판의 '학생 도트'에서 정한다 (CSL_SPR)
 · 코드 — cslwin_block.js(창 · 상담 화면 · 상담 기록) · cslwin_block.css(모양)를 넣고 다음을 고친다
   - answerCounsel · answerDefy — 셋째 인자 win: 화면을 다시 그리지 않고 결과(대답 · 서술 · 효과 · 신뢰 단계)를 돌려준다
   - 메뉴의 상담(가로 화면 사이드 · 폰 메뉴) — 화면을 바꾸지 않고 창을 연다
@@ -83,6 +84,22 @@ def webp_lossless(img):
     return b.getvalue()
 
 
+def sprites(root):
+    """상담 책상 배치의 학생 도트 (sprites) → 게임의 CSL_SPR {직업: {s, x, y}} — 직업마다 크기 · 자리. 없는 직업은 게임이 기본값(0.95배 · 0, 0)"""
+    A = os.path.join(root, "mockups", "counsel-window")
+    layout = json.load(open(os.path.join(A, "art", "desk_layout.json"), encoding="utf-8"))
+    out = {}
+    for job, t in sorted(((layout.get("sprites") or {}) if isinstance(layout.get("sprites"), dict) else {}).items()):
+        if not re.fullmatch(r"[a-z]+", job) or not isinstance(t, dict):
+            continue
+        try:
+            s, x, y = float(t.get("scale", 0.95)), float(t.get("x", 0)), float(t.get("y", 0))
+        except (TypeError, ValueError):
+            continue
+        out[job] = {"s": round(min(1.6, max(0.5, s)), 3), "x": round(min(60, max(-60, x)) * 2) / 2, "y": round(min(60, max(-60, y)) * 2) / 2}
+    return out
+
+
 def art(root):
     """배경 · 책상 + 소품 (1배 280 × 180) — data: 두 장"""
     A = os.path.join(root, "mockups", "counsel-window")
@@ -132,6 +149,7 @@ def sub1(src, old, new):
 def apply(src, root):
     js = open(HERE + "cslwin_block.js", encoding="utf-8").read()
     js = js.replace("__CSL_ART__", json.dumps(art(root), separators=(",", ":")), 1)
+    js = js.replace("__CSL_SPR__", json.dumps(sprites(root), separators=(",", ":")), 1)
     css = open(HERE + "cslwin_block.css", encoding="utf-8").read()
     # 이전 블록 지우기 → 넣기
     src = re.sub(re.escape(CSS_START) + r".*?" + re.escape(CSS_END) + r"\n?", "", src, flags=re.S)
