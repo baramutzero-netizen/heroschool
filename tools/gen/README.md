@@ -8,6 +8,9 @@ game.html 의 아래 기능은 손으로 쓴 코드가 아니라 이 폴더의 �
 | 두루마리 스케줄 (가로 화면) | `patch/apply_sched.py` | `patch/sched_block.js` · `sched_block.css` | `patch/sched_art.py` → `assets/sched_art/` (WebP) |
 | 의뢰 (이번 주 의뢰 · 의뢰처별 등급) | `patch/apply_job.py` (apply_sched 가 같이 부른다) | 스크립트 안 | — |
 | 마스터 노트 책상 | `patch/apply_desk.py` | `patch/mdesk_block.js` · `mdesk_block.css` | `patch/desk_art.py` → `patch/desk_out/` → `assets/mdesk_art/` (WebP) |
+| 원정 3구간 (원정지 깊이 · 구간 보상 · 잡몹 배율 — 아래) | `patch/apply_exped3.py` | 스크립트 안 | — |
+| 행동 지침 무시 (주 시작 판정 · 상담 이벤트 · 결산 창 문구 · 튜토리얼 14 — 아래) | `patch/apply_defy.py` | 스크립트 안 | — |
+| 스킬 등급표 (등급 6단계 · 등급 · 레벨로 정하는 수치 · 적도 같은 표 · 원정 잡몹 배율 — 아래) | `patch/apply_skgrade.py` (apply_exped3 뒤) | 스크립트 안 | — |
 | PNG → WebP (게임이 받는 그림 일부 — 아래) | `patch/apply_webp.py` (다른 apply 를 다 돌린 뒤 · wrap 앞) | 스크립트 안 | 원래 PNG 옆에 같은 이름의 `.webp` |
 | 전투 치명타 숫자 높이 · 학원 이름 맞추기 · 친선전 전부 거절 재확인 · 고른 칸 강조선 · 3인 리그 · 봄 신인전 시내 대회 필드 · 대회 쿼터뷰 제목 칸 · 줌 · 클로즈업 · 쿼터뷰 지도 11장 · 쿼터뷰 경기 이름(BATTLE START 동안) · 진영 칸 나무판 · 범례 숨김 · 실험실 확대 · 이동을 받는 쿼터뷰 지도 · 이름 길이만큼 늘어나는 진영 칸 · 경기 이름 맞춤(왼쪽 · 가운데 · 오른쪽) · 화면 · 배너를 나무 테두리 가운데로 | `patch/apply_crit.py` · `apply_acadfit.py` · `apply_fdecline.py` · `apply_optsel.py` · `apply_lgfield.py` · `apply_rookiefield.py` · `apply_tq.py` → `apply_tqcam.py` → `apply_tqmaps.py` → `apply_tqui.py` → `apply_tqfield.py` → `apply_tqgrow.py` → `apply_tqalign.py` → `apply_tqcenter.py` | 스크립트 안 | — |
 
@@ -29,6 +32,8 @@ game.html 의 아래 기능은 손으로 쓴 코드가 아니라 이 폴더의 �
 python tools/gen/patch/apply_sched.py game.html tools/gen/patch/sched_layout.json
 python tools/gen/patch/apply_desk.py  game.html                                   # desk_out 그림 그대로
 python tools/gen/patch/apply_desk.py  game.html tools/gen/patch/desk_layout.json  # 책상 배치를 바꿨을 때 — 다시 굽는다
+python tools/gen/patch/apply_exped3.py game.html                                   # 원정 3구간 (바뀐 게 없으면 그대로)
+python tools/gen/patch/apply_skgrade.py game.html                                  # 스킬 등급표 (apply_exped3 뒤 — 잡몹 배율을 다시 쓴다)
 python tools/gen/patch/apply_webp.py  game.html                                   # PNG → WebP (바뀐 게 없으면 그대로)
 python wrap.py
 python wrap_site.py
@@ -36,6 +41,40 @@ python wrap_site.py
 
 - apply 는 그림을 `data:` 로 넣는다 (1008 — 무손실 WebP). `wrap.py` · `wrap_site.py` 의 split_assets 가 `assets/sched_art/` · `assets/mdesk_art/` 로 빼고 game.html 에는 경로만 남긴다.
 - `apply_desk.py` 는 줌 넘어가기를 맞추려고 `assets/sched_art/` 그림(`.webp` 가 있으면 그것)에서 스케줄 두루마리 축 자리를 잰다. 스케줄 그림을 바꿨다면 `wrap.py` 를 한 번 돌린 뒤 apply_desk.
+
+### 원정 3구간 (`apply_exped3.py` · 1008)
+
+- 원정지는 모두 3구간이다. `DUNGEONS` 의 `depth` 는 예전 구간 수(연습장 3 · 성터 4 · 종탑 5 · 균열 6 · 무덤 7) — 구간마다 마물 레벨이 그만큼 가파르게 오르고(마지막 구간 = 예전 보스 레벨),
+  지구력 한계 · 의식 리타이어도 이 깊이를 따른다 (예전에 몇 구간까지 버티던 팀은 그에 해당하는 구간까지).
+- 구간당 경험 · 자금 · 유물 확률 · 진로 평가 · 학생 명성 · 업보 · 컨디션 소모는 **완주 합계가 예전과 같도록** 커졌다 (`dgK` = 깊이 ÷ 3, 경험은 `dgExpK`).
+- 잡몹 배율(`MOB_K`)은 `sim/exped_sim.py` 로 바꾸기 전 · 뒤 빌드를 같은 설정으로 돌려 완주율이 같아지도록 다시 맞췄다 — 다시 맞출 때는 그 파일 머리말을 본다 (`pip install playwright` 필요).
+  균열만은 예전부터 잡몹이 유난히 세서 무덤보다 어려웠던 것을 바로잡아 종탑과 무덤 사이로 낮췄다 (1.7 — 예전 완주율에 맞추면 2.0).
+
+### 행동 지침 무시 (`apply_defy.py` · 1008)
+
+- 1년차 봄 8주차부터 매주 스케줄을 시작할 때 학생마다 확률을 굴려, 걸린 학생 중 한 명(한 주에 한 명까지)이 그 주 개인 행동 지침 대신 다른 행동을 한다.
+  상담 탭의 이벤트를 하지 않고 다음 주를 시작하면 그 학생이 무조건 또 무시한다.
+- 수치는 game.html 의 `DEFY_*` 상수 — 등급 `DEFY_GRADE` · 신뢰 `DEFY_TRUST` · 학원 명성 `DEFY_FAME` · 성격 `DEFY_PERS` · 바꾼 행동의 소모/회복 `DEFY_COST` · `DEFY_REC` ·
+  상담 뒤 면제 `DEFY_FIT_SEASONS` · `DEFY_MISS_SEASONS` · 맞는 말 컨디션 `DEFY_FIT_COND` · 시작 주차 `DEFY_START_WEEK`.
+- 대사 — 마스터 질문 `DEFY_ASK` · 학생 대답 `DEFY_LINES`(성격 × 안 한 것>한 것 · `{who}` 의뢰인 · `{job}` 의뢰 이름, `+이` · `+을` 을 붙이면 조사까지) ·
+  마스터의 말 `DEFY_REPLY`(0 공감 · 1 원칙 · 2 도전 — 어느 성격에 닿는지는 `DEFY_FIT`) · 학생 반응 `DEFY_REACT`(맞는 말 · 안 맞는 말).
+- 세이브 `S.defy` — `pend` 상담 대기 · `imm` 학생별 면제가 끝나는 계절 · `log` 상담 기록 · `cur` 이번 주 · `first` 첫 안내를 띄웠는가.
+
+### 스킬 등급표 (`apply_skgrade.py` · 1008)
+
+- 스킬 수치는 **등급 · 레벨로만** 정한다 — 같은 등급 · 레벨이면 학생 · 졸업생 · 리그 · 적 · 마왕 모두 같은 수치.
+  표는 game.html 의 `SK_POW_LV`(레벨당 효과량 D 12 · C 16 · B 20 · A 25 · S 30 · EX 40%) · `SK_PROC_LV`(레벨당 출현 확률 7 · 10 · 13 · 16 · 19 · 25%, 스킬 1 · 2 만) ·
+  `SK_DUR_LV`(지속 시간 `[등급][레벨−1]` — B Lv.5 +1 · A Lv.3 +1 · S Lv.3 +1 / Lv.5 +2 · EX Lv.3 +2 / Lv.5 +3, 지속형 스킬만 · `noDur` 제외). Lv.n 은 표의 값 × (n−1).
+- 등급 6단계 `SK_GRADE` D · C · B · A · S · EX (S 를 새로 넣었다). 강화 한 번 = 레벨 +1, 진화 강화 등급 +1 · 각성 강화 등급 +2 (`evoChance` 는 그대로) —
+  등급이 오르면 지난 레벨 몫도 새 등급으로 다시 계산된다. 3지선다는 어느 스킬 · 어떤 강화만 고르고(효과량 · 출현 · 지속 중 하나를 고르던 것은 없앴다),
+  EX 위로는 등급이 없어서 제안을 만들 때 실제로 오르는 칸으로 깎는다 (`evCap`). 임의 강화 · 시뮬레이션은 `skAutoSpend`.
+- 저장 `skMod[id]` 는 `{grade, up}` 만 읽는다 (예전 `pow · proc · dur` 가 남아 있어도 쓰지 않는다). 옛 저장(`S.skgV` < 2)은 boot 에서 EX(4) → EX(5) 로 한 번 옮긴다 (`skgMigrate`).
+  리그 팀 · 마왕전 기록은 `v` 가 2 보다 작으면 받을 때 옮긴다 (`skModSane` — 서버는 고치지 않는다). 보낼 때는 등급 · 강화 횟수만 (`skModPack`, `v` 2) — 받는 쪽도 등급 · 강화 횟수만 믿는다.
+- 적 — `autoSkMod` 는 강화 횟수 · 등급만 정한다 (난수 쓰는 순서는 예전과 같다). 마왕 `DEMON_SK` 는 Lv.5 EX (효과량 +160% · 출현 +100% · 지속 +3턴 — 예전 +144% 만) · 이계 결승 1군 기록도 6단계로.
+- 전투 수치가 바뀌어 `RULES_VER` 7. 보관고 처분 가격에 S(1250 G)를 넣었고, 졸업 선물은 강화 횟수가 같으면 등급이 높은 것.
+- 원정 잡몹 배율 — 마물 스킬도 등급표를 따라 세진 만큼 낮췄다 (스크립트의 `MOB_K_SKG`: 성터 1.02 · 종탑 .94 · 균열 1.67 · 무덤 1.01).
+  학생 스킬을 임의 강화 방식으로 키운 B급 3인(`sim/exped_sim.py` 의 `"sk":"auto"`)이 권장 +0 · +2 · +4 에서 마물 스킬을 바꾸기 전과 같은 완주율이 나오도록.
+  apply_exped3 를 다시 돌리면 배율이 그 스크립트 값으로 돌아가므로 apply_skgrade 를 뒤에 한 번 더 돌린다.
 
 ### PNG → WebP (`apply_webp.py` · 1008)
 
