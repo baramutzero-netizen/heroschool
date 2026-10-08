@@ -4,12 +4,14 @@
 
 넣는 것: CSS(본 스타일시트 끝) · JS 블록(viewPlanClassic 앞) · render 의 스케줄 분기 · bindView 연결 · PREF(schedScroll · sign) · 설정 칸 ·
 임의 감추기 · 소리(SFX 셋 · slotPut / 자동 배치 뒤 slotSfx — 소리 파일은 bgm/sched_*.ogg 를 따로 둔다).
-그림은 data: 로 넣고, wrap.py / wrap_site.py 가 돌 때 split_assets 가 assets/sched_art/ 로 뺀다."""
+그림은 data: 로 넣고, wrap.py / wrap_site.py 가 돌 때 split_assets 가 assets/sched_art/ 로 뺀다.
+1008 — 그림은 무손실 WebP 로 넣는다 (apply_webp.webp_lossless — 픽셀은 PNG 와 똑같다)."""
 import base64, json, os, re, sys
 HERE = os.path.dirname(os.path.abspath(__file__)) + "/"
 sys.path.insert(0, HERE)
 import sched_art
 import apply_job                                              # 의뢰 바꾸기 (1006) — 이번 주 의뢰를 미리 · 의뢰처별 등급
+from apply_webp import webp_lossless                         # 1008 — 그림은 무손실 WebP
 
 
 def prefix_css(css, pre="html body "):
@@ -60,7 +62,7 @@ def sub1(src, old, new, done_mark):
 
 def apply(src, layout_path):
     art, geo = sched_art.build(layout_path)
-    uri = {k: "data:image/png;base64," + base64.b64encode(v).decode() for k, v in art.items()}
+    uri = {k: "data:image/webp;base64," + base64.b64encode(webp_lossless(v)).decode() for k, v in art.items()}   # 1008 — 무손실 WebP
     css = prefix_css(open(HERE + "sched_block.css", encoding="utf-8").read())
     js = open(HERE + "sched_block.js", encoding="utf-8").read()
     js = js.replace("/*SCHED_ART*/{}", json.dumps(uri, separators=(",", ":")), 1)

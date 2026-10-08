@@ -4,7 +4,8 @@
 
 desk_art.py 로 구운 그림(desk_out/*.png)과 자리(desk_out/geo.json)를 MDESK_ART · MDESK_GEO 로 넣고(data: — wrap.py · wrap_site.py 의
 split_assets 가 assets/mdesk_art/ 로 뺀다), mdesk_block.js · mdesk_block.css 를 넣은 뒤 render · bindView · viewHome · 메뉴 단추를 고친다.
-스케줄 두루마리의 축 자리(줌 맞춤)는 game.html 옆 assets/sched_art/ 그림에서 잰다."""
+스케줄 두루마리의 축 자리(줌 맞춤)는 game.html 옆 assets/sched_art/ 그림에서 잰다.
+1008 — 그림은 무손실 WebP 로 넣는다 (apply_webp.webp_lossless). 축 자리는 .webp 가 있으면 그것으로 잰다 (예전 .png 가 남아 있어도)."""
 import base64, json, os, re, sys
 import numpy as np
 from PIL import Image
@@ -12,6 +13,7 @@ from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__)) + "/"
 sys.path.insert(0, HERE)
 import desk_art
+from apply_webp import webp_lossless                         # 1008 — 그림은 무손실 WebP
 
 
 def sub1(src, old, new, done_mark):
@@ -22,13 +24,14 @@ def sub1(src, old, new, done_mark):
 
 
 def uri(path):
-    return "data:image/png;base64," + base64.b64encode(open(path, "rb").read()).decode()
+    return "data:image/webp;base64," + base64.b64encode(webp_lossless(open(path, "rb").read())).decode()   # 1008 — 무손실 WebP
 
 
 def sched_axes(root):
     A = os.path.join(root, "assets", "sched_art") + "/"
-    c = Image.open(A + "under.png").convert("RGBA")
-    for n in ("over1", "over2"): c.alpha_composite(Image.open(A + n + ".png").convert("RGBA"))
+    pic = lambda n: A + n + (".webp" if os.path.exists(A + n + ".webp") else ".png")   # 1008 — WebP 가 새것
+    c = Image.open(pic("under")).convert("RGBA")
+    for n in ("over1", "over2"): c.alpha_composite(Image.open(pic(n)).convert("RGBA"))
     a = np.array(c).astype(int)
     return desk_art.scroll_axes(a, None, a.shape[0] // 2)
 
