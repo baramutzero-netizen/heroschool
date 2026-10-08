@@ -2762,6 +2762,18 @@ html.tq-lab .tq-title{opacity:1}
 html.tq-ban .tq-title{animation:tqTitleBan 1500ms linear both}
 /* BATTLE START 글자의 진하기를 그림(battle_start.png) 장면마다 재서 옮겼다 — 167ms 부터 나타나 625ms 에 다 보이고, 1292ms 부터 흐려져 1500ms 에 사라진다 */
 @keyframes tqTitleBan{0%,11.1%{opacity:0}16.7%{opacity:.09}22.2%{opacity:.36}27.8%{opacity:.7}33.3%{opacity:.92}38.9%{opacity:.99}41.7%,86.1%{opacity:1}88.9%{opacity:.97}91.7%{opacity:.88}94.4%{opacity:.7}97.2%{opacity:.42}100%{opacity:0}}
+
+/* Shared skill icons: 48px in student/teaching/upgrade cards, 32px in codex. */
+.skill-icon{display:block;position:relative;width:48px;height:48px;flex:none;float:left;margin:1px 12px 6px 0;pointer-events:none}
+.skill-icon img{position:absolute;display:block;max-width:none;image-rendering:pixelated}
+.skill-icon .skill-icon-frame{inset:0;width:100%;height:100%}
+.skill-icon .skill-icon-art{left:8%;top:8%;width:84%;height:84%;object-fit:contain}
+.opt:has(> .skill-icon){display:flow-root;min-height:76px}
+.opt:has(> .skill-icon)>:is(.on,.od){margin-left:60px}
+.opt:has(> .skill-icon)>.on{flex-wrap:wrap;min-width:0}
+.dmsk-r>.skill-icon{width:32px;height:32px;margin-right:8px}
+@media(max-width:480px){.opt>.skill-icon{width:40px;height:40px;margin-right:8px}.opt:has(> .skill-icon)>:is(.on,.od){margin-left:48px}}
+
 </style>
 
 <link rel="stylesheet" href="assets/title-art/title-screen.css?v=7">
@@ -11570,6 +11582,7 @@ function studentDetail(s, opt){
       ${(()=>{ const P=passiveOf(passiveJobOf(s)); if(!P) return "";
         const g = skGrade(s,"passive"), k = passiveK(s);
         return `<div class="opt skgrade" data-rg="${g}" style="cursor:default;border-color:${GRADE_COLOR[g]}">
+          ${skillIconHtml("passive",g,passiveJobOf(s))}
           <div class="on" style="color:${GRADE_COLOR[g]}">${esc(P.n)} <span class="tag" style="color:${GRADE_COLOR[g]};border-color:${GRADE_COLOR[g]}">${g}</span>
             <span class="tag">패시브</span><span class="price">Lv.${skLevel(s,"passive")}${skLevel(s,"passive")>=SK_LV_MAX?" MAX":""}</span></div>
           <div class="od">${esc(P.d)}</div>
@@ -11580,6 +11593,7 @@ function studentDetail(s, opt){
         const pr = sk.kind? "—" : (skProc(s,sk,s.ment.genius)*100).toFixed(1)+"%";
         const d = skDur(s, sk);
         return `<div class="opt skgrade" data-rg="${g}" style="cursor:default;border-color:${GRADE_COLOR[g]}">
+          ${skillIconHtml(sk.id,g)}
           <div class="on" style="color:${GRADE_COLOR[g]}">${esc(sk.name)}
             <span class="tag" style="color:${GRADE_COLOR[g]};border-color:${GRADE_COLOR[g]}">${g}</span>
             <span class="tag">${kind}</span><span class="price">Lv.${skLevel(s,sk.id)}${skLevel(s,sk.id)>=SK_LV_MAX?" MAX":""}</span></div>
@@ -15581,11 +15595,23 @@ function viewBank(){
 }
 
 /* ---------- 유물 ---------- */
+// Skill icon art and grade frames: WebP quality 1, source PNGs preserved.
+const SKILL_ICON_ART = {"ar_b": "assets/skill-icons/archer/aimed-shot.webp?v=d9ecff3762", "ar_1": "assets/skill-icons/archer/pierce.webp?v=835fd8a46a", "ar_2": "assets/skill-icons/archer/hawk-eye.webp?v=5a67ce70c2", "ar_u": "assets/skill-icons/archer/meteor.webp?v=75104e5b5a", "bd_b": "assets/skill-icons/bard/pluck.webp?v=c0f16e147b", "bd_1": "assets/skill-icons/bard/march.webp?v=fc21b3fe46", "bd_2": "assets/skill-icons/bard/dissonance.webp?v=8ba949ef4c", "bd_u": "assets/skill-icons/bard/victory.webp?v=b2567bf313", "dp_b": "assets/skill-icons/darkpriest/touch.webp?v=d14150e2b5", "dp_1": "assets/skill-icons/darkpriest/drain.webp?v=cc6afa0640", "dp_2": "assets/skill-icons/darkpriest/curse.webp?v=209f0a1477", "dp_u": "assets/skill-icons/darkpriest/supper.webp?v=01afd91a01", "dr_b": "assets/skill-icons/druid/thorn-whip.webp?v=0252406354", "dr_1": "assets/skill-icons/druid/regen-seed.webp?v=8b40f3518f", "dr_2": "assets/skill-icons/druid/beast-form.webp?v=b63ec902c8", "dr_u": "assets/skill-icons/druid/nature-wrath.webp?v=44a59d090f", "en_b": "assets/skill-icons/enchanter/rune-shot.webp?v=b8d7fad549", "en_1": "assets/skill-icons/enchanter/weapon-rune.webp?v=e138d71e34", "en_2": "assets/skill-icons/enchanter/magic-seal.webp?v=d8e6169491", "en_u": "assets/skill-icons/enchanter/all-rune.webp?v=2e9febee0a", "fm_b": "assets/skill-icons/forcemage/strike.webp?v=c79a94c7d1", "fm_1": "assets/skill-icons/forcemage/shatter-foot.webp?v=9dd3015ee2", "fm_2": "assets/skill-icons/forcemage/overcharge.webp?v=64eeba7195", "fm_u": "assets/skill-icons/forcemage/unseal.webp?v=09512c8b25", "gn_b": "assets/skill-icons/gunner/greeting.webp?v=5da54b9475", "gn_1": "assets/skill-icons/gunner/waltz.webp?v=4f0b8a4276", "gn_2": "assets/skill-icons/gunner/knock.webp?v=5096c71cfb", "gn_u": "assets/skill-icons/gunner/finale.webp?v=c1c6d70844", "mo_b": "assets/skill-icons/monk/combo.webp?v=b80d6f2ced", "mo_1": "assets/skill-icons/monk/chi-wave.webp?v=dfd59a50cd", "mo_2": "assets/skill-icons/monk/circulation.webp?v=7ad51e76b4", "mo_u": "assets/skill-icons/monk/hundred-fists.webp?v=8d2c91f69c", "nj_b": "assets/skill-icons/ninja/kunai.webp?v=2bbe1040a5", "nj_1": "assets/skill-icons/ninja/swamp.webp?v=8b11d9befb", "nj_2": "assets/skill-icons/ninja/water-dragon.webp?v=e01983f8c3", "nj_u": "assets/skill-icons/ninja/fuma.webp?v=b251f064a8", "pa_b": "assets/skill-icons/paladin/holy-strike.webp?v=1912c7a3c5", "pa_1": "assets/skill-icons/paladin/protective-oath.webp?v=21b288797a", "pa_2": "assets/skill-icons/paladin/healing-light.webp?v=24e8f4d2ba", "pa_u": "assets/skill-icons/paladin/sanctuary.webp?v=864d16164a", "pr_b": "assets/skill-icons/priest/holy-wave.webp?v=a16f7ad428", "pr_1": "assets/skill-icons/priest/greater-heal.webp?v=d74078155b", "pr_2": "assets/skill-icons/priest/blessing.webp?v=d6a6af7086", "pr_u": "assets/skill-icons/priest/revival.webp?v=49a1640107", "ro_b": "assets/skill-icons/rogue/ambush.webp?v=55fa5d0b9f", "ro_1": "assets/skill-icons/rogue/poison.webp?v=702b128f66", "ro_2": "assets/skill-icons/rogue/shadow-step.webp?v=1f7a024393", "ro_u": "assets/skill-icons/rogue/assassinate.webp?v=b43b86360e", "ss_b": "assets/skill-icons/spellsword/arcane-slash.webp?v=efc1bea3ec", "ss_1": "assets/skill-icons/spellsword/triple.webp?v=f1766e8f06", "ss_2": "assets/skill-icons/spellsword/awakening.webp?v=9e08c76537", "ss_u": "assets/skill-icons/spellsword/thousand-blades.webp?v=483a794035", "sw_b": "assets/skill-icons/sword/slash.webp?v=f74233e66f", "sw_1": "assets/skill-icons/sword/taunt.webp?v=ed89296194", "sw_2": "assets/skill-icons/sword/iron-wall.webp?v=78d104e59f", "sw_u": "assets/skill-icons/sword/earth-cleaver.webp?v=35c244c284", "tm_b": "assets/skill-icons/timemage/time-shard.webp?v=75bdac684b", "tm_1": "assets/skill-icons/timemage/haste.webp?v=495ed8d2d3", "tm_2": "assets/skill-icons/timemage/delay.webp?v=96db1943d3", "tm_u": "assets/skill-icons/timemage/time-stop.webp?v=30ce4b7a6b", "wz_b": "assets/skill-icons/wizard/arcane-bolt.webp?v=4beb1faaa6", "wz_1": "assets/skill-icons/wizard/fire-burst.webp?v=5ab91a19d9", "wz_2": "assets/skill-icons/wizard/frost-field.webp?v=007c5df43c", "wz_u": "assets/skill-icons/wizard/gravity.webp?v=d31aa58b47"};
+const SKILL_ICON_PASSIVE = {"archer": "assets/skill-icons/archer/sniper.webp?v=148a495757", "bard": "assets/skill-icons/bard/harmony.webp?v=b5f12a88a1", "darkpriest": "assets/skill-icons/darkpriest/pact-clean.webp?v=ba89c4b760", "druid": "assets/skill-icons/druid/nature-recovery.webp?v=f65d32c1df", "enchanter": "assets/skill-icons/enchanter/permanent-rune.webp?v=41e771dcea", "forcemage": "assets/skill-icons/forcemage/body.webp?v=fb7df4af1b", "gunner": "assets/skill-icons/gunner/encore.webp?v=fb7e1fa4c2", "monk": "assets/skill-icons/monk/training.webp?v=0030562d4c", "ninja": "assets/skill-icons/ninja/water-mirage.webp?v=02d13b0394", "paladin": "assets/skill-icons/paladin/guardian-vow.webp?v=e44923bb9f", "priest": "assets/skill-icons/priest/prayer.webp?v=286b4f8f14", "rogue": "assets/skill-icons/rogue/weakness.webp?v=0901532014", "spellsword": "assets/skill-icons/spellsword/echo.webp?v=a3d592583f", "sword": "assets/skill-icons/sword/counter.webp?v=b675e0a591", "timemage": "assets/skill-icons/timemage/foresight.webp?v=158f245b8d", "wizard": "assets/skill-icons/wizard/resonance.webp?v=7188abe978"};
+const SKILL_ICON_FRAME = {"D": "assets/skill-icons/frame-D.webp?v=08aeb8165c", "C": "assets/skill-icons/frame-C.webp?v=f8173abc21", "B": "assets/skill-icons/frame-B.webp?v=859573342a", "A": "assets/skill-icons/frame-A.webp?v=043d2b6bc5", "S": "assets/skill-icons/frame-S.webp?v=4474a1dda4", "EX": "assets/skill-icons/frame-EX.webp?v=63ff6e4915"};
+function skillIconHtml(id, grade, passiveJob){
+  const art = id === 'passive' ? SKILL_ICON_PASSIVE[passiveJob] : SKILL_ICON_ART[id];
+  if(!art) return '';
+  const frame = SKILL_ICON_FRAME[grade] || SKILL_ICON_FRAME.D;
+  return `<span class="skill-icon" aria-hidden="true"><img class="skill-icon-frame" src="${frame}" alt="" decoding="async"><img class="skill-icon-art" src="${art}" alt="" decoding="async"></span>`;
+}
+
 function skillCardHtml(o, sk, kindLabel, gradeIdx, opt){
   opt = opt || {};
   const g = SK_GRADE[clamp(gradeIdx,0,SK_G_MAX)];
   const pr = sk.kind? "—" : (skProc(o,sk,50)*100).toFixed(1)+"%";
   return `<div class="opt skgrade ${opt.dim?"locked":""}" data-rg="${g}" style="cursor:default;border-color:${GRADE_COLOR[g]}">
+    ${skillIconHtml(sk.id,g)}
     <div class="on" style="color:${GRADE_COLOR[g]}">${esc(sk.name)}
       <span class="tag" style="color:${GRADE_COLOR[g]};border-color:${GRADE_COLOR[g]}">${g}</span>
       <span class="tag">${kindLabel}</span><span class="price">Lv.${1+(opt.up||0)}</span></div>
@@ -15608,7 +15634,8 @@ function teachCompare(i, sid){
     const cur = passiveOf(passiveJobOf(st)), nw = passiveOf(e.job);
     const cg = skGrade(st,"passive"), ck = passiveK(st);
     const nk = 1 + skModVal(e.mod, null).pow;
-    const box = (P,g,k,lv,label)=> P? `<div class="opt skgrade" data-rg="${SK_GRADE[clamp(g,0,SK_G_MAX)]}" style="cursor:default;border-color:${GRADE_COLOR[SK_GRADE[clamp(g,0,SK_G_MAX)]]}">
+    const box = (P,g,k,lv,label,job)=> P? `<div class="opt skgrade" data-rg="${SK_GRADE[clamp(g,0,SK_G_MAX)]}" style="cursor:default;border-color:${GRADE_COLOR[SK_GRADE[clamp(g,0,SK_G_MAX)]]}">
+        ${skillIconHtml("passive",SK_GRADE[clamp(g,0,SK_G_MAX)],job)}
         <div class="on" style="color:${GRADE_COLOR[SK_GRADE[clamp(g,0,SK_G_MAX)]]}">${esc(P.n)}
           <span class="tag" style="color:${GRADE_COLOR[SK_GRADE[clamp(g,0,SK_G_MAX)]]};border-color:${GRADE_COLOR[SK_GRADE[clamp(g,0,SK_G_MAX)]]}">${SK_GRADE[clamp(g,0,SK_G_MAX)]}</span>
           <span class="tag">패시브</span><span class="price">Lv.${lv}</span></div>
@@ -15616,8 +15643,8 @@ function teachCompare(i, sid){
         <div class="od" style="color:var(--ok)">효과량 ×${k.toFixed(2)}</div></div>`
       : `<div class="empty" style="margin:0">${label}</div>`;
     body = `<div class="cmp2">
-      <div><div class="eyebrow cmp-h">현재 — ${dnH(st)}</div>${box(cur, SK_GRADE.indexOf(cg), ck, skLevel(st,"passive"), "패시브 없음")}</div>
-      <div><div class="eyebrow cmp-h" style="color:var(--brass)">전수될 기술</div>${box(nw, newG, nk, 1+newUp, "패시브 없음")}</div>
+      <div><div class="eyebrow cmp-h">현재 — ${dnH(st)}</div>${box(cur, SK_GRADE.indexOf(cg), ck, skLevel(st,"passive"), "패시브 없음",passiveJobOf(st))}</div>
+      <div><div class="eyebrow cmp-h" style="color:var(--brass)">전수될 기술</div>${box(nw, newG, nk, 1+newUp, "패시브 없음",e.job)}</div>
     </div>`;
     slots = [{slot:0, label:"패시브 교체"}];
   } else {
@@ -15832,6 +15859,7 @@ function viewRelic(){
       const catN = {basic:"일반 공격", skill:"스킬", ult:"필살기", passive:"패시브"}[e.cat];
       const src = e.cat==="passive"? (passiveOf(e.job)||{}).d : ((JOBS[e.job].skills||[]).find(x=>x.id===e.skillId)||{}).txt;
       return `<div class="opt skgrade" data-rg="${g}" style="cursor:default;border-color:${GRADE_COLOR[g]}">
+        ${skillIconHtml(e.cat==="passive"?"passive":e.skillId,g,e.job)}
         <div class="on" style="color:${GRADE_COLOR[g]}">${esc(e.name)}
           <span class="tag" style="color:${GRADE_COLOR[g]};border-color:${GRADE_COLOR[g]}">${g}</span>
           <span class="tag">${catN}</span><span class="price">Lv.${1+clamp(e.mod.up|0,0,SK_LV_MAX-1)}</span></div>
@@ -18343,6 +18371,7 @@ function skillUpModal(sid){
         const cat = o.t.kind==="passive"? "패시브" : (o.t.sk.kind==="basic"?"일반 공격":o.t.sk.kind==="ult"?"필살기":"스킬");
         const g = SK_GRADE[d.g0], ng = SK_GRADE[d.g1];
         return `<button class="opt" data-skopt="${i}" style="border-color:${d.ev? SK_TIER_C[d.ev] : "var(--line-soft)"}">
+          ${skillIconHtml(o.t.kind==="passive"?"passive":o.t.sk.id,ng,passiveJobOf(st))}
           <div class="on" style="color:${SK_TIER_C[d.ev]}">${esc(nm)}
             <span class="tag">${cat}</span>
             <span class="price">${SK_TIER_N[d.ev]}</span></div>
