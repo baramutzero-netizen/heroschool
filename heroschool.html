@@ -1119,6 +1119,148 @@ html body #btnTut.tutbtn{border:0!important;box-shadow:none!important;background
 .cslwho{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-weight:600}
 .cslwho .price{margin-left:auto;font-weight:400;font-size:12px;color:var(--muted)}
 .cslq{margin-top:8px;font-size:14px;line-height:1.75;color:var(--text)}
+/* CSLWIN_CSS_START — 상담창 (1008 · apply_cslwin.py) ─ 상담 메뉴를 누르면 뜨는 창. mockups/counsel-window 목업 그대로
+   창 588px · 무대 560 × 360 (1배 280 × 180 도트를 2배로) · 아래 글 상자. 글꼴은 물마루 12 / 20px. 좁은 화면은 .compact (무대만 줄이고 글은 그대로) */
+.cw-ov{position:fixed;inset:0;z-index:80;display:flex;padding:8px;overflow-x:hidden;overflow-y:auto;background:rgba(10,11,15,.6);
+  touch-action:pan-y;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;opacity:0;transition:opacity .35s ease}
+.cw-ov.on{opacity:1}
+.cw-fit{position:relative;flex:none;margin:auto}
+.cw-in{transform-origin:0 0}
+.cw-win{--cw-ink:#35291f;--cw-paper:#efdfbf;--cw-edge:#a1845b;--cw-dark:#30271e;--cw-btn:#654a30;--cw-brass:#8a6a15;--cw-ok:#2f7f58;--cw-bad:#b33f32;--cw-lead:#3c6e9e;--cw-dim:#8b7a63;
+  position:relative;width:588px;padding:10px 10px 12px;color:var(--cw-ink);text-align:left;outline:none;
+  font:400 12px/20px "Mulmaru",sans-serif;letter-spacing:0;word-spacing:0;-webkit-font-smoothing:none;font-synthesis:none;
+  background-color:var(--cw-paper);
+  background-image:radial-gradient(at 0 0,rgba(156,105,37,.133),transparent 45%),radial-gradient(at 100% 100%,rgba(138,87,27,.15),transparent 55%),
+    repeating-linear-gradient(7deg,rgba(136,96,50,.02) 0 1px,transparent 1px 4px),linear-gradient(100deg,#e5cfaa,#f2e3c5 45%,#e9d5b0);
+  border:2px solid var(--cw-edge);
+  box-shadow:inset 0 0 0 2px rgba(255,240,201,.5),2px 0 0 var(--cw-dark),-2px 0 0 var(--cw-dark),0 2px 0 var(--cw-dark),0 -2px 0 var(--cw-dark),4px 4px 0 rgba(0,0,0,.27);
+  transition:opacity .45s ease,transform .45s ease}
+.cw-win *{box-sizing:border-box}
+.cw-ov .cw-win:focus,.cw-ov .cw-win:focus-visible,.cw-ov .cw-win :focus-visible{outline:none}   /* 게임 공통 초점 테두리 대신 단추마다 밝기 · 색으로 */
+/* 게임의 도트 마감(html[data-ui-finish="pixel"]) · 팔레트가 모든 button 에 붙이는 네모 테두리 · 입체 그림자(!important)를 걷는다 —
+   답변 구름은 테두리 없이 구름 그림만, 닫기 · 넘어가기는 이 창의 모양 그대로 (선택자를 그쪽보다 세게) */
+.cw-ov .cw-win .cw-clouds button.cw-cloud.cw-cloud{border:0!important;border-radius:0!important;box-shadow:none!important;background:none!important}
+.cw-ov .cw-win .cw-hr button.cw-x.cw-x{border:2px solid var(--cw-btn)!important;border-bottom:0!important;border-radius:0!important;box-shadow:inset 2px 2px 0 rgba(255,240,201,.55)!important}
+.cw-ov .cw-win .cw-box button.cw-next.cw-next{border:2px solid var(--cw-btn)!important;border-radius:0!important;
+  box-shadow:inset 2px 2px 0 rgba(255,240,201,.5),inset -2px -2px 0 rgba(96,66,33,.25),0 2px 0 var(--cw-dark)!important}
+.cw-ov .cw-win .cw-box button.cw-next.cw-next:active{box-shadow:inset 2px 2px 0 rgba(48,39,30,.44)!important}
+.cw-win button{font:inherit;color:inherit;letter-spacing:inherit;margin:0;border-radius:0;-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent}
+.cw-win.closed{opacity:0;transform:translateY(8px) scale(.985);pointer-events:none}
+/* 답을 고르는 동안 — 창이 아주 느리게 두근거린다 */
+.cw-win.beat{animation:cwBeat 2.6s ease-in-out infinite}
+@keyframes cwBeat{0%,46%,100%{transform:scale(1)}9%{transform:scale(1.006)}18%{transform:scale(1)}27%{transform:scale(1.0035)}}
+.cw-win.beat .cw-stage::after{animation:cwGlow 2.6s ease-in-out infinite}
+@keyframes cwGlow{0%,46%,100%{opacity:0}9%{opacity:.55}18%{opacity:.15}27%{opacity:.35}}
+/* 위 탭 — 왼쪽 고민 제목 · 오른쪽 남은 상담 수와 닫기 */
+.cw-head{display:flex;justify-content:space-between;align-items:flex-end;gap:6px;height:28px}
+.cw-hr{display:flex;align-items:flex-end;gap:4px;flex:none}
+.cw-tab{height:28px;padding:4px 12px 0;border:2px solid var(--cw-btn);border-bottom:0;background:#e2c99c;
+  box-shadow:inset 2px 2px 0 rgba(255,240,201,.55);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:opacity .3s}
+.cw-tab.title{min-width:0;max-width:62%}
+.cw-tab.fade{opacity:0}
+.cw-k{color:var(--cw-brass);margin-right:6px}
+.cw-tab b{color:var(--cw-brass);font-weight:400}
+.cw-x{width:30px;height:28px;padding:0;border:2px solid var(--cw-btn);border-bottom:0;background:#e2c99c;cursor:pointer;
+  box-shadow:inset 2px 2px 0 rgba(255,240,201,.55);font-size:24px;line-height:24px;text-align:center}
+.cw-x:hover,.cw-x:focus-visible{background:#f0dcb2;color:var(--cw-bad);outline:none}
+/* 무대 */
+.cw-mid{position:relative}
+.cw-stage{position:relative;width:564px;height:364px;border:2px solid var(--cw-btn);overflow:hidden;background:#2a211b;user-select:none;-webkit-user-select:none}
+.cw-stage::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;z-index:9;box-shadow:inset 0 0 38px 6px rgba(255,214,140,.55)}
+.cw-scene{position:absolute;left:0;top:0;width:560px;height:360px;transform-origin:0 0}
+.cw-bg{position:absolute;inset:0;background:#2a211b center/cover no-repeat}
+/* 책상 + 소품 — 1배 280 × 180 을 2배로. 학생 앞, 누르기는 통과 */
+.cw-front{position:absolute;inset:0;z-index:3;pointer-events:none;image-rendering:pixelated;background:0 0/560px 360px no-repeat}
+/* 학생 — 책상 뒤에 선다. 전투 idle 도트(128 칸 네 장 · 2배 — 그 0.95배)를 허리 즈음까지만 책상 위로. 누르는 자리 = 캐릭터 둘레 */
+.cw-stu{position:absolute;left:168px;top:76px;width:224px;height:156px;z-index:2;overflow:hidden;opacity:0;transform:translateY(10px);
+  transition:opacity .7s ease,transform .7s ease,filter .25s}
+.cw-stu.in{opacity:1;transform:none}
+.cw-stu.out{opacity:0;transform:translateY(6px)}
+.cw-stu.click{cursor:pointer}
+.cw-stu.click:hover{filter:drop-shadow(0 0 2px #fff7d6) drop-shadow(0 0 6px rgba(255,226,150,.7)) brightness(1.05)}
+/* idle 네 장을 상담에 맞게 느리게 — 숨 쉬기(0 → 1 → 3 → 0) 사이에 가끔 눈을 감는다(2) */
+.cw-spr{position:absolute;left:-16px;top:-16px;width:256px;height:256px;image-rendering:pixelated;background:0 0/1024px 256px no-repeat;
+  scale:.95;transform-origin:128px 228px;animation:cwCalm 2.8s step-end infinite}   /* 1008 — 5% 작게: 발끝(칸 y 170)을 축으로 줄인다 */
+@keyframes cwCalm{0%{background-position:0 0}22%{background-position:-256px 0}44%{background-position:-768px 0}66%{background-position:0 0}86%{background-position:-512px 0}91%,100%{background-position:0 0}}
+/* 도트가 없는 직업 — 얼굴 그림 (어깨 아래는 책상에 가린다) */
+.cw-face{display:none;width:100%;height:100%;object-fit:contain;scale:.95;animation:cwBreath 3.4s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes cwBreath{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.012) translateY(-1px)}}
+.cw-scene.face .cw-stu{left:162px;top:58px;width:236px;height:236px;overflow:visible}
+.cw-scene.face .cw-spr{display:none}
+.cw-scene.face .cw-face{display:block}
+/* 할 말이 있다 — 머리 위 말줄임 */
+.cw-dots{position:absolute;left:300px;top:70px;z-index:4;width:40px;height:26px;opacity:0;transition:opacity .3s;pointer-events:none;color:var(--cw-ink);
+  background:#fffaf0;border:2px solid #4a3524;box-shadow:2px 2px 0 rgba(0,0,0,.25);text-align:center;line-height:18px;letter-spacing:1px}
+.cw-dots::after{content:"";position:absolute;left:6px;bottom:-8px;border:6px solid transparent;border-top-color:#4a3524;border-bottom:0}
+.cw-dots.on{opacity:1;animation:cwBob 1.4s ease-in-out infinite}
+.cw-scene.face .cw-dots{top:50px}
+@keyframes cwBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+/* 학생 말 · 답변 구름 — 무대 위에 겹친다 */
+.cw-over{position:absolute;left:2px;top:2px;width:560px;height:360px;z-index:5;pointer-events:none}
+.cw-say{position:absolute;right:12px;top:12px;width:252px;padding:6px 10px 8px;background:#fffaf0;border:2px solid #4a3524;pointer-events:none;cursor:default;
+  box-shadow:inset 2px 2px 0 #fff,inset -2px -2px 0 #eadcc2,3px 3px 0 rgba(0,0,0,.28);opacity:0;transform:translateY(-4px);transition:opacity .25s,transform .25s}
+.cw-say.on{opacity:1;transform:none;pointer-events:auto}
+.cw-say::before{content:"";position:absolute;left:30px;bottom:-12px;border:10px solid transparent;border-top-color:#4a3524;border-bottom:0;border-left-width:4px}
+.cw-say::after{content:"";position:absolute;left:32px;bottom:-8px;border:8px solid transparent;border-top-color:#fffaf0;border-bottom:0;border-left-width:3px}
+.cw-sn{color:var(--cw-brass);display:flex;flex-wrap:wrap;gap:0 6px;align-items:center}
+.cw-sn i{font-style:normal;color:#fff;background:var(--cw-btn);padding:0 5px;line-height:16px}
+.cw-st{min-height:20px;white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere}
+.cw-think{display:inline-block;letter-spacing:2px}
+.cw-think i{font-style:normal;animation:cwBlink 1.2s infinite}
+.cw-think i:nth-child(2){animation-delay:.2s}.cw-think i:nth-child(3){animation-delay:.4s}
+@keyframes cwBlink{0%,100%{opacity:.2}40%{opacity:1}}
+/* 답변 구름 — 제자리를 중심으로 천천히 원을 그린다. 금빛 = 정보력으로 파악한 통할 말 */
+.cw-clouds{position:absolute;inset:0;pointer-events:none}
+.cw-cloud{position:absolute;width:196px;border:0;padding:0;background:none;cursor:pointer;opacity:0;transform:scale(.92);pointer-events:none;color:var(--cw-ink);
+  transition:opacity .5s ease,transform .5s ease;filter:drop-shadow(2px 2px 0 rgba(0,0,0,.25))}
+.cw-cloud.on{opacity:1;transform:none;pointer-events:auto}
+.cw-orb{position:relative;display:flex;align-items:center;justify-content:center;animation:cwOrbit var(--od,6.5s) linear infinite;animation-delay:var(--odl,0s)}
+@keyframes cwOrbit{from{transform:rotate(0deg) translateX(5px) rotate(0deg)}to{transform:rotate(360deg) translateX(5px) rotate(-360deg)}}
+.cw-art{position:absolute;inset:0;image-rendering:pixelated;background-size:100% 100%}
+.cw-txt{position:relative;display:block;width:100%;padding:18px 22px;text-align:center;line-height:16px;word-break:keep-all;overflow-wrap:anywhere}
+.cw-cloud:hover .cw-txt,.cw-cloud:focus-visible .cw-txt{color:#000}
+.cw-cloud:hover,.cw-cloud:focus-visible{filter:drop-shadow(2px 2px 0 rgba(0,0,0,.25)) brightness(1.05);outline:none}
+.cw-cloud.pick{animation:cwPick .45s ease forwards}
+@keyframes cwPick{0%{transform:scale(1)}40%{transform:scale(1.07)}100%{transform:scale(1);opacity:0}}
+.cw-cloud.gone{opacity:0;transform:scale(.94)}
+.cw-cloud.off{pointer-events:none}
+/* 효과 숫자 — 학생 머리 위로 떠오른다 */
+.cw-pop{position:absolute;z-index:8;left:280px;top:92px;transform:translateX(-50%);white-space:nowrap;color:#e9ffcf;pointer-events:none;font-size:24px;line-height:28px;
+  text-shadow:2px 0 0 #1f4a30,-2px 0 0 #1f4a30,0 2px 0 #1f4a30,0 -2px 0 #1f4a30;animation:cwRise 1.9s ease-out forwards}
+.cw-pop.cond{color:#fff2bf;text-shadow:2px 0 0 #6a4a10,-2px 0 0 #6a4a10,0 2px 0 #6a4a10,0 -2px 0 #6a4a10}
+.cw-pop.trust{color:#e3f0ff;text-shadow:2px 0 0 #24466c,-2px 0 0 #24466c,0 2px 0 #24466c,0 -2px 0 #24466c}
+.cw-pop.down{color:#ffe0d8;text-shadow:2px 0 0 #6d2a20,-2px 0 0 #6d2a20,0 2px 0 #6d2a20,0 -2px 0 #6d2a20}
+@keyframes cwRise{0%{opacity:0;transform:translate(-50%,8px)}15%{opacity:1;transform:translate(-50%,0)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-26px)}}
+/* 아래 글 상자 — 들어오는 모습 · 마스터의 말 · 효과 */
+.cw-box{position:relative;margin-top:8px;height:124px;padding:8px 14px;border:2px solid var(--cw-btn);background:rgba(255,248,230,.62);overflow:hidden;cursor:default;
+  box-shadow:inset 2px 2px 0 rgba(255,240,201,.6),inset -2px -2px 0 rgba(96,66,33,.14)}
+.cw-box.ask{cursor:pointer}
+.cw-who{color:var(--cw-brass);height:20px}
+.cw-who:empty{display:none}
+.cw-bt{white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere}
+.cw-ok{color:var(--cw-ok)}.cw-lead{color:var(--cw-lead)}.cw-bad{color:var(--cw-bad)}.cw-dim,.cw-hint{color:var(--cw-dim)}.cw-brass,.cw-win .epi{color:var(--cw-brass)}
+.cw-more{position:absolute;right:12px;bottom:6px;color:var(--cw-brass);opacity:0;pointer-events:none}
+.cw-more.on{opacity:1;animation:cwBob 1s ease-in-out infinite}
+.cw-next{position:absolute;right:10px;bottom:8px;padding:4px 12px;border:2px solid var(--cw-btn);background:rgba(216,189,142,.35);cursor:pointer;
+  box-shadow:inset 2px 2px 0 rgba(255,240,201,.5),inset -2px -2px 0 rgba(96,66,33,.25),0 2px 0 var(--cw-dark);opacity:0;pointer-events:none;transition:opacity .25s}
+.cw-next.on{opacity:1;pointer-events:auto}
+.cw-next:hover,.cw-next:focus-visible{background:rgba(216,189,142,.6);outline:none}
+/* 좁은 화면 — 무대만 폭에 맞춰 줄이고(JS), 학생 말 · 답변 구름은 무대 아래로. 글자 크기는 그대로 */
+.cw-win.compact{padding:8px}
+.cw-win.compact .cw-stage{margin:0 auto}
+.cw-win.compact .cw-over{position:static;width:auto;height:auto;pointer-events:auto;display:flex;flex-direction:column}
+.cw-win.compact .cw-say{position:relative;right:auto;top:auto;width:auto;margin-top:8px;display:none;transform:none}
+.cw-win.compact .cw-say.on{display:block}
+.cw-win.compact .cw-say::before{left:50%;top:-12px;bottom:auto;margin-left:-5px;border:10px solid transparent;border-bottom-color:#4a3524;border-top:0;border-left-width:4px}
+.cw-win.compact .cw-say::after{left:50%;top:-8px;bottom:auto;margin-left:-3px;border:8px solid transparent;border-bottom-color:#fffaf0;border-top:0;border-left-width:3px}
+.cw-win.compact .cw-clouds{position:static;display:grid;grid-template-columns:1fr;gap:4px;margin-top:6px}
+.cw-win.compact.wide .cw-clouds{grid-template-columns:repeat(3,minmax(0,1fr))}
+.cw-win.compact .cw-clouds:empty{display:none}
+.cw-win.compact .cw-cloud{position:relative;width:100%;left:auto;right:auto;top:auto}
+.cw-win.compact .cw-orb{animation:none}
+.cw-win.compact .cw-box{height:auto;min-height:124px;padding-bottom:44px}
+@media (prefers-reduced-motion:reduce){.cw-orb,.cw-spr,.cw-face,.cw-win.beat{animation:none}}
+/* CSLWIN_CSS_END */
 .teamtabs{display:flex;gap:6px;flex-wrap:wrap}
 .ttab{border:1px solid var(--line);border-radius:3px;background:var(--bg);padding:7px 14px;cursor:pointer;
   font-size:13px;font-weight:600;color:var(--muted);display:flex;flex-direction:column;align-items:flex-start;gap:2px;transition:.12s}
@@ -8357,113 +8499,380 @@ function finishLadder(t){
    ============================================================ */
 const COUNSEL = [
   {id:"c1", t:"연습 상대를 이기지 못한다",
-   q:"요즘 대련만 하면 집니다. 같은 학년한테도 지고, 어제는 후배한테도 졌어요. 제가 이 길이 맞는 건지 모르겠습니다.",
+   q:{intro:"……요즘 대련만 하면 져요. 같은 학년한테도…… 어제는 후배한테도요……. 저, 이 길이 맞는 걸까요……?",
+      hot:"분해서 잠이 안 옵니다! 요즘 대련만 하면 집니다! 같은 학년한테도, 어제는 후배한테까지 졌습니다! 이 길이 맞는 건지…… 아뇨, 이대로 끝낼 순 없습니다!",
+      stone:"최근 대련 전적이 좋지 않습니다. 같은 학년에게도, 어제는 후배에게도 졌습니다. 이 길이 제게 맞는지 다시 따져 보는 중입니다.",
+      dilig:"요즘 대련만 하면 져요. 연습은 하루도 안 빠졌는데…… 같은 학년한테도, 어제는 후배한테도 졌어요. 제가 이 길이 맞는 건지 모르겠어요.",
+      tsun:"…요즘 대련에서 좀 졌어요. 같은 학년한테도, 후배한테도요. …딱히 신경 쓰는 건 아닌데, 이 길이 맞나 싶긴 해요.",
+      lively:"헤헤…… 요즘 대련만 하면 져요. 같은 학년한테도, 어제는 후배한테도요! 웃고는 있는데, 사실 이 길이 맞는 건지 모르겠어요.",
+      boast:"영웅에게도 시련은 오는 법이죠……. 요즘 대련에서 연패 중입니다. 후배한테까지 졌어요. …제가 정말 영웅감이 맞긴 한 걸까요?",
+      plain:"요즘 대련만 하면 져요. 같은 학년한테도 지고, 어제는 후배한테도 졌어요. 제가 이 길이 맞는 건지 모르겠어요.",
+      genius:"요즘 대련에서 계속 져요. 같은 학년한테도, 어제는 후배한테도요. 왜 지는지 모르겠다는 건 처음이라…… 이 길이 맞는 건지 헷갈려요."},
    o:[{t:"진 이유를 하나씩 적어 와라. 같이 뜯어보자.", f:["intro","dilig","genius","tsun"],
-       r:"고개를 끄덕이고 수첩을 꺼낸다. 며칠 뒤 빼곡히 적은 종이를 들고 왔다."},
+       r:"고개를 끄덕이고 수첩을 꺼낸다. 며칠 뒤 빼곡히 적은 종이를 들고 왔다.",
+       a:{intro:"……네. 적는 건…… 할 수 있어요. 같이 봐 주신다니…… 다행이에요.",
+          dilig:"네! 하나도 빠짐없이 적어 올게요. 같이 봐 주셔서 고맙습니다.",
+          genius:"진 이유를 정리해 보자는 거죠? 좋아요. 이유만 보이면 금방 고칠 수 있어요.",
+          tsun:"…알았어요. 적어 올게요. 마스터가 같이 본다니까요. 딱히 기대하는 건 아니에요."}},
       {t:"질 때까지 붙어. 이길 때까지 다시 붙고.", f:["hot","stone","lively","boast"],
-       r:"눈빛이 달라진다. 그날 저녁 수련장 불이 늦게까지 켜져 있었다."},
+       r:"눈빛이 달라진다. 그날 저녁 수련장 불이 늦게까지 켜져 있었다.",
+       a:{hot:"알겠습니다! 이길 때까지 붙어 보겠습니다! 오늘 저녁부터 바로 갑니다!",
+          stone:"단순하지만 맞는 말씀입니다. 대련 횟수부터 늘리겠습니다.",
+          lively:"헤헤, 그거 좋아요! 이길 때까지 붙는 거죠? 오늘 바로 다시 붙어 볼래요!",
+          boast:"역시 영웅의 길은 정면 돌파죠! 다음 대련에선 반드시 이겨 보이겠습니다!"}},
       {t:"한 주 쉬어라. 지금은 몸보다 머리가 지쳤다.", f:["plain","dilig"],
-       r:"조금 멋쩍게 웃더니 어깨의 힘을 뺀다."}]},
+       r:"조금 멋쩍게 웃더니 어깨의 힘을 뺀다.",
+       a:{plain:"쉬어도 되는 거예요? ……네, 그럼 한 주만 쉬어 볼게요. 고맙습니다.",
+          dilig:"쉬는 것도 훈련이라는 거죠? 네, 한 주 푹 쉬고 다시 열심히 할게요."}}]},
 
   {id:"c2", t:"팀 동료와 부딪혔다",
-   q:"같은 조 애랑 크게 싸웠습니다. 걔가 자꾸 제 자리까지 파고들어서요. 얼굴 보기가 싫습니다.",
+   q:{intro:"……같은 조 애랑…… 크게 싸웠어요. 자꾸 제 자리까지 들어와서…… 참다가 그만……. 이제 얼굴 보기가 무서워요……",
+      hot:"같은 조 녀석이랑 한판 붙었습니다! 자꾸 제 자리까지 파고들잖아요! 얼굴만 봐도 열이 뻗칩니다!",
+      stone:"같은 조 동료와 충돌했습니다. 그쪽이 제 위치까지 반복해서 들어옵니다. 당분간 마주치지 않는 편이 낫다고 판단합니다.",
+      dilig:"같은 조 친구랑 크게 다퉜어요. 그 친구가 자꾸 제 자리까지 들어와서요……. 같이 잘해 보고 싶었는데, 지금은 얼굴 보기가 힘들어요.",
+      tsun:"…같은 조 애랑 좀 싸웠어요. 자꾸 제 자리까지 끼어들잖아요. …딱히 미워하는 건 아닌데, 얼굴은 보기 싫어요.",
+      lively:"으아, 같은 조 애랑 크게 싸웠어요! 자꾸 제 자리까지 파고들어서요! 원래 잘 지냈는데…… 지금은 얼굴 보기도 싫어요!",
+      boast:"같은 조 녀석이 감히 제 자리를 넘보더군요! 크게 한판 붙었습니다. 영웅의 무대를 나눠 줄 생각은 없어요!",
+      plain:"같은 조 애랑 크게 싸웠어요. 걔가 자꾸 제 자리까지 파고들어서요. 얼굴 보기가 싫어요.",
+      genius:"같은 조 애랑 싸웠어요. 동선이 자꾸 제 자리랑 겹쳐요. 몇 번이나 말했는데 안 고쳐서, 이젠 얼굴 보기도 싫네요."},
    o:[{t:"둘 다 불러라. 앞에서 말하게 하겠다.", f:["dilig","stone","genius","lively"],
-       r:"불편한 자리였지만, 끝날 무렵엔 둘 다 한숨을 돌렸다."},
+       r:"불편한 자리였지만, 끝날 무렵엔 둘 다 한숨을 돌렸다.",
+       a:{dilig:"네, 같이 이야기해 볼게요. 사실 저도 화해하고 싶었어요.",
+          stone:"중재해 주신다면 그게 가장 빠르겠습니다. 내일 함께 오겠습니다.",
+          genius:"마스터가 가운데 서 주면 말이 통하겠네요. 동선도 그 자리에서 정리하죠.",
+          lively:"헤헤, 알겠어요! 내일 같이 이야기해 볼게요! 원래는 친한 애거든요."}},
       {t:"싫으면 실력으로 눌러라. 말보다 그게 빠르다.", f:["hot","tsun","boast"],
-       r:"이를 악물고 나간다. 다음 대련에서 둘 다 평소보다 잘 싸웠다."},
+       r:"이를 악물고 나간다. 다음 대련에서 둘 다 평소보다 잘 싸웠다.",
+       a:{hot:"그게 제일 빠르겠습니다! 다음 대련에서 실력으로 보여 주겠습니다!",
+          tsun:"…좋아요. 실력으로 눌러 주죠. 딱히 이기고 싶어서 그러는 건 아니에요.",
+          boast:"영웅다운 해결책이군요! 실력으로 제 자리를 증명하겠습니다!"}},
       {t:"네가 무엇에 화났는지부터 말해봐라.", f:["intro","plain"],
-       r:"한참 말이 없다가, 사실 밀려나는 게 무서웠다고 털어놓는다."}]},
+       r:"한참 말이 없다가, 털어놓고 나니 한결 후련한 얼굴이 된다.",
+       a:{intro:"……사실은요…… 제 자리를 빼앗길까 봐…… 무서웠던 것 같아요.",
+          plain:"음…… 생각해 보니 밀려나는 게 싫었던 것 같아요. 들어 주셔서 고마워요."}}]},
 
   {id:"c3", t:"큰 무대가 무섭다",
-   q:"관중이 많은 데서 서면 손이 떨립니다. 연습 때 되던 것도 하나도 안 됩니다.",
+   q:{intro:"……관중이 많은 데 서면…… 손이 떨려요. 연습 땐 되던 것도…… 하나도 안 돼요……. 다들 저만 보는 것 같아서……",
+      hot:"관중 앞에만 서면 손이 떨립니다! 연습 땐 다 되던 게 하나도 안 됩니다! 이게 말이 됩니까! 너무 분합니다!",
+      stone:"관중이 많은 곳에서 손이 떨립니다. 연습 때 성공하던 동작도 실패합니다. 원인은 아는데, 통제가 되지 않습니다.",
+      dilig:"큰 무대에 서면 손이 떨려요. 연습 때는 되던 것도 하나도 안 돼요. 다들 기대하실 텐데, 실망시켜 드릴까 봐 걱정이에요.",
+      tsun:"…관중 많은 데선 손이 좀 떨려요. 연습 땐 되던 것도 안 되고요. …무서운 거 아니에요. 시끄러워서 그래요.",
+      lively:"사람 많은 건 좋아하는데, 이상하게 무대에만 서면 손이 덜덜 떨려요! 연습 땐 되던 것도 하나도 안 되고요…… 헤헤, 이상하죠?",
+      boast:"영웅은 환호 속에서 빛나는 법인데…… 관중 앞에만 서면 손이 떨립니다. 연습 땐 되던 필살기도 안 나가요. 이건 비밀로 해 주세요.",
+      plain:"관중이 많은 데서 서면 손이 떨려요. 연습 때 되던 것도 하나도 안 돼요.",
+      genius:"관중이 많으면 손이 떨려요. 연습 땐 한 번도 실수한 적 없는 동작인데요. 계산으로 설명이 안 되니까 더 답답해요."},
    o:[{t:"떨리는 게 정상이다. 떨면서 하는 법을 익히면 된다.", f:["intro","plain","dilig"],
-       r:"안심한 얼굴이 된다. 떠는 걸 숨기지 않기로 했다고 한다."},
+       r:"안심한 얼굴이 된다. 떠는 걸 숨기지 않기로 했다고 한다.",
+       a:{intro:"……떨려도…… 괜찮은 거군요. 떨면서도…… 해 볼게요.",
+          plain:"떨리는 게 정상이라니, 조금 마음이 놓여요. 떨면서 해 볼게요.",
+          dilig:"네, 떨면서도 해내는 연습을 할게요. 숨기지 않아도 된다니 다행이에요."}},
       {t:"관중은 네 적이 아니다. 그냥 시끄러운 배경이다.", f:["stone","genius","tsun","boast"],
-       r:"피식 웃는다. 그 뒤로 입장할 때 관중석을 한 번 훑고 들어간다."},
+       r:"피식 웃는다. 그 뒤로 입장할 때 관중석을 한 번 훑고 들어간다.",
+       a:{stone:"배경이라…… 그렇게 생각하니 정리가 됩니다. 다음엔 시야에서 지워 보겠습니다.",
+          genius:"배경으로 치면 되는 거네요. 변수를 하나 지우면 계산이 간단해지죠.",
+          tsun:"…시끄러운 배경이요? 흥, 그렇게 생각하면 별거 아니네요.",
+          boast:"그렇죠! 관중은 영웅의 배경 음악일 뿐! 다음 무대에선 제가 주인공입니다!"}},
       {t:"무서우면 먼저 달려들어라. 생각할 틈을 주지 마라.", f:["hot","lively"],
-       r:"주먹을 쥔다. 다음 경기 선공은 누구보다 빨랐다."}]},
+       r:"주먹을 쥔다. 다음 경기 선공은 누구보다 빨랐다.",
+       a:{hot:"먼저 달려든다! 그거라면 자신 있습니다! 다음 경기 선공은 제 겁니다!",
+          lively:"오, 그거 좋아요! 생각하기 전에 먼저 뛰어들면 되는 거죠? 해 볼게요!"}}]},
 
   {id:"c4", t:"집에서 그만두라 한다",
-   q:"집에서 용사 같은 건 그만두고 내려오라고 합니다. 저는 남고 싶은데, 제가 고집을 부리는 건가 싶어서요.",
+   q:{intro:"……집에서…… 용사 같은 건 그만두고 내려오래요. 저는…… 남고 싶은데…… 제가 고집을 부리는 걸까요……?",
+      hot:"집에서 용사 같은 건 그만두고 내려오랍니다! 저는 절대 못 그만둡니다! ……그런데 그게 그냥 제 고집인 건지, 그게 마음에 걸립니다!",
+      stone:"집에서 그만두고 돌아오라는 편지가 왔습니다. 저는 남을 생각입니다. 다만 그게 판단인지 고집인지, 스스로 구분이 되지 않습니다.",
+      dilig:"집에서 이제 그만두고 내려오라고 하세요. 걱정하시는 마음은 아는데…… 저는 남고 싶어요. 제가 불효를 하는 건가 싶어서요.",
+      tsun:"…집에서 그만두고 내려오래요. 저는 남을 거예요. …고집부리는 건가 싶긴 한데, 딱히 고민하는 건 아니거든요.",
+      lively:"집에서 편지가 왔는데, 용사 같은 건 그만하고 내려오래요! 저는 여기가 좋은데…… 제가 고집부리는 걸까요?",
+      boast:"가족들이 저를 몰라봐요! 용사는 그만두고 내려오라니요. 영웅의 길은 원래 외로운 법이지만…… 제가 고집을 부리는 건가 싶기도 해요.",
+      plain:"집에서 용사 같은 건 그만두고 내려오라고 해요. 저는 남고 싶은데, 제가 고집을 부리는 건가 싶어서요.",
+      genius:"집에서 그만두고 내려오래요. 저는 남는 게 맞다고 봐요. 근데 집에서는 그게 고집으로 보이나 봐요. 설득할 방법을 모르겠어요."},
    o:[{t:"네가 남고 싶은 이유를 말해봐라. 나한테 말고, 너한테.", f:["intro","genius"],
-       r:"오래 생각하더니 짧게 답한다. 그 답을 스스로도 처음 들은 표정이었다."},
+       r:"오래 생각하더니 짧게 답한다. 그 답을 스스로도 처음 들은 표정이었다.",
+       a:{intro:"……저한테요……? ……저, 여기서 처음으로…… 잘하고 싶은 게 생겼어요.",
+          genius:"저한테 하는 대답이라…… 생각해 볼게요. 답이 나오면 집에도 설명할 수 있겠네요."}},
       {t:"성적으로 증명해라. 그게 제일 확실한 편지다.", f:["hot","stone","tsun","boast"],
-       r:"다음 대회 기록을 집에 부치겠다고 한다."},
+       r:"다음 대회 기록을 집에 부치겠다고 한다.",
+       a:{hot:"성적으로 증명하겠습니다! 다음 대회 기록, 집에 바로 부치겠습니다!",
+          stone:"결과로 보여 드리는 게 가장 설득력이 있겠습니다. 다음 대회 기록을 보내겠습니다.",
+          tsun:"…좋아요. 성적표 보내면 할 말 없겠죠. 딱히 인정받고 싶은 건 아니지만요.",
+          boast:"영웅의 업적을 편지로 보내라는 거군요! 가족들 깜짝 놀랄 겁니다!"}},
       {t:"급하게 답하지 마라. 이번 해까지는 내가 책임지겠다.", f:["dilig","plain","lively"],
-       r:"눈가가 붉어졌다가, 인사를 하고 나간다."}]},
+       r:"눈가가 붉어졌다가, 인사를 하고 나간다.",
+       a:{dilig:"……책임져 주신다니…… 고맙습니다. 저도 이번 해 동안 꼭 보답할게요.",
+          plain:"그렇게 말씀해 주시니 마음이 좀 놓여요. 천천히 생각해 볼게요.",
+          lively:"정말요? 헤헤…… 갑자기 눈물이 날 것 같아요. 고마워요, 마스터!"}}]},
 
   {id:"c5", t:"잠이 오지 않는다",
-   q:"밤에 잠이 안 옵니다. 누우면 낮에 틀린 것만 계속 떠올라서요.",
+   q:{intro:"……밤에…… 잠이 안 와요. 누우면…… 낮에 틀린 것만 자꾸 떠올라서……",
+      hot:"밤에 잠이 안 옵니다! 누우면 낮에 틀린 게 자꾸 떠올라서, 벌떡 일어나 다시 휘두르고 싶어집니다!",
+      stone:"최근 잠이 부족합니다. 누우면 낮의 실수를 되짚게 됩니다. 멈추려 해도 생각이 멈추지 않습니다.",
+      dilig:"요즘 밤에 잠이 안 와요. 누우면 낮에 틀린 것만 계속 떠올라서요. 내일은 더 잘해야 하는데……",
+      tsun:"…요즘 잠을 좀 못 자요. 낮에 틀린 게 자꾸 생각나서요. …별로 신경 쓰는 건 아닌데, 그냥 그래요.",
+      lively:"요즘 밤에 잠이 하나도 안 와요! 누우면 낮에 틀린 것만 빙글빙글 떠올라서요. 양을 세도 소용없어요!",
+      boast:"영웅에게도 잠 못 이루는 밤이 있는 법이죠……. 누우면 낮의 실수가 자꾸 떠오릅니다. 아무한테도 말하지 마세요.",
+      plain:"밤에 잠이 안 와요. 누우면 낮에 틀린 것만 계속 떠올라서요.",
+      genius:"밤에 잠이 안 와요. 누우면 낮에 틀린 장면이 자꾸 다시 재생돼요. 고칠 방법은 아는데, 머리가 멈추질 않네요."},
    o:[{t:"수련 일지를 자기 전에 덮어라. 그날 것은 그날로 끝내라.", f:["dilig","intro","tsun"],
-       r:"일지 마지막 줄에 '오늘 끝'이라고 쓰기 시작했다."},
+       r:"일지 마지막 줄에 '오늘 끝'이라고 쓰기 시작했다.",
+       a:{dilig:"그날 것은 그날로…… 네, 일지 마지막에 ‘오늘 끝’이라고 써 볼게요.",
+          intro:"……일지를 덮으면…… 끝나는 거군요. 오늘부터…… 해 볼게요.",
+          tsun:"…일지 덮는 거쯤이야. 해 볼게요. 효과 없으면 마스터 탓이에요."}},
       {t:"몸을 더 써라. 지치면 잔다.", f:["hot","stone","lively","boast"],
-       r:"단순한 답인데 통했다. 요즘은 눕자마자 곯아떨어진다고 한다."},
+       r:"단순한 답인데 통했다. 요즘은 눕자마자 곯아떨어진다고 한다.",
+       a:{hot:"단순하고 좋습니다! 녹초가 될 때까지 몸을 쓰겠습니다!",
+          stone:"피로를 늘려 잠을 부르는 거군요. 합리적입니다. 해 보겠습니다.",
+          lively:"헤헤, 그거 쉽네요! 오늘은 쓰러질 때까지 뛰어다닐게요!",
+          boast:"영웅은 하루를 불태우고 깊이 잠드는 법이죠! 바로 실천하겠습니다!"}},
       {t:"의무실에 말해두겠다. 며칠 훈련을 줄이자.", f:["plain","genius"],
-       r:"미안해하면서도 안도한 얼굴이다."}]},
+       r:"미안해하면서도 안도한 얼굴이다.",
+       a:{plain:"그래도 될까요……? 고맙습니다. 며칠 쉬어 볼게요.",
+          genius:"훈련을 줄이는 게 지금은 효율적이겠네요. 며칠 머리를 비워 볼게요."}}]},
 
   {id:"c6", t:"재능이 없는 것 같다",
-   q:"저보다 늦게 들어온 애가 벌써 저를 앞질렀습니다. 노력으로 되는 게 아닌 것 같습니다.",
+   q:{intro:"……저보다 늦게 들어온 애가…… 벌써 저를 앞질렀어요. 저는…… 노력으로는 안 되는 사람인가 봐요……",
+      hot:"저보다 늦게 들어온 녀석이 벌써 저를 앞질렀습니다! 노력으로는 안 된다는 겁니까?! 인정 못 합니다!",
+      stone:"저보다 늦게 입학한 학생이 이미 저를 앞질렀습니다. 노력만으로는 한계가 있는 것 같습니다. 재능의 차이라고 결론을 내려야 할까요.",
+      dilig:"저보다 늦게 들어온 친구가 벌써 저를 앞질렀어요. 누구보다 열심히 했는데…… 노력으로 되는 게 아닌가 봐요.",
+      tsun:"…저보다 늦게 온 애가 벌써 앞서가요. …분한 거 아니에요. 노력으로 되는 게 아닌가 싶을 뿐이에요.",
+      lively:"저보다 늦게 들어온 애가 벌써 저를 앞질렀어요! 축하는 해 줬는데…… 저는 노력해도 안 되나 봐요. 헤헤……",
+      boast:"제 뒤를 따라오던 신입이 벌써 저를 앞질렀어요……. 영웅의 재능이란 게 제게 정말 있긴 한 걸까요?",
+      plain:"저보다 늦게 들어온 애가 벌써 저를 앞질렀어요. 노력으로 되는 게 아닌 것 같아요.",
+      genius:"늦게 들어온 애가 저를 앞질렀어요. 저보다 빠른 사람은 처음 봐요. 이럴 때 어떻게 해야 하는지 모르겠어요."},
    o:[{t:"남과 비교하지 말고 지난달의 너와 비교해라.", f:["intro","dilig","plain"],
-       r:"지난달 기록을 꺼내 보더니 표정이 조금 풀린다."},
+       r:"지난달 기록을 꺼내 보더니 표정이 조금 풀린다.",
+       a:{intro:"……지난달의 저랑요……? ……그러고 보니…… 조금은 늘었네요.",
+          dilig:"지난달 기록이랑 비교해 볼게요. 조금이라도 늘었으면 그걸로 된 거죠.",
+          plain:"지난달의 저랑 비교하면…… 그래도 좀 늘긴 했네요. 해 볼게요."}},
       {t:"재능 있는 놈을 이기는 게 제일 재미있는 일이다.", f:["hot","stone","lively"],
-       r:"웃는다. 오늘은 그 애 옆자리에서 훈련했다."},
+       r:"웃는다. 오늘은 그 애 옆자리에서 훈련했다.",
+       a:{hot:"그렇습니다! 재능 있는 녀석을 이겨야 진짜죠! 불타오르기 시작했습니다!",
+          stone:"재능 있는 상대를 넘는 것…… 목표로 삼기에 충분합니다.",
+          lively:"헤헤, 듣고 보니 그거 엄청 재밌겠는데요? 오늘은 그 애 옆에서 훈련할래요!"}},
       {t:"네가 남들보다 빠른 게 뭔지 나는 안다. 말해줄까.", f:["genius","tsun","boast"],
-       r:"진지하게 듣는다. 자기가 잘하는 것을 처음 인정한 얼굴이었다."}]},
+       r:"진지하게 듣는다. 자기가 잘하는 것을 처음 인정한 얼굴이었다.",
+       a:{genius:"제가 빠른 거요? ……듣고 싶어요. 그걸로 다시 계산해 볼게요.",
+          tsun:"…궁금한 거 아니에요. ……그래도 말해 주면, 들을게요.",
+          boast:"역시 마스터는 알아보시는군요! 말씀해 주세요. 영웅의 무기가 뭔지!"}}]},
 
   {id:"c7", t:"실수로 동료를 다치게 했다",
-   q:"제 실수로 훈련 중에 동료가 다쳤습니다. 그 뒤로 손이 안 나갑니다.",
+   q:{intro:"……제 실수로…… 훈련 중에 동료가 다쳤어요. 그 뒤로…… 손이 안 나가요……. 또 다치게 할까 봐……",
+      hot:"제 실수로 훈련 중에 동료가 다쳤습니다! 그 뒤로 손이 안 나갑니다! 휘두르려고만 하면 그 장면이 떠오릅니다!",
+      stone:"훈련 중 제 판단 착오로 동료가 다쳤습니다. 그 뒤로 공격 동작에서 손이 멈춥니다. 머리로는 괜찮다는 걸 아는데도요.",
+      dilig:"제 실수로 훈련 중에 동료가 다쳤어요. 사과는 했는데…… 그 뒤로 손이 안 나가요. 또 누가 다칠까 봐서요.",
+      tsun:"…제 실수로 동료가 다쳤어요. 그 뒤로 손이 좀 안 나가요. …걱정하는 거 아니에요. 신경 쓰일 뿐이에요.",
+      lively:"제 실수로 훈련하다가 친구가 다쳤어요……. 그 뒤로는 손이 안 나가요. 늘 웃으면서 했는데, 이제 웃음도 안 나와요.",
+      boast:"영웅의 검이 동료를 다치게 하다니……. 훈련 중 제 실수였습니다. 그 뒤로 손이 안 나갑니다. 이런 영웅이 어디 있겠어요.",
+      plain:"제 실수로 훈련 중에 동료가 다쳤어요. 그 뒤로 손이 안 나가요.",
+      genius:"제 계산 실수로 동료가 다쳤어요. 그 뒤로 손이 안 나가요. 실수는 고치면 되는 건데, 이건 잘 안 고쳐지네요."},
    o:[{t:"먼저 가서 사과해라. 그다음은 그 애가 정한다.", f:["dilig","intro","plain","lively"],
-       r:"다녀와서는 한결 가벼워진 얼굴이었다."},
+       r:"다녀와서는 한결 가벼워진 얼굴이었다.",
+       a:{dilig:"네, 지금 바로 다녀올게요. 그 애가 정하는 대로 따를게요.",
+          intro:"……무섭지만…… 가서 사과할게요. 그게 먼저인 것 같아요……",
+          plain:"맞아요, 사과가 먼저죠. 다녀올게요.",
+          lively:"네! 지금 바로 가서 진심으로 사과할게요! 과일이라도 사 갈까요?"}},
       {t:"움츠리면 또 다치게 한다. 제대로 휘둘러라.", f:["hot","stone","boast"],
-       r:"다음 대련에서 다시 제 힘을 냈다."},
+       r:"다음 대련에서 다시 제 힘을 냈다.",
+       a:{hot:"……맞습니다! 어설프게 휘두르는 게 더 위험하죠! 제대로 휘두르겠습니다!",
+          stone:"주저하는 쪽이 사고 위험이 더 크다는 거군요. 이해했습니다.",
+          boast:"영웅이 검을 망설이면 아무도 못 지키죠! 다시 제대로 휘두르겠습니다!"}},
       {t:"사고는 내 관리 책임이다. 네 몫까지 지지 마라.", f:["genius","plain","tsun"],
-       r:"오래 참았던 숨을 내쉰다."}]},
+       r:"오래 참았던 숨을 내쉰다.",
+       a:{genius:"……마스터 책임이라고요. 그렇게 정리하니까 머리가 좀 가벼워지네요.",
+          plain:"……그렇게 말씀해 주시니까, 숨이 좀 쉬어져요. 고맙습니다.",
+          tsun:"…마스터가 다 짊어지면 어떡해요. ……그래도, 고마워요."}}]},
 
   {id:"c8", t:"졸업 후가 보이지 않는다",
-   q:"졸업하면 뭐가 되는지 모르겠습니다. 그냥 시키는 대로 훈련만 하고 있는 것 같아서요.",
+   q:{intro:"……졸업하면…… 저는 뭐가 되는 걸까요. 그냥…… 시키는 대로 훈련만 하는 것 같아서……",
+      hot:"졸업하면 뭐가 되는지 모르겠습니다! 매일 시키는 대로 훈련만 하는데, 이게 어디로 가는 길인지 답답합니다!",
+      stone:"졸업 뒤의 진로가 보이지 않습니다. 지금은 주어진 훈련을 해낼 뿐, 목표가 없는 상태입니다.",
+      dilig:"졸업하면 제가 뭐가 될지 모르겠어요. 시키는 대로 열심히는 하는데, 그게 어디로 가는 건지 모르겠어서요.",
+      tsun:"…졸업하면 뭐가 되는지 모르겠어요. 시키는 대로 훈련만 하는 것 같고요. …불안한 거 아니에요. 궁금할 뿐이에요.",
+      lively:"졸업하면 저는 뭐가 될까요? 지금은 시키는 대로 신나게 훈련만 하는데, 생각해 보니 아무것도 모르겠어요!",
+      boast:"전설로 남을 몸이긴 한데…… 졸업하면 정확히 뭐가 되는 거죠? 시키는 대로 훈련만 하다 보니 그림이 안 그려져요.",
+      plain:"졸업하면 뭐가 되는지 모르겠어요. 그냥 시키는 대로 훈련만 하고 있는 것 같아서요.",
+      genius:"졸업하면 뭐가 될지 모르겠어요. 뭘 해도 할 수 있을 것 같은데, 그래서 오히려 못 고르겠어요."},
    o:[{t:"지금 네 평가로 갈 수 있는 자리를 전부 보여주겠다.", f:["dilig","genius","intro","tsun"],
-       r:"명단을 오래 들여다본다. 목표를 하나 짚고 돌아갔다."},
+       r:"명단을 오래 들여다본다. 목표를 하나 짚고 돌아갔다.",
+       a:{dilig:"보여 주시면 하나하나 꼼꼼히 볼게요. 목표가 생기면 더 열심히 할 수 있어요.",
+          genius:"선택지를 다 펼쳐 보면 답이 나오겠네요. 보여 주세요.",
+          intro:"……전부요……? ……보고 싶어요. 제가 갈 수 있는 곳이 있다면……",
+          tsun:"…보여 준다면 볼게요. 딱히 궁금해서 그러는 건 아니에요."}},
       {t:"눈앞의 대회부터 이겨라. 길은 이긴 다음에 생긴다.", f:["hot","stone","lively","boast"],
-       r:"단순해진 얼굴로 나간다."},
+       r:"단순해진 얼굴로 나간다.",
+       a:{hot:"그렇습니다! 일단 이기고 보겠습니다! 길은 그다음입니다!",
+          stone:"가까운 목표부터 정리하는 게 합리적이군요. 다음 대회에 집중하겠습니다.",
+          lively:"헤헤, 고민은 나중에! 일단 다음 대회부터 이길게요!",
+          boast:"영웅의 길은 승리 위에 놓이는 법! 눈앞의 대회부터 접수하겠습니다!"}},
       {t:"아직 몰라도 된다. 모르는 채로도 3년은 버틸 수 있다.", f:["plain"],
-       r:"조금 웃는다. 그 말이 위로가 된 모양이다."}]},
+       r:"조금 웃는다. 그 말이 위로가 된 모양이다.",
+       a:{plain:"몰라도 된다니…… 조금 웃음이 나네요. 그 말이 위로가 돼요."}}]},
 
   {id:"c9", t:"후배들이 따르지 않는다",
-   q:"후배들이 제 말을 잘 안 듣습니다. 제가 선배 노릇을 잘 못하는 것 같습니다.",
+   q:{intro:"……후배들이 제 말을 잘 안 들어요. 제가…… 말을 잘 못해서 그런가 봐요……. 선배 노릇을 못 하겠어요……",
+      hot:"후배들이 제 말을 안 듣습니다! 목소리를 높여도 소용이 없습니다! 선배 노릇은 대체 어떻게 하는 겁니까!",
+      stone:"후배들이 지시를 따르지 않습니다. 설명은 정확히 했는데도요. 선배로서 무엇이 부족한지 모르겠습니다.",
+      dilig:"후배들이 제 말을 잘 안 들어요. 잘 챙겨 주려고 하는데…… 제가 선배 노릇을 잘 못하는 것 같아요.",
+      tsun:"…후배들이 말을 안 들어요. …딱히 따르길 바라는 건 아닌데요. 그래도 좀 괘씸하잖아요.",
+      lively:"후배들이랑 친하긴 한데, 막상 제 말은 하나도 안 들어요! 다들 친구처럼 대해요. 헤헤…… 선배 노릇은 어렵네요.",
+      boast:"이 몸의 위엄을 후배들이 몰라봅니다! 말을 해도 안 듣더군요. …사실 선배 노릇을 잘 못하는 것 같아요.",
+      plain:"후배들이 제 말을 잘 안 들어요. 제가 선배 노릇을 잘 못하는 것 같아요.",
+      genius:"후배들이 제 말을 안 들어요. 하라는 대로 하면 금방 늘 텐데. 왜 안 하는지 이해가 안 돼요."},
    o:[{t:"말로 시키지 말고 먼저 해 보여라.", f:["dilig","stone","intro"],
-       r:"그날부터 제일 먼저 수련장에 나온다. 후배 둘이 따라 나왔다."},
+       r:"그날부터 제일 먼저 수련장에 나온다. 후배 둘이 따라 나왔다.",
+       a:{dilig:"먼저 해 보이면 되는 거군요. 내일부터 제일 먼저 나올게요.",
+          stone:"행동으로 보이는 게 설득력이 있겠군요. 실천하겠습니다.",
+          intro:"……말보다는…… 그게 저한테 더 쉬울 것 같아요. 해 볼게요……"}},
       {t:"한 번 크게 이겨라. 그러면 알아서 따른다.", f:["hot","lively","boast"],
-       r:"눈에 불이 켜진다."},
+       r:"눈에 불이 켜진다.",
+       a:{hot:"좋습니다! 크게 한 방 보여 주면 되는 거죠! 기대하십시오!",
+          lively:"크게 이기면 다들 따라오겠죠? 헤헤, 다음 대련 꼭 이길게요!",
+          boast:"그래요, 영웅의 위엄은 승리로 보이는 법! 후배들 눈이 번쩍 뜨일 겁니다!"}},
       {t:"따르게 할 필요 없다. 네 것만 잘하면 된다.", f:["genius","plain","tsun"],
-       r:"어깨를 으쓱하고는 훈련으로 돌아간다."}]},
+       r:"어깨를 으쓱하고는 훈련으로 돌아간다.",
+       a:{genius:"제 것만 잘하면 된다…… 그게 제일 효율적이네요. 그렇게 할게요.",
+          plain:"그래도 되는 거예요? 마음이 좀 편해졌어요.",
+          tsun:"…그렇죠. 딱히 따르길 바란 건 아니었으니까요. 제 거나 할게요."}}]},
 
   {id:"c10", t:"훈련이 지겹다",
-   q:"솔직히 말하면 요즘 훈련이 지겹습니다. 매일 같은 것만 반복하는 것 같아서요.",
+   q:{intro:"……저기, 솔직히 말하면요…… 요즘 훈련이 좀…… 지겨워요. 매일 같은 것만 해서……. 죄송해요……",
+      hot:"솔직히 말씀드리겠습니다! 요즘 훈련이 지겹습니다! 매일 같은 것만 반복하니 몸이 근질근질합니다!",
+      stone:"솔직히 말씀드리면, 요즘 훈련이 단조롭습니다. 같은 동작만 반복하니 얻는 것이 줄었다고 느낍니다.",
+      dilig:"이런 말씀 드려도 될지 모르겠는데…… 요즘 훈련이 좀 지겨워요. 매일 같은 것만 반복하는 것 같아서요. 죄송해요.",
+      tsun:"…솔직히 요즘 훈련 지겨워요. 맨날 똑같잖아요. …투정 부리는 거 아니에요.",
+      lively:"솔직히요, 요즘 훈련이 너무 지겨워요! 맨날 같은 것만 하잖아요! 뭔가 새로운 거 없어요?",
+      boast:"영웅의 재능이 이런 반복 훈련에 묻히고 있습니다! 솔직히 요즘 훈련이 지겹다고요!",
+      plain:"솔직히 말하면 요즘 훈련이 지겨워요. 매일 같은 것만 반복하는 것 같아서요.",
+      genius:"솔직히 요즘 훈련 지겨워요. 같은 걸 계속 반복하는데, 저는 이미 다 익혔거든요."},
    o:[{t:"집중 분야를 바꿔봐라. 지루한 건 몸이 아니라 머리다.", f:["genius","intro","plain"],
-       r:"새 분야를 골라 간다. 눈빛이 다시 살아났다."},
+       r:"새 분야를 골라 간다. 눈빛이 다시 살아났다.",
+       a:{genius:"분야를 바꾸면 새로 풀 문제가 생기겠네요. 좋아요, 바로 골라 볼게요.",
+          intro:"……바꿔도 되는 거군요. ……해 보고 싶었던 게 하나 있어요.",
+          plain:"분야를 바꿔 보는 거군요. 그럼 다른 걸 해 볼게요."}},
       {t:"지겨워질 때까지 했다는 뜻이다. 거기서부터가 진짜다.", f:["dilig","stone","tsun"],
-       r:"납득한 얼굴로 돌아간다."},
+       r:"납득한 얼굴로 돌아간다.",
+       a:{dilig:"지겨운 게 제대로 해 왔다는 뜻이라니…… 네, 여기서부터 더 해 볼게요.",
+          stone:"반복이 몸에 붙는 단계라는 거군요. 납득했습니다. 계속하겠습니다.",
+          tsun:"…거기서부터가 진짜라고요? ……흥, 그럼 좀 더 해 주죠."}},
       {t:"그럼 실전으로 가자. 다음 원정에 넣어주마.", f:["hot","lively","boast"],
-       r:"바로 표정이 밝아진다."}]},
+       r:"바로 표정이 밝아진다.",
+       a:{hot:"실전이요?! 바로 가겠습니다! 이걸 기다렸습니다!",
+          lively:"와, 원정이요? 신난다! 짐 싸 둘게요!",
+          boast:"드디어 영웅이 출전할 때가 왔군요! 원정에서 활약을 보여 드리죠!"}}]},
 
   {id:"c11", t:"몸이 예전 같지 않다",
-   q:"작년보다 회복이 느립니다. 같은 훈련인데 다음 날까지 안 풀립니다.",
+   q:{intro:"……작년보다…… 회복이 느려요. 같은 훈련인데…… 다음 날까지 안 풀려요. 제가 약해진 걸까요……",
+      hot:"작년보다 회복이 느립니다! 같은 훈련인데 다음 날까지 몸이 안 풀립니다! 이럴 리가 없는데!",
+      stone:"작년보다 회복이 느려졌습니다. 같은 강도의 훈련인데 다음 날까지 피로가 남습니다. 원인을 찾는 중입니다.",
+      dilig:"작년보다 회복이 느려요. 같은 훈련인데 다음 날까지 안 풀려요. 훈련에 빠질 수는 없는데…… 걱정이에요.",
+      tsun:"…요즘 회복이 좀 느려요. 다음 날까지 안 풀리고요. …늙었다는 소리 하기만 해 봐요.",
+      lively:"요즘 몸이 이상해요! 작년엔 자고 나면 쌩쌩했는데, 지금은 다음 날까지 안 풀려요. 저 벌써 늙은 걸까요?",
+      boast:"영웅의 몸도 세월은 못 이기는 걸까요……. 작년보다 회복이 느립니다. 같은 훈련인데 다음 날까지 안 풀려요.",
+      plain:"작년보다 회복이 느려요. 같은 훈련인데 다음 날까지 안 풀려요.",
+      genius:"작년보다 회복이 느려요. 같은 훈련인데 다음 날까지 안 풀리네요. 기록으로 봐도 확실히 차이가 나요."},
    o:[{t:"강도를 줄이고 회복을 늘려라. 지금 무리하면 1년을 잃는다.", f:["dilig","plain","intro"],
-       r:"아쉬워하면서도 받아들인다."},
+       r:"아쉬워하면서도 받아들인다.",
+       a:{dilig:"1년을 잃으면 안 되죠……. 아쉽지만 회복부터 챙길게요.",
+          plain:"네, 강도를 좀 줄여 볼게요. 무리하지 않을게요.",
+          intro:"……쉬어도 되는 거군요. ……천천히 할게요."}},
       {t:"몸이 아니라 요령이 늘 때다. 힘 빼는 법을 배워라.", f:["genius","stone","tsun","boast"],
-       r:"흥미로워하며 듣는다."},
+       r:"흥미로워하며 듣는다.",
+       a:{genius:"힘 빼는 법이라…… 재밌네요. 효율을 올릴 차례라는 거죠?",
+          stone:"힘을 헛되이 쓰지 말라는 말씀이군요. 동작부터 다시 점검하겠습니다.",
+          tsun:"…요령이요? 알았어요. 늙어서 그런 게 아니라는 거죠?",
+          boast:"영웅의 기술이 무르익을 때라는 거군요! 힘 빼는 법, 금방 익히겠습니다!"}},
       {t:"엄살이다. 네 나이에 벌써 무슨 소리냐.", f:["hot","lively"],
-       r:"웃으며 투덜대더니 그대로 수련장으로 갔다."}]},
+       r:"웃으며 투덜대더니 그대로 수련장으로 갔다.",
+       a:{hot:"엄살이요?! ……하하, 그렇군요! 엄살 따위 집어치우겠습니다!",
+          lively:"헤헤, 엄살이었나 봐요! 괜히 걱정했네요. 다시 뛰러 갈게요!"}}]},
 
   {id:"c12", t:"실력이 늘었는지 모르겠다",
-   q:"훈련은 빠짐없이 나갔는데, 제가 정말 늘고 있는 건지 모르겠습니다.",
+   q:{intro:"……훈련은 한 번도 안 빠졌는데요…… 제가 정말 늘고 있는 건지…… 잘 모르겠어요……",
+      hot:"훈련은 하루도 안 빠졌습니다! 그런데 제가 정말 늘고 있는 건지 모르겠습니다! 확인하고 싶습니다!",
+      stone:"훈련에는 빠짐없이 참여했습니다. 다만 실력이 늘고 있는지 객관적으로 확인할 방법이 없습니다.",
+      dilig:"훈련은 빠짐없이 나갔는데, 제가 정말 늘고 있는 건지 모르겠어요. 열심히만 하면 되는 건지……",
+      tsun:"…훈련은 다 나갔어요. 근데 늘었는지는 모르겠어요. …확인하고 싶은 거 아니에요. 궁금할 뿐이에요.",
+      lively:"훈련은 하루도 안 빠졌어요! 근데 제가 진짜 늘고 있는 걸까요? 매일 해서 그런지 잘 모르겠어요!",
+      boast:"영웅의 성장은 원래 눈에 안 보이는 법이죠! ……라고 하고 싶은데, 정말 늘고 있는 건지 저도 모르겠어요.",
+      plain:"훈련은 빠짐없이 나갔는데, 제가 정말 늘고 있는 건지 모르겠어요.",
+      genius:"훈련은 다 나갔는데, 요즘은 느는 게 안 느껴져요. 처음엔 하루하루 보였는데. 벽에 부딪힌 걸까요."},
    o:[{t:"작년 기록을 가져와라. 숫자로 보여주겠다.", f:["dilig","genius","intro","tsun"],
-       r:"차이를 보고는 한참 말이 없다가, 고맙다고 한다."},
+       r:"차이를 보고는 한참 말이 없다가, 고맙다고 한다.",
+       a:{dilig:"숫자로 보면 확실하겠네요. 바로 가져올게요.",
+          genius:"숫자라면 확실하죠. 작년 기록이랑 비교해 볼게요.",
+          intro:"……숫자로요……? ……보여 주시면…… 믿을 수 있을 것 같아요.",
+          tsun:"…가져올게요. 별로 안 늘었으면 마스터 탓이에요."}},
       {t:"다음 원정에서 직접 확인해라.", f:["hot","stone","lively","boast"],
-       r:"바로 지원서를 쓴다."},
+       r:"바로 지원서를 쓴다.",
+       a:{hot:"직접 확인하는 게 제일 확실합니다! 다음 원정, 꼭 보내 주십시오!",
+          stone:"실전에서 재 보는 게 정확하겠군요. 원정에 지원하겠습니다.",
+          lively:"원정 가서 확인해 보면 되는 거죠? 헤헤, 지원서 바로 쓸게요!",
+          boast:"영웅의 성장을 실전에서 확인하라는 거군요! 원정에서 증명하죠!"}},
       {t:"느는 건 원래 안 보인다. 어느 날 갑자기 보인다.", f:["plain"],
-       r:"그 말을 몇 번 곱씹더니 고개를 끄덕인다."}]}
+       r:"그 말을 몇 번 곱씹더니 고개를 끄덕인다.",
+       a:{plain:"어느 날 갑자기 보인다…… 그럼 계속 해 볼게요."}}]}
 ];
+/* 1008 — 맞지 않는 말을 들었을 때의 반응 (성격마다). lead 지도력으로 설득 · trust 신뢰 운명 단계 · miss 납득하지 못함(missR 서술)
+   fit 은 선택지에 그 성격의 대답(o[].a)이 없을 때만 쓴다 */
+const CSL_REACT = {
+  intro: {fit:"……네. 그렇게 해 볼게요…… 고맙습니다.",
+          lead:"……제 생각이랑은 좀 다르지만…… 마스터 말씀이니까…… 해 볼게요.",
+          trust:"……마스터가 하시는 말이라면…… 믿을게요.",
+          miss:"……네…… 그런데…… 잘 모르겠어요……",
+          missR:"고개를 숙인 채 작게 인사하고 나간다."},
+  hot:   {fit:"알겠습니다! 바로 해 보겠습니다!",
+          lead:"……솔직히 제 체질은 아니지만! 마스터 말씀이니 해 보겠습니다!",
+          trust:"마스터가 그렇다면 그런 겁니다! 믿고 가겠습니다!",
+          miss:"그건…… 아닌 것 같습니다! 저는 납득이 안 됩니다!",
+          missR:"입술을 꾹 다물고 나간다. 문이 조금 세게 닫혔다."},
+  stone: {fit:"이해했습니다. 그렇게 하겠습니다.",
+          lead:"제 판단과는 다릅니다. 다만 마스터의 근거를 믿고 따르겠습니다.",
+          trust:"마스터의 말씀이라면 따로 따져 볼 필요가 없습니다. 따르겠습니다.",
+          miss:"죄송하지만 동의하기 어렵습니다. 조금 더 생각해 보겠습니다.",
+          missR:"고개를 끄덕이지만, 눈빛은 여전히 다른 답을 찾고 있다."},
+  dilig: {fit:"네! 말씀대로 해 볼게요. 고맙습니다.",
+          lead:"제가 생각한 것과는 다르지만, 마스터 말씀대로 해 볼게요.",
+          trust:"마스터 말씀이면 믿어요. 그대로 해 볼게요.",
+          miss:"……네. 말씀은 알겠는데, 아직 마음이 잘 안 따라와요.",
+          missR:"애써 웃어 보이지만, 표정이 다 풀리지는 않았다."},
+  tsun:  {fit:"…알았어요. 해 볼게요. 딱히 마스터 말이라서 그러는 건 아니에요.",
+          lead:"…마음에 드는 방법은 아니에요. ……그래도 이번만 해 줄게요.",
+          trust:"…마스터 말이니까요. 다른 사람 말이었으면 안 들었을 거예요.",
+          miss:"…흥. 그런 말 들으려고 온 거 아니거든요.",
+          missR:"고개를 홱 돌리고 나간다."},
+  lively:{fit:"헤헤, 알겠어요! 바로 해 볼게요!",
+          lead:"음, 저랑은 좀 안 맞는 것 같지만…… 마스터가 그렇다면 해 볼게요!",
+          trust:"마스터 말이라면 뭐든 좋아요! 헤헤, 해 볼게요!",
+          miss:"음…… 그건 좀 아닌 것 같은데요……",
+          missR:"웃어 보이지만 평소보다 목소리가 작다."},
+  boast: {fit:"역시 마스터! 영웅답게 해내 보이겠습니다!",
+          lead:"흠, 영웅의 방식은 아니지만…… 마스터의 안목을 믿어 보죠!",
+          trust:"영웅의 스승이 하신 말씀이니 틀릴 리가 없죠!",
+          miss:"……영웅에게 그런 말은 어울리지 않습니다만.",
+          missR:"어깨를 펴고 나가지만, 문 앞에서 잠깐 멈칫한다."},
+  plain: {fit:"네, 알겠어요. 그렇게 해 볼게요.",
+          lead:"잘 모르겠지만…… 마스터 말씀이니까 해 볼게요.",
+          trust:"마스터 말씀이면 믿어요. 그렇게 할게요.",
+          miss:"……네. 그런데 잘 모르겠어요.",
+          missR:"표정이 풀리지 않았다. 다른 말이 필요했던 모양이다."},
+  genius:{fit:"그게 맞겠네요. 그렇게 할게요.",
+          lead:"제 계산이랑은 다른데요. ……마스터 쪽이 맞는지, 한번 해 보죠.",
+          trust:"마스터 말이면 계산할 필요도 없죠. 그렇게 할게요.",
+          miss:"그건 답이 아닌 것 같아요. 제가 따로 생각해 볼게요.",
+          missR:"고개를 갸웃하더니, 혼자 생각에 잠긴 채 나간다."}
+};
+/* 고민을 털어놓는 말 — 그 학생의 성격으로 */
+function cslQ(c, st){
+  const p = (st && st.pers) || "plain", q = c && c.q;
+  return masterQ(typeof q === "string" ? q : ((q && (q[p] || q.plain)) || ""), st);
+}
+/* 답변에 대한 반응 — kind: fit 맞는 말 · lead 지도력으로 설득 · trust 신뢰 운명 · miss 납득 못함 → {say 학생의 대답, r 서술} */
+function cslAnswer(c, oi, st, kind){
+  const p = (st && st.pers) || "plain", o = (c && c.o[oi]) || {}, R = CSL_REACT[p] || CSL_REACT.plain;
+  const say = kind === "fit" ? ((o.a && o.a[p]) || R.fit) : (R[kind] || R.miss);
+  return {say: masterQ(say, st), r: kind === "miss" ? R.missR : (o.r || "")};
+}
+/* ── 상담 대사 끝 (apply_cslpers) ── */
 const CSL_LEAD = .04, CSL_INFO = .06, CSL_NET = .04;
 function cslLead(){ return S.master.lead + cslFacBonus().lead; }
 function cslInfo(){ return S.master.info + cslFacBonus().info; }
@@ -8502,19 +8911,20 @@ function tryCounsel(){
   logE(`상담 요청 — <b>${dnH(st)}</b>${iga(st.name)} 할 말이 있다고 찾아왔다. <b style="color:var(--brass)">상담</b> 탭에서 들어줄 수 있다.${n>1? ` (대기 ${n}건)`:""}`,"big");
 }
 function shuffled(a){ const x=a.slice(); for(let i=x.length-1;i>0;i--){ const j=ri(0,i); const t=x[i]; x[i]=x[j]; x[j]=t; } return x; }
-function answerCounsel(qi, oi){
+function answerCounsel(qi, oi, win){   // win — 상담창(1008): 화면을 다시 그리지 않고 결과를 돌려준다
   const C = counselState();
   const q = C.queue[qi];
   if(!q) return;
   const st = S.students.find(x=>x.id===q.sid);
   const c = counselOf(q.cid);
-  if(!st || !c){ C.queue.splice(qi,1); save(); render(); return; }
+  if(!st || !c){ C.queue.splice(qi,1); save(); if(!win) render(); return null; }
   const o = c.o[oi];
   const fit = (o.f||[]).includes(st.pers||"plain");
   // 지도력 — 성격에 맞지 않아도 설득해낸다
   const byLead = !fit && (RNG() < cslLeadP());
   const byTrust = !fit && !byLead && trustFull(st);   // 운명 단계는 무슨 말이든 닿는다
   const ok = fit || byLead || byTrust;
+  const ans = cslAnswer(c, oi, st, fit ? "fit" : byLead ? "lead" : byTrust ? "trust" : "miss");   // 1008 — 성격마다 대답 · 반응
   let gain = null, dbl = false, capped = false;
   if(ok){
     const ks = MENTAL.filter(m=>!m.fixed && st.ment[m.k] < mentCapOf(st, m.k));
@@ -8529,15 +8939,20 @@ function answerCounsel(qi, oi){
       gain = {k:m.k, n:m.n, d: +(st.ment[m.k]-before).toFixed(2)};
     }
   }
+  const tb0 = trustBand(trustOf(st)).step, tr0 = trustRaw(st);
   const tUp = ok ? (addTrust(st, 1), true) : false;
+  const tb1 = trustBand(trustOf(st)).step;
   C.queue.splice(qi,1);
   C.usedC.push(c.id); C.usedS.push(st.id);
-  C.done.push({sid:st.id, name:dn(st), pers:st.pers, cid:c.id, oi, fit:ok, byLead, dbl, gain, capped,
+  C.done.push({sid:st.id, name:dn(st), pers:st.pers, cid:c.id, oi, fit:ok, byLead, byTrust, dbl, gain, capped, reply:ans.say, react:ans.r,
     phase:q.phase||S.phase, week:q.week||(S.week+1)});
   logE(ok
     ? `상담 — <b>${dnH(st)}</b>(${personaOf(st).n})의 마음에 닿았다.${byLead? ` <span style="color:var(--brass)">지도력으로 설득</span>`:""}${byTrust? ` <span style="color:var(--brass)">운명 단계 — 무엇을 말해도 닿는다</span>`:""}${gain? ` <b style="color:var(--ok)">${gain.n} +${gain.d}</b>${dbl? ` <span style="color:var(--brass)">(호소력 2배)</span>`:""}`:""}${capped? ` <span style="color:var(--dim)">더 오를 항목이 없다 — 멘탈리티가 모두 한계다</span>`:""} · <span style="color:var(--brass)">신뢰 ${trustGainWord(1)}</span>`
     : `상담 — <b>${dnH(st)}</b>(${personaOf(st).n})${eunn(personaOf(st).n)} 아직 납득하지 못한 표정이다.`, ok?"good":"");
-  save(); render();
+  save();
+  const res = {ok, fit, byLead, byTrust, gain, dbl, capped, say:ans.say, r:ans.r, trustUp: trustRaw(st) > tr0, trustDown:false, band: tb1 !== tb0 ? tb1 : null};   // 1008 — 상담창
+  if(win) return res;
+  render();
   toast(ok? (gain? `${dn(st)} — ${gain.n} +${gain.d}${dbl?" (2배)":""}` : capped? `${dn(st)} — 멘탈리티가 모두 한계다. 신뢰만 깊어졌다` : `${dn(st)}의 마음에 닿았다`) : `${dn(st)}${eunn(st.name)} 납득하지 못했다`);
 }
 
@@ -8744,16 +9159,17 @@ function defyLine(st, key){
   const L = DEFY_LINES[(st && st.pers) || "plain"] || DEFY_LINES.plain;
   return masterQ(L[key] || DEFY_LINES.plain[key] || "", st);
 }
-function answerDefy(pi, oi){
+function answerDefy(pi, oi, win){   // win — 상담창(1008): 화면을 다시 그리지 않고 결과를 돌려준다
   const D = defyState(), p = D.pend[pi];
   if(!p) return;
   const st = S.students.find(x=> x.id===p.sid);
-  if(!st){ D.pend.splice(pi,1); save(); render(); return; }
+  if(!st){ D.pend.splice(pi,1); save(); if(!win) render(); return null; }
   const key = p.from + ">" + p.to;
   const fit = (DEFY_FIT[oi]||[]).includes(st.pers||"plain");
   const byLead = !fit && (RNG() < cslLeadP());                // 지도력 — 성격에 맞지 않아도 설득해낸다
   const byTrust = !fit && !byLead && trustFull(st);
   const ok = fit || byLead || byTrust;
+  const tb0 = trustBand(trustOf(st)).step, tr0 = trustRaw(st);
   let gain = null, dbl = false, capped = false, cond = 0;
   if(ok){
     const ks = MENTAL.filter(m=> !m.fixed && st.ment[m.k] < mentCapOf(st, m.k));
@@ -8769,6 +9185,7 @@ function answerDefy(pi, oi){
     const c0 = st.cond; setCond(st, st.cond + DEFY_FIT_COND); cond = Math.round(st.cond - c0);
     addTrust(st, 1);
   } else addTrust(st, -1);
+  const tb1 = trustBand(trustOf(st)).step;
   const seasons = ok ? DEFY_FIT_SEASONS : DEFY_MISS_SEASONS;
   D.imm[st.id] = defySeason() + seasons;
   D.pend.splice(pi, 1);
@@ -8778,9 +9195,13 @@ function answerDefy(pi, oi){
     ans: defyFill(defyLine(st, key), p), reply: (DEFY_REPLY[key]||DEFY_REPLY["train>rest"])[oi]||"", react: masterQ(ok ? R2[0] : R2[1], st, true)});
   if(D.log.length > DEFY_LOG_MAX) D.log.splice(0, D.log.length - DEFY_LOG_MAX);
   logE(ok
-    ? `지침 무시 상담 — <b>${dnH(st)}</b>(${personaOf(st).n})${iga(st.name)} 마스터의 뜻을 받아들였다.${byLead? ` <span style="color:var(--brass)">지도력으로 설득</span>`:""}${gain? ` <b style="color:var(--ok)">${gain.n} +${gain.d}</b>${dbl? ` <span style="color:var(--brass)">(호소력 2배)</span>`:""}`:""}${cond? ` · 컨디션 +${cond}`:""} · 신뢰 증가 · ${seasons}계절 동안 지침을 따른다.`
-    : `지침 무시 상담 — <b>${dnH(st)}</b>(${personaOf(st).n})${eunn(st.name)} 납득하지 못했지만 일단 따르기로 했다. 신뢰 감소 · ${seasons}계절 동안 지침을 따른다.`, ok? "good" : "");
-  save(); render();
+    ? `지침 무시 상담 — <b>${dnH(st)}</b>(${personaOf(st).n})${iga(st.name)} 마스터의 뜻을 받아들였다.${byLead? ` <span style="color:var(--brass)">지도력으로 설득</span>`:""}${gain? ` <b style="color:var(--ok)">${gain.n} +${gain.d}</b>${dbl? ` <span style="color:var(--brass)">(호소력 2배)</span>`:""}`:""}${cond? ` · 컨디션 +${cond}`:""} · 신뢰 증가 · 앞으로 한동안 지침을 잘 따를 것 같다.`
+    : `지침 무시 상담 — <b>${dnH(st)}</b>(${personaOf(st).n})${eunn(st.name)} 납득하지 못한 표정이다. 신뢰 감소 · 일단은 지침을 따를 것 같다.`, ok? "good" : "");
+  save();
+  const rx = masterQ(ok ? R2[0] : R2[1], st, true), rq = rx.match(/“([^”]*)”/);   // 1008 — 상담창
+  const res = {ok, fit, byLead, byTrust, gain, dbl, capped, cond, say: rq ? rq[1] : rx, r: rx.replace(/“[^”]*”/, "").trim(), trustUp: trustRaw(st) > tr0, trustDown: trustRaw(st) < tr0, band: tb1 !== tb0 ? tb1 : null};
+  if(win) return res;
+  render();
   toast(ok ? `${dn(st)} — 지침을 따르겠다고 한다${gain? ` · ${gain.n} +${gain.d}${dbl?" (2배)":""}`:""}` : `${dn(st)} — 납득하지 못했지만 일단 따르겠다고 한다`);
 }
 /* 상담 탭 — 지침을 무시한 학생 (고민 상담 위에 따로) */
@@ -8833,11 +9254,561 @@ function defyRecords(){
       <div class="od" style="color:var(--${d.ok?"ok":"dim"})">${esc(d.react)}</div>
       ${d.byLead? `<div class="od" style="color:var(--brass)">성격에 맞는 말은 아니었지만, 지도력으로 설득했다</div>`:""}
       ${(d.gain || d.cond)? `<div class="od" style="color:var(--brass)">${d.gain? `${d.gain.n} +${d.gain.d}${d.dbl? ` <span style="color:var(--ok)">— 호소력으로 상승폭 2배</span>`:""}` : ""}${d.gain && d.cond? " · " : ""}${d.cond? `컨디션 +${d.cond}`:""}</div>`:""}
-      <div class="od" style="color:var(--dim)">신뢰 ${d.ok?"증가":"감소"} · ${d.seasons}계절 동안 지침을 무시하지 않는다</div>
+      <div class="od" style="color:var(--dim)">신뢰 ${d.ok?"증가":"감소"} · ${d.ok? "앞으로 한동안 지침을 잘 따를 것 같다" : "일단은 지침을 따를 것 같다"}</div>
     </div>`;
   }).join("");
 }
 
+/* CSLWIN_START — 상담창 (1008 · apply_cslwin.py) ─ 상담 메뉴를 누르면 뜨는 창. mockups/counsel-window 목업을 게임에 옮겼다
+   흐름: 학생이 책상 뒤로 들어온다 → 학생을 누르면 고민을 털어놓는다(지침 무시는 마스터가 먼저 묻는다) → 답변 구름 셋 중 하나를 고른다
+   → 학생의 대답 · 효과 → 넘어가기(다음 학생) / 마치기(창이 닫힌다). 지침을 무시한 학생이 먼저, 그다음 고민 상담 대기열 차례로.
+   · 답을 고르는 순간 게임에 반영한다 (answerCounsel · answerDefy 의 win 모드 — 화면을 다시 그리지 않고 결과를 돌려준다).
+     연출 중에 창을 닫아도 결과는 남는다. 창을 닫으면 화면을 다시 그린다 (메뉴 숫자 등)
+   · 무대 560 × 360 = 1배 280 × 180 도트를 2배로. CSL_ART.bg 배경(강당 뒷벽을 흐리게) · CSL_ART.front 책상 + 소품(상담 책상 배치판의 배치를 구운 것)
+   · 학생 — 전투 idle 도트 네 장(학생마다 머리색 치환 · sprCellCv)을 128 칸으로 잘라 전투처럼 #111 테두리를 둘러 쓴다 (화면에서는 2배의 0.95배). 도트가 없으면 얼굴 그림
+   · 학생 말 상자 머리 — 이름 · 성격 (직업은 그림으로 보여서 뺐다)
+   · 좁은 화면(창을 0.8배보다 줄여야 할 때) — 무대만 폭에 맞춰 줄이고 학생 말 · 답변 구름은 무대 아래로 (글자는 그대로)
+   · 키: 스페이스 · 엔터로 넘기기(글자가 찍히는 중이면 바로 끝까지) · 1 · 2 · 3 으로 구름 고르기 · Esc 닫기
+   · 소리 (SFX.csl_*) — 학생을 누를 때 · 답변 구름을 고를 때 · 반응 성공 / 실패(학생의 대답이 다 찍히고 효과 숫자가 뜰 때) ·
+     학생 / 마스터의 말이 한 글자씩 찍힐 때마다(cwBlip — 빈칸 · 말줄임표 …… 에서는 울리지 않는다). 학생 · 마스터의 말은 같은 빠르기(CSLW_CPS)
+   · 상담 기록은 일지의 '상담 기록' 서브탭 (viewCslLog) */
+const CSL_ART = {"bg":"assets/csl_art/bg.webp?v=c336640e","front":"assets/csl_art/front.webp?v=3a3eda9c"};
+/* 학생이 들어오는 모습 — 성격마다 */
+const CSL_ENTER = {intro:"쭈뼛거리며 들어와 책상 앞에 섰다.", hot:"성큼성큼 들어와 책상 앞에 섰다.", stone:"조용히 들어와 책상 앞에 섰다.",
+  dilig:"꾸벅 인사하고 책상 앞에 섰다.", tsun:"팔짱을 낀 채 책상 앞에 섰다.", lively:"문을 벌컥 열고 들어와 손을 흔들었다.",
+  boast:"당당한 걸음으로 들어와 책상 앞에 섰다.", plain:"할 말이 있는 듯 책상 앞에 섰다.", genius:"느긋하게 들어와 책상 앞에 섰다."};
+const CSL_DEFY_ENTER = {intro:"머뭇거리며", hot:"씩씩하게", stone:"담담한 얼굴로", dilig:"고개를 숙인 채", tsun:"시선을 피한 채",
+  lively:"멋쩍게 웃으며", boast:"가슴을 펴고", plain:"조금 멋쩍은 얼굴로", genius:"태연한 얼굴로"};
+/* 답변 구름 자리 (무대 560 × 360 · 책상 윗변 y 232) · 제자리 원을 그리는 주기 */
+const CSLW_POS = [{l:10, t:26, od:"6.8s", odl:"-1.2s"}, {l:4, t:140, od:"7.6s", odl:"-4.1s"}, {r:6, t:150, od:"6.2s", odl:"-2.7s"}];
+const CSLW = {run:0, el:null, list:[], i:0, cur:null, phase:"", typing:null, skipAt:0, spr:{}, popTop:92, compact:false, fitKey:""};
+const CSLW_CPS = 32;                                             // 학생 · 마스터의 말이 찍히는 빠르기 (글자 / 초)
+const CSLW_SFX = ["csl_tap", "csl_pick", "csl_ok", "csl_ng", "csl_stu", "csl_mst"];
+const CW_QUIET = /[\s….‥]/;                                       // 이 글자가 찍힐 때는 소리를 내지 않는다 (빈칸 · 말줄임표)
+function cwq(s){ return CSLW.el ? CSLW.el.querySelector(s) : null; }
+function cwLive(run){ return !!CSLW.el && run === CSLW.run; }
+function cwWait(ms){ return new Promise(r=> setTimeout(r, ms)); }
+function cwNow(){ return (typeof performance !== "undefined") ? performance.now() : Date.now(); }
+function cwSkipped(){ return cwNow() - (CSLW.skipAt||0) < 350; }   // 글자를 끝까지 넘긴 그 누르기로는 다음 단계로 가지 않는다
+/* 글자마다 울리는 소리 — 한 목소리: 앞 글자의 소리는 짧게 잦아들며 끊고 새로 (sfxPlay 의 55ms 막기 · 동시 8개 제한을 비켜 간다).
+   <audio> 로 울릴 때(file:// 등)는 45ms 보다 촘촘하면 건너뛴다 */
+const CW_BLIP = {src:null, g:null, at:0};
+function cwBlip(key){
+  const t = SFX[key]; if(!t) return;
+  try{
+    const gain = sfxGain(); if(gain <= 0) return;
+    const v = (t.v == null ? 1 : t.v);
+    if(AWEB === false || ASBAD[t.f] || !audCtx()){
+      const now = cwNow(); if(now - CW_BLIP.at < 45) return;
+      CW_BLIP.at = now; sfxHtml(t, gain * v); return;
+    }
+    const ctx = ACTX, buf = ASBUF[t.f];
+    if(!buf){ sfxLoad(t.f); return; }                             // 아직 못 받았다 — 받는 대로 다음 글자부터
+    if(ctx.state === "suspended") ctx.resume().catch(()=>{});
+    if(!ASG){ ASG = ctx.createGain(); ASG.connect(ctx.destination); }
+    ASG.gain.value = gain;
+    const now = ctx.currentTime;
+    if(CW_BLIP.src){ try{ CW_BLIP.g.gain.setTargetAtTime(0, now, .008); CW_BLIP.src.stop(now + .04); }catch(e){} }
+    const src = ctx.createBufferSource(), vg = ctx.createGain();
+    src.buffer = buf; vg.gain.value = v;
+    src.connect(vg); vg.connect(ASG); src.start(now);
+    CW_BLIP.src = src; CW_BLIP.g = vg;
+    src.onended = ()=>{ if(CW_BLIP.src === src){ CW_BLIP.src = CW_BLIP.g = null; } };
+  }catch(e){}
+}
+/* 글자를 한 자씩 — 누르면 바로 끝까지. voice — 글자마다 울릴 소리 (SFX 이름 · 없으면 조용히) */
+function cwType(el, html, cps, voice){
+  return new Promise(res=>{
+    if(CSLW.typing) CSLW.typing();
+    if(!el){ res(); return; }
+    const tmp = document.createElement("div"); tmp.innerHTML = html;
+    const full = tmp.innerHTML, plain = tmp.textContent;
+    let n = 0, id = 0;
+    const done = ()=>{ clearInterval(id); if(CSLW.typing === done) CSLW.typing = null; el.innerHTML = full; res(); };
+    el.textContent = "";
+    if(!plain.length){ done(); return; }
+    id = setInterval(()=>{
+      n++; el.textContent = plain.slice(0, n);
+      if(voice && !CW_QUIET.test(plain.charAt(n - 1))) cwBlip(voice);
+      if(n >= plain.length) done();
+    }, Math.max(8, 1000/(cps||CSLW_CPS)));
+    CSLW.typing = done;
+  });
+}
+/* 이번에 들을 상담 — 지침 무시 먼저, 그다음 고민 상담 */
+function cslwList(){
+  const L = [], has = id=> (S.students||[]).some(x=> x.id===id);
+  defyState().pend.forEach(p=>{ if(p && has(p.sid)) L.push({kind:"defy", sid:p.sid}); });
+  counselState().queue.forEach(q=>{ if(q && has(q.sid) && counselOf(q.cid)) L.push({kind:"worry", sid:q.sid, cid:q.cid}); });
+  return L;
+}
+/* 한 건의 글 — 그때의 게임 상태에서 만든다 (대사는 성격마다 · masterQ 는 대사 함수가 맡는다) */
+function cslwSess(e){
+  const st = (S.students||[]).find(x=> x.id===e.sid); if(!st) return null;
+  const pk = (st.pers && PERSONA[st.pers]) ? st.pers : "plain";
+  const base = {e, kind:e.kind, st, pk, name:dnH(st), pers:personaOf(st).n};
+  if(e.kind === "defy"){
+    const p = defyState().pend.find(x=> x && x.sid===e.sid); if(!p) return null;
+    const key = p.from + ">" + p.to, R = DEFY_REPLY[key] || DEFY_REPLY["train>rest"];
+    const order = (Array.isArray(p.order) && p.order.length===3) ? p.order : [0,1,2];
+    return Object.assign(base, {tag:"지침", title:`행동 지침 무시 — ${actName(p.from)} 대신 ${actName(p.to)}${(p.n|0)>1? ` · ${p.n}주째` : ""}`,
+      enter:`${dnH(st)}${iga(st.name)} 이번 주 지침과 다르게 움직였다. ${CSL_DEFY_ENTER[pk] || CSL_DEFY_ENTER.plain} 책상 앞에 섰다.`,
+      ask: esc(defyFill(DEFY_ASK[key] || "", p)), q: esc(defyFill(defyLine(st, key), p)), reveal: !!p.reveal,
+      opts: order.map(i=> ({i, t:R[i] || "", hit:(DEFY_FIT[i]||[]).includes(pk)}))});
+  }
+  const q = counselState().queue.find(x=> x && x.sid===e.sid && x.cid===e.cid), c = counselOf(e.cid);
+  if(!q || !c) return null;
+  const order = (Array.isArray(q.order) && q.order.length===3) ? q.order : [0,1,2];
+  return Object.assign(base, {tag:"고민", title:c.t, enter:`${dnH(st)}${iga(st.name)} ${CSL_ENTER[pk] || CSL_ENTER.plain}`,
+    q: esc(cslQ(c, st)), reveal: !!q.reveal, opts: order.map(i=> ({i, t:c.o[i].t, hit:(c.o[i].f||[]).includes(pk)}))});
+}
+function cslwHtml(){
+  return `<div class="cw-ov"><div class="cw-fit"><div class="cw-in">
+  <div class="cw-win closed" role="dialog" aria-modal="true" aria-label="상담실" tabindex="-1">
+    <div class="cw-head">
+      <div class="cw-tab title"><span class="cw-k">상담실</span><span class="cw-tt"></span></div>
+      <div class="cw-hr"><div class="cw-tab left">남은 상담 <b class="cw-ln">0</b></div><button type="button" class="cw-x" aria-label="상담실 닫기" title="닫기 (Esc)">×</button></div>
+    </div>
+    <div class="cw-mid">
+      <div class="cw-stage"><div class="cw-scene">
+        <div class="cw-bg" style="background-image:url(${CSL_ART.bg})"></div>
+        <div class="cw-stu"><div class="cw-spr"></div><img class="cw-face" alt="" draggable="false"></div>
+        <div class="cw-dots" aria-hidden="true">…</div>
+        <div class="cw-front" style="background-image:url(${CSL_ART.front})"></div>
+      </div></div>
+      <div class="cw-over"><div class="cw-say"><div class="cw-sn"></div><div class="cw-st"></div></div><div class="cw-clouds"></div></div>
+    </div>
+    <div class="cw-box"><div class="cw-who"></div><div class="cw-bt"></div><div class="cw-more" aria-hidden="true">▼</div><button type="button" class="cw-next">넘어가기 ▶</button></div>
+  </div></div></div></div>`;
+}
+function cslwOpen(){
+  const root = $("#modalRoot");
+  if(!root || root.firstChild || CSLW.el) return;              // 다른 창이 떠 있으면 열지 않는다
+  if(typeof dragCfg === "function") dragCfg(root, null);
+  const run = ++CSLW.run;
+  CSLW.list = cslwList(); CSLW.i = 0; CSLW.cur = null; CSLW.phase = ""; CSLW.typing = null; CSLW.fitKey = "";
+  root.innerHTML = cslwHtml();
+  CSLW.el = root.firstElementChild;
+  modalLockSync();
+  try{ const a = document.activeElement; if(a && a !== document.body && a.blur) a.blur(); }catch(e){}
+  cwq(".cw-x").onclick = ()=> cslwClose();
+  try{ if(AWEB !== false && sfxGain() > 0 && audCtx()) CSLW_SFX.forEach(k=> SFX[k] && sfxLoad(SFX[k].f)); }catch(e){}   // 소리를 미리 받아 둔다 — 첫 글자부터 울리게
+  CSLW.key = e=> cslwKey(e);
+  CSLW.rs = ()=> cslwFit();
+  CSLW.pd = e=>{                                                 // 글자가 찍히는 중에 글 · 무대를 누르면 바로 끝까지
+    if(!CSLW.typing) return;
+    const t = e.target; if(!t || !t.closest || t.closest(".cw-x")) return;
+    if(t.closest(".cw-say,.cw-box,.cw-stage")){ CSLW.typing(); CSLW.skipAt = cwNow(); }
+  };
+  document.addEventListener("keydown", CSLW.key, true);
+  window.addEventListener("resize", CSLW.rs);
+  CSLW.el.addEventListener("pointerdown", CSLW.pd, true);
+  cslwFit();
+  requestAnimationFrame(()=> requestAnimationFrame(()=>{
+    if(!cwLive(run)) return;
+    CSLW.el.classList.add("on");
+    const w = cwq(".cw-win"); w.classList.remove("closed");
+    try{ w.focus({preventScroll:true}); }catch(e){}
+  }));
+  const font = (document.fonts && document.fonts.load) ? document.fonts.load('12px "Mulmaru"').catch(()=>{}) : Promise.resolve();
+  Promise.race([font, cwWait(1500)]).then(()=>{
+    if(!cwLive(run)) return;
+    cslwFit();
+    if(CSLW.list.length) setTimeout(()=>{ if(cwLive(run)) cslwEnter(run); }, 250);
+    else cslwEmpty(run);
+  });
+}
+function cslwClose(done){
+  const el = CSLW.el; if(!el) return;
+  CSLW.run++;
+  if(CSLW.typing) CSLW.typing();
+  document.removeEventListener("keydown", CSLW.key, true);
+  window.removeEventListener("resize", CSLW.rs);
+  el.removeEventListener("pointerdown", CSLW.pd, true);
+  CSLW.el = null; CSLW.cur = null; CSLW.phase = ""; CSLW.list = [];
+  el.classList.remove("on");
+  const w = el.querySelector(".cw-win"); if(w){ w.classList.remove("beat"); w.classList.add("closed"); }
+  render();
+  if(done) toast("찾아온 학생들의 이야기를 모두 들었다.");
+  setTimeout(()=>{ const r = $("#modalRoot"); if(r && r.firstElementChild === el) closeModal(); }, 420);
+}
+function cslwKey(e){
+  if(!CSLW.el) return;
+  if(e.key === "Escape"){ e.preventDefault(); e.stopPropagation(); cslwClose(); return; }
+  if(CSLW.phase === "choose" && /^[1-3]$/.test(e.key)){                 // 1 · 2 · 3 — 그 구름으로 답한다
+    const c = cwq(".cw-clouds").children[+e.key - 1];
+    if(c && c.classList.contains("on") && !e.repeat){ e.preventDefault(); e.stopPropagation(); cslwChoose(+e.key - 1); }
+    return;
+  }
+  if(e.key !== " " && e.key !== "Enter") return;
+  const t = e.target, btn = t && t.closest ? t.closest(".cw-win button") : null;
+  if(btn && (btn.classList.contains("cw-x") || (btn.classList.contains("on") && !btn.classList.contains("off")))){   // 초점이 있는 단추는 그 단추가 눌린다
+    if(CSLW.typing){ e.preventDefault(); CSLW.typing(); }
+    return;
+  }
+  e.preventDefault(); e.stopPropagation();
+  if(e.repeat) return;
+  if(CSLW.typing){ CSLW.typing(); return; }
+  const ph = CSLW.phase;
+  if(ph === "enter"){ const s = cwq(".cw-stu"); if(s && s.onclick) s.onclick(); }
+  else if(ph === "ask"){ const b = cwq(".cw-box"); if(b && b.onclick) b.onclick(); }
+  else if(ph === "result" || ph === "empty"){ const n = cwq(".cw-next"); if(n && n.classList.contains("on") && n.onclick) n.onclick(); }
+}
+function cwFocus(){ const w = cwq(".cw-win"); if(w) try{ w.focus({preventScroll:true}); }catch(e){} }   // 쓴 단추(숨긴 단추)에 초점이 남지 않게
+function cslwHead(s){
+  const k = cwq(".cw-k"); if(!k) return;
+  k.textContent = s ? s.tag : "상담실";
+  cwq(".cw-tt").textContent = s ? s.title : "";
+  cwq(".cw-ln").textContent = s ? String(CSLW.list.length - CSLW.i) : "0";
+  cwq(".cw-tab.title").title = s ? `${s.tag} — ${s.title}` : "상담실";
+}
+function cslwReset(){
+  const box = cwq(".cw-box");
+  cwq(".cw-say").classList.remove("on"); cwq(".cw-st").innerHTML = ""; cwq(".cw-clouds").innerHTML = "";
+  cwq(".cw-who").textContent = ""; cwq(".cw-bt").innerHTML = "";
+  const n = cwq(".cw-next"); n.classList.remove("on"); n.onclick = null;
+  cwq(".cw-more").classList.remove("on"); cwq(".cw-dots").classList.remove("on");
+  box.onclick = null; box.classList.remove("ask");
+  cwq(".cw-win").classList.remove("beat");
+}
+/* 찾아온 학생이 없다 */
+function cslwEmpty(run){
+  CSLW.phase = "empty";
+  cslwHead(null); cslwReset();
+  cwType(cwq(".cw-bt"), `지금은 찾아온 학생이 없다. 한 주를 보내면 누군가 문을 두드릴 수 있다.\n<span class="cw-dim">${cslProbLine()}</span>`, 60).then(()=>{
+    if(!cwLive(run)) return;
+    const n = cwq(".cw-next"); n.textContent = "닫기 ▶"; n.classList.add("on"); n.onclick = ()=> cslwClose();
+  });
+}
+function cslProbLine(){
+  return `지도력 — 맞지 않아도 설득 ${Math.round(cslLeadP()*100)}% · 정보력 — 통할 말 파악 ${Math.round(cslInfoP()*100)}% · 호소력 — 상승폭 2배 ${Math.round(cslNetP()*100)}%${
+    cslFacLv()? ` (상담실 Lv.${cslFacLv()} 보정 포함)` : ""}`;
+}
+function cslwSkip(run){                                          // 그 사이 사라진 상담 — 건너뛴다
+  if(!cwLive(run)) return;
+  if(CSLW.i < CSLW.list.length - 1){ CSLW.i++; cslwEnter(run); return; }
+  if(CSLW.cur) cslwClose(); else cslwEmpty(run);
+}
+/* 1 · 학생이 책상 뒤로 들어온다 */
+async function cslwEnter(run){
+  if(!cwLive(run)) return;
+  const e = CSLW.list[CSLW.i], s = e ? cslwSess(e) : null;
+  if(!s) return cslwSkip(run);
+  CSLW.cur = s; CSLW.phase = "load";
+  cslwHead(s); cslwReset();
+  if(CSLW.compact) CSLW.el.scrollTop = 0;
+  const stu = cwq(".cw-stu");
+  stu.onclick = null; stu.classList.remove("in", "click");
+  const look = await cslwLook(s.st, run); if(!cwLive(run)) return;
+  cslwSetLook(look);
+  CSLW.phase = "enter";
+  stu.classList.remove("out"); void stu.offsetWidth; stu.classList.add("in");
+  await cwWait(650); if(!cwLive(run)) return;
+  await cwType(cwq(".cw-bt"), s.enter, 40); if(!cwLive(run)) return;
+  cwq(".cw-bt").insertAdjacentHTML("beforeend", `\n<span class="cw-hint">학생을 눌러 이야기를 듣는다.</span>`);
+  cwq(".cw-dots").classList.add("on");
+  stu.classList.add("click");
+  stu.onclick = ()=>{
+    if(CSLW.phase !== "enter" || !cwLive(run) || cwSkipped()) return;
+    stu.onclick = null; stu.classList.remove("click"); cwq(".cw-dots").classList.remove("on");
+    sfxPlay("csl_tap");
+    (s.kind === "defy" ? cslwAsk : cslwTalk)(run);
+  };
+}
+/* 지침 무시 — 마스터가 먼저 묻는다 */
+async function cslwAsk(run){
+  const s = CSLW.cur; CSLW.phase = "ask";
+  cwq(".cw-who").textContent = "마스터";
+  await cwType(cwq(".cw-bt"), s.ask, CSLW_CPS, "csl_mst"); if(!cwLive(run)) return;
+  const box = cwq(".cw-box");
+  cwq(".cw-more").classList.add("on"); box.classList.add("ask");
+  box.onclick = ()=>{
+    if(CSLW.phase !== "ask" || !cwLive(run) || cwSkipped()) return;
+    box.onclick = null; box.classList.remove("ask"); cwq(".cw-more").classList.remove("on");
+    cslwTalk(run);
+  };
+}
+/* 2 · 고민을 털어놓고, 답변 구름 셋이 차례로 */
+async function cslwTalk(run){
+  const s = CSLW.cur; CSLW.phase = "talk";
+  cwq(".cw-who").textContent = ""; cwq(".cw-bt").innerHTML = "";
+  cwq(".cw-sn").innerHTML = `${s.name} <i>${esc(s.pers)}</i>`;   // 이름 · 성격 (직업은 그림으로 보인다)
+  cwq(".cw-say").classList.add("on");
+  await cwType(cwq(".cw-st"), s.q, CSLW_CPS, "csl_stu"); if(!cwLive(run)) return;
+  await cwWait(250); if(!cwLive(run)) return;
+  CSLW.phase = "choose";
+  cslwClouds(s, false);
+  for(const c of [...cwq(".cw-clouds").children]){ c.classList.add("on"); await cwWait(220); if(!cwLive(run) || CSLW.phase !== "choose") return; }
+  cwq(".cw-bt").innerHTML = `<span class="cw-hint">어떻게 답할까.</span>${(s.reveal && s.opts.some(o=> o.hit))?
+    `\n<span class="cw-brass">정보력으로 ${s.name}에게 통할 말을 파악했다 — 금빛 구름.</span>` : ""}`;
+  cwq(".cw-win").classList.add("beat");
+  if(CSLW.compact){ const c = cwq(".cw-clouds"); if(c && c.scrollIntoView) c.scrollIntoView({block:"nearest", behavior:"smooth"}); }
+}
+function cslwClouds(s, show){
+  const box = cwq(".cw-clouds"); if(!box) return;
+  box.innerHTML = "";
+  s.opts.forEach((o, k)=>{
+    const p = CSLW_POS[k] || CSLW_POS[0];
+    const b = document.createElement("button"); b.type = "button"; b.className = "cw-cloud" + (show ? " on" : "");
+    if(!CSLW.compact){ if(p.l != null) b.style.left = p.l + "px"; else b.style.right = p.r + "px"; b.style.top = p.t + "px"; }
+    b.innerHTML = `<span class="cw-orb" style="--od:${p.od};--odl:${p.odl}"><span class="cw-art"></span><span class="cw-txt"></span></span>`;
+    b.querySelector(".cw-txt").textContent = o.t;
+    box.appendChild(b);
+    const sp = !!(s.reveal && o.hit);
+    const w = CSLW.compact ? Math.max(120, Math.round(b.offsetWidth/2)*2) : 196;
+    const h = Math.max(70, Math.round(b.querySelector(".cw-txt").offsetHeight/2)*2);
+    b.querySelector(".cw-orb").style.height = h + "px";
+    b.querySelector(".cw-art").style.backgroundImage = `url(${cslwCloudArt(w, h, sp)})`;
+    if(sp) b.setAttribute("aria-label", o.t + " — 정보력으로 파악한 통할 말");
+    b.onclick = ()=> cslwChoose(k);
+  });
+}
+/* 3 · 고른 답 — 이 순간 게임에 반영하고, 마스터의 말 · 학생은 고민 중 */
+async function cslwChoose(k){
+  const s = CSLW.cur, run = CSLW.run;
+  if(!s || CSLW.phase !== "choose" || !CSLW.el || cwSkipped()) return;
+  const o = s.opts[k]; if(!o) return;
+  CSLW.phase = "answer"; cwFocus();
+  let res = null;
+  try{ res = cslwApply(s, o.i); }
+  catch(err){ if(typeof errPush === "function") errPush("counsel", err.message, err.stack); }
+  if(!res){ toast("이 상담은 더 이어 갈 수 없다."); cslwClose(); return; }
+  s.res = res;
+  sfxPlay("csl_pick");
+  cwq(".cw-win").classList.remove("beat");
+  [...cwq(".cw-clouds").children].forEach((c, j)=>{ c.classList.add("off", j === k ? "pick" : "gone"); });
+  setTimeout(()=>{ if(cwLive(run) && CSLW.cur === s){ const cl = cwq(".cw-clouds"); if(cl) cl.innerHTML = ""; } }, 520);   // 사라진 구름 자리를 비운다 (좁은 화면)
+  cwq(".cw-who").textContent = "마스터";
+  await cwType(cwq(".cw-bt"), `“${esc(o.t)}”`, CSLW_CPS, "csl_mst"); if(!cwLive(run)) return;
+  cwq(".cw-st").innerHTML = `<span class="cw-think"><i>…</i><i>…</i><i>…</i></span>`;
+  await cwWait(1500); if(!cwLive(run)) return;
+  cslwResult(run);
+}
+function cslwApply(s, oi){
+  if(s.kind === "defy"){
+    const pi = defyState().pend.findIndex(p=> p && p.sid===s.e.sid);
+    return pi < 0 ? null : answerDefy(pi, oi, true);
+  }
+  const qi = counselState().queue.findIndex(q=> q && q.sid===s.e.sid && q.cid===s.e.cid);
+  return qi < 0 ? null : answerCounsel(qi, oi, true);
+}
+/* 4 · 학생의 대답 · 효과 (오른 수치가 머리 위로) */
+async function cslwResult(run){
+  const s = CSLW.cur, r = s.res; CSLW.phase = "reply";
+  await cwType(cwq(".cw-st"), esc(r.say || ""), 30, "csl_stu"); if(!cwLive(run)) return;
+  sfxPlay(r.ok ? "csl_ok" : "csl_ng");                           // 반응 성공 · 실패 — 효과 숫자와 함께
+  cslwPops(r);
+  cwq(".cw-who").textContent = "";
+  await cwType(cwq(".cw-bt"), cslwFx(s, r), 60); if(!cwLive(run)) return;
+  CSLW.phase = "result";
+  const last = CSLW.i >= CSLW.list.length - 1, n = cwq(".cw-next");
+  n.textContent = last ? "마치기 ▶" : "넘어가기 ▶";
+  n.classList.add("on"); n.onclick = ()=> cslwNext(run);
+  if(CSLW.compact){ const b = cwq(".cw-box"); if(b && b.scrollIntoView) b.scrollIntoView({block:"nearest", behavior:"smooth"}); }
+}
+function cslwFx(s, r){
+  const L = [], defy = s.kind === "defy";
+  if(r.r) L.push(`<span class="cw-dim">${esc(r.r)}</span>`);
+  if(r.ok){
+    let t = r.fit ? (defy ? "마음에 닿았다!" : "도움이 된 듯하다!")
+      : `<span class="cw-lead">${r.byLead ? "성격에 맞는 말은 아니었지만, 지도력으로 설득했다." : "신뢰가 운명 단계라 무슨 말이든 닿았다."}</span>`;
+    if(r.gain) t += ` ${esc(r.gain.n)}${iga(r.gain.n)} ${r.gain.d} 올랐다.`;
+    if(r.dbl) t += ` <span class="cw-lead">호소력으로 상승폭 2배!</span>`;
+    if(r.cond) t += ` 컨디션이 ${r.cond} 회복됐다.`;
+    if(r.capped) t += ` 멘탈리티는 모두 한계라 더 오르지 않았다.`;
+    if(r.trustUp) t += ` 신뢰가 깊어졌다.`;
+    L.push(r.fit ? `<span class="cw-ok">${t}</span>` : t);
+  } else {
+    L.push(`<span class="cw-bad">아직 납득하지 못한 표정이다.${r.trustDown ? " 신뢰가 조금 떨어졌다." : ""}</span>`);
+  }
+  if(r.band) L.push(`<span class="cw-brass">${s.name}${gwa(s.st.name)}의 관계가 ${esc(r.band)} 단계가 되었다.</span>`);
+  if(defy) L.push(r.ok ? "앞으로 한동안은 지침을 잘 따를 것 같다." : "일단은 지침을 따를 것 같다.");
+  return L.join("\n");
+}
+function cslwPops(r){
+  const sc = cwq(".cw-scene"); if(!sc) return;
+  const fx = [], run = CSLW.run;
+  if(r.gain) fx.push([`${r.gain.n} +${r.gain.d}${r.dbl ? " (2배)" : ""}`, ""]);
+  if(r.cond) fx.push([`컨디션 +${r.cond}`, "cond"]);
+  if(r.trustUp) fx.push(["신뢰 증가", "trust"]);
+  else if(r.trustDown) fx.push(["신뢰 감소", "down"]);
+  fx.forEach((f, j)=> setTimeout(()=>{
+    if(!cwLive(run)) return;
+    const p = document.createElement("div"); p.className = "cw-pop" + (f[1] ? " " + f[1] : "");
+    p.textContent = f[0]; p.style.top = (CSLW.popTop + j*30) + "px";
+    sc.appendChild(p); setTimeout(()=> p.remove(), 2100);
+  }, j*260));
+}
+/* 넘어가기 — 학생이 나가고 다음 학생이 들어온다. 마지막이면 창이 닫힌다 */
+async function cslwNext(run){
+  if(!cwLive(run) || CSLW.phase !== "result" || cwSkipped()) return;
+  CSLW.phase = "next"; cwFocus();
+  const n = cwq(".cw-next"); n.classList.remove("on"); n.onclick = null;
+  cwq(".cw-clouds").innerHTML = ""; cwq(".cw-say").classList.remove("on");
+  const stu = cwq(".cw-stu"); stu.classList.remove("in"); stu.classList.add("out");
+  if(CSLW.i >= CSLW.list.length - 1){
+    await cwWait(500); if(!cwLive(run)) return;
+    cslwClose(true); return;
+  }
+  cwq(".cw-tab.title").classList.add("fade");
+  await cwWait(550); if(!cwLive(run)) return;
+  CSLW.i++;
+  cwq(".cw-tab.title").classList.remove("fade");
+  cslwEnter(run);
+}
+/* 학생 그림 — 전투 idle 도트 네 장 (128 칸 · 칸의 x 64 · y 56 부터) + #111 테두리. 학생(직업 · 머리색)마다 한 번 굽는다 */
+function cslwSprUrl(st){
+  if(!st || !sprHas(st.job) || !SPR_READY || SPR_IDX[st.job] == null) return null;
+  const ji = SPR_IDX[st.job], pi = sprPalOf(st), key = ji + "|" + pi;
+  if(CSLW.spr[key]) return CSLW.spr[key];
+  const W = 128, n = Math.max(1, sprN(st.job, 0));
+  const cv = document.createElement("canvas"); cv.width = W*4; cv.height = W;
+  const g = cv.getContext("2d", {willReadFrequently:true}); g.imageSmoothingEnabled = false;
+  for(let f = 0; f < 4; f++){
+    const cell = sprCellCv(ji, pi, 0, f % n);
+    if(!cell) return null;                                       // 시트가 아직 안 읽혔다 — 조금 뒤에 다시
+    g.drawImage(cell, 64, 56, W, W, f*W, 0, W, W);
+  }
+  // 테두리 — 그림 둘레를 8방향으로 한 칸 넓힌 자리를 #111 로 (전투의 SVG 필터와 같은 모양). 장끼리는 넘지 않는다
+  const w4 = W*4, im = g.getImageData(0, 0, w4, W), d = im.data, m = new Uint8Array(w4*W);
+  for(let i = 0; i < m.length; i++) m[i] = d[i*4+3] > 0 ? 1 : 0;
+  for(let y = 0; y < W; y++) for(let x = 0; x < w4; x++){
+    const i = y*w4 + x; if(m[i]) continue;
+    const x0 = x - x % W; let on = 0;
+    for(let dy = -1; dy <= 1 && !on; dy++){
+      const yy = y + dy; if(yy < 0 || yy >= W) continue;
+      for(let dx = -1; dx <= 1; dx++){ const xx = x + dx; if(xx >= x0 && xx < x0 + W && m[yy*w4 + xx]){ on = 1; break; } }
+    }
+    if(on){ d[i*4] = 17; d[i*4+1] = 17; d[i*4+2] = 17; d[i*4+3] = 255; }
+  }
+  g.putImageData(im, 0, 0);
+  return (CSLW.spr[key] = cv.toDataURL());
+}
+async function cslwLook(st, run){
+  for(let t = 0; t < 30 && sprHas(st.job); t++){                // 도트 시트를 기다린다 (최대 3초)
+    const u = cslwSprUrl(st); if(u) return {spr:u};
+    await cwWait(100); if(!cwLive(run)) return {};
+  }
+  return faceHas(st.job) ? {face:FACE_IMG[st.job]} : {};
+}
+function cslwSetLook(L){
+  const sc = cwq(".cw-scene"); if(!sc) return;
+  sc.classList.toggle("face", !L.spr && !!L.face);
+  cwq(".cw-spr").style.backgroundImage = L.spr ? `url(${L.spr})` : "";
+  const img = cwq(".cw-face"); if(L.face && !L.spr) img.src = L.face; else img.removeAttribute("src");
+  CSLW.popTop = (!L.spr && L.face) ? 80 : 92;
+}
+/* 도트 구름 — 캔버스로 굽는다 (2px 도트 · 글 길이에 맞춰 높이가 바뀐다). special = 금빛 */
+function cslwCloudArt(wc, hc, special){
+  const P = 2, w = Math.round(wc/P), h = Math.round(hc/P);
+  const r = Math.max(5, Math.min(8, Math.floor(h/4)));
+  const m = new Uint8Array(w*h), x0 = r+2, y0 = r+2, x1 = w-r-3, y1 = h-r-3;
+  const C = [];
+  const stepX = Math.max(5, Math.round(r*1.45)), stepY = Math.max(5, Math.round(r*1.3));
+  let k = 0;
+  for(let x = x0; x <= x1; x += stepX){ C.push([x, y0, r - (k%3===1?1:0)]); C.push([Math.min(x1, x + (stepX>>1)), y1, r - (k%2)]); k++; }   // 아래 줄 마지막 혹이 그림 밖으로 나가 테두리가 잘리지 않게
+  C.push([x1, y0, r]); C.push([x1, y1, r]);
+  for(let y = y0 + stepY; y < y1; y += stepY){ C.push([x0, y, r]); C.push([x1, y, r - 1]); }
+  for(let y = 0; y < h; y++) for(let x = 0; x < w; x++){
+    let inside = (x>=x0 && x<=x1 && y>=y0 && y<=y1);
+    for(let j = 0; !inside && j < C.length; j++){ const c = C[j], dx = x-c[0], dy = y-c[1]; if(dx*dx+dy*dy <= c[2]*c[2] + c[2]) inside = true; }
+    m[y*w+x] = inside ? 1 : 0;
+  }
+  const at = (x,y)=> (x<0||y<0||x>=w||y>=h) ? 0 : m[y*w+x];
+  const cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+  const g = cv.getContext("2d"), img = g.createImageData(w, h), d = img.data;
+  const put = (x,y,c)=>{ const i=(y*w+x)*4; d[i]=c[0]; d[i+1]=c[1]; d[i+2]=c[2]; d[i+3]=c[3]; };
+  const FILL = special ? [255,226,128,255] : [255,248,232,255];
+  const HI   = special ? [255,246,200,255] : [255,255,255,255];
+  const LO   = special ? [232,184,72,255]  : [236,222,196,255];
+  const OUT  = [74,53,36,255], GLOW = special ? [255,196,40,255] : [232,194,91,255];
+  for(let y = 0; y < h; y++) for(let x = 0; x < w; x++){
+    if(at(x,y)){ put(x, y, (!at(x,y-1) || !at(x-1,y)) ? HI : (!at(x,y+1) || !at(x+1,y)) ? LO : FILL); continue; }
+    if(at(x-1,y)||at(x+1,y)||at(x,y-1)||at(x,y+1)){ put(x, y, OUT); continue; }
+    if(at(x-2,y)||at(x+2,y)||at(x,y-2)||at(x,y+2)||at(x-1,y-1)||at(x+1,y-1)||at(x-1,y+1)||at(x+1,y+1)) put(x, y, GLOW);
+  }
+  if(special){   // 반짝이 몇 점
+    [[x0+3,y0+2],[x1-4,y0+4],[x0+8,y1-2],[x1-9,y1-3]].forEach(([x,y])=>{
+      if(at(x,y)){ put(x,y,[255,255,255,255]); if(at(x+1,y)) put(x+1,y,[255,250,220,255]); if(at(x,y+1)) put(x,y+1,[255,250,220,255]); }
+    });
+  }
+  g.putImageData(img, 0, 0);
+  return cv.toDataURL();
+}
+/* 화면에 맞추기 — 넉넉하면 창을 통째로 (최대 1배), 0.8배보다 줄여야 하면 좁은 화면 배치 */
+function cslwFit(){
+  const ov = CSLW.el; if(!ov) return;
+  const win = ov.querySelector(".cw-win"), fit = ov.querySelector(".cw-fit"), inn = ov.querySelector(".cw-in"),
+        stage = ov.querySelector(".cw-stage"), scene = ov.querySelector(".cw-scene");
+  const vw = document.documentElement.clientWidth || window.innerWidth, vh = window.innerHeight;
+  win.classList.remove("compact", "wide"); win.style.width = ""; stage.style.width = stage.style.height = ""; scene.style.transform = ""; inn.style.transform = "";
+  const W = 592, H = win.offsetHeight + 4;                       // 그림자 4px 까지
+  const s = Math.min(1, (vw - 16) / W, (vh - 16) / H);
+  CSLW.compact = s < .8;
+  let key = "d";
+  if(!CSLW.compact){
+    if(s < 1) inn.style.transform = `scale(${s})`;
+    fit.style.width = Math.floor(W * s) + "px"; fit.style.height = Math.floor(H * s) + "px";
+  } else {
+    const ww = Math.max(260, Math.min(588, vw - 16)), inner = ww - 4 - 16 - 4;   // 창 테두리 · 안쪽 여백 · 무대 테두리
+    const ss = Math.min(1, inner / 560, Math.max(.36, vh * .46 / 360));
+    win.classList.add("compact"); win.classList.toggle("wide", inner >= 480); win.style.width = ww + "px";
+    stage.style.width = Math.round(560 * ss + 4) + "px"; stage.style.height = Math.round(360 * ss + 4) + "px";
+    scene.style.transform = `scale(${ss})`;
+    fit.style.width = (ww + 4) + "px"; fit.style.height = "";
+    key = "c" + ww;
+  }
+  if(key !== CSLW.fitKey){
+    const was = CSLW.fitKey; CSLW.fitKey = key;
+    if(was && CSLW.phase === "choose" && CSLW.cur) cslwClouds(CSLW.cur, true);   // 배치가 바뀌면 구름을 다시
+  }
+}
+/* 상담 확률 (상담 화면 · 상담 기록) */
+function cslProbHtml(){
+  return `<div class="cslprob">
+        <span>지도력 ${cslLead()} — 맞지 않아도 설득 <b>${Math.round(cslLeadP()*100)}%</b></span>
+        <span>정보력 ${cslInfo()} — 통할 말 파악 <b>${Math.round(cslInfoP()*100)}%</b></span>
+        <span>호소력 ${cslNet()} — 상승폭 2배 <b>${Math.round(cslNetP()*100)}%</b></span>
+        ${cslFacLv()? `<span style="color:var(--brass)">상담실 Lv.${cslFacLv()} 보정 포함</span>`:""}
+      </div>`;
+}
+/* 상담 화면 — 상담은 창으로 한다 (메뉴의 상담을 누르면 창이 뜬다). 이 화면은 직접 들어왔을 때의 안내 */
+function viewCounsel(){
+  const n = cslwList().length;
+  return `<section class="panel">
+    <div class="panel-h"><h2>상담실</h2><span class="hint">${yrName(S.year)}${n? ` · <b style="color:var(--brass)">찾아온 학생 ${n}명</b>` : ""}</span></div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 12px">${n? "학생이 할 말이 있다고 찾아와 있다." : "지금은 찾아온 학생이 없다. 한 주를 보내면 누군가 문을 두드릴 수 있다."} 지난 상담은 일지의 <b>상담 기록</b>에서 본다.</p>
+    ${cslProbHtml()}
+    <div class="btnrow" style="margin-top:14px"><button class="btn primary" data-cslw>상담실 열기</button><button class="btn" data-cslrec>상담 기록</button></div>
+  </section>`;
+}
+/* 일지 › 상담 기록 — 올해의 지침 무시 상담 · 고민 상담 (예전 상담 탭 아래쪽 그대로) */
+function viewCslLog(){
+  const C = counselState(), log = C.done.slice().reverse(), dr = defyRecords(), n = cslwList().length;
+  const dn2 = defyState().log.filter(d=> (d.year|0)===(S.year|0)).length;
+  return `<section class="panel">
+    <div class="panel-h"><h2>올해의 상담 기록</h2><span class="hint">${yrName(S.year)} · 고민 상담 ${C.done.length}회${dn2? ` · 지침 무시 상담 ${dn2}회` : ""}</span></div>
+    ${(log.length || dr)? `<div class="grid2">${dr}${log.map(cslRecHtml).join("")}</div>` : `<div class="empty">아직 올해 상담 기록이 없다.</div>`}
+    ${cslProbHtml()}
+    <div class="btnrow" style="margin-top:14px"><button class="btn${n? " primary" : ""}" data-cslw>상담실 열기${n? ` · 찾아온 학생 ${n}명` : ""}</button></div>
+  </section>`;
+}
+function cslRecHtml(d){
+      const c = counselOf(d.cid); if(!c) return "";
+      return `<div class="opt" style="cursor:default;border-color:${d.fit?"var(--ok)":"var(--line)"}">
+        <div class="on">${esc(d.name)} <span class="tag" style="color:var(--brass);border-color:var(--brass)">${PERSONA[d.pers]?PERSONA[d.pers].n:"평범"}</span>
+          <span class="price">${PHASES[d.phase]?PHASES[d.phase].n:""} ${d.week}주</span></div>
+        <div class="od" style="color:var(--dim)">${esc(c.t)}</div>
+        <div class="od"><b style="color:var(--brass)">마스터</b> “${esc(c.o[d.oi].t)}”</div>
+        ${d.reply? `<div class="od"><b>${esc(d.name)}</b> “${esc(d.reply)}”</div>` : ""}
+        <div class="od" style="color:var(--${d.fit?"ok":"dim"})">${esc(d.react || (d.fit? c.o[d.oi].r : "표정이 풀리지 않았다. 다른 말이 필요했던 모양이다."))}</div>
+        ${d.byLead? `<div class="od" style="color:var(--brass)">성격에 맞는 말은 아니었지만, 지도력으로 설득했다</div>`:""}
+        ${d.byTrust? `<div class="od" style="color:var(--brass)">신뢰가 운명 단계라 무슨 말이든 닿았다</div>`:""}
+        ${d.gain? `<div class="od" style="color:var(--brass)">${d.gain.n} +${d.gain.d}${d.dbl? ` <span style="color:var(--ok)">— 호소력으로 상승폭 2배</span>`:""}</div>`:""}
+        ${d.capped? `<div class="od" style="color:var(--dim)">더 오를 항목이 없다 — 멘탈리티가 모두 한계다. 신뢰만 깊어졌다</div>`:""}
+      </div>`;
+}
+/* CSLWIN_END */
 /* ============================================================
    시즌 전환
    ============================================================ */
@@ -9616,7 +10587,7 @@ const VIEW_GROUPS = {
   roster: [{id:"roster", n:"학생 명부"}, {id:"team", n:"팀 편성"}],
   relic:  [{id:"relic", n:"유물 보관고"}, {id:"skill", n:"스킬 보관고"}],
   league: [{id:"league", n:"리그"}, {id:"lgentry", n:"등록"}, {id:"spshop", n:"SP 상점"}, {id:"rank", n:"순위"}],
-  log:    [{id:"log", n:"학원 일지"}, {id:"record", n:"졸업생 명부"}, {id:"codex", n:"도감"}]
+  log:    [{id:"log", n:"학원 일지"}, {id:"csllog", n:"상담 기록"}, {id:"record", n:"졸업생 명부"}, {id:"codex", n:"도감"}]   // 1008 — 상담 기록 (상담은 창으로)
 };
 const VIEW_GROUP_OF = {};
 Object.keys(VIEW_GROUPS).forEach(g=> VIEW_GROUPS[g].forEach(t=>{ VIEW_GROUP_OF[t.id] = g; }));
@@ -9741,7 +10712,7 @@ function render(){
     const nav = $("#nav");
     if(nav._h !== navH + sideH){
       nav.innerHTML = navH + sideH; nav._h = navH + sideH;
-      nav.querySelectorAll("button[data-view]").forEach(b=> b.onclick=()=>{ if(b.dataset.view==="facil") UI.facTab = null; if(b.dataset.view==="home") UI.mdeskPop = null; UI.view=b.dataset.view; render(); });
+      nav.querySelectorAll("button[data-view]").forEach(b=> b.onclick=()=>{ if(b.dataset.view==="counsel"){ cslwOpen(); return; }   /* 1008 — 상담은 창으로 */ if(b.dataset.view==="facil") UI.facTab = null; if(b.dataset.view==="home") UI.mdeskPop = null; UI.view=b.dataset.view; render(); });
       nav.querySelectorAll("button[data-act]").forEach(b=> b.onclick=()=> b.dataset.act==="feedback" ? feedModal() : missionModal());
     }
   }
@@ -9770,7 +10741,7 @@ function render(){
     const nm = $("#navm");
     if(nm._h !== navmH){
       nm.innerHTML = navmH; nm._h = navmH;
-      nm.querySelectorAll("[data-view]").forEach(b=> b.onclick=()=>{ if(b.dataset.view==="facil") UI.facTab = null; UI.view=b.dataset.view; UI.navMore=false; render(); });
+      nm.querySelectorAll("[data-view]").forEach(b=> b.onclick=()=>{ if(b.dataset.view==="counsel"){ cslwOpen(); return; }   /* 1008 — 상담은 창으로 */ if(b.dataset.view==="facil") UI.facTab = null; UI.view=b.dataset.view; UI.navMore=false; render(); });
       $("#navMore").onclick = ()=>{ UI.navMore=!UI.navMore; render(); };
     }
   }
@@ -9797,6 +10768,7 @@ function render(){
   else if(UI.view==="opt") v.innerHTML = viewOpt();
   else if(UI.view==="scout") v.innerHTML = viewScout();
   else if(UI.view==="log") v.innerHTML = viewLog();
+  else if(UI.view==="csllog") v.innerHTML = viewCslLog();   // 1008 — 일지 › 상담 기록
   else v.innerHTML = viewHome();
   { const sub = (UI.view==="home" && mdeskOn()) ? "" : subTabsHtml(UI.view);   // 1006 — 책상에는 서브탭 대신 소품   // 1002 — 학생 · 리그 · 일지 묶음의 서브탭 (마을 서브탭과 같은 모양)
     if(sub){ v.insertAdjacentHTML("afterbegin", sub); v.querySelectorAll(".subnav [data-subview]").forEach(b=> b.onclick=()=>{ UI.view=b.dataset.subview; render(); }); } }
@@ -11799,7 +12771,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1008-1856";
+const BUILD = "1008-2251";
 const BUILD_TS = 0;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
@@ -15425,7 +16397,7 @@ function counselBlock(p, qi){
       <div class="cslwho">${dnH(st)} ${roleTag(st.job)}<span class="tag yr">${st.year}학년</span>
         <span class="tag" style="color:var(--brass);border-color:var(--brass)">${P.n}</span>
         <span class="price">${PHASES[p.phase]? PHASES[p.phase].n+" "+p.week+"주 · ":""}${esc(c.t)}</span></div>
-      <div class="cslq">“${esc(c.q)}”</div>
+      <div class="cslq">“${esc(cslQ(c, st))}”</div>
       </div></div>
     </div>
     ${p.reveal? `<p style="color:var(--muted);font-size:12.5px;margin:10px 0 8px"><b style="color:var(--brass)">정보력으로 ${dnH(st)}에게 통할 말을 미리 파악했다.</b></p>` : `<div style="height:10px"></div>`}
@@ -15438,51 +16410,6 @@ function counselBlock(p, qi){
       }).join("")}
     </div>
   </div>`;
-}
-function viewCounsel(){
-  const C = counselState();
-  const q = C.queue;
-  const left = COUNSEL.filter(c=>!C.usedC.includes(c.id)).length;
-  const head = `<div class="panel-h"><h2>상담실</h2>
-    <span class="hint">${yrName(S.year)} · 상담 ${C.done.length}회 진행${q.length? ` · <b style="color:var(--brass)">대기 ${q.length}/${CSL_QUEUE_MAX}건</b>`:""}${defyState().pend.length? ` · <b style="color:var(--bad)">지침 무시 ${defyState().pend.length}건</b>`:""}</span></div>`;
-  let body = defySection();   // 1008 — 지침을 무시한 학생이 맨 위
-  if(q.length){
-    body += `${body? '<div class="rule"></div>' : ""}${q.length>=CSL_QUEUE_MAX? `<p style="font-size:12.5px;margin:0 0 12px"><b style="color:var(--bad)">지금은 가득 차서 새 상담이 들어오지 않는다.</b></p>`:""}
-      ${q.map((p,i)=> counselBlock(p,i)).join('<div class="rule"></div>')}
-      <div class="cslprob">
-        <span>지도력 ${cslLead()} — 맞지 않아도 설득 <b>${Math.round(cslLeadP()*100)}%</b></span>
-        <span>정보력 ${cslInfo()} — 통할 말 파악 <b>${Math.round(cslInfoP()*100)}%</b></span>
-        <span>호소력 ${cslNet()} — 상승폭 2배 <b>${Math.round(cslNetP()*100)}%</b></span>
-        ${cslFacLv()? `<span style="color:var(--brass)">상담실 Lv.${cslFacLv()} 보정 포함</span>`:""}
-      </div>`;
-  } else {
-    body += `${body? "" : `<div class="empty">지금은 찾아온 학생이 없다. 한 주를 보내면 누군가 문을 두드릴 수 있다.
-</div>`}
-      <div class="cslprob">
-        <span>지도력 ${cslLead()} — 맞지 않아도 설득 <b>${Math.round(cslLeadP()*100)}%</b></span>
-        <span>정보력 ${cslInfo()} — 통할 말 파악 <b>${Math.round(cslInfoP()*100)}%</b></span>
-        <span>호소력 ${cslNet()} — 상승폭 2배 <b>${Math.round(cslNetP()*100)}%</b></span>
-        ${cslFacLv()? `<span style="color:var(--brass)">상담실 Lv.${cslFacLv()} 보정 포함</span>`:""}
-      </div>`;
-  }
-  const log = C.done.slice().reverse();
-  return `<section class="panel">${head}${body}</section>
-  <section class="panel">
-    <div class="panel-h"><h2>올해의 상담 기록</h2><span class="hint">${yrName(S.year)}</span></div>
-    ${(log.length || defyRecords())? `<div class="grid2">${defyRecords()}${log.map(d=>{
-      const c = counselOf(d.cid); if(!c) return "";
-      return `<div class="opt" style="cursor:default;border-color:${d.fit?"var(--ok)":"var(--line)"}">
-        <div class="on">${esc(d.name)} <span class="tag" style="color:var(--brass);border-color:var(--brass)">${PERSONA[d.pers]?PERSONA[d.pers].n:"평범"}</span>
-          <span class="price">${PHASES[d.phase]?PHASES[d.phase].n:""} ${d.week}주</span></div>
-        <div class="od" style="color:var(--dim)">${esc(c.t)}</div>
-        <div class="od">“${esc(c.o[d.oi].t)}”</div>
-        <div class="od" style="color:var(--${d.fit?"ok":"dim"})">${d.fit? esc(c.o[d.oi].r) : "표정이 풀리지 않았다. 다른 말이 필요했던 모양이다."}</div>
-        ${d.byLead? `<div class="od" style="color:var(--brass)">성격에 맞는 말은 아니었지만, 지도력으로 설득했다</div>`:""}
-        ${d.gain? `<div class="od" style="color:var(--brass)">${d.gain.n} +${d.gain.d}${d.dbl? ` <span style="color:var(--ok)">— 호소력으로 상승폭 2배</span>`:""}</div>`:""}
-        ${d.capped? `<div class="od" style="color:var(--dim)">더 오를 항목이 없다 — 멘탈리티가 모두 한계다. 신뢰만 깊어졌다</div>`:""}
-      </div>`;
-    }).join("")}</div>` : `<div class="empty">아직 올해 상담 기록이 없다.</div>`}
-  </section>`;
 }
 
 /* ---------- 도감 ---------- */
@@ -16263,6 +17190,8 @@ function bindView(){
     const [qi,oi] = b.dataset.csl.split("|").map(Number);
     answerCounsel(qi, oi);
   });
+  v.querySelectorAll("[data-cslw]").forEach(b=> b.onclick=()=> cslwOpen());   // 1008 — 상담창 열기
+  v.querySelectorAll("[data-cslrec]").forEach(b=> b.onclick=()=>{ UI.view = "csllog"; render(); });
   v.querySelectorAll("[data-defy]").forEach(b=> b.onclick=()=>{   // 1008 — 지침 무시 상담
     const [pi,oi] = b.dataset.defy.split("|").map(Number);
     answerDefy(pi, oi);
@@ -16362,7 +17291,7 @@ function tutGuideData(k){
     11:{title:"3학년의 겨울은 진로 준비",tag:"겨울 · 졸업 준비",job:"forcemage",lead:"3학년은 겨울 동안 졸업 이후의 진로를 준비합니다.",visual:"winter",steps:[["겨울 스케줄에서 빠져요", "3학년 학생들이 훈련에 보이지 않아도 오류가 아닙니다. 남은 재학생 중심으로 일정을 준비하세요."],["겨울이 끝나면 졸업식", "그동안 쌓아 온 성장과 기록으로 진로 발표와 졸업을 맞이합니다."]],tip:"학생들의 마지막 가을을 미리 준비해 주세요. 겨울에는 신입생을 맞을 다음 해도 계획할 수 있어요."},
     12:{title:"카드의 작은 표식을 확인해요",tag:"진행 · 카드 표식",job:"timemage",lead:"같은 훈련 카드라도 표식에 따라 사용하는 날의 효과가 달라집니다.",visual:"marks",steps:[["사용하는 날에 적용", "표식은 카드를 들고 있는 동안이 아니라, 해당 요일에 사용했을 때 적용됩니다."]],tip:"카드 왼쪽 위 남은 기간도 확인하세요. 이번 주까지인 카드는 사용하지 않으면 주가 끝날 때 사라집니다."},
     13:{title:"마을 의뢰는 쌓일수록 든든해요",tag:"개인 행동 · 의뢰",job:"bard",lead:"학생의 개인 행동을 의뢰로 두면 오후마다 마을 사람들의 일을 돕고 보수를 받아요.",visual:"job",steps:[["개인 행동을 의뢰로", "진행 화면이나 학생 화면에서 개인 행동을 의뢰로 바꾸세요. 임의로 둔 학생도 컨디션이 70 이상이면 절반쯤은 의뢰를 해요."],["보수와 멘탈리티 변화", `의뢰 하루마다 컨디션이 ${JOB_COND} 줄고 보수(처음 ${fmt(JOB_GRADES[0].pay)} G)를 받아요. 이번 주 의뢰는 주를 시작하기 전에 정해져서, 진행 화면에서 오르는 멘탈리티와 내리는 멘탈리티를 미리 볼 수 있어요.`],["반복할수록 커지는 보너스", `의뢰처마다 누적 ${fmt(JOB_GRADES[1].min)}회 · ${fmt(JOB_GRADES[2].min)}회를 넘기면 그 의뢰의 등급이 올라 보수가 하루 ${fmt(JOB_GRADES[1].pay)} G · ${fmt(JOB_GRADES[2].pay)} G로 늘어요. 누적은 의뢰처마다 따로 쌓여요. 의뢰처마다 ${JOB_EV_AT[0]}회 · ${JOB_EV_AT[1]}회를 채우면 의뢰인이 특별한 보답을 해요.`]],tip:"학생 한 명이 하루 의뢰를 마칠 때마다 1회씩 쌓여요. 여러 명이 함께 하면 그만큼 빨리 쌓여요. 여름에는 의뢰를 받을 수 없어요."}   /* 1003 — 의뢰가 열린 직후(길드 이야기 뒤) */,
-    14:{title:"지침을 어긴 학생, 이유부터 들어 봐요",tag:"상담 · 행동 지침",job:"monk",lead:"가끔 학생이 그 주의 개인 행동 지침 대신 다른 행동을 할 때가 있어요.",visual:"defy",steps:[["경과 보고에서 확인", "결산 창에 빨간 글씨로 알려 줘요. 지침을 무시한 학생은 그 주에 바꾼 행동의 컨디션 소모가 2배, 회복은 절반이에요."],["상담 탭에서 이유를 물어요", "학생의 대답을 듣고 세 가지 말 중 하나를 골라요. 상담하지 않고 다음 주를 시작하면 그 학생은 또 지침을 무시해요."],["성격에 맞는 말을 골라요", `맞는 말이면 멘탈리티 · 컨디션 · 신뢰가 오르고 ${DEFY_FIT_SEASONS}계절 동안, 맞지 않으면 신뢰가 내리고 ${DEFY_MISS_SEASONS}계절 동안 지침을 무시하지 않아요.`]],tip:"지도력 · 정보력 · 호소력은 고민 상담과 똑같이 작용해요."}   /* 1008 — 지침을 무시한 학생이 처음 나온 주 끝 · 확률 · 시작 시점 · 한 주 한 명은 안내에 쓰지 않는다 */
+    14:{title:"지침을 어긴 학생, 이유부터 들어 봐요",tag:"상담 · 행동 지침",job:"monk",lead:"가끔 학생이 그 주의 개인 행동 지침 대신 다른 행동을 할 때가 있어요.",visual:"defy",steps:[["경과 보고에서 확인", "결산 창에 빨간 글씨로 알려 줘요. 지침을 무시한 학생은 그 주에 바꾼 행동의 컨디션 소모가 2배, 회복은 절반이에요."],["상담 탭에서 이유를 물어요", "학생의 대답을 듣고 세 가지 말 중 하나를 골라요. 상담하지 않고 다음 주를 시작하면 그 학생은 또 지침을 무시해요."],["성격에 맞는 말을 골라요", `맞는 말이면 멘탈리티 · 컨디션 · 신뢰가 오르고 앞으로 한동안 지침을 잘 따라요. 맞지 않으면 신뢰가 내리고, 일단은 따르지만 오래가지는 않아요.`]],tip:"지도력 · 정보력 · 호소력은 고민 상담과 똑같이 작용해요."}   /* 1008 — 지침을 무시한 학생이 처음 나온 주 끝 · 확률 · 시작 시점 · 한 주 한 명은 안내에 쓰지 않는다 */
   };return data[k]||data[1];
 }
 function tutSampleCard(t="basic",mark){
@@ -19438,7 +20367,15 @@ const SFX = {
   sk_place:{f:"sched_place.ogg"},
   sk_chain:{f:"sched_chain.ogg"},
   sk_sign: {f:"sched_sign.ogg"},
-  sk_glow: {f:"sched_glow.ogg", v:.4}   // 깃펜 · 잉크 단지가 빛나기 시작할 때 (13.8초 · 빛나는 동안 한 번) — 다른 효과음보다 60% 작게
+  sk_glow: {f:"sched_glow.ogg", v:.4},   // 깃펜 · 잉크 단지가 빛나기 시작할 때 (13.8초 · 빛나는 동안 한 번) — 다른 효과음보다 60% 작게
+  /* 상담창 (1008) — 학생을 누를 때 · 답변 구름을 고를 때 · 반응 성공 / 실패 · 학생 / 마스터의 말이 한 글자씩 찍힐 때(cwBlip).
+     앞뒤 무음을 잘라 Ogg 로 (원본 mp3 도 bgm/ 에 — 같은 이름 파일을 바꾸면 소리만 갈아 끼울 수 있다) */
+  csl_tap: {f:"counsel_tap.ogg"},
+  csl_pick:{f:"counsel_pick.ogg"},
+  csl_ok:  {f:"counsel_ok.ogg"},
+  csl_ng:  {f:"counsel_ng.ogg"},
+  csl_stu: {f:"counsel_type_student.ogg", v:.8},
+  csl_mst: {f:"counsel_type_master.ogg", v:.8}
 };
 const SFX_GAP = 55;      // 같은 소리가 이보다 짧은 간격으로 겹치지 않게 막는다 (ms)
 const SFX_VOICE = 8;     // 한꺼번에 울릴 수 있는 소리 개수

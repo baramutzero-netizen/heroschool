@@ -11,6 +11,8 @@ game.html 의 아래 기능은 손으로 쓴 코드가 아니라 이 폴더의 �
 | 원정 3구간 (원정지 깊이 · 구간 보상 · 잡몹 배율 — 아래) | `patch/apply_exped3.py` | 스크립트 안 | — |
 | 행동 지침 무시 (주 시작 판정 · 상담 이벤트 · 결산 창 문구 · 튜토리얼 14 — 아래) | `patch/apply_defy.py` | 스크립트 안 | — |
 | 스킬 등급표 (등급 6단계 · 등급 · 레벨로 정하는 수치 · 적도 같은 표 · 원정 잡몹 배율 — 아래) | `patch/apply_skgrade.py` (apply_exped3 뒤) | 스크립트 안 | — |
+| 상담 대사를 성격마다 (고민을 털어놓는 말 · 답변에 대한 반응 · 지침 무시 효과 문구 — 아래) | `patch/apply_cslpers.py` | 스크립트 안 (`BLOCK`) | — |
+| 상담창 (상담 메뉴를 누르면 뜨는 창 · 일지 › 상담 기록 — 아래) | `patch/apply_cslwin.py` (apply_cslpers 뒤) | `patch/cslwin_block.js` · `cslwin_block.css` | `mockups/counsel-window/art` → `assets/csl_art/` (WebP) |
 | PNG → WebP (게임이 받는 그림 일부 — 아래) | `patch/apply_webp.py` (다른 apply 를 다 돌린 뒤 · wrap 앞) | 스크립트 안 | 원래 PNG 옆에 같은 이름의 `.webp` |
 | 전투 치명타 숫자 높이 · 학원 이름 맞추기 · 친선전 전부 거절 재확인 · 고른 칸 강조선 · 3인 리그 · 봄 신인전 시내 대회 필드 · 대회 쿼터뷰 제목 칸 · 줌 · 클로즈업 · 쿼터뷰 지도 11장 · 쿼터뷰 경기 이름(BATTLE START 동안) · 진영 칸 나무판 · 범례 숨김 · 실험실 확대 · 이동을 받는 쿼터뷰 지도 · 이름 길이만큼 늘어나는 진영 칸 · 경기 이름 맞춤(왼쪽 · 가운데 · 오른쪽) · 화면 · 배너를 나무 테두리 가운데로 | `patch/apply_crit.py` · `apply_acadfit.py` · `apply_fdecline.py` · `apply_optsel.py` · `apply_lgfield.py` · `apply_rookiefield.py` · `apply_tq.py` → `apply_tqcam.py` → `apply_tqmaps.py` → `apply_tqui.py` → `apply_tqfield.py` → `apply_tqgrow.py` → `apply_tqalign.py` → `apply_tqcenter.py` | 스크립트 안 | — |
 
@@ -34,6 +36,8 @@ python tools/gen/patch/apply_desk.py  game.html                                 
 python tools/gen/patch/apply_desk.py  game.html tools/gen/patch/desk_layout.json  # 책상 배치를 바꿨을 때 — 다시 굽는다
 python tools/gen/patch/apply_exped3.py game.html                                   # 원정 3구간 (바뀐 게 없으면 그대로)
 python tools/gen/patch/apply_skgrade.py game.html                                  # 스킬 등급표 (apply_exped3 뒤 — 잡몹 배율을 다시 쓴다)
+python tools/gen/patch/apply_cslpers.py game.html                                  # 상담 대사 (성격마다 — 대사를 고쳤으면 다시)
+python tools/gen/patch/apply_cslwin.py game.html                                   # 상담창 (상담 책상 배치 · 창 블록을 고쳤으면 다시)
 python tools/gen/patch/apply_webp.py  game.html                                   # PNG → WebP (바뀐 게 없으면 그대로)
 python wrap.py
 python wrap_site.py
@@ -76,6 +80,42 @@ python wrap_site.py
   학생 스킬을 임의 강화 방식으로 키운 B급 3인(`sim/exped_sim.py` 의 `"sk":"auto"`)이 권장 +0 · +2 · +4 에서 마물 스킬을 바꾸기 전과 같은 완주율이 나오도록.
   apply_exped3 를 다시 돌리면 배율이 그 스크립트 값으로 돌아가므로 apply_skgrade 를 뒤에 한 번 더 돌린다.
 
+### 상담 대사를 성격마다 (`apply_cslpers.py` · 1008)
+
+- 고민 상담 `COUNSEL` — 학생이 고민을 털어놓는 말 `q` 를 성격 9가지마다 따로 (고민 12 × 9). 내용은 같고 말투만 그 성격으로
+  (열혈은 분해서 소리치듯 · 차분은 따지듯 · 소심은 말끝을 흐리며 · 새침은 아닌 척 · 허세는 영웅 타령 …).
+- 답변에 대한 반응 — 맞는 말: 선택지마다 성격별 대답 `o[].a` + 그 뒤 일을 적은 서술 `o[].r` /
+  맞지 않는 말: 성격마다 `CSL_REACT` 의 `lead`(지도력으로 설득) · `trust`(신뢰 운명) · `miss` 와 서술 `missR`(납득 못함).
+  고르는 것은 `cslQ` · `cslAnswer` (1년차 암흑 사제는 `masterQ` 로 ‘마스터’). 상담 기록에 마스터의 말 · 학생의 대답 · 서술이 남는다
+  (`C.done` 의 `reply` · `react` — 예전 기록은 예전처럼).
+- 대사 블록은 `const COUNSEL = [` 부터 `/* ── 상담 대사 끝 (apply_cslpers) ── */` 까지 통째로 바꾼다 — 대사를 고칠 때는 스크립트의 `BLOCK` 을 고쳐 다시 돌린다.
+- 행동 지침 무시 상담의 효과 문구에서 기간을 뺐다 — 맞는 말 ‘앞으로 한동안 지침을 잘 따를 것 같다’ · 맞지 않는 말 ‘일단은 지침을 따를 것 같다’
+  (일지 · 상담 기록 · 튜토리얼 14). 실제 기간은 그대로 `DEFY_FIT_SEASONS` 4 · `DEFY_MISS_SEASONS` 2 계절.
+- 상담창 목업(`mockups/counsel-window`)은 이 표를 game.html 에서 그대로 옮겨 쓴다 — 대사를 고친 뒤 목업의 `build_mockup.py` 를 다시 돌린다.
+
+### 상담창 (`apply_cslwin.py` · 1008)
+
+- 메뉴의 **상담**(가로 화면 사이드 · 폰 메뉴)을 누르면 화면을 바꾸지 않고 상담창이 뜬다 — 목업(`mockups/counsel-window/counsel_mockup.html`) 그대로.
+  학생이 책상 뒤로 들어온다 → 학생을 누르면 고민을 털어놓는다(지침 무시는 마스터가 먼저 묻는다) → 답변 구름 셋 중 하나 → 학생의 대답 · 효과 → 넘어가기 / 마치기.
+  지침을 무시한 학생(`S.defy.pend`)이 먼저, 그다음 고민 상담 대기열(`counselState().queue`) 차례로. 찾아온 학생이 없으면 빈 상담실 + 상담 확률.
+- 답을 고르는 순간 게임에 반영한다 — `answerCounsel(qi, oi, true)` · `answerDefy(pi, oi, true)` 는 화면을 다시 그리지 않고 결과(대답 · 서술 · 효과 · 신뢰 변화 · 바뀐 신뢰 단계)를 돌려준다.
+  연출 중에 창을 닫아도 결과는 남고, 고르기 전에 닫으면 그 상담은 그대로 남는다. 일지 문구 · 저장은 예전과 같다.
+- 학생이 들어오는 모습은 성격마다 (`CSL_ENTER` · 지침 무시는 `CSL_DEFY_ENTER`). 대사는 apply_cslpers 의 표 그대로.
+- 학생 그림 — 전투 idle 도트 네 장(학생마다 머리색 치환 · `sprCellCv`)을 128 칸으로 잘라 전투처럼 `#111` 테두리를 둘러 쓴다 (`cslwSprUrl` — 그림 파일은 따로 없다). 도트가 없는 직업은 얼굴 그림.
+  화면에서는 2배의 0.95배 — 발끝(칸 y 170)을 축으로 줄였다 (`.cw-spr` 의 `scale`). 학생 말 상자 머리는 이름 · 성격만 (직업은 그림으로 보여서 뺐다).
+- 게임의 도트 마감 테마(`html[data-ui-finish="pixel"]`)와 팔레트가 모든 button 에 붙이는 네모 테두리 · 입체 그림자(`!important`)는 이 창에서 걷는다 —
+  답변 구름은 구름 그림만, 닫기 · 넘어가기는 창의 모양 그대로 (`cslwin_block.css` 의 더 센 선택자).
+- 그림 `CSL_ART` — `bg` 배경(목업의 `art/bg.webp`) · `front` 책상 + 소품(1배 280 × 180 · 무손실 WebP — `art/desk.png` 위에 `art/desk_layout.json` 배치를 `src/compose_desk.py` 로 구운 것).
+  상담 책상 배치를 바꿨으면 배치판(`mockups/counsel-window/counsel_desk_placer.html`)에서 저장한 `desk_layout.json` 을 `mockups/counsel-window/art/` 에 덮어쓰고 apply_cslwin → wrap.
+- 좁은 화면(창을 0.8배보다 줄여야 할 때 — 세로 폰 · 가로 폰) — 무대만 폭에 맞춰 줄이고 학생 말 · 답변 구름은 무대 아래로 (글자 크기는 그대로). 그보다 넓으면 창을 통째로 줄인다.
+- 키: 스페이스 · 엔터 넘기기(글자가 찍히는 중이면 바로 끝까지) · 1 · 2 · 3 구름 고르기 · Esc 닫기.
+- 효과음 — `SFX` 표 끝의 `csl_tap`(학생을 누를 때) · `csl_pick`(답변 구름을 고를 때) · `csl_ok` · `csl_ng`(반응 성공 · 실패 — 학생의 대답이 다 찍히고 효과 숫자가 뜰 때) ·
+  `csl_stu` · `csl_mst`(학생 · 마스터의 말이 한 글자씩 찍힐 때마다 — 빈칸 · 말줄임표 `……` 에서는 울리지 않는다).
+  파일은 `bgm/counsel_tap · counsel_pick · counsel_ok · counsel_ng · counsel_type_student · counsel_type_master` `.ogg` (앞뒤 무음을 잘랐다 · 원본 `.mp3` 도 같은 이름으로 `bgm/` 에).
+  글자 소리는 `cwBlip` — 한 목소리로 앞 글자의 소리를 짧게 끊고 새로 울린다 (sfxPlay 의 55ms 막기를 쓰지 않는다). 학생 · 마스터의 말은 같은 빠르기 `CSLW_CPS`(초당 32자).
+- **상담 기록은 일지의 서브탭 '상담 기록'**(`csllog` · `viewCslLog`) — 예전 상담 탭 아래쪽의 올해 상담 기록 그대로 + 상담 확률 + 상담실 열기.
+  예전 상담 화면(`UI.view` "counsel")은 안내 + 상담실 열기 단추만 남겼다 (메뉴로는 들어가지 않는다).
+
 ### PNG → WebP (`apply_webp.py` · 1008)
 
 - 무손실 (보이는 픽셀은 PNG 와 같다 — 완전히 투명한 곳의 숨은 색만 정리): 이야기 그림(`story_art`) · 스킬 이펙트(PNG 로 남아 있던 5장) · UI 리소(`ui-riso`) · 마을 지도(`town`) ·
@@ -89,12 +129,12 @@ python wrap_site.py
 
 ## 꼭 지킬 것 — 블록은 블록 파일에서 고친다
 
-`/* SCHED_SCROLL_START … */ ~ /* SCHED_SCROLL_END */`, `/* MDESK_START … */ ~ /* MDESK_END */` (와 각 CSS 블록) 안은 apply 할 때마다 블록 파일 내용으로 **통째로 갈아 끼운다**.
+`/* SCHED_SCROLL_START … */ ~ /* SCHED_SCROLL_END */`, `/* MDESK_START … */ ~ /* MDESK_END */`, `/* CSLWIN_START … */ ~ /* CSLWIN_END */` (와 각 CSS 블록) 안은 apply 할 때마다 블록 파일 내용으로 **통째로 갈아 끼운다**.
 game.html 에서 블록 안을 직접 고치면 다음 apply 가 그 수정을 지운다.
 
 그래서 `patch/blockguard.py` 가 지킨다 — apply 가 끝날 때 넣은 블록의 지문을 `patch/blocks.sha.json` 에 적어 두고, 다음 apply 전에 game.html 쪽 블록이 그 지문과 다르면 멈춘다.
 멈추면 game.html 에서 고친 내용을 `*_block.js` · `*_block.css` 로 옮긴 뒤 다시 돌린다. 덮어써도 될 때만 `--force`.
-(블록 파일을 고친 것은 상관없다 — 비교 대상은 game.html 쪽이다. 그림 줄 `const SCHED_ART/GEO`, `MDESK_ART/GEO` 는 빌드가 바꾸므로 비교에서 뺀다.)
+(블록 파일을 고친 것은 상관없다 — 비교 대상은 game.html 쪽이다. 그림 줄 `const SCHED_ART/GEO`, `MDESK_ART/GEO`, `CSL_ART` 는 빌드가 바꾸므로 비교에서 뺀다.)
 
 ## 배치를 바꿀 때
 
