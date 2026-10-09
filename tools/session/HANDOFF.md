@@ -10,10 +10,10 @@ Claude 가 새 세션을 시작할 때 읽는 작업 메모. **세션을 마칠 
 2. 도우미를 꺼내 두고, 할 일에 맞는 묶음 목록을 찍는다.
    ```
    cp /mnt/user-data/uploads/heroschool/tools/session/hs.py ~/hs.py
-   python3 ~/hs.py list core patch          # + counsel (상담창 그림) · test (게임 테스트) · placer (상담 배치판)
+   python3 ~/hs.py list core patch          # + counsel (상담창 그림) · rbook (학생 명부 책) · test (게임 테스트) · placer (상담 배치판) · roster (학생 명부 목업)
    ```
    찍힌 배열을 그대로 device_stage_files 의 paths 로 (한 번에 50개). **없는 파일이 하나라도 있으면 그 호출 전체가 실패**한다 — 그 경로만 빼고 다시.
-3. `python3 ~/hs.py init` → 작업 폴더 `~/hs/work` (PC 와 같은 모양) + PC 원본 `~/hs/base`.
+3. `python3 ~/hs.py init` → 작업 폴더 `~/hs/work` (PC 와 같은 모양) + PC 원본 `~/hs/base`. 블록 지문(`blocks.sha.json`)도 작업 폴더에 넣는다.
 4. 빌드하면 늘 커밋할 네 파일의 mtime 을 stage 결과에서 바로 적어 둔다 (나중에 찾느라 헤매지 않게):
    `python3 ~/hs.py mtimes game.html=… heroschool.html=… site/index.html=… site/version.json=…`
 5. 나중에 파일을 더 받으면 `python3 ~/hs.py sync` — PC 쪽이 바뀌었으면 작업 폴더로 넘기거나 3-way 병합한다.
@@ -23,8 +23,10 @@ Claude 가 새 세션을 시작할 때 읽는 작업 메모. **세션을 마칠 
 | core | game.html · heroschool.html · site/index.html · site/version.json · wrap 스크립트들 · 이 폴더 |
 | patch | tools/gen/README.md + tools/gen/patch 의 apply 스크립트 · 블록 · 배치 |
 | counsel | apply_cslwin 이 읽는 상담창 그림 · 배치 (mockups/counsel-window/art · src/compose_desk.py) |
-| test | 학생 도트 · 전투 이펙트 (assets/spr_img · spr_x_img · fx_img — 게임 화면 테스트용) |
+| rbook | apply_roster 가 읽는 학생 명부 책 — 목업 원본 `src/roster_tpl.html` · `art/book.png` · `ribbon.png` · `roster_layout.json` (4개) — patch 와 같이 |
+| test | 학생 도트 · 전투 이펙트 (assets/spr_img · spr_x_img · fx_img — 게임 화면 테스트용 · 빌드에도 필요하다: split_assets 가 찾는다) |
 | placer | 상담 목업 · 책상 배치판을 다시 만들 때 (src 전부 · 직업 도트 그림 · 목업의 학생 얼굴) — core · counsel 과 같이 |
+| roster | 학생 명부 목업 · 배치판 (mockups/student-roster 전부 · 초상 16 · 스킬 아이콘 · 책상 겹) — core 와 같이 (121개 · 세 번에 나눠 받는다) |
 
 ## 1. 꼭 지킬 것
 
@@ -36,7 +38,8 @@ Claude 가 새 세션을 시작할 때 읽는 작업 메모. **세션을 마칠 
 - 파일 하나 20MB 까지.
 - 돌리지 않는 것: `ui/chronicle/pack.py` · `sprites/story.py`.
 - 학생 프로필 얼굴(초상화)은 WebP 로 바꾸지 않는다.
-- 블록(`SCHED_SCROLL` · `MDESK` · `CSLWIN`)은 블록 파일(`tools/gen/patch/*_block.js · .css`)에서 고치고 apply — game.html 안을 직접 고치면 다음 apply 가 지운다.
+- 블록(`SCHED_SCROLL` · `MDESK` · `CSLWIN` · `ROSTERBK`)은 블록 파일(`tools/gen/patch/*_block.js · .css`)에서 고치고 apply — game.html 안을 직접 고치면 다음 apply 가 지운다.
+  학생 명부 책의 모양(CSS · HTML)은 목업 원본 `mockups/student-roster/src/roster_tpl.html` 에서 고치고 apply roster.
   `tools/gen/patch/blocks.sha.json` 은 커밋하지 않는다 (hs.py pack 이 뺀다).
 - 작은 수정은 가볍게 확인한다 — 빌드 + 고친 화면 스크린샷 한두 장. 시나리오 테스트는 큰 기능만.
 - 사용자에게는 한국어 해요체로 짧게. SendUserFile 로 보내는 파일 이름은 ASCII.
@@ -71,6 +74,7 @@ python3 ~/hs.py pack 이름            # 보낼 폴더 + 커밋 목록 (끝에 8
 | `tools/session/` | 이 문서 · hs.py |
 | `tools/field_lab.html` | 필드 배치 실험실 (전투 자리 · 크기 → apply_tune) |
 | `mockups/counsel-window/` | 상담창 목업 · 상담 책상 배치판 · 그림 (gitignore — PC 에만) |
+| `mockups/student-roster/` | 학생 명부 목업 · 학생 명부 배치판 · 견본 학생 · 책 그림 (gitignore — PC 에만 · README 에 굽는 법) |
 | `Claude outputs/` | 예전 결과물 · 스케줄/책상 배치판 키트 (gitignore) |
 | `sprites/` · `ui/` · `events/` · `reports/` · `captures/` | 원본 · 작업 폴더 (gitignore) |
 | `test.py` | Playwright 3년 회귀 테스트 (오래 걸린다 — 전투 · 성장 수치를 건드렸을 때만) |
@@ -78,17 +82,24 @@ python3 ~/hs.py pack 이름            # 보낼 폴더 + 커밋 목록 (끝에 8
 
 ## 4. 빌드 · 패치 요점
 
-- apply 순서 (`tools/gen/README.md` 쓰는 법): sched → desk → exped3 → skgrade → cslpers → cslwin → webp → wrap → wrap_site.
+- apply 순서 (`tools/gen/README.md` 쓰는 법): sched → desk → exped3 → skgrade → cslpers → cslwin → roster → webp → wrap → wrap_site.
   모두 몇 번 돌려도 같은 결과라 **고친 것만** 다시 돌리면 된다. `hs.py apply 이름 [인자…]` = `python tools/gen/patch/apply_이름.py game.html [인자…]`.
-- `hs.py build` 는 TZ=Asia/Seoul — 빌드 번호(`MMDD-HHMM`)가 한국 시간.
+- `hs.py build` 는 TZ=Asia/Seoul — 빌드 번호(`MMDD-HHMM`)가 한국 시간. 리눅스의 wrap 은 LF 로 쓰므로 heroschool.html · site/index.html 을 PC 원본처럼 CRLF 로 바꿔 둔다 (git 내용은 같다).
+  split_assets 는 `assets/spr_img.webp.js` 등 test 묶음 파일이 없으면 멈춘다 — 빌드하려면 test 묶음도 받는다.
 - 빌드가 game.html 의 data: 그림을 `assets/` 로 빼며 `?v=해시` 를 단다. hs.py 는 PC 의 heroschool.html 과 `?v=` 가 같은 그림은 올리지 않는다.
 - **C2PA** — Claude 가 PC 에 쓴 PNG · WebP · mp3 에는 출처 정보 조각이 붙는다 (픽셀은 같다). 그래서 PC 의 그림을 원료로 다시 구우면 `?v=` 가 바뀔 수 있다 — 그대로 커밋해도 된다.
   예: PC 원본으로 apply_cslwin 을 처음 돌리면 상담창 배경 `bg` 의 `?v=` 가 바뀐다 (`art/bg.webp` 에 C2PA 가 붙어서). 한 번 커밋하면 그 뒤로는 그대로.
-- 블록 지킴이: `blockguard` 가 game.html 쪽 블록이 지난번 넣은 것과 다르면 멈춘다. 지문 파일은 세션마다 PC 것을 받아 쓴다.
+- 블록 지킴이: `blockguard` 가 game.html 쪽 블록이 지난번 넣은 것과 다르면 멈춘다. 지문 파일은 세션마다 PC 것을 받아 쓴다 (`hs.py init` 이 넣는다 · 작업 폴더에 이미 있으면 그대로).
+  PC 의 지문은 10-07 것이라 sched · mdesk 만 있고 상담창(cslwin) · 학생 명부 책(roster_js) 지문은 없다 — 그 블록을 apply 하기 전에는 시험으로 돌려 game.html 이 바뀌는지부터 본다.
 - 상담 책상 배치판(Artifact) — https://claude.ai/artifact/QdjzxFheqqWLRoqLKJsSHf
   원본 `mockups/counsel-window/src/placer_tpl.html` → `python3 mockups/counsel-window/src/build_placer.py` (PC 용 `counsel_desk_placer.html`) ·
   `… build_placer.py --artifact ~/hs/placer_artifact.html` (아티팩트 본문). 새 세션에서 다시 올릴 때는 그 URL 을 먼저 read 한 뒤 `url` 로 publish (capabilities 는 빼면 그대로 간다).
   사용자가 배치판에서 저장한 `desk_layout.json` 을 주면 `mockups/counsel-window/art/` 에 덮어쓰고 apply cslwin → build.
+- 학생 명부 배치판(Artifact) — https://claude.ai/artifact/Dtg12MfQi9CthUS79Lq7KH (capabilities: downloads)
+  책 원본 `mockups/student-roster/src/roster_tpl.html` (표시 구간을 배치판이 가져다 쓴다) + 편집기 `src/placer_tpl.html` →
+  `python3 mockups/student-roster/src/build_mockup.py` (`roster_mockup.html`) · `build_placer.py` (`roster_placer.html`) · `build_placer.py --artifact ~/hs/roster_placer_artifact.html`.
+  새 세션에서 다시 올릴 때는 그 URL 을 먼저 read 한 뒤 `url` 로 publish (capabilities 는 빼면 그대로). 묶음은 `core roster`.
+  사용자가 배치판에서 저장한 `roster_layout.json` 을 주면 `mockups/student-roster/art/` 에 덮어쓰고 build_mockup → build_placer (→ 아티팩트 다시 올리기) → apply roster → build (게임).
 
 ## 5. 테스트
 
@@ -106,17 +117,31 @@ python3 ~/hs.py pack 이름            # 보낼 폴더 + 커밋 목록 (끝에 8
 - game.html 은 CRLF. 직접 고칠 때는 파이썬으로 읽고 써서 줄바꿈을 지킨다 — `hs.py status` 가 섞이면 경고한다.
 - 받은 파일은 1초쯤 늦게 나타난다 (init · sync 가 기다린다). 커밋은 outputs 에 복사하고 몇 초 뒤에, 매번 새 폴더로 (pack 이 한다).
 - 학생 도트는 `sprCellCv` (256 칸 · 머리색 치환). 상담창은 128 칸으로 잘라 발끝(무대 2배 280, 288)을 축으로 직업별 `CSL_SPR` 크기 · 자리.
+- `apply sched` 는 `tools/gen/kit` 의 모듈(schedule_mock · schedule_mock2 · desk_top)이 있어야 돈다 — patch 묶음에 없다. `apply desk` 는 `tools/gen/patch/desk_out/` 그림이 있어야 한다.
+- 게임 함수로 견본 데이터를 만들 때는 `withSeed("이름", fn)` 으로 난수를 고정한다 (`let RNG = Math.random` · seedRNG).
+- 학생 명부 책은 그림자 DOM(`#rbHost`) 안 — 테스트에서 `document.getElementById('rbHost').shadowRoot` 로 찾는다 (Playwright 의 `locator('#rbHost …')` 는 그대로 뚫고 들어간다).
+  책은 가로 넓은 화면(1100px 이상)에서만 뜬다 — `open_game(p, w=1440, h=1000)`. 상태는 `RBK.isOpen()` · `RBK.state`.
 
-## 7. 최근 작업 · 현재 상태 (2026-10-08 밤)
+## 7. 최근 작업 · 현재 상태 (2026-10-09 · 빌드 1009-1828)
 
-- 마지막 빌드 **1008-2359** — PC 에 반영 끝. 진행 중인 일 없음 (사용자가 커밋).
-- 최근 들어간 것 (자세한 건 `tools/gen/README.md`):
-  - 상담창 (apply_cslwin) — 메뉴 '상담' → 창: 학생 등장 → 고민 → 답변 구름 셋 → 반응 · 효과 → 다음 학생. 상담 기록은 일지 › 상담 기록.
-    효과음 6종 (`bgm/counsel_*.ogg`) · 글자 소리 `cwBlip` · 학생 · 마스터 모두 초당 32자. 가로 화면 버튼 입체감 걷음 · 말 상자 머리에서 직업 뺌.
-  - 직업별 학생 도트 크기 · 자리 — 사용자가 배치판에서 정한 값 (`art/desk_layout.json` 의 sprites → `CSL_SPR`). 말줄임 · 효과 숫자는 도트의 실제 머리 꼭대기 위.
-  - 그 앞: 상담 대사 성격별 (apply_cslpers) · 행동 지침 무시 (apply_defy) · 스킬 등급표 (apply_skgrade · RULES_VER 7) · 원정 3구간 (apply_exped3) ·
-    PNG→WebP (apply_webp) · 두루마리 스케줄 · 마스터 노트 책상 · 쿼터뷰 대회 화면 (apply_sched · apply_desk · apply_tq*).
-- 다음 할 일: 정해진 것 없음 — 사용자 요청을 기다린다.
+- 마지막 게임 빌드 **1009-1828** — 학생 명부 책을 게임에 넣었다 (1637) + 정렬 옆 ‘스킬 임의로 강화’ (1706) + 멘탈리티 육각형의 학생 값을 매끈하게 (1748)
+  + 빈 유물 칸 `+ Slot N` → 유물 보관고 · 학적의 이름 / 값 / 덧말 색 나누기 · 진로 설명 · 다음 업보 진로 숨김 (1803)
+  + 육각형 꼭짓점 차례 팀워크(12시) → 지구력 → 적극성 → 천재성 → 정신력 → 침착성 (1828 · `HEX_ORDER`). 진행 중인 게임 수정 없음.
+- 오늘 한 것:
+  - **학생 명부 책 → 게임** (`tools/gen/patch/apply_roster.py` · `roster_block.js` · `roster_block.css` — 상세는 tools/gen/README 의 ‘학생 명부 책’).
+    가로 넓은 화면(`townMode`)에서 책상의 펼친 책 · 메뉴의 학생 명부 · 팀 편성(+ `UI.view` 를 "roster" · "team" 으로 바꾸는 모든 곳)이 책 팝업을 연다.
+    세로 · 좁은 화면은 예전 화면 그대로. `render()` 앞 · 끝에 한 줄씩(`RBK.intercept()` · `RBK.after()`).
+    책 모양은 목업 원본의 CORE_CSS · CORE_HTML 을 그대로 가져와 그림자 DOM 에 넣는다 (게임 CSS 와 섞이지 않게). 그림은 `assets/roster_art/` (book · ribbon WebP).
+    사용자 결정: 이름 변경 ✎ 연결 · 스킬 칸에 **스킬 강화**(포인트 있을 때) · 유물 칸에 **해제** · 신뢰 한마디 · 훈련 성공률 · 부상 · 개인 행동 고르기는 넣지 않음.
+    정렬 바로 왼쪽에 **스킬 임의로 강화**(예전 명부 머리의 단추 — 포인트가 남은 학생이 있을 때만 · 게임의 확인 창). 목업 원본에 넣고 배치판 항목(`spbtn`)도 더했다 (15가지).
+    팀 편성은 게임의 `S.teams` 를 게임 함수로 바로 고친다 (진형 강화의 서 ·改 다섯 자리도). 시나리오 테스트(상세 · 정렬 · 이름 변경 · 스킬 강화 · 해제 · 팀 편성 · 끌어 놓기 · 닫기 · 좁은 화면) 통과.
+  - hs.py — `rbook` 묶음 · PATCH 목록에 apply_roster · roster_block 둘 · `build` 가 heroschool.html · site/index.html 을 CRLF 로 (PC 원본과 같게).
+  - **학생 명부 목업 · 배치판** (`mockups/student-roster/`) — 책 모양 팝업(왼쪽 학생 목록 · 오른쪽 상세 / 팀 편성 모드) · 배치판(아티팩트는 4번) · 사용자 배치 `roster_layout.json` 기본.
+    책 CSS 변수는 무대(#fitIn) · 초상 틀(.ring) 안에서 정한다 — 바깥 페이지 변수와 이름이 겹치면 사라진다 (배치판의 `--r` 로 상세 초상 테두리가 사라졌었다).
+    멘탈리티 카드의 표식 풀이 · 육각형 꼭짓점 점은 뺐다. 학생 값(푸른 면 · 테두리)은 도트 대신 매끈한 SVG(캔버스 위에 겹침 · 테두리 2px). 팀 이름 변경 · 진형 설명 · 팀 편성 옆 글은 숨김.
+- 다음 할 일: 사용자가 게임에서 책을 써 보고 고칠 점을 준다 (스킬 임의로 강화 자리는 ‘일단’ 정렬 옆 — 배치판으로 옮길 수 있다).
+- 그 앞(1008): 상담창 (apply_cslwin · 효과음 · 직업별 도트 자리 `CSL_SPR`) · 상담 대사 성격별 · 행동 지침 무시 · 스킬 등급표(RULES_VER 7) · 원정 3구간 · PNG→WebP ·
+  두루마리 스케줄 · 마스터 노트 책상 · 쿼터뷰 대회 화면.
 
 ## 8. 이 문서 고치기
 

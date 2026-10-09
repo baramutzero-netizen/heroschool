@@ -13,6 +13,7 @@ game.html 의 아래 기능은 손으로 쓴 코드가 아니라 이 폴더의 �
 | 스킬 등급표 (등급 6단계 · 등급 · 레벨로 정하는 수치 · 적도 같은 표 · 원정 잡몹 배율 — 아래) | `patch/apply_skgrade.py` (apply_exped3 뒤) | 스크립트 안 | — |
 | 상담 대사를 성격마다 (고민을 털어놓는 말 · 답변에 대한 반응 · 지침 무시 효과 문구 — 아래) | `patch/apply_cslpers.py` | 스크립트 안 (`BLOCK`) | — |
 | 상담창 (상담 메뉴를 누르면 뜨는 창 · 일지 › 상담 기록 — 아래) | `patch/apply_cslwin.py` (apply_cslpers 뒤) | `patch/cslwin_block.js` · `cslwin_block.css` | `mockups/counsel-window/art` → `assets/csl_art/` (WebP) |
+| 학생 명부 책 (가로 넓은 화면 — 책상의 펼친 책 · 메뉴의 학생 명부 · 팀 편성을 누르면 뜨는 책 — 아래) | `patch/apply_roster.py` | `patch/roster_block.js` · `roster_block.css` + 목업 원본 `mockups/student-roster/src/roster_tpl.html` 의 CORE_CSS · CORE_HTML | `mockups/student-roster/art/book.png` · `ribbon.png` → `assets/roster_art/` (WebP) |
 | PNG → WebP (게임이 받는 그림 일부 — 아래) | `patch/apply_webp.py` (다른 apply 를 다 돌린 뒤 · wrap 앞) | 스크립트 안 | 원래 PNG 옆에 같은 이름의 `.webp` |
 | 전투 치명타 숫자 높이 · 학원 이름 맞추기 · 친선전 전부 거절 재확인 · 고른 칸 강조선 · 3인 리그 · 봄 신인전 시내 대회 필드 · 대회 쿼터뷰 제목 칸 · 줌 · 클로즈업 · 쿼터뷰 지도 11장 · 쿼터뷰 경기 이름(BATTLE START 동안) · 진영 칸 나무판 · 범례 숨김 · 실험실 확대 · 이동을 받는 쿼터뷰 지도 · 이름 길이만큼 늘어나는 진영 칸 · 경기 이름 맞춤(왼쪽 · 가운데 · 오른쪽) · 화면 · 배너를 나무 테두리 가운데로 | `patch/apply_crit.py` · `apply_acadfit.py` · `apply_fdecline.py` · `apply_optsel.py` · `apply_lgfield.py` · `apply_rookiefield.py` · `apply_tq.py` → `apply_tqcam.py` → `apply_tqmaps.py` → `apply_tqui.py` → `apply_tqfield.py` → `apply_tqgrow.py` → `apply_tqalign.py` → `apply_tqcenter.py` | 스크립트 안 | — |
 
@@ -38,12 +39,13 @@ python tools/gen/patch/apply_exped3.py game.html                                
 python tools/gen/patch/apply_skgrade.py game.html                                  # 스킬 등급표 (apply_exped3 뒤 — 잡몹 배율을 다시 쓴다)
 python tools/gen/patch/apply_cslpers.py game.html                                  # 상담 대사 (성격마다 — 대사를 고쳤으면 다시)
 python tools/gen/patch/apply_cslwin.py game.html                                   # 상담창 (상담 책상 배치 · 창 블록을 고쳤으면 다시)
+python tools/gen/patch/apply_roster.py game.html                                   # 학생 명부 책 (목업 원본 · 책 그림 · 배치 · 책 블록을 고쳤으면 다시)
 python tools/gen/patch/apply_webp.py  game.html                                   # PNG → WebP (바뀐 게 없으면 그대로)
 python wrap.py
 python wrap_site.py
 ```
 
-- apply 는 그림을 `data:` 로 넣는다 (1008 — 무손실 WebP). `wrap.py` · `wrap_site.py` 의 split_assets 가 `assets/sched_art/` · `assets/mdesk_art/` 로 빼고 game.html 에는 경로만 남긴다.
+- apply 는 그림을 `data:` 로 넣는다 (1008 — 무손실 WebP). `wrap.py` · `wrap_site.py` 의 split_assets 가 `assets/sched_art/` · `assets/mdesk_art/` · `assets/roster_art/` 등으로 빼고 game.html 에는 경로만 남긴다.
 - `apply_desk.py` 는 줌 넘어가기를 맞추려고 `assets/sched_art/` 그림(`.webp` 가 있으면 그것)에서 스케줄 두루마리 축 자리를 잰다. 스케줄 그림을 바꿨다면 `wrap.py` 를 한 번 돌린 뒤 apply_desk.
 
 ### 원정 3구간 (`apply_exped3.py` · 1008)
@@ -119,6 +121,28 @@ python wrap_site.py
 - **상담 기록은 일지의 서브탭 '상담 기록'**(`csllog` · `viewCslLog`) — 예전 상담 탭 아래쪽의 올해 상담 기록 그대로 + 상담 확률 + 상담실 열기.
   예전 상담 화면(`UI.view` "counsel")은 안내 + 상담실 열기 단추만 남겼다 (메뉴로는 들어가지 않는다).
 
+### 학생 명부 책 (`apply_roster.py` · 1009)
+
+- 가로 넓은 화면(`townMode` — 1100px 이상 · 가로)에서 책상의 펼친 책 · 메뉴의 **학생 명부** · **팀 편성**을 누르면 화면을 바꾸지 않고 책이 뜬다 — 목업(`mockups/student-roster/roster_mockup.html`) 그대로.
+  대회 준비의 '팀 편성' 등 `UI.view` 를 "roster" · "team" 으로 바꾸는 곳은 모두 책으로 간다 ("team" 은 책의 팀 편성 쪽).
+  세로 · 좁은 화면은 예전 학생 명부(`viewRoster`) · 팀 편성(`viewTeam`) 그대로 — 책이 열린 채 창이 좁아지면 책을 닫고 같은 학생 · 같은 쪽의 예전 화면으로.
+- 길목은 `render()` 의 앞 · 끝 한 줄씩 — 앞의 `RBK.intercept()` 는 `UI.view` 가 roster · team 이면 원래 보던 화면으로 되돌리고 책을 연다
+  (책상의 마스터 육성 팝업 "master" 에서 왔으면 홈). 끝의 `RBK.after()` 는 책에서 연 게임 팝업(이름 변경 · 스킬 강화)이 끝나면 책을 다시 그린다.
+- 왼쪽 쪽 — 학생 목록. 정렬(학년 · 소속 팀 · 레벨 · 전투력 · 진로 평가 · 컨디션 · 이름 — `S.opts.rbsort`)을 원 아래 꼬리표가 따라간다.
+  정렬 바로 왼쪽에 **스킬 임의로 강화** — 강화 포인트가 남은 학생이 있을 때만(`spReady` · 오른쪽 칸은 `spTotal`). 누르면 게임의 확인 창(`autoSkillUpConfirm`) → 결과 창 (예전 학생 명부 머리의 단추와 같다).
+  오른쪽 쪽 — 학생 상세 또는 팀 편성 (명부 머리의 '팀 편성' 단추로 바꾼다).
+- 상세 — 이름 변경 ✎(게임의 `renameStudent` 팝업이 책 위에) · 스킬 칸 머리의 **스킬 강화**(강화 포인트가 있을 때만 — `skillUpModal`) ·
+  유물 칸의 **해제**(보관함으로 — 예전 학생 상세와 같다) · 빈 유물 칸(`+ Slot N`)을 누르면 책을 닫고 유물 보관고로 (보관고 유물마다 ‘장착할 학생’을 이 학생으로 골라 둔다 — `goRelic`).
+  신뢰 한마디 · 훈련 성공률 · 부상 · 개인 행동 고르기는 넣지 않았다 (사용자 결정).
+- 팀 편성 — 게임의 `S.teams` 를 게임 함수(`teamAssign` · `autoFillAllTeams` · `formOf` · `formSlots` · `cleanTeams` …)로 바로 고치고 저장한다 (진형 강화의 서 ·改 다섯 자리도 그대로).
+  팀 탭 · 진형 넷 · 자리 누르기 · 끌어 놓기(명부 → 자리 · 자리 → 자리 · 자리 → 명부는 빼기) · 진형에 맞춰 임의 편성(일지에도 남긴다) · 전투력 순으로 자동 편성 · 비우기.
+  왼쪽 꼬리표는 소속 팀 고르기 쪽지 (자리가 다 찬 팀은 바꿀 학생을 고른다).
+- 그림자 DOM(`#rbHost` · z-index 79 — 게임 팝업 `.overlay` 80 · 알림 90 아래) 안에 그린다 — 게임 CSS(도트 테마가 button 에 붙이는 `!important` 등)와 책 CSS 가 섞이지 않는다. 글꼴은 게임의 `@font-face`.
+- 책 모양 — 목업 원본 `src/roster_tpl.html` 의 CORE_CSS · CORE_HTML 을 apply_roster 가 그대로 가져온다 (그림 자리 `{{BOOK}}` · `{{RIBBON}}` 은 CSS 변수로).
+  책을 다시 디자인하면 목업 원본을 고쳐 목업 · 배치판을 다시 굽고(목업 README) apply_roster → wrap. 게임에서만 필요한 것(덮개 · 스킬 강화 · 해제 단추)은 `roster_block.css`, 동작은 `roster_block.js`.
+- 그림 `ROSTER_ART` — `book`(책) · `ribbon`(책갈피 끈), 목업의 `art/book.png` · `art/ribbon.png` 를 무손실 WebP 로. 배치 `RB_LAYOUT` — 목업의 `art/roster_layout.json` (`items` · `face.jobs` 만).
+- 책은 창에 맞춰 통째로 줄인다 (1배까지 — 1214 × 980 기준). 닫기: × · Esc · 책 바깥 누르기. Esc 는 쪽지 → 고른 자리 → 책 차례 (게임 팝업이 떠 있으면 그쪽 차례). 닫으면 게임 화면을 다시 그린다.
+
 ### PNG → WebP (`apply_webp.py` · 1008)
 
 - 무손실 (보이는 픽셀은 PNG 와 같다 — 완전히 투명한 곳의 숨은 색만 정리): 이야기 그림(`story_art`) · 스킬 이펙트(PNG 로 남아 있던 5장) · UI 리소(`ui-riso`) · 마을 지도(`town`) ·
@@ -132,18 +156,19 @@ python wrap_site.py
 
 ## 꼭 지킬 것 — 블록은 블록 파일에서 고친다
 
-`/* SCHED_SCROLL_START … */ ~ /* SCHED_SCROLL_END */`, `/* MDESK_START … */ ~ /* MDESK_END */`, `/* CSLWIN_START … */ ~ /* CSLWIN_END */` (와 각 CSS 블록) 안은 apply 할 때마다 블록 파일 내용으로 **통째로 갈아 끼운다**.
+`/* SCHED_SCROLL_START … */ ~ /* SCHED_SCROLL_END */`, `/* MDESK_START … */ ~ /* MDESK_END */`, `/* CSLWIN_START … */ ~ /* CSLWIN_END */` (와 각 CSS 블록), `/* ROSTERBK_START … */ ~ /* ROSTERBK_END */`(책 CSS 는 이 블록 안의 문자열) 안은 apply 할 때마다 블록 파일 내용으로 **통째로 갈아 끼운다**.
 game.html 에서 블록 안을 직접 고치면 다음 apply 가 그 수정을 지운다.
 
 그래서 `patch/blockguard.py` 가 지킨다 — apply 가 끝날 때 넣은 블록의 지문을 `patch/blocks.sha.json` 에 적어 두고, 다음 apply 전에 game.html 쪽 블록이 그 지문과 다르면 멈춘다.
 멈추면 game.html 에서 고친 내용을 `*_block.js` · `*_block.css` 로 옮긴 뒤 다시 돌린다. 덮어써도 될 때만 `--force`.
-(블록 파일을 고친 것은 상관없다 — 비교 대상은 game.html 쪽이다. 그림 줄 `const SCHED_ART/GEO`, `MDESK_ART/GEO`, `CSL_ART` 는 빌드가 바꾸므로 비교에서 뺀다.)
+(블록 파일을 고친 것은 상관없다 — 비교 대상은 game.html 쪽이다. 그림 줄 `const SCHED_ART/GEO`, `MDESK_ART/GEO`, `CSL_ART`, `ROSTER_ART` 는 빌드가 바꾸므로 비교에서 뺀다.)
 
 ## 배치를 바꿀 때
 
 - 스케줄: 스케줄 배치판(`Claude outputs/schedule_kit/schedule_editor.html`)에서 JSON 을 내보내 `patch/sched_layout.json` 을 바꾸고 apply_sched.
 - 책상: 책상 소품 배치판(`Claude outputs/desk_kit/desk_editor.html` — 사본 `kit/desk_editor.html`)에서 JSON 을 내보내 `patch/desk_layout.json` 을 바꾸고 `apply_desk.py game.html tools/gen/patch/desk_layout.json`.
   누를 수 있는 소품(말린 지도 · 책 더미 + 봉랍 · 안경 + 회중시계 · 펼친 책 · 두루마리)은 `desk_art.py` 의 `GROUPS` 에서 고른다.
+- 학생 명부 책: 학생 명부 배치판(`mockups/student-roster/roster_placer.html`)에서 저장한 `roster_layout.json` 을 `mockups/student-roster/art/` 에 덮어쓰고 apply_roster → wrap (목업 · 배치판도 다시 구우려면 목업 README).
 - 쿼터뷰 지도: `assets/battle-fields/quarter/` 의 그림을 바꿨으면 `python tools/gen/patch/apply_tqmaps.py game.html assets/battle-fields/quarter` — 그림 내용으로 `?v=` 를 새로 매겨 캐시를 넘긴다.
   지도 더하기 · 필드 잇기 · 클로즈업 가운데(mx · my)는 스크립트 위쪽 표(SRC · MXY)에서.
 - 전투 자리 · 직업 크기 · 필드(쿼터뷰 지도 포함) 확대 · 이동 · 쿼터뷰 경기 이름 · 진영 칸(자리 · 크기 · 글자 크기): 필드 배치 실험실(`tools/field_lab.html`)이 보여 주는 `BATTLE_TUNE_PATCH = {...}` 를 글 파일로 저장해

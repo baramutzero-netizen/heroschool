@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""용사 학원 — 클라우드 작업 공간 도우미 (1008 · 새 세션의 Claude 가 쓴다)
+"""용사 학원 — 클라우드 작업 공간 도우미 (1009 · 새 세션의 Claude 가 쓴다)
 
 PC(D:\\heroschool)에서 받은(stage) 파일은 /mnt/user-data/uploads/heroschool/<경로> 에 PC 와 같은 모양으로 쌓인다.
 그 사본으로 작업 폴더를 만들고 → 고치고 → 빌드 → 바뀐 파일만 골라 PC 에 쓸 목록(device_commit_files 입력)을 만든다.
 
-  python3 hs.py list core patch          받을 파일 목록 — device_stage_files 의 paths 로 그대로 (50개씩)
-  python3 hs.py init                     지금까지 받은 파일 → 작업 폴더 ~/hs/work + PC 원본 ~/hs/base
+  python3 hs.py list core patch          받을 파일 목록 — device_stage_files 의 paths 로 그대로 (50개씩) · 묶음: core patch counsel test placer rbook roster
+  python3 hs.py init                     지금까지 받은 파일 → 작업 폴더 ~/hs/work + PC 원본 ~/hs/base (+ 블록 지문)
   python3 hs.py sync                     나중에 더 받은 파일 반영 — PC 쪽이 바뀌었으면 3-way 병합
   python3 hs.py status                   PC 원본과 달라진 파일
   python3 hs.py diff [경로…]              바뀐 줄 (CRLF 무시 · 긴 줄은 자름)
@@ -21,6 +21,8 @@ PC(D:\\heroschool)에서 받은(stage) 파일은 /mnt/user-data/uploads/heroscho
 
 mtime 은 경로=숫자 (경로는 저장소 기준 game.html · site/index.html 또는 PC 경로) 로 주거나,
 stage / list 결과 JSON 을 파일(또는 - 로 표준 입력)로 줘도 된다 (list 결과는 --dir 'D:\\heroschool\\site' 와 같이).
+블록 지문(tools/gen/patch/blocks.sha.json)은 커밋하지 않는다 — init · sync 가 PC 것을 작업 폴더에 넣고(블록 지킴이가 읽는다),
+작업 폴더에 이미 있으면 그대로 둔다 (이 세션의 apply 가 적은 지문을 지킨다).
 환경 변수: HS_HOME(기본 ~/hs) · HS_DEVICE_ROOT(기본 D:\\heroschool) · HS_UPLOADS · HS_OUTPUTS
 직접 쓰는 테스트 스크립트에서:  sys.path.insert(0, 이 폴더); import hs; b, pg, errs = await hs.open_game(p)
 """
@@ -35,7 +37,8 @@ THEIRS = os.path.join(HOME, "theirs")                   # sync 충돌 때 PC 쪽
 MT, LAST, CONF = (os.path.join(HOME, n) for n in ("mtimes.json", "last_pack.json", "conflicts.json"))
 SHOTS = os.path.join(HOME, "shots")
 
-SKIP = re.compile(r"(^|/)(__pycache__|\.git)(/|$)|\.pyc$|\.merge$|\.orig$|^tools/gen/patch/blocks\.sha\.json$")
+FP = "tools/gen/patch/blocks.sha.json"     # 블록 지문 — 커밋하지 않는다(SKIP). 작업 폴더에는 put_fp 가 따로 넣는다
+SKIP = re.compile(r"(^|/)(__pycache__|\.git)(/|$)|\.pyc$|\.merge$|\.orig$|^" + re.escape(FP) + "$")
 IMG = (".png", ".webp", ".jpg", ".jpeg", ".gif")
 AUD = (".mp3", ".ogg", ".wav")
 TEXT = (".html", ".js", ".css", ".py", ".json", ".md", ".txt", ".csv", ".cjs", ".mjs", ".lua", ".svg")
@@ -50,11 +53,23 @@ PROPS = ["blotter", "book_pair", "book_stack", "candle", "candlestick", "coin_st
          "paperweight", "pen", "plant", "pocket_watch", "pouch", "rolled_map", "spectacles", "teacup", "teapot", "vase_flowers"]
 PATCH = ["apply_acadfit.py", "apply_crit.py", "apply_cslpers.py", "apply_cslwin.py", "apply_defy.py", "apply_desk.py",
          "apply_exped3.py", "apply_fdecline.py", "apply_job.py", "apply_lgfield.py", "apply_optsel.py", "apply_rookiefield.py",
-         "apply_sched.py", "apply_skgrade.py", "apply_tq.py", "apply_tqalign.py", "apply_tqcam.py", "apply_tqcenter.py",
+         "apply_roster.py", "apply_sched.py", "apply_skgrade.py", "apply_tq.py", "apply_tqalign.py", "apply_tqcam.py", "apply_tqcenter.py",
          "apply_tqfield.py", "apply_tqgrow.py", "apply_tqmaps.py", "apply_tqui.py", "apply_tune.py", "apply_webp.py",
          "blockguard.py", "blocks.sha.json", "cslwin_block.css", "cslwin_block.js", "desk_art.py", "desk_layout.json",
-         "mdesk_block.css", "mdesk_block.js", "sched_art.py", "sched_block.css", "sched_block.js", "sched_layout.json"]
+         "mdesk_block.css", "mdesk_block.js", "roster_block.css", "roster_block.js",
+         "sched_art.py", "sched_block.css", "sched_block.js", "sched_layout.json"]
 CW = "mockups/counsel-window/"
+SR = "mockups/student-roster/"
+SKILL_ICONS = {   # assets/skill-icons/<직업>/<이름>.webp — 직업마다 다섯 (일반 공격 · 스킬 둘 · 필살기 · 패시브)
+    "archer": ["aimed-shot", "hawk-eye", "meteor", "pierce", "sniper"], "bard": ["dissonance", "harmony", "march", "pluck", "victory"],
+    "darkpriest": ["curse", "drain", "pact-clean", "supper", "touch"], "druid": ["beast-form", "nature-recovery", "nature-wrath", "regen-seed", "thorn-whip"],
+    "enchanter": ["all-rune", "magic-seal", "permanent-rune", "rune-shot", "weapon-rune"], "forcemage": ["body", "overcharge", "shatter-foot", "strike", "unseal"],
+    "gunner": ["encore", "finale", "greeting", "knock", "waltz"], "monk": ["chi-wave", "circulation", "combo", "hundred-fists", "training"],
+    "ninja": ["fuma", "kunai", "swamp", "water-dragon", "water-mirage"], "paladin": ["guardian-vow", "healing-light", "holy-strike", "protective-oath", "sanctuary"],
+    "priest": ["blessing", "greater-heal", "holy-wave", "prayer", "revival"], "rogue": ["ambush", "assassinate", "poison", "shadow-step", "weakness"],
+    "spellsword": ["arcane-slash", "awakening", "echo", "thousand-blades", "triple"], "sword": ["counter", "earth-cleaver", "iron-wall", "slash", "taunt"],
+    "timemage": ["delay", "foresight", "haste", "time-shard", "time-stop"], "wizard": ["arcane-bolt", "fire-burst", "frost-field", "gravity", "resonance"],
+}
 PROFILES = {
     # 빌드에 늘 필요한 것 + 이 도우미 (빌드 결과물도 받는다 — 바뀐 그림 판정 · 커밋 mtime)
     "core": ["game.html", "heroschool.html", "site/index.html", "site/version.json", "wrap.py", "wrap_site.py",
@@ -75,6 +90,17 @@ PROFILES = {
                                            "placer_tpl.html", "props_counsel.py", "props_render.py", "spr_strip.py")]
               + [CW + "art/spr_%s.png" % j for j in JOBS]
               + ["assets/student-portraits-v2/%s-512.png" % j for j in JOBS],      # 목업의 학생 얼굴 (build_mockup)
+    # apply_roster 가 읽는 학생 명부 책 (1009) — 목업 원본의 CSS · HTML(roster_tpl.html) · 책 그림 · 배치. patch 와 같이
+    "rbook": [SR + f for f in ("src/roster_tpl.html", "art/book.png", "art/ribbon.png", "art/roster_layout.json")],
+    # 학생 명부 목업 · 배치판 (1009 · core 와 같이) — 결과물(목업 · 배치판 HTML)도 받는다: 다시 구운 것을 덮어쓸 때 mtime 으로 지킨다
+    "roster": [SR + f for f in ("README.md", "roster_mockup.html", "roster_placer.html", "art/book.png", "art/ribbon.png", "art/desk_bg.png",
+                                "art/sample_roster.json", "art/roster_layout.json")]
+              + [SR + "src/" + f for f in ("book_art.py", "build_mockup.py", "build_placer.py", "roster_build.py", "sample_roster.py",
+                                           "roster_tpl.html", "placer_tpl.html")]
+              + ["assets/mdesk_art/%s.webp" % k for k in ("base", "items", "props", "vig")]
+              + ["assets/student-portraits-v2/%s-512.png" % j for j in JOBS]
+              + ["assets/skill-icons/frame-%s.webp" % g for g in ("D", "C", "B", "A", "S", "EX")]
+              + ["assets/skill-icons/%s/%s.webp" % (j, n) for j in JOBS for n in SKILL_ICONS[j]],
 }
 
 
@@ -212,8 +238,11 @@ def run(cmd, env=None):
 def ingest(rels=None):
     """받은 사본(UPLOADS) → 원본(BASE) · 작업(WORK). PC 쪽이 바뀐 파일은 작업 폴더로 넘기거나 병합한다"""
     have = settle(UPLOADS)
+    asked = False
     if rels:
         rels = [rel_of(r) for r in rels]
+        asked = FP in rels
+        rels = [r for r in rels if r != FP]                 # 블록 지문은 끝의 put_fp 가 따로
         miss = [r for r in rels if r not in have]
         if miss:
             die("받은 사본에 없다: " + ", ".join(miss))
@@ -275,6 +304,39 @@ def ingest(rels=None):
         print("※ PC 쪽이 바뀐 파일은 mtime 을 지웠다 — 커밋 전에 그 stage 결과의 mtimeMs 를 hs.py mtimes 로")
     if st["conflict"]:
         print("※ 충돌을 먼저 처리한다 (해결 전에는 pack 이 멈춘다)")
+    put_fp(asked)
+
+
+def put_fp(asked=False):
+    """블록 지문(FP)은 SKIP 이라 ingest 가 건너뛴다 — 블록 지킴이가 읽도록 PC 것을 작업 폴더에 넣는다 (1009).
+    작업 폴더에 이미 있으면 그대로 둔다 — 이 세션의 apply 가 적은 지문을 PC 의 옛 지문으로 덮으면 다음 apply 가 괜히 멈춘다.
+    지문이 없거나 깨져 있으면 블록 지킴이는 아무 말 없이 통과시키므로, patch 를 받았는데 못 넣었으면 알린다."""
+    src, w = os.path.join(UPLOADS, FP), os.path.join(WORK, FP)
+    if os.path.exists(w):
+        if asked:
+            print("블록 지문: 작업 폴더에 이미 있어 그대로 둠 — PC 것으로 바꾸려면 작업 폴더의 것을 지우고 다시 sync")
+        return
+    want = os.path.isdir(os.path.dirname(w))            # patch 를 받았다 — 지문이 있어야 한다
+    missing = True
+    for i in range(4 if want else 1):                   # 받은 파일은 1초쯤 늦게 나타난다 · 반쯤 내려온 파일은 넣지 않는다
+        if i:
+            time.sleep(1)
+        try:
+            with open(src, encoding="utf-8") as f:
+                d = json.load(f)
+            if not isinstance(d, dict):
+                raise ValueError("블록 이름 → 지문 표가 아니다")
+            copy(src, w)
+            print("블록 지문: PC 의 %s 를 작업 폴더에 넣음 (블록 %d개 · 커밋하지 않는다)" % (FP, len(d)))
+            return
+        except FileNotFoundError:
+            missing = True
+        except ValueError:
+            missing = False
+    if missing and want:
+        print("※ 블록 지문(%s)을 받지 않았다 — 블록 지킴이가 첫 apply 를 그냥 통과시킨다 (patch 묶음에 들어 있다)" % FP)
+    elif not missing:
+        print("※ 블록 지문(%s)이 JSON 으로 읽히지 않아 넣지 않았다 — 블록 지킴이가 첫 apply 를 그냥 통과시킨다" % FP)
 
 
 def cmd_list(names):
@@ -422,7 +484,7 @@ def cmd_apply(args):
         die("apply 이름 [인자…]  (예: apply cslwin)")
     script = "tools/gen/patch/apply_%s.py" % args[0]
     if not os.path.exists(os.path.join(WORK, script)):
-        die("없다: %s — patch 묶음을 받았는지 (hs.py list patch)" % script)
+        die("없다: %s — patch 묶음을 받았는지 (hs.py list patch · apply roster 는 rbook 도)" % script)
     run([sys.executable, script, "game.html"] + args[1:])
 
 
@@ -430,6 +492,14 @@ def cmd_build(_):
     env = dict(os.environ, TZ="Asia/Seoul")
     run([sys.executable, "wrap.py"], env)
     run([sys.executable, "wrap_site.py"], env)
+    # 1009 — 리눅스의 wrap 은 LF 로 쓴다. PC(윈도우)에서 구운 것은 CRLF 라 PC 원본과 줄바꿈을 맞춘다 (.gitattributes text=auto 라 git 내용은 같다)
+    for rel in ("heroschool.html", "site/index.html"):
+        b, w = os.path.join(BASE, rel), os.path.join(WORK, rel)
+        if os.path.exists(b) and os.path.exists(w):
+            bb, wb = open(b, "rb").read(), open(w, "rb").read()
+            if bb.count(b"\r\n") > bb.count(b"\n") // 2 and b"\r\n" not in wb:
+                open(w, "wb").write(wb.replace(b"\n", b"\r\n"))
+                print("줄바꿈 CRLF 로 (PC 와 같게):", rel)
     v = jload(os.path.join(WORK, "site", "version.json"), {})
     print("빌드", v.get("build"))
 

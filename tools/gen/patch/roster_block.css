@@ -1,0 +1,19 @@
+/* ROSTERBK_CSS — 학생 명부 책 (1009 · apply_roster.py) ─ 그림자 DOM(#rbHost) 안에서만 쓴다.
+   목업 원본(roster_tpl.html 의 CORE_CSS)을 apply_roster 가 앞에 붙이고, 이 파일은 게임에서만 필요한 것 */
+.rbw{position:absolute;inset:0;overflow:hidden;-webkit-tap-highlight-color:transparent;font-synthesis:none}
+.rbscrim{position:absolute;inset:0;background:rgba(10,11,15,.62);transition:opacity .2s}
+.rbw.closed .rbscrim{opacity:0;pointer-events:none}
+.rbw.tm-drag,.rbw.tm-drag *{cursor:grabbing!important}
+/* 목업의 책상 · 무대 덮개는 쓰지 않는다 — 뒤는 게임 화면 (덮개는 .rbscrim 이 창 전체에) */
+#fitIn .desk,#fitIn > .scrim{display:none}
+#fitIn .book{outline:none}
+/* 스킬 강화 — 강화 포인트가 있을 때 카드 머리 오른쪽 (게임의 스킬 강화 팝업) */
+.skc .spr{position:absolute;right:6px;top:1px;display:flex;align-items:center;gap:6px;color:var(--ink3);line-height:18px;white-space:nowrap}
+.skc .spr b{font:12px/18px "Mulmaru Mono",Mulmaru;color:var(--brass);font-weight:400}
+.skc .spr .pbtn{height:20px;padding:0 8px;box-shadow:inset 2px 2px #fff0c980,inset -2px -2px #60422140,0 1px #30271e}
+/* 유물 해제 — 장착한 칸 오른쪽 (예전 학생 상세의 '해제'와 같다 — 보관함으로) */
+.slot .rn{min-width:0}
+.slot .rn .rnm{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.slot .uq{flex:none;align-self:center;height:20px;padding:0 5px;border:2px solid #c4ac84;background:#fffaf0;color:var(--ink2);cursor:pointer;line-height:16px;white-space:nowrap}
+.slot .uq:hover{border-color:var(--bad);color:var(--bad)}
+.slot .uq:focus-visible{outline:2px dashed var(--sel);outline-offset:1px}
