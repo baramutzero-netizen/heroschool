@@ -1119,6 +1119,26 @@ html body #btnTut.tutbtn{border:0!important;box-shadow:none!important;background
 .cslwho{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-weight:600}
 .cslwho .price{margin-left:auto;font-weight:400;font-size:12px;color:var(--muted)}
 .cslq{margin-top:8px;font-size:14px;line-height:1.75;color:var(--text)}
+/* COUNSEL_COOKIE_CSS_START */
+.cw-cookie-plate{position:absolute;left:270px;top:240px;width:68px;height:30px;padding:0;border:0;background:none;z-index:4;cursor:pointer;image-rendering:pixelated}
+/* This is a transparent hotspot over desk art, not a raised theme button. */
+html body .cw-ov .cw-win button.cw-cookie-plate,
+html body .cw-ov .cw-win button.cw-cookie-plate:is(:hover,:active,:focus,:focus-visible,:disabled){background:transparent!important;border:0!important;box-shadow:none!important;outline:none!important;filter:none!important;transform:none!important}
+.cw-cookie-plate:disabled{cursor:default;pointer-events:none}
+.cw-cookie-plate svg{width:100%;height:100%;opacity:0;overflow:visible;pointer-events:none}
+.cw-cookie-plate:not(:disabled):hover svg,.cw-cookie-plate:focus-visible svg{opacity:1}
+.cw-cookie-plate::after{content:'쿠키';display:none;position:absolute;bottom:34px;left:15px;background:#30251d;color:#fff3ce;padding:2px 5px;white-space:nowrap;font-size:12px}
+.cw-cookie-plate:not(:disabled):hover::after,.cw-cookie-plate:focus-visible::after{display:block}
+.cw-cookie-area{position:absolute;inset:0;z-index:12;touch-action:none;cursor:grab}
+.cw-cookie-area[hidden]{display:none!important}
+.cw-cookie-area.near{cursor:pointer}
+.cw-cookie-art{position:absolute;width:40px;height:40px;image-rendering:pixelated;pointer-events:none}
+.cw-cookie-sprite{position:absolute;left:152px;top:60px;width:256px;height:256px;transform-origin:128px 228px;image-rendering:pixelated;pointer-events:none}
+.cookie-holding .cw-clouds{visibility:hidden;pointer-events:none}
+.cookie-holding .cw-say{pointer-events:none}
+.cw-cookie-note{display:none!important}
+/* COUNSEL_COOKIE_CSS_END */
+
 /* CSLWIN_CSS_START — 상담창 (1008 · apply_cslwin.py) ─ 상담 메뉴를 누르면 뜨는 창. mockups/counsel-window 목업 그대로
    창 588px · 무대 560 × 360 (1배 280 × 180 도트를 2배로) · 아래 글 상자. 글꼴은 물마루 12 / 20px. 좁은 화면은 .compact (무대만 줄이고 글은 그대로) */
 .cw-ov{position:fixed;inset:0;z-index:80;display:flex;padding:8px;overflow-x:hidden;overflow-y:auto;background:rgba(10,11,15,.6);
@@ -2577,6 +2597,22 @@ html.tq-ban .tq-title{animation:tqTitleBan 1500ms linear both}
 <script src="assets/spr_x_img/druid.png.js?v=f9499a42"></script>
 <script src="assets/spr_x_img/timemage.png.js?v=44f13541"></script>
 <script src="assets/spr_x_img/sword.png.js?v=238a83e1"></script>
+<script src="assets/counsel-cookie/rogue.png.js?v=74466f1b"></script>
+<script src="assets/counsel-cookie/wizard.png.js?v=626b6975"></script>
+<script src="assets/counsel-cookie/enchanter.png.js?v=d75e3a24"></script>
+<script src="assets/counsel-cookie/timemage.png.js?v=a375e6ee"></script>
+<script src="assets/counsel-cookie/bard.png.js?v=10fdbfa6"></script>
+<script src="assets/counsel-cookie/archer.png.js?v=f25c6a69"></script>
+<script src="assets/counsel-cookie/gunner.png.js?v=00611e01"></script>
+<script src="assets/counsel-cookie/forcemage.png.js?v=d0aa22af"></script>
+<script src="assets/counsel-cookie/monk.png.js?v=2fd4b0b0"></script>
+<script src="assets/counsel-cookie/spellsword.png.js?v=4d27b048"></script>
+<script src="assets/counsel-cookie/darkpriest.png.js?v=0c03ae69"></script>
+<script src="assets/counsel-cookie/priest.png.js?v=6ee3d920"></script>
+<script src="assets/counsel-cookie/druid.png.js?v=3a5b52a3"></script>
+<script src="assets/counsel-cookie/ninja.png.js?v=a4ea53c5"></script>
+<script src="assets/counsel-cookie/sword.png.js?v=19f6d36f"></script>
+<script src="assets/counsel-cookie/paladin.png.js?v=e61e9c94"></script>
 <!-- ASSET_SCRIPTS_END -->
 <script>
 /* ══════ 도트 스프라이트 ══════ */
@@ -3992,6 +4028,7 @@ function cslFacBonus(){
   return {lead: Math.floor((n+2)/3), info: Math.floor((n+1)/3), net: Math.floor(n/3)};
 }
 const ITEMS = {
+  cookie: {n:"쿠키",d:"상담 중 사용",price:200,ex:0,consumable:true},
   weight:  {n:"중량 조끼", d:"고강도 체력 훈련 해금",     price:900, ex:1},
   dummy:   {n:"강철 목인", d:"실전 타격 훈련 해금",       price:1100, ex:1},
   stone:   {n:"명상석",    d:"심층 명상 해금",            price:1000, ex:2},
@@ -6460,7 +6497,7 @@ function dietDisc(){
 function evDisc(k){ const lv = jobEvLv(k); return (lv >= 1 ? .05 : 0) + (lv >= 2 ? .10 : 0); }
 function facDisc(){ return evDisc("salon"); }
 function itemDisc(){ return evDisc("inn"); }
-function itemPrice(k){ const it = ITEMS[k]; return it ? Math.round(it.price * (1 - itemDisc())) : 0; }
+function itemPrice(k){ if(k === "cookie") return 200; const it = ITEMS[k]; return it ? Math.round(it.price * (1 - itemDisc())) : 0; }
 function dietPrice(d){ return Math.round((d||dietDef()).price * (1 - dietDisc()) * (townBuff("dietHalf") ? TOWN_DIET_MUL : 1)); }   // 밭주인 할아버지 · 마을 사냥꾼 — 이번 계절 식비 절반 (1004)
 function dietCostWeek(){ return dietPrice() * (S.students||[]).length; }
 function dietMul(){ return 1 + dietDef().eff + (townBuff("trainEff") ? TOWN_TRAIN_EFF : 0); }   // 주점 주인 — 이번 계절 훈련 효율 +20% (1004)
@@ -8889,7 +8926,7 @@ const CSL_LEAD = .04, CSL_INFO = .06, CSL_NET = .04;
 function cslLead(){ return S.master.lead + cslFacBonus().lead; }
 function cslInfo(){ return S.master.info + cslFacBonus().info; }
 function cslNet(){  return S.master.net  + cslFacBonus().net;  }
-function cslLeadP(){ return clamp(cslLead()*CSL_LEAD, 0, .95); }
+function cslLeadP(extra=0){ return clamp((cslLead()+extra)*CSL_LEAD, 0, .95); }
 function cslInfoP(){ return clamp(cslInfo()*CSL_INFO, 0, .95); }
 function cslNetP(){  return clamp(cslNet() *CSL_NET,  0, .95); }
 const CSL_QUEUE_MAX = 5;
@@ -8933,7 +8970,8 @@ function answerCounsel(qi, oi, win){   // win — 상담창(1008): 화면을 다
   const o = c.o[oi];
   const fit = (o.f||[]).includes(st.pers||"plain");
   // 지도력 — 성격에 맞지 않아도 설득해낸다
-  const byLead = !fit && (RNG() < cslLeadP());
+  const cookie = !!q.cookieFed;
+  const byLead = !fit && (RNG() < cslLeadP(cookie ? 2 : 0));
   const byTrust = !fit && !byLead && trustFull(st);   // 운명 단계는 무슨 말이든 닿는다
   const ok = fit || byLead || byTrust;
   const ans = cslAnswer(c, oi, st, fit ? "fit" : byLead ? "lead" : byTrust ? "trust" : "miss");   // 1008 — 성격마다 대답 · 반응
@@ -8946,6 +8984,7 @@ function answerCounsel(qi, oi, win){   // win — 상담창(1008): 화면을 다
       let d = ri(2,4);
       // 호소력 — 상승폭 2배
       if(RNG() < cslNetP()){ d *= 2; dbl = true; }
+      if(cookie) d *= 2; // independent of charisma; both bonuses = x4 before cap
       const before = st.ment[m.k];
       st.ment[m.k] = clamp(before + d, 1, mentCapOf(st, m.k));
       gain = {k:m.k, n:m.n, d: +(st.ment[m.k]-before).toFixed(2)};
@@ -8956,13 +8995,13 @@ function answerCounsel(qi, oi, win){   // win — 상담창(1008): 화면을 다
   const tb1 = trustBand(trustOf(st)).step;
   C.queue.splice(qi,1);
   C.usedC.push(c.id); C.usedS.push(st.id);
-  C.done.push({sid:st.id, name:dn(st), pers:st.pers, cid:c.id, oi, fit:ok, byLead, byTrust, dbl, gain, capped, reply:ans.say, react:ans.r,
+  C.done.push({sid:st.id, name:dn(st), pers:st.pers, cid:c.id, oi, fit:ok, byLead, byTrust, cookie, dbl, gain, capped, reply:ans.say, react:ans.r,
     phase:q.phase||S.phase, week:q.week||(S.week+1)});
   logE(ok
-    ? `상담 — <b>${dnH(st)}</b>(${personaOf(st).n})의 마음에 닿았다.${byLead? ` <span style="color:var(--brass)">지도력으로 설득</span>`:""}${byTrust? ` <span style="color:var(--brass)">운명 단계 — 무엇을 말해도 닿는다</span>`:""}${gain? ` <b style="color:var(--ok)">${gain.n} +${gain.d}</b>${dbl? ` <span style="color:var(--brass)">(호소력 2배)</span>`:""}`:""}${capped? ` <span style="color:var(--dim)">더 오를 항목이 없다 — 멘탈리티가 모두 한계다</span>`:""} · <span style="color:var(--brass)">신뢰 ${trustGainWord(1)}</span>`
+    ? `상담 — <b>${dnH(st)}</b>(${personaOf(st).n})의 마음에 닿았다.${byLead? ` <span style="color:var(--brass)">지도력으로 설득</span>`:""}${byTrust? ` <span style="color:var(--brass)">운명 단계 — 무엇을 말해도 닿는다</span>`:""}${gain? ` <b style="color:var(--ok)">${gain.n} +${gain.d}</b>${dbl? ` <span style="color:var(--brass)">(호소력 2배)</span>`:""}`:""}${cookie? ` <span style="color:var(--brass)">(쿠키 상승량 2배)</span>`:""}${capped? ` <span style="color:var(--dim)">더 오를 항목이 없다 — 멘탈리티가 모두 한계다</span>`:""} · <span style="color:var(--brass)">신뢰 ${trustGainWord(1)}</span>`
     : `상담 — <b>${dnH(st)}</b>(${personaOf(st).n})${eunn(personaOf(st).n)} 아직 납득하지 못한 표정이다.`, ok?"good":"");
   save();
-  const res = {ok, fit, byLead, byTrust, gain, dbl, capped, say:ans.say, r:ans.r, trustUp: trustRaw(st) > tr0, trustDown:false, band: tb1 !== tb0 ? tb1 : null};   // 1008 — 상담창
+  const res = {ok, fit, byLead, byTrust, cookie, gain, dbl, capped, say:ans.say, r:ans.r, trustUp: trustRaw(st) > tr0, trustDown:false, band: tb1 !== tb0 ? tb1 : null};   // 1008 — 상담창
   if(win) return res;
   render();
   toast(ok? (gain? `${dn(st)} — ${gain.n} +${gain.d}${dbl?" (2배)":""}` : capped? `${dn(st)} — 멘탈리티가 모두 한계다. 신뢰만 깊어졌다` : `${dn(st)}의 마음에 닿았다`) : `${dn(st)}${eunn(st.name)} 납득하지 못했다`);
@@ -9178,7 +9217,8 @@ function answerDefy(pi, oi, win){   // win — 상담창(1008): 화면을 다시
   if(!st){ D.pend.splice(pi,1); save(); if(!win) render(); return null; }
   const key = p.from + ">" + p.to;
   const fit = (DEFY_FIT[oi]||[]).includes(st.pers||"plain");
-  const byLead = !fit && (RNG() < cslLeadP());                // 지도력 — 성격에 맞지 않아도 설득해낸다
+  const cookie = !!p.cookieFed;
+  const byLead = !fit && (RNG() < cslLeadP(cookie ? 2 : 0));                // 지도력 — 성격에 맞지 않아도 설득해낸다
   const byTrust = !fit && !byLead && trustFull(st);
   const ok = fit || byLead || byTrust;
   const tb0 = trustBand(trustOf(st)).step, tr0 = trustRaw(st);
@@ -9190,6 +9230,7 @@ function answerDefy(pi, oi, win){   // win — 상담창(1008): 화면을 다시
       const m = pick(ks);
       let d = ri(2,4);
       if(RNG() < cslNetP()){ d *= 2; dbl = true; }              // 호소력 — 상승폭 2배
+      if(cookie) d *= 2; // independent of charisma; both bonuses = x4 before cap
       const before = st.ment[m.k];
       st.ment[m.k] = clamp(before + d, 1, mentCapOf(st, m.k));
       gain = {k:m.k, n:m.n, d: +(st.ment[m.k]-before).toFixed(2)};
@@ -9202,16 +9243,16 @@ function answerDefy(pi, oi, win){   // win — 상담창(1008): 화면을 다시
   D.imm[st.id] = defySeason() + seasons;
   D.pend.splice(pi, 1);
   const R2 = DEFY_REACT[st.pers||"plain"] || DEFY_REACT.plain;
-  D.log.push({sid:st.id, name:dn(st), pers:st.pers||"plain", from:p.from, to:p.to, jk:p.jk||null, oi, ok, byLead, byTrust, dbl, gain, capped, cond, seasons,
+  D.log.push({sid:st.id, name:dn(st), pers:st.pers||"plain", from:p.from, to:p.to, jk:p.jk||null, oi, ok, byLead, byTrust, cookie, dbl, gain, capped, cond, seasons,
     year:p.year||S.year, phase:p.phase||S.phase, week:p.week||(S.week+1),
     ans: defyFill(defyLine(st, key), p), reply: (DEFY_REPLY[key]||DEFY_REPLY["train>rest"])[oi]||"", react: masterQ(ok ? R2[0] : R2[1], st, true)});
   if(D.log.length > DEFY_LOG_MAX) D.log.splice(0, D.log.length - DEFY_LOG_MAX);
   logE(ok
-    ? `지침 무시 상담 — <b>${dnH(st)}</b>(${personaOf(st).n})${iga(st.name)} 마스터의 뜻을 받아들였다.${byLead? ` <span style="color:var(--brass)">지도력으로 설득</span>`:""}${gain? ` <b style="color:var(--ok)">${gain.n} +${gain.d}</b>${dbl? ` <span style="color:var(--brass)">(호소력 2배)</span>`:""}`:""}${cond? ` · 컨디션 +${cond}`:""} · 신뢰 증가 · 앞으로 한동안 지침을 잘 따를 것 같다.`
+    ? `지침 무시 상담 — <b>${dnH(st)}</b>(${personaOf(st).n})${iga(st.name)} 마스터의 뜻을 받아들였다.${byLead? ` <span style="color:var(--brass)">지도력으로 설득</span>`:""}${gain? ` <b style="color:var(--ok)">${gain.n} +${gain.d}</b>${dbl? ` <span style="color:var(--brass)">(호소력 2배)</span>`:""}`:""}${cookie? ` <span style="color:var(--brass)">(쿠키 상승량 2배)</span>`:""}${cond? ` · 컨디션 +${cond}`:""} · 신뢰 증가 · 앞으로 한동안 지침을 잘 따를 것 같다.`
     : `지침 무시 상담 — <b>${dnH(st)}</b>(${personaOf(st).n})${eunn(st.name)} 납득하지 못한 표정이다. 신뢰 감소 · 일단은 지침을 따를 것 같다.`, ok? "good" : "");
   save();
   const rx = masterQ(ok ? R2[0] : R2[1], st, true), rq = rx.match(/“([^”]*)”/);   // 1008 — 상담창
-  const res = {ok, fit, byLead, byTrust, gain, dbl, capped, cond, say: rq ? rq[1] : rx, r: rx.replace(/“[^”]*”/, "").trim(), trustUp: trustRaw(st) > tr0, trustDown: trustRaw(st) < tr0, band: tb1 !== tb0 ? tb1 : null};
+  const res = {ok, fit, byLead, byTrust, cookie, gain, dbl, capped, cond, say: rq ? rq[1] : rx, r: rx.replace(/“[^”]*”/, "").trim(), trustUp: trustRaw(st) > tr0, trustDown: trustRaw(st) < tr0, band: tb1 !== tb0 ? tb1 : null};
   if(win) return res;
   render();
   toast(ok ? `${dn(st)} — 지침을 따르겠다고 한다${gain? ` · ${gain.n} +${gain.d}${dbl?" (2배)":""}`:""}` : `${dn(st)} — 납득하지 못했지만 일단 따르겠다고 한다`);
@@ -9270,6 +9311,148 @@ function defyRecords(){
     </div>`;
   }).join("");
 }
+
+const CSL_COOKIE_META={"rogue":{"axis":70,"mouth":[73,68]},"wizard":{"axis":70,"mouth":[72,72]},"enchanter":{"axis":70,"mouth":[76,64]},"timemage":{"axis":64,"mouth":[76,65]},"bard":{"axis":70,"mouth":[76,60]},"archer":{"axis":70,"mouth":[77,58]},"gunner":{"axis":70,"mouth":[77,59]},"forcemage":{"axis":64,"mouth":[73,68]},"monk":{"axis":74,"mouth":[83,66]},"spellsword":{"axis":70,"mouth":[75,73]},"darkpriest":{"axis":64,"mouth":[70,62]},"priest":{"axis":64,"mouth":[70,61]},"druid":{"axis":70,"mouth":[77,59]},"ninja":{"axis":74,"mouth":[80,72]},"sword":{"axis":70,"mouth":[75,62]},"paladin":{"axis":64,"mouth":[66,60]}};
+const CSL_COOKIE_IMG={"rogue":HS_A["counsel-cookie/rogue.png"],"wizard":HS_A["counsel-cookie/wizard.png"],"enchanter":HS_A["counsel-cookie/enchanter.png"],"timemage":HS_A["counsel-cookie/timemage.png"],"bard":HS_A["counsel-cookie/bard.png"],"archer":HS_A["counsel-cookie/archer.png"],"gunner":HS_A["counsel-cookie/gunner.png"],"forcemage":HS_A["counsel-cookie/forcemage.png"],"monk":HS_A["counsel-cookie/monk.png"],"spellsword":HS_A["counsel-cookie/spellsword.png"],"darkpriest":HS_A["counsel-cookie/darkpriest.png"],"priest":HS_A["counsel-cookie/priest.png"],"druid":HS_A["counsel-cookie/druid.png"],"ninja":HS_A["counsel-cookie/ninja.png"],"sword":HS_A["counsel-cookie/sword.png"],"paladin":HS_A["counsel-cookie/paladin.png"]};
+const CSL_COOKIE_AUDIO={eat:"assets/counsel-cookie/eat.mp3",thanks:"assets/counsel-cookie/thanks.mp3"};
+/* COUNSEL_COOKIE_START — consumable inventory and per-session reward, persisted in save state. */
+const COOKIE_PRICE = 200, COOKIE_LIMIT = 2;
+function cookieStock(){ return Math.max(0, Math.floor(Number(S.cookies)||0)); }
+function cookieShopState(){
+  const key = `${S.year}-${S.phase}`;
+  if(!S.cookieShop || S.cookieShop.key !== key) S.cookieShop = {key, bought:0};
+  return S.cookieShop;
+}
+function cookieBuyLeft(){ return Math.max(0, COOKIE_LIMIT - (cookieShopState().bought|0)); }
+function buyCookie(){
+  if(!shopUnlocked()) return false;
+  if(!cookieBuyLeft()){ toast("이번 계절의 쿠키는 모두 구입했다."); return false; }
+  if(S.gold < COOKIE_PRICE){ toast("자금이 부족하다."); return false; }
+  S.gold -= COOKIE_PRICE; S.cookies = cookieStock()+1; cookieShopState().bought++;
+  sfxPlay("coin"); logE(`<b>쿠키</b> 구입 — 200 G · 보유 ${cookieStock()}개 · 이번 계절 ${cookieBuyLeft()}개 구입 가능`,"good");
+  save(); render(); return true;
+}
+function cookieShopCard(){
+  const left = cookieBuyLeft();
+  return `<button class="opt ${!left?'locked':S.gold<COOKIE_PRICE?'poor':''}" data-item="cookie" ${!left?'disabled':''}>
+    <div class="on">쿠키<span class="price">200 G</span></div>
+    <div class="od">상담 중 사용 · 해당 상담 지도력 +2 · 성공 시 멘탈리티 상승량 +100%</div>
+    <div class="od">보유 ${cookieStock()}개 · 이번 계절 ${left}/2개 구입 가능</div></button>`;
+}
+function cslCookieRecord(s){
+  if(!s) return null;
+  return s.kind==='defy' ? defyState().pend.find(p=>p && p.sid===s.e.sid)
+    : counselState().queue.find(q=>q && q.sid===s.e.sid && q.cid===s.e.cid);
+}
+function cslCookieConsume(s){
+  const q = cslCookieRecord(s);
+  if(!q || q.cookieFed || cookieStock()<1) return false;
+  S.cookies = cookieStock()-1; q.cookieFed = true;
+  save(); return true;
+}
+const CW_COOKIE = {token:0, frame:0, active:false, canvas:null, source:null, facing:1, bites:0, audio:null, thanks:null};
+function cslCookieRefresh(){
+  const b=cwq('.cw-cookie-plate'); if(!b) return;
+  const q=cslCookieRecord(CSLW.cur), fed=!!(q && q.cookieFed);
+  b.disabled=CSLW.phase!=='choose' || cookieStock()<1 || fed;
+  b.title=fed?'이 상담에서는 이미 쿠키를 먹었습니다.':cookieStock()?`쿠키 건네기 · 보유 ${cookieStock()}개`:'쿠키가 없습니다. 도구상에서 구입할 수 있습니다.';
+  b.setAttribute('aria-label',b.title); b.onclick=cslCookieStart;
+  const note=cwq('.cw-cookie-note');
+  if(note) note.textContent='';
+}
+function cslCookieStop(){
+  if(CSLW.phase.startsWith("cookie-") && CSLW.typing) CSLW.typing();
+  CW_COOKIE.token++; CW_COOKIE.active=false; cancelAnimationFrame(CW_COOKIE.frame);
+  for(const a of [CW_COOKIE.audio,CW_COOKIE.thanks]) if(a){ a.pause(); a.currentTime=0; }
+  if(CW_COOKIE.canvas){ CW_COOKIE.canvas.remove(); CW_COOKIE.canvas=null; }
+  const spr=cwq('.cw-spr'); if(spr) spr.style.visibility='';
+  const area=cwq('.cw-cookie-area'); if(area){ area.hidden=true; area.onpointermove=area.onpointerup=area.onpointerdown=area.onpointercancel=area.oncontextmenu=null; }
+  const scene=cwq('.cw-mid'); if(scene) scene.classList.remove('cookie-holding');
+}
+function cslCookieCancel(){
+  if(!['cookie-loading','cookie-hold'].includes(CSLW.phase)) return;
+  cslCookieStop(); CSLW.phase='choose'; cslCookieRefresh(); cwFocus();
+  cwq('.cw-bt').textContent='어떻게 답할까.';
+  if(CSLW.cur) cwq('.cw-st').innerHTML=CSLW.cur.q;
+}
+function cslCookiePoint(e){ const r=cwq('.cw-scene').getBoundingClientRect(); return {x:(e.clientX-r.left)*560/r.width,y:(e.clientY-r.top)*360/r.height}; }
+function cslCookieMouth(){
+  const st=CSLW.cur.st,T=cslwTune(st.job),m=CSL_COOKIE_META[st.job],x=CW_COOKIE.facing<0?m.axis*2-m.mouth[0]:m.mouth[0];
+  return {x:280+2*T.x+(x*2-128)*T.s,y:288+2*T.y+(m.mouth[1]*2-228)*T.s};
+}
+function cslCookieNear(p){ const m=cslCookieMouth(); return Math.hypot(p.x-m.x,p.y-m.y)<70 && p.y<235; }
+function cslCookieDrawSprite(dx=0,dy=0){
+  const cv=CW_COOKIE.canvas; if(!cv || !CW_COOKIE.source) return;
+  const g=cv.getContext('2d'),st=CSLW.cur.st,T=cslwTune(st.job),m=CSL_COOKIE_META[st.job];
+  g.clearRect(0,0,128,128); g.save(); if(CW_COOKIE.facing<0){g.translate(m.axis*2,0);g.scale(-1,1);}g.drawImage(CW_COOKIE.source,0,0);g.restore();
+  cv.style.scale=String(T.s); cv.style.translate=`${2*T.x+dx}px ${2*T.y+dy}px`;
+}
+function cslCookieArt(n){
+  const cv=cwq('.cw-cookie-art'); if(!cv) return;
+  const c=cv.getContext('2d'); c.clearRect(0,0,20,20); if(n>=3)return;
+  c.fillStyle='#694024';c.fillRect(5,2,10,16);c.fillRect(2,5,16,10);c.fillStyle='#d69c4f';c.fillRect(5,3,10,14);c.fillRect(3,5,14,10);c.fillStyle='#f5ce79';c.fillRect(5,4,9,2);c.fillRect(4,6,2,7);c.fillStyle='#754426';[[7,7],[13,6],[11,11],[6,13],[14,14]].forEach(([x,y])=>c.fillRect(x,y,2,2));
+  c.save();c.globalCompositeOperation='destination-out';
+  if(n>=1)[[12,0,8,7],[11,2,9,6],[12,8,8,2],[14,10,6,1]].forEach(a=>c.fillRect(...a));
+  if(n>=2)[[0,0,9,7],[0,5,10,3],[0,8,8,2],[0,10,5,1]].forEach(a=>c.fillRect(...a));c.restore();
+}
+function cslCookieMove(p){
+  CW_COOKIE.point=p;
+  const T=cslwTune(CSLW.cur.st.job),m=CSL_COOKIE_META[CSLW.cur.st.job],center=280+2*T.x+(m.axis-64)*2*T.s;
+  CW_COOKIE.facing=p.x<center-8?-1:p.x>center+8?1:CW_COOKIE.facing;
+  cslCookieDrawSprite(); const cv=cwq('.cw-cookie-art');cv.style.left=(p.x-20)+'px';cv.style.top=(p.y-20)+'px';
+  cwq('.cw-cookie-area').classList.toggle('near',cslCookieNear(p));
+}
+async function cslCookieStart(){
+  if(CSLW.phase!=='choose' || !cookieStock() || cslCookieRecord(CSLW.cur)?.cookieFed) return;
+  cslCookieStop();const token=CW_COOKIE.token,run=CSLW.run,s=CSLW.cur;
+  CSLW.phase='cookie-loading';cslCookieRefresh();
+  try{
+    const im=new Image(); await new Promise((resolve,reject)=>{im.onload=resolve;im.onerror=reject;im.src=CSL_COOKIE_IMG[s.st.job];});
+    if(!cwLive(run) || token!==CW_COOKIE.token || CSLW.cur!==s) return;
+    const cv=document.createElement('canvas');cv.width=cv.height=128;const g=cv.getContext('2d',{willReadFrequently:true});g.imageSmoothingEnabled=false;g.drawImage(im,0,0);
+    const lut=sprLut(s.st.job,sprPalOf(s.st));if(lut)sprSwap(g,128,128,lut);
+    const img=g.getImageData(0,0,128,128),d=img.data,m=new Uint8Array(128*128);for(let i=0;i<m.length;i++)m[i]=d[i*4+3]>0;
+    for(let y=0;y<128;y++)for(let x=0;x<128;x++){let i=y*128+x;if(m[i])continue;let on=false;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){let xx=x+dx,yy=y+dy;if(xx>=0&&xx<128&&yy>=0&&yy<128&&m[yy*128+xx])on=true;}if(on){d[i*4]=d[i*4+1]=d[i*4+2]=17;d[i*4+3]=255;}}g.putImageData(img,0,0);
+    CW_COOKIE.source=cv;CW_COOKIE.canvas=document.createElement('canvas');CW_COOKIE.canvas.width=CW_COOKIE.canvas.height=128;CW_COOKIE.canvas.className='cw-cookie-sprite';cwq('.cw-stu').appendChild(CW_COOKIE.canvas);cwq('.cw-spr').style.visibility='hidden';
+    CW_COOKIE.active=true;CW_COOKIE.facing=1;CW_COOKIE.bites=0;
+    CSLW.phase='cookie-hold';cwq('.cw-mid').classList.add('cookie-holding');const area=cwq('.cw-cookie-area');area.hidden=false;
+    cslCookieArt(0);cslCookieMove({x:305,y:250});
+    cwq('.cw-bt').textContent='눈이 반짝! 쿠키를 기다리고 있어요.';
+    cwType(cwq('.cw-st'),'…저 주시는 건가요?',CSLW_CPS,'csl_stu');
+    area.onpointermove=e=>{if(CSLW.phase==='cookie-hold'){e.preventDefault();cslCookieMove(cslCookiePoint(e));}};
+    area.onpointerdown=e=>{if(CSLW.phase!=='cookie-hold')return;e.preventDefault();area.setPointerCapture(e.pointerId);cslCookieMove(cslCookiePoint(e));};
+    area.onpointerup=e=>{if(CSLW.phase!=='cookie-hold')return;e.preventDefault();if(e.button===2){cslCookieCancel();return;}const p=cslCookiePoint(e);cslCookieMove(p);if(cslCookieNear(p))cslCookieGive(p);};
+    area.onpointercancel=()=>cslCookieCancel();area.oncontextmenu=e=>{e.preventDefault();cslCookieCancel();};cwFocus();
+  }catch(e){if(cwLive(run)&&token===CW_COOKIE.token){cslCookieCancel();toast('쿠키 표정을 불러오지 못했습니다. 다시 시도해 주세요.');}}
+}
+function cslCookieGive(p){
+  if(CSLW.phase!=='cookie-hold')return;
+  const s=CSLW.cur,run=CSLW.run,token=CW_COOKIE.token;
+  if(!cslCookieRecord(s) || cslCookieRecord(s).cookieFed || !cookieStock()){cslCookieCancel();return;}
+  if(CSLW.typing) CSLW.typing();
+  CSLW.phase='cookie-eat';cslCookieMove(p);cwq('.cw-bt').textContent='냠…';
+  const audio=new Audio(CSL_COOKIE_AUDIO.eat);CW_COOKIE.audio=audio;audio.volume=Math.min(1,sfxGain()*.8);
+  let fallback=null,playing=false,lastTime=0,lastAdvance=cwNow(),committed=false;
+  audio.play().then(()=>{if(token===CW_COOKIE.token)playing=true;else audio.pause();}).catch(()=>{fallback=cwNow();});
+  const start=cwNow(),times=[.36,1.18,1.84];
+  function tick(){
+    if(!cwLive(run)||token!==CW_COOKIE.token||CSLW.cur!==s)return;
+    const now=cwNow();if(audio.currentTime>lastTime){lastTime=audio.currentTime;lastAdvance=now;}
+    if(fallback===null && ((!playing&&now-start>1800)||(playing&&now-lastAdvance>1800)))fallback=now-lastTime*1000;
+    const t=fallback!==null?(now-fallback)/1000:audio.currentTime;
+    const n=times.filter(at=>t>=at).length;
+    if(n && !committed){if(!cslCookieConsume(s)){CSLW.phase='cookie-hold';cslCookieCancel();return;}committed=true;}
+    if(n!==CW_COOKIE.bites){CW_COOKIE.bites=n;cslCookieArt(n);}
+    let amount=0;for(const at of times)if(t>=at-.27&&t<=at+.26){amount=t<at?(t-at+.27)/.27:1-(t-at)/.26;amount=amount*amount*(3-2*amount);break;}
+    const mouth=cslCookieMouth();cslCookieDrawSprite(Math.round((p.x-mouth.x)*amount),Math.round((p.y-mouth.y)*amount));
+    if(t>=2.24){
+      cslCookieStop();CSLW.phase='cookie-thanks';cwq('.cw-st').textContent='맛있어요. 감사합니다!';cwq('.cw-bt').textContent='쿠키를 맛있게 먹었어요.';
+      const a=new Audio(CSL_COOKIE_AUDIO.thanks);CW_COOKIE.thanks=a;a.volume=Math.min(1,sfxGain()*.8);a.play().catch(()=>{});
+      const doneToken=CW_COOKIE.token;setTimeout(()=>{if(cwLive(run)&&CSLW.cur===s&&doneToken===CW_COOKIE.token){cwq('.cw-st').innerHTML=s.q;CSLW.phase='choose';cslCookieRefresh();}},1500);return;
+    }CW_COOKIE.frame=requestAnimationFrame(tick);
+  }CW_COOKIE.frame=requestAnimationFrame(tick);
+}
+/* COUNSEL_COOKIE_END */
 
 /* CSLWIN_START — 상담창 (1008 · apply_cslwin.py) ─ 상담 메뉴를 누르면 뜨는 창. mockups/counsel-window 목업을 게임에 옮겼다
    흐름: 학생이 책상 뒤로 들어온다 → 학생을 누르면 고민을 털어놓는다(지침 무시는 마스터가 먼저 묻는다) → 답변 구름 셋 중 하나를 고른다
@@ -9391,10 +9574,12 @@ function cslwHtml(){
         <div class="cw-stu"><div class="cw-spr"></div><img class="cw-face" alt="" draggable="false"><div class="cw-hit"></div></div>
         <div class="cw-dots" aria-hidden="true">…</div>
         <div class="cw-front" style="background-image:url(${CSL_ART.front})"></div>
+        <button type="button" class="cw-cookie-plate" disabled aria-label="쿠키 접시"><svg viewBox="0 0 68 30" aria-hidden="true"><path d="M16 2H50V4H58V8H64V12H67V18H63V22H57V26H49V28H17V26H9V22H3V18H1V12H5V8H11V4H16Z" fill="none" stroke="#fff4c9" stroke-width="2"/></svg></button>
+        <div class="cw-cookie-area" hidden><canvas class="cw-cookie-art" width="20" height="20"></canvas></div>
       </div></div>
       <div class="cw-over"><div class="cw-say"><div class="cw-sn"></div><div class="cw-st"></div></div><div class="cw-clouds"></div></div>
     </div>
-    <div class="cw-box"><div class="cw-who"></div><div class="cw-bt"></div><div class="cw-more" aria-hidden="true">▼</div><button type="button" class="cw-next">넘어가기 ▶</button></div>
+    <div class="cw-box"><div class="cw-who"></div><div class="cw-bt"></div><div class="cw-cookie-note" aria-live="polite"></div><div class="cw-more" aria-hidden="true">▼</div><button type="button" class="cw-next">넘어가기 ▶</button></div>
   </div></div></div></div>`;
 }
 function cslwOpen(){
@@ -9435,6 +9620,7 @@ function cslwOpen(){
   });
 }
 function cslwClose(done){
+  cslCookieStop();
   const el = CSLW.el; if(!el) return;
   CSLW.run++;
   if(CSLW.typing) CSLW.typing();
@@ -9450,6 +9636,10 @@ function cslwClose(done){
 }
 function cslwKey(e){
   if(!CSLW.el) return;
+  if(CSLW.phase.startsWith("cookie-")){
+    if(e.key==="Escape"){e.preventDefault();e.stopPropagation();if(CSLW.phase==='cookie-hold'||CSLW.phase==='cookie-loading')cslCookieCancel();else cslwClose();return;}
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();if(CSLW.phase==='cookie-hold'&&!e.repeat){const m=cslCookieMouth();cslCookieGive({x:m.x+28,y:m.y});}return;}
+  }
   if(e.key === "Escape"){ e.preventDefault(); e.stopPropagation(); cslwClose(); return; }
   if(CSLW.phase === "choose" && /^[1-3]$/.test(e.key)){                 // 1 · 2 · 3 — 그 구름으로 답한다
     const c = cwq(".cw-clouds").children[+e.key - 1];
@@ -9458,7 +9648,7 @@ function cslwKey(e){
   }
   if(e.key !== " " && e.key !== "Enter") return;
   const t = e.target, btn = t && t.closest ? t.closest(".cw-win button") : null;
-  if(btn && (btn.classList.contains("cw-x") || (btn.classList.contains("on") && !btn.classList.contains("off")))){   // 초점이 있는 단추는 그 단추가 눌린다
+  if(btn && (btn.classList.contains("cw-x") || (btn.classList.contains("cw-cookie-plate") && !btn.disabled) || (btn.classList.contains("on") && !btn.classList.contains("off")))){   // 초점이 있는 단추는 그 단추가 눌린다
     if(CSLW.typing){ e.preventDefault(); CSLW.typing(); }
     return;
   }
@@ -9479,6 +9669,7 @@ function cslwHead(s){
   cwq(".cw-tab.title").title = s ? `${s.tag} — ${s.title}` : "상담실";
 }
 function cslwReset(){
+  cslCookieStop(); cslCookieRefresh();
   const box = cwq(".cw-box");
   cwq(".cw-say").classList.remove("on"); cwq(".cw-st").innerHTML = ""; cwq(".cw-clouds").innerHTML = "";
   cwq(".cw-who").textContent = ""; cwq(".cw-bt").innerHTML = "";
@@ -9557,7 +9748,7 @@ async function cslwTalk(run){
   for(const c of [...cwq(".cw-clouds").children]){ c.classList.add("on"); await cwWait(220); if(!cwLive(run) || CSLW.phase !== "choose") return; }
   cwq(".cw-bt").innerHTML = `<span class="cw-hint">어떻게 답할까.</span>${(s.reveal && s.opts.some(o=> o.hit))?
     `\n<span class="cw-brass">정보력으로 ${s.name}에게 통할 말을 파악했다 — 금빛 구름.</span>` : ""}`;
-  cwq(".cw-win").classList.add("beat");
+  cwq(".cw-win").classList.add("beat"); cslCookieRefresh();
   if(CSLW.compact){ const c = cwq(".cw-clouds"); if(c && c.scrollIntoView) c.scrollIntoView({block:"nearest", behavior:"smooth"}); }
 }
 function cslwClouds(s, show){
@@ -9584,7 +9775,7 @@ async function cslwChoose(k){
   const s = CSLW.cur, run = CSLW.run;
   if(!s || CSLW.phase !== "choose" || !CSLW.el || cwSkipped()) return;
   const o = s.opts[k]; if(!o) return;
-  CSLW.phase = "answer"; cwFocus();
+  CSLW.phase = "answer"; cslCookieRefresh(); cwFocus();
   let res = null;
   try{ res = cslwApply(s, o.i); }
   catch(err){ if(typeof errPush === "function") errPush("counsel", err.message, err.stack); }
@@ -9629,6 +9820,7 @@ function cslwFx(s, r){
     let t = r.fit ? (defy ? "마음에 닿았다!" : "도움이 된 듯하다!")
       : `<span class="cw-lead">${r.byLead ? "성격에 맞는 말은 아니었지만, 지도력으로 설득했다." : "신뢰가 운명 단계라 무슨 말이든 닿았다."}</span>`;
     if(r.gain) t += ` ${esc(r.gain.n)}${iga(r.gain.n)} ${r.gain.d} 올랐다.`;
+    if(r.cookie && r.gain) t += ` <span class="cw-lead">쿠키로 상승량 2배!</span>`;
     if(r.dbl) t += ` <span class="cw-lead">호소력으로 상승폭 2배!</span>`;
     if(r.cond) t += ` 컨디션이 ${r.cond} 회복됐다.`;
     if(r.capped) t += ` 멘탈리티는 모두 한계라 더 오르지 않았다.`;
@@ -13681,7 +13873,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1009-1828";
+const BUILD = "1009-1902";
 const BUILD_TS = 0;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
@@ -16052,6 +16244,7 @@ function viewItemShop(){
     <div class="panel-h"><h2>도구</h2>${itemDisc()? `<span class="hint">도구상 할인 <b style="color:var(--ok)">${Math.round(itemDisc()*100)}%</b></span>` : ""}</div>
     <div class="grid2">
       ${itemOrder().map(k=>{
+        if(k==="cookie") return cookieShopCard();
         const it=ITEMS[k], has=!!S.items[k], lock = has? null : itemLock(k);
         if(it.secret && !has && !itemKnown(k)) return `<button class="opt locked" disabled title="조건을 채우면 드러난다">
           <div class="on" style="color:var(--dim)">??? <span class="price" style="color:var(--dim)">???</span></div>
@@ -17982,6 +18175,7 @@ function bindView(){
   v.querySelectorAll("[data-heal]").forEach(b=> b.onclick=()=> doHeal(b.dataset.heal));
   v.querySelectorAll("[data-item]").forEach(b=> b.onclick=()=>{
     const k=b.dataset.item, it=ITEMS[k];
+    if(k==="cookie"){ buyCookie(); return; }
     if(S.items[k] || itemLock(k)) return;
     if(S.gold < itemPrice(k)){ toast("자금이 부족하다."); return; }
     S.gold-=itemPrice(k); S.items[k]=1; sfxPlay("coin");
