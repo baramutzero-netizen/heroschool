@@ -21827,7 +21827,9 @@ const SFX = {
   csl_ok:  {f:"counsel_ok.ogg"},
   csl_ng:  {f:"counsel_ng.ogg"},
   csl_stu: {f:"counsel_type_student.ogg", v:.8},
-  csl_mst: {f:"counsel_type_master.ogg", v:.8}
+  csl_mst: {f:"counsel_type_master.ogg", v:.8},
+  /* 메뉴 단추 (1009) — 사이드 메뉴 · 큰 스케줄 단추 · 폰 메뉴 · 더보기 · 서브탭을 누를 때 (MENU_SFX_SEL). 원본 menu_click.mp3 — 끝의 무음을 잘라 0.25초 */
+  menu:    {f:"menu_click.ogg"}
 };
 const SFX_GAP = 55;      // 같은 소리가 이보다 짧은 간격으로 겹치지 않게 막는다 (ms)
 const SFX_VOICE = 8;     // 한꺼번에 울릴 수 있는 소리 개수
@@ -21901,6 +21903,12 @@ function sfxSeq(key, list){
     }catch(e){}
   });
 }
+/* 메뉴 단추 소리 (1009) — 단추는 render 마다 다시 그려지므로 문서에 한 번 걸어 둔다 (누르는 순간 먼저 — 다른 처리와 상관없이).
+   누르기 시작할 때 소리를 미리 받아 두어 처음 누를 때도 늦지 않게 */
+const MENU_SFX_SEL = "#nav button, #sideSched, #navm button, .subnav [data-subview]";
+function menuSfxAt(e){ const b = e.target && e.target.closest ? e.target.closest(MENU_SFX_SEL) : null; return b && !b.disabled ? b : null; }
+document.addEventListener("pointerdown", e => { if(menuSfxAt(e) && AWEB !== false && sfxGain() > 0) sfxLoad(SFX.menu.f); }, true);
+document.addEventListener("click", e => { if(menuSfxAt(e)) sfxPlay("menu"); }, true);
 /* 한 프레임에 실린 소리 */
 function sfxFrame(f, rate=1, active=()=>true){
   if(!f || !f.fx || !f.fx.s)return;
