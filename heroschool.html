@@ -13929,7 +13929,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1010-1250";
+const BUILD = "1010-1530";
 const BUILD_TS = 0;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
@@ -18504,6 +18504,11 @@ function tutSchedBtn(){
 }
 function tutGuideHTML(k){
   const d=tutGuideData(k);
+  // Illustrated guides, WebP quality 90. Other pages retain their existing guide.
+  const illustrated = {1:"01",2:"02",3:"03",4:"04",5:"05",12:"12"};
+  if(Object.prototype.hasOwnProperty.call(illustrated, String(k))){
+    return `<article class="tg-illustrated" data-guide="${esc(String(k))}" aria-label="${esc(d.title)}" style="margin:0;padding:0"><img src="assets/tutorial-illustrated/${illustrated[k]}.webp?v=20261010-1" alt="${esc(d.title)}" style="display:block;width:100%;height:auto;image-rendering:auto"></article>`;
+  }
   /* 1003 — d.first: 가로 화면(오른쪽 사이드에 스케줄 단추가 있는 배치)에서만 보이는 맨 앞 단계 + 단추 그림. 그 배치에서는 뒤 단계 번호가 하나씩 밀린다 */
   const first=d.first?`<div class="tg-first"><div class="tg-step"><span>1</span><div><h3>${esc(d.first[0])}</h3><p>${esc(d.first[1])}</p></div></div>${tutSchedBtn()}</div>`:"";
   const num=i=>d.first?`<i class="tgn-p">${i+1}</i><i class="tgn-l">${i+2}</i>`:`${i+1}`;
