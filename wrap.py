@@ -7,6 +7,11 @@ STAMP=datetime.datetime.now().strftime('%m%d-%H%M')
 src=re.sub(r'const BUILD = "[^"]*";', 'const BUILD = "%s";' % STAMP, src, count=1)
 from build_strip import strip_dev
 src = strip_dev(src)   # 배포 빌드에서는 테스트 기능(진행 페이지 테스트 모드 · 애니메이션 테스트)을 뺀다
+try:   # 영어판 (1010) — 한국어 글을 번역 함수로 감싼다. 한국어로 띄우면 그대로 · 실패하면 변환 없이 (tools/i18n/i18n_build.py)
+    import sys; sys.path.insert(0, 'tools/i18n'); from i18n_build import apply_i18n
+    src = apply_i18n(src)
+except ImportError:
+    print('i18n: tools/i18n 이 없어 한국어만으로 빌드한다')
 i=src.index('<div id="app">')
 head=src[:i]; body=src[i:]
 from build_boot import boot_split

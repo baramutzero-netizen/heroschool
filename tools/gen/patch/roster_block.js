@@ -514,7 +514,7 @@ function recordBody(st){
   return `<div class="rgrid">
     <div class="it"><div class="k">신뢰 단계</div><div class="v">${h(st.trust.step)} <span class="num sub">${st.trust.v} / ${TRUST_MAX}</span></div>${hearts(st.trust.v)}</div>
     <div class="it"><div class="k">관계 상태</div><div class="v">${h(st.trust.rel)}</div></div>
-    <div class="it"><div class="k">개인 명성</div><div class="v num">${st.fame.toLocaleString()}</div><div class="s">${st.fameBonus > 0 ? `졸업 후원금 <span class="c-ok">+${st.fameBonus}%</span>` : "대회 · 원정에서 쌓인다"}</div></div>
+    <div class="it"><div class="k">평판</div><div class="v num">${st.fame.toLocaleString()}</div><div class="s">${st.fameBonus > 0 ? `졸업 후원금 <span class="c-ok">+${st.fameBonus}%</span>` : "대회 · 원정에서 쌓인다"}</div></div>
     <div class="it"><div class="k">업보</div><div class="v num ${kc}"${!st.career.dark && st.karmaNext ? ` title="${h(st.karmaNext.n)}까지 ${st.karmaNext.need}"` : ""}>${st.karma}</div>${st.career.dark ? `<div class="s">업보가 진로를 덮었다</div>` : ""}</div>
     <div class="it"><div class="k">진로 평가</div><div class="v num">${st.eval}</div><div class="s">${st.nextCareer ? `${h(st.nextCareer.n)}까지 ${st.nextCareer.need}` : st.career.dark ? "" : "최고 진로 도달"}</div></div>
     <div class="it"><div class="k">진로 전망</div><div class="v ${st.career.dark ? "c-bad" : ""}" title="${h(st.career.d)}">${h(st.career.n)}${st.career.dark ? `<span class="tag inj">업보</span>` : ""}</div></div>

@@ -98,6 +98,9 @@ python test.py
 저장소를 GitHub Pages 로 켜면 (Settings → Pages → Deploy from a branch → `main` / `/ (root)`)
 루트의 `index.html` 이 `site/` 로 넘겨주므로 `https://<아이디>.github.io/heroschool/` 에서 바로 열립니다.
 
+영어로 링크를 나눌 때는 `https://<아이디>.github.io/heroschool/en/` — 맨 위 `en/index.html` 이 영어 미리보기(`site/og-en.png`)를 보여 주고
+영어판(`site/?lang=en`)으로 넘겨줍니다. 게임 언어는 처음 접속할 때 브라우저 언어로 정하고, 설정에서 바꿀 수 있습니다 (`tools/i18n/README.md`).
+
 `site/index.html` 은 저장소 맨 위의 `assets/` · `bgm/` 을 `../` 로 읽습니다. Netlify·Vercel 등 다른 호스팅에는
 `site/` 만이 아니라 저장소 전체(최소 `site/` · `assets/` · `bgm/`)를 올려야 합니다.
 자세한 절차는 [`site/README.md`](site/README.md) 에 정리해 뒀습니다.

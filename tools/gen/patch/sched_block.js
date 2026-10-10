@@ -3,14 +3,15 @@
    자리는 두루마리 캔버스(607×466)의 2배 좌표 그대로 — 목업(schedule_mock2)과 같은 숫자. 무대 전체(1544×1008)를 화면 폭에 맞춰 줄인다.
    가로 화면(townMode)에서만 쓰고, 설정에서 끌 수 있다(PREF.schedScroll — 끄면 예전 스케줄 화면).
    결재 — 깃펜을 집어 잉크 단지에 찍은 뒤 결재란 서명줄에 서명한다. 처음 그린 서명은 이 브라우저에 남고(PREF.sign),
-   다음부터는 잉크를 찍고 서명줄을 한 번 누르면 그 서명이 써진다. 새로 그으면 서명이 바뀐다.
-   결재란에서 Enter(키보드)를 누르면 깃펜이 스스로 잉크를 찍고 서명한다.
+   다음부터는 다섯 칸이 차면 결재란도 깃펜처럼 반짝이고, 결재란을 누르면 깃펜이 스스로 잉크를 찍어 그 서명을 쓴다 (1011).
+   깃펜을 집어 잉크를 찍고 서명줄을 한 번 누르는 것도 그대로 된다. 새로 그으면 서명이 바뀐다.
+   결재란에서 Enter(키보드)를 누르면 (저장된 서명이 없어도) 깃펜이 스스로 잉크를 찍고 서명한다.
    사이드(오른쪽 메뉴판)가 잉크 단지 · 깃펜을 가리면 사이드를 줄인다 — skSideFit (1010). */
 const SCHED_ART = /*SCHED_ART*/{};
 const SCHED_GEO = /*SCHED_GEO*/{};
 const SK_X0 = 42, SK_X1 = 565, SK_YRIB = 54, SK_YDAY = 78, SK_YHANDL = 166, SK_YHAND = 188, SK_YBAND = 280, SK_XL1 = 432, SK_XR0 = 440;
 /* 카드 56×82 (1006, 예전 80) — 훈련 이름을 화면 12px 로 키우며 색 머리를 2칸 늘렸다. 손패 줄도 2칸 내렸다 (sched_art 의 M2.CH · HB · Y_RULE2 와 같이) */
-const SK_CW = 56, SK_CH = 82, SK_ROW = 10, SK_ROWS = 15, SK_COLW = 192;   // 명부 줄 간격 10 — 행동 칸(15×9)이 줄 안에 들어가고 점선 한 줄이 남는다 (1006, 예전 9)
+const SK_CW = 56, SK_CH = 82, SK_ROW = 10, SK_ROWS = 15;   // 명부 줄 간격 10 — 행동 칸(15×9)이 줄 안에 들어가고 점선 한 줄이 남는다 (1006, 예전 9) · 한 쪽 15명. 줄 폭은 skRowGeo (1011 — 예전 SK_COLW 192)
 const SK_ICON = {basic:"dumbbell", heavy:"barbell", spar:"swords", mock:"shield", tact:"book", study:"book", form:"flag", medit:"leaf", deep:"lotus",
   free:"target", strike:"arrow", exped:"map", rest:"cup", crest:"cup", camp:"barbell"};
 /* 카드 색 — 진한 쪽부터 다섯 (DT.CARD 와 같다). [0] 글자 그림자 · [2] 바탕 */
@@ -24,18 +25,22 @@ const SK_SIG0 = [[4,15,8,6,11,3,12,9,8,14,6,13,12,10,16,11,18,7,17,12,21,13,24,8
 const SK = {s:.78, held:false, ink:0, strokes:[], cur:null, len:0, writing:false, timer:0, busy:false, auto:false, keyOn:null, ro:null};
 
 function schedScrollOn(){ return PREF.schedScroll !== false && typeof townMode === "function" && townMode(); }
-function skSpr(name, x, y, cls, attrs){                          // x, y = 2배 좌표
+function skSpr(name, x, y, cls, attrs, k){                       // x, y = 2배 좌표 · k = 그림 1배의 몇 배로 (기본 2 — 큰 단추의 아이콘은 3, 1011)
   const p = SCHED_GEO.sheet.pos[name]; if(!p) return "";
-  return `<i class="sk-spr${cls? " "+cls : ""}" style="left:${x}px;top:${y}px;width:${p[2]*2}px;height:${p[3]*2}px;background-position:${-p[0]*2}px ${-p[1]*2}px"${attrs||""}></i>`;
+  k = k || 2;
+  const bs = k !== 2 ? `;background-size:${SCHED_GEO.sheet.w*k}px ${SCHED_GEO.sheet.h*k}px` : "";
+  return `<i class="sk-spr${cls? " "+cls : ""}" style="left:${x}px;top:${y}px;width:${p[2]*k}px;height:${p[3]*k}px;background-position:${-p[0]*k}px ${-p[1]*k}px${bs}"${attrs||""}></i>`;
 }
 function skBg(name){ const p = SCHED_GEO.sheet.pos[name]; return p? `background-position:${-p[0]*2}px ${-p[1]*2}px` : ""; }
-function skB(id, label, icon, tone, attrs){                     // 종이 꼬리표 단추
-  return `<button type="button" class="skb${icon? " ic" : ""}${tone? " "+tone : ""}"${id? ` id="${id}"` : ""}${attrs||""}>${icon? skSpr("mi_"+icon, 6, 2) : ""}${label}</button>`;
+function skB(id, label, icon, tone, attrs){                     // 종이 꼬리표 단추 — tone 에 lg 가 있으면 큰 단추 (1011 · 글자 18 · 아이콘 3배)
+  const lg = /(^|\s)lg(\s|$)/.test(tone || "");
+  return `<button type="button" class="skb${icon? " ic" : ""}${tone? " "+tone : ""}"${id? ` id="${id}"` : ""}${attrs||""}>${icon? (lg ? skSpr("mi_"+icon, 8, 4, "", "", 3) : skSpr("mi_"+icon, 6, 2)) : ""}${label}</button>`;
 }
+function skHasSign(){ return !!(PREF.sign && Array.isArray(PREF.sign.s) && PREF.sign.s.length); }   // 저장된 서명이 있다 (1011)
 function skColKey(c){ const k = colOf(c); return SK_PAL[k] ? k : "none"; }
 function skCard(c, x, y){                                       // x, y = 카드 왼쪽 위 (1배)
   const tr = TR[c.t] || TR.free, key = skColKey(c), pal = SK_PAL[key], col = cardColor(c), mk = markOf(c);
-  const L = clamp(cardLeft(c), 1, CARD_LIFE), eff = cardEffLine(tr), cv = eff.replace(/^컨디션\s*/, ""), good = cv.charAt(0) === "+";
+  const L = clamp(cardLeft(c), 1, CARD_LIFE), eff = cardEffLine(tr), cv = eff.replace(/^[^+\-−]*/, "")   /* 1010 — 영어판: 앞의 이름(컨디션 · Condition)을 떼고 값만 */, good = cv.charAt(0) === "+";
   const cost = cardCostText(c);
   const tip = `${tr.n}${cost? " · "+cardCostTip(c) : ""}${mk? ` — ${mk.i} ${mk.n}: ${mk.d}` : ""} · ${cardLeftText(L)}${L<=1? "" : " 남음"}`;
   const fx = (tr.fx||[]).slice(0, 4).map((f, i)=> `<span class="sk-fx${f[2]? " bad":""}" style="top:${80 + i*14}px">${esc(f[0])}<b>${"+".repeat(f[1])}</b></span>`).join("");
@@ -64,35 +69,73 @@ function skTone(v){
   if(v >= COND_MID) return ["#9a6410", "#c3922c", "#e6c262"];
   return ["#a3302a", "#b0473a", "#d97a62"];
 }
-/* 명부 크기 — 학생이 적으면 크게 (1006). 한 단에 2배 · 1.5배로 다 들어가면 그 크기로(남는 줄은 빈 줄로 채운다),
-   아니면 예전처럼 두 단(8 + 7). 아래 끝은 그 밑에 놓인 소품(문진) 바로 위까지 (SCHED_GEO.ros_bottom) */
-function skRosterFit(n, y0){
-  const H = (SCHED_GEO.ros_bottom || 421) - y0, W = SK_XL1 - (SK_X0 + 2);
-  for(const f of [2, 1.5]) if(SK_COLW * f <= W && n * SK_ROW * f <= H) return {f, cols:1, per: Math.max(n, Math.floor(H / (SK_ROW * f)))};
-  return {f:1, cols:2, per:Math.ceil(SK_ROWS / 2)};
+/* 명부 크기 (1006 · 1011) — 남는 자리를 다 쓰도록 한 단 · 두 단 중 더 크게 들어가는 쪽으로, 크기는 2배까지 1/8 단위.
+   두 단은 왼쪽 단부터 채운다 (15명이면 8 + 7). 줄 폭이 좁아지는 만큼 컨디션 막대를 줄인다 (SK_BARMIN 까지 · 한 단은 줄이지 않는다).
+   한 단이 두 단보다 1/4 이상 작을 때만 두 단으로 — 비슷하면 막대가 긴 한 단이 보기 좋다.
+   rsv — 맨 끝 칸 하나를 '변경 취소' 단추 자리로 비워 둔다 (지난주 기록이 있을 때 · 칸은 skRoster 의 slot).
+   아래 끝은 그 밑에 놓인 소품(문진) 바로 위까지 (SCHED_GEO.ros_bottom). 줄 안 자리는 2배 좌표 — 이름 60 · 행동 칸 62~92 · 부상 96~ · 막대 bx~ */
+const SK_BARMIN = 60, SK_BARMAX = 160, SK_RTAIL = 70;            // 막대 폭 (2배) · 막대 뒤(컨디션 값 · 효율 % · 여백)
+function skRowGeo(f, cols, bx){                                  // 한 줄 폭 · 막대 폭 (2배 · 명부를 키우기 전)
+  const W2 = (SK_XL1 - (SK_X0 + 2)) * 2, room = cols === 2 ? (W2 / f - 12) / 2 : W2 / f;
+  const bar = Math.floor(clamp(room - bx - SK_RTAIL, SK_BARMIN, SK_BARMAX) / 2) * 2;
+  return {bar, w: bx + bar + SK_RTAIL};
 }
-function skRoster(x0, y0, chips){
+function skRosterFit(n, y0, bx, rsv){
+  const H = (SCHED_GEO.ros_bottom || 421) - y0, W2 = (SK_XL1 - (SK_X0 + 2)) * 2, q = v=> Math.floor(v * 8) / 8;
+  const r = n + (rsv ? 1 : 0), per2 = Math.max(1, Math.ceil(r / 2));
+  const f1 = q(Math.min(2, H / (Math.max(1, r) * SK_ROW), W2 / (bx + SK_BARMAX + SK_RTAIL)));
+  const f2 = q(Math.min(2, H / (per2 * SK_ROW), W2 / (2 * (bx + SK_BARMIN + SK_RTAIL) + 12)));
+  if(r <= 1 || f1 + .25 > f2){ const f = Math.max(.5, f1); return {f, cols:1, per: Math.max(r, Math.floor(H / (SK_ROW * f)))}; }
+  return {f: f2, cols:2, per: per2};
+}
+function skRoster(x0, y0, chips, rsv){
   const all = S.students.slice().sort((a,b)=> a.cond - b.cond);
   const pages = Math.max(1, Math.ceil(all.length / SK_ROWS));
   UI.skPage = clamp(UI.skPage|0, 0, pages - 1);
   const list = all.slice(UI.skPage * SK_ROWS, UI.skPage * SK_ROWS + SK_ROWS);
-  const F = pages > 1 ? {f:1, cols:2, per:Math.ceil(SK_ROWS / 2)} : skRosterFit(list.length, y0);
-  const lines = F.cols === 2 ? SK_ROWS : F.per;
+  const bx = !chips ? 66 : all.some(isInjured) ? 132 : 96;      // 막대 왼쪽 — 행동 칸 뒤 · 다친 학생이 있으면 부상 표시(✚ N주) 뒤
+  const F = skRosterFit(pages > 1 ? SK_ROWS : list.length, y0, bx, rsv);   // 여러 쪽이면 쪽마다 같은 모양 (15명 기준)
+  const G = skRowGeo(F.f, F.cols, bx), lines = F.cols === 2 ? F.per * 2 : F.per, pitch = G.w + 12;
   let h = "";
   for(let i = 0; i < lines; i++){
     const col = Math.floor(i / F.per), row = i % F.per, s = list[i];
-    const x = col * (SK_COLW + 6), y = row * SK_ROW;              // 명부 안 좌표 (1배) — 명부 전체를 F.f 배로 키운다
-    if(!s){ h += `<div class="sk-r empty" style="left:${x*2}px;top:${y*2}px"></div>`; continue; }
-    const v = Math.round(clamp(s.cond, 0, 100)), [tc, fc, hc] = skTone(v), bx = chips ? 66 : 33;
+    const x = col * pitch, y = row * SK_ROW * 2;                   // 명부 안 좌표 (2배) — 명부 전체를 F.f 배로 키운다
+    if(!s){ h += `<div class="sk-r empty" style="left:${x}px;top:${y}px"></div>`; continue; }
+    const v = Math.round(clamp(s.cond, 0, 100)), [tc, fc, hc] = skTone(v);
     const inj = isInjured(s) ? skSpr("cross", 96, 2) + `<span class="iw">${injWeeks(s)}주</span>` : "";
-    h += `<div class="sk-r${(chips ? actShown(s) === "rest" : isRestFocus(s))? " rest" : ""}" style="left:${x*2}px;top:${y*2}px">`
+    h += `<div class="sk-r${(chips ? actShown(s) === "rest" : isRestFocus(s))? " rest" : ""}" style="left:${x}px;top:${y}px">`
       + `<span class="nm" title="${esc(dn(s))}">${esc(s.name)}</span>${chips? skChips(s) + inj : ""}`
-      + `<span class="sk-bar" style="left:${bx*2}px"><i style="width:${Math.max(0, Math.round(77 * v / 100)) * 2}px;background:${fc};--hc:${hc}"></i></span>`
-      + `<span class="cv" style="left:${bx*2 + 160 + 22 - 40}px;color:${tc}">${v}</span>`
-      + `<span style="left:${bx*2 + 188}px;color:${tc}">${effPct(s)}%</span></div>`;
+      + `<span class="sk-bar" style="left:${bx}px"><i style="width:${Math.max(0, Math.round((G.bar - 6) / 2 * v / 100)) * 2}px;background:${fc};--hc:${hc}"></i></span>`
+      + `<span class="cv" style="left:${bx + G.bar - 18}px;color:${tc}">${v}</span>`
+      + `<span style="left:${bx + G.bar + 28}px;color:${tc}">${effPct(s)}%</span></div>`;
   }
-  if(F.cols === 2) h += `<i class="sk-div" style="left:${(SK_COLW + 2) * 2}px;top:0;height:${(F.per * SK_ROW - 1) * 2}px"></i>`;
-  return {html:`<div class="sk-ros" style="left:${x0*2}px;top:${y0*2}px${F.f !== 1? `;transform:scale(${F.f})` : ""}">${h}</div>`, pages, f:F.f};
+  if(F.cols === 2) h += `<i class="sk-div" style="left:${G.w + 4}px;top:0;height:${(F.per * SK_ROW - 1) * 2}px"></i>`;
+  /* 맨 끝 빈칸 (종이 2배 좌표 · 밑줄 끝까지) — 변경 취소 단추를 여기 오른쪽 끝에 맞춰 놓는다 */
+  const last = lines - 1, sc = Math.floor(last / F.per), sr = last % F.per;
+  const slot = rsv && lines > list.length ? {x: x0*2 + sc * pitch * F.f, y: y0*2 + sr * SK_ROW * 2 * F.f, w: (G.w - 14) * F.f, h: SK_ROW * 2 * F.f} : null;
+  return {html:`<div class="sk-ros" style="left:${x0*2}px;top:${y0*2}px;--rw:${G.w}px;--bw:${G.bar}px${F.f !== 1? `;transform:scale(${F.f})` : ""}">${h}</div>`, pages, f:F.f, slot};
+}
+/* 교회 단추 (1011) — 예지의 서(쓰기 · 사기) · 신비한 성수. 개인 행동 줄 오른쪽 끝에 (예전엔 일과 머리 줄 · 명부 머리 줄).
+   사기 단추는 바로 옆 예지의 서 단추에 붙어 '구매 · 값'만. 줄이 넘치면 skActFit 이 이름(.nm)을 숨긴다 (아이콘 · 권수 · 값만 — 이름은 title 에)
+   — 영어는 거의 늘 · 한국어는 소진일 때쯤. 소진은 '이번 계절 소진' 대신 '소진' (남은 횟수는 title) */
+function skChurch(hand){
+  const lv2 = churchLv() >= 2, nb = bookCount();
+  if(!lv2 && nb <= 0) return "";
+  let h = skB("btnBookUse", `<span class="nm">예지의 서${nb>0? " " : ""}</span>${nb>0? `×${nb}` : ""}`, "book", "", (nb>0 && hand.length? "" : " disabled") + ` title="일과를 통째로 새로 뽑는다 — 월~금에 올려둔 카드는 그대로 둔다"`);
+  if(lv2){
+    const pr = foresightPrice(), bd = churchBought("book"), c = holyWaterCost(), wd = churchBought("water");
+    h += skB("btnBook2", `구매 · ${bd? "소진" : fmt(pr)+" G"}`, "", "brass" + (S.gold < pr ? " poor" : ""), (bd? " disabled" : "") + ` title="교회에 가지 않고 바로 산다 · ${esc(churchLeftLabel("book"))}"`);
+    h += skB("btnWater2", `<span class="nm">신비한 성수 · </span>${wd? "소진" : fmt(c)+" G"}`, "water", S.gold < c ? "poor" : "", (wd? " disabled" : "") + ` title="교회에 가지 않고 바로 쓴다 · 전 학생 컨디션 +${HOLY_WATER_COND} · ${esc(churchLeftLabel("water"))}"`);
+  }
+  return `<span class="sk-church">${h}</span>`;
+}
+/* 글이 넘치는 곳 줄이기 (1011 · 그린 뒤 · 글꼴을 받은 뒤) — 개인 행동 줄: 교회 단추 이름을 숨긴다 ·
+   결재란 맨 위 줄('결재' + 비용): 결재란 안쪽(테두리 8 안)을 넘으면 '결재'를 뺀다. 한국어는 거의 그대로 — 영어 글이 길 때 */
+function skActFit(){
+  const r = document.querySelector("#view .sk-act");
+  if(r){ r.classList.remove("tight"); if(r.scrollWidth > r.clientWidth + 1) r.classList.add("tight"); }
+  const b = document.querySelector("#view .sk-appr"), t = b && b.querySelector(".top");
+  if(t){ b.classList.remove("tight"); if(t.offsetLeft + t.scrollWidth > b.clientWidth - 8) b.classList.add("tight"); }
 }
 function viewPlanScroll(){
   const G = SCHED_GEO, ph = PHASES[S.phase];
@@ -102,6 +145,8 @@ function viewPlanScroll(){
   const endSeason = S.week >= ph.weeks;
   const disabled = (endSeason && UI.pendingTour) || (!endSeason && left > 0);
   const P = [];
+  /* 반짝이는 별 (1006) — pts = 그 요소 안 1배 좌표 (skFxUpd 가 빛을 켜면 보인다) */
+  const tw = (pts)=> pts.map(([x, y], i)=> `<i class="sk-tw" style="left:${x*2}px;top:${y*2}px;--d:${(i * .55).toFixed(2)}s"></i>`).join("");
   /* ── 머리 ── */
   P.push(`<h2 class="sk-title" style="left:88px;top:44px">${yrName(S.year)} ${ph.n} ${Math.min(S.week+1, ph.weeks)}주 스케줄</h2>`);
   { const wl = Math.max(0, ph.weeks - S.week), due = upkeepTotal() + debtInterest();
@@ -109,8 +154,9 @@ function viewPlanScroll(){
       isCampWeek()? `<span class="sk-brass"> · 합숙 — 훈련 ×${CAMP_GAIN} · 컨디션 소모 ×${CAMP_COND}</span>` : ""}</span>`); }
   { const d = dietDef(), open = DIETS.filter(dietOpen).length;
     const dt = `${open>1? "누르면 다음 식단으로 바꾼다 · " : ""}${d.eff? `훈련 효율 +${Math.round(d.eff*100)}% · ` : ""}이번 주 ${fmt(dietCostWeek())} G (${(S.students||[]).length}명)`;
-    P.push(`<div class="sk-row r" style="right:86px;top:48px;gap:8px">${skB("btnAuto", "자동 배치", "wand")}${skB("btnDiet", `식단: ${esc(d.n)} (학생 당 ${fmt(dietPrice(d))} G)`, "bowl", "", ` title="${esc(dt)}"`)}${skB("btnClearSlots", "전부 비우기", "eraser")}${
-      SHOW_BULKRUN? skB("btnRest", "남은 주 일괄 진행", "", "", endSeason? " disabled" : "") : ""}</div>`); }
+    /* 위 단추 셋은 크게 (1011 — 글자 18 · 높이 36 · 아이콘 3배). 제목(24 · 44~68)과 세로 가운데를 맞춘다 */
+    P.push(`<div class="sk-row r" style="right:86px;top:38px;gap:10px">${skB("btnAuto", "자동 배치", "wand", "lg")}${skB("btnDiet", `식단: ${esc(d.n)} (학생 당 ${fmt(dietPrice(d))} G)`, "bowl", "lg", ` title="${esc(dt)}"`)}${skB("btnClearSlots", "전부 비우기", "eraser", "lg")}${
+      SHOW_BULKRUN? skB("btnRest", "남은 주 일괄 진행", "", "lg", endSeason? " disabled" : "") : ""}</div>`); }
   /* ── 요일 ── */
   const colw = (SK_X1 - SK_X0) / 5, cxs = [0,1,2,3,4].map(i=> Math.floor(SK_X0 + colw * (i + .5)));
   DAY_N.forEach((d, i)=>{
@@ -127,21 +173,18 @@ function viewPlanScroll(){
   /* ── 일과 (손패) ── */
   /* 쓰는 법 안내(카드를 끌어 요일 칸에 놓는다 …)는 화면에서 뺐다 — 제목에 마우스를 올리면 보인다 (1006) */
   P.push(`<div class="sk-row" style="left:88px;top:${SK_YHANDL*2}px"><span class="sk-h" title="카드를 끌어 요일 칸에 놓는다 · 누르면 빈 칸으로 · 전날과 같은 색이면 능률이 오른다">일과 ${hand.length}장</span></div>`);
-  if(churchLv() >= 2 || bookCount() > 0){
-    const pr = foresightPrice(), done = churchBought("book");
-    P.push(`<div class="sk-row r" style="right:86px;top:${SK_YHANDL*2}px;gap:8px">${skB("btnBookUse", `예지의 서 (일과 교체)${bookCount()>0? ` ×${bookCount()}` : ""}`, "book", "", (bookCount()>0 && hand.length? "" : " disabled") + ` title="일과를 통째로 새로 뽑는다 — 월~금에 올려둔 카드는 그대로 둔다"`)}${
-      churchLv() >= 2 ? skB("btnBook2", `예지의 서 구매 · ${done? "이번 계절 소진" : fmt(pr)+" G"}`, "", "brass" + (S.gold < pr ? " poor" : ""), (done? " disabled" : "") + ` title="교회에 가지 않고 바로 산다 · ${esc(churchLeftLabel("book"))}"`) : ""}</div>`);
-  }
+  /* 예지의 서 단추는 개인 행동 줄로 옮겼다 (1011 — skChurch) */
   P.push(`<div class="sk-hand" data-handzone="1" style="left:${(SK_X0-2)*2}px;top:${(SK_YHAND-4)*2}px;width:${(SK_X1 - SK_X0 + 4)*2}px;height:${(SK_CH + 8)*2}px">${
     hand.map((c, j)=> skCard(c, 43 + j * (SK_CW + 2) - (SK_X0 - 2), 4 + (j % 2))).join("")}${hand.length? "" : `<span class="sk-t sk-fade" style="left:20px;top:70px">일과가 비었다.</span>`}</div>`);
   /* ── 아래 띠 왼쪽 — 개인 행동 · 부상 · 컨디션 ── */
   let y = SK_YBAND;
+  /* 개인 행동 줄 (1011) — 왼쪽 개인 행동 · 전원 단추, 오른쪽 끝(왼쪽 띠 끝)에 교회 단추(skChurch).
+     변경 취소 단추는 명부 맨 끝 빈칸으로 옮겼다 (아래 ros.slot) — 이 줄에 다 넣으면 넘친다. 개인 행동이 열리기 전에는 '컨디션' 머리 줄 오른쪽에 */
+  const church = skChurch(hand), actW = (SK_XL1 + 1)*2 - 88;
+  const und = actUnlocked() ? focusUndoDiff() : 0, prv = actUnlocked() ? focusPrevDiff() : 0;
   if(actUnlocked()){
-    const und = focusUndoDiff(), prv = focusPrevDiff();
-    P.push(`<div class="sk-row" style="left:88px;top:${y*2}px;gap:6px"><span class="sk-h" style="margin-right:6px">개인 행동</span>${skB("btnActTrain", "전원 훈련")}${
-      skB("btnRestAll", "전원 휴식", "", "", ` title="컨디션과 상관없이 전 학생을 휴식으로 돌린다"`)}${jobOpen()? skB("btnActJob", "전원 의뢰", "", "", (J0=> J0? ` title="이번 주 의뢰 — ${esc(J0.n)}"` : "")(weekJobPlan())) : ""}${
-      und? skB("btnFocusUndo", `변경 취소 (${und}명)`, "", "", ` style="margin-left:6px" title="지금 바꾼 설정을 취소하고 지난주 배치로 돌아간다"`) : ""}${
-      prv? skB("btnFocusPrev", `지난주 변경 취소 (${prv}명)`, "", "", ` title="지난주에 바꾼 설정을 취소하고 지지난주 배치로 돌아간다"`) : ""}</div>`);
+    P.push(`<div class="sk-row sk-act" style="left:88px;top:${y*2}px;width:${actW}px;gap:6px"><span class="sk-h" style="margin-right:6px">개인 행동</span>${skB("btnActTrain", "전원 훈련")}${
+      skB("btnRestAll", "전원 휴식", "", "", ` title="컨디션과 상관없이 전 학생을 휴식으로 돌린다"`)}${jobOpen()? skB("btnActJob", "전원 의뢰", "", "", (J0=> J0? ` title="이번 주 의뢰 — ${esc(J0.n)}"` : "")(weekJobPlan())) : ""}${church}</div>`);
     y += 17;
     const hurt = S.students.filter(isInjured);
     if(hurt.length){
@@ -154,32 +197,38 @@ function viewPlanScroll(){
     }
   }
   /* 명부 머리 줄 — 안내 글(컨디션 · 낮은 순 · N명 · 행동 칸을 누르면 …)은 화면에서 뺐다 (1006). 행동 칸 안내는 칸에 마우스를 올리면 보인다.
-     머리 줄에는 쪽 넘김(16명부터)과 성수 단추(교회 2단계)만 남는다 — 둘 다 없으면 명부를 그 자리까지 올린다 */
-  const many = S.students.length > SK_ROWS, water = churchLv() >= 2;
-  const ros = skRoster(SK_X0 + 2, actUnlocked() ? y + (many || water ? 16 : 4) : y + 18, actUnlocked());
+     머리 줄에는 쪽 넘김(16명부터)만 남는다 — 없으면 명부를 그 자리까지 올린다 (1011 — 성수 단추는 개인 행동 줄로) */
+  const many = S.students.length > SK_ROWS, rsv = actUnlocked() && !!focusHist()[0];   // 지난주 기록이 있으면 변경 취소 자리를 비워 둔다
+  const ros = skRoster(SK_X0 + 2, actUnlocked() ? y + (many ? 16 : 4) : y + 18, actUnlocked(), rsv);
   { const pg = ros.pages > 1 ? `<span class="sk-pager">${skB("", "◀", "", "", ` data-sk-page="-1"${UI.skPage? "" : " disabled"} aria-label="앞 명부"`)}<span class="sk-ink2" style="margin-top:6px">${UI.skPage+1}/${ros.pages}</span>${skB("", "▶", "", "", ` data-sk-page="1"${UI.skPage < ros.pages-1? "" : " disabled"} aria-label="다음 명부"`)}</span>` : "";
     if(actUnlocked()){
       if(pg) P.push(`<div class="sk-row" style="left:80px;top:${y*2 + 6}px">${pg}</div>`);
     } else
-      P.push(`<div class="sk-row" style="left:88px;top:${y*2}px;gap:10px"><span class="sk-h">컨디션</span>${pg}</div>`);
-    if(water){ const done = churchBought("water"), c = holyWaterCost();
-      P.push(`<div class="sk-row r" style="right:${1214 - (SK_XL1 + 1)*2}px;top:${y*2}px">${skB("btnWater2", `신비한 성수 (전원 +${HOLY_WATER_COND}) · ${done? "이번 계절 소진" : fmt(c)+" G"}`, "water", S.gold < c ? "poor" : "", (done? " disabled" : "") + ` title="교회에 가지 않고 바로 쓴다 · ${esc(churchLeftLabel("water"))}"`)}</div>`); }
+      P.push(`<div class="sk-row sk-act" style="left:88px;top:${y*2}px;width:${actW}px;gap:10px"><span class="sk-h">컨디션</span>${pg}${church}</div>`);
   }
   P.push(ros.html);
+  /* 변경 취소 (1011) — 명부 맨 끝 빈칸의 오른쪽 끝에. 칸이 단추(24)보다 낮으면 칸 가운데에 걸친다 */
+  if(ros.slot && (und || prv)){ const L = ros.slot;
+    P.push(`<div class="sk-row r sk-undo" style="right:${Math.round(1214 - L.x - L.w)}px;top:${Math.round(L.y + (L.h - 24) / 2)}px;gap:6px">${
+      und? skB("btnFocusUndo", `변경 취소 (${und}명)`, "", "", ` title="지금 바꾼 설정을 취소하고 지난주 배치로 돌아간다"`) : ""}${
+      prv? skB("btnFocusPrev", `지난주 변경 취소 (${prv}명)`, "", "", ` title="지난주에 바꾼 설정을 취소하고 지지난주 배치로 돌아간다"`) : ""}</div>`); }
   /* ── 아래 띠 오른쪽 — 의뢰 쪽지(위) · 결재(아래 — 1006 에 자리를 바꿨다) ── */
-  /* 결재란 (1006) — 위 '결재' · 가운데 진행 비용 · 아래쪽 서명 줄과 '학원장'. 일과가 덜 찼을 때는 글 없이 비워 둔다
-     (다섯 칸이 차면 깃펜이 반짝인다 — skFxUpd) */
+  /* 결재란 (1006 · 1011) — 맨 위 '결재'와 그 옆에 비용(일과 · 식단) · 그 밑 진행 비용(글자 20 — 예전 24) · 아래쪽 서명 줄과 '학원장'.
+     서명 칸(.sk-sig)은 진행 줄 바로 밑부터 서명 줄까지 (예전엔 비용 줄 밑부터 — 1011 에 두 배 가까이 키웠다). 일과가 덜 찼을 때는 글 없이 비워 둔다
+     (다섯 칸이 차면 깃펜이 반짝인다 — 저장된 서명이 있으면 결재란도 · skFxUpd) */
   { const A = G.appr, cost = weekCardCost(slots), n = (S.students||[]).length, rest = S.students.filter(s=> !willAttend(s)).length;
     const label = endSeason ? "시즌 마무리" : left > 0 ? `일과 ${left}일치 세팅 필요` : `진행 (${fmt(cost + dietCostWeek())} G 소모)`;
     const big = endSeason || left <= 0 ? label : "";
-    const subs = disabled ? (endSeason ? [`<span class="sk-fade">대회 준비를 먼저 마친다</span>`] : [])
-      : endSeason ? [`<span class="sk-fade">서명하면 계절을 마무리한다</span>`]
-      : [`<span class="sk-ink2">일과 ${fmt(cost)} G · 식단 ${fmt(dietPrice())} G × ${n}명</span>`];
+    const sub = disabled ? (endSeason ? `<span class="sk-fade">대회 준비를 먼저 마친다</span>` : "")
+      : endSeason ? `<span class="sk-fade">서명하면 계절을 마무리한다</span>`
+      : `<span class="sk-ink2">일과 ${fmt(cost)} G · 식단 ${fmt(dietPrice())} G × ${n}명</span>`;
     const tip = !disabled && !endSeason && rest ? ` title="쉬는 ${rest}명은 일과 비용이 없다"` : "";
-    const how = disabled ? "" : "깃펜을 잉크에 찍어 서명";   // 1006 — 저장된 서명이 있어도 같은 글
-    P.push(`<button type="button" id="btnWeek" class="sk-appr${disabled? "" : " ready"}" data-need="${endSeason? 0 : Math.max(0, left)}" style="left:${A.x*2}px;top:${A.y*2}px;${skBg(disabled? "appr_off" : "appr_on")}" ${disabled? "disabled" : ""}${tip} aria-label="결재 — ${esc(label)}${disabled? "" : " · 깃펜으로 서명한다 (Enter 를 누르면 깃펜이 스스로 서명한다)"}">`
-      + `<span class="lab">결재</span>${big? `<span class="big${disabled? " sk-fade" : ""}">${big}</span>` : ""}${subs.map((s, i)=> `<span class="sub" style="top:${62 + i*14}px">${s}</span>`).join("")}`
-      + `<canvas class="sk-sig" width="107" height="20"></canvas><span class="who">학원장</span><span class="how">${how}</span></button>`); }
+    const signed = skHasSign(), lab = "결재";
+    const how = disabled ? "" : signed ? "클릭으로 서명" : "깃펜을 잉크에 찍어 서명";   // 1011 — 저장된 서명이 있으면 결재란을 누르기만 하면 된다
+    P.push(`<button type="button" id="btnWeek" class="sk-appr${disabled? "" : " ready"}" data-need="${endSeason? 0 : Math.max(0, left)}" style="left:${A.x*2}px;top:${A.y*2}px;${skBg(disabled? "appr_off" : "appr_on")}" ${disabled? "disabled" : ""}${tip} aria-label="결재 — ${esc(label)}${disabled? "" : signed ? " · 누르면 깃펜이 저장된 서명을 쓴다" : " · 깃펜으로 서명한다 (Enter 를 누르면 깃펜이 스스로 서명한다)"}">`
+      + `<span class="top"><span class="lab">${lab}</span>${sub}</span>${big? `<span class="big${disabled? " sk-fade" : ""}">${big}</span>` : ""}`
+      + `<canvas class="sk-sig" width="107" height="33"></canvas><span class="who">학원장</span><span class="how">${how}</span>`
+      + `${tw([[2, 2], [125, 3], [126, 68], [2, 70]])}</button>`); }
   /* 의뢰 쪽지 (1006) — 이번 주 의뢰를 미리 보인다(weekJobPlan — 주를 시작하기 전에 정해 둔다): 의뢰 이름 · 의뢰인 · 보수 ·
      오르는 멘탈리티 ▲ · 내리는 멘탈리티 ▼ · 그 의뢰처의 누적과 등급(의뢰처마다 따로) · 이번 주 맡은 학생. 계절 마무리 주에는 의뢰가 없어 뺀다 */
   { const J = weekJobPlan();
@@ -197,9 +246,8 @@ function viewPlanScroll(){
     } }
   /* ── 무대 ── */
   const Q = G.quill, IW = G.inkwell;
-  /* 반짝임 (1006) — 다섯 칸이 차면 깃펜 · 깃펜을 집으면 잉크 단지 · 잉크를 찍으면 결재란 (skFxUpd 가 켠다).
-     별 자리 = 그림 1배 좌표 (깃펜: 끝 · 깃 위 · 아래 깃 · 펜촉 / 잉크 단지: 왼쪽 위 모서리 · 금 고리 · 오른쪽 · 왼쪽 아래) */
-  const tw = (pts)=> pts.map(([x, y], i)=> `<i class="sk-tw" style="left:${x*2}px;top:${y*2}px;--d:${(i * .55).toFixed(2)}s"></i>`).join("");
+  /* 반짝임 (1006) — 다섯 칸이 차면 깃펜(저장된 서명이 있으면 결재란도 — 1011) · 깃펜을 집으면 잉크 단지 · 잉크를 찍으면 결재란 (skFxUpd 가 켠다).
+     별 자리 = 그림 1배 좌표 (깃펜: 끝 · 깃 위 · 아래 깃 · 펜촉 / 잉크 단지: 왼쪽 위 모서리 · 금 고리 · 오른쪽 · 왼쪽 아래 / 결재란: 네 귀퉁이 쪽) */
   return `<section class="skwrap" aria-label="${esc(yrName(S.year))} ${ph.n} 스케줄"><div class="skfit"><div class="skstage" style="--sk-sheet:url('${SCHED_ART.sheet}');--sk-ss:${G.sheet.w*2}px ${G.sheet.h*2}px;--sk-chain:url('${SCHED_ART.chain}')">`
     + `<img class="sk-under" src="${SCHED_ART.under}" alt="" draggable="false">`
     + `<div class="sk-paper" style="left:${G.paper.x*2}px;top:${G.paper.y*2}px">${P.join("")}</div>`
@@ -336,7 +384,7 @@ function skQuillAt(x, y, held){                                  // x, y = 펜�
 function skQuillHome(){ const Q = SCHED_GEO.quill; skQuillAt(Q.x*2, Q.y*2, false); }
 function skInkUpd(){ const q = skQuill(); if(!q) return; q.classList.toggle("inked", SK.ink > 0); q.style.setProperty("--ink", String(Math.max(.25, Math.min(1, SK.ink * 1.6)))); skFxUpd(); }
 /* 반짝임 (1006) — 다음에 할 일을 빛으로 알려 준다: 다섯 칸이 차면 깃펜 → 깃펜을 집으면 잉크 단지 → 잉크를 찍으면 결재란.
-   잉크가 떨어지면 다시 잉크 단지가 반짝인다 */
+   잉크가 떨어지면 다시 잉크 단지가 반짝인다. 저장된 서명이 있으면 다섯 칸이 찼을 때 결재란도 깃펜과 같이 반짝인다 (1011 — 누르면 바로 서명) */
 function skFxUpd(){
   const st = skStage(); if(!st) return;
   const rd = skReady(), q = skQuill(), b = $("#btnWeek"), iw = st.querySelector(".sk-inkfx");
@@ -344,7 +392,7 @@ function skFxUpd(){
   const glint = rd && !run && !SK.held && !SK.busy, inkOn = rd && !run && SK.held && SK.ink <= 0 && !SK.busy;
   if(q) q.classList.toggle("glint", glint);
   if(iw) iw.classList.toggle("on", inkOn);
-  if(b) b.classList.toggle("inked", rd && SK.held && SK.ink > 0);
+  if(b){ b.classList.toggle("inked", rd && SK.held && SK.ink > 0); b.classList.toggle("glint", glint && skHasSign()); }
   /* 반짝이는 소리 (1006) — 깃펜이나 잉크 단지가 빛나기 시작할 때 (깃펜 → 잉크 단지로 넘어갈 때는 이어서). 빛이 꺼지면 잦아든다.
      다른 화면에서 스케줄로 넘어왔을 때 일과가 이미 꽉 차 있으면 그때도 울린다 (skLeave 가 SK.fx 를 비운다). 스케줄 안에서 다시 그릴 때는 울리지 않는다 */
   const glow = glint || inkOn, was = !!(SK.fx && SK.fx.glow);
@@ -515,10 +563,15 @@ function skFinish(){
   prefSave();
   skSigned(true);
 }
+/* 저장된 서명 → 지금 서명 칸 (1011) — 서명 칸을 위로 키웠다(107×20 → 107×33). 예전 서명은 늘리지 않고 아래(서명 줄)에 붙인다 · 큰 서명만 줄인다 */
+function skSigFit(sig, c){
+  const sw = sig.w || c.width, sh = sig.h || c.height, k = Math.min(1, c.width / sw, c.height / sh);
+  return {k, dy: c.height - Math.round(sh * k)};
+}
 function skReplay(sig, done){                                    // 저장된 서명을 깃펜이 따라 쓴다
   SK.busy = true;
-  const c = skSig(), g = c.getContext("2d"), fx = c.width / (sig.w || c.width), fy = c.height / (sig.h || c.height);
-  const strokes = sig.s.map(s=>{ const o = []; for(let i = 0; i + 1 < s.length; i += 2) o.push([Math.round(s[i] * fx), Math.round(s[i+1] * fy)]); return o; }).filter(s=> s.length);
+  const c = skSig(), g = c.getContext("2d"), m = skSigFit(sig, c);
+  const strokes = sig.s.map(s=>{ const o = []; for(let i = 0; i + 1 < s.length; i += 2) o.push([Math.round(s[i] * m.k), Math.round(s[i+1] * m.k) + m.dy]); return o; }).filter(s=> s.length);
   let si = 0, pi = 0, acc = 0, last = performance.now();
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches, speed = reduce ? 4000 : 150;   // 칸/초
   const step = (now)=>{
@@ -541,7 +594,7 @@ function skReplay(sig, done){                                    // 저장된 �
 function skSigned(fresh){                                         // 서명 끝 — 잉크가 마르는 동안 잠깐 보여 주고 깃펜을 내려놓은 뒤 진행
   SK.busy = true; skScratch(false);
   const b = $("#btnWeek"); if(b) b.classList.add("signed");
-  if(fresh) toast("서명을 남겼다 — 다음부터는 잉크를 찍고 서명줄을 한 번 누르면 이 서명이 써진다.");
+  if(fresh) toast("서명을 남겼다 — 다음부터는 결재란을 누르면 이 서명이 써진다.");
   setTimeout(()=>{
     SK.busy = false; SK.held = false; SK.ink = 0;
     const hold = document.querySelector("#view .sk-hold"); if(hold) hold.hidden = true;
@@ -559,7 +612,7 @@ function skMoveTo(x, y, ms){                                       // 깃펜을 
     requestAnimationFrame(f);
   });
 }
-async function skAutoSign(){                                      // Enter — 깃펜이 스스로 잉크를 찍고 서명한다
+async function skAutoSign(){                                      // Enter · 저장된 서명이 있을 때 결재란 누르기 (1011) — 깃펜이 스스로 잉크를 찍고 서명한다
   if(SK.busy || !skReady()) return;
   SK.busy = true;
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches, T = reduce ? 1 : 280;
@@ -568,13 +621,13 @@ async function skAutoSign(){                                      // Enter — �
   await skMoveTo(R.x + R.w / 2, R.y + R.h / 2, T); skDip(); await new Promise(r=> setTimeout(r, reduce ? 1 : 260));
   const sig = (PREF.sign && Array.isArray(PREF.sign.s) && PREF.sign.s.length) ? PREF.sign : {w:107, h:20, s:SK_SIG0};
   const c = skSig(); if(!c){ SK.busy = false; return; }
-  const s0 = sig.s[0], fx = c.width / (sig.w || c.width), fy = c.height / (sig.h || c.height), sp = skSigToStage(Math.round(s0[0]*fx), Math.round(s0[1]*fy));
+  const s0 = sig.s[0], m = skSigFit(sig, c), sp = skSigToStage(Math.round(s0[0]*m.k), Math.round(s0[1]*m.k) + m.dy);
   await skMoveTo(sp.x, sp.y, T);
   skReplay(sig, ()=> skSigned(false));
 }
 function bindSchedScroll(v){
   const stage = skStage(); if(!stage) return;
-  skFit(); skSideFit();
+  skFit(); skSideFit(); skActFit();
   if(SK.ro) SK.ro.disconnect();
   if(typeof ResizeObserver === "function"){ SK.ro = new ResizeObserver(()=>{ skFit(); skSideFit(); }); SK.ro.observe(stage.parentElement); }
   SK.held = false; SK.busy = false; SK.ink = 0; SK.strokes = []; SK.len = 0; SK.writing = false; clearTimeout(SK.timer); skScratch(false);
@@ -589,7 +642,8 @@ function bindSchedScroll(v){
     bw.onclick = (e)=>{
       if(SK.busy) return;
       if(e && e.detail === 0){ skAutoSign(); return; }               // 키보드 — 깃펜이 스스로
-      skHint(PREF.sign ? "깃펜을 집어 잉크 단지에 찍고, 서명줄을 누르면 저장된 서명이 써진다." : "깃펜을 집어 잉크 단지에 찍은 뒤 서명줄에 서명한다.");
+      if(skHasSign()){ skAutoSign(); return; }                      // 저장된 서명이 있으면 바로 (1011)
+      skHint("깃펜을 집어 잉크 단지에 찍은 뒤 서명줄에 서명한다.");
     };
   }
   const q = skQuill();
@@ -642,7 +696,7 @@ function bindSchedScroll(v){
   if(mq){ if(mq.addEventListener) mq.addEventListener("change", h); else if(mq.addListener) mq.addListener(h); } }
 /* 창 높이만 바뀌어도(무대 폭은 그대로) · 글꼴을 받아 사이드 높이가 바뀌어도 사이드를 다시 잰다 (1010 — 학원 이름 맞춤 acadNameFit 의 0.15초 뒤) */
 { let t = 0;
-  const h = ()=>{ clearTimeout(t); t = setTimeout(()=>{ if(typeof UI !== "undefined" && UI.view === "plan" && skStage()) skSideFit(); }, 200); };
+  const h = ()=>{ clearTimeout(t); t = setTimeout(()=>{ if(typeof UI !== "undefined" && UI.view === "plan" && skStage()){ skSideFit(); skActFit(); } }, 200); };   // 1011 — 글꼴이 바뀌면 개인 행동 줄 폭도
   addEventListener("resize", h);
   if(document.fonts && document.fonts.addEventListener) document.fonts.addEventListener("loadingdone", h); }
 /* SCHED_SCROLL_END */

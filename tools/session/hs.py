@@ -5,7 +5,7 @@
 PC(D:\\heroschool)에서 받은(stage) 파일은 /mnt/user-data/uploads/heroschool/<경로> 에 PC 와 같은 모양으로 쌓인다.
 그 사본으로 작업 폴더를 만들고 → 고치고 → 빌드 → 바뀐 파일만 골라 PC 에 쓸 목록(device_commit_files 입력)을 만든다.
 
-  python3 hs.py list core patch          받을 파일 목록 — device_stage_files 의 paths 로 그대로 (50개씩) · 묶음: core patch counsel test placer rbook roster schedkit
+  python3 hs.py list core patch          받을 파일 목록 — device_stage_files 의 paths 로 그대로 (50개씩) · 묶음: core patch counsel test placer rbook roster schedkit i18n
   python3 hs.py init                     지금까지 받은 파일 → 작업 폴더 ~/hs/work + PC 원본 ~/hs/base (+ 블록 지문)
   python3 hs.py sync                     나중에 더 받은 파일 반영 — PC 쪽이 바뀌었으면 3-way 병합
   python3 hs.py status                   PC 원본과 달라진 파일
@@ -13,6 +13,8 @@ PC(D:\\heroschool)에서 받은(stage) 파일은 /mnt/user-data/uploads/heroscho
   python3 hs.py apply cslwin [인자…]      작업 폴더에서 tools/gen/patch/apply_cslwin.py game.html [인자…]
   python3 hs.py build                    wrap.py → wrap_site.py (TZ=Asia/Seoul)
   python3 hs.py shot [옵션]               heroschool.html 을 띄워 스크린샷 · 오류 (http(s) 는 모두 막는다 — firebase 쓰기 불가)
+  python3 hs.py i18n [--years 3]         영어판 시험 — 한국어가 변환 전과 같은지 · 영어 시험 단어가 보이는지 (tools/i18n/check_i18n.py · 빌드 뒤에)
+  python3 hs.py layout [--only plan,…]    영어판 화면 점검 — 넘치거나 잘린 칸 (tools/i18n/check_layout.py · 빌드 뒤에 · 스크린샷 shots/layout)
   python3 hs.py mtimes game.html=1791…   PC mtime 기록 (stage 결과의 mtimeMs) — pack 이 expectedMtimeMs 로 쓴다
   python3 hs.py pack 이름                 바뀐 파일 → /mnt/user-data/outputs/이름_시각/ + 커밋 목록 (1차 · 2차)
   python3 hs.py done [경로=mtime…]        커밋이 끝났다 — 보낸 내용을 새 원본으로 (새 mtime 을 주면 기록, 안 주면 지운다)
@@ -75,7 +77,10 @@ PROFILES = {
     # 빌드에 늘 필요한 것 + 이 도우미 (빌드 결과물도 받는다 — 바뀐 그림 판정 · 커밋 mtime)
     "core": ["game.html", "heroschool.html", "site/index.html", "site/version.json", "wrap.py", "wrap_site.py",
              "split_assets.py", "build_boot.py", "build_guard.py", "build_strip.py",
-             "tools/session/HANDOFF.md", "tools/session/hs.py"],
+             "tools/session/HANDOFF.md", "tools/session/hs.py"]
+            + ["tools/i18n/" + f for f in ("i18n_build.py", "i18n_runtime.js", "config.json", "en.json", "check_i18n.py", "check_layout.py", "check_save.py", "todo_en.py",
+                                           "en_layout.css", "en_layout_rbook.css")]
+            + ["tools/i18n/en/%s.json" % n for n in ("battle", "core", "data", "dialogue", "log", "names", "opening", "story", "tut", "ui")],   # 영어판 (1010) — 빌드가 읽는다 · en/ 는 2단계(화면) · 3단계(data · names) · 4단계(dialogue · story · opening) 표
     # tools/gen/patch 의 apply 스크립트 · 블록 · 배치 (desk_out 그림은 빼고 — apply_desk 로 다시 구울 때만 따로)
     "patch": ["tools/gen/README.md"] + ["tools/gen/patch/" + f for f in PATCH],
     # 학생 도트 · 전투 이펙트가 그려지게 (게임 테스트용 — 다른 그림은 없어도 돈다)
@@ -110,6 +115,10 @@ PROFILES = {
               + ["assets/student-portraits-v2/%s-512.png" % j for j in JOBS]
               + ["assets/skill-icons/frame-%s.webp" % g for g in ("D", "C", "B", "A", "S", "EX")]
               + ["assets/skill-icons/%s/%s.webp" % (j, n) for j in JOBS for n in SKILL_ICONS[j]],
+    # 영어판 글 목록을 다시 뽑을 때 (1010 · core 와 같이) — extract_ko.cjs 는 acorn 이 필요하다 (저장소 밖에서 npm i acorn acorn-walk)
+    # 영어 공유 미리보기(og_en.py → site/og-en.png · en/index.html)를 다시 만들 때도 (5단계)
+    "i18n": ["tools/i18n/README.md", "tools/i18n/extract_ko.cjs", "tools/i18n/classify_ko.py",
+             "tools/i18n/og_en.py", "site/og-en.png", "en/index.html"],
 }
 
 
@@ -524,7 +533,7 @@ class Errs(list):
 async def open_game(p, w=1280, h=800, page="heroschool.html", dsf=1, title=False):
     """게임을 띄워 시작 화면을 닫고 홈으로 (title=True 면 시작 화면 그대로). 반환: (browser, page, errs)"""
     b = await p.chromium.launch()
-    c = await b.new_context(viewport={"width": w, "height": h}, device_scale_factor=dsf)
+    c = await b.new_context(viewport={"width": w, "height": h}, device_scale_factor=dsf, locale="ko-KR")   # 한국어 브라우저 — 영어판 공개 뒤에도 ?lang=en 을 붙여야 영어
     await c.route(re.compile(r"^https?://"), lambda r: r.abort())      # 바깥 주소는 전부 막는다 (firebase · 글꼴)
     pg = await c.new_page()
     errs = Errs()
@@ -607,6 +616,25 @@ def cmd_shot(args):
                         print(json.dumps([dev_of(r) for r in m[i:i + MAX_CALL_FILES]], ensure_ascii=False))
             await b.close()
     asyncio.run(main())
+
+
+def cmd_i18n(args):
+    """영어판 시험 (1010) — 빌드한 뒤에 돌린다. 실패하면 멈춘다"""
+    if not os.path.exists(os.path.join(WORK, "tools", "i18n", "check_i18n.py")):
+        die("없다: tools/i18n/check_i18n.py — core 묶음을 다시 받는다 (hs.py list core)")
+    run([sys.executable, "tools/i18n/check_i18n.py", "--shots", os.path.join(SHOTS, "i18n")] + args)
+    print("영어 스크린샷:", os.path.join(SHOTS, "i18n"))
+
+
+def cmd_layout(args):
+    """영어판 화면 점검 (1010 · 2단계) — 영어에서 넘치거나 잘린 칸 (크기 1440×900 · 900×1000 · 390×844, 한국어에도 있는 것은 뺀다)"""
+    if not os.path.exists(os.path.join(WORK, "tools", "i18n", "check_layout.py")):
+        die("없다: tools/i18n/check_layout.py — core 묶음을 다시 받는다 (hs.py list core)")
+    out = os.path.join(SHOTS, "layout")
+    p = subprocess.run([sys.executable, "tools/i18n/check_layout.py", "--shots", out] + args, cwd=WORK)
+    print("영어 화면 스크린샷:", out)
+    if p.returncode:
+        print("(넘치거나 잘린 칸이 있다 — 위 목록)")
 
 
 # ── PC 로 보내기 ─────────────────────────────────────────────────────────────
@@ -727,7 +755,7 @@ def finish(args, check):
 
 CMDS = {"list": cmd_list, "init": cmd_init, "sync": lambda a: ingest(a or None), "resolve": cmd_resolve,
         "mtimes": cmd_mtimes, "status": cmd_status, "diff": cmd_diff, "apply": cmd_apply, "build": cmd_build,
-        "shot": cmd_shot, "pack": cmd_pack, "done": lambda a: finish(a, False), "verify": lambda a: finish(a, True)}
+        "shot": cmd_shot, "i18n": cmd_i18n, "layout": cmd_layout, "pack": cmd_pack, "done": lambda a: finish(a, False), "verify": lambda a: finish(a, True)}
 
 if __name__ == "__main__":
     if len(sys.argv) < 2 or sys.argv[1] not in CMDS:

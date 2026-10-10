@@ -8,6 +8,8 @@ const OPTX = (()=>{
   const W = 1280, H = 720, REVEAL = 420, BLUR0 = 11, MAXW = 1920;
   const SERIF = ["OpTxSerif", 800, 46, 4.1, 0.5];            // [글꼴, 굵기, 크기(1280 기준), 자간, 굵게 덧칠(px)]
   const SANS = ["OpTxSans", 400, 46, 2.7, 0.55];
+  const SERIF_EN = ["OpTxSerifEn", 800, 46, 1, 0.45];      // 영어판 (1010) — EB Garamond ExtraBold · 고운돋움의 라틴 글자
+  const SANS_EN = ["OpTxSans", 400, 46, 1.2, 0.55];
   const LOOK = {
     cream: {fill:"rgb(245,240,230)", rgb:[245,240,230], glow:"rgba(255,248,236,0.55)", glowBlur:6, halo:"rgba(105,125,190,0.42)", haloBlur:22},
     red:   {fill:"rgb(255,0,0)", rgb:[255,0,0], glow:"rgba(205,10,20,0.62)", glowBlur:8, halo:"rgba(100,115,190,0.38)", haloBlur:22},
@@ -49,6 +51,37 @@ const OPTX = (()=>{
       {t:["—왕국력 230년, 겨울", "아버지가 돌아가셨다."], y:[315.5, 403.5],
        at:[[110, 460, 510, 610, 760, 860, 960, 1010, 1060, 1410, 1460], [3360, 3460, 3510, 3610, 3760, 3860, 3960, 4010, 4110, 4160]], fade:[6470, 7100]}]}
   };
+  /* 영어판 (1010) — 장면 · 연 · 효과 · 때는 SC 그대로 두고 글 · 줄 · 글꼴만 바꾼다. at 는 조각마다 고르게 나눈 값
+     (타자기 제목은 소리 OP_TYPE_AT 와 맞게 오른쪽부터 음절 조각 일곱 · 부제 여섯) */
+  const SC_EN = {
+    intro: {ms:29250, tail:300, look:"cream", font:SERIF_EN, st:[
+      {t:["Kingdom Year 236—", "The Demon Army began its all-out assault."], y:[318, 402], ln:[[110, 760], [1710, 2810]], fade:[4880, 5480]},
+      {t:["The royal army, long steeped in peace,", "crumbled helplessly,", "and the kingdom faced an unprecedented crisis."], y:[274, 361, 448], ln:[[5760, 7360], [7960, 8760], [9360, 10660]], fade:[12720, 13300]},
+      {t:["But even this kingdom had one hope:", "the first and only in history to master every class,", "humanity’s mightiest hero—you."], y:[274, 361, 448], ln:[[13610, 15310], [16110, 17860], [18410, 19860]], fade:[21880, 22450]},
+      {t:["To stop the Demon King, you and your companions", "braved the danger and marched into enemy territory."], y:[318, 402], ln:[[22760, 24360], [24910, 26310]], fade:[28370, 28950]}]},
+    rift: {ms:19300, tail:300, look:"red", font:SANS_EN,
+      glitch:[1700, 1750, 1800, 3400, 3450, 3500, 5150, 5200, 6800, 6850, 6900, 10250, 10300, 11900, 11950, 12000, 13600, 13650, 13700, 15300, 15350, 15400, 17000, 17050, 17100], st:[
+      {t:["Before my eyes, space and time swirl and shudder,", "then begin greedily devouring everything around them."], y:[318, 400], ln:[[110, 1610], [2060, 4410]], out:[[6360, 6960], [7010, 7910]], flash:8500, end:8700},
+      {t:["Laughing, the Demon King is pulled into the rift...", "and my companions are swallowed before I can move."], y:[318, 400], ln:[[9010, 11710], [12360, 14560]], out:[[16510, 17360], [17410, 18210]], flash:18800, end:19300}]},
+    danger: {ms:7000, tail:350, look:"red", font:["OpTxSans", 400, 50, 1.2, 0.55], glitch:[1700, 1750, 1800, 3400, 3450, 3500], st:[
+      {t:["Ah, this is dangerous..."], y:[359.5], at:[[110, 135, 160, 460, 480, 500, 520, 560, 590, 710, 722, 734, 746, 758, 770, 782, 794, 806, 810, 1260, 1610]], mal:{t0:3700, tab:MAL_DANGER}}]},
+    date: {ms:4700, tail:300, look:"ink", font:SERIF_EN, light:true, st:[
+      {t:["—Kingdom Year 230, Fall"], y:[359.5], at:[[110, 460, 485, 510, 535, 560, 585, 610, 660, 685, 710, 735, 760, 860, 960, 1060, 1410, 1440, 1470, 1500]], fade:[3750, 4380]}]},
+    typer: {ms:5950, tail:300, light:true, reveal:"pop", ghost:[108, 150, 177], ghost2:[196, 92, 132], glitch:[100, 1700, 1750, 1800, 3400, 3450, 3500], st:[
+      {t:["My Hero’s Academy", "The Academy Went Under"], y:[299.5, 423.5], fonts:[["OpTxSans", 400, 100, 10, 4], ["OpTxSans", 400, 34, 3, 0.3]], looks:["metal", "metalSub"],
+       at:[[2700, 2700, 2250, 2250, 1850, 1850, 1850, 1850, 1400, 1000, 1000, 550, 550, 100, 100], [2750, 2750, 2750, 2700, 2700, 2700, 2650, 2650, 2650, 2650, 2600, 2600, 2600, 2600, 2550, 2550, 2500, 2500, 2500]], cut:[4750, 4800], rule:{y:381.5, x0:72, x1:1207, grow:[100, 950], shrink:[4800, 5650]}}]},
+    dontsay: {ms:5050, tail:300, look:"dad", font:["OpTxSans", 400, 55, 1.6, 0.8], reveal:"fade", st:[
+      {t:["Don’t say that."], y:[359.5], at:[[110, 160, 210, 260, 310, 610, 660, 710, 910, 1043, 1177, 1310, 1560]], fade:[4050, 4750]}]},
+    dream: {ms:5050, tail:300, look:"dad", font:["OpTxSans", 400, 55, 1.6, 0.8], reveal:"fade", st:[
+      {t:["My dream is..."], y:[359.5], at:[[110, 160, 560, 590, 620, 650, 680, 910, 960, 1260, 1360, 1510]], fade:[4000, 4720]}]},
+    hero: {ms:5100, tail:300, look:"dad", font:["OpTxSans", 400, 46, 1.4, 0.8], reveal:"fade", st:[
+      {t:["to be a hero just like the dad I’m so proud of..."], y:[360],
+       at:[[110, 149, 188, 227, 266, 306, 345, 384, 423, 462, 501, 540, 579, 619, 658, 697, 736, 775, 814, 853, 892, 931, 971, 1010, 1049, 1088, 1127, 1166, 1205, 1244, 1284, 1323, 1362, 1401, 1440, 1510, 1560, 1560]], fade:[4080, 4790]}]},
+    winter: {ms:7400, tail:300, look:"cream", font:SERIF_EN, st:[
+      {t:["—Kingdom Year 230, Winter", "My father passed away."], y:[315.5, 403.5],
+       at:[[110, 460, 485, 510, 535, 560, 585, 610, 660, 685, 710, 735, 760, 860, 960, 1060, 1410, 1435, 1460, 1485, 1510, 1535], [3360, 3400, 3460, 3496, 3532, 3568, 3604, 3640, 3760, 3796, 3832, 3868, 3904, 3940, 3990, 4030, 4070, 4110, 4160]], fade:[6470, 7100]}]}
+  };
+  const SCX = (typeof I18N !== "undefined" && I18N.lang === "en") ? SC_EN : SC;
   const meas = document.createElement("canvas").getContext("2d");
   const FILTER_OK = (()=>{ try{ const c = document.createElement("canvas").getContext("2d"); if(!("filter" in c)) return false; c.filter = "blur(2px)"; return c.filter === "blur(2px)"; }catch(e){ return false; } })();
   const isSpace = c=> c === " " || c === "　";
@@ -263,9 +296,9 @@ const OPTX = (()=>{
   let fontP = null;
   function fonts(){
     if(fontP) return fontP;
-    const all = Object.values(SC).flatMap(sc=> sc.st.flatMap(sp=> sp.t)).join("");
+    const all = Object.values(SCX).flatMap(sc=> sc.st.flatMap(sp=> sp.t)).join("");
     const load = (document.fonts && document.fonts.load)
-      ? Promise.all(["800 46px OpTxSerif", "400 46px OpTxSans"].map(f=> document.fonts.load(f, all))).catch(()=>{})
+      ? Promise.all([SCX === SC_EN ? "800 46px OpTxSerifEn" : "800 46px OpTxSerif", "400 46px OpTxSans"].map(f=> document.fonts.load(f, all))).catch(()=>{})
       : Promise.resolve();
     fontP = Promise.race([load, new Promise(r=> setTimeout(r, 2500))]);
     return fontP;
@@ -281,7 +314,7 @@ const OPTX = (()=>{
     I.lc.width = I.lc.height = I.tc.width = I.tc.height = 0;
   }
   function make(key, cls){
-    const sc = SC[key];
+    const sc = SCX[key];
     if(!sc) return Promise.resolve(null);
     return fonts().then(()=>{
       const cv = document.createElement("canvas");
@@ -309,6 +342,6 @@ const OPTX = (()=>{
       return cv;
     });
   }
-  return {make, prep:fonts, ms:k=> SC[k] && SC[k].ms, tail:k=> SC[k] && SC[k].tail,
+  return {make, prep:fonts, ms:k=> SCX[k] && SCX[k].ms, tail:k=> SCX[k] && SCX[k].tail,
     seek:(cv, t)=>{ const I = cv && cv._optx; if(!I || I.done) return false; I.frozen = t; if(cv.isConnected && cv.clientWidth) size(I, cv.clientWidth); draw(I, Math.min(t, I.sc.ms)); return true; }};   // 시험용 — 특정 때에 멈춰 그리기
 })();

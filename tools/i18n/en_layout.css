@@ -1,0 +1,33 @@
+/* 영어 화면 고침 (1010 · 2단계) — 영어일 때만 붙는다 (i18n_runtime.js 가 <style id="i18nCss"> 로).
+   한국어 화면 · game.html 의 CSS 는 그대로. 게임 규칙보다 세게 하려고 모두 html[lang=en] 으로 시작한다.
+   학생 명부 책(그림자 DOM) 안은 en_layout_rbook.css. 확인: tools/i18n/check_layout.py */
+
+/* 가로 화면 사이드의 큰 '스케줄' 단추 — 'Schedule [Wk 1]' 이 왼쪽 두루마리 그림에 걸린다 */
+html[lang=en] body #app>.topbar .side-sched{padding-left:64px;letter-spacing:0}
+
+/* 폰 스케줄(예전 화면)의 손패 — 한 줄 다섯 칸이면 카드 이름(Mock Battle · Expedition …)이 칸보다 넓어 오른쪽 카드가 잘린다 → 네 칸 */
+@media (max-width:640px){
+  html[lang=en] .handrow{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+/* 같은 손패 카드의 능력 줄(Composure +++) — 이름과 + 가 한 줄에 안 들어가면 + 를 다음 줄 오른쪽으로 */
+@media (max-width:640px){
+  html[lang=en] .handrow .card .fxl{flex-wrap:wrap;row-gap:0}
+  html[lang=en] .handrow .card .fxl b{margin-left:auto}
+}
+
+/* 시설 · 도구 · 도감 카드 목록의 첫 줄 (이름 · 꼬리표 · 값) — 한 줄에 안 들어가면 다음 줄로 (좁게 눌려 세 줄로 갈라지지 않게) */
+html[lang=en] .opt .on{flex-wrap:wrap}
+
+/* 가운데 폭(641px~) 위쪽 메뉴 줄 — 긴 이름(Master's Notes · Graduate League …)이면 오른쪽 메뉴가 밀려 숨는다 → 짧은 이름(Master · League …)으로.
+   가로 넓은 화면의 그림 메뉴는 원래 짧은 이름이고 그쪽 규칙이 더 세다 */
+@media (min-width:641px){
+  html[lang=en] nav#nav button .nl{display:none}
+  html[lang=en] nav#nav button .ns{display:inline}
+}
+
+/* 컨디션 줄(스케줄 아래) — 이름(Nocturne · Belladonna · 이명이 붙으면 Claire “the Lightbinder”)과 개인 행동 · 지침 무시 꼬리표가 한 칸에 안 들어간다
+   → 꼬리표는 넘치면 다음 줄로 (모든 폭 · 4단계 — 900px 에서 이명 + 꼬리표 둘이 넘쳤다) · 폰은 이름 칸도 넓힌다 (3단계) */
+html[lang=en] .condrow .cn{flex-wrap:wrap;row-gap:0;min-width:0}
+@media (max-width:640px){
+  html[lang=en] .condrow{grid-template-columns:minmax(0,1.5fr) 1fr 30px 56px}
+}

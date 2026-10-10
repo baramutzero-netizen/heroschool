@@ -1,0 +1,9 @@
+/* 영어 화면 고침 — 학생 명부 책(그림자 DOM #rbHost) 안 (1010 · 2단계). 영어일 때만 붙는다.
+   책 CSS(RB_CSS · ROSTERBK 블록)는 그대로 두고 덧붙인다 */
+
+/* 팀 편성 쪽의 전열 · 후열 세로 글 — 한글은 글자를 세워 쌓지만 영어는 옆으로 눕혀 한 줄로 */
+.tmc .frl{text-orientation:mixed;letter-spacing:1px;white-space:nowrap}
+
+/* 멘탈리티 육각형의 왼쪽 · 오른쪽 이름(Composure · Endurance · Willpower) — 카드 테두리에 걸린다 → 표식 쪽으로 조금 당긴다 */
+.hex .lab.L{margin-right:-7px}
+.hex .lab.R{margin-left:-7px}

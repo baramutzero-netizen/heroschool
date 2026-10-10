@@ -11,6 +11,11 @@ src=re.sub(r'const BUILD_TS = \d+;', 'const BUILD_TS = %d;' % TS, src, count=1)
 RULES=int(re.search(r'const RULES_VER = (\d+);', src).group(1))
 from build_strip import strip_dev
 src = strip_dev(src)   # 배포 빌드에서는 테스트 기능(진행 페이지 테스트 모드 · 애니메이션 테스트)을 뺀다
+try:   # 영어판 (1010) — 한국어 글을 번역 함수로 감싼다 (tools/i18n/i18n_build.py). relink 앞 — 영어 표 속 그림 주소도 같이 ../ 가 붙는다
+    import sys; sys.path.insert(0, 'tools/i18n'); from i18n_build import apply_i18n
+    src = apply_i18n(src)
+except ImportError:
+    print('i18n: tools/i18n 이 없어 한국어만으로 빌드한다')
 # site/index.html 은 한 칸 아래 폴더에 있다 — 그림(assets/) · 배경음(bgm/) 은 저장소 맨 위의 것을 같이 쓴다
 from split_assets import relink
 src = relink(src, '../')
