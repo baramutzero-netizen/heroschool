@@ -57,6 +57,7 @@ PATCH = ["apply_acadfit.py", "apply_crit.py", "apply_cslpers.py", "apply_cslwin.
          "apply_tqfield.py", "apply_tqgrow.py", "apply_tqmaps.py", "apply_tqui.py", "apply_tune.py", "apply_webp.py",
          "blockguard.py", "blocks.sha.json", "cslwin_block.css", "cslwin_block.js", "desk_art.py", "desk_layout.json",
          "mdesk_block.css", "mdesk_block.js", "roster_block.css", "roster_block.js",
+         "apply_optx.py", "optx_block.js", "optx_fonts.css", "optx_fonts.py",
          "sched_art.py", "sched_block.css", "sched_block.js", "sched_layout.json"]
 CW = "mockups/counsel-window/"
 SR = "mockups/student-roster/"

@@ -41,6 +41,7 @@ python tools/gen/patch/apply_cslpers.py game.html                               
 python tools/gen/patch/apply_cslwin.py game.html                                   # 상담창 (상담 책상 배치 · 창 블록을 고쳤으면 다시)
 python tools/gen/patch/apply_roster.py game.html                                   # 학생 명부 책 (목업 원본 · 책 그림 · 배치 · 책 블록을 고쳤으면 다시)
 python tools/gen/patch/apply_webp.py  game.html                                   # PNG → WebP (바뀐 게 없으면 그대로)
+python tools/gen/patch/apply_optx.py  game.html                                   # 오프닝 글 (장면 · 글 · 효과를 고쳤으면 다시 — 글을 바꿨으면 optx_fonts.py 먼저)
 python wrap.py
 python wrap_site.py
 ```
@@ -143,6 +144,23 @@ python wrap_site.py
 - 그림 `ROSTER_ART` — `book`(책) · `ribbon`(책갈피 끈), 목업의 `art/book.png` · `art/ribbon.png` 를 무손실 WebP 로. 배치 `RB_LAYOUT` — 목업의 `art/roster_layout.json` (`items` · `face.jobs` 만).
 - 책은 창에 맞춰 통째로 줄인다 (1배까지 — 1214 × 980 기준). 닫기: × · Esc · 책 바깥 누르기. Esc 는 쪽지 → 고른 자리 → 책 차례 (게임 팝업이 떠 있으면 그쪽 차례). 닫으면 게임 화면을 다시 그린다.
 
+### 오프닝 글 (`apply_optx.py` · 1010)
+
+- 새 시나리오 오프닝의 글 아홉 장면을 캔버스로 그린다 — 예전 APNG(12.3MB · `assets/opening/` 의 intro · rift · danger · date · title-type · dad-dontsay · dad-dream · dad-hero · date-winter)를 대신한다.
+  APNG 를 50ms 장마다 재서 효과 · 때(ms)를 옮겼다 (비교 · 측정은 Claude 세션에서 — 겹쳐 보면 글자 위치가 0~4px 안).
+  - 인트로 · 날짜 둘 — 글자가 흐림에서 선명해지기(0.42초) · 연이 통째로 흐려지기. 날짜 '가을' 은 검은 글자(푸른 빛 위)
+  - 시공 균열 · '아, 이건 위험...' — 같은 등장 + 지지직(청록 잔상 · 밀린 띠 · 검은 줄 · 50ms 장) · 글자마다 깜빡이다 꺼지기 · '위험' 은 꺼질 듯 깜빡이는 59장(`MAL_DANGER`)
+  - 타자기 제목 — 오른쪽부터 한 글자씩 찍기(`OP_TYPE_AT` 타자 소리와 같은 때) · 가로줄 긋고 걷기 · 은빛 그라데이션 · 테두리 · 그림자
+  - 아버지 대사 셋 — 흐림 없이 서서히 · 연이 흐려지기
+- `OPTX.make(장면, 클래스)` → 그릴 준비가 된 canvas (글꼴을 기다리고 글자를 미리 굽는다). 붙이는 순간부터 돌고, 떼면 멈춘다 — 예전 `apngImg` 자리에 그대로.
+  클래스는 예전 APNG 와 같다(`op-intro` · `op-rift` · `op-date`) — 크기 · 자리가 그대로. 캔버스는 화면 폭 × 배율(최대 1920)로 그린다.
+  `OPENING.<장면>` 은 `{ms, tail}` 만 남았다 (끝의 빈 시간 — 다음 장면까지의 간격 계산). 시험용 `OPTX.seek(canvas, ms)` (그때에 멈춰 그리기).
+- 글 · 효과 · 때는 `optx_block.js` 의 `SC` 한 곳 — 줄마다 `at`(글자마다 나오는 때) 또는 연의 `ln`(첫 · 끝 글자 때 · 그 사이는 글자 무게대로).
+  글꼴은 나눔명조 ExtraBold(`OpTxSerif` — 인트로 · 날짜 둘)와 고운돋움(`OpTxSans` — 나머지)을 쓰는 글자만 남긴 조각 `optx_fonts.css`(50KB · data: woff2).
+  **글을 바꾸면** `optx_fonts.py` 로 조각을 다시 만든다 (`npm i @fontsource/nanum-myeongjo @fontsource/gowun-dodum` 한 폴더를 인자로) → apply_optx.
+- 블록 지킴이에는 넣지 않았다 — game.html 의 `/* OPTX 시작 */ ~ /* OPTX 끝 */` · `/* OPTX-FONTS 시작 … 끝 */` 은 apply 할 때마다 블록 파일로 덮는다.
+- 예전 APNG 아홉 장은 게임이 더 이상 읽지 않는다 (지워도 된다). `tools/apngen/*-en.png`(영어 APNG)도 게임은 안 쓴다.
+
 ### PNG → WebP (`apply_webp.py` · 1008)
 
 - 무손실 (보이는 픽셀은 PNG 와 같다 — 완전히 투명한 곳의 숨은 색만 정리): 이야기 그림(`story_art`) · 스킬 이펙트(PNG 로 남아 있던 5장) · UI 리소(`ui-riso`) · 마을 지도(`town`) ·
@@ -156,7 +174,7 @@ python wrap_site.py
 
 ## 꼭 지킬 것 — 블록은 블록 파일에서 고친다
 
-`/* SCHED_SCROLL_START … */ ~ /* SCHED_SCROLL_END */`, `/* MDESK_START … */ ~ /* MDESK_END */`, `/* CSLWIN_START … */ ~ /* CSLWIN_END */` (와 각 CSS 블록), `/* ROSTERBK_START … */ ~ /* ROSTERBK_END */`(책 CSS 는 이 블록 안의 문자열) 안은 apply 할 때마다 블록 파일 내용으로 **통째로 갈아 끼운다**.
+`/* SCHED_SCROLL_START … */ ~ /* SCHED_SCROLL_END */`, `/* MDESK_START … */ ~ /* MDESK_END */`, `/* CSLWIN_START … */ ~ /* CSLWIN_END */` (와 각 CSS 블록), `/* ROSTERBK_START … */ ~ /* ROSTERBK_END */`(책 CSS 는 이 블록 안의 문자열), `/* OPTX 시작 */ ~ /* OPTX 끝 */`(+ 글꼴 `/* OPTX-FONTS 시작 … 끝 */` · 지킴이 없음) 안은 apply 할 때마다 블록 파일 내용으로 **통째로 갈아 끼운다**.
 game.html 에서 블록 안을 직접 고치면 다음 apply 가 그 수정을 지운다.
 
 그래서 `patch/blockguard.py` 가 지킨다 — apply 가 끝날 때 넣은 블록의 지문을 `patch/blocks.sha.json` 에 적어 두고, 다음 apply 전에 game.html 쪽 블록이 그 지문과 다르면 멈춘다.

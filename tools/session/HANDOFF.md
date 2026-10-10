@@ -38,7 +38,8 @@ Claude 가 새 세션을 시작할 때 읽는 작업 메모. **세션을 마칠 
 - 파일 하나 20MB 까지.
 - 돌리지 않는 것: `ui/chronicle/pack.py` · `sprites/story.py`.
 - 학생 프로필 얼굴(초상화)은 WebP 로 바꾸지 않는다.
-- 블록(`SCHED_SCROLL` · `MDESK` · `CSLWIN` · `ROSTERBK`)은 블록 파일(`tools/gen/patch/*_block.js · .css`)에서 고치고 apply — game.html 안을 직접 고치면 다음 apply 가 지운다.
+- 블록(`SCHED_SCROLL` · `MDESK` · `CSLWIN` · `ROSTERBK` · `OPTX`)은 블록 파일(`tools/gen/patch/*_block.js · .css`)에서 고치고 apply — game.html 안을 직접 고치면 다음 apply 가 지운다.
+  오프닝 글(`OPTX`)은 `optx_block.js` · 글꼴 `optx_fonts.css` → `hs.py apply optx` (지킴이 없음 · 글을 바꾸면 `optx_fonts.py` 로 글꼴 조각부터).
   학생 명부 책의 모양(CSS · HTML)은 목업 원본 `mockups/student-roster/src/roster_tpl.html` 에서 고치고 apply roster.
   `tools/gen/patch/blocks.sha.json` 은 커밋하지 않는다 (hs.py pack 이 뺀다).
 - 작은 수정은 가볍게 확인한다 — 빌드 + 고친 화면 스크린샷 한두 장. 시나리오 테스트는 큰 기능만.
@@ -122,28 +123,23 @@ python3 ~/hs.py pack 이름            # 보낼 폴더 + 커밋 목록 (끝에 8
 - 학생 명부 책은 그림자 DOM(`#rbHost`) 안 — 테스트에서 `document.getElementById('rbHost').shadowRoot` 로 찾는다 (Playwright 의 `locator('#rbHost …')` 는 그대로 뚫고 들어간다).
   책은 가로 넓은 화면(1100px 이상)에서만 뜬다 — `open_game(p, w=1440, h=1000)`. 상태는 `RBK.isOpen()` · `RBK.state`.
 
-## 7. 최근 작업 · 현재 상태 (2026-10-09 · 빌드 1009-1925)
+## 7. 최근 작업 · 현재 상태 (2026-10-10 · 빌드 1010-1216)
 
-- 마지막 게임 빌드 **1009-1925** — 학생 명부 책을 게임에 넣었다 (1637) + 정렬 옆 ‘스킬 임의로 강화’ (1706) + 멘탈리티 육각형의 학생 값을 매끈하게 (1748)
-  + 빈 유물 칸 `+ Slot N` → 유물 보관고 · 학적의 이름 / 값 / 덧말 색 나누기 · 진로 설명 · 다음 업보 진로 숨김 (1803)
-  + 육각형 꼭짓점 차례 팀워크(12시) → 지구력 → 적극성 → 천재성 → 정신력 → 침착성 (1828 · `HEX_ORDER`)
-  + 메뉴 단추 효과음 (1925 · game.html 직접) — `SFX.menu` = `bgm/menu_click.ogg` (사용자가 준 ‘선택지 클릭 시 나오는 소리’ — `bgm/statup.mp3` 와 같은 파일, 원본은 `bgm/menu_click.mp3`).
-    사이드 메뉴 · 큰 스케줄 단추 · 폰 메뉴 · 더보기 · 서브탭(`MENU_SFX_SEL`)을 누를 때 — 문서에 건 click 하나 (누르기 시작할 때 미리 받는다). 진행 중인 게임 수정 없음.
-- 오늘 한 것:
-  - **학생 명부 책 → 게임** (`tools/gen/patch/apply_roster.py` · `roster_block.js` · `roster_block.css` — 상세는 tools/gen/README 의 ‘학생 명부 책’).
-    가로 넓은 화면(`townMode`)에서 책상의 펼친 책 · 메뉴의 학생 명부 · 팀 편성(+ `UI.view` 를 "roster" · "team" 으로 바꾸는 모든 곳)이 책 팝업을 연다.
-    세로 · 좁은 화면은 예전 화면 그대로. `render()` 앞 · 끝에 한 줄씩(`RBK.intercept()` · `RBK.after()`).
-    책 모양은 목업 원본의 CORE_CSS · CORE_HTML 을 그대로 가져와 그림자 DOM 에 넣는다 (게임 CSS 와 섞이지 않게). 그림은 `assets/roster_art/` (book · ribbon WebP).
-    사용자 결정: 이름 변경 ✎ 연결 · 스킬 칸에 **스킬 강화**(포인트 있을 때) · 유물 칸에 **해제** · 신뢰 한마디 · 훈련 성공률 · 부상 · 개인 행동 고르기는 넣지 않음.
-    정렬 바로 왼쪽에 **스킬 임의로 강화**(예전 명부 머리의 단추 — 포인트가 남은 학생이 있을 때만 · 게임의 확인 창). 목업 원본에 넣고 배치판 항목(`spbtn`)도 더했다 (15가지).
-    팀 편성은 게임의 `S.teams` 를 게임 함수로 바로 고친다 (진형 강화의 서 ·改 다섯 자리도). 시나리오 테스트(상세 · 정렬 · 이름 변경 · 스킬 강화 · 해제 · 팀 편성 · 끌어 놓기 · 닫기 · 좁은 화면) 통과.
-  - hs.py — `rbook` 묶음 · PATCH 목록에 apply_roster · roster_block 둘 · `build` 가 heroschool.html · site/index.html 을 CRLF 로 (PC 원본과 같게).
-  - **학생 명부 목업 · 배치판** (`mockups/student-roster/`) — 책 모양 팝업(왼쪽 학생 목록 · 오른쪽 상세 / 팀 편성 모드) · 배치판(아티팩트는 4번) · 사용자 배치 `roster_layout.json` 기본.
-    책 CSS 변수는 무대(#fitIn) · 초상 틀(.ring) 안에서 정한다 — 바깥 페이지 변수와 이름이 겹치면 사라진다 (배치판의 `--r` 로 상세 초상 테두리가 사라졌었다).
-    멘탈리티 카드의 표식 풀이 · 육각형 꼭짓점 점은 뺐다. 학생 값(푸른 면 · 테두리)은 도트 대신 매끈한 SVG(캔버스 위에 겹침 · 테두리 2px). 팀 이름 변경 · 진형 설명 · 팀 편성 옆 글은 숨김.
-- 다음 할 일: 사용자가 게임에서 책을 써 보고 고칠 점을 준다 (스킬 임의로 강화 자리는 ‘일단’ 정렬 옆 — 배치판으로 옮길 수 있다).
-- 그 앞(1008): 상담창 (apply_cslwin · 효과음 · 직업별 도트 자리 `CSL_SPR`) · 상담 대사 성격별 · 행동 지침 무시 · 스킬 등급표(RULES_VER 7) · 원정 3구간 · PNG→WebP ·
-  두루마리 스케줄 · 마스터 노트 책상 · 쿼터뷰 대회 화면.
+- 마지막 게임 빌드 **1010-1216** — 새 시나리오 오프닝의 글 아홉 장면을 **APNG → 캔버스 글자(OPTX)** 로 바꿨다. 진행 중인 게임 수정 없음.
+  - `tools/gen/patch/apply_optx.py` · `optx_block.js`(장면 · 글 · 효과 · 때 전부 — `SC`) · `optx_fonts.css`(나눔명조 ExtraBold · 고운돋움 조각 50KB) · `optx_fonts.py`(조각 굽기). 상세는 tools/gen/README 의 ‘오프닝 글’.
+  - 예전 APNG(intro · rift · danger · date · title-type · dad-dontsay · dad-dream · dad-hero · date-winter, 합계 12.3MB)를 50ms 장마다 재서 효과 · 때를 옮겼다 — 비교 페이지에서 겹쳐 보면 글자 위치 0~4px.
+    `OPTX.make(장면, 예전과 같은 클래스)` 가 예전 `apngImg` 자리에 (인트로 · 시공 균열 · 위험 · 날짜 · 타자기 · 아버지 넷). `OPENING.<장면>` 은 `{ms, tail}` 만.
+    처음 내려받기에서 APNG 아홉 장이 빠졌다 (`bootAssetList` 는 HTML 의 assets/ 경로만 받는다). 파일은 PC 에 남아 있다 — 사용자가 지워도 된다.
+  - 시험: 아홉 장면을 게임 안에서 멈춰 찍기 + 실제 오프닝 흐름(인트로 → 대화 → 시공 균열 → 위험 · openingFinish → 날짜 → 타자기 → 아버지 넷)에서 오류 없음.
+- 오늘 한 것 (1010):
+  - **오프닝 글 비교 페이지**(Artifact) — https://claude.ai/artifact/VnR97bQycuQZTSDSqjxWZV · 원본은 `Claude outputs/opening_compare/` (PC 에만).
+    왼쪽 APNG · 오른쪽 캔버스를 같은 시계로 (나란히 · 겹쳐서). 인트로 · 시공 균열은 다섯 언어(영어 · 일본어 · 간체 · 번체는 비교용 초벌 번역 · 글꼴 Gelasio · Noto Serif/Sans CJK),
+    한국어 글꼴 비교(APNG와 같은 글꼴 · 나눔명조 Bold · 물마루 · 물마루 가늘게 — 게임에는 ‘APNG와 같은 글꼴’). 시공 균열 비교 움짤 rift_compare.gif.
+  - 사용자 결정: 오프닝 글은 지금 모양 그대로 캔버스로 교체. 로컬라이징(영 · 일 · 간 · 번)은 아직 고민 중 — 바꿀 때는 `SC` 의 글 · 글꼴만 언어별로 (효과 · 때 구조는 그대로).
+  - 알아 둘 것: 물마루는 12px 에서 세로획 2칸 · 가로획 1칸인 글꼴이라 크게 키우면 굵어 보인다 (굵게 처리 아님). 나눔명조는 ExtraBold + 0.5px 덧칠로 APNG 굵기에 맞췄다.
+- 다음 할 일: 사용자가 게임에서 오프닝을 보고 고칠 점을 준다 · 예전 APNG 아홉 장 지우기(사용자) · 로컬라이징 방식 결정.
+- 그 앞(1009): 학생 명부 책 → 게임(apply_roster · 스킬 임의로 강화 · 유물 빈 칸 · 학적 색 · 육각형 차례) · 메뉴 단추 효과음(`SFX.menu`) · 학생 명부 목업 · 배치판.
+  그 앞(1008): 상담창 · 상담 대사 성격별 · 행동 지침 무시 · 스킬 등급표 · 원정 3구간 · PNG→WebP · 두루마리 스케줄 · 마스터 노트 책상 · 쿼터뷰 대회 화면.
 
 ## 8. 이 문서 고치기
 
