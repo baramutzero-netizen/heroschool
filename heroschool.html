@@ -2309,6 +2309,85 @@ html[data-font="pixel"] .tg-schedbtn{font-family:"Mulmaru",sans-serif;letter-spa
 .tg-grade>span.on{border-color:var(--tg-gold);box-shadow:inset 0 0 0 1px var(--tg-gold)}
 .tg-grade>i{align-self:center;font-style:normal;color:var(--tg-gold)}
 /* TUTORIAL_RESPONSIVE_STYLE_END */
+/* MDESK_CSS_START — 마스터 노트 책상 (1006) · 마을 지도(.town · .townmap · .townpop)와 같은 틀 위에 얹는다 */
+.mdesk .mdesk-in{overflow:hidden}
+.mdesk .mdesk-art{position:absolute;left:0;top:0;width:100%;height:calc(100% * 932 / 931)}
+.mdesk .mdl{position:absolute;left:0;top:0;width:100%;height:100%;display:block;max-width:none;margin:0;image-rendering:pixelated;pointer-events:none;-webkit-user-select:none;user-select:none}
+.mdesk .md-light{mix-blend-mode:screen}
+.mdesk .md-items{transition:opacity .26s ease-in}
+/* 누를 수 있는 소품 — 마우스를 올리면(키보드로 고르면) 테두리 빛 + 이름표 */
+.mdesk .mdh{opacity:0;transition:opacity .12s}
+.mdesk[data-hot="1"] .mdh[data-g="1"],.mdesk[data-hot="2"] .mdh[data-g="2"],.mdesk[data-hot="3"] .mdh[data-g="3"],
+.mdesk[data-hot="4"] .mdh[data-g="4"],.mdesk[data-hot="5"] .mdh[data-g="5"]{opacity:1}
+html body #view .mdesk .mdk{position:absolute;display:block;margin:0!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;
+  border-radius:0!important;outline:0!important;min-width:0!important;min-height:0!important;pointer-events:none;color:inherit;transform:none!important}
+.mdesk .mdtag{position:absolute;left:50%;bottom:100%;transform:translate(-50%,-4px);white-space:nowrap;font-size:12px;line-height:1.35;padding:1px 7px;
+  background:#2a1a11e6;color:#fff0ce;border-radius:3px;pointer-events:none;opacity:0;transition:opacity .12s;z-index:4}
+.mdesk .mdk.below .mdtag{top:100%;bottom:auto;transform:translate(-50%,4px)}
+.mdesk[data-hot="1"] .mdk[data-g="1"] .mdtag,.mdesk[data-hot="2"] .mdk[data-g="2"] .mdtag,.mdesk[data-hot="3"] .mdk[data-g="3"] .mdtag,
+.mdesk[data-hot="4"] .mdk[data-g="4"] .mdtag,.mdesk[data-hot="5"] .mdk[data-g="5"] .mdtag{opacity:1}
+/* 남은 마스터 육성 포인트 — 책 더미 오른쪽 위에 -15도 (사이드 메뉴의 숫자 표식과 같은 결) */
+.mdesk .mdbadge{position:absolute;z-index:3;transform:translate(-50%,-50%) rotate(-15deg);min-width:24px;height:24px;padding:0 5px;box-sizing:border-box;
+  font-size:14px;line-height:20px;font-weight:700;text-align:center;color:#fff;background:#b0412c;border:2px solid #4a1d14;border-radius:0;
+  box-shadow:2px 2px 0 #2a120c80;pointer-events:none;transition:opacity .15s}
+/* 두루마리 → 스케줄 */
+.mdesk.mdesk-go .md-items,.mdesk.mdesk-go .mdh,.mdesk.mdesk-go .mdbadge,.mdesk.mdesk-go .mdtag{opacity:0!important}
+.mdesk.mdesk-go .mdesk-art{pointer-events:none}
+.mdesk .mdesk-frame.mf-top{top:0;bottom:auto;clip-path:inset(0 0 50% 0)}
+.mdesk .mdesk-frame.mf-bot{top:auto;bottom:0;clip-path:inset(50% 0 0 0)}
+.mdesk-ghost{position:absolute;z-index:30;opacity:0;pointer-events:none}                 /* 사이드 메뉴(z 40) 아래 */
+.mdesk-ghost img{position:absolute;left:0;top:0;width:100%;height:100%;max-width:none;display:block;margin:0;image-rendering:pixelated}
+html body .skwrap.mdesk-wait .sk-paper{opacity:0}
+html body .skwrap.mdesk-intro .sk-paper{animation:mdeskIn .42s ease-out both}
+@keyframes mdeskIn{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.mdesk .mdh,.mdesk .mdtag,.mdesk .md-items{transition:none}}
+/* MDESK_CSS_END */
+
+/* Quarter-view tournament frame and controls */
+.modal.tournament-quarter{flex:none!important;overflow:visible!important;max-width:none!important;transform-origin:center}
+.modal.tournament-quarter::before,.modal.tournament-quarter::after,.tournament-quarter .bf-stage::before{display:none!important}
+.tournament-quarter .btscroll,.tournament-quarter .bf-layout{height:100%!important;overflow:visible!important;margin:0!important;padding:0!important}
+.tournament-quarter .bf-stage{width:100%!important;height:100%!important;min-height:0!important;overflow:visible!important;border:0!important;background:transparent!important;box-shadow:none!important;isolation:isolate}
+.tq-map{position:absolute;inset:0;overflow:hidden;z-index:-1;pointer-events:none}.tq-map img{max-width:none!important;transform:none!important}
+.tq-frame{z-index:100;pointer-events:none;max-width:none!important;object-fit:fill}
+.tournament-quarter .bf-unit{z-index:101}.tournament-quarter .bf-school,.tournament-quarter .bf-legend,.tq-title{z-index:610!important}
+.tq-title{padding:7px 12px;background:#18202eee;color:white;border:1px solid #d8c79b99;border-radius:7px;font-size:18px!important}
+.tournament-quarter .btbar{z-index:610;display:block!important;padding:0!important;border:0!important;background:transparent!important;overflow:visible!important}
+.tq-control-skin{z-index:-1;pointer-events:none;max-width:none!important}
+.tournament-quarter .btbar .btn{min-height:0!important;padding:4px 6px!important;white-space:nowrap;font-size:12px!important;background:#b68b50!important;color:#281b0e!important;border:1px solid #66441f!important;border-radius:3px!important;box-shadow:none!important}
+.tournament-quarter .btbar .btn.primary{background:#65401f!important;color:#ffe3a7!important;border-color:#ceaa63!important}
+.tournament-quarter .battle-drawer{left:auto;right:0;bottom:calc(100% + 20px);width:500px;max-height:400px;z-index:700}
+
+.tournament-quarter .bf-legend{font-size:11px!important;padding:4px!important;gap:4px!important;white-space:nowrap!important}.tournament-quarter .bf-school>b{font-size:18px!important}.tournament-quarter .bf-school{box-shadow:none!important;text-shadow:none!important}
+/* 1007 — 대회 쿼터뷰 화면 정리 (apply_tqui) — 범례 숨김 · 진영 칸은 이름만 + 버튼 박스 나무판 · 경기 이름은 BATTLE START 동안만 */
+.tournament-quarter .bf-legend{display:none!important}
+.tournament-quarter .bf-school .fmtag{display:none!important}
+.tournament-quarter .bf-school{background:none!important;border:0!important;border-radius:0!important;padding:0 14px!important;gap:0!important;max-width:none!important;justify-content:center!important;align-items:center!important;text-align:center!important;overflow:visible!important}
+.tournament-quarter .bf-school::before{content:"";position:absolute;z-index:-1;pointer-events:none;box-sizing:border-box;
+  top:calc(var(--tq-ot,19px) * -1);right:calc(var(--tq-or,12px) * -1);bottom:calc(var(--tq-ob,22px) * -1);left:calc(var(--tq-ol,12px) * -1);
+  border:1px solid transparent;border-image-source:url(assets/battle-fields/quarter/controls.webp?v=d31f4ada);border-image-slice:290 320 292 320 fill;border-image-width:var(--tq-bw,50px 43px 51px 43px);border-image-repeat:stretch}
+.tournament-quarter .bf-school>b{font-size:var(--tq-fs,18px)!important;line-height:1.25!important;max-width:100%;color:#ffe9b5!important;word-break:keep-all;overflow-wrap:anywhere;
+  text-shadow:1px 0 0 #2a1506,-1px 0 0 #2a1506,0 1px 0 #2a1506,0 -1px 0 #2a1506,1px 1px 0 #2a1506,-1px 1px 0 #2a1506,1px -1px 0 #2a1506,-1px -1px 0 #2a1506,0 2px 3px #000b!important}
+.tq-title{position:absolute;transform:translate(-50%,-50%);margin:0!important;padding:0!important;background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;
+  font-family:"Mulmaru",sans-serif!important;font-weight:400!important;line-height:1.25!important;letter-spacing:0!important;color:#fff!important;text-align:center;white-space:normal;word-break:keep-all;
+  opacity:0;pointer-events:none;filter:drop-shadow(0 3px 2px #0009)}
+.tq-title::before{content:attr(data-text);position:absolute;inset:0;z-index:-1;color:#000;-webkit-text-stroke:calc(var(--tq-o,2px) * 2) #000;pointer-events:none}
+html.tq-lab .tq-title{opacity:1}
+html.tq-ban .tq-title{animation:tqTitleBan 1500ms linear both}
+/* BATTLE START 글자의 진하기를 그림(battle_start.png) 장면마다 재서 옮겼다 — 167ms 부터 나타나 625ms 에 다 보이고, 1292ms 부터 흐려져 1500ms 에 사라진다 */
+@keyframes tqTitleBan{0%,11.1%{opacity:0}16.7%{opacity:.09}22.2%{opacity:.36}27.8%{opacity:.7}33.3%{opacity:.92}38.9%{opacity:.99}41.7%,86.1%{opacity:1}88.9%{opacity:.97}91.7%{opacity:.88}94.4%{opacity:.7}97.2%{opacity:.42}100%{opacity:0}}
+
+/* Shared skill icons: 48px in student/teaching/upgrade cards, 32px in codex. */
+.skill-icon{display:block;position:relative;width:48px;height:48px;flex:none;float:left;margin:1px 12px 6px 0;pointer-events:none}
+.skill-icon img{position:absolute;display:block;max-width:none;image-rendering:pixelated}
+.skill-icon .skill-icon-frame{inset:0;width:100%;height:100%}
+.skill-icon .skill-icon-art{left:8%;top:8%;width:84%;height:84%;object-fit:contain}
+.opt:has(> .skill-icon){display:flow-root;min-height:76px}
+.opt:has(> .skill-icon)>:is(.on,.od){margin-left:60px}
+.opt:has(> .skill-icon)>.on{flex-wrap:wrap;min-width:0}
+.dmsk-r>.skill-icon{width:32px;height:32px;margin-right:8px}
+@media(max-width:480px){.opt>.skill-icon{width:40px;height:40px;margin-right:8px}.opt:has(> .skill-icon)>:is(.on,.od){margin-left:48px}}
+
 /* SCHED_SCROLL_CSS_START — 두루마리 스케줄 (1006). 무대는 1배 그림의 2배(1544×1008) 좌표로 그리고 화면 폭에 맞춰 통째로 줄인다(--sk-s).
    글자는 물마루 12 · 24px — 목업(schedule_mock2)과 같은 자리 · 같은 크기. 색은 두루마리 그림 색 그대로(화면 분위기와 상관없이) */
 html body .skwrap{position:relative;isolation:isolate;user-select:none;-webkit-user-select:none}
@@ -2436,86 +2515,10 @@ html body .skwrap .skfit .skstage .sk-ripple{position:absolute;border:2px solid 
 @keyframes skRipple{from{transform:scale(.3);opacity:1}to{transform:scale(1.25);opacity:0}}
 html body .skwrap .skfit .skstage .sk-hold{position:absolute;inset:0;z-index:40;cursor:none;touch-action:none}
 @media (prefers-reduced-motion:reduce){html body .skwrap .skfit .skstage .sk-quill.nudge,html body .skwrap .skfit .skstage .sk-quill.dip img,html body .skwrap .skfit .skstage .sk-ripple,html body .skwrap .skfit .skstage .sk-appr.inked::after{animation:none}html body .skwrap .skfit .skstage .sk-quill.glint img,html body .skwrap .skfit .skstage .sk-inkfx.on img{animation:none;filter:drop-shadow(2px 0 0 #ffeca0) drop-shadow(-2px 0 0 #ffeca0) drop-shadow(0 2px 0 #ffeca0) drop-shadow(0 -2px 0 #ffeca0)}html body .skwrap .skfit .skstage .sk-quill.glint .sk-tw,html body .skwrap .skfit .skstage .sk-inkfx.on .sk-tw{animation:none;display:none}}
+/* 사이드가 잉크 단지 · 깃펜을 가릴 때 (1010) — skSideFit 이 html 에 붙인다. sk-side1 'MENU' 글자 · sk-side2 스케줄 단추(지금 보는 화면)를 숨긴다.
+   사이드 규칙이라 무대 접두어를 붙이지 않는다 (html 로 시작하는 선택자는 apply_sched 의 prefix_css 가 그대로 둔다) */
+@media (min-width:1100px) and (orientation:landscape){html.sk-side1 body #app>.topbar .side-lab,html.sk-side2 body #app>.topbar .side-sched{display:none}}
 /* SCHED_SCROLL_CSS_END */
-/* MDESK_CSS_START — 마스터 노트 책상 (1006) · 마을 지도(.town · .townmap · .townpop)와 같은 틀 위에 얹는다 */
-.mdesk .mdesk-in{overflow:hidden}
-.mdesk .mdesk-art{position:absolute;left:0;top:0;width:100%;height:calc(100% * 932 / 931)}
-.mdesk .mdl{position:absolute;left:0;top:0;width:100%;height:100%;display:block;max-width:none;margin:0;image-rendering:pixelated;pointer-events:none;-webkit-user-select:none;user-select:none}
-.mdesk .md-light{mix-blend-mode:screen}
-.mdesk .md-items{transition:opacity .26s ease-in}
-/* 누를 수 있는 소품 — 마우스를 올리면(키보드로 고르면) 테두리 빛 + 이름표 */
-.mdesk .mdh{opacity:0;transition:opacity .12s}
-.mdesk[data-hot="1"] .mdh[data-g="1"],.mdesk[data-hot="2"] .mdh[data-g="2"],.mdesk[data-hot="3"] .mdh[data-g="3"],
-.mdesk[data-hot="4"] .mdh[data-g="4"],.mdesk[data-hot="5"] .mdh[data-g="5"]{opacity:1}
-html body #view .mdesk .mdk{position:absolute;display:block;margin:0!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;
-  border-radius:0!important;outline:0!important;min-width:0!important;min-height:0!important;pointer-events:none;color:inherit;transform:none!important}
-.mdesk .mdtag{position:absolute;left:50%;bottom:100%;transform:translate(-50%,-4px);white-space:nowrap;font-size:12px;line-height:1.35;padding:1px 7px;
-  background:#2a1a11e6;color:#fff0ce;border-radius:3px;pointer-events:none;opacity:0;transition:opacity .12s;z-index:4}
-.mdesk .mdk.below .mdtag{top:100%;bottom:auto;transform:translate(-50%,4px)}
-.mdesk[data-hot="1"] .mdk[data-g="1"] .mdtag,.mdesk[data-hot="2"] .mdk[data-g="2"] .mdtag,.mdesk[data-hot="3"] .mdk[data-g="3"] .mdtag,
-.mdesk[data-hot="4"] .mdk[data-g="4"] .mdtag,.mdesk[data-hot="5"] .mdk[data-g="5"] .mdtag{opacity:1}
-/* 남은 마스터 육성 포인트 — 책 더미 오른쪽 위에 -15도 (사이드 메뉴의 숫자 표식과 같은 결) */
-.mdesk .mdbadge{position:absolute;z-index:3;transform:translate(-50%,-50%) rotate(-15deg);min-width:24px;height:24px;padding:0 5px;box-sizing:border-box;
-  font-size:14px;line-height:20px;font-weight:700;text-align:center;color:#fff;background:#b0412c;border:2px solid #4a1d14;border-radius:0;
-  box-shadow:2px 2px 0 #2a120c80;pointer-events:none;transition:opacity .15s}
-/* 두루마리 → 스케줄 */
-.mdesk.mdesk-go .md-items,.mdesk.mdesk-go .mdh,.mdesk.mdesk-go .mdbadge,.mdesk.mdesk-go .mdtag{opacity:0!important}
-.mdesk.mdesk-go .mdesk-art{pointer-events:none}
-.mdesk .mdesk-frame.mf-top{top:0;bottom:auto;clip-path:inset(0 0 50% 0)}
-.mdesk .mdesk-frame.mf-bot{top:auto;bottom:0;clip-path:inset(50% 0 0 0)}
-.mdesk-ghost{position:absolute;z-index:30;opacity:0;pointer-events:none}                 /* 사이드 메뉴(z 40) 아래 */
-.mdesk-ghost img{position:absolute;left:0;top:0;width:100%;height:100%;max-width:none;display:block;margin:0;image-rendering:pixelated}
-html body .skwrap.mdesk-wait .sk-paper{opacity:0}
-html body .skwrap.mdesk-intro .sk-paper{animation:mdeskIn .42s ease-out both}
-@keyframes mdeskIn{from{opacity:0}to{opacity:1}}
-@media (prefers-reduced-motion:reduce){.mdesk .mdh,.mdesk .mdtag,.mdesk .md-items{transition:none}}
-/* MDESK_CSS_END */
-
-/* Quarter-view tournament frame and controls */
-.modal.tournament-quarter{flex:none!important;overflow:visible!important;max-width:none!important;transform-origin:center}
-.modal.tournament-quarter::before,.modal.tournament-quarter::after,.tournament-quarter .bf-stage::before{display:none!important}
-.tournament-quarter .btscroll,.tournament-quarter .bf-layout{height:100%!important;overflow:visible!important;margin:0!important;padding:0!important}
-.tournament-quarter .bf-stage{width:100%!important;height:100%!important;min-height:0!important;overflow:visible!important;border:0!important;background:transparent!important;box-shadow:none!important;isolation:isolate}
-.tq-map{position:absolute;inset:0;overflow:hidden;z-index:-1;pointer-events:none}.tq-map img{max-width:none!important;transform:none!important}
-.tq-frame{z-index:100;pointer-events:none;max-width:none!important;object-fit:fill}
-.tournament-quarter .bf-unit{z-index:101}.tournament-quarter .bf-school,.tournament-quarter .bf-legend,.tq-title{z-index:610!important}
-.tq-title{padding:7px 12px;background:#18202eee;color:white;border:1px solid #d8c79b99;border-radius:7px;font-size:18px!important}
-.tournament-quarter .btbar{z-index:610;display:block!important;padding:0!important;border:0!important;background:transparent!important;overflow:visible!important}
-.tq-control-skin{z-index:-1;pointer-events:none;max-width:none!important}
-.tournament-quarter .btbar .btn{min-height:0!important;padding:4px 6px!important;white-space:nowrap;font-size:12px!important;background:#b68b50!important;color:#281b0e!important;border:1px solid #66441f!important;border-radius:3px!important;box-shadow:none!important}
-.tournament-quarter .btbar .btn.primary{background:#65401f!important;color:#ffe3a7!important;border-color:#ceaa63!important}
-.tournament-quarter .battle-drawer{left:auto;right:0;bottom:calc(100% + 20px);width:500px;max-height:400px;z-index:700}
-
-.tournament-quarter .bf-legend{font-size:11px!important;padding:4px!important;gap:4px!important;white-space:nowrap!important}.tournament-quarter .bf-school>b{font-size:18px!important}.tournament-quarter .bf-school{box-shadow:none!important;text-shadow:none!important}
-/* 1007 — 대회 쿼터뷰 화면 정리 (apply_tqui) — 범례 숨김 · 진영 칸은 이름만 + 버튼 박스 나무판 · 경기 이름은 BATTLE START 동안만 */
-.tournament-quarter .bf-legend{display:none!important}
-.tournament-quarter .bf-school .fmtag{display:none!important}
-.tournament-quarter .bf-school{background:none!important;border:0!important;border-radius:0!important;padding:0 14px!important;gap:0!important;max-width:none!important;justify-content:center!important;align-items:center!important;text-align:center!important;overflow:visible!important}
-.tournament-quarter .bf-school::before{content:"";position:absolute;z-index:-1;pointer-events:none;box-sizing:border-box;
-  top:calc(var(--tq-ot,19px) * -1);right:calc(var(--tq-or,12px) * -1);bottom:calc(var(--tq-ob,22px) * -1);left:calc(var(--tq-ol,12px) * -1);
-  border:1px solid transparent;border-image-source:url(assets/battle-fields/quarter/controls.webp?v=d31f4ada);border-image-slice:290 320 292 320 fill;border-image-width:var(--tq-bw,50px 43px 51px 43px);border-image-repeat:stretch}
-.tournament-quarter .bf-school>b{font-size:var(--tq-fs,18px)!important;line-height:1.25!important;max-width:100%;color:#ffe9b5!important;word-break:keep-all;overflow-wrap:anywhere;
-  text-shadow:1px 0 0 #2a1506,-1px 0 0 #2a1506,0 1px 0 #2a1506,0 -1px 0 #2a1506,1px 1px 0 #2a1506,-1px 1px 0 #2a1506,1px -1px 0 #2a1506,-1px -1px 0 #2a1506,0 2px 3px #000b!important}
-.tq-title{position:absolute;transform:translate(-50%,-50%);margin:0!important;padding:0!important;background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;
-  font-family:"Mulmaru",sans-serif!important;font-weight:400!important;line-height:1.25!important;letter-spacing:0!important;color:#fff!important;text-align:center;white-space:normal;word-break:keep-all;
-  opacity:0;pointer-events:none;filter:drop-shadow(0 3px 2px #0009)}
-.tq-title::before{content:attr(data-text);position:absolute;inset:0;z-index:-1;color:#000;-webkit-text-stroke:calc(var(--tq-o,2px) * 2) #000;pointer-events:none}
-html.tq-lab .tq-title{opacity:1}
-html.tq-ban .tq-title{animation:tqTitleBan 1500ms linear both}
-/* BATTLE START 글자의 진하기를 그림(battle_start.png) 장면마다 재서 옮겼다 — 167ms 부터 나타나 625ms 에 다 보이고, 1292ms 부터 흐려져 1500ms 에 사라진다 */
-@keyframes tqTitleBan{0%,11.1%{opacity:0}16.7%{opacity:.09}22.2%{opacity:.36}27.8%{opacity:.7}33.3%{opacity:.92}38.9%{opacity:.99}41.7%,86.1%{opacity:1}88.9%{opacity:.97}91.7%{opacity:.88}94.4%{opacity:.7}97.2%{opacity:.42}100%{opacity:0}}
-
-/* Shared skill icons: 48px in student/teaching/upgrade cards, 32px in codex. */
-.skill-icon{display:block;position:relative;width:48px;height:48px;flex:none;float:left;margin:1px 12px 6px 0;pointer-events:none}
-.skill-icon img{position:absolute;display:block;max-width:none;image-rendering:pixelated}
-.skill-icon .skill-icon-frame{inset:0;width:100%;height:100%}
-.skill-icon .skill-icon-art{left:8%;top:8%;width:84%;height:84%;object-fit:contain}
-.opt:has(> .skill-icon){display:flow-root;min-height:76px}
-.opt:has(> .skill-icon)>:is(.on,.od){margin-left:60px}
-.opt:has(> .skill-icon)>.on{flex-wrap:wrap;min-width:0}
-.dmsk-r>.skill-icon{width:32px;height:32px;margin-right:8px}
-@media(max-width:480px){.opt>.skill-icon{width:40px;height:40px;margin-right:8px}.opt:has(> .skill-icon)>:is(.on,.od){margin-left:48px}}
-
 </style>
 
 <link rel="stylesheet" href="assets/title-art/title-screen.css?v=7">
@@ -12552,7 +12555,8 @@ function chronicleAdvance(button){ runWithReport(); }
    가로 화면(townMode)에서만 쓰고, 설정에서 끌 수 있다(PREF.schedScroll — 끄면 예전 스케줄 화면).
    결재 — 깃펜을 집어 잉크 단지에 찍은 뒤 결재란 서명줄에 서명한다. 처음 그린 서명은 이 브라우저에 남고(PREF.sign),
    다음부터는 잉크를 찍고 서명줄을 한 번 누르면 그 서명이 써진다. 새로 그으면 서명이 바뀐다.
-   결재란에서 Enter(키보드)를 누르면 깃펜이 스스로 잉크를 찍고 서명한다. */
+   결재란에서 Enter(키보드)를 누르면 깃펜이 스스로 잉크를 찍고 서명한다.
+   사이드(오른쪽 메뉴판)가 잉크 단지 · 깃펜을 가리면 사이드를 줄인다 — skSideFit (1010). */
 const SCHED_ART = {"under":"assets/sched_art/under.webp?v=f543bea3","over1":"assets/sched_art/over1.webp?v=06e31abf","over2":"assets/sched_art/over2.webp?v=f7c57a8d","quill":"assets/sched_art/quill.webp?v=67d7d5b6","inkwell":"assets/sched_art/inkwell.webp?v=1df25ad0","sheet":"assets/sched_art/sheet.webp?v=4ac119ec","chain":"assets/sched_art/chain.webp?v=2b76f2f1"};
 const SCHED_GEO = {"desk":[746,478],"inset":13,"frame":[772,504],"ros_bottom":421,"right_bottom":424,"paper":{"x":6,"y":11,"w":607,"h":466},"quill":{"x":670,"y":480,"px":1,"py":58,"w":93,"h":59},"ink":{"x":624,"y":420,"w":20,"h":14},"inkwell":{"x":609,"y":410,"w":50,"h":54},"menu":{"w":288,"h":616,"top":16,"right":16,"screen":1208,"unit":"css"},"sheet":{"w":699,"h":204,"pos":{"card_red":[0,0,59,85],"card_green":[60,0,59,85],"card_blue":[120,0,59,85],"card_sky":[180,0,59,85],"card_gold":[240,0,59,85],"card_none":[300,0,59,85],"slot_empty":[360,0,56,82],"rib_red":[0,86,99,18],"rib_green":[100,86,99,18],"rib_blue":[200,86,99,18],"rib_sky":[300,86,99,18],"rib_gold":[400,86,99,18],"rib_none":[500,86,99,18],"rib_empty":[600,86,99,18],"ic_dumbbell":[0,105,16,14],"ic_barbell":[17,105,16,14],"ic_swords":[34,105,16,14],"ic_shield":[51,105,16,14],"ic_book":[68,105,16,14],"ic_flag":[85,105,16,14],"ic_leaf":[102,105,16,14],"ic_lotus":[119,105,16,14],"ic_target":[136,105,16,14],"ic_arrow":[153,105,16,14],"ic_map":[170,105,16,14],"ic_cup":[187,105,16,14],"mi_wand":[0,120,8,8],"mi_bowl":[9,120,8,8],"mi_eraser":[18,120,8,8],"mi_book":[27,120,8,8],"mi_water":[36,120,8,8],"cross":[45,120,6,6],"chip_auto":[52,120,15,9],"chip_train":[68,120,15,9],"chip_rest":[84,120,15,9],"chip_job":[100,120,15,9],"appr_on":[0,130,128,74],"appr_off":[129,130,128,74],"slip":[258,130,127,65]}},"slip":{"x":441,"y":280,"w":124,"h":61},"appr":{"x":440,"y":351,"w":126,"h":72,"sig_y":58}};
 const SK_X0 = 42, SK_X1 = 565, SK_YRIB = 54, SK_YDAY = 78, SK_YHANDL = 166, SK_YHAND = 188, SK_YBAND = 280, SK_XL1 = 432, SK_XR0 = 440;
@@ -12765,6 +12769,31 @@ function skFit(){
   const w = st.parentElement.clientWidth; if(!w) return;
   SK.s = w / 1544; st.style.setProperty("--sk-s", SK.s.toFixed(5));
 }
+/* ── 사이드가 잉크 단지 · 깃펜을 가리지 않게 (1010) ──
+   가로 화면의 사이드(#app>.topbar)는 화면에 고정이고 무대 오른쪽 위에 얹힌다. 소품(잉크 단지 · 깃펜)은 그 아래 책상 자리라
+   화면이 낮으면(14인치 맥북 등) 무대를 아래로 내렸을 때, 창이 좁으면(무대가 작다) 처음부터 사이드가 소품 위로 내려와 잉크를 찍을 수 없었다.
+   페이지를 끝까지 내렸을 때 소품의 위쪽을 재서, 사이드가 거기까지 내려오면 ① 'MENU' 글자 ② 스케줄 단추(지금 보는 화면)를 차례로 숨기고
+   ③ 그래도 길면 사이드 높이를 줄인다 (안에서 스크롤). 스크롤하는 동안 사이드가 바뀌지 않게 끝까지 내린 자리 하나로 정한다.
+   다시 재는 때 — 스케줄을 그릴 때 · 무대 폭이 바뀔 때 · 창 크기가 바뀔 때 · 글꼴을 받았을 때. 다른 화면으로 가면 되돌린다 (skLeave) */
+const SK_SIDE_GAP = 6;                                             // 사이드 아래 끝과 소품 사이 (화면 px)
+function skSideReset(){
+  document.documentElement.classList.remove("sk-side1", "sk-side2");
+  const tb = document.querySelector("#app>.topbar"); if(tb) tb.style.removeProperty("max-height");
+}
+function skSideFit(){
+  const st = skStage(), tb = document.querySelector("#app>.topbar"), keep = tb ? tb.scrollTop : 0;
+  skSideReset();
+  if(!st || !tb || getComputedStyle(tb).position !== "fixed") return;      // 세로 · 좁은 화면 — 사이드가 아니라 위쪽 띠
+  const r = st.getBoundingClientRect(), s = r.width / 1544, t = tb.getBoundingClientRect();
+  if(!s || !t.height) return;
+  const IW = SCHED_GEO.inkwell, Q = SCHED_GEO.quill;
+  const zx = Math.min(IW.x, Q.x - Q.px) * 2, zy = Math.min(IW.y, Q.y - Q.py) * 2;   // 소품 자리 왼쪽 · 위 (2배 좌표)
+  if(r.left + zx * s >= t.right) return;                                   // 사이드와 옆으로 비켜 있다
+  const de = document.documentElement, endY = Math.max(0, de.scrollHeight - innerHeight);
+  const room = r.top + scrollY - endY + zy * s - SK_SIDE_GAP - t.top;     // 끝까지 내렸을 때 사이드가 쓸 수 있는 높이
+  for(const c of ["sk-side1", "sk-side2"]){ if(tb.scrollHeight <= room) return; de.classList.add(c); }
+  if(tb.scrollHeight > room){ tb.style.maxHeight = Math.max(240, Math.floor(room)) + "px"; tb.scrollTop = keep; }   // 다시 그려도 사이드 안 스크롤은 그대로
+}
 function skPt(e){ const r = skStage().getBoundingClientRect(); return {x:(e.clientX - r.left) / SK.s, y:(e.clientY - r.top) / SK.s}; }
 function skInkRect(){ const I = SCHED_GEO.ink; return {x:I.x*2, y:I.y*2, w:I.w*2, h:I.h*2}; }
 
@@ -12873,8 +12902,8 @@ function skFxUpd(){
   if(glow && !was) skGlowSnd(true); else if(!glow && was) skGlowSnd(false);
   SK.fx = {glow};
 }
-/* 두루마리 스케줄이 아닌 화면으로 갈 때 (bindView) — 반짝이는 소리를 끄고, 다음에 스케줄로 돌아오면 처음 연 것처럼 */
-function skLeave(){ skGlowSnd(false); SK.fx = null; }
+/* 두루마리 스케줄이 아닌 화면으로 갈 때 (bindView) — 반짝이는 소리를 끄고, 다음에 스케줄로 돌아오면 처음 연 것처럼. 줄였던 사이드도 되돌린다 (1010) */
+function skLeave(){ skGlowSnd(false); SK.fx = null; skSideReset(); }
 
 /* ── 소리 (1006) — 일과 놓기 · 체인 · 서명 (SFX.sk_* · bgm/sched_*.ogg). 효과음 음량을 따른다 ── */
 function skSfx(k){ try{ sfxPlay(k); }catch(e){} }
@@ -13096,9 +13125,9 @@ async function skAutoSign(){                                      // Enter — �
 }
 function bindSchedScroll(v){
   const stage = skStage(); if(!stage) return;
-  skFit();
+  skFit(); skSideFit();
   if(SK.ro) SK.ro.disconnect();
-  if(typeof ResizeObserver === "function"){ SK.ro = new ResizeObserver(()=> skFit()); SK.ro.observe(stage.parentElement); }
+  if(typeof ResizeObserver === "function"){ SK.ro = new ResizeObserver(()=>{ skFit(); skSideFit(); }); SK.ro.observe(stage.parentElement); }
   SK.held = false; SK.busy = false; SK.ink = 0; SK.strokes = []; SK.len = 0; SK.writing = false; clearTimeout(SK.timer); skScratch(false);
   if(SK.keyOn){ document.removeEventListener("keydown", SK.keyOn); SK.keyOn = null; }
   skQuillHome(); skFxUpd(); skSfxPreload();
@@ -13162,6 +13191,11 @@ function bindSchedScroll(v){
 { const mq = (typeof matchMedia === "function") ? matchMedia("(min-width:1100px) and (orientation:landscape)") : null;
   const h = ()=>{ if(UI && UI.view === "plan" && S) render(); };
   if(mq){ if(mq.addEventListener) mq.addEventListener("change", h); else if(mq.addListener) mq.addListener(h); } }
+/* 창 높이만 바뀌어도(무대 폭은 그대로) · 글꼴을 받아 사이드 높이가 바뀌어도 사이드를 다시 잰다 (1010 — 학원 이름 맞춤 acadNameFit 의 0.15초 뒤) */
+{ let t = 0;
+  const h = ()=>{ clearTimeout(t); t = setTimeout(()=>{ if(typeof UI !== "undefined" && UI.view === "plan" && skStage()) skSideFit(); }, 200); };
+  addEventListener("resize", h);
+  if(document.fonts && document.fonts.addEventListener) document.fonts.addEventListener("loadingdone", h); }
 /* SCHED_SCROLL_END */
 function viewPlanClassic(){
   const ph = PHASES[S.phase];
@@ -13895,7 +13929,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1010-1216";
+const BUILD = "1010-1250";
 const BUILD_TS = 0;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —

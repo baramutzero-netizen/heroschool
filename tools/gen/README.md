@@ -49,6 +49,14 @@ python wrap_site.py
 - apply 는 그림을 `data:` 로 넣는다 (1008 — 무손실 WebP). `wrap.py` · `wrap_site.py` 의 split_assets 가 `assets/sched_art/` · `assets/mdesk_art/` · `assets/roster_art/` 등으로 빼고 game.html 에는 경로만 남긴다.
 - `apply_desk.py` 는 줌 넘어가기를 맞추려고 `assets/sched_art/` 그림(`.webp` 가 있으면 그것)에서 스케줄 두루마리 축 자리를 잰다. 스케줄 그림을 바꿨다면 `wrap.py` 를 한 번 돌린 뒤 apply_desk.
 
+### 두루마리 스케줄 — 사이드가 잉크 단지 · 깃펜을 가릴 때 (`sched_block.js` 의 `skSideFit` · 1010)
+
+- 가로 화면 사이드(`#app>.topbar`)는 화면에 고정이고 무대 오른쪽 위에 얹힌다. 소품(잉크 단지 · 깃펜)은 그 아래 책상 자리라, 화면이 낮으면(14인치 맥북 등 — 창 높이 860 아래)
+  무대를 끝까지 내렸을 때, 창이 좁으면(1272 아래 — 무대가 작다) 처음부터 사이드가 소품을 덮어 잉크를 찍을 수 없었다.
+- 페이지를 끝까지 내렸을 때의 소품 위쪽을 재서, 사이드가 거기까지 내려오면 차례로 ① 'MENU' 글자(`html.sk-side1`) ② 스케줄 단추(`html.sk-side2` — 지금 보는 화면) 를 숨기고
+  ③ 그래도 길면 사이드 높이를 줄인다(안에서 스크롤). 스크롤하는 동안에는 바뀌지 않는다. 스케줄을 그릴 때 · 창 크기 · 글꼴이 바뀔 때 다시 재고, 다른 화면으로 가면 되돌린다(`skLeave`).
+- 사이드 규칙처럼 무대 밖을 꾸미는 CSS 는 `sched_block.css` 에 `html` 로 시작하는 선택자로 쓴다 — apply_sched 의 `prefix_css` 가 무대 접두어를 붙이지 않는다.
+
 ### 원정 3구간 (`apply_exped3.py` · 1008)
 
 - 원정지는 모두 3구간이다. `DUNGEONS` 의 `depth` 는 예전 구간 수(연습장 3 · 성터 4 · 종탑 5 · 균열 6 · 무덤 7) — 구간마다 마물 레벨이 그만큼 가파르게 오르고(마지막 구간 = 예전 보스 레벨),

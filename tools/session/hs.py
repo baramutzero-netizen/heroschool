@@ -5,7 +5,7 @@
 PC(D:\\heroschool)에서 받은(stage) 파일은 /mnt/user-data/uploads/heroschool/<경로> 에 PC 와 같은 모양으로 쌓인다.
 그 사본으로 작업 폴더를 만들고 → 고치고 → 빌드 → 바뀐 파일만 골라 PC 에 쓸 목록(device_commit_files 입력)을 만든다.
 
-  python3 hs.py list core patch          받을 파일 목록 — device_stage_files 의 paths 로 그대로 (50개씩) · 묶음: core patch counsel test placer rbook roster
+  python3 hs.py list core patch          받을 파일 목록 — device_stage_files 의 paths 로 그대로 (50개씩) · 묶음: core patch counsel test placer rbook roster schedkit
   python3 hs.py init                     지금까지 받은 파일 → 작업 폴더 ~/hs/work + PC 원본 ~/hs/base (+ 블록 지문)
   python3 hs.py sync                     나중에 더 받은 파일 반영 — PC 쪽이 바뀌었으면 3-way 병합
   python3 hs.py status                   PC 원본과 달라진 파일
@@ -93,6 +93,14 @@ PROFILES = {
               + ["assets/student-portraits-v2/%s-512.png" % j for j in JOBS],      # 목업의 학생 얼굴 (build_mockup)
     # apply_roster 가 읽는 학생 명부 책 (1009) — 목업 원본의 CSS · HTML(roster_tpl.html) · 책 그림 · 배치. patch 와 같이
     "rbook": [SR + f for f in ("src/roster_tpl.html", "art/book.png", "art/ribbon.png", "art/roster_layout.json")],
+    # apply_sched 가 두루마리 그림을 굽는 재료 (1010 · patch 와 같이) — kit 모듈 · 소품 시트 · 글꼴. 지금 배치(sched_layout.json)의 소품만 —
+    # 배치에 다른 소품을 넣었으면 tools/gen/kit/out3/props/<이름>.png 도 받는다. 그림은 바이트 단위로 같게 나온다 (?v= 그대로)
+    "schedkit": ["tools/gen/kit/" + f for f in ("compose3.py", "desk_top.py", "props3d.py", "px3d.py", "scene2d.py", "schedule_mock.py",
+                                                "schedule_mock2.py", "cache/rollers_24_582_14_451.png", "cache/rollers_24_582_14_451.png.json",
+                                                "out3/desk_bg.png", "out3/frame_1x.png", "out3/props.json")]
+                + ["tools/gen/kit/out3/props/%s.png" % n for n in ("inkwell", "knob_bottom", "paperweight", "quill", "runner")]
+                + ["tools/gen/fonts/" + f for f in ("Galmuri7.woff", "Galmuri9.woff", "Galmuri11.woff", "Galmuri11-Bold.woff", "Galmuri14.woff",
+                                                     "mulmaru.woff2", "mulmaru_mono.woff2")],
     # 학생 명부 목업 · 배치판 (1009 · core 와 같이) — 결과물(목업 · 배치판 HTML)도 받는다: 다시 구운 것을 덮어쓸 때 mtime 으로 지킨다
     "roster": [SR + f for f in ("README.md", "roster_mockup.html", "roster_placer.html", "art/book.png", "art/ribbon.png", "art/desk_bg.png",
                                 "art/sample_roster.json", "art/roster_layout.json")]

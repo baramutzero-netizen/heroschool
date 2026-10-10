@@ -4,7 +4,8 @@
    가로 화면(townMode)에서만 쓰고, 설정에서 끌 수 있다(PREF.schedScroll — 끄면 예전 스케줄 화면).
    결재 — 깃펜을 집어 잉크 단지에 찍은 뒤 결재란 서명줄에 서명한다. 처음 그린 서명은 이 브라우저에 남고(PREF.sign),
    다음부터는 잉크를 찍고 서명줄을 한 번 누르면 그 서명이 써진다. 새로 그으면 서명이 바뀐다.
-   결재란에서 Enter(키보드)를 누르면 깃펜이 스스로 잉크를 찍고 서명한다. */
+   결재란에서 Enter(키보드)를 누르면 깃펜이 스스로 잉크를 찍고 서명한다.
+   사이드(오른쪽 메뉴판)가 잉크 단지 · 깃펜을 가리면 사이드를 줄인다 — skSideFit (1010). */
 const SCHED_ART = /*SCHED_ART*/{};
 const SCHED_GEO = /*SCHED_GEO*/{};
 const SK_X0 = 42, SK_X1 = 565, SK_YRIB = 54, SK_YDAY = 78, SK_YHANDL = 166, SK_YHAND = 188, SK_YBAND = 280, SK_XL1 = 432, SK_XR0 = 440;
@@ -217,6 +218,31 @@ function skFit(){
   const w = st.parentElement.clientWidth; if(!w) return;
   SK.s = w / 1544; st.style.setProperty("--sk-s", SK.s.toFixed(5));
 }
+/* ── 사이드가 잉크 단지 · 깃펜을 가리지 않게 (1010) ──
+   가로 화면의 사이드(#app>.topbar)는 화면에 고정이고 무대 오른쪽 위에 얹힌다. 소품(잉크 단지 · 깃펜)은 그 아래 책상 자리라
+   화면이 낮으면(14인치 맥북 등) 무대를 아래로 내렸을 때, 창이 좁으면(무대가 작다) 처음부터 사이드가 소품 위로 내려와 잉크를 찍을 수 없었다.
+   페이지를 끝까지 내렸을 때 소품의 위쪽을 재서, 사이드가 거기까지 내려오면 ① 'MENU' 글자 ② 스케줄 단추(지금 보는 화면)를 차례로 숨기고
+   ③ 그래도 길면 사이드 높이를 줄인다 (안에서 스크롤). 스크롤하는 동안 사이드가 바뀌지 않게 끝까지 내린 자리 하나로 정한다.
+   다시 재는 때 — 스케줄을 그릴 때 · 무대 폭이 바뀔 때 · 창 크기가 바뀔 때 · 글꼴을 받았을 때. 다른 화면으로 가면 되돌린다 (skLeave) */
+const SK_SIDE_GAP = 6;                                             // 사이드 아래 끝과 소품 사이 (화면 px)
+function skSideReset(){
+  document.documentElement.classList.remove("sk-side1", "sk-side2");
+  const tb = document.querySelector("#app>.topbar"); if(tb) tb.style.removeProperty("max-height");
+}
+function skSideFit(){
+  const st = skStage(), tb = document.querySelector("#app>.topbar"), keep = tb ? tb.scrollTop : 0;
+  skSideReset();
+  if(!st || !tb || getComputedStyle(tb).position !== "fixed") return;      // 세로 · 좁은 화면 — 사이드가 아니라 위쪽 띠
+  const r = st.getBoundingClientRect(), s = r.width / 1544, t = tb.getBoundingClientRect();
+  if(!s || !t.height) return;
+  const IW = SCHED_GEO.inkwell, Q = SCHED_GEO.quill;
+  const zx = Math.min(IW.x, Q.x - Q.px) * 2, zy = Math.min(IW.y, Q.y - Q.py) * 2;   // 소품 자리 왼쪽 · 위 (2배 좌표)
+  if(r.left + zx * s >= t.right) return;                                   // 사이드와 옆으로 비켜 있다
+  const de = document.documentElement, endY = Math.max(0, de.scrollHeight - innerHeight);
+  const room = r.top + scrollY - endY + zy * s - SK_SIDE_GAP - t.top;     // 끝까지 내렸을 때 사이드가 쓸 수 있는 높이
+  for(const c of ["sk-side1", "sk-side2"]){ if(tb.scrollHeight <= room) return; de.classList.add(c); }
+  if(tb.scrollHeight > room){ tb.style.maxHeight = Math.max(240, Math.floor(room)) + "px"; tb.scrollTop = keep; }   // 다시 그려도 사이드 안 스크롤은 그대로
+}
 function skPt(e){ const r = skStage().getBoundingClientRect(); return {x:(e.clientX - r.left) / SK.s, y:(e.clientY - r.top) / SK.s}; }
 function skInkRect(){ const I = SCHED_GEO.ink; return {x:I.x*2, y:I.y*2, w:I.w*2, h:I.h*2}; }
 
@@ -325,8 +351,8 @@ function skFxUpd(){
   if(glow && !was) skGlowSnd(true); else if(!glow && was) skGlowSnd(false);
   SK.fx = {glow};
 }
-/* 두루마리 스케줄이 아닌 화면으로 갈 때 (bindView) — 반짝이는 소리를 끄고, 다음에 스케줄로 돌아오면 처음 연 것처럼 */
-function skLeave(){ skGlowSnd(false); SK.fx = null; }
+/* 두루마리 스케줄이 아닌 화면으로 갈 때 (bindView) — 반짝이는 소리를 끄고, 다음에 스케줄로 돌아오면 처음 연 것처럼. 줄였던 사이드도 되돌린다 (1010) */
+function skLeave(){ skGlowSnd(false); SK.fx = null; skSideReset(); }
 
 /* ── 소리 (1006) — 일과 놓기 · 체인 · 서명 (SFX.sk_* · bgm/sched_*.ogg). 효과음 음량을 따른다 ── */
 function skSfx(k){ try{ sfxPlay(k); }catch(e){} }
@@ -548,9 +574,9 @@ async function skAutoSign(){                                      // Enter — �
 }
 function bindSchedScroll(v){
   const stage = skStage(); if(!stage) return;
-  skFit();
+  skFit(); skSideFit();
   if(SK.ro) SK.ro.disconnect();
-  if(typeof ResizeObserver === "function"){ SK.ro = new ResizeObserver(()=> skFit()); SK.ro.observe(stage.parentElement); }
+  if(typeof ResizeObserver === "function"){ SK.ro = new ResizeObserver(()=>{ skFit(); skSideFit(); }); SK.ro.observe(stage.parentElement); }
   SK.held = false; SK.busy = false; SK.ink = 0; SK.strokes = []; SK.len = 0; SK.writing = false; clearTimeout(SK.timer); skScratch(false);
   if(SK.keyOn){ document.removeEventListener("keydown", SK.keyOn); SK.keyOn = null; }
   skQuillHome(); skFxUpd(); skSfxPreload();
@@ -614,4 +640,9 @@ function bindSchedScroll(v){
 { const mq = (typeof matchMedia === "function") ? matchMedia("(min-width:1100px) and (orientation:landscape)") : null;
   const h = ()=>{ if(UI && UI.view === "plan" && S) render(); };
   if(mq){ if(mq.addEventListener) mq.addEventListener("change", h); else if(mq.addListener) mq.addListener(h); } }
+/* 창 높이만 바뀌어도(무대 폭은 그대로) · 글꼴을 받아 사이드 높이가 바뀌어도 사이드를 다시 잰다 (1010 — 학원 이름 맞춤 acadNameFit 의 0.15초 뒤) */
+{ let t = 0;
+  const h = ()=>{ clearTimeout(t); t = setTimeout(()=>{ if(typeof UI !== "undefined" && UI.view === "plan" && skStage()) skSideFit(); }, 200); };
+  addEventListener("resize", h);
+  if(document.fonts && document.fonts.addEventListener) document.fonts.addEventListener("loadingdone", h); }
 /* SCHED_SCROLL_END */

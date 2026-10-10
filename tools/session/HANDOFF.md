@@ -24,6 +24,7 @@ Claude 가 새 세션을 시작할 때 읽는 작업 메모. **세션을 마칠 
 | patch | tools/gen/README.md + tools/gen/patch 의 apply 스크립트 · 블록 · 배치 |
 | counsel | apply_cslwin 이 읽는 상담창 그림 · 배치 (mockups/counsel-window/art · src/compose_desk.py) |
 | rbook | apply_roster 가 읽는 학생 명부 책 — 목업 원본 `src/roster_tpl.html` · `art/book.png` · `ribbon.png` · `roster_layout.json` (4개) — patch 와 같이 |
+| schedkit | apply_sched 가 두루마리 그림을 굽는 재료 — tools/gen/kit 모듈 7 · 소품 시트 · tools/gen/fonts 글꼴 7 (24개) — patch 와 같이. 그림은 바이트까지 같게 나온다 |
 | test | 학생 도트 · 전투 이펙트 (assets/spr_img · spr_x_img · fx_img — 게임 화면 테스트용 · 빌드에도 필요하다: split_assets 가 찾는다) |
 | placer | 상담 목업 · 책상 배치판을 다시 만들 때 (src 전부 · 직업 도트 그림 · 목업의 학생 얼굴) — core · counsel 과 같이 |
 | roster | 학생 명부 목업 · 배치판 (mockups/student-roster 전부 · 초상 16 · 스킬 아이콘 · 책상 겹) — core 와 같이 (121개 · 세 번에 나눠 받는다) |
@@ -118,26 +119,34 @@ python3 ~/hs.py pack 이름            # 보낼 폴더 + 커밋 목록 (끝에 8
 - game.html 은 CRLF. 직접 고칠 때는 파이썬으로 읽고 써서 줄바꿈을 지킨다 — `hs.py status` 가 섞이면 경고한다.
 - 받은 파일은 1초쯤 늦게 나타난다 (init · sync 가 기다린다). 커밋은 outputs 에 복사하고 몇 초 뒤에, 매번 새 폴더로 (pack 이 한다).
 - 학생 도트는 `sprCellCv` (256 칸 · 머리색 치환). 상담창은 128 칸으로 잘라 발끝(무대 2배 280, 288)을 축으로 직업별 `CSL_SPR` 크기 · 자리.
-- `apply sched` 는 `tools/gen/kit` 의 모듈(schedule_mock · schedule_mock2 · desk_top)이 있어야 돈다 — patch 묶음에 없다. `apply desk` 는 `tools/gen/patch/desk_out/` 그림이 있어야 한다.
+- `apply sched` 는 `tools/gen/kit` 의 모듈 · 소품 시트와 `tools/gen/fonts` 글꼴이 있어야 돈다 — `hs.py list schedkit` 으로 받는다 (patch 묶음에 없다). `apply desk` 는 `tools/gen/patch/desk_out/` 그림이 있어야 한다.
+  apply_sched · apply_desk 를 다시 돌리면 그 CSS 블록이 스타일시트 맨 끝으로 옮겨 가서 game.html diff 가 크게 보인다 (내용은 같다).
 - 게임 함수로 견본 데이터를 만들 때는 `withSeed("이름", fn)` 으로 난수를 고정한다 (`let RNG = Math.random` · seedRNG).
 - 학생 명부 책은 그림자 DOM(`#rbHost`) 안 — 테스트에서 `document.getElementById('rbHost').shadowRoot` 로 찾는다 (Playwright 의 `locator('#rbHost …')` 는 그대로 뚫고 들어간다).
   책은 가로 넓은 화면(1100px 이상)에서만 뜬다 — `open_game(p, w=1440, h=1000)`. 상태는 `RBK.isOpen()` · `RBK.state`.
 
-## 7. 최근 작업 · 현재 상태 (2026-10-10 · 빌드 1010-1216)
+## 7. 최근 작업 · 현재 상태 (2026-10-10 · 빌드 1010-1250)
 
-- 마지막 게임 빌드 **1010-1216** — 새 시나리오 오프닝의 글 아홉 장면을 **APNG → 캔버스 글자(OPTX)** 로 바꿨다. 진행 중인 게임 수정 없음.
+- 마지막 게임 빌드 **1010-1250** — 두루마리 스케줄에서 **사이드(오른쪽 메뉴판)가 잉크 단지 · 깃펜을 가려 결재를 못 하던 것**을 고쳤다 (14인치 맥북 사용자 제보). 진행 중인 게임 수정 없음.
+  - 원인: 사이드는 화면에 고정(fixed · 위 16px · 높이 618~653)인데 소품은 무대(스크롤된다) 오른쪽 아래. 창 높이가 860 아래면 무대를 끝까지 내렸을 때,
+    창 폭이 1272 아래면(무대가 작다) 처음부터 사이드가 잉크 자리를 덮었다. 1512×800(맥북 + Dock + 브라우저 줄)에서 끝까지 내리면 잉크 자리가 사이드 밑 — 깃펜은 들려도 잉크가 안 묻었다.
+  - 고친 것: `sched_block.js` 의 `skSideFit` — 끝까지 내렸을 때 소품 위쪽을 재서 사이드가 거기까지 내려오면 'MENU' 글자 → 스케줄 단추를 숨기고, 그래도 길면 높이를 줄인다 (상세는 tools/gen/README).
+    `apply_sched.py` 의 `prefix_css` 는 `html` 로 시작하는 선택자를 그대로 둔다 (사이드 규칙용). 두루마리 그림은 바이트까지 그대로(?v= 같음).
+  - 시험: 14가지 창 크기 × 학원 이름 1 · 2줄 × 맨 위 · 끝까지 내림에서 잉크 자리 · 잉크 단지 · 깃펜이 가려지는 곳 0. 실제 마우스로 깃펜 → 잉크 → 서명 → 결재(1512×800 · 1280×720 · 1100×700 · 1920×1080).
+    고치기 전 코드로는 1512×800 에서 잉크가 안 묻는 것도 재현했다. 다른 화면으로 가면 사이드가 그대로 돌아온다 · 창 크기를 바꾸면 다시 잰다.
+- 그 앞 (1010-1216): 새 시나리오 오프닝의 글 아홉 장면을 **APNG → 캔버스 글자(OPTX)** 로 바꿨다.
   - `tools/gen/patch/apply_optx.py` · `optx_block.js`(장면 · 글 · 효과 · 때 전부 — `SC`) · `optx_fonts.css`(나눔명조 ExtraBold · 고운돋움 조각 50KB) · `optx_fonts.py`(조각 굽기). 상세는 tools/gen/README 의 ‘오프닝 글’.
   - 예전 APNG(intro · rift · danger · date · title-type · dad-dontsay · dad-dream · dad-hero · date-winter, 합계 12.3MB)를 50ms 장마다 재서 효과 · 때를 옮겼다 — 비교 페이지에서 겹쳐 보면 글자 위치 0~4px.
     `OPTX.make(장면, 예전과 같은 클래스)` 가 예전 `apngImg` 자리에 (인트로 · 시공 균열 · 위험 · 날짜 · 타자기 · 아버지 넷). `OPENING.<장면>` 은 `{ms, tail}` 만.
     처음 내려받기에서 APNG 아홉 장이 빠졌다 (`bootAssetList` 는 HTML 의 assets/ 경로만 받는다). 파일은 PC 에 남아 있다 — 사용자가 지워도 된다.
   - 시험: 아홉 장면을 게임 안에서 멈춰 찍기 + 실제 오프닝 흐름(인트로 → 대화 → 시공 균열 → 위험 · openingFinish → 날짜 → 타자기 → 아버지 넷)에서 오류 없음.
-- 오늘 한 것 (1010):
+- 오프닝 글 작업 (1010):
   - **오프닝 글 비교 페이지**(Artifact) — https://claude.ai/artifact/VnR97bQycuQZTSDSqjxWZV · 원본은 `Claude outputs/opening_compare/` (PC 에만).
     왼쪽 APNG · 오른쪽 캔버스를 같은 시계로 (나란히 · 겹쳐서). 인트로 · 시공 균열은 다섯 언어(영어 · 일본어 · 간체 · 번체는 비교용 초벌 번역 · 글꼴 Gelasio · Noto Serif/Sans CJK),
     한국어 글꼴 비교(APNG와 같은 글꼴 · 나눔명조 Bold · 물마루 · 물마루 가늘게 — 게임에는 ‘APNG와 같은 글꼴’). 시공 균열 비교 움짤 rift_compare.gif.
   - 사용자 결정: 오프닝 글은 지금 모양 그대로 캔버스로 교체. 로컬라이징(영 · 일 · 간 · 번)은 아직 고민 중 — 바꿀 때는 `SC` 의 글 · 글꼴만 언어별로 (효과 · 때 구조는 그대로).
   - 알아 둘 것: 물마루는 12px 에서 세로획 2칸 · 가로획 1칸인 글꼴이라 크게 키우면 굵어 보인다 (굵게 처리 아님). 나눔명조는 ExtraBold + 0.5px 덧칠로 APNG 굵기에 맞췄다.
-- 다음 할 일: 사용자가 게임에서 오프닝을 보고 고칠 점을 준다 · 예전 APNG 아홉 장 지우기(사용자) · 로컬라이징 방식 결정.
+- 다음 할 일: 제보한 분이 14인치 맥북에서 결재가 되는지 확인 · 사용자가 게임에서 오프닝을 보고 고칠 점을 준다 · 예전 APNG 아홉 장 지우기(사용자) · 로컬라이징 방식 결정.
 - 그 앞(1009): 학생 명부 책 → 게임(apply_roster · 스킬 임의로 강화 · 유물 빈 칸 · 학적 색 · 육각형 차례) · 메뉴 단추 효과음(`SFX.menu`) · 학생 명부 목업 · 배치판.
   그 앞(1008): 상담창 · 상담 대사 성격별 · 행동 지침 무시 · 스킬 등급표 · 원정 3구간 · PNG→WebP · 두루마리 스케줄 · 마스터 노트 책상 · 쿼터뷰 대회 화면.
 

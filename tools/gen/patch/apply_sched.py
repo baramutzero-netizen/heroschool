@@ -16,7 +16,8 @@ from apply_webp import webp_lossless                         # 1008 — 그림�
 
 def prefix_css(css, pre="html body "):
     """규칙마다 앞에 pre 를 붙인다 (@media 안쪽도). 무대 안 규칙은 .skwrap .skfit .skstage 까지 — 게임의 도트 테마 단추 규칙
-    (html[data-ui-finish=pixel] :is(button…) — :is 안의 input:not()×3 때문에 (0,4,2))과 같거나 세고, 스타일시트 끝에 두어 같으면 이긴다"""
+    (html[data-ui-finish=pixel] :is(button…) — :is 안의 input:not()×3 때문에 (0,4,2))과 같거나 세고, 스타일시트 끝에 두어 같으면 이긴다.
+    html 로 시작하는 선택자(무대 밖 — 사이드 등, 1010)는 그대로 둔다"""
     out, i, n = [], 0, len(css)
     def rules(block):
         res = []
@@ -24,7 +25,7 @@ def prefix_css(css, pre="html body "):
             sel, body = m.group(1), m.group(2)
             lead = sel[:len(sel) - len(sel.lstrip())]
             sels = [s.strip() for s in sel.split(',')]
-            res.append(lead + ",".join(s if s.startswith(('from', 'to')) or re.match(r'^[0-9.,% ]+$', s) else (pre if s.startswith(('.skwrap', '.skfit', '.skstage')) else pre + '.skwrap .skfit .skstage ') + s for s in sels) + "{" + body + "}")
+            res.append(lead + ",".join(s if s.startswith(('from', 'to', 'html')) or re.match(r'^[0-9.,% ]+$', s) else (pre if s.startswith(('.skwrap', '.skfit', '.skstage')) else pre + '.skwrap .skfit .skstage ') + s for s in sels) + "{" + body + "}")
         return "".join(res)
     while i < n:
         if css.startswith('/*', i):
