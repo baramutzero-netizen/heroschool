@@ -11,7 +11,7 @@ check_i18n.py 와 같은 빌드(변환함 · 그림은 저장소 것)를 같은 
 를 모은다. 같은 화면을 한국어로도 재서 한국어에도 있는 것은 빼고 영어에서 새로 생긴 것만 알린다 (하나라도 있으면 실패).
 영어 화면에 남은 한글(글 · title · aria-label 등)도 모은다 — 언어 이름 '한국어' · 'Language · 언어' 말고는 하나라도 있으면 실패 (5단계).
 단추 · 제목 · 표 머리처럼 짧은 칸이 한국어보다 줄이 늘어난 것은 넘침이 아니라 개수만 알린다 (--wrap 이면 목록).
-화면: 메뉴 화면 전부 · 마을 탭 · 학생 명부 책 · 목표 · 운영 안내 14장 · 스킬 강화 · 상담창 · 이야기 팝업(4단계 — cer_*) · 프롤로그 · 마을 손님
+화면: 메뉴 화면 전부 · 마을 탭 · 학생 명부 책 · 목표 · 새 시나리오(난이도) · 운영 안내 14장 · 스킬 강화 · 상담창 · 이야기 팝업(4단계 — cer_*) · 프롤로그 · 마을 손님
     · 경과 보고 · 대회(시내 · 광역 · 신인전) · 전투.
 바깥 주소는 전부 막는다. --shots 를 주면 영어 화면을 크기별로 찍어 둔다 (--ko-shots 면 한국어도 · --full 이면 세로 화면은 페이지 전체).
 """
@@ -36,6 +36,7 @@ SCENES = r"""(() => {
   }
   facTabs().forEach(t => sc['facil_' + t.k] = fac(t.k));
   sc['mission'] = () => { RBC(); closeModal(); UI.view = 'home'; render(); missionModal(); };
+  sc['newscen'] = () => { RBC(); closeModal(); UI.view = 'home'; render(); askAcademyName(); };   // 새 시나리오 — 학원 이름 · 난이도 · 시작 빚 (1011)
   [1,2,3,4,5,6,7,8,9,10,11,12,13,14].forEach(k => sc['tut' + k] = () => { RBC(); closeModal(); showModal(tutGuideHTML(k)); });
   sc['skillup'] = () => { RBC(); closeModal(); const s = S.students.find(x => (x.skPts|0) > 0) || S.students[0]; skillUpModal(s.id); };
   sc['cslwin'] = () => { RBC(); closeModal(); UI.view = 'counsel'; render(); cslwOpen(); };

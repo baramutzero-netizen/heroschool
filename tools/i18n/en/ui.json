@@ -1542,6 +1542,7 @@
  "학원의 이름": "Name Your Academy",
  "아버지가 세운 학원의 간판을 다시 건다. 이름은 언제든 바꿀 수 있다.": "Hang the sign of the academy your father founded once more. You can change the name anytime.",
  "이 이름으로 시작": "Start with This Name",
+ "시작 빚 <b>{0} G</b>": "Starting debt <b>{0} G</b>",
  "다른 이름 제안": "Suggest Another Name",
  "뒤로": "Back",
  "_따로 정한 키": "",
@@ -1585,5 +1586,11 @@
  "_scalePanel": "",
  "큰 모니터에서 게임 전체를 브라우저 확대처럼 키운다. 자동은 창 크기에 맞춘다 — 스케줄 · 마을 액자가 창 높이에 꼭 맞는 크기.": "Scales the whole game up on big monitors, like browser zoom. Auto fits the window — the Schedule and Town frames fill its height.",
  "지금 ×{0}": "Now ×{0}",
- "화면 크기": "Display Size"
+ "화면 크기": "Display Size",
+ "_demoEndShow": "",
+ "체험판은 여기까지": "End of the Demo",
+ "2년차 봄 2주차 — 체험판이 여기서 끝난다. 함께해 주어서 고맙다!": "Spring of Year 2, Week 2 — this is where the demo ends. Thank you for playing!",
+ "정식판에서는 3년 동안 학생을 길러 졸업시키고, 졸업생 리그와 마왕 대항전까지 이어진다.": "The full game follows your students through three years to graduation, then on to the Graduate League and the Demon King Challenge.",
+ "새 학원으로 다시 하기": "Start a New Academy",
+ "학원 둘러보기": "Look Around"
 }

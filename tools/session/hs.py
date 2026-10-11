@@ -83,9 +83,10 @@ PROFILES = {
             + ["tools/i18n/en/%s.json" % n for n in ("battle", "core", "data", "dialogue", "log", "names", "opening", "story", "tut", "ui")],   # 영어판 (1010) — 빌드가 읽는다 · en/ 는 2단계(화면) · 3단계(data · names) · 4단계(dialogue · story · opening) 표
     # tools/gen/patch 의 apply 스크립트 · 블록 · 배치 (desk_out 그림은 빼고 — apply_desk 로 다시 구울 때만 따로)
     "patch": ["tools/gen/README.md"] + ["tools/gen/patch/" + f for f in PATCH],
-    # 학생 도트 · 전투 이펙트가 그려지게 (게임 테스트용 — 다른 그림은 없어도 돈다)
+    # 학생 도트 · 전투 이펙트 · 상담 쿠키가 그려지게 (게임 테스트용 · 빌드에도 필요 — split_assets 가 HS_A["…"] 로 쓰는 .js 를 찾는다)
     "test": ["assets/spr_img.webp.js", "assets/fx_img.webp.js"] + ["assets/spr_x_img/%s.png.js" % j for j in JOBS]
-            + ["assets/spr_x_img/demonking.webp.js"],
+            + ["assets/spr_x_img/demonking.webp.js"]
+            + ["assets/counsel-cookie/%s.png.js" % j for j in JOBS],      # 1011 — 상담 쿠키 그림도 split_assets 가 찾는다 (없으면 빌드가 멈춘다)
     # apply_cslwin 이 읽는 상담창 그림 · 배치
     "counsel": [CW + "README.md", CW + "src/compose_desk.py"]
                + [CW + "art/" + f for f in ("bg.webp", "desk.png", "desk_plain.png", "desk_layout.json", "props.json")]

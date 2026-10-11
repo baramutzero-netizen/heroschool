@@ -70,6 +70,11 @@ data: 그림을 다시 넣어도 여기서 `assets/` 로 빠지고, 이름이 �
 iframe 으로 띄워 `transform: scale()` 로 키우는 '틀'이 됩니다. 배율은 창 크기에 맞추고(`min(폭 ÷ 1280, 높이 ÷ 870)`) 설정 › 화면 크기에서
 100 ~ 200% 로 고를 수 있습니다. 폰 · 태블릿은 그대로입니다. 시험: `python3 tools/check_scale.py` (주소에 `?scale=off` 를 붙이면 틀 없이).
 
+### itch.io 영어 체험판
+
+`tools\itch\build_itch.bat` 을 더블클릭하면(또는 `python tools/itch/build_itch.py`) `Claude outputs/itch/` 에 itch.io 에 올릴 ZIP 이 생깁니다.
+영어가 기본이고 2년차 봄 2주차가 시작되면 체험판 끝 화면이 뜹니다. ZIP 에는 `index.html` 과 게임이 부르는 그림 · 소리만 들어갑니다.
+
 ### 회귀 테스트
 
 ```bash

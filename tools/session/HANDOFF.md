@@ -25,7 +25,7 @@ Claude 가 새 세션을 시작할 때 읽는 작업 메모. **세션을 마칠 
 | counsel | apply_cslwin 이 읽는 상담창 그림 · 배치 (mockups/counsel-window/art · src/compose_desk.py) |
 | rbook | apply_roster 가 읽는 학생 명부 책 — 목업 원본 `src/roster_tpl.html` · `art/book.png` · `ribbon.png` · `roster_layout.json` (4개) — patch 와 같이 |
 | schedkit | apply_sched 가 두루마리 그림을 굽는 재료 — tools/gen/kit 모듈 7 · 소품 시트 · tools/gen/fonts 글꼴 7 (24개) — patch 와 같이. 그림은 바이트까지 같게 나온다 |
-| test | 학생 도트 · 전투 이펙트 (assets/spr_img · spr_x_img · fx_img — 게임 화면 테스트용 · 빌드에도 필요하다: split_assets 가 찾는다) |
+| test | 학생 도트 · 전투 이펙트 · 상담 쿠키 (assets/spr_img · spr_x_img · fx_img · counsel-cookie — 게임 화면 테스트용 · 빌드에도 필요하다: split_assets 가 찾는다) |
 | placer | 상담 목업 · 책상 배치판을 다시 만들 때 (src 전부 · 직업 도트 그림 · 목업의 학생 얼굴) — core · counsel 과 같이 |
 | roster | 학생 명부 목업 · 배치판 (mockups/student-roster 전부 · 초상 16 · 스킬 아이콘 · 책상 겹) — core 와 같이 (121개 · 세 번에 나눠 받는다) |
 | i18n | 영어판 글 목록을 다시 뽑는 `extract_ko.cjs` · `classify_ko.py` — core 와 같이 (acorn 은 저장소 밖에서 npm i) |
@@ -144,7 +144,39 @@ python3 ~/hs.py pack 이름            # 보낼 폴더 + 커밋 목록 (끝에 8
 - 학생 명부 책은 그림자 DOM(`#rbHost`) 안 — 테스트에서 `document.getElementById('rbHost').shadowRoot` 로 찾는다 (Playwright 의 `locator('#rbHost …')` 는 그대로 뚫고 들어간다).
   책은 가로 넓은 화면(1100px 이상)에서만 뜬다 — `open_game(p, w=1440, h=1000)`. 상태는 `RBK.isOpen()` · `RBK.state`.
 
-## 7. 최근 작업 · 현재 상태 (2026-10-11 · 빌드 1011-1106)
+## 7. 최근 작업 · 현재 상태 (2026-10-11 · 빌드 1011-1833)
+
+- **난이도별 시작 빚 (1011 · 빌드 1011-1819)** — 사용자 요청: 보통 30,000 G 에서 시작해 난이도 한 단계마다 +10,000 G (보통 3만 · 어려움 4만 · 악몽 5만 — 예전은 모두 5만).
+  - game.html: `DIFFS[*].debt` · 새 시나리오가 `S.debt = S.debt0 = diffOf().debt` · `debtStart()`(= `S.debt0`, 없으면 옛 세이브라 `DEBT_START_OLD` 5만) ·
+    `repayMax()`(원금 상환 상품 수 = 처음 빚 ÷ 1만 → 3 · 4 · 5 · 은행 'Lv.n / 3') · 아버지의 빚 목표 `갚은 / 처음 빚` · 은행장 첫 대사 `debtSay`(삼만 · 사만 · 오만 G일세 — 액수마다 한 문장 · 영어도) ·
+    난이도 고르는 칸에 '시작 빚 30,000 G' 줄(`.nsdebt`). 옛 세이브는 그대로 5만 기준(부트가 `S.debt0` 이 없으면 5만을 적는다) · 빚이 생기기 전(0926) 세이브는 지금 난이도의 시작 빚.
+    `DEBT_START` · `REPAY_MAX` 이름은 없어졌다.
+  - 영어 4줄(en/ui.json `시작 빚 <b>{0} G</b>` · en/dialogue.json 은행장 3줄). `check_layout.py` 에 새 시나리오 창 화면 `newscen` 을 더했다.
+  - 시험: 세 난이도 × 한/영(빚 · 상품 수 · 목표 · 은행장) · 보통에서 원금 상환 3번 → 예금 화면 · 옛 세이브(어려움 5만) · 빚 전 세이브 ·
+    `hs.py i18n` · `check_save.py` · `hs.py layout --only newscen,facil_bank,mission,home,plan` 통과.
+- **스케줄 단추 글자 → Jacquard 12 (1011 · 빌드 1011-1833)** — 사용자가 글꼴 목업에서 골랐다. 사이드 스케줄 단추 · 영어 운영 안내 1장의 단추 그림(`.tg-schedbtn`) 'Schedule' (한국어 운영 안내는 그림이라 그대로).
+  - game.html: `@font-face "HsSchedFont"`(Mulmaru Mono 다음 줄 · A–Z a–z 2.6KB · data:) — `tools/gen/fonts/sched_font.py` 가 `Jacquard12-latin.woff2` 를 잘라 넣는다 (몇 번 돌려도 같다).
+    OS/2 win 높이를 typo(960/300)와 맞췄다 — 원래 win 1020/720 이라 윈도우에서만 기준선이 6px 위로 뜰 수 있었다. 라이선스 `assets/fonts/Jacquard12-OFL.txt`(OFL 1.1 · 예약 이름 없음).
+  - CSS: `font:400 42px/42px "HsSchedFont"`(21칸/em → 42px 가 2배로 또렷) · `padding:0 0 6px 62px` → 글자 상자 (92, 14) · 폭 138 · 기준선 46 — **목업과 잉크 픽셀이 똑같다**(0/1184 다름).
+    `font-synthesis:none` · `-webkit-font-smoothing:none` · 굵기 400 (도트 폰트를 끈 모드에서도 같은 모양 — 확인함).
+  - **물마루 바꾸기(`pixelRules`)에서 `side-sched` 를 뺐다** — 안 빼면 42px → 36px 로 줄이고 글꼴 앞에 물마루를 붙인다 (`tg-` 는 원래 빠져 있다). 예전 `html[data-font="pixel"] .tg-schedbtn` 규칙은 지웠다.
+  - 시험: 한/영 · 1배/2배 · 스케줄 화면일 때 테두리 · 도트 폰트 끔/켬 · 영어 운영 안내 1장 · `hs.py i18n` · `hs.py layout --only home,plan,tut1,newscen`.
+- **스케줄 단추 글꼴 목업 (1011)** — 후보 18가지 · PC `mockups/sched-font/`(깃 밖) · `sched_font_mockup.html` · 다시 만들기는 그 README. → Jacquard 12 로 반영(위).
+  - 알게 된 것: hs.py 의 test 묶음에 `assets/counsel-cookie/*.png.js` 가 없어 빌드(split_assets)가 멈췄다 → 묶음에 더했다 (35개).
+
+- **itch.io 영어 체험판 (1011 · 빌드 1011-1759)** — 사용자가 itch.io(baramutzero.itch.io/my-heros-academy · HTML · 초안)에 영어판을 올린다.
+  - `tools/itch/build_itch.py`(+ 더블클릭 `build_itch.bat`) — wrap.py 와 같은 빌드에 ① 체험판 `DEMO_END = {year:2, phase:"spring", week:1}`(2년차 봄 2주차 시작에 끝)
+    ② 영어가 기본(주소 ?lang= · 설정의 hs_lang 이 없으면 브라우저 언어와 상관없이 English) ③ 화면 크기 틀을 itch 의 iframe 안에서도(UISCALE `EMBED`) →
+    `Claude outputs/itch/heroschool_demo_en_<빌드>.zip`(index.html + 빌드된 HTML 이 부르는 assets 476 · bgm 69 · 약 156MB — itch 제한 1000개 · 500MB 를 확인하고 멈춘다).
+    빌드 번호는 `<날짜-시각>-itch`(의견 보내기에 찍힌다). **ZIP 이 30MB 를 넘어 Claude 가 PC 로 못 보낸다** — PC 에서 build_itch.bat 을 돌린다(파이썬 표준 라이브러리만).
+    클라우드에서 돌릴 때는 `--root /mnt/user-data/uploads/heroschool --out <scratchpad>`(작업 폴더에 없는 그림을 받아 둔 곳 · ZIP 을 작업 폴더에 만들지 않는다).
+  - game.html: `DEMO_END`(보통 null) · `demoOver` · `demoEndShow`(끝 화면 — 새 학원으로 다시 하기 = 오프닝 · 학원 둘러보기) · 0.7초마다 보고 · 행사 · 대회 · 팝업이 끝나면 띄운다 ·
+    `weekRunGo` 맨 앞에서 막는다. UISCALE: `EMBED`(itch 빌드만 true — 남의 iframe 안에서도 틀이 된다) · 폴더 주소(…/)면 `index.html` 을 붙인다(itch 는 폴더 요청에 403).
+    시작 때 받기(`bootAssetList`)가 템플릿 자리(`${…}`)가 든 주소를 받으려다 404 나던 것 고침. 영어 5줄(en/ui.json).
+  - 시험: itch 처럼 다른 출처 페이지가 iframe 으로 띄워(2560×1300) — 영어 · iframe 안 화면 크기 ×1.494 · 404 없음 · 2년차 봄 2주차에 끝 화면 · 둘러보기 뒤 주를 못 넘김 · 새 학원 →
+    오프닝 (세션 scratchpad `itch/test_itch.py`). 기존 시험 모두 통과(i18n · layout 세 크기 · check_save · check_scale · 스케줄 겹침 · 서명).
+  - itch 쪽 설정(사용자에게 안내): No payments · ZIP 업로드 후 'This file will be played in the browser' · Click to launch in fullscreen · Enable scrollbars ·
+    Genre Simulation · AI 공개 Yes(코드 · 영어 글). 표지(630×500) · 스크린샷은 아직 — 필요하면 만든다.
 
 - **화면 크기 자동 맞춤 (1011 · 빌드 1011-1106)** — 사용자가 목업의 안 ① 을 골랐다. 큰 화면 PC 에서 게임 전체를 브라우저 확대처럼 키운다.
   - game.html 맨 앞(`<title>` 바로 뒤) **UISCALE 스크립트** · `HS_SCALE`: 맨 위 창이 데스크톱(마우스가 주인 · iPad/폰/Android 빼고)이고 배율 k ≥ 1.05 면 '틀'이 된다 —
