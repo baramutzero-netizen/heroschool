@@ -4,6 +4,9 @@
 /* 팀 편성 쪽의 전열 · 후열 세로 글 — 한글은 글자를 세워 쌓지만 영어는 옆으로 눕혀 한 줄로 */
 .tmc .frl{text-orientation:mixed;letter-spacing:1px;white-space:nowrap}
 
-/* 멘탈리티 육각형의 왼쪽 · 오른쪽 이름(Composure · Endurance · Willpower) — 카드 테두리에 걸린다 → 표식 쪽으로 조금 당긴다 */
-.hex .lab.L{margin-right:-7px}
-.hex .lab.R{margin-left:-7px}
+/* 멘탈리티 육각형의 왼쪽 · 오른쪽 이름(Composure · Endurance · Willpower · Drive) — 영어는 길어 표식을 덮고 카드 밖으로 나간다
+   → 책 코드(drawHex · 영어일 때)가 꼭짓점 위(위쪽 둘) · 아래(아래쪽 둘)로 옮겨 .vt 를 단다 — 두 줄을 가운데 맞춤 (1011) */
+.hex .lab.vt{text-align:center}
+
+/* 학적 탭의 덧말(진로 평가 '120 to First-Class Adventurer' 등) — 두 줄이 되면 아래 줄이 카드 밖으로 나가므로 한 줄로 · 넘치면 … (1011 · 전체 글은 title) */
+.rgrid .s{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

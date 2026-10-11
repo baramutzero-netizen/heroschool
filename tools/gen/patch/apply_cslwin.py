@@ -39,7 +39,7 @@ EDITS = [
      "  const tb0 = trustBand(trustOf(st)).step, tr0 = trustRaw(st);\n  const tUp = ok ? (addTrust(st, 1), true) : false;\n  const tb1 = trustBand(trustOf(st)).step;\n"),
     ("  save(); render();\n  toast(ok? (gain? `${dn(st)} — ${gain.n} +${gain.d}",
      "  save();\n"
-     "  const res = {ok, fit, byLead, byTrust, gain, dbl, capped, say:ans.say, r:ans.r, trustUp: trustRaw(st) > tr0, trustDown:false, band: tb1 !== tb0 ? tb1 : null};   // 1008 — 상담창\n"
+     "  const res = {ok, fit, byLead, byTrust, cookie, gain, dbl, capped, say:ans.say, r:ans.r, trustUp: trustRaw(st) > tr0, trustDown:false, band: tb1 !== tb0 ? tb1 : null};   // 1008 — 상담창\n"   # 1011 — 쿠키 기능 뒤의 지금 코드에 맞춤 (cookie)
      "  if(win) return res;\n"
      "  render();\n  toast(ok? (gain? `${dn(st)} — ${gain.n} +${gain.d}"),
     # 지침 무시 상담 — 같은 방식 (학생의 반응은 따옴표 안 = 말 · 밖 = 서술로 나눠 돌려준다)
@@ -54,14 +54,14 @@ EDITS = [
     ("  save(); render();\n  toast(ok ? `${dn(st)} — 지침을 따르겠다고 한다",
      "  save();\n"
      "  const rx = masterQ(ok ? R2[0] : R2[1], st, true), rq = rx.match(/“([^”]*)”/);   // 1008 — 상담창\n"
-     "  const res = {ok, fit, byLead, byTrust, gain, dbl, capped, cond, say: rq ? rq[1] : rx, r: rx.replace(/“[^”]*”/, \"\").trim(), trustUp: trustRaw(st) > tr0, trustDown: trustRaw(st) < tr0, band: tb1 !== tb0 ? tb1 : null};\n"
+     "  const res = {ok, fit, byLead, byTrust, cookie, gain, dbl, capped, cond, say: rq ? rq[1] : rx, r: rx.replace(/“[^”]*”/, \"\").trim(), trustUp: trustRaw(st) > tr0, trustDown: trustRaw(st) < tr0, band: tb1 !== tb0 ? tb1 : null};\n"   # 1011 — 쿠키 기능 뒤의 지금 코드에 맞춤 (cookie)
      "  if(win) return res;\n"
      "  render();\n  toast(ok ? `${dn(st)} — 지침을 따르겠다고 한다"),
     # 메뉴의 상담 — 화면을 바꾸지 않고 상담창을 연다 (가로 화면 사이드 · 폰 메뉴)
-    ("      nav.querySelectorAll(\"button[data-view]\").forEach(b=> b.onclick=()=>{ if(b.dataset.view===\"facil\") UI.facTab = null;",
-     "      nav.querySelectorAll(\"button[data-view]\").forEach(b=> b.onclick=()=>{ if(b.dataset.view===\"counsel\"){ cslwOpen(); return; }   /* 1008 — 상담은 창으로 */ if(b.dataset.view===\"facil\") UI.facTab = null;"),
-    ("      nm.querySelectorAll(\"[data-view]\").forEach(b=> b.onclick=()=>{ if(b.dataset.view===\"facil\") UI.facTab = null;",
-     "      nm.querySelectorAll(\"[data-view]\").forEach(b=> b.onclick=()=>{ if(b.dataset.view===\"counsel\"){ cslwOpen(); return; }   /* 1008 — 상담은 창으로 */ if(b.dataset.view===\"facil\") UI.facTab = null;"),
+    ("      nav.querySelectorAll(\"button[data-view]\").forEach(b=> b.onclick=()=>{ if(b.dataset.lock){ navLockToast(b); return; }   /* 1010 — 잠긴 메뉴 */ if(b.dataset.view===\"facil\") UI.facTab = null;",   # 1011 — 잠긴 메뉴(1010) 뒤의 지금 코드에 맞춤
+     "      nav.querySelectorAll(\"button[data-view]\").forEach(b=> b.onclick=()=>{ if(b.dataset.lock){ navLockToast(b); return; }   /* 1010 — 잠긴 메뉴 */ if(b.dataset.view===\"counsel\"){ cslwOpen(); return; }   /* 1008 — 상담은 창으로 */ if(b.dataset.view===\"facil\") UI.facTab = null;"),
+    ("      nm.querySelectorAll(\"[data-view]\").forEach(b=> b.onclick=()=>{ if(b.dataset.lock){ navLockToast(b); return; }   /* 1010 — 잠긴 메뉴 */ if(b.dataset.view===\"facil\") UI.facTab = null;",   # 1011 — 잠긴 메뉴(1010) 뒤의 지금 코드에 맞춤
+     "      nm.querySelectorAll(\"[data-view]\").forEach(b=> b.onclick=()=>{ if(b.dataset.lock){ navLockToast(b); return; }   /* 1010 — 잠긴 메뉴 */ if(b.dataset.view===\"counsel\"){ cslwOpen(); return; }   /* 1008 — 상담은 창으로 */ if(b.dataset.view===\"facil\") UI.facTab = null;"),
     # 일지 서브탭 — 상담 기록
     ("  log:    [{id:\"log\", n:\"학원 일지\"}, {id:\"record\", n:\"졸업생 명부\"}, {id:\"codex\", n:\"도감\"}]\n",
      "  log:    [{id:\"log\", n:\"학원 일지\"}, {id:\"csllog\", n:\"상담 기록\"}, {id:\"record\", n:\"졸업생 명부\"}, {id:\"codex\", n:\"도감\"}]   // 1008 — 상담 기록 (상담은 창으로)\n"),
@@ -151,13 +151,16 @@ def apply(src, root):
     js = js.replace("__CSL_ART__", json.dumps(art(root), separators=(",", ":")), 1)
     js = js.replace("__CSL_SPR__", json.dumps(sprites(root), separators=(",", ":")), 1)
     css = open(HERE + "cslwin_block.css", encoding="utf-8").read()
-    # 이전 블록 지우기 → 넣기
-    src = re.sub(re.escape(CSS_START) + r".*?" + re.escape(CSS_END) + r"\n?", "", src, flags=re.S)
-    src = re.sub(re.escape(JS_START) + r".*?" + re.escape(JS_END) + r"\n?", "", src, flags=re.S)
-    i = src.index(CSS_ANCHOR) + len(CSS_ANCHOR)
-    src = src[:i] + css.rstrip("\n") + "\n" + src[i:]
-    j = src.index(JS_ANCHOR)
-    src = src[:j] + js.rstrip("\n") + "\n" + src[j:]
+    # 이전 블록이 있으면 그 자리에서 갈아 끼우고, 없으면 기준 줄에 넣는다 (1011 — 예전엔 지우고 기준 줄에 다시 넣어서,
+    # 그 사이 뒤에 붙은 다른 블록(쿠키 CSS 등)과 차례가 바뀌어 diff 가 커지고 CSS 우선순위도 달라질 수 있었다)
+    def put(src, start, end, body, anchor, after):
+        m = re.search(re.escape(start) + r".*?" + re.escape(end) + r"\n?", src, flags=re.S)
+        if m:
+            return src[:m.start()] + body.rstrip("\n") + "\n" + src[m.end():]
+        k = src.index(anchor) + (len(anchor) if after else 0)
+        return src[:k] + body.rstrip("\n") + "\n" + src[k:]
+    src = put(src, CSS_START, CSS_END, css, CSS_ANCHOR, True)
+    src = put(src, JS_START, JS_END, js, JS_ANCHOR, False)
     # 예전 상담 화면 (상담 카드 · 올해의 상담 기록) — 새 viewCounsel · viewCslLog 가 맡는다
     a = src.find(OLD_VIEW_START)
     if a >= 0:

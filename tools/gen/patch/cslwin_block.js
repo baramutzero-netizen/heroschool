@@ -118,10 +118,12 @@ function cslwHtml(){
         <div class="cw-stu"><div class="cw-spr"></div><img class="cw-face" alt="" draggable="false"><div class="cw-hit"></div></div>
         <div class="cw-dots" aria-hidden="true">…</div>
         <div class="cw-front" style="background-image:url(${CSL_ART.front})"></div>
+        <button type="button" class="cw-cookie-plate" disabled aria-label="쿠키 접시"><svg viewBox="0 0 68 30" aria-hidden="true"><path d="M16 2H50V4H58V8H64V12H67V18H63V22H57V26H49V28H17V26H9V22H3V18H1V12H5V8H11V4H16Z" fill="none" stroke="#fff4c9" stroke-width="2"/></svg></button>
+        <div class="cw-cookie-area" hidden><canvas class="cw-cookie-art" width="20" height="20"></canvas></div>
       </div></div>
       <div class="cw-over"><div class="cw-say"><div class="cw-sn"></div><div class="cw-st"></div></div><div class="cw-clouds"></div></div>
     </div>
-    <div class="cw-box"><div class="cw-who"></div><div class="cw-bt"></div><div class="cw-more" aria-hidden="true">▼</div><button type="button" class="cw-next">넘어가기 ▶</button></div>
+    <div class="cw-box"><div class="cw-who"></div><div class="cw-bt"></div><div class="cw-cookie-note" aria-live="polite"></div><div class="cw-more" aria-hidden="true">▼</div><button type="button" class="cw-next">넘어가기 ▶</button></div>
   </div></div></div></div>`;
 }
 function cslwOpen(){
@@ -162,6 +164,7 @@ function cslwOpen(){
   });
 }
 function cslwClose(done){
+  cslCookieStop();
   const el = CSLW.el; if(!el) return;
   CSLW.run++;
   if(CSLW.typing) CSLW.typing();
@@ -177,6 +180,10 @@ function cslwClose(done){
 }
 function cslwKey(e){
   if(!CSLW.el) return;
+  if(CSLW.phase.startsWith("cookie-")){
+    if(e.key==="Escape"){e.preventDefault();e.stopPropagation();if(CSLW.phase==='cookie-hold'||CSLW.phase==='cookie-loading')cslCookieCancel();else cslwClose();return;}
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();if(CSLW.phase==='cookie-hold'&&!e.repeat){const m=cslCookieMouth();cslCookieGive({x:m.x+28,y:m.y});}return;}
+  }
   if(e.key === "Escape"){ e.preventDefault(); e.stopPropagation(); cslwClose(); return; }
   if(CSLW.phase === "choose" && /^[1-3]$/.test(e.key)){                 // 1 · 2 · 3 — 그 구름으로 답한다
     const c = cwq(".cw-clouds").children[+e.key - 1];
@@ -185,7 +192,7 @@ function cslwKey(e){
   }
   if(e.key !== " " && e.key !== "Enter") return;
   const t = e.target, btn = t && t.closest ? t.closest(".cw-win button") : null;
-  if(btn && (btn.classList.contains("cw-x") || (btn.classList.contains("on") && !btn.classList.contains("off")))){   // 초점이 있는 단추는 그 단추가 눌린다
+  if(btn && (btn.classList.contains("cw-x") || (btn.classList.contains("cw-cookie-plate") && !btn.disabled) || (btn.classList.contains("on") && !btn.classList.contains("off")))){   // 초점이 있는 단추는 그 단추가 눌린다
     if(CSLW.typing){ e.preventDefault(); CSLW.typing(); }
     return;
   }
@@ -206,6 +213,7 @@ function cslwHead(s){
   cwq(".cw-tab.title").title = s ? `${s.tag} — ${s.title}` : "상담실";
 }
 function cslwReset(){
+  cslCookieStop(); cslCookieRefresh();
   const box = cwq(".cw-box");
   cwq(".cw-say").classList.remove("on"); cwq(".cw-st").innerHTML = ""; cwq(".cw-clouds").innerHTML = "";
   cwq(".cw-who").textContent = ""; cwq(".cw-bt").innerHTML = "";
@@ -218,14 +226,10 @@ function cslwReset(){
 function cslwEmpty(run){
   CSLW.phase = "empty";
   cslwHead(null); cslwReset();
-  cwType(cwq(".cw-bt"), `지금은 찾아온 학생이 없다. 한 주를 보내면 누군가 문을 두드릴 수 있다.\n<span class="cw-dim">${cslProbLine()}</span>`, 60).then(()=>{
+  cwType(cwq(".cw-bt"), `지금은 찾아온 학생이 없다. 한 주를 보내면 누군가 문을 두드릴 수 있다.`, 60).then(()=>{   // 1011 — 지도력 · 정보력 · 호소력 확률 줄은 숨김 (사용자)
     if(!cwLive(run)) return;
     const n = cwq(".cw-next"); n.textContent = "닫기 ▶"; n.classList.add("on"); n.onclick = ()=> cslwClose();
   });
-}
-function cslProbLine(){
-  return `지도력 — 맞지 않아도 설득 ${Math.round(cslLeadP()*100)}% · 정보력 — 통할 말 파악 ${Math.round(cslInfoP()*100)}% · 호소력 — 상승폭 2배 ${Math.round(cslNetP()*100)}%${
-    cslFacLv()? ` (상담실 Lv.${cslFacLv()} 보정 포함)` : ""}`;
 }
 function cslwSkip(run){                                          // 그 사이 사라진 상담 — 건너뛴다
   if(!cwLive(run)) return;
@@ -284,7 +288,7 @@ async function cslwTalk(run){
   for(const c of [...cwq(".cw-clouds").children]){ c.classList.add("on"); await cwWait(220); if(!cwLive(run) || CSLW.phase !== "choose") return; }
   cwq(".cw-bt").innerHTML = `<span class="cw-hint">어떻게 답할까.</span>${(s.reveal && s.opts.some(o=> o.hit))?
     `\n<span class="cw-brass">정보력으로 ${s.name}에게 통할 말을 파악했다 — 금빛 구름.</span>` : ""}`;
-  cwq(".cw-win").classList.add("beat");
+  cwq(".cw-win").classList.add("beat"); cslCookieRefresh();
   if(CSLW.compact){ const c = cwq(".cw-clouds"); if(c && c.scrollIntoView) c.scrollIntoView({block:"nearest", behavior:"smooth"}); }
 }
 function cslwClouds(s, show){
@@ -311,7 +315,7 @@ async function cslwChoose(k){
   const s = CSLW.cur, run = CSLW.run;
   if(!s || CSLW.phase !== "choose" || !CSLW.el || cwSkipped()) return;
   const o = s.opts[k]; if(!o) return;
-  CSLW.phase = "answer"; cwFocus();
+  CSLW.phase = "answer"; cslCookieRefresh(); cwFocus();
   let res = null;
   try{ res = cslwApply(s, o.i); }
   catch(err){ if(typeof errPush === "function") errPush("counsel", err.message, err.stack); }
@@ -356,6 +360,7 @@ function cslwFx(s, r){
     let t = r.fit ? (defy ? "마음에 닿았다!" : "도움이 된 듯하다!")
       : `<span class="cw-lead">${r.byLead ? "성격에 맞는 말은 아니었지만, 지도력으로 설득했다." : "신뢰가 운명 단계라 무슨 말이든 닿았다."}</span>`;
     if(r.gain) t += ` ${esc(r.gain.n)}${iga(r.gain.n)} ${r.gain.d} 올랐다.`;
+    if(r.cookie && r.gain) t += ` <span class="cw-lead">쿠키로 상승량 2배!</span>`;
     if(r.dbl) t += ` <span class="cw-lead">호소력으로 상승폭 2배!</span>`;
     if(r.cond) t += ` 컨디션이 ${r.cond} 회복됐다.`;
     if(r.capped) t += ` 멘탈리티는 모두 한계라 더 오르지 않았다.`;
@@ -527,7 +532,7 @@ function cslwFit(){
     if(was && CSLW.phase === "choose" && CSLW.cur) cslwClouds(CSLW.cur, true);   // 배치가 바뀌면 구름을 다시
   }
 }
-/* 상담 확률 (상담 화면 · 상담 기록) */
+/* 상담 확률 (상담 기록 — 1011 상담실(창 · 상담 화면)에서는 숨김) */
 function cslProbHtml(){
   return `<div class="cslprob">
         <span>지도력 ${cslLead()} — 맞지 않아도 설득 <b>${Math.round(cslLeadP()*100)}%</b></span>
@@ -542,7 +547,6 @@ function viewCounsel(){
   return `<section class="panel">
     <div class="panel-h"><h2>상담실</h2><span class="hint">${yrName(S.year)}${n? ` · <b style="color:var(--brass)">찾아온 학생 ${n}명</b>` : ""}</span></div>
     <p style="font-size:13px;color:var(--muted);margin:0 0 12px">${n? "학생이 할 말이 있다고 찾아와 있다." : "지금은 찾아온 학생이 없다. 한 주를 보내면 누군가 문을 두드릴 수 있다."} 지난 상담은 일지의 <b>상담 기록</b>에서 본다.</p>
-    ${cslProbHtml()}
     <div class="btnrow" style="margin-top:14px"><button class="btn primary" data-cslw>상담실 열기</button><button class="btn" data-cslrec>상담 기록</button></div>
   </section>`;
 }

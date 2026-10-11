@@ -8,6 +8,9 @@
    · 배치(art/roster_layout.json — 학생 명부 배치판)는 RB_LAYOUT 으로 들어간다. 책은 창 크기에 맞춰 통째로 줄인다(1배까지)
    · 닫기: × · Esc · 책 바깥 누르기. 닫으면 게임 화면을 다시 그린다 */
 const ROSTER_ART = __ROSTER_ART__;
+/* 전투 능력치 탭의 이름 (1011) — 게임의 BATTLE 이름과 같은 한국어지만 맨 위 선언을 따로 두어, 영어는 책 칸에 맞춘 짧은 이름으로 옮긴다
+   (영어 표 문맥 키 `RB_BAT_N|스킬 성공률` 등 → Skill Acc. · Skill Res. · Crit Res. · Daze Res. · Cond. — 학생 상세 · 유물 같은 다른 화면은 그대로) */
+const RB_BAT_N = {skAcc:"스킬 성공률", skRes:"스킬 저항률", critRes:"받는 크리 감소", willCut:"의식 저하 경감", cond:"컨디션"};
 (() => {
 const RB_LAYOUT_SRC = __RB_LAYOUT__;
 const RB_CSS = __RB_CSS__;
@@ -129,7 +132,7 @@ function vmOf(st){
     })),
     cond: Math.round(st.cond), eff: effPct(st), condTone: condEff(st.cond).tone, power: Math.round(power(st)), sp: st.sp || 0,
     battle: (bs => BATTLE.map(b => { const v = bs[b.k] || 0;
-      return {n: b.n, v: b.p === 1 ? (b.k === "critDmg" ? (v * 100).toFixed(0) + "%" : (v * 100).toFixed(1) + "%") : b.p === 2 ? "×" + v.toFixed(2) : fmt(v)}; }))(battleStats(st)),
+      return {k: b.k, n: RB_BAT_N[b.k] || b.n, v: b.p === 1 ? (b.k === "critDmg" ? (v * 100).toFixed(0) + "%" : (v * 100).toFixed(1) + "%") : b.p === 2 ? "×" + v.toFixed(2) : fmt(v)}; }))(battleStats(st)),
     cons: Math.round(consThr(st.ment.stam)), willCut: Math.round((1 - clamp(1 - st.ment.will / 100 * .7, .3, 1)) * 100)
   };
 }
@@ -516,15 +519,15 @@ function recordBody(st){
     <div class="it"><div class="k">관계 상태</div><div class="v">${h(st.trust.rel)}</div></div>
     <div class="it"><div class="k">평판</div><div class="v num">${st.fame.toLocaleString()}</div><div class="s">${st.fameBonus > 0 ? `졸업 후원금 <span class="c-ok">+${st.fameBonus}%</span>` : "대회 · 원정에서 쌓인다"}</div></div>
     <div class="it"><div class="k">업보</div><div class="v num ${kc}"${!st.career.dark && st.karmaNext ? ` title="${h(st.karmaNext.n)}까지 ${st.karmaNext.need}"` : ""}>${st.karma}</div>${st.career.dark ? `<div class="s">업보가 진로를 덮었다</div>` : ""}</div>
-    <div class="it"><div class="k">진로 평가</div><div class="v num">${st.eval}</div><div class="s">${st.nextCareer ? `${h(st.nextCareer.n)}까지 ${st.nextCareer.need}` : st.career.dark ? "" : "최고 진로 도달"}</div></div>
+    <div class="it"><div class="k">진로 평가</div><div class="v num">${st.eval}</div><div class="s"${st.nextCareer ? ` title="${h(st.nextCareer.n)}까지 ${st.nextCareer.need}"` : ""}>${st.nextCareer ? `${h(st.nextCareer.n)}까지 ${st.nextCareer.need}` : st.career.dark ? "" : "최고 진로 도달"}</div></div>
     <div class="it"><div class="k">진로 전망</div><div class="v ${st.career.dark ? "c-bad" : ""}" title="${h(st.career.d)}">${h(st.career.n)}${st.career.dark ? `<span class="tag inj">업보</span>` : ""}</div></div>
   </div>`;
 }
 function battleBody(st){
   const B = st.battle.map(b => ({n: b.n, v: b.v}));
   B.push({n: "의식 유지선", v: st.cons + "%", t: `체력이 ${st.cons}% 이상이면 의식을 잃지 않는다`});
-  B.push({n: "의식 저하 경감", v: st.willCut + "%"});
-  B.push({n: "컨디션", v: `<span class="c-${h(st.condTone)}">${st.cond} · ${st.eff}%</span>`, t: `컨디션 ${st.cond} — 효율 ${st.eff}%`, raw: true});
+  B.push({n: RB_BAT_N.willCut, v: st.willCut + "%"});
+  B.push({n: RB_BAT_N.cond, v: `<span class="c-${h(st.condTone)}">${st.cond} · ${st.eff}%</span>`, t: `컨디션 ${st.cond} — 효율 ${st.eff}%`, raw: true});
   return `<div class="bgrid">${B.map(b => `<div class="b"${b.t ? ` title="${h(b.t)}"` : ""}><span class="k">${h(b.n)}</span><span class="v">${b.raw ? b.v : h(b.v)}</span></div>`).join("")}</div>`;
 }
 function recordCard(st){
@@ -645,17 +648,25 @@ function drawHex(st){
     + `<polygon points="${pts}" fill="none" stroke="#3f5f95" stroke-width="1" stroke-linejoin="round"/>`
     + Object.entries(mk).map(([c, f]) => `<path d="${f.d()}" fill="${c}" shape-rendering="crispEdges"/>`).join("");
   // 글 — 표식 바깥 (이름 줄 · 값 줄)
+  //   1011 — 영어는 옆 이름(Composure · Endurance · Willpower · Drive)이 길어 표식을 덮고 카드 밖으로 나간다 → 꼭짓점 위(위쪽 둘) · 아래(아래쪽 둘)에 가운데 맞춤 (.lab.vt)
+  const vert = typeof I18N !== "undefined" && I18N.lang === "en";
   lab.innerHTML = HEX6.map((m, i) => {
     const [x, y] = pt(i, R + MO), v = Math.round(st.ment[m.k]), gr = mentalGrade(v);
     const c = Math.cos(ang(i)), sn = Math.sin(ang(i));
     const side = Math.abs(c) < .2 ? "C" : (c < 0 ? "L" : "R");
     const X = X0 + x * 2, Y = Y0 + y * 2;
     const pos = side === "C" ? `left:${Math.round(X - 30)}px;width:60px;top:${Math.round(sn < 0 ? Y - 42 : Y + 8)}px`
+      : vert ? `left:${Math.round(X)}px;top:${Math.round(sn < 0 ? Y - 44 : Y + 10)}px`
       : side === "L" ? `right:${Math.round(cw - (X - GAP))}px;top:${Math.round(Y - 17)}px`
       : `left:${Math.round(X + GAP)}px;top:${Math.round(Y - 17)}px`;
-    return `<div class="lab ${side}" style="${pos}" title="${h(m.n)} — ${h(m.d)}">
+    return `<div class="lab ${side}${vert && side !== "C" ? " vt" : ""}" data-x="${Math.round(X)}" style="${pos}" title="${h(m.n)} — ${h(m.d)}">
       <div class="n">${h(m.n)}</div><div class="v">${v}<b style="color:${GC_PAGE[gr] || "var(--ink)"}">${h(gr)}</b></div></div>`;
   }).join("");
+  // 위 · 아래 이름은 그린 뒤 폭을 재서 꼭짓점 가운데로 (정수 px — 도트 글자가 번지지 않게) · 카드 안쪽 4px 을 넘지 않게
+  lab.querySelectorAll(".lab.vt").forEach(el => {
+    const w = el.offsetWidth;
+    el.style.left = Math.max(4, Math.min(cw - 4 - w, Math.round(+el.dataset.x - w / 2))) + "px";
+  });
 }
 
 function bindDetail(st){
