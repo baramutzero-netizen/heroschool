@@ -125,6 +125,9 @@ python3 ~/hs.py pack 이름            # 보낼 폴더 + 커밋 목록 (끝에 8
   `hs.py layout` — 영어 화면 넘침 · 남은 한글 (세 크기 · 크기마다 1분 반쯤 · 10분 넘으면 `--sizes` 로 나눠 돌린다) · `python3 tools/i18n/check_save.py` — 세이브 왕복.
   **영어판은 공개됐다** — 브라우저 언어로 고르므로 시험 스크립트의 크로미움은 locale 을 정해 띄운다(`hs.py shot` 은 ko-KR). 영어로 보려면 `hs.py shot --page 'heroschool.html?lang=en'`.
 - 긴 시나리오는 직접 스크립트로: `sys.path.insert(0, os.path.expanduser("~")); import hs; b, pg, errs = await hs.open_game(p)` — 띄우는 데 4초쯤.
+- `python3 tools/check_scale.py` — 화면 크기 틀(UISCALE · 큰 화면 PC 에서 게임을 iframe 에 넣어 키운다 — 1분 반쯤). 틀 · 진짜 마우스(클릭 · 서명 긋기 · 휠) · 키보드 ·
+  설정 '화면 크기' · 언어 바꾸기 · 새 버전 · 폰/iPad/자동화는 틀 없이 · file:// 과 http://. 맨 앞 스크립트(UISCALE)나 iframe 에 영향 가는 걸 고치면 돌린다.
+  **Playwright(자동화)에서는 틀이 안 생긴다**(navigator.webdriver) — 다른 시험은 예전 그대로. 틀로 보려면 주소에 `?scale=auto` (또는 150 · user · off).
 - 게임 상태: `S` (세이브) · `UI.view` · `render()` · `closeModal()`. 상담 대기열 `counselState().queue` · 지침 무시 `defyState().pend` · 난수 `RNG`.
   새 브라우저마다 새 게임(1년차 봄 · 학생 3명)으로 시작한다.
 
@@ -141,7 +144,47 @@ python3 ~/hs.py pack 이름            # 보낼 폴더 + 커밋 목록 (끝에 8
 - 학생 명부 책은 그림자 DOM(`#rbHost`) 안 — 테스트에서 `document.getElementById('rbHost').shadowRoot` 로 찾는다 (Playwright 의 `locator('#rbHost …')` 는 그대로 뚫고 들어간다).
   책은 가로 넓은 화면(1100px 이상)에서만 뜬다 — `open_game(p, w=1440, h=1000)`. 상태는 `RBK.isOpen()` · `RBK.state`.
 
-## 7. 최근 작업 · 현재 상태 (2026-10-11 · 빌드 1011-0115)
+## 7. 최근 작업 · 현재 상태 (2026-10-11 · 빌드 1011-1106)
+
+- **화면 크기 자동 맞춤 (1011 · 빌드 1011-1106)** — 사용자가 목업의 안 ① 을 골랐다. 큰 화면 PC 에서 게임 전체를 브라우저 확대처럼 키운다.
+  - game.html 맨 앞(`<title>` 바로 뒤) **UISCALE 스크립트** · `HS_SCALE`: 맨 위 창이 데스크톱(마우스가 주인 · iPad/폰/Android 빼고)이고 배율 k ≥ 1.05 면 '틀'이 된다 —
+    `document.write('<body><script>…')` 로 body 를 열고 그 안에서 `window.stop()`(아래 게임은 읽지도 돌지도 않는다) → 같은 주소 `?hsf=k` 를 iframe 으로 `transform: scale(k)`.
+    게임 안은 W/k × H/k 창이라 게임 코드 · 클릭 · 끌기 · 서명이 그대로. 창 크기가 바뀌면 다시 맞춘다. iframe 안은 devicePixelRatio ×k(오프닝 캔버스 또렷 · 진짜 값 `HS_SCALE.dpr0()`) ·
+    탭 제목은 게임이 알려 준다(바뀔 때마다) · 언어 바꾸기 · 새 버전 불러오기는 `HS_SCALE.nav` 로 틀에 넘겨 탭째로 다시 불러온다.
+  - 배율: 자동 = min(창 폭 ÷ 1280, 창 높이 ÷ 870) · 1.05 아래는 1 · 2.5 까지 (2560×1300 → ×1.494 · 1920×1070 → ×1.229 · 1920×950 → ×1.092).
+    설정 › **화면 크기**(자동 · 100 ~ 200% — `scalePanel` · localStorage `hs_scale` · 폰/태블릿에서는 숨김). 100% 면 틀 없이 · 틀 없이 돌던 창에서 키우면 저장 뒤 다시 불러온다.
+  - **Playwright(자동화)에서는 틀이 안 생긴다**(navigator.webdriver) — 다른 시험 · hs.py shot 은 예전 그대로. 틀 시험은 주소 `?scale=auto|150|…`(강제) · `user`(사람처럼) · `off`.
+    새 시험 `tools/check_scale.py`(file:// · http:// · 진짜 마우스 · 키보드 · 설정 · 언어 · 새 버전 · 폰/iPad 제외) 통과 + 기존 시험 모두 통과.
+  - 알게 된 것 — **맨 앞 스크립트에 한글을 쓰면 안 된다**: i18n 빌드가 '한글이 든 첫 스크립트'에 번역 장치를 넣는데 그게 <head> 면 정적 HTML 을 못 옮겨 영어 시험이 깨진다
+    (그래서 UISCALE 은 주석까지 영어 · 한국어 설명은 scalePanel 위). **<head> 안에서 window.stop() 하면 크로미움이 다시 안 그린다**(rAF · 마우스 이동 멈춤) — body 를 먼저 연다.
+    file:// 은 출처가 없어(opaque) iframe allow 는 `autoplay *; clipboard-write *`. `?hsf=k` 로 게임 쪽이 '우리 틀 안'임을 알고 처음 배율을 받는다
+    (조상과 같은 주소의 iframe 은 표준상 막힐 수 있다 — 크로미움은 한 겹 허용). https 에서는 틀이 받다 만 앞부분 + 게임 한 번을 받는다.
+  - 사용자 확인 대기: 실제 모니터에서의 크기(자동이 작거나 크면 설정에서) · 자동일 때 Ctrl + 확대가 거의 안 먹는 것.
+
+- **마을 · 마스터 노트 · 스케줄 같은 액자 (1011 · 빌드 1011-0901)** — 사용자가 목업에서 마을 **안 A** 를 골랐다. 세 화면이 같은 상자(1544:1008) · 같은 나무 테두리라
+  화면을 바꾸거나 두루마리 → 스케줄로 넘어가도 테두리 크기가 그대로다. 마을은 폭을 채우고 아래 16% 자름 · 마스터 노트는 책상 바탕을 746×478 로 넓힘(`desk_ext` · 소품 그대로) ·
+  팝업은 액자 안에서 스크롤(나가기 · 닫기 줄은 늘 보임) · 사이드 스케줄 단추 글 한국어도 'Schedule'. 상세는 tools/gen/README '같은 액자'.
+  - 고친 곳: `sched_art.py`(액자만 그림 `frame`) · `mdesk_block.js · .css` · `apply_desk.py` → `hs.py apply sched …` · `hs.py apply desk` · game.html(마을 CSS · `TOWN_FRAME` · 사이드 단추 · 운영 안내 단추) ·
+    en_layout.css(영어 전용 사이드 단추 규칙 뺌). 새 그림 `assets/sched_art/frame.webp` · `assets/mdesk_art/ext.webp` — 예전 `assets/mdesk_art/base.webp` · `vig.webp` 는
+    이제 아무도 안 읽는다(PC 에 남아 있다 — 사용자가 지워도 된다).
+  - 시험: `hs.py i18n` · `hs.py layout`(세 크기) · `check_save.py` · 스케줄 겹침 · 서명 점검 통과. 세 화면 액자 상자 같음(1100 · 1280 · 1440 · 1920 · 영어) · 넘어가는 동안 액자 상자 그대로 ·
+    다 다가갔을 때 책상 두루마리 축 = 스케줄 두루마리 축(±0.1px) · 시설 팝업 5 · 마스터 노트 팝업 2 가 액자 안.
+  - PC 의 blocks.sha.json(커밋 안 함)은 SCHED_SCROLL · MDESK 가 옛 지문이다 — PC 에서 apply 하면 blockguard 가 멈춘다(위 2단계 메모와 같다 — 시험으로 돌려 보고 --force).
+  - **화면 크기 자동 맞춤 목업** (사용자 요청 — 큰 모니터에서 150% 확대처럼 · → 안 ① 로 1011-1106 에 반영 · 위) — PC `mockups/ui-scale/`(깃 밖) · `ui_scale_mockup.html` · 다시 만들기 · 시험 결과는 그 폴더 README.
+    배율 = min(창 폭 ÷ 1280, 창 높이 ÷ 870) · 1 ~ 2.5 (2560×1300 → ×1.49 · 1920×1070 → ×1.23 · 1920×950 → ×1.09 · 그보다 작은 창 · 폰은 그대로).
+    추천안 ① 같은 파일이 큰 화면 PC 에서만 게임을 iframe 으로 한 겹 감싸 `transform: scale(k)` — 게임 안은 '작은 창'으로 보여 코드를 거의 안 건드린다(목업의 '실제 게임으로 해 보기').
+    안 ② html 에 CSS zoom — vh · vw 100여 곳 · 화면 좌표 코드(skSideFit · mdeskGo · 책 · 상담창 맞춤 등)를 다 손봐야 한다. 설정 '화면 크기' 칸(자동 · 100~200%)도 제안.
+
+- **스케줄 손보기 2 (1011 · 빌드 1011-0752)** — 사이드 '스케줄 [1주]' → '스케줄'(폰 메뉴의 큰 스케줄 단추 · 운영 안내 그림 단추도 · 위쪽 일정 칸에 이미 있다 — 900px 위쪽 탭은 그대로) ·
+  원정 카드에서 '진로 평가 +' 줄 숨김(`TRAININGS` fx · 효과는 그대로) · 영어 카드 · 의뢰 쪽지의 멘탈리티 줄임말(Comp. · Gen. · Team. · Will. · End. · Drive — `MENT_SHORT` 문맥 키) ·
+  명부 행동 칸 영어 **Work**(의뢰 — 칸에서만 · `SK_CHIP_N|의뢰`) · 행동 칸을 CSS 로 그려 영어에서 38 폭(`--sk-chipw` · 부상 '✚ 2wk' 자리 `--sk-injw` 40 — en_layout.css).
+  영어 '1 wks' → '1wk'(`skRoster|{0}주`). 상세는 tools/gen/README '결재 · 위 단추 · 개인 행동 줄 · 명부'. 시험 모두 통과 · 영어 넘침 · 남은 한글 0.
+  - 알게 된 것: `hs.py i18n` 의 '공개: 자동을 누른 뒤 (한국어 브라우저)' 가 한 번 새 게임(다른 학원 이름)으로 떠서 실패했다 — 6번 중 1번 · 같은 흐름만 12번 돌려서는 재현 안 됨.
+    언어 바꾸기(`langSwitch` — save 뒤 location.replace)와 불러오기 쪽 원인은 못 찾았다. 다시 실패하면 그 페이지의 localStorage 세이브 · `curData` 예외부터 본다.
+  - **마을 · 마스터 노트 화면 크기 통일 목업** (사용자 요청 · 게임은 그대로) — PC `mockups/scene-size/`(깃 밖) · `scene_size_mockup.html` 비교 페이지 · 다시 만들기는 그 폴더 README.
+    지금 마을 · 마스터 노트 틀 1208×939 · 스케줄 1208×789 (창 폭 1240 이상). 통일안 = `.townmap` 을 1544:1008 · 틀 그림은 스케줄 over2 ·
+    마스터 노트는 책상을 746×478 로 넓힌다(소품 그대로 · 오른쪽 사이드 밑은 판자) · 마을은 안 A(폭 채우고 아래 16% 자름) / 안 B(높이에 맞춰 왼쪽 · 오른쪽 책상 판자).
+    → 사용자가 안 A 를 골라 1011-0901 에 반영(위). 배치판 · desk_layout.json 은 607×466 그대로 두고 apply 가 바탕만 넓힌다.
 
 - **두루마리 스케줄 손보기 (1011 · 빌드 1011-0115)** — 사용자 요청 일곱 가지. 모두 `sched_block.js · .css` → `hs.py apply sched tools/gen/patch/sched_layout.json` (상세는 tools/gen/README '결재 · 위 단추 · 개인 행동 줄 · 명부').
   - 결재: 서명을 한 번 남긴 뒤로는 다섯 칸이 차면 **결재란도 깃펜처럼 반짝이고, 누르면 바로 깃펜이 서명**(`skAutoSign`) · 안내 '클릭으로 서명'. 결재란 맨 위 '결재' 옆에 비용(일과 · 식단) ·

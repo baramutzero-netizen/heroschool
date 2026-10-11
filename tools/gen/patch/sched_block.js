@@ -43,7 +43,7 @@ function skCard(c, x, y){                                       // x, y = 카드
   const L = clamp(cardLeft(c), 1, CARD_LIFE), eff = cardEffLine(tr), cv = eff.replace(/^[^+\-−]*/, "")   /* 1010 — 영어판: 앞의 이름(컨디션 · Condition)을 떼고 값만 */, good = cv.charAt(0) === "+";
   const cost = cardCostText(c);
   const tip = `${tr.n}${cost? " · "+cardCostTip(c) : ""}${mk? ` — ${mk.i} ${mk.n}: ${mk.d}` : ""} · ${cardLeftText(L)}${L<=1? "" : " 남음"}`;
-  const fx = (tr.fx||[]).slice(0, 4).map((f, i)=> `<span class="sk-fx${f[2]? " bad":""}" style="top:${80 + i*14}px">${esc(f[0])}<b>${"+".repeat(f[1])}</b></span>`).join("");
+  const fx = (tr.fx||[]).slice(0, 4).map((f, i)=> `<span class="sk-fx${f[2]? " bad":""}" style="top:${80 + i*14}px">${esc(mentShortOf(f[0]))}<b>${"+".repeat(f[1])}</b></span>`).join("");   // 1011 — 멘탈리티는 줄임말 (영어 Comp. 등)
   const lc = {3:"#3b6b33", 2:"#8a5e1c", 1:"#a3302a"}[Math.min(3, L)] || "#3b6b33";
   return `<div class="sk-card" data-card="${c.u}" draggable="false" role="button" tabindex="0" title="${esc(tip)}" aria-label="${esc(tip)}" style="left:${x*2}px;top:${y*2}px;${skBg("card_"+key)}">`
     + skSpr("ic_" + (SK_ICON[c.t] || "target"), 40, 10, "ic")
@@ -59,10 +59,15 @@ function skRibbon(cx, label, key){
   return skSpr(key? "rib_"+key : "rib_empty", (cx - 49) * 2, SK_YRIB * 2)
     + `<span class="sk-rib" style="left:${cx*2 - 100}px;top:${SK_YRIB*2 + 4}px;text-shadow:2px 2px 0 #${pal[0]}">${label}</span>`;
 }
+/* 행동 칸 (1011) — 그림(chip_*) 대신 CSS 로 같은 모양(테두리 · 바탕 · 윗줄 밝게)을 그려 폭을 바꿀 수 있게 했다.
+   폭은 CSS 변수 --sk-chipw (한국어 30 · 영어 38 — en_layout.css · 'Train' 이 테두리 안에 들어가게). 글은 칸에 맞춘 짧은 이름(SK_CHIP_N — 영어 의뢰 = Work).
+   부상 표시(✚ N주) 자리 폭은 --sk-injw (한국어 36 · 영어 40 — '2wk'). 둘 다 skRoster 가 막대 자리를 정할 때 읽는다 */
+const SK_CHIP_N = {train:"훈련", rest:"휴식", job:"의뢰"};
+function skCssPx(name, def){ const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)); return v > 0 ? v : def; }
 function skChips(s){
   const k = actUnlocked() ? actShown(s) : (isRestFocus(s) ? "rest" : "train");
   const col = {train:"#3a2a20", rest:"#3b6b33", job:"#8a5e1c"}[k] || "#3a2a20";
-  return `<button type="button" class="sk-chip" data-sk-act="${esc(s.id)}" ${actUnlocked()? "" : "disabled"} title="${esc(actName(k))} — 누르면 ${actPickKeys().map(actName).join(" → ")}" style="${skBg("chip_"+k)};color:${col}"><b>${esc(actName(k))}</b></button>`;
+  return `<button type="button" class="sk-chip k-${k}" data-sk-act="${esc(s.id)}" ${actUnlocked()? "" : "disabled"} title="${esc(actName(k))} — 누르면 ${actPickKeys().map(actName).join(" → ")}" style="color:${col}"><b>${esc(SK_CHIP_N[k] || actName(k))}</b></button>`;
 }
 function skTone(v){
   if(v >= COND_HI)  return ["#3b6b33", "#4f8a42", "#86bd6c"];
@@ -73,7 +78,7 @@ function skTone(v){
    두 단은 왼쪽 단부터 채운다 (15명이면 8 + 7). 줄 폭이 좁아지는 만큼 컨디션 막대를 줄인다 (SK_BARMIN 까지 · 한 단은 줄이지 않는다).
    한 단이 두 단보다 1/4 이상 작을 때만 두 단으로 — 비슷하면 막대가 긴 한 단이 보기 좋다.
    rsv — 맨 끝 칸 하나를 '변경 취소' 단추 자리로 비워 둔다 (지난주 기록이 있을 때 · 칸은 skRoster 의 slot).
-   아래 끝은 그 밑에 놓인 소품(문진) 바로 위까지 (SCHED_GEO.ros_bottom). 줄 안 자리는 2배 좌표 — 이름 60 · 행동 칸 62~92 · 부상 96~ · 막대 bx~ */
+   아래 끝은 그 밑에 놓인 소품(문진) 바로 위까지 (SCHED_GEO.ros_bottom). 줄 안 자리는 2배 좌표 — 이름 60 · 행동 칸 62~(30 · 영어 38) · 부상 그 뒤 4~ · 막대 bx~ */
 const SK_BARMIN = 60, SK_BARMAX = 160, SK_RTAIL = 70;            // 막대 폭 (2배) · 막대 뒤(컨디션 값 · 효율 % · 여백)
 function skRowGeo(f, cols, bx){                                  // 한 줄 폭 · 막대 폭 (2배 · 명부를 키우기 전)
   const W2 = (SK_XL1 - (SK_X0 + 2)) * 2, room = cols === 2 ? (W2 / f - 12) / 2 : W2 / f;
@@ -93,7 +98,8 @@ function skRoster(x0, y0, chips, rsv){
   const pages = Math.max(1, Math.ceil(all.length / SK_ROWS));
   UI.skPage = clamp(UI.skPage|0, 0, pages - 1);
   const list = all.slice(UI.skPage * SK_ROWS, UI.skPage * SK_ROWS + SK_ROWS);
-  const bx = !chips ? 66 : all.some(isInjured) ? 132 : 96;      // 막대 왼쪽 — 행동 칸 뒤 · 다친 학생이 있으면 부상 표시(✚ N주) 뒤
+  const cw = chips ? skCssPx("--sk-chipw", 30) : 0, cx = 62 + cw + 4;   // 행동 칸 폭 (1011 — 영어는 넓다) · 부상 표시(✚) 자리
+  const bx = !chips ? 66 : all.some(isInjured) ? cx + skCssPx("--sk-injw", 36) : cx;   // 막대 왼쪽 — 행동 칸 뒤 · 다친 학생이 있으면 부상 표시(✚ N주) 뒤 (한국어 96 · 132)
   const F = skRosterFit(pages > 1 ? SK_ROWS : list.length, y0, bx, rsv);   // 여러 쪽이면 쪽마다 같은 모양 (15명 기준)
   const G = skRowGeo(F.f, F.cols, bx), lines = F.cols === 2 ? F.per * 2 : F.per, pitch = G.w + 12;
   let h = "";
@@ -102,7 +108,7 @@ function skRoster(x0, y0, chips, rsv){
     const x = col * pitch, y = row * SK_ROW * 2;                   // 명부 안 좌표 (2배) — 명부 전체를 F.f 배로 키운다
     if(!s){ h += `<div class="sk-r empty" style="left:${x}px;top:${y}px"></div>`; continue; }
     const v = Math.round(clamp(s.cond, 0, 100)), [tc, fc, hc] = skTone(v);
-    const inj = isInjured(s) ? skSpr("cross", 96, 2) + `<span class="iw">${injWeeks(s)}주</span>` : "";
+    const inj = isInjured(s) ? skSpr("cross", cx, 2) + `<span class="iw" style="left:${cx + 15}px">${injWeeks(s)}주</span>` : "";
     h += `<div class="sk-r${(chips ? actShown(s) === "rest" : isRestFocus(s))? " rest" : ""}" style="left:${x}px;top:${y}px">`
       + `<span class="nm" title="${esc(dn(s))}">${esc(s.name)}</span>${chips? skChips(s) + inj : ""}`
       + `<span class="sk-bar" style="left:${bx}px"><i style="width:${Math.max(0, Math.round((G.bar - 6) / 2 * v / 100)) * 2}px;background:${fc};--hc:${hc}"></i></span>`
@@ -239,7 +245,7 @@ function viewPlanScroll(){
         + `<div class="hd" style="left:12px;top:10px"><span class="sk-h" style="color:#8a5e1c">${esc(J.n)}</span><span class="gr">${g+1}등급</span></div>`
         + `<span class="sk-fade" style="left:12px;top:38px">${esc(J.who)}</span>`
         + `<span style="left:12px;top:54px"><span class="sk-ink2">보수 </span><span class="sk-brass">${fmt(pay)} G/일</span><span class="sk-ink2"> · 컨디션 </span><span class="sk-red">-${JOB_COND}/일</span></span>`
-        + `<span style="left:12px;top:68px"><span class="sk-ink2">${esc(mentName(J.up))} </span><span class="sk-grn">▲</span><span class="sk-ink2"> · ${esc(mentName(J.down))} </span><span class="sk-red">▼</span></span>`
+        + `<span style="left:12px;top:68px"><span class="sk-ink2">${esc(mentShort(J.up))} </span><span class="sk-grn">▲</span><span class="sk-ink2"> · ${esc(mentShort(J.down))} </span><span class="sk-red">▼</span></span>`
         + (nx ? `<span style="left:12px;top:82px"><span class="sk-ink2">누적 </span>${fmt(cnt)} / ${fmt(nx.min)}회</span><span class="bar" style="left:150px;top:84px;width:84px"><i style="width:${Math.round(80 * clamp(cnt / nx.min, 0, 1))}px"></i></span>`
               : `<span style="left:12px;top:82px"><span class="sk-ink2">누적 </span>${fmt(cnt)}회<span class="sk-brass"> · 최대 등급</span></span>`)
         + `<span style="left:12px;top:96px">${nj? `<span class="sk-ink2">이번 주 </span><span class="sk-brass">의뢰 ${nj}명</span><span class="sk-ink2"> · 최대 </span><span class="sk-brass">+${fmt(pay * nj * WEEK_DAYS)} G</span>` : `<span class="sk-fade">이번 주 의뢰를 맡은 학생이 없다</span>`}</span></div>`);

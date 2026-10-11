@@ -4,6 +4,7 @@
   under  = 액자 안 검정 · 책상 판자 · 남색 천 · 두루마리 종이(그림자) · 종이에 늘 있는 줄(머리 줄 · 아래 띠 줄 · 요일 칸 점선)
   over1  = 두루마리 축(위아래가 잘린 그대로) · 붙인 축 끝 마개 · 소품 (깃펜 앞까지 — 배치 순서)
   over2  = 가장자리 그늘 · 액자
+  frame  = 액자만 (1011 — 마을 지도 · 마스터 노트 책상도 이 액자 · 이 크기로. 마스터 노트는 over2 를 쓴다)
   quill  = 깃펜 (움직인다 — 따로)
   sheet  = 카드 바탕(색 6 + 빈 칸) · 요일 띠(색 7) · 카드 그림 13 · 작은 그림(단추 · 십자 · 압정) · 행동 칸 4 · 결재란 2 · 의뢰 쪽지
   chain  = 체인 고리 (가로로 되풀이)
@@ -112,6 +113,7 @@ def scene(layout):
     FU = Image.new('RGBA', (FW, FH), (0, 0, 0, 255)); FU.alpha_composite(under, (IN, IN))
     F1 = new(FW, FH); F1.alpha_composite(over1, (IN, IN))
     F2 = new(FW, FH); F2.alpha_composite(C3.vignette(W, H), (IN, IN)); F2.alpha_composite(frame)
+    FR = new(FW, FH); FR.alpha_composite(frame)               # 액자만 (그늘 없이) — 마을 지도도 스케줄과 같은 액자 · 같은 크기로 (1011)
 
     # 깃펜 · 잉크 단지 입구
     dq = kit['objects']['quill']; quill = frame_of(dq)
@@ -149,7 +151,7 @@ def scene(layout):
                quill=dict(x=int(round(qo['x'])) + IN, y=int(round(qo['y'])) + IN, px=dq['px'], py=dq['py'], w=quill.width, h=quill.height),
                ink=dict(x=inkhole['x'] + IN, y=inkhole['y'] + IN, w=inkhole['w'], h=inkhole['h']),
                inkwell=inkwell, menu=layout.get('menu'))
-    return dict(under=FU, over1=F1, over2=F2, quill=quill, inkwell=inkwell_img), geo
+    return dict(under=FU, over1=F1, over2=F2, quill=quill, inkwell=inkwell_img, frame=FR), geo
 
 
 # ───────────────────────── 스케줄 조각 그림 (시트) ─────────────────────────

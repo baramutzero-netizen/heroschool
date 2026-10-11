@@ -72,13 +72,17 @@
 .sk-r.rest::before{content:"";position:absolute;left:-4px;top:0;width:calc(var(--rw,384px) - 4px);height:20px;background:rgba(207,226,176,.31)}
 .sk-r>*{position:absolute;top:3px;white-space:nowrap}
 .sk-r .nm{left:0;width:60px;overflow:hidden;color:#3a2a20}
-.sk-chip{position:absolute;top:0!important;left:62px;width:30px;height:18px;padding:0;border:0;margin:0;box-shadow:none!important;border-radius:0!important;background:var(--sk-sheet) no-repeat;background-size:var(--sk-ss);image-rendering:pixelated;
-  font:400 12px/12px "Mulmaru",sans-serif;text-align:left;cursor:pointer;-webkit-appearance:none;appearance:none}
-/* 행동 칸 글자 — 칸(18) 안쪽 2~16 에 잉크 11칸: 위 1 · 아래 2 띄운다. 단추 안 세로 가운데 맞춤을 피해 절대 자리로 (1006) */
-.sk-chip>b{position:absolute;left:0;top:3px;width:30px;font-weight:400;line-height:12px;text-align:center;pointer-events:none}
+/* 행동 칸 (1011) — 예전 그림(chip_* · 15×9)과 같은 모양을 CSS 로: 1칸 테두리 · 바탕 · 윗줄 한 칸 밝게(바탕 +18).
+   폭은 --sk-chipw (한국어 30 · 영어 38 — en_layout.css) — 명부 줄의 막대 · 부상 자리도 이 폭을 따른다 (skRoster) */
+.sk-chip{position:absolute;top:0!important;left:62px;width:var(--sk-chipw,30px);height:18px;padding:0;border:2px solid var(--ce,#5c4733);margin:0;box-shadow:none!important;border-radius:0!important;
+  background:linear-gradient(var(--ch,#f8e4b6) 0 2px,var(--cf,#e6d2a4) 2px);font:400 12px/12px "Mulmaru",sans-serif;text-align:left;cursor:pointer;-webkit-appearance:none;appearance:none}
+.sk-chip.k-rest{--ce:#3b6b33;--cf:#d3e3bb;--ch:#e5f5cd}
+.sk-chip.k-job{--ce:#8a5e1c;--cf:#f2dc9c;--ch:#ffeeae}
+/* 행동 칸 글자 — 칸(18) 안쪽 2~16 에 잉크 11칸: 위 1 · 아래 2 띄운다 (테두리 안쪽 기준 top 1 = 바깥 3). 단추 안 세로 가운데 맞춤을 피해 절대 자리로 (1006) */
+.sk-chip>b{position:absolute;left:0;top:1px;width:100%;font-weight:400;line-height:12px;text-align:center;pointer-events:none}
 .sk-chip:disabled{cursor:default}
 .sk-chip:hover:not(:disabled){filter:brightness(1.06)}
-.sk-r .sk-spr{top:2px;left:96px;width:12px;height:12px}
+.sk-r .sk-spr{top:2px;left:96px;width:12px;height:12px}   /* 자리(left)는 skRoster 가 행동 칸 폭에 맞춰 넣는다 (1011) */
 .sk-r .iw{left:111px;color:#a3302a}
 .sk-bar{top:4px!important;width:var(--bw,160px);height:10px;border:2px solid #8c7353;background:#e8d8b2}
 .sk-bar i{position:absolute;left:0;top:0;bottom:0;display:block;box-shadow:inset 0 2px 0 var(--hc)}

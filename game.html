@@ -1,4 +1,124 @@
 <title>용사 학원 키우기 — 학원이 망했다</title>
+<script>/* UISCALE start (1011) - display size: scale the whole game on big desktop screens. Notes (Korean): the comment above scalePanel() in this file.
+   ASCII only in this script: if it held Hangul (even in comments), tools/i18n would put its runtime here, in <head>, before the page HTML exists. */
+(function(){
+  var W = window, KEY = "hs_scale", BW = 1280, BH = 870, KMIN = 1.05, KMAX = 2.5;
+  function kOf(p, w, h){
+    if(p && p !== "auto"){ var n = parseFloat(p); return n >= 50 && n <= 300 ? n / 100 : 1; }
+    var k = Math.floor(Math.min(KMAX, w / BW, h / BH) * 1000) / 1000;
+    return k >= KMIN ? k : 1;
+  }
+  function getPref(){ try{ return localStorage.getItem(KEY) || "auto"; }catch(e){ return "auto"; } }
+  function desktop(){
+    var ua = navigator.userAgent || "";
+    if(/iPad|iPhone|iPod|Android/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)) return false;
+    return !!(W.matchMedia && W.matchMedia("(hover:hover) and (pointer:fine)").matches);
+  }
+  var sp = null; try{ sp = new URLSearchParams(location.search); }catch(e){}
+  var force = sp ? sp.get("scale") : null;
+  var H = W.HS_SCALE = {k: 1, pref: getPref(), framed: false, host: false, kOf: kOf, desktop: desktop,
+    dpr0: function(){ return W.devicePixelRatio || 1; },
+    /* settings pick -> "framed" (the host refits) | "reload" (caller saves, then reloads to become a host) | "saved" */
+    set: function(v){
+      v = String(v || "auto"); H.pref = v;
+      try{ localStorage.setItem(KEY, v); }catch(e){}
+      if(H.framed && H.host){ try{ W.parent.postMessage({hs: "pref", v: v}, "*"); }catch(e){} return "framed"; }
+      if(W.top !== W.self || !desktop() || (navigator.webdriver && force !== "user")) return "saved";
+      return kOf(v, W.innerWidth, W.innerHeight) !== 1 ? "reload" : "saved";
+    },
+    /* reload with a new query from inside the frame (language, new build) - the host reloads the whole tab. true if handed over */
+    nav: function(q){
+      if(!(H.framed && H.host)) return false;
+      q = String(q || "");
+      try{ var u = new URLSearchParams(q.charAt(0) === "?" ? q.slice(1) : q); u["delete"]("hsf"); var s = u.toString(); q = s ? "?" + s : ""; }catch(e){}
+      try{ W.parent.postMessage({hs: "nav", q: q}, "*"); return true; }catch(e){ return false; }
+    }};
+  if(W.top !== W.self){                                            /* inside the frame: the game */
+    var k0 = sp ? parseFloat(sp.get("hsf")) : NaN;
+    if(!(k0 > 0)) return;                                          // embedded by some other page - leave it alone
+    H.framed = true; H.k = k0;
+    try{ document.documentElement.className += " hs-framed"; }catch(e){}
+    try{
+      var dd = Object.getOwnPropertyDescriptor(W, "devicePixelRatio") || Object.getOwnPropertyDescriptor(Window.prototype, "devicePixelRatio");
+      var d0 = W.devicePixelRatio || 1;
+      var raw = function(){ try{ return (dd && dd.get ? dd.get.call(W) : d0) || d0; }catch(e){ return d0; } };
+      Object.defineProperty(W, "devicePixelRatio", {configurable: true, enumerable: true, get: function(){ return raw() * H.k; }});
+      H.dpr0 = raw;
+    }catch(e){}
+    W.addEventListener("message", function(e){
+      var m = e.data;
+      if(e.source !== W.parent || !m || m.hs !== "host") return;
+      var first = !H.host;
+      H.host = true; H.k = +m.k || 1; if(m.pref) H.pref = String(m.pref);
+      if(first){                                                 // tab title: now, and whenever the game changes it (i18n sets it later)
+        var sendTitle = function(){ try{ W.parent.postMessage({hs: "title", t: document.title}, "*"); }catch(e2){} };
+        sendTitle();
+        try{ var te = document.querySelector("title"); if(te && W.MutationObserver) new MutationObserver(sendTitle).observe(te, {childList: true, characterData: true, subtree: true}); }catch(e4){}
+        W.addEventListener("load", sendTitle);
+      }
+      try{ W.dispatchEvent(new Event("hsscale")); }catch(e3){}
+    });
+    try{ W.parent.postMessage({hs: "hi"}, "*"); }catch(e){}
+    return;
+  }
+  /* top window: become the host? */
+  if(force === "off") return;
+  var forced = !!force && force !== "user";
+  if(forced) H.pref = force;
+  else if((navigator.webdriver && force !== "user") || !desktop()) return;
+  var k = kOf(H.pref, W.innerWidth, W.innerHeight);
+  if(k === 1 && !forced) return;
+  /* become the host: open <body> first and stop the page from a script inside it, then build the frame.
+     (stopping while still in <head> leaves Chromium never rendering again - no rAF, mouse moves hang) */
+  W.__hsHost = function(){
+    try{ W.stop(); }catch(e){}
+    var d = document;
+    try{
+      var st = d.createElement("style");
+      st.textContent = "html,body{margin:0;height:100%;overflow:hidden;background:#F6F3E9}"
+        + "#hsFrame{position:fixed;left:0;top:0;border:0;display:block;transform-origin:0 0;background:#F6F3E9}";
+      (d.head || d.documentElement).appendChild(st);
+      var body = d.body;
+      if(!body){ body = d.createElement("body"); d.documentElement.appendChild(body); }
+      var f = d.createElement("iframe"), cur = k;
+      f.id = "hsFrame"; f.title = d.title || "";
+      f.setAttribute("allow", "autoplay *; clipboard-write *");   // * : file:// frames have an opaque origin
+      var post = function(){ try{ f.contentWindow.postMessage({hs: "host", k: cur, pref: H.pref}, "*"); }catch(e){} };
+      var fit = function(){
+        var w = W.innerWidth, h = W.innerHeight, kk = kOf(H.pref, w, h);
+        f.style.width = (w / kk) + "px"; f.style.height = (h / kk) + "px";
+        f.style.transform = kk === 1 ? "none" : "scale(" + kk + ")";
+        if(kk !== cur){ cur = kk; H.k = kk; post(); }
+      };
+      var u = new URLSearchParams(location.search); u["delete"]("scale"); u.set("hsf", String(k));
+      f.src = location.pathname + "?" + u.toString() + location.hash;
+      body.appendChild(f);
+      H.host = true; H.k = k; H.frame = f;
+      fit();
+      W.addEventListener("resize", fit);
+      W.addEventListener("message", function(e){
+        if(e.source !== f.contentWindow) return;
+        var m = e.data || {};
+        if(m.hs === "hi") post();
+        else if(m.hs === "pref"){ H.pref = String(m.v || "auto"); fit(); post(); }
+        else if(m.hs === "title"){ if(typeof m.t === "string" && m.t){ d.title = m.t; f.title = m.t; } }
+        else if(m.hs === "nav"){
+          var q = (typeof m.q === "string" && (m.q === "" || m.q.charAt(0) === "?")) ? m.q : "";
+          if(force){ var u2 = new URLSearchParams(q.slice(1)); u2.set("scale", force); q = "?" + u2.toString(); }   // keep the test switch
+          location.replace(location.pathname + q + location.hash);
+        }
+      });
+      W.addEventListener("storage", function(e){ if(e.key === KEY){ H.pref = e.newValue || "auto"; fit(); post(); } });
+      f.addEventListener("load", function(){ post(); try{ f.focus(); f.contentWindow.focus(); }catch(e){} });
+      W.addEventListener("focus", function(){ try{ f.contentWindow.focus(); }catch(e){} });
+      d.addEventListener("keydown", function(){ try{ f.contentWindow.focus(); }catch(e){} }, true);
+    }catch(e){                                                       // could not build the frame - reopen without it
+      try{ var u3 = new URLSearchParams(location.search); u3.set("scale", "off"); location.replace(location.pathname + "?" + u3.toString() + location.hash); }catch(e2){}
+    }
+  };
+  try{ document.write("<body><script>window.__hsHost()<\/script>"); }catch(e){}
+})();
+/* UISCALE end */</script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
 :root{
@@ -34,6 +154,7 @@
   --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
 }
 *{box-sizing:border-box}
+html.hs-framed{scrollbar-width:thin}   /* 1011 — 화면 크기 틀 안(UISCALE) — 스크롤바도 배율만큼 커 보이므로 가늘게 */
 /* ── 도트 폰트 (0929) — 물마루 · 물마루 Mono (mushsooni · SIL OFL 1.1 · assets/fonts/OFL.txt)
    12px 의 배수에서만 또렷하게 찍힌다. 크기는 pixelFontApply() 가 12 / 24 / 36px 으로 맞추고, 굵기 흉내는 끈다.
    설정의 '도트 폰트'를 끄면 원래 글꼴과 크기로 돌아간다. */
@@ -216,11 +337,16 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 .lvnever{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted);cursor:pointer}
 @media (max-width:640px){ .lvrows{grid-template-columns:1fr} }
 /* 상점 주인 (0929) — 초상화와 말풍선. 색은 UI 컨셉(심플 · 일지)을 따른다 */
-/* 마을 (1002) — 액자 두른 지도 · NPC 단추 · 팝업. 지도와 팝업은 같은 칸에 겹쳐 놓는다 (팝업이 길면 칸이 늘어난다) */
+/* 마을 (1002) — 액자 두른 지도 · NPC 단추 · 팝업. 지도와 팝업은 같은 칸에 겹쳐 놓는다 (팝업이 길면 칸이 늘어난다 — 가로 화면은 1011 부터 액자 안에서 스크롤).
+   1011 — 액자는 스케줄 두루마리 무대와 같은 1544:1008 · 안쪽 26(2배) · 액자 그림도 스케줄 것(SCHED_ART.frame) — 마을 · 마스터 노트 · 스케줄을 오가도 액자 크기 · 테두리 굵기가 그대로 */
 .town{display:grid;align-items:start;position:relative;isolation:isolate}   /* NPC 의 z-index 를 마을 안에 가둔다 — 팝업창(지침 · 피드백) 위로 올라오지 않게 */
 .town>.townmap,.town>.townpop{grid-area:1/1}
-.townmap{position:relative;width:100%;aspect-ratio:1266/984;user-select:none;-webkit-user-select:none}
-.townmap-in{position:absolute;left:calc(26 / 1266 * 100%);top:calc(26 / 984 * 100%);width:calc(1214 / 1266 * 100%);height:calc(931 / 984 * 100%);transition:filter .2s}
+.townmap{position:relative;width:100%;aspect-ratio:1544/1008;user-select:none;-webkit-user-select:none}
+.townmap-in{position:absolute;left:calc(26 / 1544 * 100%);top:calc(26 / 1008 * 100%);width:calc(1492 / 1544 * 100%);height:calc(956 / 1008 * 100%);transition:filter .2s}
+/* 마을 지도 (1011 · 사용자가 고른 안 A) — 지도(1214×931)로 액자 안쪽 칸(1492×956) 폭을 채우고 아래를 자른다 (1492×1144 중 아래 188 = 16%).
+   지도 상자(.townmap-in)만 지도 비율로 늘리고 안쪽 칸에서 자르므로 그림 · 사람 자리(%)는 그대로 */
+.town:not(.mdesk)>.townmap{overflow:hidden}
+.town:not(.mdesk) .townmap-in{height:calc(931 / 1214 * 1492 / 1008 * 100%);clip-path:inset(0 0 calc((1 - 956 * 1214 / 931 / 1492) * 100%) 0)}
 .town-bg,.town-frame{position:absolute;inset:0;display:block;width:100%;height:100%;max-width:none;image-rendering:pixelated;pointer-events:none}
 .town .townnpc{position:absolute;width:calc(124 / 1214 * 100%);padding:0;margin:0;border:0;background:none;cursor:pointer;display:block;line-height:0;min-width:0;min-height:0}
 .town .townnpc img{display:block;width:100%;height:auto;max-width:none;image-rendering:pixelated;transition:transform .12s,filter .12s}
@@ -2426,6 +2552,10 @@ html:is([data-ui-palette="riso"],[data-ui-palette="mint"]) nav button:hover:not(
   html.town-on #app::after{display:none}
   .town{width:calc(100% + 290px);margin-top:16px}
   .town>.townpop{margin:2.4% calc(290px + 1.6%) 2% 2.4%}
+  /* 1011 — 팝업은 액자 안에 띄운다: 예전 바깥 여백(폭의 2.4% · 2%)을 그대로 자리로 바꾸고, 길면 팝업 안에서 스크롤 (예전엔 칸이 늘어나 액자 밖으로 길어졌다) */
+  .town>.townpop{position:absolute;left:2.4%;right:calc(290px + 1.6%);top:calc(2.4% * 1544 / 1008);margin:0;max-height:calc(100% - 4.4% * 1544 / 1008);overflow-y:auto;scrollbar-width:thin}
+  /* 나가기 · 닫기는 길어도 늘 보이게 — 팝업 아래에 붙여 둔다 */
+  .town>.townpop>.townpop-foot{position:sticky;bottom:-14px;z-index:3;margin:12px -14px -14px;padding:10px 14px 14px;background:var(--bg)}
   /* 삽화처럼 화면에 고정 (0930) — 스크롤해도 움직이지 않는다. 자리(오른쪽 칸)는 격자에 비워 둔다 */
   #app>.topbar{grid-column:2;grid-row:1;position:fixed;top:0;right:max(0px,calc((100% - 1240px) / 2));width:288px;margin:0;padding:14px 12px 16px;
     height:100vh;overflow-y:auto;scrollbar-width:thin;box-sizing:border-box;display:flex;flex-direction:column;gap:10px;
@@ -2520,7 +2650,7 @@ html body .topbar .acadbox{display:contents;color:inherit}
   html body #app>.topbar nav#nav button .badge{position:absolute;top:2px;right:2px;z-index:2;margin:0;min-width:18px;height:18px;padding:0 3px;box-sizing:border-box;font-size:12px;line-height:14px;
     text-align:center;background:#b0412c;color:#fff;border:2px solid #4a1d14;border-radius:0}
   /* 스케줄 — 도트 양피지 띠 + 지도. 지금 보는 중이면 띠 둘레에 금색 도트 테두리 */
-  html body #app>.topbar .side-sched{position:relative;flex:none;height:76px;margin-top:6px;padding:0 0 0 52px;font-size:24px;color:#3a2a1c;
+  html body #app>.topbar .side-sched{position:relative;flex:none;height:76px;margin-top:6px;padding:0 0 0 64px;font-size:24px;letter-spacing:0;color:#3a2a1c;   /* 1011 — 'Schedule' (한국어도) — 지도 그림에 걸리지 않게 64 */
     background:url(assets/menu_sc/banner.webp?v=6e25d8ea) 0 0/100% 100% no-repeat!important;image-rendering:pixelated;border:0!important;box-shadow:none!important;
     filter:drop-shadow(0 3px 0 #30271e40)}
   html body #app>.topbar .side-sched::before{content:"";position:absolute;left:18px;top:14px;width:48px;height:48px;
@@ -2612,7 +2742,7 @@ html body nav button .lki svg{display:block;width:100%;height:100%}
   .tg-first .tg-step{flex:1;min-width:0;margin:0}
   .tgn-l{display:inline}.tgn-p{display:none}
 }
-.tg-schedbtn{position:relative;flex:none;display:flex;align-items:center;justify-content:center;width:260px;height:76px;padding:0 0 0 52px;
+.tg-schedbtn{position:relative;flex:none;display:flex;align-items:center;justify-content:center;width:260px;height:76px;padding:0 0 0 64px;
   background:url(assets/menu_sc/banner.webp?v=6e25d8ea) 0 0/100% 100% no-repeat;image-rendering:pixelated;filter:drop-shadow(0 3px 0 #30271e40);
   font:700 24px/1 "IBM Plex Sans KR",system-ui,-apple-system,"Malgun Gothic",sans-serif;letter-spacing:.02em;color:#3a2a1c;white-space:nowrap;user-select:none}
 .tg-schedbtn::before{content:"";position:absolute;left:18px;top:14px;width:48px;height:48px;background:url(assets/menu_sc/plan48.webp?v=cabede27) 0 0/48px 48px no-repeat;image-rendering:pixelated}
@@ -2633,39 +2763,6 @@ html[data-font="pixel"] .tg-schedbtn{font-family:"Mulmaru",sans-serif;letter-spa
 .tg-grade>span.on{border-color:var(--tg-gold);box-shadow:inset 0 0 0 1px var(--tg-gold)}
 .tg-grade>i{align-self:center;font-style:normal;color:var(--tg-gold)}
 /* TUTORIAL_RESPONSIVE_STYLE_END */
-/* MDESK_CSS_START — 마스터 노트 책상 (1006) · 마을 지도(.town · .townmap · .townpop)와 같은 틀 위에 얹는다 */
-.mdesk .mdesk-in{overflow:hidden}
-.mdesk .mdesk-art{position:absolute;left:0;top:0;width:100%;height:calc(100% * 932 / 931)}
-.mdesk .mdl{position:absolute;left:0;top:0;width:100%;height:100%;display:block;max-width:none;margin:0;image-rendering:pixelated;pointer-events:none;-webkit-user-select:none;user-select:none}
-.mdesk .md-light{mix-blend-mode:screen}
-.mdesk .md-items{transition:opacity .26s ease-in}
-/* 누를 수 있는 소품 — 마우스를 올리면(키보드로 고르면) 테두리 빛 + 이름표 */
-.mdesk .mdh{opacity:0;transition:opacity .12s}
-.mdesk[data-hot="1"] .mdh[data-g="1"],.mdesk[data-hot="2"] .mdh[data-g="2"],.mdesk[data-hot="3"] .mdh[data-g="3"],
-.mdesk[data-hot="4"] .mdh[data-g="4"],.mdesk[data-hot="5"] .mdh[data-g="5"]{opacity:1}
-html body #view .mdesk .mdk{position:absolute;display:block;margin:0!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;
-  border-radius:0!important;outline:0!important;min-width:0!important;min-height:0!important;pointer-events:none;color:inherit;transform:none!important}
-.mdesk .mdtag{position:absolute;left:50%;bottom:100%;transform:translate(-50%,-4px);white-space:nowrap;font-size:12px;line-height:1.35;padding:1px 7px;
-  background:#2a1a11e6;color:#fff0ce;border-radius:3px;pointer-events:none;opacity:0;transition:opacity .12s;z-index:4}
-.mdesk .mdk.below .mdtag{top:100%;bottom:auto;transform:translate(-50%,4px)}
-.mdesk[data-hot="1"] .mdk[data-g="1"] .mdtag,.mdesk[data-hot="2"] .mdk[data-g="2"] .mdtag,.mdesk[data-hot="3"] .mdk[data-g="3"] .mdtag,
-.mdesk[data-hot="4"] .mdk[data-g="4"] .mdtag,.mdesk[data-hot="5"] .mdk[data-g="5"] .mdtag{opacity:1}
-/* 남은 마스터 육성 포인트 — 책 더미 오른쪽 위에 -15도 (사이드 메뉴의 숫자 표식과 같은 결) */
-.mdesk .mdbadge{position:absolute;z-index:3;transform:translate(-50%,-50%) rotate(-15deg);min-width:24px;height:24px;padding:0 5px;box-sizing:border-box;
-  font-size:14px;line-height:20px;font-weight:700;text-align:center;color:#fff;background:#b0412c;border:2px solid #4a1d14;border-radius:0;
-  box-shadow:2px 2px 0 #2a120c80;pointer-events:none;transition:opacity .15s}
-/* 두루마리 → 스케줄 */
-.mdesk.mdesk-go .md-items,.mdesk.mdesk-go .mdh,.mdesk.mdesk-go .mdbadge,.mdesk.mdesk-go .mdtag{opacity:0!important}
-.mdesk.mdesk-go .mdesk-art{pointer-events:none}
-.mdesk .mdesk-frame.mf-top{top:0;bottom:auto;clip-path:inset(0 0 50% 0)}
-.mdesk .mdesk-frame.mf-bot{top:auto;bottom:0;clip-path:inset(50% 0 0 0)}
-.mdesk-ghost{position:absolute;z-index:30;opacity:0;pointer-events:none}                 /* 사이드 메뉴(z 40) 아래 */
-.mdesk-ghost img{position:absolute;left:0;top:0;width:100%;height:100%;max-width:none;display:block;margin:0;image-rendering:pixelated}
-html body .skwrap.mdesk-wait .sk-paper{opacity:0}
-html body .skwrap.mdesk-intro .sk-paper{animation:mdeskIn .42s ease-out both}
-@keyframes mdeskIn{from{opacity:0}to{opacity:1}}
-@media (prefers-reduced-motion:reduce){.mdesk .mdh,.mdesk .mdtag,.mdesk .md-items{transition:none}}
-/* MDESK_CSS_END */
 
 /* Quarter-view tournament frame and controls */
 .modal.tournament-quarter{flex:none!important;overflow:visible!important;max-width:none!important;transform-origin:center}
@@ -2786,13 +2883,17 @@ html body .skwrap .skfit .skstage .sk-r.empty::after{opacity:.88}
 html body .skwrap .skfit .skstage .sk-r.rest::before{content:"";position:absolute;left:-4px;top:0;width:calc(var(--rw,384px) - 4px);height:20px;background:rgba(207,226,176,.31)}
 html body .skwrap .skfit .skstage .sk-r>*{position:absolute;top:3px;white-space:nowrap}
 html body .skwrap .skfit .skstage .sk-r .nm{left:0;width:60px;overflow:hidden;color:#3a2a20}
-html body .skwrap .skfit .skstage .sk-chip{position:absolute;top:0!important;left:62px;width:30px;height:18px;padding:0;border:0;margin:0;box-shadow:none!important;border-radius:0!important;background:var(--sk-sheet) no-repeat;background-size:var(--sk-ss);image-rendering:pixelated;
-  font:400 12px/12px "Mulmaru",sans-serif;text-align:left;cursor:pointer;-webkit-appearance:none;appearance:none}
-/* 행동 칸 글자 — 칸(18) 안쪽 2~16 에 잉크 11칸: 위 1 · 아래 2 띄운다. 단추 안 세로 가운데 맞춤을 피해 절대 자리로 (1006) */
-html body .skwrap .skfit .skstage .sk-chip>b{position:absolute;left:0;top:3px;width:30px;font-weight:400;line-height:12px;text-align:center;pointer-events:none}
+/* 행동 칸 (1011) — 예전 그림(chip_* · 15×9)과 같은 모양을 CSS 로: 1칸 테두리 · 바탕 · 윗줄 한 칸 밝게(바탕 +18).
+   폭은 --sk-chipw (한국어 30 · 영어 38 — en_layout.css) — 명부 줄의 막대 · 부상 자리도 이 폭을 따른다 (skRoster) */
+html body .skwrap .skfit .skstage .sk-chip{position:absolute;top:0!important;left:62px;width:var(--sk-chipw,30px);height:18px;padding:0;border:2px solid var(--ce,#5c4733);margin:0;box-shadow:none!important;border-radius:0!important;
+  background:linear-gradient(var(--ch,#f8e4b6) 0 2px,var(--cf,#e6d2a4) 2px);font:400 12px/12px "Mulmaru",sans-serif;text-align:left;cursor:pointer;-webkit-appearance:none;appearance:none}
+html body .skwrap .skfit .skstage .sk-chip.k-rest{--ce:#3b6b33;--cf:#d3e3bb;--ch:#e5f5cd}
+html body .skwrap .skfit .skstage .sk-chip.k-job{--ce:#8a5e1c;--cf:#f2dc9c;--ch:#ffeeae}
+/* 행동 칸 글자 — 칸(18) 안쪽 2~16 에 잉크 11칸: 위 1 · 아래 2 띄운다 (테두리 안쪽 기준 top 1 = 바깥 3). 단추 안 세로 가운데 맞춤을 피해 절대 자리로 (1006) */
+html body .skwrap .skfit .skstage .sk-chip>b{position:absolute;left:0;top:1px;width:100%;font-weight:400;line-height:12px;text-align:center;pointer-events:none}
 html body .skwrap .skfit .skstage .sk-chip:disabled{cursor:default}
 html body .skwrap .skfit .skstage .sk-chip:hover:not(:disabled){filter:brightness(1.06)}
-html body .skwrap .skfit .skstage .sk-r .sk-spr{top:2px;left:96px;width:12px;height:12px}
+html body .skwrap .skfit .skstage .sk-r .sk-spr{top:2px;left:96px;width:12px;height:12px}   /* 자리(left)는 skRoster 가 행동 칸 폭에 맞춰 넣는다 (1011) */
 html body .skwrap .skfit .skstage .sk-r .iw{left:111px;color:#a3302a}
 html body .skwrap .skfit .skstage .sk-bar{top:4px!important;width:var(--bw,160px);height:10px;border:2px solid #8c7353;background:#e8d8b2}
 html body .skwrap .skfit .skstage .sk-bar i{position:absolute;left:0;top:0;bottom:0;display:block;box-shadow:inset 0 2px 0 var(--hc)}
@@ -2857,6 +2958,38 @@ html body .skwrap .skfit .skstage .sk-hold{position:absolute;inset:0;z-index:40;
    사이드 규칙이라 무대 접두어를 붙이지 않는다 (html 로 시작하는 선택자는 apply_sched 의 prefix_css 가 그대로 둔다) */
 @media (min-width:1100px) and (orientation:landscape){html.sk-side1 body #app>.topbar .side-lab,html.sk-side2 body #app>.topbar .side-sched{display:none}}
 /* SCHED_SCROLL_CSS_END */
+/* MDESK_CSS_START — 마스터 노트 책상 (1006) · 마을 지도(.town · .townmap · .townpop)와 같은 틀 위에 얹는다 — 1011 부터 그 틀이 스케줄과 같은 1544:1008 */
+.mdesk .mdesk-in{overflow:hidden}
+.mdesk .mdesk-desk{position:absolute;left:0;top:0;width:100%;height:100%}   /* 넓힌 책상 746×478 — 두루마리로 다가갈 때 통째로 */
+.mdesk .mdesk-art{position:absolute}   /* 예전 책상 607×466 자리 (소품 · 누르는 자리) — 자리 · 크기는 viewHomeDesk 가 MDESK_GEO.ext 로 */
+.mdesk .mdl{position:absolute;left:0;top:0;width:100%;height:100%;display:block;max-width:none;margin:0;image-rendering:pixelated;pointer-events:none;-webkit-user-select:none;user-select:none}
+.mdesk .md-light{mix-blend-mode:screen}
+.mdesk .md-items{transition:opacity .26s ease-in}
+/* 누를 수 있는 소품 — 마우스를 올리면(키보드로 고르면) 테두리 빛 + 이름표 */
+.mdesk .mdh{opacity:0;transition:opacity .12s}
+.mdesk[data-hot="1"] .mdh[data-g="1"],.mdesk[data-hot="2"] .mdh[data-g="2"],.mdesk[data-hot="3"] .mdh[data-g="3"],
+.mdesk[data-hot="4"] .mdh[data-g="4"],.mdesk[data-hot="5"] .mdh[data-g="5"]{opacity:1}
+html body #view .mdesk .mdk{position:absolute;display:block;margin:0!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;
+  border-radius:0!important;outline:0!important;min-width:0!important;min-height:0!important;pointer-events:none;color:inherit;transform:none!important}
+.mdesk .mdtag{position:absolute;left:50%;bottom:100%;transform:translate(-50%,-4px);white-space:nowrap;font-size:12px;line-height:1.35;padding:1px 7px;
+  background:#2a1a11e6;color:#fff0ce;border-radius:3px;pointer-events:none;opacity:0;transition:opacity .12s;z-index:4}
+.mdesk .mdk.below .mdtag{top:100%;bottom:auto;transform:translate(-50%,4px)}
+.mdesk[data-hot="1"] .mdk[data-g="1"] .mdtag,.mdesk[data-hot="2"] .mdk[data-g="2"] .mdtag,.mdesk[data-hot="3"] .mdk[data-g="3"] .mdtag,
+.mdesk[data-hot="4"] .mdk[data-g="4"] .mdtag,.mdesk[data-hot="5"] .mdk[data-g="5"] .mdtag{opacity:1}
+/* 남은 마스터 육성 포인트 — 책 더미 오른쪽 위에 -15도 (사이드 메뉴의 숫자 표식과 같은 결) */
+.mdesk .mdbadge{position:absolute;z-index:3;transform:translate(-50%,-50%) rotate(-15deg);min-width:24px;height:24px;padding:0 5px;box-sizing:border-box;
+  font-size:14px;line-height:20px;font-weight:700;text-align:center;color:#fff;background:#b0412c;border:2px solid #4a1d14;border-radius:0;
+  box-shadow:2px 2px 0 #2a120c80;pointer-events:none;transition:opacity .15s}
+/* 두루마리 → 스케줄 */
+.mdesk.mdesk-go .md-items,.mdesk.mdesk-go .mdh,.mdesk.mdesk-go .mdbadge,.mdesk.mdesk-go .mdtag{opacity:0!important}
+.mdesk.mdesk-go .mdesk-art{pointer-events:none}
+.mdesk-ghost{position:absolute;z-index:30;opacity:0;pointer-events:none}                 /* 사이드 메뉴(z 40) 아래 */
+.mdesk-ghost img{position:absolute;left:0;top:0;width:100%;height:100%;max-width:none;display:block;margin:0;image-rendering:pixelated}
+html body .skwrap.mdesk-wait .sk-paper{opacity:0}
+html body .skwrap.mdesk-intro .sk-paper{animation:mdeskIn .42s ease-out both}
+@keyframes mdeskIn{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.mdesk .mdh,.mdesk .mdtag,.mdesk .md-items{transition:none}}
+/* MDESK_CSS_END */
 </style>
 
 <link rel="stylesheet" href="assets/title-art/title-screen.css?v=7">
@@ -4410,7 +4543,7 @@ const TRAININGS = [
     fx:[["팀워크",3],["침착성",3],["천재성",2]]},
   // 특수
   {id:"exped", n:"원정 파견",   fac:null,    cond:0,  gains:{}, special:"exped", d:"3인 팀을 던전으로 보낸다",
-    fx:[["자금",1],["유물",1],["진로 평가",1],["업보",1,1]]},
+    fx:[["자금",1],["유물",1],["업보",1,1]]},   // 1011 — 진로 평가는 카드에 보이지 않게 뺐다 (효과는 그대로 · EXPED_RWD_MUL)
   {id:"camp",  n:"합숙 집중",   fac:null,    cond:28, gains:{team:2.4,aggr:1.6,calm:1.6,will:1.6,stam:1.6,genius:1.2}, special:"camp", d:"여름 합숙 전용 · 효과 2배 · 컨디션 소모 큼"},
   {id:"crest", n:"합숙 휴식",   fac:"infirm", cond:-36, gains:{}, rest:true, special:"camp", d:"여름 합숙 전용 · 컨디션을 크게 회복한다"}
 ];
@@ -6740,6 +6873,11 @@ const JOB_LIST = [
 function jobPay(k){ return jobGrade(k).pay; }
 function jobDef(k){ return JOB_LIST.find(j=> j.k===k) || JOB_LIST[0]; }
 function mentName(k){ return (MENTAL.find(m=>m.k===k)||{n:k}).n; }
+/* 멘탈리티 줄임말 (1011) — 스케줄 화면(카드 효과 줄 · 의뢰 쪽지)이 쓴다. 한국어는 이름 그대로, 영어는 문맥 키 MENT_SHORT|… 로
+   Comp. · Gen. · Team. · Will. · End. · Drive (사용자 결정). 카드 효과 줄(TRAININGS fx)은 이름으로 적혀 있어 같은 표에서 온 MENTAL 의 이름과 맞춘다 */
+const MENT_SHORT = {team:"팀워크", aggr:"적극성", calm:"침착성", will:"정신력", stam:"지구력", genius:"천재성"};
+function mentShort(k){ return MENT_SHORT[k] || mentName(k); }
+function mentShortOf(name){ const m = MENTAL.find(x=> x.n === name); return m ? mentShort(m.k) : name; }
 /* ══════ 의뢰처별 누적 · 단골 이벤트 (0929) ══════
    학생 한 명이 하루 그 의뢰를 마칠 때마다 1회. 20회 · 200회에 의뢰인이 찾아와 무언가를 열어 준다 (그 주가 끝날 때 팝업 · 1003 — 첫 단계 10 → 20회) */
 const JOB_EV_AT = [20, 200];
@@ -12151,9 +12289,9 @@ function render(){
       nav.querySelectorAll("button[data-act]").forEach(b=> b.onclick=()=> b.dataset.act==="feedback" ? feedModal() : missionModal());
     }
   }
-  { /* 가로 화면 사이드 — 진행 탭을 맨 아래 큰 '스케줄' 단추로 (0930) */
+  { /* 가로 화면 사이드 — 진행 탭을 맨 아래 큰 '스케줄' 단추로 (0930). 1011 — 주차 [N주] 는 뺐다 (위쪽 일정 칸에 이미 있다) · 글은 한국어도 'Schedule' (사이드의 'MENU' 처럼) */
     const sb = $("#sideSched"), pv = tabs.find(v=>v.id==="plan");
-    if(sb && pv){ sb.innerHTML = `스케줄 <b>[${esc(pv.side||"")}]</b>`; sb.setAttribute("aria-current", String(UI.view==="plan")); sb.onclick = ()=>{ UI.view="plan"; render(); }; } }
+    if(sb && pv){ sb.textContent = "Schedule"; sb.setAttribute("aria-label", "스케줄"); sb.setAttribute("aria-current", String(UI.view==="plan")); sb.onclick = ()=>{ UI.view="plan"; render(); }; } }
   { /* 폰 메뉴 — CSS 가 폭에 따라 #nav 와 바꿔 보여준다.
        1002 — 스케줄 포함 8개(스케줄 · 마스터 노트 · 학생 · 마을 · 유물 · 상담 · 설정 · 더보기), 겨울에는 학생 옆에 스카우트가 붙어 9개.
        더보기 안에는 리그 · 일지 (각자 서브탭) */
@@ -12164,8 +12302,8 @@ function render(){
     const restBadge = restT.reduce((a,v)=> a+(v.badge||0), 0);
     /* 1002 — 장면 단추: 6열(스케줄은 2×2 칸) · 좁은 폰은 5열 · 4열(스케줄 1×2 칸). 더보기는 지금 보는 화면이 그 안에 있으면 그 그림 */
     const tb = (v)=> v.id==="plan"
-      ? `<button data-view="plan" class="${v.hot?"hot":""} navm-sched" aria-current="${UI.view==="plan"}" title="${v.n}">${menuArt("plan","big")}${menuArt("plan48","small")}<span class="sl">스케줄</span>${
-          v.side?`<span class="wk">${v.side}</span>`:""}${v.badge?`<span class="badge">${v.badge}</span>`:""}</button>`
+      ? `<button data-view="plan" class="${v.hot?"hot":""} navm-sched" aria-current="${UI.view==="plan"}" title="${v.n}">${menuArt("plan","big")}${menuArt("plan48","small")}<span class="sl">스케줄</span>${   /* 1011 — 주차는 뺐다 (위쪽 일정 칸에 있다) */
+          v.badge?`<span class="badge">${v.badge}</span>`:""}</button>`
       : `<button data-view="${v.id}" class="${v.hot?"hot":""}${v.lock?" lk":""}" aria-current="${curG===v.id}"${v.lock?` aria-disabled="true" data-lock="${v.lock}"`:""} title="${v.lock || v.n}">${menuArt(v.id)}${v.lock? LOCK_ICO : ""}<span class="ml">${MENU_SHORT[v.id]||SHORT[v.id]||v.n}</span>${
           v.badge?`<span class="badge">${v.badge}</span>`:""}</button>`;
     const moreN = curRest? (MENU_SHORT[curRest.id]||curRest.n) : "더보기";
@@ -12305,14 +12443,17 @@ const SHOW_BULKRUN  = false;   // 스케줄 탭 · 남은 주 일괄 진행 버�
 const SHOW_FOCUSHELP= false;   // 개인 집중 훈련 · 일괄 지정 안내 문단
 /* MDESK_START — 마스터 노트 책상 (1006)
    책상 소품 배치판(2판)으로 사용자가 정한 배치(desk_layout.json)를 배치판 자신의 그리기 코드로 구운 그림(MDESK_ART · 1배 607×466)을
-   마을 지도와 같은 액자 안에 띄운다. 가로 화면(townMode)에서만 — 세로 · 좁은 화면은 예전 마스터 노트(학원 정보 · 마스터 육성 서브탭) 그대로.
+   스케줄 두루마리와 같은 액자(1544:1008 · 액자 그림 SCHED_ART.over2 — 가장자리 그늘 포함)에 띄운다 (1011 — 마을 · 마스터 노트 · 스케줄 셋이 같은 크기 · 같은 액자).
+   책상은 스케줄 책상 크기(746×478 — MDESK_GEO.ext)로 넓혔다: 예전 책상 바탕을 왼쪽 위(위 6 줄 띄움)에 두고 오른쪽 · 위아래는 거울로 이어 붙인 판자(MDESK_ART.ext — apply_desk 가 만든다).
+   소품 · 누르는 자리 · 촛불은 예전 607×466 좌표 그대로(.mdesk-art 상자 안). 오른쪽 넓어진 자리는 사이드 밑.
+   가로 화면(townMode)에서만 — 세로 · 좁은 화면은 예전 마스터 노트(학원 정보 · 마스터 육성 서브탭) 그대로.
    누를 수 있는 소품: 말린 지도(튜토리얼) · 책 더미(마스터 육성 팝업) · 안경 + 회중시계(학원 정보 팝업) · 펼친 책(학생) · 두루마리(스케줄).
    누르는 자리는 그림 픽셀 그대로(MDESK_GEO.hit — 줄마다 [시작, 길이, 묶음]) — 위에 얹힌 다른 소품(잉크병 · 깃펜 등)은 누르지 않는다.
    남은 마스터 육성 포인트가 있으면 책 더미 오른쪽 위에 -15도로 기운 표식.
-   두루마리를 누르면(mdeskGo) — 두루마리 위 내용이 사라지고, 책상이 두루마리로 다가가며 액자가 스케줄 크기로 줄어든 뒤
+   두루마리를 누르면(mdeskGo) — 두루마리 위 내용이 사라지고, 책상이 두루마리로 다가간 뒤(액자는 그대로 — 1011 부터 같은 크기)
    스케줄 그림이 겹쳐 나타나고, 스케줄 내용이 두루마리 위로 떠오른다 */
-const MDESK_ART = {"base":"assets/mdesk_art/base.webp?v=fe644492","items":"assets/mdesk_art/items.webp?v=4d7cda76","props":"assets/mdesk_art/props.webp?v=47932f89","vig":"assets/mdesk_art/vig.webp?v=66f8902b","light":"assets/mdesk_art/light.webp?v=a64642d9","hl_map":"assets/mdesk_art/hl_map.webp?v=97f12197","hl_books":"assets/mdesk_art/hl_books.webp?v=fab0fb53","hl_info":"assets/mdesk_art/hl_info.webp?v=bf75c8fd","hl_book":"assets/mdesk_art/hl_book.webp?v=3342625e","hl_scroll":"assets/mdesk_art/hl_scroll.webp?v=df1b4dcb"};
-const MDESK_GEO = {"size":[607,466],"light":{"x":15,"y":0,"w":123,"h":98},"groups":[{"k":"map","n":"튜토리얼","bb":[313,28,394,93],"hl":[311,26,85,69]},{"k":"books","n":"마스터 육성","bb":[80,355,188,443],"hl":[78,353,112,92]},{"k":"info","n":"학원 정보","bb":[335,394,410,450],"hl":[333,392,79,60]},{"k":"book","n":"학생","bb":[224,372,304,431],"hl":[222,370,84,63]},{"k":"scroll","n":"스케줄","bb":[57,112,420,353],"hl":[55,110,367,245]}],"scroll":{"x":57,"y":112,"w":363,"h":241},"books":{"x":157,"y":355,"bb":[80,355,180,437],"bx":167,"by":360},"hit":";;;;;;;;;;;;;;;;;;;;;;;;;;;;378,4,1;376,7,1;375,9,1;373,12,1;372,14,1;370,17,1;369,18,1;367,21,1;366,23,1;364,25,1;363,26,1;361,28,1;360,30,1;358,33,1;357,35,1;356,37,1;354,40,1;351,43,1;348,46,1;347,46,1;346,47,1;344,49,1;343,48,1;342,48,1;342,46,1;341,46,1;339,46,1;338,46,1;336,46,1;335,46,1;333,46,1;332,46,1;330,46,1;329,46,1;327,46,1;326,46,1;324,46,1;323,46,1;322,45,1;320,46,1;319,47,1;317,48,1;316,45,1,363,2,1;314,46,1;313,46,1;313,44,1;313,44,1;313,43,1;313,40,1,354,1,1;313,38,1;314,36,1;314,34,1;315,32,1;316,29,1;317,27,1;318,24,1;319,22,1;320,19,1;321,17,1;322,14,1;323,12,1;324,9,1;325,7,1;326,4,1;327,2,1;;;;;;;;;;;;;;;;;;;;63,3,5,408,3,5;62,5,5,407,5,5;60,9,5,405,9,5;58,13,5,403,13,5;57,15,5,402,15,5;57,15,5,402,15,5;57,17,5,402,17,5;57,18,5,402,18,5;57,18,5,402,18,5;58,17,5,403,17,5;58,17,5,403,17,5;58,17,5,403,17,5;58,17,5,403,17,5;58,17,5,403,17,5;58,17,5,403,17,5;58,20,5,79,9,5,91,2,5,95,3,5,100,18,5,120,3,5,124,4,5,130,3,5,136,2,5,141,2,5,144,14,5,161,2,5,165,3,5,171,12,5,184,9,5,194,14,5,210,3,5,215,3,5,221,2,5,225,3,5,229,4,5,235,8,5,245,3,5,250,13,5,265,3,5,271,2,5,275,8,5,286,12,5,299,4,5,306,2,5,310,8,5,321,2,5,324,24,5,351,2,5,356,22,5,381,2,5,385,3,5,389,4,5,396,2,5,401,18,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,303,5,389,30,5;58,302,5,390,29,5;58,301,5,391,28,5;58,301,5,391,28,5;58,300,5,392,27,5;58,300,5,392,27,5;58,300,5,392,27,5;58,300,5,392,27,5;58,300,5,392,27,5;58,300,5,392,27,5;58,300,5,392,27,5;58,300,5,394,25,5;58,300,5,396,23,5;58,300,5,398,21,5;58,300,5,398,21,5;58,300,5,399,20,5;58,300,5,399,20,5;58,300,5,399,20,5;58,300,5,399,20,5;58,300,5,399,20,5;58,300,5,399,18,5;58,300,5,399,16,5;58,300,5,399,13,5;58,300,5,399,11,5;58,300,5,399,9,5;58,300,5,399,7,5;58,300,5,399,5,5;58,300,5,399,3,5;58,300,5,399,2,5;58,300,5;58,300,5;58,301,5;58,301,5;58,302,5;58,303,5;58,304,5;58,305,5;58,306,5;58,307,5;58,308,5,418,1,5;58,309,5,417,2,5;58,310,5,415,4,5;58,325,5,414,5,5;58,325,5,412,7,5;58,324,5,411,8,5;58,323,5,409,10,5;58,23,5,82,9,5,93,3,5,97,4,5,104,7,5,113,3,5,118,13,5,133,8,5,142,9,5,153,3,5,158,8,5,167,9,5,179,2,5,183,8,5,193,3,5,199,2,5,202,4,5,208,3,5,214,2,5,217,9,5,228,13,5,244,7,5,253,3,5,259,7,5,268,23,5,294,17,5,314,7,5,323,18,5,343,3,5,349,12,5,364,7,5,372,8,5,407,12,5;58,16,5,406,13,5;58,16,5,404,15,5;58,16,5,403,16,5;57,17,5,402,17,5;57,17,5,402,17,5;57,17,5,402,17,5;57,18,5,402,18,5;57,18,5,402,18,5;58,17,5,403,17,5;59,16,5,404,16,5;60,15,5,405,15,5;60,15,5,405,15,5;61,14,5,406,14,5;63,11,5,408,11,5;64,9,5,409,9,5;65,5,5,410,5,5;67,1,5,412,1,5;;;157,1,2;154,5,2;150,10,2;146,14,2;142,19,2;138,24,2;135,28,2;131,32,2;127,37,2;123,41,2;120,44,2;116,48,2;112,52,2;106,59,2;100,66,2;93,73,2;86,81,2;85,82,2,291,4,4;84,84,2,285,11,4;84,86,2,278,21,4;84,88,2,266,34,4;84,88,2,230,70,4;84,89,2,229,72,4;84,90,2,225,76,4;84,90,2,224,77,4;85,89,2,224,77,4;85,90,2,224,77,4;83,92,2,224,77,4;81,94,2,224,77,4;80,96,2,224,77,4;80,96,2,225,76,4;80,96,2,225,76,4;80,97,2,225,76,4;80,97,2,225,76,4;80,97,2,225,76,4;81,97,2,225,77,4;81,97,2,225,77,4;81,98,2,225,77,4;82,97,2,225,77,4;82,97,2,225,77,4,344,1,3,358,2,3;83,97,2,225,77,4,343,19,3;83,97,2,225,77,4,342,25,3;83,97,2,226,76,4,341,27,3;84,97,2,226,76,4,341,28,3;84,97,2,226,76,4,340,11,3,361,10,3;85,96,2,226,76,4,339,13,3,363,10,3;85,97,2,226,76,4,338,15,3,365,10,3;85,97,2,226,77,4,337,17,3,367,10,3;86,96,2,226,77,4,337,18,3,367,12,3;86,97,2,226,77,4,336,20,3,364,16,3,382,4,3;87,96,2,226,77,4,336,25,3,362,26,3;87,96,2,226,77,4,335,54,3;87,97,2,226,77,4,335,55,3;88,96,2,226,77,4,335,56,3;88,97,2,226,77,4,335,23,3,359,22,3,386,6,3;89,96,2,227,76,4,335,46,3,387,5,3;89,96,2,227,76,4,335,46,3,388,5,3;89,97,2,227,76,4,335,46,3,388,5,3;90,96,2,227,76,4,336,45,3,389,4,3;90,96,2,227,77,4,336,20,3,357,24,3,389,9,3;91,96,2,227,77,4,337,18,3,356,25,3,389,10,3;91,96,2,227,77,4,338,16,3,356,26,3,390,10,3;91,96,2,227,77,4,339,14,3,354,28,3,390,10,3;92,96,2,227,77,4,340,38,3,379,3,3,389,6,3,396,5,3;92,95,2,227,77,4,341,16,3,358,20,3,379,3,3,389,12,3;93,94,2,227,76,4,344,11,3,359,18,3,379,3,3,390,11,3;93,94,2,227,76,4,360,16,3,378,4,3,390,10,3;93,93,2,228,53,4,295,8,4,361,14,3,376,6,3,391,9,3;93,94,2,228,36,4,265,5,4,362,19,3,390,10,3;94,93,2,228,23,4,265,5,4,363,16,3,388,14,3;95,91,2,229,2,4,237,7,4,265,5,4,366,11,3,386,18,3;95,87,2,238,1,4,265,6,4,371,1,3,385,20,3;95,83,2,265,6,4,384,22,3;96,78,2,265,6,4,383,24,3;96,75,2,265,6,4,382,26,3;97,70,2,266,4,4,382,26,3;97,66,2,381,28,3;97,62,2,381,28,3;98,57,2,381,28,3;98,54,2,381,29,3;98,50,2,380,30,3;99,45,2,380,30,3;101,39,2,381,29,3;102,35,2,381,29,3;103,6,2,114,19,2,381,29,3;105,1,2,115,14,2,381,29,3;116,9,2,382,28,3;117,4,2,382,27,3;383,26,3;384,24,3;385,23,3;386,21,3;388,18,3;390,14,3;392,10,3;;;;;;;;;;;;;;;;","zoom":{"m":[63.0,408.0,229.5],"s":[25.5,587.5,243.0]}};
+const MDESK_ART = {"items":"assets/mdesk_art/items.webp?v=4d7cda76","props":"assets/mdesk_art/props.webp?v=47932f89","light":"assets/mdesk_art/light.webp?v=a64642d9","ext":"assets/mdesk_art/ext.webp?v=4f56ff89","hl_map":"assets/mdesk_art/hl_map.webp?v=97f12197","hl_books":"assets/mdesk_art/hl_books.webp?v=fab0fb53","hl_info":"assets/mdesk_art/hl_info.webp?v=bf75c8fd","hl_book":"assets/mdesk_art/hl_book.webp?v=3342625e","hl_scroll":"assets/mdesk_art/hl_scroll.webp?v=df1b4dcb"};
+const MDESK_GEO = {"size":[607,466],"light":{"x":15,"y":0,"w":123,"h":98},"groups":[{"k":"map","n":"튜토리얼","bb":[313,28,394,93],"hl":[311,26,85,69]},{"k":"books","n":"마스터 육성","bb":[80,355,188,443],"hl":[78,353,112,92]},{"k":"info","n":"학원 정보","bb":[335,394,410,450],"hl":[333,392,79,60]},{"k":"book","n":"학생","bb":[224,372,304,431],"hl":[222,370,84,63]},{"k":"scroll","n":"스케줄","bb":[57,112,420,353],"hl":[55,110,367,245]}],"scroll":{"x":57,"y":112,"w":363,"h":241},"books":{"x":157,"y":355,"bb":[80,355,180,437],"bx":167,"by":360},"hit":";;;;;;;;;;;;;;;;;;;;;;;;;;;;378,4,1;376,7,1;375,9,1;373,12,1;372,14,1;370,17,1;369,18,1;367,21,1;366,23,1;364,25,1;363,26,1;361,28,1;360,30,1;358,33,1;357,35,1;356,37,1;354,40,1;351,43,1;348,46,1;347,46,1;346,47,1;344,49,1;343,48,1;342,48,1;342,46,1;341,46,1;339,46,1;338,46,1;336,46,1;335,46,1;333,46,1;332,46,1;330,46,1;329,46,1;327,46,1;326,46,1;324,46,1;323,46,1;322,45,1;320,46,1;319,47,1;317,48,1;316,45,1,363,2,1;314,46,1;313,46,1;313,44,1;313,44,1;313,43,1;313,40,1,354,1,1;313,38,1;314,36,1;314,34,1;315,32,1;316,29,1;317,27,1;318,24,1;319,22,1;320,19,1;321,17,1;322,14,1;323,12,1;324,9,1;325,7,1;326,4,1;327,2,1;;;;;;;;;;;;;;;;;;;;63,3,5,408,3,5;62,5,5,407,5,5;60,9,5,405,9,5;58,13,5,403,13,5;57,15,5,402,15,5;57,15,5,402,15,5;57,17,5,402,17,5;57,18,5,402,18,5;57,18,5,402,18,5;58,17,5,403,17,5;58,17,5,403,17,5;58,17,5,403,17,5;58,17,5,403,17,5;58,17,5,403,17,5;58,17,5,403,17,5;58,20,5,79,9,5,91,2,5,95,3,5,100,18,5,120,3,5,124,4,5,130,3,5,136,2,5,141,2,5,144,14,5,161,2,5,165,3,5,171,12,5,184,9,5,194,14,5,210,3,5,215,3,5,221,2,5,225,3,5,229,4,5,235,8,5,245,3,5,250,13,5,265,3,5,271,2,5,275,8,5,286,12,5,299,4,5,306,2,5,310,8,5,321,2,5,324,24,5,351,2,5,356,22,5,381,2,5,385,3,5,389,4,5,396,2,5,401,18,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,361,5;58,303,5,389,30,5;58,302,5,390,29,5;58,301,5,391,28,5;58,301,5,391,28,5;58,300,5,392,27,5;58,300,5,392,27,5;58,300,5,392,27,5;58,300,5,392,27,5;58,300,5,392,27,5;58,300,5,392,27,5;58,300,5,392,27,5;58,300,5,394,25,5;58,300,5,396,23,5;58,300,5,398,21,5;58,300,5,398,21,5;58,300,5,399,20,5;58,300,5,399,20,5;58,300,5,399,20,5;58,300,5,399,20,5;58,300,5,399,20,5;58,300,5,399,18,5;58,300,5,399,16,5;58,300,5,399,13,5;58,300,5,399,11,5;58,300,5,399,9,5;58,300,5,399,7,5;58,300,5,399,5,5;58,300,5,399,3,5;58,300,5,399,2,5;58,300,5;58,300,5;58,301,5;58,301,5;58,302,5;58,303,5;58,304,5;58,305,5;58,306,5;58,307,5;58,308,5,418,1,5;58,309,5,417,2,5;58,310,5,415,4,5;58,325,5,414,5,5;58,325,5,412,7,5;58,324,5,411,8,5;58,323,5,409,10,5;58,23,5,82,9,5,93,3,5,97,4,5,104,7,5,113,3,5,118,13,5,133,8,5,142,9,5,153,3,5,158,8,5,167,9,5,179,2,5,183,8,5,193,3,5,199,2,5,202,4,5,208,3,5,214,2,5,217,9,5,228,13,5,244,7,5,253,3,5,259,7,5,268,23,5,294,17,5,314,7,5,323,18,5,343,3,5,349,12,5,364,7,5,372,8,5,407,12,5;58,16,5,406,13,5;58,16,5,404,15,5;58,16,5,403,16,5;57,17,5,402,17,5;57,17,5,402,17,5;57,17,5,402,17,5;57,18,5,402,18,5;57,18,5,402,18,5;58,17,5,403,17,5;59,16,5,404,16,5;60,15,5,405,15,5;60,15,5,405,15,5;61,14,5,406,14,5;63,11,5,408,11,5;64,9,5,409,9,5;65,5,5,410,5,5;67,1,5,412,1,5;;;157,1,2;154,5,2;150,10,2;146,14,2;142,19,2;138,24,2;135,28,2;131,32,2;127,37,2;123,41,2;120,44,2;116,48,2;112,52,2;106,59,2;100,66,2;93,73,2;86,81,2;85,82,2,291,4,4;84,84,2,285,11,4;84,86,2,278,21,4;84,88,2,266,34,4;84,88,2,230,70,4;84,89,2,229,72,4;84,90,2,225,76,4;84,90,2,224,77,4;85,89,2,224,77,4;85,90,2,224,77,4;83,92,2,224,77,4;81,94,2,224,77,4;80,96,2,224,77,4;80,96,2,225,76,4;80,96,2,225,76,4;80,97,2,225,76,4;80,97,2,225,76,4;80,97,2,225,76,4;81,97,2,225,77,4;81,97,2,225,77,4;81,98,2,225,77,4;82,97,2,225,77,4;82,97,2,225,77,4,344,1,3,358,2,3;83,97,2,225,77,4,343,19,3;83,97,2,225,77,4,342,25,3;83,97,2,226,76,4,341,27,3;84,97,2,226,76,4,341,28,3;84,97,2,226,76,4,340,11,3,361,10,3;85,96,2,226,76,4,339,13,3,363,10,3;85,97,2,226,76,4,338,15,3,365,10,3;85,97,2,226,77,4,337,17,3,367,10,3;86,96,2,226,77,4,337,18,3,367,12,3;86,97,2,226,77,4,336,20,3,364,16,3,382,4,3;87,96,2,226,77,4,336,25,3,362,26,3;87,96,2,226,77,4,335,54,3;87,97,2,226,77,4,335,55,3;88,96,2,226,77,4,335,56,3;88,97,2,226,77,4,335,23,3,359,22,3,386,6,3;89,96,2,227,76,4,335,46,3,387,5,3;89,96,2,227,76,4,335,46,3,388,5,3;89,97,2,227,76,4,335,46,3,388,5,3;90,96,2,227,76,4,336,45,3,389,4,3;90,96,2,227,77,4,336,20,3,357,24,3,389,9,3;91,96,2,227,77,4,337,18,3,356,25,3,389,10,3;91,96,2,227,77,4,338,16,3,356,26,3,390,10,3;91,96,2,227,77,4,339,14,3,354,28,3,390,10,3;92,96,2,227,77,4,340,38,3,379,3,3,389,6,3,396,5,3;92,95,2,227,77,4,341,16,3,358,20,3,379,3,3,389,12,3;93,94,2,227,76,4,344,11,3,359,18,3,379,3,3,390,11,3;93,94,2,227,76,4,360,16,3,378,4,3,390,10,3;93,93,2,228,53,4,295,8,4,361,14,3,376,6,3,391,9,3;93,94,2,228,36,4,265,5,4,362,19,3,390,10,3;94,93,2,228,23,4,265,5,4,363,16,3,388,14,3;95,91,2,229,2,4,237,7,4,265,5,4,366,11,3,386,18,3;95,87,2,238,1,4,265,6,4,371,1,3,385,20,3;95,83,2,265,6,4,384,22,3;96,78,2,265,6,4,383,24,3;96,75,2,265,6,4,382,26,3;97,70,2,266,4,4,382,26,3;97,66,2,381,28,3;97,62,2,381,28,3;98,57,2,381,28,3;98,54,2,381,29,3;98,50,2,380,30,3;99,45,2,380,30,3;101,39,2,381,29,3;102,35,2,381,29,3;103,6,2,114,19,2,381,29,3;105,1,2,115,14,2,381,29,3;116,9,2,382,28,3;117,4,2,382,27,3;383,26,3;384,24,3;385,23,3;386,21,3;388,18,3;390,14,3;392,10,3;;;;;;;;;;;;;;;;","zoom":{"m":[63.0,408.0,229.5],"s":[25.5,587.5,243.0]},"ext":{"w":746,"h":478,"x":0,"y":6}};
 const MDESK_TAG = {map:"튜토리얼", books:"마스터 육성", info:"학원 정보", book:"학생 명부", scroll:"스케줄"};
 let MDESK_ROWS = null, MDESK_GOING = false;
 function mdeskOn(){ return typeof townMode === "function" && townMode(); }
@@ -12324,6 +12465,7 @@ function mdeskHit(x, y){
   for(let i = 0; i < r.length; i += 3) if(x >= r[i] && x < r[i] + r[i+1]) return r[i+2];
   return 0;
 }
+function mdeskFrame(){ return (typeof SCHED_ART !== "undefined" && SCHED_ART.over2) || TOWN_FRAME; }   // 스케줄과 같은 액자 + 가장자리 그늘 (1011)
 function mdeskBox(x, y, w, h){
   const [W, H] = MDESK_GEO.size, p = (v, d)=> (v / d * 100).toFixed(3) + "%";
   return `left:${p(x, W)};top:${p(y, H)};width:${p(w, W)};height:${p(h, H)}`;
@@ -12346,13 +12488,15 @@ function viewHomeDesk(){
     return `<button type="button" class="mdk${below ? " below" : ""}" data-g="${i + 1}" data-mdesk="${g.k}" style="${mdeskBox(x0, y0, x1 - x0, y1 - y0)}" aria-label="${esc(tag)}">`
       + `<span class="mdtag" aria-hidden="true">${esc(tag)}</span></button>`;
   }).join("");
-  const B = G.books;
+  const B = G.books, E = G.ext, pc = (v, d)=> (v / d * 100).toFixed(3) + "%";
   const badge = pts > 0 ? `<span class="mdbadge" style="left:${(B.bx / G.size[0] * 100).toFixed(3)}%;top:${(B.by / G.size[1] * 100).toFixed(3)}%" title="남은 마스터 육성 포인트">${pts}</span>` : "";
+  /* 책상 상자(.mdesk-desk · 746×478 — 두루마리로 다가갈 때 통째로 커진다) = 넓힌 바탕(ext) + 예전 책상 자리(.mdesk-art · 607×466 — 소품 · 누르는 자리) */
   return `<section class="town mdesk${pop ? " popopen" : ""}" aria-label="마스터 노트">`
-    + `<div class="townmap mdesk-map"${pop ? " inert" : ""}><div class="townmap-in mdesk-in"><div class="mdesk-art">`
-    + img(A.base) + img(A.items, "md-items") + img(A.props) + img(A.vig) + img(A.light, "md-light", mdeskBox(L.x, L.y, L.w, L.h))
+    + `<div class="townmap mdesk-map"${pop ? " inert" : ""}><div class="townmap-in mdesk-in"><div class="mdesk-desk">` + img(A.ext, "md-ext")
+    + `<div class="mdesk-art" style="left:${pc(E.x, E.w)};top:${pc(E.y, E.h)};width:${pc(G.size[0], E.w)};height:${pc(G.size[1], E.h)}">`
+    + img(A.items, "md-items") + img(A.props) + img(A.light, "md-light", mdeskBox(L.x, L.y, L.w, L.h))
     + hl + badge + btn
-    + `</div></div><img class="town-frame mdesk-frame" src="${TOWN_FRAME}" alt="" draggable="false"></div>`
+    + `</div></div></div><img class="town-frame mdesk-frame" src="${mdeskFrame()}" alt="" draggable="false"></div>`
     + (pop ? mdeskPop(pop) : "") + `</section>`;
 }
 function mdeskAct(k){
@@ -12389,10 +12533,10 @@ function bindMasterDesk(v){
     b.onblur = ()=> hot(0);
   });
 }
-/* ── 두루마리 → 스케줄 (1006) ──
+/* ── 두루마리 → 스케줄 (1006 · 1011) ──
    ① 두루마리 위 내용(띠 · 카드 · 서명)이 사라진다 ② 책상이 두루마리로 다가간다 — 두 축(가운데)과 종이 가운데를 스케줄 두루마리에 맞춘다
-   (MDESK_GEO.zoom — m: 책상 1배 [왼쪽 축, 오른쪽 축, 종이 세로 가운데] · s: 스케줄 무대 1배). 그동안 액자는 스케줄 무대 높이로 줄어든다
-   (액자 그림을 위 · 아래 반쪽으로 나눠 아래쪽이 따라 올라온다 — 모서리가 찌그러지지 않게) ③ 끝무렵 스케줄 그림(내용 없이)이 겹쳐 나타나고
+   (MDESK_GEO.zoom — m: 예전 책상 1배 [왼쪽 축, 오른쪽 축, 종이 세로 가운데] · s: 스케줄 무대 1배). 액자는 그대로 (1011 — 마스터 노트도 스케줄과 같은 크기라
+   예전처럼 액자를 줄이지 않는다. 책상 1배와 스케줄 1배가 화면에서 같은 배율 W/772) ③ 끝무렵 스케줄 그림(내용 없이)이 겹쳐 나타나고
    ④ 스케줄 화면으로 바꾼 뒤 두루마리 위 내용(.sk-paper)이 떠오른다. 움직임 줄이기 설정이면 바로 넘어간다 */
 function mdeskGo(){
   const go = ()=>{ UI.view = "plan"; render(); };
@@ -12400,25 +12544,19 @@ function mdeskGo(){
   const reduce = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
   if(!map || reduce || !(typeof schedScrollOn === "function" && schedScrollOn()) || typeof SCHED_ART === "undefined" || typeof SCHED_GEO === "undefined"){ go(); return; }
   if(MDESK_GOING) return;
-  const inn = map.querySelector(".mdesk-in"), art = map.querySelector(".mdesk-art"), fr = map.querySelector(".mdesk-frame");
-  const R = map.getBoundingClientRect(), W = R.width, H0 = R.height, H1 = W * 1008 / 1544;
-  if(!inn || !art || !fr || !W){ go(); return; }
+  const desk = map.querySelector(".mdesk-desk"), art = map.querySelector(".mdesk-art");
+  const R = map.getBoundingClientRect(), W = R.width, H1 = W * 1008 / 1544;
+  if(!desk || !art || !W){ go(); return; }
   MDESK_GOING = true;
   delete sec.dataset.hot; art.style.cursor = "";
-  const b = W * 26 / 1266, km = W * 2 / 1266, ks = W / 772, Z = MDESK_GEO.zoom;
-  const s = (Z.s[1] - Z.s[0]) * ks / ((Z.m[1] - Z.m[0]) * km);
-  const tx = (Z.s[0] + Z.s[1]) / 2 * ks - b - (Z.m[0] + Z.m[1]) / 2 * km * s;
-  const ty = Z.s[2] * ks - b - Z.m[2] * km * s;
-  const aw = W - 2 * b, ah = aw * MDESK_GEO.size[1] / MDESK_GEO.size[0];
+  /* 책상 1배 → 화면 k = W/772 (액자 안쪽 13 · 책상 746×478 — 스케줄 무대와 같다). 예전 책상 점 (mx, my) 은 넓힌 책상에서 (E.x + mx, E.y + my) */
+  const k = W / 772, b = 13 * k, E = MDESK_GEO.ext, Z = MDESK_GEO.zoom;
+  const s = (Z.s[1] - Z.s[0]) / (Z.m[1] - Z.m[0]);                       // 두 축 사이를 스케줄 두루마리와 같게
+  const tx = (Z.s[0] + Z.s[1]) / 2 * k - b - (E.x + (Z.m[0] + Z.m[1]) / 2) * k * s;   // 다 다가갔을 때 책상 상자의 왼쪽 위 (액자 안쪽 칸 기준)
+  const ty = Z.s[2] * k - b - (E.y + Z.m[2]) * k * s;
+  const dw = E.w * k, dh = E.h * k;
   sec.classList.add("mdesk-go");
-  /* 액자 — 위 반쪽은 그대로, 아래 반쪽은 상자 바닥에 붙어 올라온다 */
-  const bot = fr.cloneNode();
-  fr.classList.add("mf-top"); bot.classList.add("mf-bot");
-  fr.style.height = bot.style.height = H0 + "px";
-  fr.after(bot);
-  map.style.aspectRatio = "auto"; map.style.height = H0 + "px";
-  inn.style.cssText = `left:${b}px;top:${b}px;width:${aw}px;height:${H0 - 2 * b}px`;
-  art.style.cssText = `left:0;top:0;width:${aw}px;height:${ah}px`;
+  desk.style.cssText = `left:0;top:0;width:${dw}px;height:${dh}px`;
   /* 스케줄 그림 (내용 없이) — 바뀌기 직전에 겹쳐 나타난다. 무대(1544×1008)와 같은 자리 · 크기 */
   const SG = SCHED_GEO, Q = SG.quill, P = (x, y, w, h)=> `left:${(x / 772 * 100).toFixed(3)}%;top:${(y / 504 * 100).toFixed(3)}%;width:${(w / 772 * 100).toFixed(3)}%;height:${(h / 504 * 100).toFixed(3)}%`;
   /* 문서 위에 따로 띄운다(사이드 메뉴 아래) — 화면이 스케줄로 바뀐 뒤 그 그림이 다 그려질 때까지 덮어 둔다
@@ -12434,11 +12572,9 @@ function mdeskGo(){
   const ease = t=> t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   const step = (now)=>{
     if(!map.isConnected){ MDESK_GOING = false; gh.remove(); if(UI.view === "home") go(); return; }   // 그새 화면이 다시 그려졌다
-    const t = Math.min(1, Math.max(0, (now - T0 - FADE) / ZOOM)), e = ease(t), k = 1 + (s - 1) * e, H = H0 + (H1 - H0) * e;
-    map.style.height = H + "px";
-    inn.style.height = (H - 2 * b) + "px";
-    art.style.left = (tx * e) + "px"; art.style.top = (ty * e) + "px";
-    art.style.width = (aw * k) + "px"; art.style.height = (ah * k) + "px";
+    const t = Math.min(1, Math.max(0, (now - T0 - FADE) / ZOOM)), e = ease(t), z = 1 + (s - 1) * e;
+    desk.style.left = (tx * e) + "px"; desk.style.top = (ty * e) + "px";
+    desk.style.width = (dw * z) + "px"; desk.style.height = (dh * z) + "px";
     gh.style.opacity = String(Math.min(1, Math.max(0, (t - .58) / .36)));
     if(t < 1){ requestAnimationFrame(step); return; }
     MDESK_GOING = false;
@@ -12782,8 +12918,8 @@ function cardEffLine(tr){
   const cd = Math.max(1, Math.round(tr.cond*DAY_MUL*(isCampWeek()?CAMP_COND:1)));
   return `컨디션 -${cd}`;
 }
-function fxHtml(tr){
-  return (tr.fx||[]).map(f=>`<div class="fxl${f[2]?" bad":""}">${esc(f[0])}<b>${"+".repeat(f[1])}</b></div>`).join("");
+function fxHtml(tr){                                   // 1011 — 멘탈리티는 줄임말(영어 Comp. 등 · mentShortOf)
+  return (tr.fx||[]).map(f=>`<div class="fxl${f[2]?" bad":""}">${esc(mentShortOf(f[0]))}<b>${"+".repeat(f[1])}</b></div>`).join("");
 }
 /* 훈련 비용 (0926) — 카드 한 장을 쓸 때마다. 휴식 · 자율 훈련은 무료 · 기본 훈련 10G · 원정 파견과 고급 훈련(아이템 해금) 20G */
 const CARD_COST = 10, CARD_COST_ADV = 20, CARD_COST_FREE = ["free"];
@@ -12940,7 +13076,7 @@ function chronicleAdvance(button){
    깃펜을 집어 잉크를 찍고 서명줄을 한 번 누르는 것도 그대로 된다. 새로 그으면 서명이 바뀐다.
    결재란에서 Enter(키보드)를 누르면 (저장된 서명이 없어도) 깃펜이 스스로 잉크를 찍고 서명한다.
    사이드(오른쪽 메뉴판)가 잉크 단지 · 깃펜을 가리면 사이드를 줄인다 — skSideFit (1010). */
-const SCHED_ART = {"under":"assets/sched_art/under.webp?v=f543bea3","over1":"assets/sched_art/over1.webp?v=06e31abf","over2":"assets/sched_art/over2.webp?v=f7c57a8d","quill":"assets/sched_art/quill.webp?v=67d7d5b6","inkwell":"assets/sched_art/inkwell.webp?v=1df25ad0","sheet":"assets/sched_art/sheet.webp?v=4ac119ec","chain":"assets/sched_art/chain.webp?v=2b76f2f1"};
+const SCHED_ART = {"under":"assets/sched_art/under.webp?v=f543bea3","over1":"assets/sched_art/over1.webp?v=06e31abf","over2":"assets/sched_art/over2.webp?v=f7c57a8d","quill":"assets/sched_art/quill.webp?v=67d7d5b6","inkwell":"assets/sched_art/inkwell.webp?v=1df25ad0","frame":"assets/sched_art/frame.webp?v=ed1c46b6","sheet":"assets/sched_art/sheet.webp?v=4ac119ec","chain":"assets/sched_art/chain.webp?v=2b76f2f1"};
 const SCHED_GEO = {"desk":[746,478],"inset":13,"frame":[772,504],"ros_bottom":421,"right_bottom":424,"paper":{"x":6,"y":11,"w":607,"h":466},"quill":{"x":670,"y":480,"px":1,"py":58,"w":93,"h":59},"ink":{"x":624,"y":420,"w":20,"h":14},"inkwell":{"x":609,"y":410,"w":50,"h":54},"menu":{"w":288,"h":616,"top":16,"right":16,"screen":1208,"unit":"css"},"sheet":{"w":699,"h":204,"pos":{"card_red":[0,0,59,85],"card_green":[60,0,59,85],"card_blue":[120,0,59,85],"card_sky":[180,0,59,85],"card_gold":[240,0,59,85],"card_none":[300,0,59,85],"slot_empty":[360,0,56,82],"rib_red":[0,86,99,18],"rib_green":[100,86,99,18],"rib_blue":[200,86,99,18],"rib_sky":[300,86,99,18],"rib_gold":[400,86,99,18],"rib_none":[500,86,99,18],"rib_empty":[600,86,99,18],"ic_dumbbell":[0,105,16,14],"ic_barbell":[17,105,16,14],"ic_swords":[34,105,16,14],"ic_shield":[51,105,16,14],"ic_book":[68,105,16,14],"ic_flag":[85,105,16,14],"ic_leaf":[102,105,16,14],"ic_lotus":[119,105,16,14],"ic_target":[136,105,16,14],"ic_arrow":[153,105,16,14],"ic_map":[170,105,16,14],"ic_cup":[187,105,16,14],"mi_wand":[0,120,8,8],"mi_bowl":[9,120,8,8],"mi_eraser":[18,120,8,8],"mi_book":[27,120,8,8],"mi_water":[36,120,8,8],"cross":[45,120,6,6],"chip_auto":[52,120,15,9],"chip_train":[68,120,15,9],"chip_rest":[84,120,15,9],"chip_job":[100,120,15,9],"appr_on":[0,130,128,74],"appr_off":[129,130,128,74],"slip":[258,130,127,65]}},"slip":{"x":441,"y":280,"w":124,"h":61},"appr":{"x":440,"y":351,"w":126,"h":72,"sig_y":58}};
 const SK_X0 = 42, SK_X1 = 565, SK_YRIB = 54, SK_YDAY = 78, SK_YHANDL = 166, SK_YHAND = 188, SK_YBAND = 280, SK_XL1 = 432, SK_XR0 = 440;
 /* 카드 56×82 (1006, 예전 80) — 훈련 이름을 화면 12px 로 키우며 색 머리를 2칸 늘렸다. 손패 줄도 2칸 내렸다 (sched_art 의 M2.CH · HB · Y_RULE2 와 같이) */
@@ -12976,7 +13112,7 @@ function skCard(c, x, y){                                       // x, y = 카드
   const L = clamp(cardLeft(c), 1, CARD_LIFE), eff = cardEffLine(tr), cv = eff.replace(/^[^+\-−]*/, "")   /* 1010 — 영어판: 앞의 이름(컨디션 · Condition)을 떼고 값만 */, good = cv.charAt(0) === "+";
   const cost = cardCostText(c);
   const tip = `${tr.n}${cost? " · "+cardCostTip(c) : ""}${mk? ` — ${mk.i} ${mk.n}: ${mk.d}` : ""} · ${cardLeftText(L)}${L<=1? "" : " 남음"}`;
-  const fx = (tr.fx||[]).slice(0, 4).map((f, i)=> `<span class="sk-fx${f[2]? " bad":""}" style="top:${80 + i*14}px">${esc(f[0])}<b>${"+".repeat(f[1])}</b></span>`).join("");
+  const fx = (tr.fx||[]).slice(0, 4).map((f, i)=> `<span class="sk-fx${f[2]? " bad":""}" style="top:${80 + i*14}px">${esc(mentShortOf(f[0]))}<b>${"+".repeat(f[1])}</b></span>`).join("");   // 1011 — 멘탈리티는 줄임말 (영어 Comp. 등)
   const lc = {3:"#3b6b33", 2:"#8a5e1c", 1:"#a3302a"}[Math.min(3, L)] || "#3b6b33";
   return `<div class="sk-card" data-card="${c.u}" draggable="false" role="button" tabindex="0" title="${esc(tip)}" aria-label="${esc(tip)}" style="left:${x*2}px;top:${y*2}px;${skBg("card_"+key)}">`
     + skSpr("ic_" + (SK_ICON[c.t] || "target"), 40, 10, "ic")
@@ -12992,10 +13128,15 @@ function skRibbon(cx, label, key){
   return skSpr(key? "rib_"+key : "rib_empty", (cx - 49) * 2, SK_YRIB * 2)
     + `<span class="sk-rib" style="left:${cx*2 - 100}px;top:${SK_YRIB*2 + 4}px;text-shadow:2px 2px 0 #${pal[0]}">${label}</span>`;
 }
+/* 행동 칸 (1011) — 그림(chip_*) 대신 CSS 로 같은 모양(테두리 · 바탕 · 윗줄 밝게)을 그려 폭을 바꿀 수 있게 했다.
+   폭은 CSS 변수 --sk-chipw (한국어 30 · 영어 38 — en_layout.css · 'Train' 이 테두리 안에 들어가게). 글은 칸에 맞춘 짧은 이름(SK_CHIP_N — 영어 의뢰 = Work).
+   부상 표시(✚ N주) 자리 폭은 --sk-injw (한국어 36 · 영어 40 — '2wk'). 둘 다 skRoster 가 막대 자리를 정할 때 읽는다 */
+const SK_CHIP_N = {train:"훈련", rest:"휴식", job:"의뢰"};
+function skCssPx(name, def){ const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name)); return v > 0 ? v : def; }
 function skChips(s){
   const k = actUnlocked() ? actShown(s) : (isRestFocus(s) ? "rest" : "train");
   const col = {train:"#3a2a20", rest:"#3b6b33", job:"#8a5e1c"}[k] || "#3a2a20";
-  return `<button type="button" class="sk-chip" data-sk-act="${esc(s.id)}" ${actUnlocked()? "" : "disabled"} title="${esc(actName(k))} — 누르면 ${actPickKeys().map(actName).join(" → ")}" style="${skBg("chip_"+k)};color:${col}"><b>${esc(actName(k))}</b></button>`;
+  return `<button type="button" class="sk-chip k-${k}" data-sk-act="${esc(s.id)}" ${actUnlocked()? "" : "disabled"} title="${esc(actName(k))} — 누르면 ${actPickKeys().map(actName).join(" → ")}" style="color:${col}"><b>${esc(SK_CHIP_N[k] || actName(k))}</b></button>`;
 }
 function skTone(v){
   if(v >= COND_HI)  return ["#3b6b33", "#4f8a42", "#86bd6c"];
@@ -13006,7 +13147,7 @@ function skTone(v){
    두 단은 왼쪽 단부터 채운다 (15명이면 8 + 7). 줄 폭이 좁아지는 만큼 컨디션 막대를 줄인다 (SK_BARMIN 까지 · 한 단은 줄이지 않는다).
    한 단이 두 단보다 1/4 이상 작을 때만 두 단으로 — 비슷하면 막대가 긴 한 단이 보기 좋다.
    rsv — 맨 끝 칸 하나를 '변경 취소' 단추 자리로 비워 둔다 (지난주 기록이 있을 때 · 칸은 skRoster 의 slot).
-   아래 끝은 그 밑에 놓인 소품(문진) 바로 위까지 (SCHED_GEO.ros_bottom). 줄 안 자리는 2배 좌표 — 이름 60 · 행동 칸 62~92 · 부상 96~ · 막대 bx~ */
+   아래 끝은 그 밑에 놓인 소품(문진) 바로 위까지 (SCHED_GEO.ros_bottom). 줄 안 자리는 2배 좌표 — 이름 60 · 행동 칸 62~(30 · 영어 38) · 부상 그 뒤 4~ · 막대 bx~ */
 const SK_BARMIN = 60, SK_BARMAX = 160, SK_RTAIL = 70;            // 막대 폭 (2배) · 막대 뒤(컨디션 값 · 효율 % · 여백)
 function skRowGeo(f, cols, bx){                                  // 한 줄 폭 · 막대 폭 (2배 · 명부를 키우기 전)
   const W2 = (SK_XL1 - (SK_X0 + 2)) * 2, room = cols === 2 ? (W2 / f - 12) / 2 : W2 / f;
@@ -13026,7 +13167,8 @@ function skRoster(x0, y0, chips, rsv){
   const pages = Math.max(1, Math.ceil(all.length / SK_ROWS));
   UI.skPage = clamp(UI.skPage|0, 0, pages - 1);
   const list = all.slice(UI.skPage * SK_ROWS, UI.skPage * SK_ROWS + SK_ROWS);
-  const bx = !chips ? 66 : all.some(isInjured) ? 132 : 96;      // 막대 왼쪽 — 행동 칸 뒤 · 다친 학생이 있으면 부상 표시(✚ N주) 뒤
+  const cw = chips ? skCssPx("--sk-chipw", 30) : 0, cx = 62 + cw + 4;   // 행동 칸 폭 (1011 — 영어는 넓다) · 부상 표시(✚) 자리
+  const bx = !chips ? 66 : all.some(isInjured) ? cx + skCssPx("--sk-injw", 36) : cx;   // 막대 왼쪽 — 행동 칸 뒤 · 다친 학생이 있으면 부상 표시(✚ N주) 뒤 (한국어 96 · 132)
   const F = skRosterFit(pages > 1 ? SK_ROWS : list.length, y0, bx, rsv);   // 여러 쪽이면 쪽마다 같은 모양 (15명 기준)
   const G = skRowGeo(F.f, F.cols, bx), lines = F.cols === 2 ? F.per * 2 : F.per, pitch = G.w + 12;
   let h = "";
@@ -13035,7 +13177,7 @@ function skRoster(x0, y0, chips, rsv){
     const x = col * pitch, y = row * SK_ROW * 2;                   // 명부 안 좌표 (2배) — 명부 전체를 F.f 배로 키운다
     if(!s){ h += `<div class="sk-r empty" style="left:${x}px;top:${y}px"></div>`; continue; }
     const v = Math.round(clamp(s.cond, 0, 100)), [tc, fc, hc] = skTone(v);
-    const inj = isInjured(s) ? skSpr("cross", 96, 2) + `<span class="iw">${injWeeks(s)}주</span>` : "";
+    const inj = isInjured(s) ? skSpr("cross", cx, 2) + `<span class="iw" style="left:${cx + 15}px">${injWeeks(s)}주</span>` : "";
     h += `<div class="sk-r${(chips ? actShown(s) === "rest" : isRestFocus(s))? " rest" : ""}" style="left:${x}px;top:${y}px">`
       + `<span class="nm" title="${esc(dn(s))}">${esc(s.name)}</span>${chips? skChips(s) + inj : ""}`
       + `<span class="sk-bar" style="left:${bx}px"><i style="width:${Math.max(0, Math.round((G.bar - 6) / 2 * v / 100)) * 2}px;background:${fc};--hc:${hc}"></i></span>`
@@ -13172,7 +13314,7 @@ function viewPlanScroll(){
         + `<div class="hd" style="left:12px;top:10px"><span class="sk-h" style="color:#8a5e1c">${esc(J.n)}</span><span class="gr">${g+1}등급</span></div>`
         + `<span class="sk-fade" style="left:12px;top:38px">${esc(J.who)}</span>`
         + `<span style="left:12px;top:54px"><span class="sk-ink2">보수 </span><span class="sk-brass">${fmt(pay)} G/일</span><span class="sk-ink2"> · 컨디션 </span><span class="sk-red">-${JOB_COND}/일</span></span>`
-        + `<span style="left:12px;top:68px"><span class="sk-ink2">${esc(mentName(J.up))} </span><span class="sk-grn">▲</span><span class="sk-ink2"> · ${esc(mentName(J.down))} </span><span class="sk-red">▼</span></span>`
+        + `<span style="left:12px;top:68px"><span class="sk-ink2">${esc(mentShort(J.up))} </span><span class="sk-grn">▲</span><span class="sk-ink2"> · ${esc(mentShort(J.down))} </span><span class="sk-red">▼</span></span>`
         + (nx ? `<span style="left:12px;top:82px"><span class="sk-ink2">누적 </span>${fmt(cnt)} / ${fmt(nx.min)}회</span><span class="bar" style="left:150px;top:84px;width:84px"><i style="width:${Math.round(80 * clamp(cnt / nx.min, 0, 1))}px"></i></span>`
               : `<span style="left:12px;top:82px"><span class="sk-ink2">누적 </span>${fmt(cnt)}회<span class="sk-brass"> · 최대 등급</span></span>`)
         + `<span style="left:12px;top:96px">${nj? `<span class="sk-ink2">이번 주 </span><span class="sk-brass">의뢰 ${nj}명</span><span class="sk-ink2"> · 최대 </span><span class="sk-brass">+${fmt(pay * nj * WEEK_DAYS)} G</span>` : `<span class="sk-fade">이번 주 의뢰를 맡은 학생이 없다</span>`}</span></div>`);
@@ -13866,7 +14008,8 @@ function feedOn(){ return !!LEAGUE_URL; }
 function feedLast(){ try{ return +localStorage.getItem(FEED_KEY) || 0; }catch(e){ return 0; } }
 function feedCtx(){
   let sc = "";
-  try{ sc = `${screen.width}x${screen.height}@${Math.round((window.devicePixelRatio||1)*10)/10}`; }catch(e){}
+  try{ const H = typeof HS_SCALE !== "undefined" ? HS_SCALE : null;   // 1011 — 틀 안에서는 devicePixelRatio 가 ×k 라 진짜 값 + 틀 배율
+    sc = `${screen.width}x${screen.height}@${Math.round(((H ? H.dpr0() : window.devicePixelRatio)||1)*10)/10}${H && H.framed ? " x" + H.k : ""}`; }catch(e){}
   return {
     build: String(BUILD), rv: RULES_VER,
     y: S.year|0, ph: S.phase, wk: (S.week|0)+1,
@@ -13922,7 +14065,9 @@ function verReload(){
   try{ save(); }catch(e){}
   const v = VER.srv ? VER.srv.build : String(Date.now());
   const lq = /[?&]lang=(en|ko)\b/.exec(location.search);                                   // 1010 — 영어판 시험 주소(?lang=)는 그대로 둔다
-  location.replace(location.pathname + "?v=" + encodeURIComponent(v) + (lq ? "&lang=" + lq[1] : "") + location.hash);   // 주소가 바뀌어야 캐시에 남은 옛 파일을 안 받는다
+  const q = "?v=" + encodeURIComponent(v) + (lq ? "&lang=" + lq[1] : "");
+  if(typeof HS_SCALE !== "undefined" && HS_SCALE.nav(q)) return;   // 1011 — 화면 크기 틀 안이면 틀째로 (틀 스크립트도 새것으로)
+  location.replace(location.pathname + q + location.hash);   // 주소가 바뀌어야 캐시에 남은 옛 파일을 안 받는다
 }
 function verPaint(){
   const gap = verGap(), v = VER.srv;
@@ -16179,8 +16324,31 @@ function langSwitch(k){
   }
   try{ if(S && S.pingOk) save(); }catch(e){}      // 시작 화면의 임시 학원은 저장하지 않는다
   const s = q.toString();
+  if(typeof HS_SCALE !== "undefined" && HS_SCALE.nav(s ? "?" + s : "")) return;   // 1011 — 화면 크기 틀 안이면 틀째로 다시 불러온다 (UISCALE)
   location.replace(location.pathname + (s ? "?" + s : "") + location.hash);
 }
+/* 1011 — 화면 크기 자동 맞춤 (UISCALE — <head> 맨 앞 스크립트 · HS_SCALE · 목업 mockups/ui-scale · 시험 tools/check_scale.py)
+   큰 화면 PC 에서 게임 전체를 브라우저 확대처럼 키운다.
+   · 맨 위 창: 데스크톱(마우스가 주인 · iPad/폰/Android 빼고)이고 배율 k ≥ 1.05 면 '틀'이 된다 — <body> 를 열고 그 안에서 문서 읽기를 멈춘 뒤(window.stop —
+     아래 게임은 읽지도 돌지도 않는다) 같은 주소에 ?hsf=k 를 붙인 iframe 을 transform: scale(k) 로 띄운다. 게임 안은 W/k × H/k 창으로 보여서
+     (브라우저 확대와 같다) 게임 코드 · 클릭 · 끌기 · 서명이 그대로 돈다. 창 크기가 바뀌면 다시 맞춘다. 탭 제목은 게임이 알려 준다.
+   · iframe 안(?hsf=k): 게임. devicePixelRatio 를 ×k 로 보여 캔버스(오프닝 글)가 또렷하다 (HS_SCALE.dpr0() = 진짜 값). 스크롤바는 가늘게(html.hs-framed).
+     언어 바꾸기 · 새 버전 불러오기는 HS_SCALE.nav 로 틀에 넘겨 탭째로 다시 불러온다.
+   · 배율: 자동 = min(창 폭 ÷ 1280, 창 높이 ÷ 870) — 1.05 아래는 1 · 2.5 까지 (870 = 액자 화면이 스크롤 없이 들어가는 높이).
+     설정 값 localStorage hs_scale (auto · 100 · 125 · 150 · 175 · 200) — 100 이면 틀 없이. 자동일 때 브라우저 확대(Ctrl +)는 창에 다시 맞춰 거의 안 먹는다.
+   · 틀 없이: 폰 · 태블릿 · 자동화(Playwright — 다른 시험은 예전 그대로) · 설정 100% · 배율 1. 시험용 주소 ?scale=auto|150…(틀 강제) · user(자동화여도 사람처럼) · off.
+   · 맨 앞 스크립트에는 한글을 쓰지 않는다 — 한글이 든 첫 스크립트에 i18n 빌드가 번역 장치를 넣는데, 그게 <head> 이면 정적 HTML 을 못 옮긴다.
+   설정 칸: 폰 · 태블릿에서는 숨긴다. 틀 안이면 틀이 바로 다시 맞추고, 틀 없이 돌던 창은 저장한 뒤 다시 불러와 틀이 된다 */
+const UI_SCALES = [["auto", "자동"], ["100", "100%"], ["125", "125%"], ["150", "150%"], ["175", "175%"], ["200", "200%"]];
+function scaleOn(){ return typeof HS_SCALE !== "undefined" && (HS_SCALE.framed || HS_SCALE.desktop()); }
+function scalePanel(){
+  if(!scaleOn()) return "";
+  const cur = UI_SCALES.some(([v])=> v === HS_SCALE.pref) ? HS_SCALE.pref : "auto", k = HS_SCALE.framed ? (HS_SCALE.k || 1) : 1;
+  const desc = "큰 모니터에서 게임 전체를 브라우저 확대처럼 키운다. 자동은 창 크기에 맞춘다 — 스케줄 · 마을 액자가 창 높이에 꼭 맞는 크기.";
+  return `<section class="panel"><div class="optrow"><div class="optlab"><b>화면 크기</b><span>${desc} <b class="num" style="white-space:nowrap">${`지금 ×${k.toFixed(2)}`}</b></span></div><div class="ui-concept-picker" role="group" aria-label="화면 크기">${
+    UI_SCALES.map(([v, n])=>`<button type="button" class="btn" data-uiscale="${v}" aria-pressed="${cur===v}">${n}</button>`).join("")}</div></div></section>`;
+}
+if(typeof addEventListener === "function") addEventListener("hsscale", ()=>{ if(typeof UI !== "undefined" && UI.view === "opt") render(); });   // 틀이 배율을 바꿨다 — 설정 화면의 '지금 ×k'
 function viewOpt(){
   const a = optFxA();
   const conceptPanel = `<section class="panel"><div class="panel-h"><h2>화면 분위기</h2></div><div class="optrow"><div class="optlab"><b>삽화</b><span>캐릭터 판화와 밝은 종이 배경을 사용하는 기본 화면입니다.</span></div><span class="badge">적용 중</span></div></section>`;
@@ -16190,7 +16358,7 @@ function viewOpt(){
   const gridPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>전투 배치 격자</b><span>전투 화면 바닥에 학생이 설 자리(격자)를 표시한다. 기본은 표시하지 않는다.</span></div><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="optBfGrid" ${PREF.bfGrid?"checked":""}> 표시</label></div></section>`;
   const camPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>전투 연출</b><span>스타일리시 모드는 가로 화면에서만 — 행동 게이지가 차오르고, 차례가 온 학생과 스킬 대상을 카메라가 가까이 잡아 보여 준다. 세로 화면에서는 심플 모드로 돈다.</span></div><div class="ui-concept-picker" role="group" aria-label="전투 연출"><button type="button" class="btn" data-battle-cam="simple" aria-pressed="${PREF.battleCam!=="stylish"}">심플 모드</button><button type="button" class="btn" data-battle-cam="stylish" aria-pressed="${PREF.battleCam==="stylish"}">스타일리시 모드</button></div></div></section>`;
   const skPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>두루마리 스케줄</b><span>가로 화면의 스케줄을 책상 위 두루마리로 보여 준다. 결재는 깃펜을 잉크 단지에 찍어 서명한다. 끄면 예전 스케줄 화면.</span></div><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="optSchedScroll" ${PREF.schedScroll!==false?"checked":""}> 켜기</label></div>${PREF.sign? `<div class="optrow" style="margin-top:8px"><div class="optlab"><b>저장된 서명</b><span>결재 때 쓰는 서명. 지우면 다음 결재 때 새로 그린다 — 서명줄에 새로 그어도 바뀐다.</span></div><button class="btn sm" id="optSignClear">서명 지우기</button></div>` : ""}</section>`;   // 두루마리 스케줄 (1006)
-  return langPanel() + conceptPanel + (OPT_PIXEL_FONT ? pxPanel : "") + skPanel + lvPanel + (OPT_FIELD_PASTEL ? fpPanel : "") + gridPanel + (OPT_BATTLE_CAM ? camPanel : "") + errPanel() + xferPanel() + `<section class="panel"><div class="optrow"><div class="optlab"><b>애니메이션 테스트</b><span>공통 몸체와 부위별 착용 레이어의 동작을 확인합니다.</span></div><button class="btn" id="avatarLabOpen">테스트 열기</button></div></section><section class="panel"><div class="optrow"><div class="optlab"><b>진행 페이지 테스트 모드</b><span>양피지 책으로 일정과 학생 집중 훈련을 기록합니다. 기본은 꺼짐이며 다른 페이지는 유지됩니다.</span></div><label><input type="checkbox" id="chronicleToggle" ${PREF.chronicleTest?"checked":""}> 사용</label></div></section><section class="panel">
+  return langPanel() + scalePanel() + conceptPanel + (OPT_PIXEL_FONT ? pxPanel : "") + skPanel + lvPanel + (OPT_FIELD_PASTEL ? fpPanel : "") + gridPanel + (OPT_BATTLE_CAM ? camPanel : "") + errPanel() + xferPanel() + `<section class="panel"><div class="optrow"><div class="optlab"><b>애니메이션 테스트</b><span>공통 몸체와 부위별 착용 레이어의 동작을 확인합니다.</span></div><button class="btn" id="avatarLabOpen">테스트 열기</button></div></section><section class="panel"><div class="optrow"><div class="optlab"><b>진행 페이지 테스트 모드</b><span>양피지 책으로 일정과 학생 집중 훈련을 기록합니다. 기본은 꺼짐이며 다른 페이지는 유지됩니다.</span></div><label><input type="checkbox" id="chronicleToggle" ${PREF.chronicleTest?"checked":""}> 사용</label></div></section><section class="panel">
     <div class="panel-h"><h2>설정</h2><span class="hint">빌드 ${esc(BUILD)} · 규칙 ${RULES_VER} · 전투 연출과 화면 표시를 조절한다</span></div>
     <div class="optrow">
       <div class="optlab">
@@ -16571,7 +16739,7 @@ const NPC_IMG = {"bank": "assets/npc/bank-manager.webp?v=152d7e34", "bankDebt": 
    밭주인 할아버지 · 미용실 원장 · 주점 주인 · 여관 안주인 · 마을 사냥꾼은 아직 이어진 탭이 없어 그리지 않는다 (얼굴 그림은 NPC_PX 에 있다).
    드래프트 홀은 1004 부터 사냥꾼 대신 스카우터(draft)가 맡는다 */
 const TOWN_IMG = {"spring_lv1": "assets/town/spring_lv1.webp?v=2ee8fa4d", "spring_lv2": "assets/town/spring_lv2.webp?v=3cb64c5d", "spring_lv3": "assets/town/spring_lv3.webp?v=76157019", "summer_lv1": "assets/town/summer_lv1.webp?v=272f1f93", "summer_lv2": "assets/town/summer_lv2.webp?v=9e8d511a", "summer_lv3": "assets/town/summer_lv3.webp?v=d3d276d1", "autumn_lv1": "assets/town/autumn_lv1.webp?v=3e6ef0b2", "autumn_lv2": "assets/town/autumn_lv2.webp?v=35201a85", "autumn_lv3": "assets/town/autumn_lv3.webp?v=7965d959", "winter_lv1": "assets/town/winter_lv1.webp?v=e79dde25", "winter_lv2": "assets/town/winter_lv2.webp?v=c841c9cb", "winter_lv3": "assets/town/winter_lv3.webp?v=d936dce5"};
-const TOWN_FRAME = "assets/town/frame.webp?v=49660157";
+const TOWN_FRAME = (typeof SCHED_ART !== "undefined" && SCHED_ART.frame) || "assets/town/frame.webp?v=49660157";   // 1011 — 스케줄과 같은 액자 (SCHED_SCROLL 블록 · 마스터 노트는 그늘까지 있는 over2)
 const NPC_PX = {"bank": "assets/npc_px/bank.webp?v=7dc486bf", "bank_debt": "assets/npc_px/bank_debt.webp?v=c5915ab8", "bank_repaid": "assets/npc_px/bank_repaid.webp?v=c689d3b9", "bank_deposit": "assets/npc_px/bank_deposit.webp?v=0366b47d", "carpenter": "assets/npc_px/carpenter.webp?v=71442713", "tool": "assets/npc_px/tool.webp?v=5439f455", "draft": "assets/npc_px/draft.webp?v=9f0fe88c", "church": "assets/npc_px/church.webp?v=b0861af4", "hunt": "assets/npc_px/hunt.webp?v=4ebaa82c", "farm": "assets/npc_px/farm.webp?v=9975ec03", "inn": "assets/npc_px/inn.webp?v=1214ec2b", "salon": "assets/npc_px/salon.webp?v=8ed92db5", "tavern": "assets/npc_px/tavern.webp?v=af3cb422"};
 const TOWN_NPCS = [
   {tab:"bank",   face:"bank",      n:"은행장",      x:684, y:528},
@@ -18256,6 +18424,12 @@ function bindView(){
   { const lp = $("#optLvPop"); if(lp) lp.onchange = ()=>{ PREF.lvPopup = lp.checked; prefSave(); toast(lp.checked? "레벨업 팝업을 켰다." : "레벨업 팝업을 껐다."); }; }
   document.querySelectorAll('[data-ui-concept-choice]').forEach(b=>b.onclick=()=>uiConceptSet(b.dataset.uiConceptChoice));
   document.querySelectorAll("[data-lang]").forEach(b=> b.onclick = ()=> langSwitch(b.dataset.lang));   // 1010 — 언어 (설정 · langPanel)
+  document.querySelectorAll("[data-uiscale]").forEach(b=> b.onclick = ()=>{   // 1011 — 화면 크기 (설정 · scalePanel)
+    if(typeof HS_SCALE === "undefined") return;
+    const r = HS_SCALE.set(b.dataset.uiscale);
+    if(r === "reload"){ try{ if(S && S.pingOk) save(); }catch(e){} location.reload(); return; }
+    render();
+  });
   const v = $("#view");
   if(UI.view==="home" && typeof bindMasterDesk === "function") bindMasterDesk(v);   // 마스터 노트 책상 (1006)
   v.querySelectorAll("[data-sid]").forEach(b=> b.onclick=()=>{ UI.sel = (UI.sel===b.dataset.sid?null:b.dataset.sid); UI.view="roster"; render();
@@ -18980,10 +19154,8 @@ function tutGuideVisual(kind){
   }return "";
 }
 /* 1003 — 스케줄 단추 그림: 가로 화면 오른쪽 사이드의 단추와 같은 그림 · 크기 · 글 (주차도 지금 것) */
-function tutSchedBtn(){
-  let wk = "1주";
-  try{ wk = `${Math.min((S.week|0)+1, PHASES[S.phase].weeks)}주`; }catch(e){}
-  return `<span class="tg-schedbtn" role="img" aria-label="스케줄 [${wk}] 버튼"><span>스케줄 <b>[${wk}]</b></span></span>`;   // 안쪽 span — 플렉스 칸에서 '스케줄' 뒤 빈칸이 먹히지 않게
+function tutSchedBtn(){                                // 1011 — 사이드 단추처럼 주차 [N주] 없이 · 글은 'Schedule'
+  return `<span class="tg-schedbtn" role="img" aria-label="스케줄 버튼"><span>Schedule</span></span>`;
 }
 function tutGuideHTML(k){
   const d=tutGuideData(k);

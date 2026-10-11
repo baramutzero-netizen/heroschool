@@ -5,8 +5,9 @@
 desk_art.py 로 구운 그림(desk_out/*.png)과 자리(desk_out/geo.json)를 MDESK_ART · MDESK_GEO 로 넣고(data: — wrap.py · wrap_site.py 의
 split_assets 가 assets/mdesk_art/ 로 뺀다), mdesk_block.js · mdesk_block.css 를 넣은 뒤 render · bindView · viewHome · 메뉴 단추를 고친다.
 스케줄 두루마리의 축 자리(줌 맞춤)는 game.html 옆 assets/sched_art/ 그림에서 잰다.
-1008 — 그림은 무손실 WebP 로 넣는다 (apply_webp.webp_lossless). 축 자리는 .webp 가 있으면 그것으로 잰다 (예전 .png 가 남아 있어도)."""
-import base64, json, os, re, sys
+1008 — 그림은 무손실 WebP 로 넣는다 (apply_webp.webp_lossless). 축 자리는 .webp 가 있으면 그것으로 잰다 (예전 .png 가 남아 있어도).
+1011 — 스케줄 두루마리와 같은 액자 크기: 책상 바탕을 sched_layout.json 의 책상 크기(746×478)로 넓힌 ext 를 넣는다 (base · vig 는 넣지 않는다)."""
+import base64, io, json, os, re, sys
 import numpy as np
 from PIL import Image
 
@@ -27,6 +28,18 @@ def uri(path):
     return "data:image/webp;base64," + base64.b64encode(webp_lossless(open(path, "rb").read())).decode()   # 1008 — 무손실 WebP
 
 
+def desk_ext(W, H):
+    """1011 — 책상을 스케줄 책상 크기(W×H — sched_layout.json 의 desk)로 넓힌 바탕: 예전 바탕(desk_out/base.png · 607×466)을 왼쪽 위
+    (위 (H-466)//2 줄 띄움)에 두고, 오른쪽은 바탕 오른쪽 끝을 거울로 · 위아래는 바로 안쪽 줄을 거울로 이어 붙인다 (이음매가 보이지 않게)"""
+    b = Image.open(desk_art.OUT + "base.png").convert("RGBA"); bw, bh = b.size
+    y0 = (H - bh) // 2; e = Image.new("RGBA", (W, H)); e.paste(b, (0, y0))
+    if W > bw: e.paste(b.crop((bw - (W - bw), 0, bw, bh)).transpose(Image.FLIP_LEFT_RIGHT), (bw, y0))
+    if y0: e.paste(e.crop((0, y0, W, 2 * y0)).transpose(Image.FLIP_TOP_BOTTOM), (0, 0))
+    r = H - y0 - bh
+    if r: e.paste(e.crop((0, y0 + bh - r, W, y0 + bh)).transpose(Image.FLIP_TOP_BOTTOM), (0, y0 + bh))
+    out = io.BytesIO(); e.save(out, "PNG"); return out.getvalue(), dict(w=W, h=H, x=0, y=y0)
+
+
 def sched_axes(root):
     A = os.path.join(root, "assets", "sched_art") + "/"
     pic = lambda n: A + n + (".webp" if os.path.exists(A + n + ".webp") else ".png")   # 1008 — WebP 가 새것
@@ -40,7 +53,11 @@ def apply(src, root, layout=None):
     geo = desk_art.build(layout) if layout else json.load(open(desk_art.OUT + "geo.json", encoding="utf-8"))
     geo["zoom"]["s"] = sched_axes(root)
     geo.pop("src", None)
-    art = {k: uri(desk_art.OUT + k + ".png") for k in ("base", "items", "props", "vig", "light")}
+    # 1011 — 스케줄과 같은 액자 · 같은 크기: 넓힌 바탕(ext)이 예전 바탕(base)을 대신하고, 가장자리 그늘(vig)은 스케줄 액자 그림(over2)이 맡는다
+    SW, SH = json.load(open(HERE + "sched_layout.json", encoding="utf-8"))["desk"]
+    ext, geo["ext"] = desk_ext(SW, SH)
+    art = {k: uri(desk_art.OUT + k + ".png") for k in ("items", "props", "light")}
+    art["ext"] = "data:image/webp;base64," + base64.b64encode(webp_lossless(ext)).decode()
     for g in geo["groups"]: art["hl_" + g["k"]] = uri(desk_art.OUT + "hl_" + g["k"] + ".png")
     js = open(HERE + "mdesk_block.js", encoding="utf-8").read()
     js = js.replace("__MDESK_ART__", json.dumps(art, separators=(",", ":")), 1)

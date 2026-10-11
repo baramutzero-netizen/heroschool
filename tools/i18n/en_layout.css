@@ -2,8 +2,7 @@
    한국어 화면 · game.html 의 CSS 는 그대로. 게임 규칙보다 세게 하려고 모두 html[lang=en] 으로 시작한다.
    학생 명부 책(그림자 DOM) 안은 en_layout_rbook.css. 확인: tools/i18n/check_layout.py */
 
-/* 가로 화면 사이드의 큰 '스케줄' 단추 — 'Schedule [Wk 1]' 이 왼쪽 두루마리 그림에 걸린다 */
-html[lang=en] body #app>.topbar .side-sched{padding-left:64px;letter-spacing:0}
+/* (1011 — 사이드의 큰 스케줄 단추는 한국어도 'Schedule' 이라 자리 고침을 game.html 로 옮겼다) */
 
 /* 폰 스케줄(예전 화면)의 손패 — 한 줄 다섯 칸이면 카드 이름(Mock Battle · Expedition …)이 칸보다 넓어 오른쪽 카드가 잘린다 → 네 칸 */
 @media (max-width:640px){
@@ -31,3 +30,7 @@ html[lang=en] .condrow .cn{flex-wrap:wrap;row-gap:0;min-width:0}
 @media (max-width:640px){
   html[lang=en] .condrow{grid-template-columns:minmax(0,1.5fr) 1fr 30px 56px}
 }
+
+/* 두루마리 스케줄 명부의 행동 칸 (1011) — 'Train' 이 칸(30) 테두리를 넘는다 → 38 · 부상 표시 '✚ 2wk' 자리 36 → 40.
+   막대 자리도 이 값을 따른다 (sched_block.js 의 skCssPx) */
+html[lang=en]{--sk-chipw:38px;--sk-injw:40px}

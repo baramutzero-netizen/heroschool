@@ -1,6 +1,7 @@
-/* MDESK_CSS_START — 마스터 노트 책상 (1006) · 마을 지도(.town · .townmap · .townpop)와 같은 틀 위에 얹는다 */
+/* MDESK_CSS_START — 마스터 노트 책상 (1006) · 마을 지도(.town · .townmap · .townpop)와 같은 틀 위에 얹는다 — 1011 부터 그 틀이 스케줄과 같은 1544:1008 */
 .mdesk .mdesk-in{overflow:hidden}
-.mdesk .mdesk-art{position:absolute;left:0;top:0;width:100%;height:calc(100% * 932 / 931)}
+.mdesk .mdesk-desk{position:absolute;left:0;top:0;width:100%;height:100%}   /* 넓힌 책상 746×478 — 두루마리로 다가갈 때 통째로 */
+.mdesk .mdesk-art{position:absolute}   /* 예전 책상 607×466 자리 (소품 · 누르는 자리) — 자리 · 크기는 viewHomeDesk 가 MDESK_GEO.ext 로 */
 .mdesk .mdl{position:absolute;left:0;top:0;width:100%;height:100%;display:block;max-width:none;margin:0;image-rendering:pixelated;pointer-events:none;-webkit-user-select:none;user-select:none}
 .mdesk .md-light{mix-blend-mode:screen}
 .mdesk .md-items{transition:opacity .26s ease-in}
@@ -22,8 +23,6 @@ html body #view .mdesk .mdk{position:absolute;display:block;margin:0!important;p
 /* 두루마리 → 스케줄 */
 .mdesk.mdesk-go .md-items,.mdesk.mdesk-go .mdh,.mdesk.mdesk-go .mdbadge,.mdesk.mdesk-go .mdtag{opacity:0!important}
 .mdesk.mdesk-go .mdesk-art{pointer-events:none}
-.mdesk .mdesk-frame.mf-top{top:0;bottom:auto;clip-path:inset(0 0 50% 0)}
-.mdesk .mdesk-frame.mf-bot{top:auto;bottom:0;clip-path:inset(50% 0 0 0)}
 .mdesk-ghost{position:absolute;z-index:30;opacity:0;pointer-events:none}                 /* 사이드 메뉴(z 40) 아래 */
 .mdesk-ghost img{position:absolute;left:0;top:0;width:100%;height:100%;max-width:none;display:block;margin:0;image-rendering:pixelated}
 html body .skwrap.mdesk-wait .sk-paper{opacity:0}
