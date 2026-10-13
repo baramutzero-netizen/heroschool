@@ -29,6 +29,7 @@ Claude 가 새 세션을 시작할 때 읽는 작업 메모. **세션을 마칠 
 | placer | 상담 목업 · 책상 배치판을 다시 만들 때 (src 전부 · 직업 도트 그림 · 목업의 학생 얼굴) — core · counsel 과 같이 |
 | roster | 학생 명부 목업 · 배치판 (mockups/student-roster 전부 · 초상 16 · 스킬 아이콘 · 책상 겹) — core 와 같이 (121개 · 세 번에 나눠 받는다) |
 | i18n | 영어판 글 목록을 다시 뽑는 `extract_ko.cjs` · `classify_ko.py` — core 와 같이 (acorn 은 저장소 밖에서 npm i) |
+| locker | 락커룸 목업을 다시 만들 때 · 시험에서 락커룸 창 배경(쿼터뷰 지도 다섯 장 · 장마다 3MB)을 볼 때 — mockups/locker-room 원본 4 + `assets/battle-fields/quarter/` city · regional · final · spring · winter.png |
 
 ## 1. 꼭 지킬 것
 
@@ -48,7 +49,7 @@ Claude 가 새 세션을 시작할 때 읽는 작업 메모. **세션을 마칠 
   (영어 표 `tools/i18n/en.json` · `en/*.json` 의 키도 같이 고친다). 영어 화면은 `hs.py layout` 으로 넘치는 칸을 본다.
 - **글을 더하거나 바꿀 때는 영어도 같이 한다** (사용자 지시 · 1011~). 빌드 끝이 `번역 단위 N가지 중 M 번역됨 · 영어 표에만 있고 지금 빌드에 없는 키 0` 이 되게 —
   새 단위는 `python3 tools/i18n/todo_en.py --cat ui --out a.tsv`(갈래마다) 로 찾아 영어 표에 넣고, 안 쓰게 된 옛 키는 지운다. 영어가 길어 넘치면 영어 글을 줄이거나 문맥 키(`맨위선언|키`)로 그 자리만 달리.
-- 블록(`SCHED_SCROLL` · `MDESK` · `CSLWIN` · `ROSTERBK` · `OPTX`)은 블록 파일(`tools/gen/patch/*_block.js · .css`)에서 고치고 apply — game.html 안을 직접 고치면 다음 apply 가 지운다.
+- 블록(`SCHED_SCROLL` · `MDESK` · `CSLWIN` · `LKWIN` · `ROSTERBK` · `OPTX`)은 블록 파일(`tools/gen/patch/*_block.js · .css`)에서 고치고 apply — game.html 안을 직접 고치면 다음 apply 가 지운다.
   오프닝 글(`OPTX`)은 `optx_block.js` · 글꼴 `optx_fonts.css` → `hs.py apply optx` (지킴이 없음 · 글을 바꾸면 `optx_fonts.py` 로 글꼴 조각부터).
   학생 명부 책의 모양(CSS · HTML)은 목업 원본 `mockups/student-roster/src/roster_tpl.html` 에서 고치고 apply roster.
   `tools/gen/patch/blocks.sha.json` 은 커밋하지 않는다 (hs.py pack 이 뺀다).
@@ -85,6 +86,8 @@ python3 ~/hs.py pack 이름            # 보낼 폴더 + 커밋 목록 (끝에 8
 | `tools/session/` | 이 문서 · hs.py |
 | `tools/i18n/` | 영어판 — 빌드 변환 `i18n_build.py` · 번역 함수 `i18n_runtime.js` · 영어 표 `en.json` · 공개 여부 `config.json` · 시험 `check_i18n.py` · 글 뽑기 `extract_ko.cjs` · `classify_ko.py` (README) |
 | `tools/field_lab.html` | 필드 배치 실험실 (전투 자리 · 크기 → apply_tune) |
+| `tools/check_scale.py` · `tools/check_modes.py` | 화면 크기 틀(UISCALE) · 화면 모드(넓은 화면 · 좁은 화면 · 태블릿 · 폰) 시험 — Playwright |
+| `mockups/ui-scale/` · `mockups/screen-modes/` | 화면 크기 틀 · 화면 모드 목업 (gitignore — PC 에만) |
 | `mockups/counsel-window/` | 상담창 목업 · 상담 책상 배치판 · 그림 (gitignore — PC 에만) |
 | `mockups/student-roster/` | 학생 명부 목업 · 학생 명부 배치판 · 견본 학생 · 책 그림 (gitignore — PC 에만 · README 에 굽는 법) |
 | `Claude outputs/` | 예전 결과물 · 스케줄/책상 배치판 키트 (gitignore) |
@@ -94,7 +97,7 @@ python3 ~/hs.py pack 이름            # 보낼 폴더 + 커밋 목록 (끝에 8
 
 ## 4. 빌드 · 패치 요점
 
-- apply 순서 (`tools/gen/README.md` 쓰는 법): sched → desk → exped3 → skgrade → cslpers → cslwin → roster → webp → wrap → wrap_site.
+- apply 순서 (`tools/gen/README.md` 쓰는 법): sched → desk → exped3 → skgrade → cslpers → cslwin → lkwin → roster → webp → wrap → wrap_site.
   모두 몇 번 돌려도 같은 결과라 **고친 것만** 다시 돌리면 된다. `hs.py apply 이름 [인자…]` = `python tools/gen/patch/apply_이름.py game.html [인자…]`.
 - `hs.py build` 는 TZ=Asia/Seoul — 빌드 번호(`MMDD-HHMM`)가 한국 시간. 리눅스의 wrap 은 LF 로 쓰므로 heroschool.html · site/index.html 을 PC 원본처럼 CRLF 로 바꿔 둔다 (git 내용은 같다).
   split_assets 는 `assets/spr_img.webp.js` 등 test 묶음 파일이 없으면 멈춘다 — 빌드하려면 test 묶음도 받는다.
@@ -125,9 +128,12 @@ python3 ~/hs.py pack 이름            # 보낼 폴더 + 커밋 목록 (끝에 8
   `hs.py layout` — 영어 화면 넘침 · 남은 한글 (세 크기 · 크기마다 1분 반쯤 · 10분 넘으면 `--sizes` 로 나눠 돌린다) · `python3 tools/i18n/check_save.py` — 세이브 왕복.
   **영어판은 공개됐다** — 브라우저 언어로 고르므로 시험 스크립트의 크로미움은 locale 을 정해 띄운다(`hs.py shot` 은 ko-KR). 영어로 보려면 `hs.py shot --page 'heroschool.html?lang=en'`.
 - 긴 시나리오는 직접 스크립트로: `sys.path.insert(0, os.path.expanduser("~")); import hs; b, pg, errs = await hs.open_game(p)` — 띄우는 데 4초쯤.
-- `python3 tools/check_scale.py` — 화면 크기 틀(UISCALE · 큰 화면 PC 에서 게임을 iframe 에 넣어 키운다 — 1분 반쯤). 틀 · 진짜 마우스(클릭 · 서명 긋기 · 휠) · 키보드 ·
+- `python3 tools/check_scale.py` — 화면 크기 틀(UISCALE · PC 에서 게임을 iframe 에 넣어 키우고 줄인다 — 1분 반쯤). 틀 · 진짜 마우스(클릭 · 서명 긋기 · 휠) · 키보드 ·
   설정 '화면 크기' · 언어 바꾸기 · 새 버전 · 폰/iPad/자동화는 틀 없이 · file:// 과 http://. 맨 앞 스크립트(UISCALE)나 iframe 에 영향 가는 걸 고치면 돌린다.
-  **Playwright(자동화)에서는 틀이 안 생긴다**(navigator.webdriver) — 다른 시험은 예전 그대로. 틀로 보려면 주소에 `?scale=auto` (또는 150 · user · off).
+  **Playwright(자동화)에서는 틀이 안 생긴다**(navigator.webdriver) — 다른 시험은 예전 그대로(창 크기 그대로). 틀로 보려면 주소에 `?scale=user`(사람처럼) · `auto` · `150` · `off`.
+- `python3 tools/check_modes.py [--shots 폴더]` — 화면 모드(1013 · 1분 반쯤): PC 틀(1440 · 900×600 ×0.818 · 600) · 한 창에서 크기 바꾸기 · 설정 150% · 진짜 마우스로 스케줄 끌기 ·
+  락커룸 → 쿼터뷰/세로 전투 · 태블릿 흉내(viewport width=1100 · 돌리기 · iPad Air · 화면 나누기 · 탭) · 폰 흉내(가로 덮개 · 전투 중 숨김 · 영어). 화면 모드 · 배치 판정을 고치면 돌린다.
+  틀 안에서 직접 시험할 때: `b, pg, fr, errs = await hs.open_framed(p, 900, 600)` — fr 이 게임 frame (마우스 좌표 = 게임 좌표 × `HS_SCALE.k`).
 - 게임 상태: `S` (세이브) · `UI.view` · `render()` · `closeModal()`. 상담 대기열 `counselState().queue` · 지침 무시 `defyState().pend` · 난수 `RNG`.
   새 브라우저마다 새 게임(1년차 봄 · 학생 3명)으로 시작한다.
 
@@ -142,9 +148,83 @@ python3 ~/hs.py pack 이름            # 보낼 폴더 + 커밋 목록 (끝에 8
   apply_sched · apply_desk 를 다시 돌리면 그 CSS 블록이 스타일시트 맨 끝으로 옮겨 가서 game.html diff 가 크게 보인다 (내용은 같다).
 - 게임 함수로 견본 데이터를 만들 때는 `withSeed("이름", fn)` 으로 난수를 고정한다 (`let RNG = Math.random` · seedRNG).
 - 학생 명부 책은 그림자 DOM(`#rbHost`) 안 — 테스트에서 `document.getElementById('rbHost').shadowRoot` 로 찾는다 (Playwright 의 `locator('#rbHost …')` 는 그대로 뚫고 들어간다).
-  책은 가로 넓은 화면(1100px 이상)에서만 뜬다 — `open_game(p, w=1440, h=1000)`. 상태는 `RBK.isOpen()` · `RBK.state`.
+  책은 넓은 화면(게임이 보는 폭 1100px 이상 — 1013 부터 방향은 안 본다)에서만 뜬다 — `open_game(p, w=1440, h=1000)`. 상태는 `RBK.isOpen()` · `RBK.state`.
 
-## 7. 최근 작업 · 현재 상태 (2026-10-11 · 빌드 1011-2038)
+## 7. 최근 작업 · 현재 상태 (2026-10-13 · 빌드 1013-1649)
+
+- **화면 모드 — 넓은 화면을 기본으로 · 좁은 PC 창은 통째로 줄인다 (1013 · 빌드 1013-1649)** — 사용자: '가로 넓은 화면을 기본으로, 폭 1100 미만이면 전체 스케일을 축소,
+  640 이하는 세로 모드 · 폰은 무조건 세로 · 세로 태블릿은 무조건 가로(넓은 화면) · PC 좁은 창은 줄이고 PC 640 이하는 세로'. 목업(아티팩트 '화면 모드 개편 목업' · PC
+  `mockups/screen-modes/`)으로 문제점을 본 뒤 둘을 정했다 — ① 화면 크기 설정으로 틀 안 폭이 1100 보다 좁아지면 좁은 화면(세로 모드) ② 폰 가로 안내는 전투 화면에서 띄우지 않는다.
+  - **배치는 게임이 보는 폭만 본다** — 1100 이상 = 넓은 화면(오른쪽 사이드 · 책상 · 마을 지도 · 두루마리 · 명부 책 · 가로 전투(쿼터뷰)), 그보다 좁으면 좁은 화면(위쪽 탭 ·
+    640 이하는 폰 메뉴 · 세로 전투). 예전 `(min-width:1100px) and (orientation:landscape)` → `(min-width:1100px)`: game.html CSS 넷 · 스케줄 블록(sched_block.css 둘 ·
+    sched_block.js 의 mq) · `TOWN_MQ`. `bfOrient()` = `townMode()` 면 landscape (예전: 창 폭 900 이하이거나 폭/높이 1.2 미만이면 portrait).
+  - 기기마다 그 폭을 맨 앞 스크립트(UISCALE · 영문만)가 맞춘다 — `HS_SCALE.kind` 'pc' · 'tablet' · 'phone' (<html> 에 hs-pc · hs-tablet · hs-phone):
+    · PC(`desktop()` 그대로 — 마우스 · iPad/폰/Android 빼고): **배율 1 이어도 늘 틀** — 창을 좁히면 다시 불러오지 않고 줄인다. 자동 배율 `kOf`: 폭 640 이하 ×1 · 641~1099 폭÷1100
+      (천분의 일 내림 — 틀 안 폭이 늘 1100 이상) · 1100 이상 예전 큰 화면 규칙. 직접 고른 100~200% 는 그대로 — 틀 안이 1100 보다 좁으면 저절로 좁은 화면 (결정 ①).
+      `set()` 은 틀 없이 돌던 데스크톱 창이면 늘 "reload"(다시 불러와 틀이 된다 · 자동화 · `?scale=off` 는 "saved").
+    · 태블릿(PC 아님 · `screen` 짧은 변 600 이상): 창 폭 641~1099 면 viewport `width=1100`, 아니면 `width=device-width,initial-scale=1` — 처음 · resize · orientationchange 때마다.
+      창 폭 = `visualViewport.width × scale` (viewport 를 바꿔도 · 두 손가락 확대에도 그대로). 화면 나누기로 640 이하면 좁은 화면 (계획 때 덧붙인 것).
+    · 폰(짧은 변 600 미만): viewport 그대로.
+    · `html{text-size-adjust:100%}` — 줄여 보이는 화면에서 iOS · 안드로이드 크롬이 글자를 멋대로 키우지 않게.
+  - **ROTATE** (scalePanel 아래): 폰을 가로로 들면 `#rotateAsk` 덮개('화면을 세로로 돌려 주세요') — `#modalRoot .bf-stage`(전투 창)가 있으면 숨김(결정 ②) · 전투 창은 MutationObserver 로 본다.
+    방향은 `HS_SCALE.landscape()`(screen.orientation → window.orientation → 창 모양) — 키보드가 올라와 창이 납작해져도 안 뜬다. 태블릿 세로 + 넓은 화면이면 토스트
+    '가로로 돌리면 더 크게 보인다' 한 번(로딩 화면 뒤). `rotateInit()` 은 `boot()` 바로 앞.
+  - 글 — 화면 크기 설명 · '가로 화면' → '넓은 화면' / '세로 화면' → '좁은 화면'(전투 연출 · 두루마리 스케줄 설명 · 알림 둘 · 설정 꼬리말). 영어: en/ui.json(바꿈 넷 + 새 셋) · en/log.json(바꿈 둘).
+  - 필드 실험실(`tools/field_lab.html`) 크기 목록 — 1100 폭(태블릿 · PC 좁은 창이 보는 크기 셋) · 폰 가로 844×390 · PC 600×800 을 더했다 (게임이 보는 폭으로 가로 · 세로 전투가 갈리므로).
+  - 시험: 새 `tools/check_modes.py` · `check_scale.py`(새 규칙 — 1440 · 100% 도 틀 ×1 · 900 ×0.818 · 600 ×1) · `hs.py layout`(1100×700 을 더해 네 크기) · `hs.py i18n` · `check_save.py` 통과.
+    layout 이 처음 찾은 영어 넘침 둘은 en_layout.css 로 고쳤다 — 졸업생 카드 이명(`.gradcard-epi` · 1100 폭에서 말줄임 → 영어는 줄바꿈) · 입학식 역할 줄(`.cerrole` · 900 폭 도트 24px 에서
+    'Assassination' 이 카드 밖으로 → 영어는 15px = 도트 12px). 둘 다 이번 화면 모드와 상관없이 전부터 있던 것 (1100 크기를 처음 재서 · 시뮬레이션 학생이 바뀌어서 보였다).
+    크로미움 흉내뿐이라 **실제 기기 확인이 남았다** — iPad Safari 회전(배율이 남는지 · 두 손가락 확대 뒤) · 안드로이드 태블릿 크롬(기본이 데스크톱 사이트) · 폰 가로 덮개 · 키보드 ·
+    맥 Safari · Firefox 의 틀 축소(641~1099 창 · 끌기 · 글자 번짐).
+  - 알게 된 것 — 가로로 든 폰의 세로 전투는 실제 폰 크기(주소창 빼고 750×342 쯤)에서 전투판 높이가 170px 남짓으로 납작하다 (예전부터 같다 · 덮개를 안 띄우는 건 사용자가 정한 것).
+    쿼터뷰가 없는 계절 필드 전투는 세로로 긴 넓은 화면(1100×1467)에서도 전투판 높이가 잘려(최대 752) 가로 비율 그대로 — 그림 · 자리가 어긋나지 않는다.
+    apply_sched 를 다시 돌리면 그림 줄(SCHED_ART)이 data: 로 돌아가고 SCHED CSS 가 MDESK CSS 뒤로 옮겨 간다 — 이번에는 블록 파일과 game.html 블록을 같은 글로 고치고
+    지문만 다시 적었다 (블록 파일로 apply 한 결과와 그림 줄 말고 같은지 확인함). 바꾼 스크립트: 세션 scratchpad `modes/apply_modes.py`.
+
+
+- **명중 보정 — 피해를 주는 스킬 +10%p · 필살기 +20%p · 명중 확률 35 ~ 100% (1013 · 빌드 1013-0900)** — 사용자: '피해를 주는 스킬만 명중 보정 +10%,
+  피해를 주는 필살기는 +20%, 기본기/반격은 보정 없음. 범위는 35%~100%로' (바로 앞 빌드 0850 은 기본기 · 반격도 +10%p 였다 — 사용자가 바로 고쳤다).
+  - `HIT_BONUS_SKILL = .10` · `HIT_BONUS_ULT = .20` · `hitBonusOf(o)` (`DMG_K` 바로 아래) — `dealDamage` 의 명중 확률 = clamp(명중 + hitBonusOf(o) − 회피, .35, **1**).
+    `o` 가 기술(sk)이면 kind 'basic' → 0 · 'ult' → .20 · 그 밖(스킬 1 · 2 — 중독의 첫 타 포함) → .10. 반격(`o.counter`) → 0. 양쪽 모두(적 · 마왕 포함).
+    스킬 시전 판정(스킬 성공률 − 저항)은 그대로. 전투력 식(`PW`)은 다시 맞추지 않았다 (그쪽 clamp 의 .99 도 그대로).
+  - 같은 팀 · 같은 상대 · 같은 시드로 1200판 (시험 세이브 봄 신인전) — 빗나간 타격: 스킬 14.6 → 5.0% · 필살기 17.4 → 0.6% · 기본기 16.4 → 15.8% · 반격 20.9 → 21.7%
+    (기본기 · 반격은 보정이 없어 거의 그대로). 타격 수 약 6% 줄었다. 세션 scratchpad `hit_cmp.py`(보정 전 빌드와 견줌) · `hit_after.py`. `hs.py i18n` 통과.
+
+- **기분 · 정보력 보정 글에 '속도' (1013 · 빌드 1013-0832)** — runBattle 은 기분(`moodStatMul`)과 정보력(`infoBattleMul`)을 체력 · 공격 · 방어 · **속도**에 곱하는데
+  글은 '체력·공격력·방어력'만 말하고 있었다. 사용자: '글에 속도도 넣고' — 코드는 그대로, 글만 고쳤다.
+  - 락커룸 칸 카드(`lockerHtml` · '체력·공격력·방어력·속도 ±5%') · 락커룸 창 결과 줄(`lkwResultHtml`) — LKWIN 블록. 정보력 설명(`MASTER_INFO.info.d`) · `MOOD_STAT` 주석 — 블록 밖 그대로 고침.
+  - 영어: en/ui.json 다섯 줄 · en/core.json 한 줄 (HP·ATK·DEF·SPD). `hs.py layout --only tour_match,tour_lkwin,tour_lkwres` · `hs.py i18n` 통과.
+
+- **락커룸 창이 출전과 같이 뜬다 (1013 · 빌드 1013-0811)** — 사용자: '경기 화면에 들어가서 락커룸에서 한마디 단추를 눌러 들어가지 말고, (출전 화면에서) 출전을 누르고 한마디를 안 했으면 락커룸이 같이 팝업'.
+  - 경기 화면으로 넘어가는 단추 — 봄 신인전 '○팀 출전' · 친선전 '친선전 시작' · 가을 대회 '엔트리 확정' · '대진 확정'(광역처럼 대진 화면을 거치면 그 뒤) — 가 `lkwAuto(t)`.
+    다음에 그려지는 그 대회의 경기 화면에서 `bindLocker` 가 한 번 쓰고 지우며, 한마디 전이면 `lkwOpen()` (경기 화면 위에 창).
+  - 창(경기 시작 ▶ · 말없이 시작 ▶)이나 경기 화면의 '경기 시작'으로 전투를 열 때도 `lkwAuto` — 전투를 보고 '결과 확정'으로 다음 경기 화면에 오면 그 경기의 창이 같이 뜬다.
+    '빠르게 결과만' · '남은 경기 한 번에' 뒤 · 다시 그리기(창을 닫은 뒤 · 리그 출전 팀 바꾸기)에는 뜨지 않는다 — 그때는 '경기 시작'이 창부터 (`lkwGate` 그대로).
+  - 경기 화면의 '락커룸에서 한마디' 단추 · 안내(`.lkw-go` · `data-lkw`)는 뺐다 — 영어 두 줄도 en/ui.json 에서 뺐다. apply 확인에 `lkwAuto(t);` 5곳 · `data-lkw` 0.
+  - 시험: 한/영 — 봄 신인전 출전 → 창(+ 튜토리얼 8) → 전투 → 결과 확정 → 다음 경기 + 창 → × → 빠르게 결과만(창 없음) → 경기 시작(창) → 말없이 시작 → 다음 경기 + 창 ·
+    친선전 · 시내 · 예선(리그 — 출전 팀을 바꿔 다시 그려도 창 없음) · 광역(엔트리 확정 → 대진 확정 화면은 창 없음 → 대진 확정 → 창) ·
+    `hs.py layout --only tour_match,tour_lkwin,tour_lkwres` · `hs.py i18n` 통과. 세션 scratchpad `lka_test.py`.
+
+- **락커룸 창 — 목업 그대로 게임에 (1013 · 빌드 1013-0706)** — 사용자: '만든대로 진행하자'. 새 블록 `LKWIN` (`tools/gen/patch/apply_lkwin.py` · `lkwin_block.js` · `lkwin_block.css` — apply_cslwin 뒤). 자세한 것은 `tools/gen/README.md` 의 락커룸 창.
+  - 경기 화면 셋(가을 대회 `renderLadder` · 친선전 `renderFriendly` · 봄 신인전 `renderTournament`)의 **'경기 시작' → `lkwGate`** — 그 경기에서 한마디 전이면 락커룸 창부터, 했으면 바로 전투.
+    '빠르게 결과만' · '남은 경기 한 번에'는 창 없이. 경기 화면의 락커룸 칸 = 학생 기분 카드 그대로 (0706 에는 한마디 전에 '락커룸에서 한마디' 단추 · 안내가 있었다 — 0811 에 뺐다, 위) (예전 2 × 2 한마디 단추 `data-say` 는 없어졌다).
+    `lockerHtml` · `bindLocker` 는 블록 안으로 (apply 가 블록 밖의 예전 것을 지운다) — `bindLocker(t, L, my, rerender, {title, label, foe, field, start})` 가 창이 쓸 것을 `LKW.ctx` 에 둔다.
+  - 창 = 목업 그대로 (창 796 · 무대 768 × 432 · 쿼터뷰 지도 흐림 · 학생 1.5배 반원 · 구름 넷 · 고민 … → ~♪ / | | | · 이름표 ±20 · 결과 글 · '경기 시작 ▶' · '말없이 시작 ▶' · ×(Esc)는 경기 화면으로).
+    `#modalRoot` 에 덧붙는 `.cw-ov.lkw-ov`(z 81 — 경기 화면 위 · 튜토리얼 아래). 상담창 CSS · `cslwSprUrl` · `cslwCloudArt` · `cwBlip` 을 그대로 쓴다. 고르는 순간 `lockerSpeak` + `save()`.
+    튜토리얼 8 은 창을 처음 열 때 창 위에 (예전: 경기 화면에 처음 들어설 때). 좁은 화면은 상담창처럼 `.compact` (구름 · 이름표 격자는 무대 아래).
+  - 영어 23줄(en/ui.json `_lkwin` 묶음 + '친선전') · 영어 이름표는 이름 · 성격 두 줄(`en_layout.css`). `check_layout.py` 에 `tour_match` · `tour_lkwin` · `tour_lkwres` (창은 점검용 `lkwOpen({instant:true, pick})`).
+  - hs.py: patch 묶음에 lkwin 셋 · 새 묶음 `locker`(목업 원본 + 쿼터뷰 지도 다섯 장).
+  - 시험: 한/영 · 시내 · 광역 · 예선 · 본선 · 친선전 · 봄 신인전 — 경기 시작 → 튜토리얼 8 → 구름 → 반응 → 결과 → 전투가 열린다 · 봄 신인전 세 경기 잇달아(경기마다 새 락커룸) ·
+    단추로 먼저 열기 → × → 경기 화면에 결과 → 경기 시작은 바로 전투 · Esc · 말없이 시작 · 빠르게 결과만(창 없음) · 키 1 ~ 4 · 스페이스 · 폰 390 × 844(좁은 배치) ·
+    `hs.py layout --only tour`(세 크기 · 넘침 0 · 남은 한글 0) · `hs.py i18n` · `check_save.py` 통과. 세션 scratchpad `lkg_test.py` · `lkg_paths.py` · `lkg_next.py`.
+
+- **락커룸 목업 — 상담실 같은 창 (1012 · → 1013 에 게임에 넣었다(위))** — PC `mockups/locker-room/`(깃 밖) · `locker_room_mockup.html`(약 1.7MB · 인터넷 없이) · 자세한 것 · 다시 만들기는 그 README.
+  - 사용자 요청: 배경은 목표 대회를 흐리게(→ 도중에 **쿼터뷰 지도** `assets/battle-fields/quarter` 로 바꿔 달라고 함 · `TQ_MAPS` · `tqMapKey` 대로 시내 city · 광역 / 예선 regional · 본선 final · 친선전 = 그 계절 학원),
+    출전 3 ~ 5명이 허들, 대사는 둘레의 구름 선택지, 고르면 잠시 고민(…) → 납득은 머리 위 ~♪ · 못 납득은 머리 둘레 | | |.
+  - 창 796 × 622 · 무대 768 × 432 — 상담창 CSS(`cslwin_block.css`)를 그대로 깔고 크기만 · 구름은 `cslwCloudArt` 그대로 · 학생 도트 `cslwSprUrl` 1.5배(상담창 2배의 0.95 — 다섯이면 커서) ·
+    먼 쪽 반원(양 끝 앞 · 가운데 뒤, 오른쪽은 좌우 뒤집기) · 발 아래 이름표(이름 · 성격 / 기분 · 수치 / 막대 — 영어는 두 줄) · 규칙은 `makeSpeechOffers` · `lockerSpeak` · `baseMood` 그대로.
+  - 목업 조작판: 대회 · 인원 · 학생 크기 · 전력 · 상대 전력 파악 · 호소력 · 흐림 · 배경 확대 · 한/영 · 운명 학생 · 말 종류 보기 · 단계 바로 보기(`?step=4`).
+  - 쿼터뷰 지도 다섯 장(city · regional · final · spring · winter.png)은 hs.py 의 `locker` 묶음 (1013).
 
 - **영어 학생 명부 책 넘침 · 상담실 확률 줄 (1011 · 빌드 1011-2038)** — 사용자 제보 넷 (스크린샷).
   - 전투 능력치 탭(영어) 오른쪽 칸이 책 밖으로 → 책에서만 짧은 이름: 책 블록 맨 위 표 `RB_BAT_N`(같은 한국어 · 맨 위 선언을 따로 둬 문맥 키 `RB_BAT_N|…`) →
@@ -200,6 +280,7 @@ python3 ~/hs.py pack 이름            # 보낼 폴더 + 커밋 목록 (끝에 8
     Genre Simulation · AI 공개 Yes(코드 · 영어 글). 표지(630×500) · 스크린샷은 아직 — 필요하면 만든다.
 
 - **화면 크기 자동 맞춤 (1011 · 빌드 1011-1106)** — 사용자가 목업의 안 ① 을 골랐다. 큰 화면 PC 에서 게임 전체를 브라우저 확대처럼 키운다.
+  (1013 — 위 '화면 모드'로 바뀌었다: PC 는 배율 1 이어도 늘 틀 · 100% 도 틀 ×1 · 641~1099 창은 줄인다. 아래는 1011 때의 설명)
   - game.html 맨 앞(`<title>` 바로 뒤) **UISCALE 스크립트** · `HS_SCALE`: 맨 위 창이 데스크톱(마우스가 주인 · iPad/폰/Android 빼고)이고 배율 k ≥ 1.05 면 '틀'이 된다 —
     `document.write('<body><script>…')` 로 body 를 열고 그 안에서 `window.stop()`(아래 게임은 읽지도 돌지도 않는다) → 같은 주소 `?hsf=k` 를 iframe 으로 `transform: scale(k)`.
     게임 안은 W/k × H/k 창이라 게임 코드 · 클릭 · 끌기 · 서명이 그대로. 창 크기가 바뀌면 다시 맞춘다. iframe 안은 devicePixelRatio ×k(오프닝 캔버스 또렷 · 진짜 값 `HS_SCALE.dpr0()`) ·

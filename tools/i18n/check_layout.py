@@ -1,6 +1,8 @@
 """영어판 화면 점검 (1010 · 2단계) — 영어로 띄운 화면에서 넘치거나 잘린 칸을 찾는다.
 
-    python3 tools/i18n/check_layout.py [--sizes 1440x900,900x1000,390x844] [--only home,plan] [--shots 폴더] [--years 3]
+    python3 tools/i18n/check_layout.py [--sizes 1440x900,1100x700,900x1000,390x844] [--only home,plan] [--shots 폴더] [--years 3]
+    크기 — 1440x900 넓은 화면 · 1100x700 넓은 화면의 가장 좁은 폭(1013 — PC 좁은 창 · 태블릿이 이 폭으로 그려 줄인다) ·
+    900x1000 좁은 화면(화면 크기를 직접 키운 PC · 가로로 든 폰) · 390x844 폰
     hs.py 를 쓰는 세션이면:  python3 ~/hs.py layout   (빌드 뒤에)
 
 check_i18n.py 와 같은 빌드(변환함 · 그림은 저장소 것)를 같은 시드로 몇 해 돌린 뒤, 화면마다 크기마다
@@ -82,6 +84,12 @@ SCENES = r"""(() => {
   sc['tour_entry'] = () => { if (UI.tour) { UI.tour._prepOpen = false; UI.tour.stage = 'entry'; } render(); };
   sc['tour_region'] = () => { closeModal(); UI.tour = null; UI.pendingTour = null; startLadder('region'); if (UI.tour) { UI.tour._prepOpen = false; UI.tour.stage = 'entry'; } render(); };
   sc['tour_spring'] = () => { closeModal(); UI.tour = null; UI.pendingTour = null; startSpringTour(); render(); };
+  /* 1013 — 경기 화면(락커룸 칸) · 락커룸 창(구름 고르기 · 결과). 창은 점검용 instant 로 그 단계까지 바로 */
+  sc['tour_match'] = () => { closeModal(); UI.tour = null; UI.pendingTour = null; startLadder('region'); const t = UI.tour;
+    if (t) { t._prepOpen = false; t.entryTeams = ['A','B','C'].filter(n => teamFull(teamByName(n))).slice(0, ladderUse('region'));
+      t.myTeams = t.entryTeams.map(n => teamMembers(teamByName(n)).map(x => x.id)); t.stage = 'match'; } render(); };
+  sc['tour_lkwin'] = () => { sc['tour_match'](); lkwOpen({instant: true}); };
+  sc['tour_lkwres'] = () => { sc['tour_match'](); lkwOpen({instant: true, pick: 0}); };
   /* 전투 화면은 닫는 길이 따로라 맨 끝에 */
   sc['battle'] = () => {
     RBC(); closeModal(); UI.tour = null; UI.pendingTour = null; UI.view = 'home'; render();
@@ -199,7 +207,7 @@ def run(br, path, query, size, scenes_only, shots, years, tag):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--sizes', default='1440x900,900x1000,390x844')
+    ap.add_argument('--sizes', default='1440x900,1100x700,900x1000,390x844')   # 1013 — 1100x700 (넓은 화면의 가장 좁은 폭)
     ap.add_argument('--only', default='', help='화면 이름 (쉼표) — home,plan,facil,tut …')
     ap.add_argument('--shots', help='영어 화면 스크린샷 폴더')
     ap.add_argument('--years', type=int, default=3)

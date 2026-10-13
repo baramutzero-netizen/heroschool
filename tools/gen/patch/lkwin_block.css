@@ -1,0 +1,104 @@
+/* LKWIN_CSS_START — 락커룸 창 (1013 · apply_lkwin.py) ─ 경기 직전 한마디. mockups/locker-room 목업 그대로.
+   상담창(.cw-* — CSLWIN_CSS)을 그대로 쓰고 크기 · 무대만 바꾼다: 창 796 · 무대 768 × 432 (1배 384 × 216 을 2배로). 경기 화면 위에 겹쳐 뜬다 */
+.cw-ov.lkw-ov{z-index:81}                                  /* 경기 화면(.overlay 80) 위 · 튜토리얼(.tutover 82) 아래 */
+.cw-win.lkw-win{width:796px}
+.lkw-win .cw-stage{width:772px;height:436px;background:#2a211b}
+.lkw-win .cw-over{width:768px;height:432px}
+.lkw-win .cw-cloud{width:188px}
+.lkw-win .cw-tab.title{max-width:56%}
+.lkw-win .lkw-pw b{font-weight:400;color:var(--cw-ink)}
+.lkw-win .lkw-pw b.cw-dim{color:var(--cw-dim)}
+.lkw-win .cw-bt b{font-weight:400;color:#000}
+.lkw-win .cw-who{height:auto;min-height:20px}                 /* 결과의 머리줄(말 종류 — 설명)은 좁은 화면에서 두 줄이 될 수 있다 */
+.lkw-win .cw-next.on.dim{opacity:.82}
+.lkw-scene{position:absolute;left:0;top:0;width:768px;height:432px;overflow:hidden;transform-origin:0 0}
+/* 배경 — 그 경기의 쿼터뷰 지도를 흐리게 + 가장자리 어둡게 (가장자리가 비치지 않게 넉넉히 키운다 · 다 받으면 나타난다) */
+.lkw-bg{position:absolute;inset:-28px;background-color:#2a211b;background-repeat:no-repeat;filter:blur(4px) saturate(.92) brightness(.86);opacity:0;transition:opacity .6s ease}
+.lkw-bg.on{opacity:1}
+.lkw-tint{position:absolute;inset:0;pointer-events:none;background:
+  radial-gradient(ellipse 60% 50% at 50% 66%,rgba(255,224,160,.12),rgba(255,224,160,0) 75%),
+  radial-gradient(ellipse 82% 78% at 50% 56%,rgba(18,12,8,0) 52%,rgba(18,12,8,.46) 100%),
+  linear-gradient(rgba(18,12,8,.2),rgba(18,12,8,0) 28%,rgba(18,12,8,0) 72%,rgba(18,12,8,.3))}
+.lkw-floor{position:absolute;pointer-events:none;border-radius:50%;background:radial-gradient(closest-side,rgba(14,9,5,.44),rgba(14,9,5,.26) 62%,rgba(14,9,5,0))}
+.lkw-team{position:absolute;inset:0;z-index:1}
+.lkw-fx{position:absolute;inset:0;z-index:3;pointer-events:none}
+/* 학생 — 전투 idle 도트 1.5배 (칸 192). 발끝이 자리 y, 머리 가운데가 자리 x. 오른쪽 학생은 좌우를 뒤집어 가운데를 본다 */
+.lkw-stu{position:absolute;pointer-events:none;opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s ease}
+.lkw-stu.in{opacity:1;transform:none}
+.lkw-sh{position:absolute;border-radius:50%;background:radial-gradient(closest-side,rgba(12,8,5,.5),rgba(12,8,5,.28) 70%,rgba(12,8,5,0))}
+.lkw-lean,.lkw-body{position:absolute;inset:0}
+.lkw-lean{transition:transform .5s steps(2)}
+.lkw-scene.lean .lkw-stu.l .lkw-lean{transform:translateX(4px)}
+.lkw-scene.lean .lkw-stu.r .lkw-lean{transform:translateX(-4px)}
+.lkw-spr{position:absolute;inset:0;background-position:0 0;background-repeat:no-repeat;image-rendering:pixelated;animation:lkwCalm 2.8s step-end infinite;
+  filter:brightness(calc(var(--ld,1) * var(--lr,1))) saturate(var(--ls,1));transition:filter .45s}
+.lkw-stu.m .lkw-spr{transform:scaleX(-1)}
+.lkw-spr.face{background-size:contain;background-position:50% 30%;image-rendering:auto;animation:none}
+/* idle 네 장 — 상담창 cwCalm 과 같은 차례 (숨 쉬기 0 → 1 → 3 → 0 사이에 가끔 눈 감기 2) · 칸 크기 --c */
+@keyframes lkwCalm{0%{background-position:0 0}22%{background-position:calc(var(--c) * -1) 0}44%{background-position:calc(var(--c) * -3) 0}
+  66%{background-position:0 0}86%{background-position:calc(var(--c) * -2) 0}91%,100%{background-position:0 0}}
+.lkw-hit{position:absolute;pointer-events:auto}
+.lkw-stu.hi .lkw-spr{filter:brightness(calc(var(--ld,1) * var(--lr,1) * 1.07)) saturate(var(--ls,1)) drop-shadow(0 0 2px #fff7d6) drop-shadow(0 0 5px rgba(255,226,150,.55))}
+/* 반응 — 납득: 폴짝 / 못 납득: 어깨가 처지고 살짝 어둡고 흐려진다 */
+.lkw-stu.ok .lkw-body{animation:lkwHop .5s steps(4) 1}
+@keyframes lkwHop{0%,100%{transform:none}30%{transform:translateY(-8px)}65%{transform:translateY(-2px)}}
+.lkw-stu.no{--lr:.84;--ls:.68}
+.lkw-stu.no .lkw-body{transform:translateY(2px);transition:transform .4s steps(2)}
+/* 고민 중 — 머리 위 말줄임 (상담창 .cw-dots 와 같은 상자) */
+.lkw-think{position:absolute;width:36px;height:24px;background:#fffaf0;border:2px solid #4a3524;box-shadow:2px 2px 0 rgba(0,0,0,.25);opacity:0;transform:translateY(4px);transition:opacity .25s,transform .25s steps(2)}
+.lkw-think.on{opacity:1;transform:none;animation:cwBob 1.4s ease-in-out infinite}
+.lkw-think::after{content:"";position:absolute;left:6px;bottom:-8px;border:6px solid transparent;border-top-color:#4a3524;border-bottom:0}
+.lkw-think.r::after{left:auto;right:6px}
+.lkw-think i{position:absolute;top:8px;width:4px;height:4px;background:#4a3524;animation:cwBlink 1.2s infinite}
+.lkw-think i:nth-child(1){left:6px}
+.lkw-think i:nth-child(2){left:14px;animation-delay:.2s}
+.lkw-think i:nth-child(3){left:22px;animation-delay:.4s}
+/* 납득 — 머리 위 ~♪ (도트 2배) · 가끔 ♫ 가 떠오른다 */
+.lkw-joy{position:absolute;width:60px;height:32px;opacity:0}
+.lkw-joy.on{opacity:1;animation:lkwPop .36s steps(3) 1}
+@keyframes lkwPop{0%{transform:scale(.4)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+.lkw-joy i{position:absolute;background:0 0/100% 100% no-repeat;image-rendering:pixelated}
+.lkw-joy .jt{left:0;top:16px;animation:lkwSway 1.2s steps(2) infinite}
+.lkw-joy .j1{left:22px;top:0;animation:lkwBob .9s steps(2) infinite}
+.lkw-joy .j2{left:36px;top:4px;opacity:0;animation:lkwFloat 2.6s steps(13) .5s infinite}
+@keyframes lkwBob{0%,100%{transform:none}50%{transform:translateY(-2px)}}
+@keyframes lkwSway{0%,100%{transform:none}50%{transform:translateX(2px)}}
+@keyframes lkwFloat{0%{opacity:0;transform:none}12%{opacity:1}72%{opacity:1}100%{opacity:0;transform:translate(8px,-26px)}}
+/* 못 납득 — 머리 둘레 | | | (위에서 아래로 내려오고, 천천히 흐려졌다 짙어진다) */
+.lkw-gloom{position:absolute;background:0 0/100% 100% no-repeat;image-rendering:pixelated;opacity:0;clip-path:inset(0 0 100% 0)}
+.lkw-gloom.on{opacity:1;animation:lkwDrop .5s steps(6) forwards,lkwDim 2.4s steps(2) .6s infinite}
+@keyframes lkwDrop{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes lkwDim{0%,100%{opacity:1}50%{opacity:.7}}
+/* 호소력 · 운명으로 통했다 — 작은 금빛 글씨 */
+.lkw-tag{position:absolute;transform:translateX(-50%);white-space:nowrap;font-size:12px;line-height:16px;color:#ffe7a0;opacity:0;transition:opacity .3s;
+  text-shadow:1px 0 0 #5a3e12,-1px 0 0 #5a3e12,0 1px 0 #5a3e12,0 -1px 0 #5a3e12,1px 1px 0 #5a3e12,-1px -1px 0 #5a3e12,1px -1px 0 #5a3e12,-1px 1px 0 #5a3e12}
+.lkw-tag.on{opacity:1}
+/* 이름표 — 이름 · 성격 / 기분 이름 · 수치 / 막대(30 · 70 눈금). 무대 위(.cw-over) 아래쪽 한 줄 — 좁은 화면은 무대 아래 격자 */
+.lkw-plates{position:absolute;inset:0;pointer-events:none}
+.lkw-plate{position:absolute;left:var(--x,0);top:var(--y,0);width:var(--w,104px);padding:3px 6px 4px;background:rgba(255,250,240,.9);border:2px solid #4a3524;color:var(--cw-ink);
+  pointer-events:auto;cursor:default;box-shadow:inset 1px 1px 0 #fff,2px 2px 0 rgba(0,0,0,.3);opacity:0;transform:translateY(4px);transition:opacity .4s,transform .4s,border-color .2s}
+.lkw-plate.in{opacity:1;transform:none}
+.lkw-plate.hi{border-color:#b8860b;background:#fffaf0}
+.lkw-plate .r1,.lkw-plate .r2{display:flex;justify-content:space-between;align-items:baseline;gap:6px;line-height:16px;white-space:nowrap}
+.lkw-plate .pn{min-width:0;overflow:hidden;text-overflow:ellipsis;color:#000}
+.lkw-plate .pp{flex:none;color:var(--cw-brass)}
+.lkw-plate .ml{min-width:0;overflow:hidden;text-overflow:ellipsis;color:var(--cw-dim)}
+.lkw-plate .mv{flex:none;color:var(--cw-ink)}
+.lkw-plate .ok{color:var(--cw-ok)}
+.lkw-plate .bad{color:var(--cw-bad)}
+.lkw-plate .bar{position:relative;height:4px;margin-top:2px;background:#dccaa6;box-shadow:inset 0 1px 0 rgba(0,0,0,.14)}
+.lkw-plate .bar i{position:absolute;left:0;top:0;bottom:0;background:#b08a3a;transition:width .6s steps(10)}
+.lkw-plate .bar i.ok{background:#2f7f58}
+.lkw-plate .bar i.bad{background:#b33f32}
+.lkw-plate .bar b{position:absolute;top:-1px;bottom:-1px;width:2px;margin-left:-1px;background:rgba(53,41,31,.45)}
+.lkw-plate .cw-pop{left:50%;top:-30px}
+/* 시험 · 단계 바로 보기 — 전환 없이 */
+.lkw-ov.instant *,.lkw-ov.instant *::before,.lkw-ov.instant *::after{transition:none!important}
+/* 좁은 화면 — 무대만 폭에 맞춰 줄이고(JS) 구름 · 이름표는 무대 아래로 (상담창 .compact 그대로 + 이름표 격자) */
+.lkw-win.compact .lkw-plates{position:static;display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:4px;margin-top:6px;pointer-events:auto}
+.lkw-win.compact .lkw-plate{position:relative;left:auto;top:auto;width:auto}
+.lkw-win.compact .lkw-plate .cw-pop{top:-26px}
+.lkw-win.compact .cw-tab.title{max-width:none;flex:none}       /* 좁은 화면의 위 탭 — '락커룸'만 · 전력은 '파악 못 함' 없이 (??? 로 보인다) */
+.lkw-win.compact .lkw-tt,.lkw-win.compact .lkw-unk{display:none}
+@media (prefers-reduced-motion:reduce){.lkw-spr,.lkw-joy i,.lkw-gloom.on,.lkw-think.on{animation:none}.lkw-gloom.on{clip-path:none}}
+/* LKWIN_CSS_END */

@@ -5,7 +5,7 @@
 PC(D:\\heroschool)에서 받은(stage) 파일은 /mnt/user-data/uploads/heroschool/<경로> 에 PC 와 같은 모양으로 쌓인다.
 그 사본으로 작업 폴더를 만들고 → 고치고 → 빌드 → 바뀐 파일만 골라 PC 에 쓸 목록(device_commit_files 입력)을 만든다.
 
-  python3 hs.py list core patch          받을 파일 목록 — device_stage_files 의 paths 로 그대로 (50개씩) · 묶음: core patch counsel test placer rbook roster schedkit i18n
+  python3 hs.py list core patch          받을 파일 목록 — device_stage_files 의 paths 로 그대로 (50개씩) · 묶음: core patch counsel test placer rbook roster schedkit i18n locker
   python3 hs.py init                     지금까지 받은 파일 → 작업 폴더 ~/hs/work + PC 원본 ~/hs/base (+ 블록 지문)
   python3 hs.py sync                     나중에 더 받은 파일 반영 — PC 쪽이 바뀌었으면 3-way 병합
   python3 hs.py status                   PC 원본과 달라진 파일
@@ -27,6 +27,8 @@ stage / list 결과 JSON 을 파일(또는 - 로 표준 입력)로 줘도 된다
 작업 폴더에 이미 있으면 그대로 둔다 (이 세션의 apply 가 적은 지문을 지킨다).
 환경 변수: HS_HOME(기본 ~/hs) · HS_DEVICE_ROOT(기본 D:\\heroschool) · HS_UPLOADS · HS_OUTPUTS
 직접 쓰는 테스트 스크립트에서:  sys.path.insert(0, 이 폴더); import hs; b, pg, errs = await hs.open_game(p)
+  화면 크기 틀(1013 — PC 는 늘 틀) 안에서:  b, pg, fr, errs = await hs.open_framed(p, 900, 600)  — fr 은 게임 frame (evaluate 는 fr, 마우스 · 화면은 pg ·
+  틀 좌표 = 게임 좌표 × HS_SCALE.k). open_game 은 자동화라 틀 없이 창 크기 그대로다 (배치는 게임이 보는 폭만 본다 — 1100 이상 넓은 화면)
 """
 import difflib, hashlib, json, os, re, shutil, subprocess, sys, time, urllib.parse
 
@@ -60,6 +62,7 @@ PATCH = ["apply_acadfit.py", "apply_crit.py", "apply_cslpers.py", "apply_cslwin.
          "blockguard.py", "blocks.sha.json", "cslwin_block.css", "cslwin_block.js", "desk_art.py", "desk_layout.json",
          "mdesk_block.css", "mdesk_block.js", "roster_block.css", "roster_block.js",
          "apply_optx.py", "optx_block.js", "optx_fonts.css", "optx_fonts.py",
+         "apply_lkwin.py", "lkwin_block.css", "lkwin_block.js",                          # 1013 — 락커룸 창
          "sched_art.py", "sched_block.css", "sched_block.js", "sched_layout.json"]
 CW = "mockups/counsel-window/"
 SR = "mockups/student-roster/"
@@ -87,6 +90,9 @@ PROFILES = {
     "test": ["assets/spr_img.webp.js", "assets/fx_img.webp.js"] + ["assets/spr_x_img/%s.png.js" % j for j in JOBS]
             + ["assets/spr_x_img/demonking.webp.js"]
             + ["assets/counsel-cookie/%s.png.js" % j for j in JOBS],      # 1011 — 상담 쿠키 그림도 split_assets 가 찾는다 (없으면 빌드가 멈춘다)
+    # 락커룸 목업을 다시 만들 때 · 시험에서 락커룸 창 배경(쿼터뷰 지도 — 장마다 3MB)을 볼 때 (1013)
+    "locker": ["mockups/locker-room/" + f for f in ("README.md", "src/shots.py", "src/page.py", "src/page_tpl.html")]
+              + ["assets/battle-fields/quarter/%s.png" % k for k in ("city", "regional", "final", "spring", "winter")],
     # apply_cslwin 이 읽는 상담창 그림 · 배치
     "counsel": [CW + "README.md", CW + "src/compose_desk.py"]
                + [CW + "art/" + f for f in ("bg.webp", "desk.png", "desk_plain.png", "desk_layout.json", "props.json")]
@@ -556,6 +562,34 @@ async def open_game(p, w=1280, h=800, page="heroschool.html", dsf=1, title=False
     return b, pg, errs
 
 
+async def open_framed(p, w=1280, h=800, page="heroschool.html", dsf=1, query="scale=user"):
+    """화면 크기 틀 안에서 게임을 띄운다 (1013 — 사람이 쓰는 PC 처럼: 640 이하 ×1 · 641~1099 폭÷1100 · 1100 이상 큰 화면 규칙).
+    query: scale=user(사람처럼 자동 배율) · scale=81.8(배율 강제) 등. 반환: (browser, page, frame, errs) — frame 은 게임이 도는 iframe"""
+    b = await p.chromium.launch()
+    c = await b.new_context(viewport={"width": w, "height": h}, device_scale_factor=dsf, locale="ko-KR")
+    await c.route(re.compile(r"^https?://"), lambda r: r.abort())      # 바깥 주소는 전부 막는다 (firebase · 글꼴)
+    pg = await c.new_page()
+    errs = Errs()
+    pg.on("pageerror", lambda e: errs.append("pageerror: " + str(e)[:300]))
+    pg.on("console", lambda m: errs.append("console: " + m.text[:300]) if m.type == "error" else None)
+    await pg.goto("file://" + os.path.join(WORK, page) + ("&" if "?" in page else "?") + query, wait_until="commit")
+    fr = None
+    for _ in range(200):
+        fr = next((f for f in pg.frames if "hsf=" in f.url), None)
+        if fr:
+            try:
+                if await fr.evaluate("() => typeof S !== 'undefined' && S && Array.isArray(S.students) && S.students.length > 0 && !document.getElementById('bootLoader')"):
+                    break
+            except Exception:
+                pass
+        await pg.wait_for_timeout(250)
+    else:
+        raise RuntimeError("틀 안 게임이 뜨지 않았다")
+    await fr.evaluate("() => { try { audOver(null); } catch(e) {} closeModal(); UI.view = 'home'; render(); }")
+    await pg.wait_for_timeout(300)
+    return b, pg, fr, errs
+
+
 def real_errors(errs):
     """그림 파일이 없어서 나는 오류(작업 폴더에 assets 를 다 받지 않았으니 당연)는 뺀다"""
     return [e for e in errs if "Failed to load resource" not in e and "ERR_FILE_NOT_FOUND" not in e and "ERR_FAILED" not in e]
@@ -628,7 +662,7 @@ def cmd_i18n(args):
 
 
 def cmd_layout(args):
-    """영어판 화면 점검 (1010 · 2단계) — 영어에서 넘치거나 잘린 칸 (크기 1440×900 · 900×1000 · 390×844, 한국어에도 있는 것은 뺀다)"""
+    """영어판 화면 점검 (1010 · 2단계) — 영어에서 넘치거나 잘린 칸 (크기 1440×900 · 1100×700 · 900×1000 · 390×844, 한국어에도 있는 것은 뺀다)"""
     if not os.path.exists(os.path.join(WORK, "tools", "i18n", "check_layout.py")):
         die("없다: tools/i18n/check_layout.py — core 묶음을 다시 받는다 (hs.py list core)")
     out = os.path.join(SHOTS, "layout")

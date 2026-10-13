@@ -5,7 +5,7 @@ game.html 의 아래 기능은 손으로 쓴 코드가 아니라 이 폴더의 �
 
 | 기능 | 넣는 스크립트 | 블록 원본 | 그림 |
 |---|---|---|---|
-| 두루마리 스케줄 (가로 화면) | `patch/apply_sched.py` | `patch/sched_block.js` · `sched_block.css` | `patch/sched_art.py` → `assets/sched_art/` (WebP) |
+| 두루마리 스케줄 (넓은 화면) | `patch/apply_sched.py` | `patch/sched_block.js` · `sched_block.css` | `patch/sched_art.py` → `assets/sched_art/` (WebP) |
 | 의뢰 (이번 주 의뢰 · 의뢰처별 등급) | `patch/apply_job.py` (apply_sched 가 같이 부른다) | 스크립트 안 | — |
 | 마스터 노트 책상 | `patch/apply_desk.py` | `patch/mdesk_block.js` · `mdesk_block.css` | `patch/desk_art.py` → `patch/desk_out/` → `assets/mdesk_art/` (WebP) |
 | 원정 3구간 (원정지 깊이 · 구간 보상 · 잡몹 배율 — 아래) | `patch/apply_exped3.py` | 스크립트 안 | — |
@@ -13,6 +13,7 @@ game.html 의 아래 기능은 손으로 쓴 코드가 아니라 이 폴더의 �
 | 스킬 등급표 (등급 6단계 · 등급 · 레벨로 정하는 수치 · 적도 같은 표 · 원정 잡몹 배율 — 아래) | `patch/apply_skgrade.py` (apply_exped3 뒤) | 스크립트 안 | — |
 | 상담 대사를 성격마다 (고민을 털어놓는 말 · 답변에 대한 반응 · 지침 무시 효과 문구 — 아래) | `patch/apply_cslpers.py` | 스크립트 안 (`BLOCK`) | — |
 | 상담창 (상담 메뉴를 누르면 뜨는 창 · 일지 › 상담 기록 — 아래) | `patch/apply_cslwin.py` (apply_cslpers 뒤) | `patch/cslwin_block.js` · `cslwin_block.css` | `mockups/counsel-window/art` → `assets/csl_art/` (WebP) |
+| 락커룸 창 (경기 직전 한마디 — 출전해 경기 화면에 들어서면 같이 뜨는 창 — 아래) | `patch/apply_lkwin.py` (apply_cslwin 뒤) | `patch/lkwin_block.js` · `lkwin_block.css` | — (쿼터뷰 지도 · 전투 도트 · 상담창 구름을 그대로 쓴다) |
 | 학생 명부 책 (가로 넓은 화면 — 책상의 펼친 책 · 메뉴의 학생 명부 · 팀 편성을 누르면 뜨는 책 — 아래) | `patch/apply_roster.py` | `patch/roster_block.js` · `roster_block.css` + 목업 원본 `mockups/student-roster/src/roster_tpl.html` 의 CORE_CSS · CORE_HTML | `mockups/student-roster/art/book.png` · `ribbon.png` → `assets/roster_art/` (WebP) |
 | PNG → WebP (게임이 받는 그림 일부 — 아래) | `patch/apply_webp.py` (다른 apply 를 다 돌린 뒤 · wrap 앞) | 스크립트 안 | 원래 PNG 옆에 같은 이름의 `.webp` |
 | 전투 치명타 숫자 높이 · 학원 이름 맞추기 · 친선전 전부 거절 재확인 · 고른 칸 강조선 · 3인 리그 · 봄 신인전 시내 대회 필드 · 대회 쿼터뷰 제목 칸 · 줌 · 클로즈업 · 쿼터뷰 지도 11장 · 쿼터뷰 경기 이름(BATTLE START 동안) · 진영 칸 나무판 · 범례 숨김 · 실험실 확대 · 이동을 받는 쿼터뷰 지도 · 이름 길이만큼 늘어나는 진영 칸 · 경기 이름 맞춤(왼쪽 · 가운데 · 오른쪽) · 화면 · 배너를 나무 테두리 가운데로 | `patch/apply_crit.py` · `apply_acadfit.py` · `apply_fdecline.py` · `apply_optsel.py` · `apply_lgfield.py` · `apply_rookiefield.py` · `apply_tq.py` → `apply_tqcam.py` → `apply_tqmaps.py` → `apply_tqui.py` → `apply_tqfield.py` → `apply_tqgrow.py` → `apply_tqalign.py` → `apply_tqcenter.py` | 스크립트 안 | — |
@@ -39,6 +40,7 @@ python tools/gen/patch/apply_exped3.py game.html                                
 python tools/gen/patch/apply_skgrade.py game.html                                  # 스킬 등급표 (apply_exped3 뒤 — 잡몹 배율을 다시 쓴다)
 python tools/gen/patch/apply_cslpers.py game.html                                  # 상담 대사 (성격마다 — 대사를 고쳤으면 다시)
 python tools/gen/patch/apply_cslwin.py game.html                                   # 상담창 (상담 책상 배치 · 창 블록을 고쳤으면 다시)
+python tools/gen/patch/apply_lkwin.py  game.html                                   # 락커룸 창 (apply_cslwin 뒤 — 창 블록을 고쳤으면 다시)
 python tools/gen/patch/apply_roster.py game.html                                   # 학생 명부 책 (목업 원본 · 책 그림 · 배치 · 책 블록을 고쳤으면 다시)
 python tools/gen/patch/apply_webp.py  game.html                                   # PNG → WebP (바뀐 게 없으면 그대로)
 python tools/gen/patch/apply_optx.py  game.html                                   # 오프닝 글 (장면 · 글 · 효과를 고쳤으면 다시 — 글을 바꿨으면 optx_fonts.py 먼저)
@@ -166,9 +168,36 @@ python wrap_site.py
 - **상담 기록은 일지의 서브탭 '상담 기록'**(`csllog` · `viewCslLog`) — 예전 상담 탭 아래쪽의 올해 상담 기록 그대로 + 상담 확률 + 상담실 열기.
   예전 상담 화면(`UI.view` "counsel")은 안내 + 상담실 열기 단추만 남겼다 (메뉴로는 들어가지 않는다).
 
+### 락커룸 창 (`apply_lkwin.py` · 1013)
+
+- 경기 직전 감독의 한마디를 상담창 같은 창으로 — 목업(`mockups/locker-room/locker_room_mockup.html`) 그대로. 경기 화면 셋(가을 대회 `renderLadder` · 친선전 `renderFriendly` · 봄 신인전 `renderTournament`) 위에 겹쳐 뜬다.
+  - **경기 화면에 들어서면 같이 뜬다**(`lkwAuto(t)` → 다음 `bindLocker` 가 한 번 쓰고 지운다) — 출전 · 친선전 시작 · 엔트리 확정 · 대진 확정을 눌러 경기 화면이 그려질 때,
+    그리고 창이나 '경기 시작'으로 연 전투를 보고 '결과 확정'으로 다음 경기 화면에 왔을 때 — 그 경기에서 한마디 전이면 창이 같이 뜬다
+    (1013 사용자: '경기 화면에 들어가 락커룸에서 한마디 단추를 누르지 말고, 출전을 누르고 한마디를 안 했으면 락커룸이 같이 팝업').
+    다시 그리기(창을 닫은 뒤 · 리그에서 출전 팀 바꾸기)와 '빠르게 결과만' · '남은 경기 한 번에' 뒤의 경기 화면에는 뜨지 않는다.
+  - **'경기 시작'**(`lkwGate`) — 이 경기에서 한마디를 아직 안 했으면 창부터, 했으면 바로 전투. 경기 화면의 락커룸 칸은 학생 기분 카드 그대로 — 창을 여는 단추는 없다 (예전 '락커룸에서 한마디' 단추 · 안내는 뺐다)
+  - 창: 출전 학생 3 ~ 5명이 하나씩 들어와 둥글게 선다 → 구름 넷(기대치 충족 요구 1 · 부담감 완화 1 · 동기부여 2 — `makeSpeechOffers`)이 차례로 떠서 제자리에서 원을 그린다(창이 두근거린다)
+    → 고르면 마스터의 말 · 학생들이 가운데로 살짝 다가서고 머리 위에 `…` → 한 명씩(차례는 섞어서 · 연출이라 `Math.random`): 납득 **~♪**(폴짝 · 가끔 ♫ 가 떠오른다) · 못 납득 **| | |**(어깨가 처지고 어둡고 흐려진다)
+    · 이름표의 기분 ±20(숫자가 위로) → 글 상자: 말 종류 — 설명 · 통함(호소력 · 운명 표시) + 신뢰 · 빗나감 · 이번 경기 기분 보정 → **'경기 시작 ▶'** 로 전투
+  - **'말없이 시작 ▶'**(고르는 동안) — 한마디 없이 전투 · **×(Esc)** — 경기 화면으로 (한마디를 했으면 경기 화면을 다시 그려 결과를 보인다). '빠르게 결과만' · '남은 경기 한 번에'는 창 없이
+  - 고르는 순간 게임에 반영한다 — `lockerSpeak` 그대로(기분 · 신뢰 · 일지) + `save()`. 연출 중에 창을 닫아도 결과는 남는다. 전투는 `lockerApply` 가 같은 `t.locker` 를 돌려줘 그 기분으로 싸운다.
+- 화면 — 창 796 · 무대 768 × 432(1배 384 × 216 의 2배) · 위 탭(왼쪽 '락커룸 · 대회 · 라운드' · 오른쪽 전력 — 모르면 ??? 파악 못 함) · 아래 글 상자. 상담창 CSS(`.cw-*`)를 그대로 쓰고 크기만 바꾼다(`lkwin_block.css` 는 CSLWIN CSS 바로 뒤).
+  - 배경 — 그 경기의 대회 쿼터뷰 지도(`TQ_MAPS` · `tqMapKey` — 시내 city · 광역 / 예선 regional · 본선 final · 친선전 = 연습장 = 그 계절 학원)를 흐리게(blur 4px · 채도 0.92 · 밝기 0.86 + 가장자리 어둡게).
+    확대 1.4(지도 폭 = 무대 폭이 1) · 바닥 문장(mx, my)을 무대 y 250 에 — 허들 바로 뒤. 쿼터뷰 지도가 없는 필드면 필드 그림(`fieldOf`). 다 받으면 나타난다(전투도 같은 그림을 쓰니 미리 받는 셈)
+  - 학생 — 상담창과 같은 전투 idle 도트(`cslwSprUrl`)를 **1.5배**. 둥글게 선 원의 먼 쪽 반원(`LKW_SLOTS` — 3 · 4 · 5명 · 1.5배 기준 · 양 끝이 앞(아래) · 가운데가 뒤(위)) — 오른쪽 학생은 좌우를 뒤집어 가운데를 본다.
+    머리 · 발 자리는 도트에서 잰다(`lkwMeasure` — 머리 덩어리 가운데 · 그 둘레 맨 위 · 발끝 · 발 가운데). 말줄임 · 음표 · 세로줄이 따라간다. 발밑 그림자 + 무리 전체 그림자
+  - 이름표 — 발 아래 한 줄(이름 · 성격 / 기분 이름 · 수치 / 막대 — 30 · 70 눈금). 겹치면 벌린다. 영어는 이름 · 성격을 두 줄로(`tools/i18n/en_layout.css`) — 이름표 높이를 재서 허들이 그만큼 위로
+  - 구름 — 양옆 위아래 둘씩(너비 188 · 글 길이에 맞춰 높이 · 아래 구름은 같은 쪽 위 구름 바로 밑). 구름 그림은 `cslwCloudArt`. 효과 그림(♪ · ♫ · ~ · | | |)은 캔버스로 1배를 찍어 2배로(`lkwArt`)
+  - 좁은 화면(창을 0.8배보다 줄여야 할 때) — 무대만 폭에 맞춰 줄이고 구름 · 이름표(격자)는 무대 아래로 · 위 탭은 '락커룸'과 전력만 (상담창 `.compact` 와 같은 방식)
+- 키: 1 ~ 4 구름 · 스페이스 · 엔터(글자가 찍히는 중이면 끝까지 · 결과에서는 경기 시작) · Esc 닫기. 위에 튜토리얼 · 확인 창이 떠 있으면 그쪽이 먼저.
+- 소리 — 상담창 것: 구름 `csl_pick` · 마스터의 말 `csl_mst`(글자마다 `cwBlip`) · 반응 `csl_ok` / `csl_ng`.
+- 튜토리얼 8(전투 전, 학생들에게 한마디)은 창을 처음 열 때 창 위에 (예전: 경기 화면에 처음 들어설 때).
+- 점검 · 시험용 `lkwOpen({instant:true, pick:k})` — 기다림 · 글자 찍기 없이 그 단계까지 (pick 을 주면 그 말을 골라 결과까지 · 튜토리얼도 건너뛴다). `tools/i18n/check_layout.py` 의 `tour_match` · `tour_lkwin` · `tour_lkwres`.
+- 예전 락커룸 칸의 한마디 넷(2 × 2 단추 · `data-say`)은 없어졌다. `lockerHtml` · `bindLocker` 는 블록 안으로 옮겼다(apply 가 블록 밖의 예전 것을 지운다) — `bindLocker(t, L, my, rerender, {title, label, foe, field, start})`.
+
 ### 학생 명부 책 (`apply_roster.py` · 1009)
 
-- 가로 넓은 화면(`townMode` — 1100px 이상 · 가로)에서 책상의 펼친 책 · 메뉴의 **학생 명부** · **팀 편성**을 누르면 화면을 바꾸지 않고 책이 뜬다 — 목업(`mockups/student-roster/roster_mockup.html`) 그대로.
+- 넓은 화면(`townMode` — 게임이 보는 폭 1100px 이상 · 1013 부터 방향은 안 본다)에서 책상의 펼친 책 · 메뉴의 **학생 명부** · **팀 편성**을 누르면 화면을 바꾸지 않고 책이 뜬다 — 목업(`mockups/student-roster/roster_mockup.html`) 그대로.
   대회 준비의 '팀 편성' 등 `UI.view` 를 "roster" · "team" 으로 바꾸는 곳은 모두 책으로 간다 ("team" 은 책의 팀 편성 쪽).
   세로 · 좁은 화면은 예전 학생 명부(`viewRoster`) · 팀 편성(`viewTeam`) 그대로 — 책이 열린 채 창이 좁아지면 책을 닫고 같은 학생 · 같은 쪽의 예전 화면으로.
 - 길목은 `render()` 의 앞 · 끝 한 줄씩 — 앞의 `RBK.intercept()` 는 `UI.view` 가 roster · team 이면 원래 보던 화면으로 되돌리고 책을 연다
@@ -218,7 +247,7 @@ python wrap_site.py
 
 ## 꼭 지킬 것 — 블록은 블록 파일에서 고친다
 
-`/* SCHED_SCROLL_START … */ ~ /* SCHED_SCROLL_END */`, `/* MDESK_START … */ ~ /* MDESK_END */`, `/* CSLWIN_START … */ ~ /* CSLWIN_END */` (와 각 CSS 블록), `/* ROSTERBK_START … */ ~ /* ROSTERBK_END */`(책 CSS 는 이 블록 안의 문자열), `/* OPTX 시작 */ ~ /* OPTX 끝 */`(+ 글꼴 `/* OPTX-FONTS 시작 … 끝 */` · 지킴이 없음) 안은 apply 할 때마다 블록 파일 내용으로 **통째로 갈아 끼운다**.
+`/* SCHED_SCROLL_START … */ ~ /* SCHED_SCROLL_END */`, `/* MDESK_START … */ ~ /* MDESK_END */`, `/* CSLWIN_START … */ ~ /* CSLWIN_END */` · `/* LKWIN_START … */ ~ /* LKWIN_END */` (와 각 CSS 블록), `/* ROSTERBK_START … */ ~ /* ROSTERBK_END */`(책 CSS 는 이 블록 안의 문자열), `/* OPTX 시작 */ ~ /* OPTX 끝 */`(+ 글꼴 `/* OPTX-FONTS 시작 … 끝 */` · 지킴이 없음) 안은 apply 할 때마다 블록 파일 내용으로 **통째로 갈아 끼운다**.
 game.html 에서 블록 안을 직접 고치면 다음 apply 가 그 수정을 지운다.
 
 그래서 `patch/blockguard.py` 가 지킨다 — apply 가 끝날 때 넣은 블록의 지문을 `patch/blocks.sha.json` 에 적어 두고, 다음 apply 전에 game.html 쪽 블록이 그 지문과 다르면 멈춘다.

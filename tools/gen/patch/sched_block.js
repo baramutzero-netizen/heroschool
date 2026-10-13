@@ -696,8 +696,9 @@ function bindSchedScroll(v){
   v.querySelectorAll("[data-sk-page]").forEach(b=> b.onclick = ()=>{ UI.skPage = (UI.skPage|0) + Number(b.dataset.skPage); render(); });
   v.querySelectorAll(".sk-card[data-card]").forEach(el=> el.onkeydown = (e)=>{ if(e.key === "Enter" || e.key === " "){ e.preventDefault(); el.click(); } });
 }
-/* 가로 ↔ 세로가 바뀌면 스케줄 화면을 다시 그린다 (마을 지도와 같은 기준 · TOWN_MQ 는 아래에서 선언돼 여기서 따로 만든다) */
-{ const mq = (typeof matchMedia === "function") ? matchMedia("(min-width:1100px) and (orientation:landscape)") : null;
+/* 넓은 화면 ↔ 좁은 화면이 바뀌면 스케줄 화면을 다시 그린다 (마을 지도와 같은 기준 · TOWN_MQ 는 아래에서 선언돼 여기서 따로 만든다).
+   1013 — 넓은 화면은 폭 1100 이상 (방향은 보지 않는다 — 기기마다 게임이 보는 폭은 맨 앞 스크립트 UISCALE 이 맞춘다) */
+{ const mq = (typeof matchMedia === "function") ? matchMedia("(min-width:1100px)") : null;
   const h = ()=>{ if(UI && UI.view === "plan" && S) render(); };
   if(mq){ if(mq.addEventListener) mq.addEventListener("change", h); else if(mq.addListener) mq.addListener(h); } }
 /* 창 높이만 바뀌어도(무대 폭은 그대로) · 글꼴을 받아 사이드 높이가 바뀌어도 사이드를 다시 잰다 (1010 — 학원 이름 맞춤 acadNameFit 의 0.15초 뒤) */

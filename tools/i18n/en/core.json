@@ -260,7 +260,7 @@
  "주간 훈련과 개인 훈련의 성장량이 포인트당 3.5% 증가 · 상담에서 성격에 맞지 않는 답도 받아들일 확률 포인트당 +4%p": "Weekly and personal training growth +3.5% per point · +4%p per point chance a student accepts a counseling reply that doesn't fit their personality",
  "정보력": "Insight",
  "정찰 능력 증가 · 학생의 전투 능력 +2%/pt": "Better scouting · students' combat stats +2%/pt",
- "대회 상대 정찰 단계 상승 · 전투 중 우리 학생 체력·공격력·방어력 포인트당 2% 증가 · 상담에서 성격에 맞는 답을 미리 알아볼 확률 포인트당 +6%p": "Tournament scouting levels up · our students' HP · ATK · DEF +2% per point in battle · +6%p per point chance to see ahead which counseling reply fits",
+ "대회 상대 정찰 단계 상승 · 전투 중 우리 학생 체력·공격력·방어력·속도 포인트당 2% 증가 · 상담에서 성격에 맞는 답을 미리 알아볼 확률 포인트당 +6%p": "Tournament scouting levels up · our students' HP · ATK · DEF · SPD +2% per point in battle · +6%p per point chance to see ahead which counseling reply fits",
  "스카우트 확률 증가 · 자금 획득량 +2%/pt": "Better scouting odds · funds earned +2%/pt",
  "스카우트 성공률 포인트당 +5%p · 모든 자금 획득량 포인트당 2% 증가 · 상담 멘탈리티 상승폭이 2배가 될 확률 포인트당 +4%p": "Scouting success +5%p per point · all funds earned +2% per point · +4%p per point chance a counseling Stat gain is doubled",
  "_FAME_MARKS": "",

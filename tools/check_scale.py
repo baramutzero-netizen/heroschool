@@ -8,8 +8,10 @@
    마을 사람 → 팝업 · 휠 스크롤 · 키보드(명부 책 Esc) · 창 크기를 바꾸면 다시 맞춤
 3. 설정 '화면 크기' 150% → 틀이 ×1.5 로 다시 맞춘다 · 100% → ×1 · 자동 → 다시 ×1.494 (고른 값은 hs_scale)
 4. 언어 바꾸기 · 새 버전 불러오기 → 틀째로 다시 불러온다 (시험용 ?scale= 은 그대로)
-5. ?scale=user (자동화여도 사람처럼): 2560×1300 은 틀 · 1440×900 은 틀 없이(×1.03) · hs_scale=100 이면 틀 없이 ·
+5. ?scale=user (자동화여도 사람처럼): 1013 부터 데스크톱은 늘 틀 — 2560×1300 ×1.494 · 1440×900 ×1 · hs_scale=100 이면 ×1 ·
+   900×600 ×0.818 (좁은 창은 틀 안 폭 1100 으로 줄인다) · 600×800 ×1 (640 이하는 좁은 화면 그대로) ·
    폰(터치) · iPad 는 틀 없이 · 주소에 scale 이 없으면(자동화) 늘 틀 없이 — 다른 시험은 예전 그대로 돈다
+   (화면 모드 전체 — 태블릿 viewport · 폰 덮개 · 창 크기 바꾸기 — 는 tools/check_modes.py)
 6. http:// (같은 출처)에서도 1 과 같게
 바깥 주소(firebase · 글꼴 등)는 전부 막는다 — 서버에는 아무것도 쓰지 않는다.
 """
@@ -196,23 +198,25 @@ async def test_host(b, base_url, label):
 
 async def test_user(b):
     print('[사람처럼 판단 · ?scale=user]')
-    cases = [
-        ('2560×1300 → 틀', dict(w=2560, h=1300), '?scale=user', True),
-        ('1440×900 → 틀 없이 (×1.03)', dict(w=1440, h=900), '?scale=user', False),
-        ('hs_scale=100 → 틀 없이', dict(w=2560, h=1300, init="try { localStorage.setItem('hs_scale', '100'); } catch (e) {}"), '?scale=user', False),
-        ('hs_scale=150 → 1440×900 도 틀 ×1.5', dict(w=1440, h=900, init="try { localStorage.setItem('hs_scale', '150'); } catch (e) {}"), '?scale=user', True),
-        ('폰(터치) → 틀 없이', dict(w=390, h=844, is_mobile=True, has_touch=True, device_scale_factor=2), '?scale=user', False),
-        ('iPad → 틀 없이', dict(w=1366, h=1024, user_agent='Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1'), '?scale=user', False),
-        ('자동화 · 주소에 scale 없음 → 틀 없이', dict(w=2560, h=1300), '', False),
+    cases = [   # (이름, 창, 주소, 틀이 되나, 배율 — 1013: 데스크톱은 배율 1 이어도 틀)
+        ('2560×1300 → 틀 ×1.494', dict(w=2560, h=1300), '?scale=user', True, 1.494),
+        ('1440×900 → 틀 ×1 (1013 — 늘 틀)', dict(w=1440, h=900), '?scale=user', True, 1.0),
+        ('hs_scale=100 → 틀 ×1', dict(w=2560, h=1300, init="try { localStorage.setItem('hs_scale', '100'); } catch (e) {}"), '?scale=user', True, 1.0),
+        ('hs_scale=150 → 1440×900 도 틀 ×1.5', dict(w=1440, h=900, init="try { localStorage.setItem('hs_scale', '150'); } catch (e) {}"), '?scale=user', True, 1.5),
+        ('900×600 → 틀 ×0.818 (좁은 창은 틀 안 폭 1100)', dict(w=900, h=600), '?scale=user', True, 0.818),
+        ('600×800 → 틀 ×1 (640 이하는 그대로)', dict(w=600, h=800), '?scale=user', True, 1.0),
+        ('폰(터치) → 틀 없이', dict(w=390, h=844, is_mobile=True, has_touch=True, device_scale_factor=2), '?scale=user', False, None),
+        ('iPad → 틀 없이', dict(w=1366, h=1024, user_agent='Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1'), '?scale=user', False, None),
+        ('자동화 · 주소에 scale 없음 → 틀 없이', dict(w=2560, h=1300), '', False, None),
     ]
-    for name, kw, q, want in cases:
+    for name, kw, q, want, kk in cases:
         w, h = kw.pop('w'), kw.pop('h')
         c, pg, errs = await new_page(b, w, h, **kw)
         await pg.goto('file://' + PAGE + q, wait_until='commit')
         if want:
             fr = await game_frame(pg)
             k = await host_k(pg) if fr else None
-            ok(fr is not None, name, {'k': k})
+            ok(fr is not None and k is not None and abs(k - kk) < 1e-6, name, {'k': k})
         else:
             up = await main_game(pg)
             st = await pg.evaluate("() => ({iframes: document.querySelectorAll('iframe#hsFrame').length, host: !!(window.HS_SCALE && HS_SCALE.host)})")
