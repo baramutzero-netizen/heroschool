@@ -40,7 +40,7 @@ SCENES = r"""(() => {
   sc['mission'] = () => { RBC(); closeModal(); UI.view = 'home'; render(); missionModal(); };
   sc['newscen'] = () => { RBC(); closeModal(); UI.view = 'home'; render(); askAcademyName(); };   // 새 시나리오 — 학원 이름 · 난이도 · 시작 빚 (1011)
   [1,2,3,4,5,6,7,8,9,10,11,12,13,14].forEach(k => sc['tut' + k] = () => { RBC(); closeModal(); showModal(tutGuideHTML(k)); });
-  sc['skillup'] = () => { RBC(); closeModal(); const s = S.students.find(x => (x.skPts|0) > 0) || S.students[0]; skillUpModal(s.id); };
+  sc['skillup'] = () => { RBC(); closeModal(); const s = S.students.find(x => (x.sp|0) > 0) || S.students[0]; skillUpModal(s.id); };   // 강화 포인트 = st.sp (1013 재작업 — 말풍선이 나오는 1.5초 기다림)
   sc['cslwin'] = () => { RBC(); closeModal(); UI.view = 'counsel'; render(); cslwOpen(); };
   /* 4단계 (1010) — 이야기 팝업 · 프롤로그 · 마을 손님. 팝업은 대기열을 비우고 하나만 띄운다 */
   const cer = c => () => { RBC(); closeModal(); UI.ceremonies = [c]; showCeremony(); };
@@ -196,7 +196,7 @@ def run(br, path, query, size, scenes_only, shots, years, tag):
         except Exception as e:
             res[n] = {'error': str(e)[:200]}
             continue
-        pg.wait_for_timeout(1500 if n in ('report', 'cslwin') or n.startswith('tour') else 900 if n == 'battle' or n.startswith('rbook') or n in ('roster', 'team') else 250)
+        pg.wait_for_timeout(1500 if n in ('report', 'cslwin', 'skillup') or n.startswith('tour') else 900 if n == 'battle' or n.startswith('rbook') or n in ('roster', 'team') else 250)
         m = pg.evaluate(MEASURE)
         res[n] = {'issues': m['out'], 'lines': m['lines'], 'han': pg.evaluate(HAN_JS) if tag == 'en' else []}
         if shots:

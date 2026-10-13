@@ -86,6 +86,7 @@ python3 ~/hs.py pack 이름            # 보낼 폴더 + 커밋 목록 (끝에 8
 | `tools/session/` | 이 문서 · hs.py |
 | `tools/i18n/` | 영어판 — 빌드 변환 `i18n_build.py` · 번역 함수 `i18n_runtime.js` · 영어 표 `en.json` · 공개 여부 `config.json` · 시험 `check_i18n.py` · 글 뽑기 `extract_ko.cjs` · `classify_ko.py` (README) |
 | `tools/field_lab.html` | 필드 배치 실험실 (전투 자리 · 크기 → apply_tune) |
+| `tools/skill_upgrade_lab.html` | 스킬 강화 창 배치 실험실 (창 안 요소의 자리 · 크기 → `skup_layout.json` → apply_skup) |
 | `tools/check_scale.py` · `tools/check_modes.py` | 화면 크기 틀(UISCALE) · 화면 모드(넓은 화면 · 좁은 화면 · 태블릿 · 폰) 시험 — Playwright |
 | `mockups/ui-scale/` · `mockups/screen-modes/` | 화면 크기 틀 · 화면 모드 목업 (gitignore — PC 에만) |
 | `mockups/counsel-window/` | 상담창 목업 · 상담 책상 배치판 · 그림 (gitignore — PC 에만) |
@@ -134,6 +135,8 @@ python3 ~/hs.py pack 이름            # 보낼 폴더 + 커밋 목록 (끝에 8
 - `python3 tools/check_modes.py [--shots 폴더]` — 화면 모드(1013 · 1분 반쯤): PC 틀(1440 · 900×600 ×0.818 · 600) · 한 창에서 크기 바꾸기 · 설정 150% · 진짜 마우스로 스케줄 끌기 ·
   락커룸 → 쿼터뷰/세로 전투 · 태블릿 흉내(viewport width=1100 · 돌리기 · iPad Air · 화면 나누기 · 탭) · 폰 흉내(가로 덮개 · 전투 중 숨김 · 영어). 화면 모드 · 배치 판정을 고치면 돌린다.
   틀 안에서 직접 시험할 때: `b, pg, fr, errs = await hs.open_framed(p, 900, 600)` — fr 이 게임 frame (마우스 좌표 = 게임 좌표 × `HS_SCALE.k`).
+- `node tools/check_skill_upgrade.cjs` — 스킬 강화 창(1013 재작업 세션 것 · PC 경로 `D:/heroschool` · msedge). 클라우드에서는 경로를 `~/hs/work` 로 바꾸고 `channel` 을 빼고
+  바깥 주소를 막아 돌린다 (그림 `assets/skill-upgrade/` 전부 · 16 직업 스킬 아이콘을 받아야 통과). 창 배치를 고치면 이것과 `hs.py layout --only skillup`.
 - 게임 상태: `S` (세이브) · `UI.view` · `render()` · `closeModal()`. 상담 대기열 `counselState().queue` · 지침 무시 `defyState().pend` · 난수 `RNG`.
   새 브라우저마다 새 게임(1년차 봄 · 학생 3명)으로 시작한다.
 
@@ -150,7 +153,89 @@ python3 ~/hs.py pack 이름            # 보낼 폴더 + 커밋 목록 (끝에 8
 - 학생 명부 책은 그림자 DOM(`#rbHost`) 안 — 테스트에서 `document.getElementById('rbHost').shadowRoot` 로 찾는다 (Playwright 의 `locator('#rbHost …')` 는 그대로 뚫고 들어간다).
   책은 넓은 화면(게임이 보는 폭 1100px 이상 — 1013 부터 방향은 안 본다)에서만 뜬다 — `open_game(p, w=1440, h=1000)`. 상태는 `RBK.isOpen()` · `RBK.state`.
 
-## 7. 최근 작업 · 현재 상태 (2026-10-13 · 빌드 1013-1649)
+## 7. 최근 작업 · 현재 상태 (2026-10-14 · 빌드 1014-0103)
+
+- **스킬 강화 창 배치 도구 (1013 · 빌드 1013-2120)** — 사용자: '지금 스킬 강화 창을 재작업했거든? 확인해보고 스킬 강화 창 위치/사이즈 변경 툴을 만들어줘'.
+  재작업(다른 세션 — `skillUpModal` · CSS `SKILL_CHOICE_STYLE` · 그림 `assets/skill-upgrade/` · 영어 `en/skill-upgrade.json` · 시험 `tools/check_skill_upgrade.cjs`)은 그대로 두고
+  창 안 요소의 자리 · 크기만 표로 뺐다. 자세한 것은 `tools/gen/README.md` 의 '스킬 강화 창 배치'.
+  - **배치표** — game.html `SKUP_LAYOUT` 블록(`SK_CHOICE_MARKS` 아래 · 블록 파일 없음 — 직접 고친다): `SK_CHOICE_LAYOUT`(한 줄 JSON · apply_skup 이 바꾼다) · `SK_CHOICE_SEL` · `skChoiceLayoutApply(scene)`.
+    요소마다 {ax l·c·r, ay t·b, x, y, w, h, mw, tail} 를 인라인 style 로 (CSS 를 덮는다) · 넓은 화면(pc)과 폰(mobile — 폭 760 이하, CSS 와 같은 기준) 따로 · 창은 크기 + 화면 가운데에서
+    옮긴 x·y (폰은 높이 + 완료 화면 높이 sceneEnd). 선택지 칸(`.suc-choices`)은 창 전체를 덮고(누르기는 통과) 말풍선이 창 기준 자리에 선다 · 완료 화면은 absolute.
+    부르는 곳: 창을 열 때 `skChoiceLayoutWatch`(폭 760 을 넘나들면 다시) · 선택지를 그릴 때(`reveal`) · 완료 화면(`skChoiceSuccessHtml` — choose 와 실험실이 같이 쓴다).
+    처음 값(`tools/gen/patch/skup_layout.json`)은 재작업한 CSS 그대로 — 재작업 빌드와 픽셀 비교에서 말풍선이 0.3px 옮겨 정수 자리에 선 것 말고 같다.
+    완료 화면은 재작업 CSS 가 세로 흐름(결과 칸 아래 12px 에 확인 단추)이라, 결과 글이 길면 `skChoiceDoneFit` 이 단추를 내리고 창을 늘린다
+    (이것 없이 절대 자리로만 두면 폰에서 효과 줄이 둘인 결과 96/240 이 단추에 겹쳤다 — 세션 scratchpad `skup/probe_succ.py`).
+  - **실험실** `tools/skill_upgrade_lab.html` — `game.html?skuplab`(SKUP_LAB 블록 · 배포 빌드에서는 build_strip 이 뺀다)을 iframe 으로: 끌어 옮기기 · 노란 손잡이로 크기(비율 고정) ·
+    빈 곳을 끌면 창 위치 · 방향키 1px(Shift 10) · 가운데 근처에서 붙기(Alt 면 안 붙음) · 기준 바꾸기(자리는 그대로) · 숫자 칸 · 말풍선 꼬리 · 요소 / 전체 기본값 · 장면 넷 · 학생 직업 16 ·
+    화면 크기(PC 일곱 — 낮은 노트북 1280×720 · 1366×650 포함 · 폰 셋) · 차이점 글 · JSON 저장 / 불러오기. 세이브를 쓰지 않는다(Storage.setItem · save 막음) · 실험실 상태는 그 브라우저
+    localStorage `heroschool_skuplab_v1`. 주고받기 postMessage `lab:"skup"` (게임 → ready · measure · pick · move / change, 실험실 → set · nudge).
+    반영: 사용자가 저장한 `skup_layout.json` 을 `tools/gen/patch/` 에 두고 `python3 tools/gen/patch/apply_skup.py game.html` → build.
+  - 확인하며 고친 것 — ① 폰에서 창이 맨 아래('나중에' 단추 focus)로 내려가 열렸다 → `focus({preventScroll:true})` ② 영어: 재작업이 만든 `en/skill-upgrade.json` 과 겹친 키를 빼고
+    ui.json 에는 나머지 여섯(강화 포인트 · 규칙 글 · 제안 유지 · 보유 · 1개 사용 · 획득 경로)만, 옛 창 글 넷은 지웠다 · 폰 제목이 두 줄이 되어 아래가 잘려
+    'Which skill will you develop?' → 'Which skill to develop?' (skill-upgrade.json) ③ 영어 스킬 이름 'Assassination' · 'Earthsplitter' 가 글자 중간에서 끊겼다 →
+    `skChoiceNameFit`(긴 낱말이 들어가게 글자를 줄인다 — 21.5 · 22.5px · 한국어는 그대로) ④ `check_layout.py` 의 skillup 장면 — 옛 필드 `skPts` → `sp` · 말풍선이 나오기 전에 찍던 것을 1.5초 기다림.
+  - 알게 된 것 (배치는 사용자가 실험실로 정한다) — 창 높이 740 이라 1280×720 · 1366×768 노트북(브라우저 안 650쯤)에서 아래 이름 띠 · '나중에'가 잘려 창 안에서 스크롤 /
+    폰에서 선택지 말풍선 꼬리가 다음 말풍선에 겹친다 / 폰 '이국의 부채' 글 아래가 이름 띠에 걸친다.
+  - **학생 머리 옆 표시 둘** (빌드 1013-2144 — 사용자: '도구에서 이 2개의 소품 이동이 처리가 안되있어') — 긴장(`anticipation.png` · 부채 들기) · 충격(`impact.png` · 부채 맞음).
+    `skChoiceHero` 의 표시 `<img class="suc-mark">` 에 `data-art` · `data-mark` 를 달고 자리 · 크기를 `skChoiceMarkCss` 로 — 배치표 `marks`(두 화면 같이 · 학생 그림 192 칸):
+    `{s 크기(가운데 그대로) · d 모든 직업 옮김 · at {직업 그림: [x, y]}}` 를 `SK_CHOICE_MARKS`(재작업 세션 것 · 그대로) 위에 더한다. 기본값이면 예전과 같은 자리(16 직업 × 2 확인).
+    실험실: 요소 목록 '긴장 표시' · '충격 표시' — 끌면 자리('모든 직업 같이 옮기기' 기본 켬 · 끄면 지금 직업 그림만 at 에) · 모서리 손잡이 크기 · 방향키 1칸 · 숫자(그림 칸) ·
+    '이 직업만 따로 정한 자리 지우기'. apply_skup 이 marks 를 확인해 넣는다(없는 예전 JSON 은 기본값). 시험 세션 scratchpad `skup/labtest_marks.py`.
+  - **사용자 배치 반영 · 낮은 화면에서 창 줄이기** (빌드 1013-2210) — 사용자가 실험실에서 맞춘 배치(넓은 화면: 창 y 1 · 학생 아래에서 5 · 휘두르는 부채 105, 269 ·
+    이국의 부채 단추 19, 125 · 표시 둘은 머리 오른쪽 — 긴장은 모든 직업 103, -16 옮긴 뒤 직업마다 · 충격은 직업마다)를 `skup_layout.json` 에 그대로 넣고 apply.
+    + 사용자: '가로 모드에서 세로 화면 높이가 900 이하일 경우에는 창의 전체적인 비율을 축소' → 넓은 화면 배치에서 게임이 보는 세로 h 가 `scene.fitH`(900) 이하면
+    `.suc-scene` 에 zoom h/900 (0.5 까지 · `skChoiceZoom` · 창 크기가 바뀌면 다시). 창 폭 · 옮긴 자리도 같은 배율. 1280×720 → 80% · 1366×650 → 72% · PC 900×600 창(틀 안 733) → 81% —
+    창 안 스크롤이 없어졌다. 폰 배치는 그대로. 실험실: 창을 고르면 '줄이기 시작' 칸 · 배지에 줄인 배율 · 끈 거리는 배율로 나눈다. 시험 scratchpad `skup/labtest_zoom.py` ·
+    실험실 시험은 처음 배치 나무(`skup/mk_tt.py` → `tt/`)에서 (`LABROOT=…/tt`).
+  - **띠 불투명 · 배경 벨트** (빌드 1013-2231) — 사용자: '제목 띠와 이름 띠의 투명도를 없애고, 뒷 배경은 SKILL UPGRADE 가 쓰인 두 색 띠가 하나는 위로, 하나는 아래로
+    벨트 스크롤' (목업 그림 — 연파랑 #c2e5ff · 민트 #c6faf6 · 20° 기울기). 재작업 CSS 의 `.suc-heading` · `.suc-footer` 배경 #5c94b0e0 → #5c94b0.
+    배경은 배치표 `bg` (`skChoiceBg` — 방 그림 대신 · 띠 22개(넓은 화면) · 14개(폰)의 글 줄을 transform 으로 · 시계에 맞춘 animation-delay · 움직임 줄이기면 멈춤 ·
+    CSS 는 `#sucBgCss` 로 한 번 넣는다). 밝은 띠 위 글은 테두리(`suc-belt`) · 완료 화면의 어두운 막은 뺐다. 실험실 '배경' 칸(색 셋 · 진하기 · 폭 · 기울기 · 속도 · 글 사이 · 크기 · 끄기).
+    apply_skup 이 bg 를 확인(#rrggbb · 범위 · 크기 12·24·36·48 — 없으면 기본값). 시험 scratchpad `skup/labtest_bg.py` · `cap_bg.py`(벨트 GIF).
+  - **전구 · 표시 테두리 · 완료 배경 · 부채 상자** (빌드 1013-2255) — 사용자: '전구 사이즈 보정/이동 가능하게, 잘 안 보여서 테두리 · 긴장 · 충격 표시도 테두리 ·
+    완료 창의 뒷배경은 업그레이드 된 스킬의 배경색을 채도를 더 낮게 · 부채의 텍스트와 보유 수량은 이국의 부채 (2개) 로, 마우스 오버 때 박스에서'.
+    전구는 thinking.png 에 그려져 있어(16 직업 같은 자리 82, 20 · 28×27) 그 칸을 마스크로 가리고 같은 그림을 잘라 `.suc-bulb` 로 — `marks.thinking` (실험실 '전구' · 고르기 장면).
+    테두리 `outline {c #3d2b1f, w 1칸}` (실험실 표시 칸). 완료 배경 `bg.end` solid · `endSat` 50 (실험실 배경 칸 '완료 화면' · '완료 채도').
+    부채 단추 — '이국의 부채 (N개)' 상자(`.suc-fan-tip` · 0개면 '획득 경로 추후 추가' 줄) · 터치 기기는 부채 아래 글 · 단추 상자가 그림만이 되어 사용자 배치 y 를 39 올렸다(그림 자리 그대로).
+    영어: ui.json 에서 '보유 ' · ' · 1개 사용' 지우고 '이국의 부채 ({0}개)' → 'Exotic Fan ({0})'. 시험 scratchpad `skup/labtest_v4.py` · `cap_v4.py`.
+  - **부채 그림 v2 · 효과음 다섯** (빌드 1013-2330) — 사용자: 참고 그림(은빛 부채 · 흰 테두리 · 붉은 손잡이)처럼 '부채도 이미지 같은 느낌으로 가공하고 테두리/그림자' ·
+    소리 다섯(나중에 · 스킬과 부채에 마우스 오버 · 창 진입 후 전구 · 부채 맞고 다시 전구 · 부채 타격 · 옵션 출력) · '옵션 출력 소리는 진화 · 각성일 때 톤을 올릴 수 있나'.
+    `fan-v2.svg`(새 파일 · 생성 스크립트 `tools/gen/patch/skup_fan.py`) + CSS 그림자 · `SK_CHOICE_FIT.fan` 높이 비율 89/150 · 66/110. 효과음 `bgm/skillup_{later,hover,bulb,hit,option}`
+    (.ogg + 원본 .mp3) · `sfxPlay(key, rate)` 에 재생 빠르기(WebAudio playbackRate · <audio> 는 preservesPitch 끄고 playbackRate) — 진화 +4 · 각성 +7 반음.
+    사용자 배치(휘두르는 부채 101, 260 · 폭 126 / 부채 단추 18, 134 · 폭 172 · 폰 y 100 / 전구 크기 36 · 위로 7 · 직업 13 따로 / 띠 색 #e5edff · #dbf5f3 · 글자 #000 25% ·
+    완료 채도 30) 반영. 실험실 차이점 — 키 차례만 다른 것을 '바뀜'으로 보던 것(긴장 · 충격 표시 빈 줄) 고침(`canon`). 터치 기기 부채 글은 부채 위로(이름 띠에 걸리지 않게).
+  - **새 부채 그림 테두리 · 휘두르기 시작 자리** (1014 · 빌드 1014-0020) — 사용자가 부채를 새 그림 `exotic-fan-v3.png`(64×64 도트 · 손잡이 왼쪽 아래 · 다른 세션이
+    `SK_CHOICE_FAN` 과 정사각 128 / 64 CSS · 손잡이 축 22% 85% 를 넣었다)로 바꾼 뒤: '테두리 처리 해주고 스킬 강화 창 배치에서 부채 휘두를 때 시작 위치를 조정할 수 있게'.
+    부채 둘은 그림 칸 정수배(64 · 128 · 192 — 배치 w 에 가장 가까운 · `SK_CHOICE_FAN_PX`)로 — 배치의 인라인 크기가 그 CSS 를 덮어 단추 그림이 102px(1.59배)로 고르지 않던 것.
+    테두리 · 그림자는 배치표 `fan {flip, c, w}`(`skChoiceFanFilter` — 그림 1칸 단위 · 그림자는 각 자세 각도만큼 되돌려 늘 오른쪽 아래). 휘두르기는 `swing` 상자 = 맞는 자리(+ `r`) ·
+    `swingFrom {x, y, r}` = 시작 자리(맞는 자리에서 옮긴 px) — `skChoiceSwing` 이 `#sucSwingCss` 에 .ready · .bonk · keyframes `suc-bonk-fan` 을 쓴다(손잡이 `SK_CHOICE_FAN_GRIP` 축).
+    새 그림은 예전 그림과 좌우가 반대라 예전 회전(24 → -45 → -25도)으로는 맞을 때 종이가 머리 위로 섰다 → `flip`(손잡이를 오른쪽으로) + 기본 자세 시작 (24, -40) 35도(종이가 위로) ·
+    맞음 -60도(머리 위에 눕는다) · 가운데 쯤 조금 더 나감. 사용자 배치의 휘두르는 부채(101, 260 · 폭 126 — 예전 그림의 '시작' 자리)는 새 뜻으로 바꿨다: 넓은 화면 맞는 자리 150, 302 · 폭 128 / 폰 75, 268.5 · 64.
+    실험실: '부채 들기' 장면 '부채 — 시작 자리'(끌기 · 방향키 · 각도) · '부채 맞음' 장면 '부채 — 맞는 자리'(각도 · 모서리 손잡이 64 단위) · [ ] 키 5도(Shift 15) · '▶ 휘두르기 보기' ·
+    부채 테두리 · 휘두를 때 좌우 뒤집기 · 테두리 상자는 보이는(돌린) 자리 · 1014 전 저장분의 swing(r 없음)은 게임 값으로. apply_skup — swingFrom · swing.r · fan (없으면 기본값).
+    지난번 패치(효과음)가 주석 뒤로 밀어 버린 실험실 부팅 코드 `UI.ceremonies = []; UI.view = "home";` 되살림. `assets/skill-upgrade/README.md` 의 부채 줄도 v3 로.
+    시험 scratchpad `skup/labtest_v6.py` · `swing_frames.py`(프레임 시트 — 애니메이션을 멈춰 찍는다) · `swing_jobs.py`(16 직업 맞는 자리).
+  - **명부 '스킬 강화 가능!' 쪽지 · 완료 소리 · 말풍선 조각 2배 · 꼬리 픽셀 테두리 · 영어 Auto-Upgrade** (1014 · 빌드 1014-0035) — 사용자 목업(초상 원 위쪽에 걸친
+    'SKILL UPGRADE!' / '스킬 강화 가능!' 쪽지 · '서식은 다른 것들을 따라가면'): 명부 책(roster_block.js · .css → apply_roster)의 학생 목록에서 `st.sp > 0` 이면
+    `<span class="tag tm skb">스킬 강화 가능!</span>` — 원 아래 꼬리표와 같은 모양 · 원 위 15px(원을 따라 옮김) · 영어 'SKILL UPGRADE!'(ui.json).
+    영어 '스킬 임의로 강화' → 'Auto-Upgrade'(예전 'Auto-Upgrade Skills' 가 정렬 칸을 침범 — 좁은 화면 학생 명부 단추도 같은 글).
+    완료 화면 소리 `bgm/skillup_done.{ogg,mp3}`(새 파일 · SFX suc_done · `choose` 에서 완료 화면을 그린 뒤). 말풍선이 나오기 전 조각 64×56(2배 · 가운데 그대로).
+    꼬리 · 점 — 계단 모서리 clip-path 두 겹(바깥 테두리 색 · 안 ::after 등급 색)으로 픽셀 테두리 · 말풍선 · 꼬리 · 점 사이 4px. 폰은 말풍선이 붙어 있어 꼬리가 다음 말풍선 뒤에 거의 숨는다.
+    apply_roster 는 그림을 data: 로 넣지만 빌드(split_assets)가 같은 assets/roster_art 경로로 되돌린다(game.html 의 ROSTER_ART 줄은 그대로). 시험 scratchpad `skup/roster_shot.py` · `puff2.py` · `puff_tail.py` · `sfx_done_test.py`.
+  - **명부 쪽지로 스킬 강화 · 강화 규칙 숨김 · 사용자 휘두르기 배치** (1014 · 빌드 1014-0050) — 사용자: '학생 명부의 스킬 강화 가능!/Skill Upgrade! 을 눌러서
+    스킬 업그레이드 창을 띄우기 · 스킬 창의 Skill Upgrade 버튼은 숨김 · 강화 규칙 숨김' + 실험실 배치(넓은 화면 맞는 자리 126, 275 · 시작 자리 20, -3).
+    쪽지 `<span class="tag tm skb" data-skup role=button tabindex=0>` — 목록 click · keydown(Enter · Space)에서 `openSkillUp(id)`(상세 쪽이면 select 뒤 `RB.want = true; skillUpModal`) ·
+    `dragSrc` 는 [data-skup] 에서 끌기를 시작하지 않는다 · 마우스를 올리면 #fff3d6 · 초점 점선. 학생 상세 스킬 칸의 `#skUp` 단추와 그 연결 · `.pbtn` CSS 를 뺐다('강화 포인트 N' 글은 그대로).
+    제목 글 '눌러서 스킬 강화 — 강화 포인트 {0}' (영어 표). 강화 규칙 `.suc-rules{display:none}`(skChoiceCss) · 실험실 목록에서 rules 를 뺐다(배치표 칸은 그대로).
+    시험 scratchpad `skup/roster_click_test.py`(마우스 · Enter · 팀 편성 · 강화 뒤 사라짐).
+  - **이국의 부채 — 도구 탭에서 판다** (1014 · 빌드 1014-0103) — 사용자: '이국의 부채 도구점에서 1000G 에 구매 가능 · 계절 당 2개 구입 가능'.
+    쿠키(`COUNSEL_COOKIE` 블록 — 200G · 계절 2개)와 같은 방식으로 그 블록 바로 아래에: `EXOTIC_FAN_PRICE` 1000 · `EXOTIC_FAN_LIMIT` 2 · `fanShopState`(`S.fanShop {key 연도-계절, bought}`) ·
+    `buyExoticFan` · `exoticFanShopCard`(쿠키 다음 칸 · 이름 · 값 · 설명 · '보유 N개 · 이번 계절 M/2개 구입 가능'). `ITEMS.exoticFan` pending 을 빼고 price 1000 · ex 0 ·
+    `itemPrice` 는 할인 없는 1000. 도구 탭 클릭 처리에 exoticFan 갈래. 스킬 강화 창의 부채 상자(0개) 글 '획득 경로 추후 추가' → '도구상에서 구입 · 1,000 G'.
+    영어 — 일지 · 알림 · 카드 줄 · 상자 글 (log.json · ui.json). `assets/skill-upgrade/README.md` 의 'pending' 줄도 고쳤다. 시험 scratchpad `skup/shop_fan_test.py`
+    (넓은 화면 마을 · 좁은 화면 · 영어 · 한도 · 계절 바뀜 · 자금 부족 · 일지 · 스킬 강화 창 상자).
+  - 시험: `tools/check_skill_upgrade.cjs`(경로 · 브라우저만 바꾸고 바깥 주소를 막아) 통과 · 실험실 조작 시험 · JSON → apply → 빌드 왕복 · 재작업 빌드와 픽셀 비교
+    (세션 scratchpad `skup/labtest2.py` · `roundtrip.py` · `cmp.py`) · `hs.py layout --only skillup` · `hs.py i18n` · `check_modes.py` 통과.
 
 - **화면 모드 — 넓은 화면을 기본으로 · 좁은 PC 창은 통째로 줄인다 (1013 · 빌드 1013-1649)** — 사용자: '가로 넓은 화면을 기본으로, 폭 1100 미만이면 전체 스케일을 축소,
   640 이하는 세로 모드 · 폰은 무조건 세로 · 세로 태블릿은 무조건 가로(넓은 화면) · PC 좁은 창은 줄이고 PC 640 이하는 세로'. 목업(아티팩트 '화면 모드 개편 목업' · PC

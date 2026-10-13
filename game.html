@@ -3158,6 +3158,42 @@ html body .skwrap.mdesk-intro .sk-paper{animation:mdeskIn .42s ease-out both}
 @keyframes mdeskIn{from{opacity:0}to{opacity:1}}
 @media (prefers-reduced-motion:reduce){.mdesk .mdh,.mdesk .mdtag,.mdesk .md-items{transition:none}}
 /* MDESK_CSS_END */
+/* SKILL_CHOICE_STYLE_START */
+/* Skill-upgrade popup: scoped to avoid changing other game windows. */
+#modalRoot .suc-modal{padding:0;width:min(1024px,100%)!important;max-height:calc(100dvh - 24px);border:0;border-radius:0;overflow:auto;background:#735f48}
+.suc-scene{position:relative;isolation:isolate;height:740px;min-height:640px;border:4px double #c6ae7b;background:url('assets/skill-upgrade/room.webp') center/cover;color:#fff3d4;font:400 16px/1.4 Mulmaru,sans-serif;overflow:hidden}
+.suc-scene *{box-sizing:border-box}.suc-scene button{font:inherit;cursor:pointer;border-radius:0}.suc-scene button:focus-visible{outline:3px solid #fff2b2;outline-offset:3px}.suc-scene button:disabled{cursor:default}
+.suc-heading{position:absolute;inset:0 0 auto;height:136px;padding:20px 24px;background:#5c94b0;clip-path:polygon(0 0,100% 0,100% 48%,0 100%);z-index:3}.suc-heading:after{content:'';position:absolute;inset:0;background:#f4e5bf;clip-path:polygon(0 96%,100% 44%,100% 46%,0 98%)}
+.suc-heading small{letter-spacing:2px;font-size:16px}.suc-heading h2{font:400 28px/1.2 Mulmaru;margin:6px 0;color:#fff6df;text-shadow:0 2px #385f75}.suc-points{position:absolute;right:22px;top:12px;z-index:4;border:2px solid #e8dbb4;background:#375e7370;padding:4px 10px;font-size:16px}.suc-points b{color:#ffedac}
+.suc-choices{position:absolute;top:112px;left:2%;width:96%;height:330px;z-index:5}.suc-slot{position:absolute;width:32%;height:178px;--grade-bg:#d5cfc2;--tier:#b8b8b1}.suc-slot:nth-child(1){left:0;top:100px}.suc-slot:nth-child(2){left:34%;top:0}.suc-slot:nth-child(3){right:0;top:100px}
+.suc-scene [data-grade=D]{--grade-bg:#d5cfc2}.suc-scene [data-grade=C]{--grade-bg:#bfd0b1}.suc-scene [data-grade=B]{--grade-bg:#b9cfdb}.suc-scene [data-grade=A]{--grade-bg:#cec0dd}.suc-scene [data-grade=S]{--grade-bg:#e4d09d}.suc-scene [data-grade=EX]{--grade-bg:#d8b7cd}.suc-slot[data-tier="1"]{--tier:#39a9eb}.suc-slot[data-tier="2"]{--tier:#ffc739}
+.suc-card{position:relative;width:100%;height:100%;padding:0;border:0;background:transparent;color:#493721;text-align:right}.suc-cloud{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 4px 0 #50372480);shape-rendering:crispEdges}.suc-cloud path{fill:var(--grade-bg);stroke:#ac8c59;stroke-width:2}.suc-card:hover .suc-cloud,.suc-card:focus-visible .suc-cloud{filter:brightness(1.08) drop-shadow(0 4px 0 #50372480)}
+.suc-card-body{position:absolute;inset:25px 23px;display:grid;grid-template-columns:17px 80px minmax(0,1fr);align-items:center;gap:6px}.suc-stars{display:flex;flex-direction:column;font-size:23px;line-height:1.2;color:var(--tier);-webkit-text-stroke:1px #777;paint-order:stroke fill;text-shadow:1px 1px #666}.suc-stars .off{opacity:.22;color:#817d70}.suc-info{display:flex;flex-direction:column;gap:2px;min-width:0}.suc-info small{font-size:12px;color:#715e43}.suc-info strong{font:400 19px/1.15 Mulmaru;overflow-wrap:anywhere;margin:4px 0}.suc-info>span{font-size:12px;color:#705b3b}
+.suc-scene .skill-icon{position:relative;float:none;display:block;width:80px;height:80px;margin:0;flex-shrink:0}.suc-scene .skill-icon img{image-rendering:pixelated}.suc-tail{position:absolute;bottom:-29px;right:14px;width:36px;height:30px;background:#ac8c59;border:0;clip-path:polygon(6px 0,calc(100% - 6px) 0,calc(100% - 6px) 3px,calc(100% - 3px) 3px,calc(100% - 3px) 6px,100% 6px,100% calc(100% - 6px),calc(100% - 3px) calc(100% - 6px),calc(100% - 3px) calc(100% - 3px),calc(100% - 6px) calc(100% - 3px),calc(100% - 6px) 100%,6px 100%,6px calc(100% - 3px),3px calc(100% - 3px),3px calc(100% - 6px),0 calc(100% - 6px),0 6px,3px 6px,3px 3px,6px 3px)}.suc-tail:after{content:'';position:absolute;inset:3px;background:var(--grade-bg);clip-path:polygon(3px 0,calc(100% - 3px) 0,calc(100% - 3px) 3px,100% 3px,100% calc(100% - 3px),calc(100% - 3px) calc(100% - 3px),calc(100% - 3px) 100%,3px 100%,3px calc(100% - 3px),0 calc(100% - 3px),0 3px,3px 3px)}.suc-slot:nth-child(2) .suc-tail{right:calc(50% - 18px)}.suc-slot:nth-child(3) .suc-tail{right:auto;left:14px}
+.suc-tip{display:none;position:absolute;left:calc(100% + 8px);top:36px;min-width:230px;padding:16px;border:3px double #ac8c59;background:var(--grade-bg);color:#493721;box-shadow:3px 4px #3c2c2466;text-align:left;font-size:14px}.suc-slot:last-child .suc-tip{left:auto;right:calc(100% + 8px)}.suc-slot:hover,.suc-slot:focus-within{z-index:10}.suc-slot:hover .suc-tip,.suc-slot:focus-within .suc-tip{display:block}
+.suc-hero,.suc-result-hero{position:absolute;bottom:64px;left:calc(50% - 192px);width:384px;height:384px;pointer-events:none}.suc-layer{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated;object-fit:contain}.suc-mark{position:absolute;width:16.66667%;height:16.66667%;image-rendering:pixelated}.suc-footer{position:absolute;bottom:0;left:0;right:0;height:116px;background:#5c94b0;clip-path:polygon(0 61%,100% 0,100% 100%,0 100%);padding:65px 140px 10px;text-align:center;font-size:24px}.suc-footer:before{content:'';position:absolute;inset:0;background:#f4e5bf;clip-path:polygon(0 64%,100% 3%,100% 5%,0 66%)}
+.suc-later,.suc-done{background:#527b91;border:3px double #e8dbb4;color:#fff5db;padding:8px 22px;box-shadow:2px 2px #31495e44}.suc-later{position:absolute;bottom:16px;right:24px}.suc-reroll{position:absolute;bottom:126px;right:32px;width:150px;background:none;border:0;color:#fff4db;text-shadow:1px 2px #59432c;display:flex;flex-direction:column;align-items:center;gap:4px}.suc-reroll img{width:108px;height:88px;image-rendering:pixelated}.suc-reroll span{font-size:12px}.suc-reroll:disabled{opacity:.65}.suc-reroll:not(:disabled):hover img{transform:rotate(-10deg)}
+.suc-swing{position:absolute;left:calc(50% + 45px);bottom:326px;width:110px;opacity:0;transform-origin:80% 85%;z-index:6;pointer-events:none;image-rendering:pixelated}.suc-swing.ready{opacity:1;transform:rotate(24deg)}.suc-swing.bonk{opacity:1;animation:suc-bonk .4s steps(4,end) both}@keyframes suc-bonk{0%{transform:rotate(24deg)}40%{transform:translate(-25px,25px) rotate(-45deg)}100%{transform:translate(-15px,8px) rotate(-25deg)}}
+.suc-rules{position:absolute;left:18px;bottom:14px;z-index:12;font-size:12px;max-width:calc(100% - 160px)}.suc-rules summary{cursor:pointer}.suc-rules>div{position:absolute;bottom:30px;left:0;width:min(600px,75vw);max-height:400px;overflow:auto;padding:16px;background:#fff1d6;color:#493721;border:3px double #ac8c59}.suc-rules table{color:#493721}
+.suc-puff{position:absolute;inset:0;pointer-events:none}.suc-puff i{position:absolute;left:calc(50% - 16px);top:calc(50% - 14px);width:64px;height:56px;background:var(--tier);opacity:0;clip-path:polygon(20% 0,80% 0,80% 20%,100% 20%,100% 80%,80% 80%,80% 100%,20% 100%,20% 80%,0 80%,0 20%,20% 20%)}.suc-reveal .suc-puff i{animation:suc-poof 540ms steps(5,end) both;animation-delay:var(--delay)}.suc-reveal .suc-card{animation:suc-appear 260ms steps(4,end) both;animation-delay:calc(var(--delay) + 560ms)}.suc-reveal .suc-tip{display:none!important}@keyframes suc-poof{0%{opacity:0;transform:scale(.3)}20%{opacity:.95}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(.4)}}@keyframes suc-appear{from{opacity:0;translate:0 8px}to{opacity:1;translate:0 0}}
+.suc-success{display:flex;flex-direction:column;align-items:center;height:100%;padding:30px 20px;gap:12px;background:#4e45302b;text-align:center}.suc-success>small{font-size:16px;letter-spacing:2px;color:#ffdf9d;text-shadow:0 2px #493721}.suc-success h2{font:400 28px/1.2 Mulmaru;margin:0;text-shadow:0 2px #493721}.suc-result-hero{position:relative;bottom:auto;left:auto;flex-shrink:0}.suc-result-info{display:flex;align-items:center;gap:20px;padding:14px 20px;width:min(490px,100%);border:4px double #ac8c59;background:var(--grade-bg);color:#493721;font-size:14px}.suc-result-info>div{flex:1}.suc-result-info strong{font-size:23px}.suc-result-info p{margin:5px 0}.suc-done{min-width:160px}
+@media(max-width:760px){.suc-scene{height:auto;min-height:1060px}.suc-heading{height:126px;padding:16px}.suc-heading h2{font-size:22px;max-width:70%}.suc-heading small{font-size:12px}.suc-points{font-size:12px;right:10px;top:10px}.suc-choices{top:134px;height:552px;width:94%;left:3%}.suc-slot:nth-child(n){width:min(350px,100%);left:50%;right:auto;transform:translateX(-50%)}.suc-slot:nth-child(1){top:0}.suc-slot:nth-child(2){top:184px}.suc-slot:nth-child(3){top:368px}.suc-slot .suc-tip,.suc-slot:last-child .suc-tip{left:50%;right:auto;top:130px;transform:translateX(-50%)}.suc-hero{width:192px;height:192px;left:calc(50% - 96px);bottom:120px}.suc-reroll{bottom:100px;right:8px;width:110px}.suc-reroll img{width:80px;height:64px}.suc-footer{font-size:18px;padding:62px 120px 10px 10px}.suc-swing{bottom:258px;left:calc(50% + 20px);width:75px}.suc-success{min-height:660px;padding:30px 12px}.suc-scene:has(.suc-success){min-height:660px}.suc-result-hero{width:192px;height:192px;margin:20px 0}.suc-success h2{font-size:24px}.suc-result-info{gap:10px;padding:12px}.suc-rules{max-width:90px}}
+@media(prefers-reduced-motion:reduce){.suc-reveal .suc-puff i,.suc-reveal .suc-card,.suc-swing.bonk{animation:none!important}.suc-reveal .suc-card{opacity:1}}
+/* The game's global pixel theme decorates every button with !important borders. */
+.suc-tail-dot{position:absolute;bottom:-53px;right:4px;width:22px;height:20px;background:#ac8c59;border:0;clip-path:polygon(4px 0,calc(100% - 4px) 0,calc(100% - 4px) 2px,calc(100% - 2px) 2px,calc(100% - 2px) 4px,100% 4px,100% calc(100% - 4px),calc(100% - 2px) calc(100% - 4px),calc(100% - 2px) calc(100% - 2px),calc(100% - 4px) calc(100% - 2px),calc(100% - 4px) 100%,4px 100%,4px calc(100% - 2px),2px calc(100% - 2px),2px calc(100% - 4px),0 calc(100% - 4px),0 4px,2px 4px,2px 2px,4px 2px)}.suc-tail-dot:after{content:'';position:absolute;inset:2px;background:var(--grade-bg);clip-path:polygon(2px 0,calc(100% - 2px) 0,calc(100% - 2px) 2px,100% 2px,100% calc(100% - 2px),calc(100% - 2px) calc(100% - 2px),calc(100% - 2px) 100%,2px 100%,2px calc(100% - 2px),0 calc(100% - 2px),0 2px,2px 2px)}.suc-slot:nth-child(2) .suc-tail-dot{right:calc(50% - 11px)}.suc-slot:nth-child(3) .suc-tail-dot{right:auto;left:4px}
+@media(max-width:760px){.suc-tail-dot{display:none}}
+html body #modalRoot .suc-scene button.suc-card,html body #modalRoot .suc-scene button.suc-reroll{border:0!important;background:transparent!important;box-shadow:none!important;border-radius:0!important}
+html body #modalRoot .suc-scene button.suc-later,html body #modalRoot .suc-scene button.suc-done{border:3px double #e8dbb4!important;background:#527b91!important;color:#fff5db!important;box-shadow:2px 2px #31495e44!important}
+html body #modalRoot .suc-scene .suc-info strong{font-size:19px!important;line-height:1.15!important}
+html body #modalRoot .suc-scene .suc-reroll strong{font-size:12px!important;line-height:1.3!important}html body #modalRoot .suc-scene .suc-reroll span{font-size:12px!important;line-height:1.3!important}
+html body #modalRoot .suc-scene .suc-heading h2,html body #modalRoot .suc-success h2{font-size:28px!important;line-height:1.2!important}
+@media(max-width:760px){html body #modalRoot .suc-scene .suc-heading{height:142px;padding-top:18px}html body #modalRoot .suc-scene .suc-heading h2{font-size:20px!important;max-width:100%;margin-top:16px;max-height:52px;overflow:hidden}.suc-heading small{display:block;width:45%}.suc-choices{top:146px}.suc-scene{min-height:1080px}}
+
+
+/* Exotic fan v2: preserve square pixels and pivot around the red grip. */
+html body #modalRoot .suc-reroll img,html body #modalRoot .suc-swing{width:128px;height:128px;object-fit:contain;image-rendering:pixelated}html body #modalRoot .suc-swing{transform-origin:22% 85%}
+@media(max-width:760px){html body #modalRoot .suc-reroll img,html body #modalRoot .suc-swing{width:64px;height:64px}}
+/* SKILL_CHOICE_STYLE_END */
 </style>
 
 <link rel="stylesheet" href="assets/title-art/title-screen.css?v=7">
@@ -4633,12 +4669,13 @@ function facOrder(){
     (FACILITIES[a].ex|0) - (FACILITIES[b].ex|0) || ks.indexOf(a) - ks.indexOf(b));
 }
 function itemOrder(){
-  const ks = Object.keys(ITEMS);
+  const ks = Object.keys(ITEMS).filter(k=>!ITEMS[k].pending);
   return ks.slice().sort((a,b)=> (ITEMS[a].secret?1:0) - (ITEMS[b].secret?1:0) ||
     (ITEMS[a].ex|0) - (ITEMS[b].ex|0) || ks.indexOf(a) - ks.indexOf(b));
 }
 function itemLock(k){
   const it = ITEMS[k];
+  if(it && it.pending) return "추후 추가 예정";
   if(it && it.needFac && !(S.facil && S.facil[it.needFac])) return `${FACILITIES[it.needFac].n} 필요`;
   return (it && it.ex && expandLv() < it.ex) ? `학원 증축 Lv.${it.ex} 필요` : null;
 }
@@ -4656,6 +4693,7 @@ function cslFacBonus(){
 }
 const ITEMS = {
   cookie: {n:"쿠키",d:"상담 중 사용",price:200,ex:0,consumable:true},
+  exoticFan: {n:"이국의 부채",d:"스킬 강화 제안 세 가지를 모두 다시 뽑는다",price:1000,ex:0,consumable:true},   // 1014 — 도구 탭에서 판다 (계절마다 2개 · exoticFanShopCard)
   weight:  {n:"중량 조끼", d:"고강도 체력 훈련 해금",     price:900, ex:1},
   dummy:   {n:"강철 목인", d:"실전 타격 훈련 해금",       price:1100, ex:1},
   stone:   {n:"명상석",    d:"심층 명상 해금",            price:1000, ex:2},
@@ -7136,7 +7174,7 @@ function dietDisc(){
 function evDisc(k){ const lv = jobEvLv(k); return (lv >= 1 ? .05 : 0) + (lv >= 2 ? .10 : 0); }
 function facDisc(){ return evDisc("salon"); }
 function itemDisc(){ return evDisc("inn"); }
-function itemPrice(k){ if(k === "cookie") return 200; const it = ITEMS[k]; return it ? Math.round(it.price * (1 - itemDisc())) : 0; }
+function itemPrice(k){ if(k === "cookie") return 200; if(k === "exoticFan") return EXOTIC_FAN_PRICE; const it = ITEMS[k]; return it ? Math.round(it.price * (1 - itemDisc())) : 0; }
 function dietPrice(d){ return Math.round((d||dietDef()).price * (1 - dietDisc()) * (townBuff("dietHalf") ? TOWN_DIET_MUL : 1)); }   // 밭주인 할아버지 · 마을 사냥꾼 — 이번 계절 식비 절반 (1004)
 function dietCostWeek(){ return dietPrice() * (S.students||[]).length; }
 function dietMul(){ return 1 + dietDef().eff + (townBuff("trainEff") ? TOWN_TRAIN_EFF : 0); }   // 주점 주인 — 이번 계절 훈련 효율 +20% (1004)
@@ -10119,6 +10157,31 @@ function cslCookieGive(p){
   }CW_COOKIE.frame=requestAnimationFrame(tick);
 }
 /* COUNSEL_COOKIE_END */
+/* 이국의 부채 (1014 사용자: '도구점에서 1000G 에 구매 가능 · 계절 당 2개 구입 가능') — 스킬 강화 제안 세 가지를 다시 뽑는 소모품(S.items.exoticFan 개수).
+   쿠키처럼 도구 탭에서 정해진 값으로 판다(도구상 할인 없음) · 계절마다 EXOTIC_FAN_LIMIT 개까지 (S.fanShop {key 연도-계절, bought}) */
+const EXOTIC_FAN_PRICE = 1000, EXOTIC_FAN_LIMIT = 2;
+function exoticFanStock(){ return Math.max(0, Math.floor(Number(S.items && S.items.exoticFan)||0)); }
+function fanShopState(){
+  const key = `${S.year}-${S.phase}`;
+  if(!S.fanShop || S.fanShop.key !== key) S.fanShop = {key, bought:0};
+  return S.fanShop;
+}
+function fanBuyLeft(){ return Math.max(0, EXOTIC_FAN_LIMIT - (fanShopState().bought|0)); }
+function buyExoticFan(){
+  if(!shopUnlocked()) return false;
+  if(!fanBuyLeft()){ toast("이번 계절의 이국의 부채는 모두 구입했다."); return false; }
+  if(S.gold < EXOTIC_FAN_PRICE){ toast("자금이 부족하다."); return false; }
+  S.gold -= EXOTIC_FAN_PRICE; S.items = S.items || {}; S.items.exoticFan = exoticFanStock()+1; fanShopState().bought++;
+  sfxPlay("coin"); logE(`<b>이국의 부채</b> 구입 — ${fmt(EXOTIC_FAN_PRICE)} G · 보유 ${exoticFanStock()}개 · 이번 계절 ${fanBuyLeft()}개 구입 가능`,"good");
+  save(); render(); return true;
+}
+function exoticFanShopCard(){
+  const left = fanBuyLeft(), it = ITEMS.exoticFan;
+  return `<button class="opt ${!left?'locked':S.gold<EXOTIC_FAN_PRICE?'poor':''}" data-item="exoticFan" ${!left?'disabled':''}>
+    <div class="on">${it.n}<span class="price">${fmt(EXOTIC_FAN_PRICE)} G</span></div>
+    <div class="od">${it.d}</div>
+    <div class="od">보유 ${exoticFanStock()}개 · 이번 계절 ${left}/${EXOTIC_FAN_LIMIT}개 구입 가능</div></button>`;
+}
 
 /* CSLWIN_START — 상담창 (1008 · apply_cslwin.py) ─ 상담 메뉴를 누르면 뜨는 창. mockups/counsel-window 목업을 게임에 옮겼다
    흐름: 학생이 책상 뒤로 들어온다 → 학생을 누르면 고민을 털어놓는다(지침 무시는 마스터가 먼저 묻는다) → 답변 구름 셋 중 하나를 고른다
@@ -10714,7 +10777,7 @@ const ROSTER_ART = {"book":"assets/roster_art/book.webp?v=b5899c72","ribbon":"as
 const RB_BAT_N = {skAcc:"스킬 성공률", skRes:"스킬 저항률", critRes:"받는 크리 감소", willCut:"의식 저하 경감", cond:"컨디션"};
 (() => {
 const RB_LAYOUT_SRC = {"items":{"lring":{"x":-1,"y":2,"size":100},"ltag":{"x":0,"y":0},"lepi":{"x":0,"y":0},"lname":{"x":0,"y":0},"dring":{"x":0,"y":0,"size":108},"dname":{"x":11,"y":0},"dtags":{"x":10,"y":0},"bub":{"x":0,"y":0},"xbtn":{"x":-8,"y":9},"sort":{"x":0,"y":0},"ebtn":{"x":0,"y":0},"rtabs":{"x":0,"y":0},"ribbon":{"x":20,"y":22},"tbtn":{"x":0,"y":0},"spbtn":{"x":0,"y":0}},"face":{"jobs":{"paladin":{"scale":0.93,"x":0,"y":9.5},"sword":{"scale":0.95,"x":0,"y":4},"monk":{"scale":1.04,"x":-5.5,"y":2},"archer":{"scale":1.02,"x":0,"y":9},"rogue":{"scale":1.02,"x":0,"y":2.5},"priest":{"scale":0.98,"x":0.5,"y":8},"timemage":{"scale":1.03,"x":-2,"y":4.5},"wizard":{"scale":1.09,"x":2,"y":5},"druid":{"scale":1,"x":2,"y":8.5},"forcemage":{"scale":1.03,"x":0,"y":5},"enchanter":{"scale":0.94,"x":0,"y":6.5},"darkpriest":{"scale":1.04,"x":0,"y":11},"bard":{"scale":0.94,"x":-2,"y":5},"spellsword":{"scale":1.03,"x":0.5,"y":2.5},"gunner":{"scale":1.02,"x":2.5,"y":9},"ninja":{"scale":0.95,"x":-4,"y":4}}}};
-const RB_CSS = "/* ── 무대 — 마스터 노트 책상(2배) 위에 창. 색 · 글꼴은 무대 안에서만 (배치판의 화면 색과 섞이지 않게) ── */\n#fitIn{\n  --ink:#35291f; --ink2:#5b4632; --ink3:#8a7356; --brass:#8a6a15; --brass-b:#b98e23;\n  --edge:#a1845b; --frame:#654a30; --dark:#30271e; --paper:#faf0d8; --paper2:#efdfba; --paper3:#e6d4b0;\n  --ok:#2f7f58; --warn:#b5661a; --bad:#b33f32;\n  --tank:#3c6e9e; --dps:#a5432f; --heal:#2f7f58; --supp:#6d4ba8;\n  --sel:#c8902e;\n  position:absolute;left:0;top:0;width:1214px;height:980px;transform-origin:top left;\n  color:var(--ink);font:12px/18px Mulmaru,\"IBM Plex Sans KR\",system-ui,sans-serif;letter-spacing:0;\n  -webkit-font-smoothing:none;font-synthesis:none;text-align:left}\n#fitIn *{box-sizing:border-box}\n#fitIn button,#fitIn select{font:inherit;color:inherit;letter-spacing:0}\n#fitIn .num{font-family:\"Mulmaru Mono\",\"Mulmaru\",monospace}\n.desk{position:absolute;left:0;top:0;width:1214px;height:932px;image-rendering:pixelated;\n  background:none 0 0/1214px 932px no-repeat}\n.desk .hit{position:absolute;left:440px;top:732px;width:180px;height:132px;cursor:pointer}\n.desk .tip{position:absolute;left:478px;top:706px;padding:0 6px;background:#2a1d14;color:#f6e7c4;border:2px solid #f6e7c4;opacity:0;transition:opacity .15s;pointer-events:none}\n.desk .hit:hover + .tip{opacity:1}\n.scrim{position:absolute;left:0;top:0;width:1214px;height:932px;background:rgba(10,11,15,.62);transition:opacity .2s}\n.closed .scrim{opacity:0;pointer-events:none}\n\n/* ── 책 창 ── */\n.book{position:absolute;left:19px;top:14px;width:1176px;height:948px;image-rendering:pixelated;\n  background:var(--rb-book) 0 0/1176px 948px no-repeat;filter:drop-shadow(6px 8px 0 rgba(0,0,0,.35));\n  transition:opacity .2s ease,transform .2s ease}\n.closed .book{opacity:0;transform:translateY(10px) scale(.985);pointer-events:none}\n.book *{image-rendering:auto}\n/* 책갈피 끈 — 책 그림과 따로 (art/ribbon.png 1배 8 × 52 → 2배). 쪽의 글 · 칸 밑에 깔리고, 누르기를 막지 않는다 */\n.book .ribbon{position:absolute;left:598px;top:844px;width:16px;height:104px;background:var(--rb-ribbon) 0 0/16px 104px no-repeat;\n  image-rendering:pixelated;pointer-events:none}\n.page{position:absolute;top:24px;height:832px;width:502px}\n.page.l{left:48px}\n.page.r{left:626px}\n.xbtn{position:absolute;right:-6px;top:-8px;width:32px;height:32px;padding:0;background:#e5cda5;color:#45321f;cursor:pointer;\n  border:2px solid var(--frame);box-shadow:inset 2px 2px #fff0c980,inset -2px -2px #60422140,0 2px #30271e;font:24px/24px Mulmaru}\n.xbtn:active{box-shadow:inset 2px 2px #30271e70}\n\n/* 쪽 머리 */\n.ph{display:flex;align-items:flex-end;gap:10px;height:34px}\n.ph h2{font:24px/28px Mulmaru;margin:0;color:var(--ink);letter-spacing:0}\n.ph .cnt{color:var(--ink3);padding-bottom:3px}\n.ph .sp{flex:1}\n.sel{appearance:none;-webkit-appearance:none;height:28px;padding:0 26px 0 8px;background:#f6e7c4;color:var(--ink);cursor:pointer;\n  border:2px solid var(--frame);box-shadow:inset 2px 2px #fff0c980,inset -2px -2px #60422140,0 2px #30271e;\n  background-image:linear-gradient(45deg,transparent 50%,var(--frame) 50%),linear-gradient(135deg,var(--frame) 50%,transparent 50%);\n  background-position:calc(100% - 13px) 11px,calc(100% - 8px) 11px;background-size:5px 5px;background-repeat:no-repeat}\n.rule{height:10px;margin:6px 0 4px;position:relative;\n  background:linear-gradient(var(--paper3),var(--paper3)) 0 4px/100% 2px no-repeat}\n.rule::after{content:\"\";position:absolute;left:50%;top:1px;width:8px;height:8px;margin-left:-4px;transform:rotate(45deg);\n  background:var(--paper);border:2px solid #c4ac84}\n\n/* 왼쪽 — 학생 목록 */\n.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0 4px;max-height:778px;overflow:auto;padding:2px 2px 0;scrollbar-width:thin;scrollbar-color:#c4ac84 transparent}\n.cell{position:relative;display:flex;flex-direction:column;align-items:center;padding:0;border:0;background:none;cursor:pointer;color:var(--ink)}\n.cell .epi{height:20px;line-height:20px;color:var(--brass);white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}\n.cell .nm{margin-top:10px;height:18px;line-height:18px;white-space:nowrap}\n.cell:hover .ring{--ring-c:#a8703a}\n.cell.on .ring{--ring-c:var(--sel)}\n.cell.on .ring::after{content:\"\";position:absolute;inset:-7px;border-radius:50%;border:2px solid var(--sel);opacity:.55}\n.cell.on .nm{color:var(--brass)}\n/* 원 아래에 걸친 꼬리표 — 정렬을 따라 학년 · 소속 팀 · 레벨 · 전투력 (진로 평가 · 컨디션 · 이름은 없다) */\n.cell .lt{position:absolute;left:50%;transform:translateX(-50%);z-index:2;gap:3px}\n.cell:focus-visible{outline:2px dashed var(--sel);outline-offset:-2px}\n\n/* 초상 — 원 안만 보인다 · 속배경은 투명 (아래 종이가 비친다)\n   틀 색(--ring-c)은 .ring 에서 정한다 — 바깥 페이지의 같은 이름 변수를 물려받으면 테두리가 통째로 사라진다 (배치판의 --r: 6px 이 그랬다) */\n.ring{--ring-c:#8b5a2b;position:relative;flex:none;border-radius:50%}\n.ring .face{position:absolute;inset:0;border-radius:50%;overflow:hidden}\n.ring .face img{display:block;width:100%;height:100%;object-fit:cover}\n.ring::before{content:\"\";position:absolute;inset:0;border-radius:50%;border:4px solid var(--ring-c,#8b5a2b);z-index:1;\n  box-shadow:inset 0 0 0 1px rgba(255,240,201,.35)}\n\n/* 꼬리표 */\n.tag{display:inline-flex;align-items:center;height:20px;padding:0 5px;border:2px solid currentColor;background:#fff7e3;color:var(--ink2);white-space:nowrap;line-height:16px}\n.tag.tm{background:#f6e7c4;color:var(--frame);height:20px}\n.tag.tm.none{color:var(--ink3);border-style:dashed}\n.tag.g-D{color:#82849a}.tag.g-C{color:#5b5d72}.tag.g-B{color:var(--tank)}.tag.g-A{color:var(--supp)}.tag.g-S{color:var(--brass)}.tag.g-EX{color:#b02e6b}\n.tag.r-tank{color:var(--tank)}.tag.r-dps{color:var(--dps)}.tag.r-heal{color:var(--heal)}.tag.r-supp{color:var(--supp)}\n.tag.yr{color:var(--ink2)}\n.tag.lv{color:var(--ink);background:none;border-color:transparent;padding:0 2px}\n.ebtn{width:24px;height:24px;padding:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;background:#e5cda5;color:#45321f;\n  border:2px solid var(--frame);box-shadow:inset 2px 2px #fff0c980,inset -2px -2px #60422140,0 2px #30271e}\n\n/* 오른쪽 — 상세 */\n.det{position:relative;height:100%;display:flex;flex-direction:column;transition:opacity .16s ease,transform .16s ease}\n.det > *{flex:none}\n.det.turn{opacity:0;transform:translateX(8px)}\n.hd{display:flex;gap:16px;min-height:112px;align-items:flex-start}\n.hd .who{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;padding-top:0}\n.hd .nmrow{display:flex;align-items:baseline;gap:8px;white-space:nowrap}\n.hd .nmrow .epi{color:var(--brass)}\n.hd .nmrow .nm{font:24px/28px Mulmaru}\n.hd .nmrow .ebtn{align-self:center;margin-left:-2px}           /* 이름 변경 — 이름 바로 뒤 (이름 길이를 따라간다) */\n.hd .tags{display:flex;gap:4px;align-items:center;flex-wrap:wrap}\n.bub{position:relative;align-self:flex-start;max-width:350px;margin:3px 0 0 10px;padding:6px 10px;background:#fffdf8;color:#2d241b;\n  border:2px solid #83603f;box-shadow:2px 2px 0 #5a3f2826;word-break:keep-all}\n.bub::before{content:\"\";position:absolute;left:-10px;top:8px;border:6px solid transparent;border-right:8px solid #83603f;border-left:0}\n.bub::after{content:\"\";position:absolute;left:-6px;top:10px;border:4px solid transparent;border-right:6px solid #fffdf8;border-left:0}\n.bub.boast{font:14px/18px HsBombaram21,Mulmaru;-webkit-font-smoothing:antialiased}\n.bub.timid{font-size:12px;color:#6b5a48}\n.note-band{margin-top:8px;padding:2px 8px;background:#e9d29c66;border-left:4px solid var(--brass-b);color:var(--ink2)}\n.note-band b{color:var(--brass);font-weight:400}\n.pers{display:flex;align-items:center;gap:6px 8px;margin-top:6px;flex-wrap:wrap}\n.pers .k{color:var(--ink3)}\n.pers .eff{display:inline-flex;align-items:center;gap:3px}\n.pers .eff.up{color:#b8382c}.pers .eff.dn{color:#2f63b5}\n.pdesc{color:var(--ink3);margin-top:2px}\n\n/* 카드 — 책장 위에 연필로 두른 칸 */\n.card{position:relative;border:2px solid var(--edge);box-shadow:inset 0 0 0 2px #fff7e2aa;background:#fbf3df80;padding:24px 10px 8px}\n.card > .cap{position:absolute;left:-2px;top:-2px;height:22px;padding:0 8px;background:var(--edge);color:#fff7e2;line-height:22px;white-space:nowrap}\n.card > .cap i{font-style:normal;color:#f6e1ac;margin-left:6px}\n.det > .row2{flex:1 1 auto;min-height:250px;display:grid;grid-template-columns:260px 1fr;gap:12px;margin-top:10px}   /* 남는 높이를 육각형 · 유물 줄이 받는다 */\n\n/* 멘탈리티 육각형 — 책장 위에 잉크로 그린 도트 (1배로 그려 2배로 본다) · 학생 값만 매끈한 SVG */\n.hex{min-height:0;padding:0}\n.hex canvas{position:absolute;image-rendering:pixelated}\n.hex .hexsv{position:absolute;overflow:visible;pointer-events:none}   /* 학생 값(면 · 테두리)은 매끈하게 — 캔버스와 같은 자리 · 같은 1배 좌표 */\n.hex .lab{position:absolute;line-height:16px;white-space:nowrap;text-align:center}\n.hex .lab .n{color:var(--brass)}\n.hex .lab .v{font:12px/16px \"Mulmaru Mono\",Mulmaru;color:var(--ink)}\n.hex .lab .v b{font-weight:400;margin-left:4px}\n.hex .lab.L{text-align:right}\n.hex .lab.R{text-align:left}\n\n/* 유물 */\n.rel{min-height:0;display:flex;flex-direction:column;gap:4px;padding:24px 4px 6px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#c4ac84 transparent}\n.slot{flex:none;display:flex;gap:6px;padding:3px 3px 3px 4px;border:2px solid #d6c09a;border-left-width:4px;background:#fffaf0aa}\n.slot .bd{min-width:0;flex:1}\n.slot .rn{display:flex;align-items:center;gap:5px;white-space:nowrap}\n.slot .rn .sc{margin-left:auto;color:var(--ink3)}\n.slot .af{color:var(--ink2);line-height:16px;margin-top:1px;display:flex;flex-wrap:wrap;gap:0 5px}\n.slot .af span{white-space:nowrap}\n.slot.empty{height:30px;border-style:dashed;border-left-width:2px;background:none;color:var(--ink3);align-items:center}\nbutton.slot.empty{width:100%;font:inherit;text-align:left;cursor:pointer}   /* 빈 칸 — 누르면 유물 보관고로 */\nbutton.slot.empty:hover{border-color:var(--sel);background:#fff3d6;color:var(--ink)}\nbutton.slot.empty:focus-visible{outline:2px dashed var(--sel);outline-offset:1px}\n.slot.empty .pl{width:20px;text-align:center}\n.slot.lock{height:30px;border-left-width:2px;border-style:dashed;border-color:#e0cfaa;background:repeating-linear-gradient(135deg,#efdfba33 0 6px,transparent 6px 12px);color:#b29c78;align-items:center}\n\n/* 스킬 */\n.skc{margin-top:10px;height:170px}\n.sks{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}\n.sk{display:flex;flex-direction:column;align-items:center;gap:2px;padding:2px 0 4px;border:2px solid transparent;background:none;cursor:pointer;color:var(--ink);text-align:center}\n.sk:hover,.sk.on{border-color:#d6c09a;background:#fffaf0aa}\n.sk .ic{position:relative;width:48px;height:48px;flex:none}\n.sk .ic img{position:absolute;image-rendering:pixelated}\n.sk .ic .fr{inset:0;width:100%;height:100%}\n.sk .ic .ar{left:8%;top:8%;width:84%;height:84%;object-fit:contain;image-rendering:auto}\n.sk .sn{height:18px;max-width:94px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}\n.sk .sl{color:var(--ink3);height:16px;line-height:16px}\n.sk .sl b{font-weight:400}\n.skd{margin-top:4px;padding-top:4px;border-top:2px dotted #d6c09a;height:42px;overflow:hidden;color:var(--ink2);line-height:18px}\n.skd b{color:var(--ink);font-weight:400}\n.skd .m{color:var(--ink3)}\n\n/* 학적 · 전투 능력치 — 머리띠 탭으로 바꿔 본다 (고른 탭은 학생을 바꿔도 그대로) */\n.rec{margin-top:10px;height:136px;padding:23px 10px 4px}\n.rec > .tabs{position:absolute;left:-2px;top:-2px;display:flex;height:22px}\n.rec .rt{height:22px;padding:0 8px;border:2px solid var(--edge);margin-right:-2px;background:#fbf3df;color:var(--ink3);line-height:18px;cursor:pointer}\n.rec .rt.on{background:var(--edge);color:#fff7e2}\n.rec .rt:not(.on):hover{color:var(--ink)}\n.rec > .pw{position:absolute;right:8px;top:2px;color:var(--ink3);line-height:18px}\n.rec > .pw b{font:12px/18px \"Mulmaru Mono\",Mulmaru;color:var(--ink);font-weight:400;margin-left:4px}\n.rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px 12px}\n.rgrid .it{min-width:0}\n.rgrid .k{color:var(--brass);height:18px;line-height:16px;border-bottom:2px dotted #e6d4b0}   /* 이름은 황동 + 점선 밑줄 — 값(잉크) · 덧말(옅은 잉크)과 갈리게 */\n.rgrid .v{color:var(--ink);line-height:18px;word-break:keep-all}\n.rgrid .s{color:var(--ink3);line-height:16px}\n.rgrid .v .sub{color:var(--ink3)}\n.rgrid .hearts{display:flex;gap:2px;margin-top:2px}\n.bgrid{display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;gap:4px 14px;padding-top:3px}\n.bgrid .b{display:flex;gap:6px;justify-content:space-between;white-space:nowrap;line-height:18px;border-bottom:2px dotted #e6d4b0}\n.bgrid .b .k{color:var(--ink3)}\n.bgrid .b .v{font-family:\"Mulmaru Mono\",Mulmaru;color:var(--ink)}\n#fitIn .c-brass{color:var(--brass)!important}#fitIn .c-bad{color:var(--bad)!important}#fitIn .c-warn{color:var(--warn)!important}\n#fitIn .c-dim{color:var(--ink3)!important}#fitIn .c-ok{color:var(--ok)!important}\n.tag.inj{color:var(--bad);height:18px;padding:0 3px;margin-left:4px}\n\n/* ── 팀 편성 — 명부 머리의 '팀 편성'으로 바꿔 본다. 오른쪽 쪽은 팀 · 진형 · 배치, 왼쪽 꼬리표는 소속 팀 고르기 ── */\n#fitIn [hidden]{display:none!important}\n.pbtn{height:28px;padding:0 10px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;background:#f6e7c4;color:var(--ink);white-space:nowrap;\n  border:2px solid var(--frame);box-shadow:inset 2px 2px #fff0c980,inset -2px -2px #60422140,0 2px #30271e}\n.pbtn:hover{background:#fff3d6}\n.pbtn:active{box-shadow:inset 2px 2px #30271e70,0 1px #30271e}\n.pbtn:focus-visible{outline:2px dashed var(--sel);outline-offset:2px}\n.pbtn:disabled{opacity:.45;cursor:default;background:#f6e7c4}\n.pbtn.pri{background:#ecd08a;color:#3a2a10}\n.pbtn.pri:hover{background:#f4dc9f}\n.pbtn.tog{flex:none}\n.pbtn.tog[aria-pressed=\"true\"]{background:var(--frame);color:#fff7e2;box-shadow:inset 2px 2px #1f160e8c,inset -2px -2px #fff0c926,0 2px #30271e}\n.pbtn.tog[aria-pressed=\"true\"]:hover{background:#755638}\n/* 스킬 임의로 강화 — 강화 포인트가 남은 학생이 있을 때만 정렬 옆에. 오른쪽 작은 칸에 남은 포인트 합 */\n.ph #spbtn{flex:none;padding:0 4px 0 10px}\n.ph #spbtn .spn{min-width:20px;height:20px;padding:0 4px;display:inline-flex;align-items:center;justify-content:center;\n  background:var(--frame);color:#fff7e2;font:12px/20px \"Mulmaru Mono\",Mulmaru}\n/* 왼쪽 — 지금 팀은 금색 틀, 다른 팀은 흐리게. 꼬리표를 누르면 소속 팀 쪽지 */\n.teammode .grid .cell{touch-action:none}\n.teammode .cell.cur .ring{--ring-c:var(--sel)}\n.teammode .cell.oth .ring,.teammode .cell.oth .epi,.teammode .cell.oth .nm{opacity:.45}\n.teammode .cell.lift{opacity:.4}\n.cell .tag.tset{cursor:pointer;max-width:150px}\n.cell .tag.tset .tx{overflow:hidden;text-overflow:ellipsis}\n.cell .tag.tset .mkr{flex:none}\n.cell .tag.tset:hover,.cell .tag.tset.open{background:#fff3d6}\n.cell .tag.tset.cur{background:var(--frame);border-color:var(--frame);color:#fff7e2}\n.cell .tag.tset.cur:hover,.cell .tag.tset.cur.open{background:#7a5a3a}\n.cell .tag.tset:focus-visible{outline:2px dashed var(--sel);outline-offset:1px}\n.page.l.dropout .grid{outline:2px dashed var(--bad);outline-offset:-2px;background:#b33f320f}\n.page.l.dropout::after{content:\"여기에 놓으면 팀에서 뺀다\";position:absolute;left:50%;top:48px;transform:translateX(-50%);padding:0 8px;line-height:20px;\n  background:var(--bad);color:#fff7e2;z-index:6;pointer-events:none;white-space:nowrap}\n/* 오른쪽 — 팀 탭(카드 머리) · 진형 넷 · 전열 / 후열 세 자리 */\n.tmc{padding:38px 10px 10px;margin-top:2px}\n.tmc > .ttabs{position:absolute;left:-2px;top:-2px;display:flex;height:28px}\n.tmc .tt{height:28px;padding:0 12px;margin-right:-2px;display:inline-flex;align-items:center;gap:6px;border:2px solid var(--edge);background:#f3e6c6;color:var(--ink3);cursor:pointer;white-space:nowrap}\n.tmc .tt:not(.on):not(.lock):hover{color:var(--ink);background:#f8eed6}\n.tmc .tt.on{background:var(--edge);color:#fff7e2}\n.tmc .tt .tc.ok{color:var(--ok)}\n.tmc .tt.on .tc.ok{color:#e2f4d2}\n.tmc .tt.lock{border-style:dashed;border-color:#d6c09a;background:none;color:#b29c78;cursor:default;gap:4px}\n.tmc .tt:focus-visible{outline:2px dashed var(--sel);outline-offset:1px;z-index:1}\n.tmc > .pw{position:absolute;right:8px;top:5px;color:var(--ink3);line-height:18px;display:flex;align-items:center;gap:4px}\n.tmc > .pw b{font:12px/18px \"Mulmaru Mono\",Mulmaru;color:var(--ink);font-weight:400}\n.tmc .th{display:flex;align-items:baseline;gap:8px;line-height:18px;white-space:nowrap;min-width:0}\n.tmc .th b{font-weight:400;color:var(--brass);flex:none}\n.tmc .th .st{margin-left:auto;flex:none}\n.tmc .fos{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0 12px;padding-bottom:12px;border-bottom:2px dotted #e6d4b0}\n.tmc .fo{position:relative;display:flex;flex-direction:column;gap:4px;padding:6px 9px 7px;border:2px solid #d6c09a;background:#fffaf0aa;color:var(--ink);cursor:pointer;text-align:left}\n.tmc .fo:hover{border-color:#c4ac84;background:#fffcf4}\n.tmc .fo.on{border-color:var(--brass-b);background:#fff3d2;box-shadow:inset 0 0 0 2px #fffaf0}\n.tmc .fo:focus-visible{outline:2px dashed var(--sel);outline-offset:2px}\n.tmc .fo .fh{display:flex;align-items:center;gap:8px;height:20px}\n.tmc .fo.on .fnm{color:var(--brass)}\n.tmc .fo .fsh{color:var(--ink3)}\n.tmc .fo .fck{margin-left:auto;display:flex}\n.tmc .fo .fx{display:flex;flex-direction:column;color:var(--ink2);line-height:16px;word-break:keep-all}\n.tmc .fld{display:flex;flex-direction:column;gap:6px;margin-top:6px}\n.tmc .frow{display:grid;grid-template-columns:20px repeat(3,minmax(0,1fr));gap:6px}\n.tmc .frl{writing-mode:vertical-rl;text-orientation:upright;align-self:center;justify-self:center;color:var(--ink3);letter-spacing:6px}\n.fs{position:relative;height:160px;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;\n  border:2px solid #d6c09a;background:#fffaf0cc;color:var(--ink);cursor:pointer;outline:none;text-align:center}\n.fs.fill{justify-content:flex-start;padding-top:10px}\n.fs:hover{border-color:#c4ac84}\n.fs:focus-visible{outline:2px dashed var(--sel);outline-offset:2px}\n.fs.empty{border-style:dashed;border-color:#c4ac84;background:#fbf3df80}\n.fs.empty .fe{color:var(--ink2)}\n.fs .fw{color:var(--ink3);line-height:16px}\n.fs .fw b{font-weight:400}\n.fs.on{border-style:solid;border-color:var(--sel);background:#fff3d6;box-shadow:0 0 0 2px #c8902e4d}\n.fs.off{border:2px dashed #e0cfaa;background:repeating-linear-gradient(135deg,#efdfba40 0 6px,transparent 6px 12px);cursor:default}\n.fs.off .fe{color:#b29c78}\n.fs .ring{width:64px;height:64px;margin-bottom:5px}\n.fs .ring::before{border-width:3px}\n.fs .fn{display:flex;align-items:center;gap:4px;white-space:nowrap;max-width:100%;line-height:18px}\n.fs .fn .nm{overflow:hidden;text-overflow:ellipsis}\n.fs .ft{display:flex;align-items:center;gap:4px;white-space:nowrap}\n.fs .tag{height:18px;padding:0 3px;line-height:14px}\n.fs .tag.lv{padding:0}\n.fs .fp,.fs .fc{color:var(--ink3);line-height:16px;white-space:nowrap}\n.fs .fp b,.fs .fc b{font-weight:400;color:var(--ink);margin-left:4px}\n.fs .x{position:absolute;right:2px;top:2px;width:20px;height:20px;padding:0;display:grid;place-items:center;border:0;background:none;color:var(--ink3);cursor:pointer;opacity:.5}\n.fs:hover .x,.fs .x:focus-visible{opacity:1}\n.fs .x:hover{color:var(--bad)}\n.fs.drop{border-style:solid;border-color:var(--sel);background:#fff0c8}\n.fs.lift{opacity:.45}\n@keyframes fsflash{0%{box-shadow:0 0 0 5px #e9c77acc;background:#fff0c0}100%{box-shadow:0 0 0 0 #e9c77a00}}\n.fs.flash{animation:fsflash .9s ease-out}\n.tmbar{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}\n.tmhint{margin:10px 2px 0;color:var(--ink3);line-height:18px;word-break:keep-all}\n.tmhint b{font-weight:400;color:var(--brass)}\n#fitIn .c-tank{color:var(--tank)}#fitIn .c-dps{color:var(--dps)}#fitIn .c-heal{color:var(--heal)}#fitIn .c-supp{color:var(--supp)}\n/* 쪽지 — 꼬리표의 소속 팀 고르기 · 팀 이름 바꾸기 */\n.slip{position:absolute;z-index:30;min-width:170px;padding:4px;background:#fffaf0;border:2px solid var(--frame);box-shadow:3px 3px 0 #30271e59;color:var(--ink);text-align:left}\n.slip .slip-h{padding:1px 6px 4px;margin-bottom:3px;border-bottom:2px dotted #e6d4b0;color:var(--ink3);white-space:nowrap}\n.slip .so{display:flex;width:100%;align-items:center;gap:6px;padding:3px 6px;border:0;background:none;color:var(--ink);cursor:pointer;white-space:nowrap;text-align:left}\n.slip .so:hover:not(:disabled),.slip .so:focus-visible{background:#f6e7c4;outline:none}\n.slip .so.on{color:var(--brass)}\n.slip .so .sp0{width:18px;flex:none}\n.slip .so .sd{margin-left:auto;padding-left:12px;color:var(--ink3)}\n.slip .so:disabled{color:#b29c78;cursor:default}\n.slip .so:disabled .sd{color:#c9b48f}\n.slip .so.dis{cursor:default}\n.slip .sws{display:flex;flex-wrap:wrap;gap:4px;padding:1px 6px 5px 30px}\n.slip .sw{height:22px;padding:0 6px;display:inline-flex;align-items:center;gap:4px;border:2px solid #d6c09a;background:#fffaf0;color:var(--ink);cursor:pointer;white-space:nowrap}\n.slip .sw i{font-style:normal;color:var(--ink3)}\n.slip .sw:hover,.slip .sw:focus-visible{border-color:var(--sel);background:#fff3d6;outline:none}\n.slip .sin{display:block;width:220px;height:28px;margin:2px 4px 6px;padding:0 6px;background:#fffdf8;color:var(--ink);border:2px solid var(--frame);font:inherit;outline:none}\n.slip .sin:focus{border-color:var(--sel)}\n.slip .sbtns{display:flex;gap:6px;padding:0 4px 4px}\n.slip .shint{padding:0 4px 2px;color:var(--ink3)}\n.tm-ghost{position:absolute;z-index:40;width:56px;height:56px;pointer-events:none;rotate:-6deg;filter:drop-shadow(3px 4px 0 rgba(48,39,30,.4))}\n.tm-ghost .ring{display:block;width:56px;height:56px}\nbody.tm-drag,body.tm-drag *{cursor:grabbing!important}\n@media (prefers-reduced-motion:reduce){.fs.flash{animation:none}}\n\n/* ── 배치 (art/roster_layout.json — 학생 명부 배치판에서 정한다)\n   기본 자리에서 옮긴 양(--○-x · --○-y)과 원 지름(--○-s). 단위는 게임 화면 px. 초상 그림은 원 안에서 --fs 배율 · --fx --fy (원 지름의 %) ── */\n.cell{height:calc(var(--lring-s,100px) + 52px)}\n.cell .ring{width:var(--lring-s,100px);height:var(--lring-s,100px);translate:var(--lring-x,0px) var(--lring-y,0px)}\n.cell .lt{top:calc(var(--lring-s,100px) + 4px);translate:calc(var(--lring-x,0px) + var(--ltag-x,0px)) calc(var(--lring-y,0px) + var(--ltag-y,0px))}\n.cell .epi{translate:var(--lepi-x,0px) var(--lepi-y,0px)}\n.cell .nm{translate:var(--lname-x,0px) var(--lname-y,0px)}\n.book #sort{translate:var(--sort-x,0px) var(--sort-y,0px)}\n.book #tbtn{translate:var(--tbtn-x,0px) var(--tbtn-y,0px)}\n.book #spbtn{translate:var(--spbtn-x,0px) var(--spbtn-y,0px)}\n.book .xbtn{translate:var(--xbtn-x,0px) var(--xbtn-y,0px)}\n.hd .ring{width:var(--dring-s,108px);height:var(--dring-s,108px);translate:var(--dring-x,0px) var(--dring-y,0px)}\n.hd .nmrow{translate:var(--dname-x,0px) var(--dname-y,0px)}\n.hd .tags{translate:var(--dtags-x,0px) var(--dtags-y,0px)}\n.hd .ebtn{translate:var(--ebtn-x,0px) var(--ebtn-y,0px)}\n.hd .bub{translate:var(--bub-x,0px) var(--bub-y,0px)}\n.rec > .tabs{translate:var(--rtabs-x,0px) var(--rtabs-y,0px)}\n.book .ribbon{translate:var(--ribbon-x,0px) var(--ribbon-y,0px)}\n.ring .face img{transform:translate(var(--fx,0%),var(--fy,2%)) scale(var(--fs,1.04))}\n/* ROSTERBK_CSS — 학생 명부 책 (1009 · apply_roster.py) ─ 그림자 DOM(#rbHost) 안에서만 쓴다.\n   목업 원본(roster_tpl.html 의 CORE_CSS)을 apply_roster 가 앞에 붙이고, 이 파일은 게임에서만 필요한 것 */\n.rbw{position:absolute;inset:0;overflow:hidden;-webkit-tap-highlight-color:transparent;font-synthesis:none}\n.rbscrim{position:absolute;inset:0;background:rgba(10,11,15,.62);transition:opacity .2s}\n.rbw.closed .rbscrim{opacity:0;pointer-events:none}\n.rbw.tm-drag,.rbw.tm-drag *{cursor:grabbing!important}\n/* 목업의 책상 · 무대 덮개는 쓰지 않는다 — 뒤는 게임 화면 (덮개는 .rbscrim 이 창 전체에) */\n#fitIn .desk,#fitIn > .scrim{display:none}\n#fitIn .book{outline:none}\n/* 스킬 강화 — 강화 포인트가 있을 때 카드 머리 오른쪽 (게임의 스킬 강화 팝업) */\n.skc .spr{position:absolute;right:6px;top:1px;display:flex;align-items:center;gap:6px;color:var(--ink3);line-height:18px;white-space:nowrap}\n.skc .spr b{font:12px/18px \"Mulmaru Mono\",Mulmaru;color:var(--brass);font-weight:400}\n.skc .spr .pbtn{height:20px;padding:0 8px;box-shadow:inset 2px 2px #fff0c980,inset -2px -2px #60422140,0 1px #30271e}\n/* 유물 해제 — 장착한 칸 오른쪽 (예전 학생 상세의 '해제'와 같다 — 보관함으로) */\n.slot .rn{min-width:0}\n.slot .rn .rnm{overflow:hidden;text-overflow:ellipsis;min-width:0}\n.slot .uq{flex:none;align-self:center;height:20px;padding:0 5px;border:2px solid #c4ac84;background:#fffaf0;color:var(--ink2);cursor:pointer;line-height:16px;white-space:nowrap}\n.slot .uq:hover{border-color:var(--bad);color:var(--bad)}\n.slot .uq:focus-visible{outline:2px dashed var(--sel);outline-offset:1px}\n";
+const RB_CSS = "/* ── 무대 — 마스터 노트 책상(2배) 위에 창. 색 · 글꼴은 무대 안에서만 (배치판의 화면 색과 섞이지 않게) ── */\n#fitIn{\n  --ink:#35291f; --ink2:#5b4632; --ink3:#8a7356; --brass:#8a6a15; --brass-b:#b98e23;\n  --edge:#a1845b; --frame:#654a30; --dark:#30271e; --paper:#faf0d8; --paper2:#efdfba; --paper3:#e6d4b0;\n  --ok:#2f7f58; --warn:#b5661a; --bad:#b33f32;\n  --tank:#3c6e9e; --dps:#a5432f; --heal:#2f7f58; --supp:#6d4ba8;\n  --sel:#c8902e;\n  position:absolute;left:0;top:0;width:1214px;height:980px;transform-origin:top left;\n  color:var(--ink);font:12px/18px Mulmaru,\"IBM Plex Sans KR\",system-ui,sans-serif;letter-spacing:0;\n  -webkit-font-smoothing:none;font-synthesis:none;text-align:left}\n#fitIn *{box-sizing:border-box}\n#fitIn button,#fitIn select{font:inherit;color:inherit;letter-spacing:0}\n#fitIn .num{font-family:\"Mulmaru Mono\",\"Mulmaru\",monospace}\n.desk{position:absolute;left:0;top:0;width:1214px;height:932px;image-rendering:pixelated;\n  background:none 0 0/1214px 932px no-repeat}\n.desk .hit{position:absolute;left:440px;top:732px;width:180px;height:132px;cursor:pointer}\n.desk .tip{position:absolute;left:478px;top:706px;padding:0 6px;background:#2a1d14;color:#f6e7c4;border:2px solid #f6e7c4;opacity:0;transition:opacity .15s;pointer-events:none}\n.desk .hit:hover + .tip{opacity:1}\n.scrim{position:absolute;left:0;top:0;width:1214px;height:932px;background:rgba(10,11,15,.62);transition:opacity .2s}\n.closed .scrim{opacity:0;pointer-events:none}\n\n/* ── 책 창 ── */\n.book{position:absolute;left:19px;top:14px;width:1176px;height:948px;image-rendering:pixelated;\n  background:var(--rb-book) 0 0/1176px 948px no-repeat;filter:drop-shadow(6px 8px 0 rgba(0,0,0,.35));\n  transition:opacity .2s ease,transform .2s ease}\n.closed .book{opacity:0;transform:translateY(10px) scale(.985);pointer-events:none}\n.book *{image-rendering:auto}\n/* 책갈피 끈 — 책 그림과 따로 (art/ribbon.png 1배 8 × 52 → 2배). 쪽의 글 · 칸 밑에 깔리고, 누르기를 막지 않는다 */\n.book .ribbon{position:absolute;left:598px;top:844px;width:16px;height:104px;background:var(--rb-ribbon) 0 0/16px 104px no-repeat;\n  image-rendering:pixelated;pointer-events:none}\n.page{position:absolute;top:24px;height:832px;width:502px}\n.page.l{left:48px}\n.page.r{left:626px}\n.xbtn{position:absolute;right:-6px;top:-8px;width:32px;height:32px;padding:0;background:#e5cda5;color:#45321f;cursor:pointer;\n  border:2px solid var(--frame);box-shadow:inset 2px 2px #fff0c980,inset -2px -2px #60422140,0 2px #30271e;font:24px/24px Mulmaru}\n.xbtn:active{box-shadow:inset 2px 2px #30271e70}\n\n/* 쪽 머리 */\n.ph{display:flex;align-items:flex-end;gap:10px;height:34px}\n.ph h2{font:24px/28px Mulmaru;margin:0;color:var(--ink);letter-spacing:0}\n.ph .cnt{color:var(--ink3);padding-bottom:3px}\n.ph .sp{flex:1}\n.sel{appearance:none;-webkit-appearance:none;height:28px;padding:0 26px 0 8px;background:#f6e7c4;color:var(--ink);cursor:pointer;\n  border:2px solid var(--frame);box-shadow:inset 2px 2px #fff0c980,inset -2px -2px #60422140,0 2px #30271e;\n  background-image:linear-gradient(45deg,transparent 50%,var(--frame) 50%),linear-gradient(135deg,var(--frame) 50%,transparent 50%);\n  background-position:calc(100% - 13px) 11px,calc(100% - 8px) 11px;background-size:5px 5px;background-repeat:no-repeat}\n.rule{height:10px;margin:6px 0 4px;position:relative;\n  background:linear-gradient(var(--paper3),var(--paper3)) 0 4px/100% 2px no-repeat}\n.rule::after{content:\"\";position:absolute;left:50%;top:1px;width:8px;height:8px;margin-left:-4px;transform:rotate(45deg);\n  background:var(--paper);border:2px solid #c4ac84}\n\n/* 왼쪽 — 학생 목록 */\n.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0 4px;max-height:778px;overflow:auto;padding:2px 2px 0;scrollbar-width:thin;scrollbar-color:#c4ac84 transparent}\n.cell{position:relative;display:flex;flex-direction:column;align-items:center;padding:0;border:0;background:none;cursor:pointer;color:var(--ink)}\n.cell .epi{height:20px;line-height:20px;color:var(--brass);white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}\n.cell .nm{margin-top:10px;height:18px;line-height:18px;white-space:nowrap}\n.cell:hover .ring{--ring-c:#a8703a}\n.cell.on .ring{--ring-c:var(--sel)}\n.cell.on .ring::after{content:\"\";position:absolute;inset:-7px;border-radius:50%;border:2px solid var(--sel);opacity:.55}\n.cell.on .nm{color:var(--brass)}\n/* 원 아래에 걸친 꼬리표 — 정렬을 따라 학년 · 소속 팀 · 레벨 · 전투력 (진로 평가 · 컨디션 · 이름은 없다) */\n.cell .lt{position:absolute;left:50%;transform:translateX(-50%);z-index:2;gap:3px}\n.cell:focus-visible{outline:2px dashed var(--sel);outline-offset:-2px}\n\n/* 초상 — 원 안만 보인다 · 속배경은 투명 (아래 종이가 비친다)\n   틀 색(--ring-c)은 .ring 에서 정한다 — 바깥 페이지의 같은 이름 변수를 물려받으면 테두리가 통째로 사라진다 (배치판의 --r: 6px 이 그랬다) */\n.ring{--ring-c:#8b5a2b;position:relative;flex:none;border-radius:50%}\n.ring .face{position:absolute;inset:0;border-radius:50%;overflow:hidden}\n.ring .face img{display:block;width:100%;height:100%;object-fit:cover}\n.ring::before{content:\"\";position:absolute;inset:0;border-radius:50%;border:4px solid var(--ring-c,#8b5a2b);z-index:1;\n  box-shadow:inset 0 0 0 1px rgba(255,240,201,.35)}\n\n/* 꼬리표 */\n.tag{display:inline-flex;align-items:center;height:20px;padding:0 5px;border:2px solid currentColor;background:#fff7e3;color:var(--ink2);white-space:nowrap;line-height:16px}\n.tag.tm{background:#f6e7c4;color:var(--frame);height:20px}\n.tag.tm.none{color:var(--ink3);border-style:dashed}\n.tag.g-D{color:#82849a}.tag.g-C{color:#5b5d72}.tag.g-B{color:var(--tank)}.tag.g-A{color:var(--supp)}.tag.g-S{color:var(--brass)}.tag.g-EX{color:#b02e6b}\n.tag.r-tank{color:var(--tank)}.tag.r-dps{color:var(--dps)}.tag.r-heal{color:var(--heal)}.tag.r-supp{color:var(--supp)}\n.tag.yr{color:var(--ink2)}\n.tag.lv{color:var(--ink);background:none;border-color:transparent;padding:0 2px}\n.ebtn{width:24px;height:24px;padding:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;background:#e5cda5;color:#45321f;\n  border:2px solid var(--frame);box-shadow:inset 2px 2px #fff0c980,inset -2px -2px #60422140,0 2px #30271e}\n\n/* 오른쪽 — 상세 */\n.det{position:relative;height:100%;display:flex;flex-direction:column;transition:opacity .16s ease,transform .16s ease}\n.det > *{flex:none}\n.det.turn{opacity:0;transform:translateX(8px)}\n.hd{display:flex;gap:16px;min-height:112px;align-items:flex-start}\n.hd .who{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;padding-top:0}\n.hd .nmrow{display:flex;align-items:baseline;gap:8px;white-space:nowrap}\n.hd .nmrow .epi{color:var(--brass)}\n.hd .nmrow .nm{font:24px/28px Mulmaru}\n.hd .nmrow .ebtn{align-self:center;margin-left:-2px}           /* 이름 변경 — 이름 바로 뒤 (이름 길이를 따라간다) */\n.hd .tags{display:flex;gap:4px;align-items:center;flex-wrap:wrap}\n.bub{position:relative;align-self:flex-start;max-width:350px;margin:3px 0 0 10px;padding:6px 10px;background:#fffdf8;color:#2d241b;\n  border:2px solid #83603f;box-shadow:2px 2px 0 #5a3f2826;word-break:keep-all}\n.bub::before{content:\"\";position:absolute;left:-10px;top:8px;border:6px solid transparent;border-right:8px solid #83603f;border-left:0}\n.bub::after{content:\"\";position:absolute;left:-6px;top:10px;border:4px solid transparent;border-right:6px solid #fffdf8;border-left:0}\n.bub.boast{font:14px/18px HsBombaram21,Mulmaru;-webkit-font-smoothing:antialiased}\n.bub.timid{font-size:12px;color:#6b5a48}\n.note-band{margin-top:8px;padding:2px 8px;background:#e9d29c66;border-left:4px solid var(--brass-b);color:var(--ink2)}\n.note-band b{color:var(--brass);font-weight:400}\n.pers{display:flex;align-items:center;gap:6px 8px;margin-top:6px;flex-wrap:wrap}\n.pers .k{color:var(--ink3)}\n.pers .eff{display:inline-flex;align-items:center;gap:3px}\n.pers .eff.up{color:#b8382c}.pers .eff.dn{color:#2f63b5}\n.pdesc{color:var(--ink3);margin-top:2px}\n\n/* 카드 — 책장 위에 연필로 두른 칸 */\n.card{position:relative;border:2px solid var(--edge);box-shadow:inset 0 0 0 2px #fff7e2aa;background:#fbf3df80;padding:24px 10px 8px}\n.card > .cap{position:absolute;left:-2px;top:-2px;height:22px;padding:0 8px;background:var(--edge);color:#fff7e2;line-height:22px;white-space:nowrap}\n.card > .cap i{font-style:normal;color:#f6e1ac;margin-left:6px}\n.det > .row2{flex:1 1 auto;min-height:250px;display:grid;grid-template-columns:260px 1fr;gap:12px;margin-top:10px}   /* 남는 높이를 육각형 · 유물 줄이 받는다 */\n\n/* 멘탈리티 육각형 — 책장 위에 잉크로 그린 도트 (1배로 그려 2배로 본다) · 학생 값만 매끈한 SVG */\n.hex{min-height:0;padding:0}\n.hex canvas{position:absolute;image-rendering:pixelated}\n.hex .hexsv{position:absolute;overflow:visible;pointer-events:none}   /* 학생 값(면 · 테두리)은 매끈하게 — 캔버스와 같은 자리 · 같은 1배 좌표 */\n.hex .lab{position:absolute;line-height:16px;white-space:nowrap;text-align:center}\n.hex .lab .n{color:var(--brass)}\n.hex .lab .v{font:12px/16px \"Mulmaru Mono\",Mulmaru;color:var(--ink)}\n.hex .lab .v b{font-weight:400;margin-left:4px}\n.hex .lab.L{text-align:right}\n.hex .lab.R{text-align:left}\n\n/* 유물 */\n.rel{min-height:0;display:flex;flex-direction:column;gap:4px;padding:24px 4px 6px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#c4ac84 transparent}\n.slot{flex:none;display:flex;gap:6px;padding:3px 3px 3px 4px;border:2px solid #d6c09a;border-left-width:4px;background:#fffaf0aa}\n.slot .bd{min-width:0;flex:1}\n.slot .rn{display:flex;align-items:center;gap:5px;white-space:nowrap}\n.slot .rn .sc{margin-left:auto;color:var(--ink3)}\n.slot .af{color:var(--ink2);line-height:16px;margin-top:1px;display:flex;flex-wrap:wrap;gap:0 5px}\n.slot .af span{white-space:nowrap}\n.slot.empty{height:30px;border-style:dashed;border-left-width:2px;background:none;color:var(--ink3);align-items:center}\nbutton.slot.empty{width:100%;font:inherit;text-align:left;cursor:pointer}   /* 빈 칸 — 누르면 유물 보관고로 */\nbutton.slot.empty:hover{border-color:var(--sel);background:#fff3d6;color:var(--ink)}\nbutton.slot.empty:focus-visible{outline:2px dashed var(--sel);outline-offset:1px}\n.slot.empty .pl{width:20px;text-align:center}\n.slot.lock{height:30px;border-left-width:2px;border-style:dashed;border-color:#e0cfaa;background:repeating-linear-gradient(135deg,#efdfba33 0 6px,transparent 6px 12px);color:#b29c78;align-items:center}\n\n/* 스킬 */\n.skc{margin-top:10px;height:170px}\n.sks{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}\n.sk{display:flex;flex-direction:column;align-items:center;gap:2px;padding:2px 0 4px;border:2px solid transparent;background:none;cursor:pointer;color:var(--ink);text-align:center}\n.sk:hover,.sk.on{border-color:#d6c09a;background:#fffaf0aa}\n.sk .ic{position:relative;width:48px;height:48px;flex:none}\n.sk .ic img{position:absolute;image-rendering:pixelated}\n.sk .ic .fr{inset:0;width:100%;height:100%}\n.sk .ic .ar{left:8%;top:8%;width:84%;height:84%;object-fit:contain;image-rendering:auto}\n.sk .sn{height:18px;max-width:94px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}\n.sk .sl{color:var(--ink3);height:16px;line-height:16px}\n.sk .sl b{font-weight:400}\n.skd{margin-top:4px;padding-top:4px;border-top:2px dotted #d6c09a;height:42px;overflow:hidden;color:var(--ink2);line-height:18px}\n.skd b{color:var(--ink);font-weight:400}\n.skd .m{color:var(--ink3)}\n\n/* 학적 · 전투 능력치 — 머리띠 탭으로 바꿔 본다 (고른 탭은 학생을 바꿔도 그대로) */\n.rec{margin-top:10px;height:136px;padding:23px 10px 4px}\n.rec > .tabs{position:absolute;left:-2px;top:-2px;display:flex;height:22px}\n.rec .rt{height:22px;padding:0 8px;border:2px solid var(--edge);margin-right:-2px;background:#fbf3df;color:var(--ink3);line-height:18px;cursor:pointer}\n.rec .rt.on{background:var(--edge);color:#fff7e2}\n.rec .rt:not(.on):hover{color:var(--ink)}\n.rec > .pw{position:absolute;right:8px;top:2px;color:var(--ink3);line-height:18px}\n.rec > .pw b{font:12px/18px \"Mulmaru Mono\",Mulmaru;color:var(--ink);font-weight:400;margin-left:4px}\n.rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px 12px}\n.rgrid .it{min-width:0}\n.rgrid .k{color:var(--brass);height:18px;line-height:16px;border-bottom:2px dotted #e6d4b0}   /* 이름은 황동 + 점선 밑줄 — 값(잉크) · 덧말(옅은 잉크)과 갈리게 */\n.rgrid .v{color:var(--ink);line-height:18px;word-break:keep-all}\n.rgrid .s{color:var(--ink3);line-height:16px}\n.rgrid .v .sub{color:var(--ink3)}\n.rgrid .hearts{display:flex;gap:2px;margin-top:2px}\n.bgrid{display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;gap:4px 14px;padding-top:3px}\n.bgrid .b{display:flex;gap:6px;justify-content:space-between;white-space:nowrap;line-height:18px;border-bottom:2px dotted #e6d4b0}\n.bgrid .b .k{color:var(--ink3)}\n.bgrid .b .v{font-family:\"Mulmaru Mono\",Mulmaru;color:var(--ink)}\n#fitIn .c-brass{color:var(--brass)!important}#fitIn .c-bad{color:var(--bad)!important}#fitIn .c-warn{color:var(--warn)!important}\n#fitIn .c-dim{color:var(--ink3)!important}#fitIn .c-ok{color:var(--ok)!important}\n.tag.inj{color:var(--bad);height:18px;padding:0 3px;margin-left:4px}\n\n/* ── 팀 편성 — 명부 머리의 '팀 편성'으로 바꿔 본다. 오른쪽 쪽은 팀 · 진형 · 배치, 왼쪽 꼬리표는 소속 팀 고르기 ── */\n#fitIn [hidden]{display:none!important}\n.pbtn{height:28px;padding:0 10px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;background:#f6e7c4;color:var(--ink);white-space:nowrap;\n  border:2px solid var(--frame);box-shadow:inset 2px 2px #fff0c980,inset -2px -2px #60422140,0 2px #30271e}\n.pbtn:hover{background:#fff3d6}\n.pbtn:active{box-shadow:inset 2px 2px #30271e70,0 1px #30271e}\n.pbtn:focus-visible{outline:2px dashed var(--sel);outline-offset:2px}\n.pbtn:disabled{opacity:.45;cursor:default;background:#f6e7c4}\n.pbtn.pri{background:#ecd08a;color:#3a2a10}\n.pbtn.pri:hover{background:#f4dc9f}\n.pbtn.tog{flex:none}\n.pbtn.tog[aria-pressed=\"true\"]{background:var(--frame);color:#fff7e2;box-shadow:inset 2px 2px #1f160e8c,inset -2px -2px #fff0c926,0 2px #30271e}\n.pbtn.tog[aria-pressed=\"true\"]:hover{background:#755638}\n/* 스킬 임의로 강화 — 강화 포인트가 남은 학생이 있을 때만 정렬 옆에. 오른쪽 작은 칸에 남은 포인트 합 */\n.ph #spbtn{flex:none;padding:0 4px 0 10px}\n.ph #spbtn .spn{min-width:20px;height:20px;padding:0 4px;display:inline-flex;align-items:center;justify-content:center;\n  background:var(--frame);color:#fff7e2;font:12px/20px \"Mulmaru Mono\",Mulmaru}\n/* 왼쪽 — 지금 팀은 금색 틀, 다른 팀은 흐리게. 꼬리표를 누르면 소속 팀 쪽지 */\n.teammode .grid .cell{touch-action:none}\n.teammode .cell.cur .ring{--ring-c:var(--sel)}\n.teammode .cell.oth .ring,.teammode .cell.oth .epi,.teammode .cell.oth .nm{opacity:.45}\n.teammode .cell.lift{opacity:.4}\n.cell .tag.tset{cursor:pointer;max-width:150px}\n.cell .tag.tset .tx{overflow:hidden;text-overflow:ellipsis}\n.cell .tag.tset .mkr{flex:none}\n.cell .tag.tset:hover,.cell .tag.tset.open{background:#fff3d6}\n.cell .tag.tset.cur{background:var(--frame);border-color:var(--frame);color:#fff7e2}\n.cell .tag.tset.cur:hover,.cell .tag.tset.cur.open{background:#7a5a3a}\n.cell .tag.tset:focus-visible{outline:2px dashed var(--sel);outline-offset:1px}\n.page.l.dropout .grid{outline:2px dashed var(--bad);outline-offset:-2px;background:#b33f320f}\n.page.l.dropout::after{content:\"여기에 놓으면 팀에서 뺀다\";position:absolute;left:50%;top:48px;transform:translateX(-50%);padding:0 8px;line-height:20px;\n  background:var(--bad);color:#fff7e2;z-index:6;pointer-events:none;white-space:nowrap}\n/* 오른쪽 — 팀 탭(카드 머리) · 진형 넷 · 전열 / 후열 세 자리 */\n.tmc{padding:38px 10px 10px;margin-top:2px}\n.tmc > .ttabs{position:absolute;left:-2px;top:-2px;display:flex;height:28px}\n.tmc .tt{height:28px;padding:0 12px;margin-right:-2px;display:inline-flex;align-items:center;gap:6px;border:2px solid var(--edge);background:#f3e6c6;color:var(--ink3);cursor:pointer;white-space:nowrap}\n.tmc .tt:not(.on):not(.lock):hover{color:var(--ink);background:#f8eed6}\n.tmc .tt.on{background:var(--edge);color:#fff7e2}\n.tmc .tt .tc.ok{color:var(--ok)}\n.tmc .tt.on .tc.ok{color:#e2f4d2}\n.tmc .tt.lock{border-style:dashed;border-color:#d6c09a;background:none;color:#b29c78;cursor:default;gap:4px}\n.tmc .tt:focus-visible{outline:2px dashed var(--sel);outline-offset:1px;z-index:1}\n.tmc > .pw{position:absolute;right:8px;top:5px;color:var(--ink3);line-height:18px;display:flex;align-items:center;gap:4px}\n.tmc > .pw b{font:12px/18px \"Mulmaru Mono\",Mulmaru;color:var(--ink);font-weight:400}\n.tmc .th{display:flex;align-items:baseline;gap:8px;line-height:18px;white-space:nowrap;min-width:0}\n.tmc .th b{font-weight:400;color:var(--brass);flex:none}\n.tmc .th .st{margin-left:auto;flex:none}\n.tmc .fos{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0 12px;padding-bottom:12px;border-bottom:2px dotted #e6d4b0}\n.tmc .fo{position:relative;display:flex;flex-direction:column;gap:4px;padding:6px 9px 7px;border:2px solid #d6c09a;background:#fffaf0aa;color:var(--ink);cursor:pointer;text-align:left}\n.tmc .fo:hover{border-color:#c4ac84;background:#fffcf4}\n.tmc .fo.on{border-color:var(--brass-b);background:#fff3d2;box-shadow:inset 0 0 0 2px #fffaf0}\n.tmc .fo:focus-visible{outline:2px dashed var(--sel);outline-offset:2px}\n.tmc .fo .fh{display:flex;align-items:center;gap:8px;height:20px}\n.tmc .fo.on .fnm{color:var(--brass)}\n.tmc .fo .fsh{color:var(--ink3)}\n.tmc .fo .fck{margin-left:auto;display:flex}\n.tmc .fo .fx{display:flex;flex-direction:column;color:var(--ink2);line-height:16px;word-break:keep-all}\n.tmc .fld{display:flex;flex-direction:column;gap:6px;margin-top:6px}\n.tmc .frow{display:grid;grid-template-columns:20px repeat(3,minmax(0,1fr));gap:6px}\n.tmc .frl{writing-mode:vertical-rl;text-orientation:upright;align-self:center;justify-self:center;color:var(--ink3);letter-spacing:6px}\n.fs{position:relative;height:160px;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;\n  border:2px solid #d6c09a;background:#fffaf0cc;color:var(--ink);cursor:pointer;outline:none;text-align:center}\n.fs.fill{justify-content:flex-start;padding-top:10px}\n.fs:hover{border-color:#c4ac84}\n.fs:focus-visible{outline:2px dashed var(--sel);outline-offset:2px}\n.fs.empty{border-style:dashed;border-color:#c4ac84;background:#fbf3df80}\n.fs.empty .fe{color:var(--ink2)}\n.fs .fw{color:var(--ink3);line-height:16px}\n.fs .fw b{font-weight:400}\n.fs.on{border-style:solid;border-color:var(--sel);background:#fff3d6;box-shadow:0 0 0 2px #c8902e4d}\n.fs.off{border:2px dashed #e0cfaa;background:repeating-linear-gradient(135deg,#efdfba40 0 6px,transparent 6px 12px);cursor:default}\n.fs.off .fe{color:#b29c78}\n.fs .ring{width:64px;height:64px;margin-bottom:5px}\n.fs .ring::before{border-width:3px}\n.fs .fn{display:flex;align-items:center;gap:4px;white-space:nowrap;max-width:100%;line-height:18px}\n.fs .fn .nm{overflow:hidden;text-overflow:ellipsis}\n.fs .ft{display:flex;align-items:center;gap:4px;white-space:nowrap}\n.fs .tag{height:18px;padding:0 3px;line-height:14px}\n.fs .tag.lv{padding:0}\n.fs .fp,.fs .fc{color:var(--ink3);line-height:16px;white-space:nowrap}\n.fs .fp b,.fs .fc b{font-weight:400;color:var(--ink);margin-left:4px}\n.fs .x{position:absolute;right:2px;top:2px;width:20px;height:20px;padding:0;display:grid;place-items:center;border:0;background:none;color:var(--ink3);cursor:pointer;opacity:.5}\n.fs:hover .x,.fs .x:focus-visible{opacity:1}\n.fs .x:hover{color:var(--bad)}\n.fs.drop{border-style:solid;border-color:var(--sel);background:#fff0c8}\n.fs.lift{opacity:.45}\n@keyframes fsflash{0%{box-shadow:0 0 0 5px #e9c77acc;background:#fff0c0}100%{box-shadow:0 0 0 0 #e9c77a00}}\n.fs.flash{animation:fsflash .9s ease-out}\n.tmbar{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}\n.tmhint{margin:10px 2px 0;color:var(--ink3);line-height:18px;word-break:keep-all}\n.tmhint b{font-weight:400;color:var(--brass)}\n#fitIn .c-tank{color:var(--tank)}#fitIn .c-dps{color:var(--dps)}#fitIn .c-heal{color:var(--heal)}#fitIn .c-supp{color:var(--supp)}\n/* 쪽지 — 꼬리표의 소속 팀 고르기 · 팀 이름 바꾸기 */\n.slip{position:absolute;z-index:30;min-width:170px;padding:4px;background:#fffaf0;border:2px solid var(--frame);box-shadow:3px 3px 0 #30271e59;color:var(--ink);text-align:left}\n.slip .slip-h{padding:1px 6px 4px;margin-bottom:3px;border-bottom:2px dotted #e6d4b0;color:var(--ink3);white-space:nowrap}\n.slip .so{display:flex;width:100%;align-items:center;gap:6px;padding:3px 6px;border:0;background:none;color:var(--ink);cursor:pointer;white-space:nowrap;text-align:left}\n.slip .so:hover:not(:disabled),.slip .so:focus-visible{background:#f6e7c4;outline:none}\n.slip .so.on{color:var(--brass)}\n.slip .so .sp0{width:18px;flex:none}\n.slip .so .sd{margin-left:auto;padding-left:12px;color:var(--ink3)}\n.slip .so:disabled{color:#b29c78;cursor:default}\n.slip .so:disabled .sd{color:#c9b48f}\n.slip .so.dis{cursor:default}\n.slip .sws{display:flex;flex-wrap:wrap;gap:4px;padding:1px 6px 5px 30px}\n.slip .sw{height:22px;padding:0 6px;display:inline-flex;align-items:center;gap:4px;border:2px solid #d6c09a;background:#fffaf0;color:var(--ink);cursor:pointer;white-space:nowrap}\n.slip .sw i{font-style:normal;color:var(--ink3)}\n.slip .sw:hover,.slip .sw:focus-visible{border-color:var(--sel);background:#fff3d6;outline:none}\n.slip .sin{display:block;width:220px;height:28px;margin:2px 4px 6px;padding:0 6px;background:#fffdf8;color:var(--ink);border:2px solid var(--frame);font:inherit;outline:none}\n.slip .sin:focus{border-color:var(--sel)}\n.slip .sbtns{display:flex;gap:6px;padding:0 4px 4px}\n.slip .shint{padding:0 4px 2px;color:var(--ink3)}\n.tm-ghost{position:absolute;z-index:40;width:56px;height:56px;pointer-events:none;rotate:-6deg;filter:drop-shadow(3px 4px 0 rgba(48,39,30,.4))}\n.tm-ghost .ring{display:block;width:56px;height:56px}\nbody.tm-drag,body.tm-drag *{cursor:grabbing!important}\n@media (prefers-reduced-motion:reduce){.fs.flash{animation:none}}\n\n/* ── 배치 (art/roster_layout.json — 학생 명부 배치판에서 정한다)\n   기본 자리에서 옮긴 양(--○-x · --○-y)과 원 지름(--○-s). 단위는 게임 화면 px. 초상 그림은 원 안에서 --fs 배율 · --fx --fy (원 지름의 %) ── */\n.cell{height:calc(var(--lring-s,100px) + 52px)}\n.cell .ring{width:var(--lring-s,100px);height:var(--lring-s,100px);translate:var(--lring-x,0px) var(--lring-y,0px)}\n.cell .lt{top:calc(var(--lring-s,100px) + 4px);translate:calc(var(--lring-x,0px) + var(--ltag-x,0px)) calc(var(--lring-y,0px) + var(--ltag-y,0px))}\n.cell .epi{translate:var(--lepi-x,0px) var(--lepi-y,0px)}\n.cell .nm{translate:var(--lname-x,0px) var(--lname-y,0px)}\n.book #sort{translate:var(--sort-x,0px) var(--sort-y,0px)}\n.book #tbtn{translate:var(--tbtn-x,0px) var(--tbtn-y,0px)}\n.book #spbtn{translate:var(--spbtn-x,0px) var(--spbtn-y,0px)}\n.book .xbtn{translate:var(--xbtn-x,0px) var(--xbtn-y,0px)}\n.hd .ring{width:var(--dring-s,108px);height:var(--dring-s,108px);translate:var(--dring-x,0px) var(--dring-y,0px)}\n.hd .nmrow{translate:var(--dname-x,0px) var(--dname-y,0px)}\n.hd .tags{translate:var(--dtags-x,0px) var(--dtags-y,0px)}\n.hd .ebtn{translate:var(--ebtn-x,0px) var(--ebtn-y,0px)}\n.hd .bub{translate:var(--bub-x,0px) var(--bub-y,0px)}\n.rec > .tabs{translate:var(--rtabs-x,0px) var(--rtabs-y,0px)}\n.book .ribbon{translate:var(--ribbon-x,0px) var(--ribbon-y,0px)}\n.ring .face img{transform:translate(var(--fx,0%),var(--fy,2%)) scale(var(--fs,1.04))}\n/* ROSTERBK_CSS — 학생 명부 책 (1009 · apply_roster.py) ─ 그림자 DOM(#rbHost) 안에서만 쓴다.\n   목업 원본(roster_tpl.html 의 CORE_CSS)을 apply_roster 가 앞에 붙이고, 이 파일은 게임에서만 필요한 것 */\n.rbw{position:absolute;inset:0;overflow:hidden;-webkit-tap-highlight-color:transparent;font-synthesis:none}\n.rbscrim{position:absolute;inset:0;background:rgba(10,11,15,.62);transition:opacity .2s}\n.rbw.closed .rbscrim{opacity:0;pointer-events:none}\n.rbw.tm-drag,.rbw.tm-drag *{cursor:grabbing!important}\n/* 목업의 책상 · 무대 덮개는 쓰지 않는다 — 뒤는 게임 화면 (덮개는 .rbscrim 이 창 전체에) */\n#fitIn .desk,#fitIn > .scrim{display:none}\n#fitIn .book{outline:none}\n/* 강화 포인트 — 있을 때 스킬 카드 머리 오른쪽 (스킬 강화 단추는 1014 에 뺐다 — 왼쪽 목록의 '스킬 강화 가능!' 쪽지로 연다) */\n.skc .spr{position:absolute;right:6px;top:1px;display:flex;align-items:center;gap:6px;color:var(--ink3);line-height:18px;white-space:nowrap}\n.skc .spr b{font:12px/18px \"Mulmaru Mono\",Mulmaru;color:var(--brass);font-weight:400}\n/* 스킬 강화 가능 — 강화 포인트가 남은 학생(spReady 와 같은 기준)은 목록의 초상 원 위쪽에 걸친 쪽지 (1014 · 모양은 원 아래 꼬리표와 같다 · 원을 따라 옮긴다).\n   누르면(Enter · Space 도) 게임의 스킬 강화 팝업 — 학생 상세의 스킬 강화 단추 대신. 마우스를 올리면 소속 팀 꼬리표처럼 밝아진다 */\n.cell .skb{position:absolute;left:50%;top:15px;transform:translateX(-50%);translate:var(--lring-x,0px) var(--lring-y,0px);z-index:3;cursor:pointer}\n.cell .skb:hover{background:#fff3d6}\n.cell .skb:focus-visible{outline:2px dashed var(--sel);outline-offset:1px}\n.teammode .cell.oth .skb{opacity:.45}\n/* 유물 해제 — 장착한 칸 오른쪽 (예전 학생 상세의 '해제'와 같다 — 보관함으로) */\n.slot .rn{min-width:0}\n.slot .rn .rnm{overflow:hidden;text-overflow:ellipsis;min-width:0}\n.slot .uq{flex:none;align-self:center;height:20px;padding:0 5px;border:2px solid #c4ac84;background:#fffaf0;color:var(--ink2);cursor:pointer;line-height:16px;white-space:nowrap}\n.slot .uq:hover{border-color:var(--bad);color:var(--bad)}\n.slot .uq:focus-visible{outline:2px dashed var(--sel);outline-offset:1px}\n";
 const RB_HTML = "<div id=\"fitIn\">\n  <div class=\"desk\"><div class=\"hit\" id=\"deskBook\" title=\"학생 명부\"><\/div><div class=\"tip\">학생 명부<\/div><\/div>\n  <div class=\"scrim\" id=\"scrim\"><\/div>\n  <div class=\"book\" id=\"book\" role=\"dialog\" aria-label=\"학생 명부\">\n    <i class=\"ribbon\" data-ed=\"ribbon\" aria-hidden=\"true\"><\/i>\n    <button class=\"xbtn\" id=\"xbtn\" data-ed=\"xbtn\" aria-label=\"닫기\">×<\/button>\n    <section class=\"page l\">\n      <div class=\"ph\"><h2>학생 명부<\/h2><button class=\"pbtn tog\" id=\"tbtn\" data-ed=\"tbtn\" aria-pressed=\"false\">팀 편성<\/button><span class=\"sp\"><\/span>\n        <button class=\"pbtn pri\" id=\"spbtn\" data-ed=\"spbtn\" hidden><\/button><select class=\"sel\" id=\"sort\" data-ed=\"sort\" aria-label=\"정렬\"><\/select><\/div>\n      <div class=\"rule\"><\/div>\n      <div class=\"grid\" id=\"grid\"><\/div>\n    <\/section>\n    <section class=\"page r\"><div class=\"det\" id=\"det\"><\/div><div class=\"det tmw\" id=\"tmw\" hidden><\/div><\/section>\n  <\/div>\n<\/div>";
 const RB = {host: null, root: null, open: false, mode: "detail", sel: null, sk: 0, rt: "rec", team: "A", slot: null,
   back: "home", want: false, vm: new Map(), wired: false, mq: false, ovf: ""};
@@ -10889,7 +10952,7 @@ function renderList(){
     const aria = tm ? ` title="${h(st.name)} — 누르면 ${h(into)}에 넣는다 · 끌어서 자리에 놓을 수도 있다"` : ` aria-pressed="${st.id === RB.sel}"`;
     return `<button class="cell${cls}" data-sid="${h(st.id)}"${aria}>
       <span class="epi" data-ed="lepi">${st.epithet ? "“" + h(st.epithet) + "”" : ""}</span>
-      ${faceHTML(st, "lring")}${listTag(st)}
+      ${faceHTML(st, "lring")}${listTag(st)}${st.sp > 0 ? `<span class="tag tm skb" data-skup="${h(st.id)}" role="button" tabindex="0" title="눌러서 스킬 강화 — 강화 포인트 ${st.sp}">스킬 강화 가능!</span>` : ""}
       <span class="nm" data-ed="lname">${h(st.name)}</span></button>`;
   }).join("") : `<p style="grid-column:1/-1;margin:20px 0;color:var(--ink3);text-align:center">학생이 없다.</p>`;
   $("tbtn").title = `재학생 ${L.length}명 — ${tm ? "누르면 학생 상세로 돌아간다" : "누르면 오른쪽 쪽에서 팀 · 진형 · 배치를 짠다"}`;
@@ -11121,7 +11184,7 @@ function openTeamPicker(tag){
 let DRAG = null, dragEat = false;
 function dragSrc(e){
   if(!RB.open || RB.mode !== "team" || e.button !== 0) return null;
-  if(e.target.closest("[data-tset],[data-unslot],.slip")) return null;
+  if(e.target.closest("[data-tset],[data-skup],[data-unslot],.slip")) return null;
   const cell = e.target.closest("#grid .cell");
   if(cell) return {kind: "stu", id: cell.dataset.sid};
   const fs = e.target.closest(".fs.fill[data-slot]");
@@ -11193,7 +11256,7 @@ function skillList(st){ return (st.passive ? [Object.assign({id:"passive", kindL
 function skillCard(st){
   const L = skillList(st);
   RB.sk = Math.max(0, Math.min(RB.sk, L.length - 1));
-  const up = st.sp > 0 ? `<span class="spr">강화 포인트 <b>${st.sp}</b><button class="pbtn pri" id="skUp" data-skup="${h(st.id)}">스킬 강화</button></span>` : "";
+  const up = st.sp > 0 ? `<span class="spr">강화 포인트 <b>${st.sp}</b></span>` : "";   // 스킬 강화 단추는 뺐다 (1014 사용자 — 왼쪽 목록의 '스킬 강화 가능!' 쪽지로 연다)
   return `<div class="card skc"><span class="cap">패시브 · 스킬<i>강화 상한 Lv.${SK_LV_MAX}</i></span>${up}
     <div class="sks">${L.map((s, i) => `<button class="sk${i === RB.sk ? " on" : ""}" data-sk="${i}">
       <span class="ic"><img class="fr" src="${h(SKILL_ICON_FRAME[s.grade] || SKILL_ICON_FRAME.D)}" alt=""><img class="ar" src="${h(s.icon || "")}" alt=""></span>
@@ -11377,7 +11440,6 @@ function bindDetail(st){
   });
   $$("#recCard .rt").forEach(b => b.onclick = () => setRecTab(b.dataset.rt));
   const e = $("ebtn"); if(e) e.onclick = () => { RB.want = true; renameStudent(st.id); };          // 게임의 이름 변경 팝업 (책 위에 뜬다)
-  const u = $("skUp"); if(u) u.onclick = () => { RB.want = true; skillUpModal(st.id); };           // 게임의 스킬 강화 팝업
   $$("#det [data-relic-go]").forEach(b => b.onclick = () => goRelic(b.dataset.relicGo));          // 빈 유물 칸 → 유물 보관고
   $$("#det [data-unequip]").forEach(b => b.onclick = () => {                                     // 유물 해제 — 예전 학생 상세와 같다 (보관함으로)
     const [sid, idx] = b.dataset.unequip.split("|"), s = rawById(sid);
@@ -11410,6 +11472,13 @@ function setRecTab(rt){                                  // 고른 탭은 다른
   bindDetail(st);
 }
 
+/* 스킬 강화 — 목록의 '스킬 강화 가능!' 쪽지 (1014). 학생 상세 쪽이면 그 학생을 고른 뒤 게임의 스킬 강화 팝업 (책 위에 · 닫으면 render() 끝에서 책을 다시 그린다) */
+function openSkillUp(id){
+  const st = stuById(id);
+  if(!st || !(st.sp > 0)) return;
+  if(RB.mode !== "team") select(id, true);
+  RB.want = true; skillUpModal(id);
+}
 /* ── 고르기 · 정렬 ── */
 function select(id, anim){
   if(RB.sel === id) return;
@@ -11461,6 +11530,8 @@ function wire(){
   $("spbtn").onclick = () => { RB.want = true; autoSkillUpConfirm(); };     // 게임의 임의 강화 확인 창 (책 위에) → 결과 창 · 책은 render() 끝에서 다시 그린다
   $("sort").onchange = e => setSort(e.target.value);
   $("grid").addEventListener("click", e => {
+    const su = e.target.closest("[data-skup]");                       // 스킬 강화 가능! 쪽지 — 게임의 스킬 강화 팝업 (1014)
+    if(su){ e.stopPropagation(); openSkillUp(su.dataset.skup); return; }
     const tg = e.target.closest("[data-tset]");                       // 팀 편성 — 꼬리표는 소속 팀 쪽지
     if(tg){ e.stopPropagation(); openTeamPicker(tg); return; }
     const c = e.target.closest(".cell");
@@ -11468,6 +11539,8 @@ function wire(){
     if(RB.mode === "team") placeFromList(c.dataset.sid); else select(c.dataset.sid, true);
   });
   $("grid").addEventListener("keydown", e => {
+    const su = e.target.closest && e.target.closest("[data-skup]");
+    if(su && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); e.stopPropagation(); openSkillUp(su.dataset.skup); return; }
     const tg = e.target.closest && e.target.closest("[data-tset]");
     if(tg && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); e.stopPropagation(); openTeamPicker(tg); return; }
     const cells = $$("#grid .cell");
@@ -17217,6 +17290,7 @@ function viewItemShop(){
     <div class="grid2">
       ${itemOrder().map(k=>{
         if(k==="cookie") return cookieShopCard();
+        if(k==="exoticFan") return exoticFanShopCard();
         const it=ITEMS[k], has=!!S.items[k], lock = has? null : itemLock(k);
         if(it.secret && !has && !itemKnown(k)) return `<button class="opt locked" disabled title="조건을 채우면 드러난다">
           <div class="on" style="color:var(--dim)">??? <span class="price" style="color:var(--dim)">???</span></div>
@@ -19157,6 +19231,7 @@ function bindView(){
   v.querySelectorAll("[data-item]").forEach(b=> b.onclick=()=>{
     const k=b.dataset.item, it=ITEMS[k];
     if(k==="cookie"){ buyCookie(); return; }
+    if(k==="exoticFan"){ buyExoticFan(); return; }
     if(S.items[k] || itemLock(k)) return;
     if(S.gold < itemPrice(k)){ toast("자금이 부족하다."); return; }
     S.gold-=itemPrice(k); S.items[k]=1; sfxPlay("coin");
@@ -20064,49 +20139,661 @@ function autoSkillUpConfirm(){
     $("#spGo").onclick = ()=>{ closeModal(); autoSkillUpAll(); };
   }, true);
 }
-function skillUpModal(sid){
-  const st = S.students.find(x=>x.id===sid);
-  if(!st || !(st.sp>0)) return;
-  if(!st.skOpts || !st.skOpts.length){
-    const gen = genSkillOptions(st);
-    if(!gen.length){ toast("모든 스킬이 최대 레벨이다."); return; }
-    st.skOpts = gen.map(o=>({ id: optId(o.t), ev:o.ev }));
-    save();
-  }
-  const opts = st.skOpts.map(o=> hydrateOpt(st, o));
-  const p = evoChance(st);
-  showModal(`<div class="cerhead"><div class="eyebrow">스킬 강화 · 남은 포인트 ${st.sp}</div>
-      <h2 style="font-size:22px;margin-top:2px">${dnH(st)}</h2>
-      <p style="color:var(--muted);font-size:13px;margin-top:6px">세 가지 제안 중 하나를 고른다. 한 번 확인한 제안은 고정되며, 나중에 다시 열어도 같은 세 가지가 나온다.
-        강화하면 레벨이 하나 오르고, <b style="color:var(--brass)">진화 강화</b>는 등급이 한 단계, <b style="color:var(--ex)">각성 강화</b>는 두 단계 오른다 (D · C · B · A · S · EX).
-        수치는 등급과 레벨로 정해져서, 등급이 오르면 지난 레벨 몫까지 새 등급으로 다시 계산된다.
-        천재성과 잠재력이 높을수록 진화 · 각성이 자주 나타난다 (진화 이상 ${Math.round(p*100)}% · 각성 ${Math.round(p*p*100)}%). 스킬은 Lv.${SK_LV_MAX}에서 멈춘다.</p>
-      ${skGradeTable()}</div>
-    <div class="grid2" style="margin-top:12px">
-      ${opts.map((o,i)=>{
-        const d = skUpDiff(st, o);
-        const nm = o.t.kind==="passive"? o.t.name : o.t.sk.name;
-        const cat = o.t.kind==="passive"? "패시브" : (o.t.sk.kind==="basic"?"일반 공격":o.t.sk.kind==="ult"?"필살기":"스킬");
-        const g = SK_GRADE[d.g0], ng = SK_GRADE[d.g1];
-        return `<button class="opt" data-skopt="${i}" style="border-color:${d.ev? SK_TIER_C[d.ev] : "var(--line-soft)"}">
-          ${skillIconHtml(o.t.kind==="passive"?"passive":o.t.sk.id,ng,passiveJobOf(st))}
-          <div class="on" style="color:${SK_TIER_C[d.ev]}">${esc(nm)}
-            <span class="tag">${cat}</span>
-            <span class="price">${SK_TIER_N[d.ev]}</span></div>
-          <div class="od">Lv.${d.lv0} → ${d.lv1}${d.lv1>=SK_LV_MAX?" <b>MAX</b>":""} · 등급 <b style="color:${GRADE_COLOR[g]}">${g}</b>${d.ev? ` → <b style="color:${GRADE_COLOR[ng]}">${ng}</b>`:""}</div>
-          ${skUpLines(d).map(x=>`<div class="od skopt-v">${x}</div>`).join("")}
-        </button>`;
-      }).join("")}
-    </div>
-    <div class="btnrow" style="margin-top:14px"><button class="btn ghost" data-close>나중에 고른다</button></div>`, ()=>{
-    $("#modalRoot").querySelectorAll("[data-skopt]").forEach(b=> b.onclick=()=>{
-      applySkillUp(st, opts[+b.dataset.skopt]);
-      st.skOpts = null;
-      save(); closeModal(); render();
-      if(st.sp>0) skillUpModal(sid);
-    });
-  }, true);
+/* Skill-choice presentation. Gameplay values come only from skUpDiff/applySkillUp. */
+const SK_CHOICE_ROOT = 'assets/skill-upgrade/';
+const SK_CHOICE_ART = {"paladin": "paladin-v2", "druid": "druid-v2", "sword": "sword-v2", "darkpriest": "darkpriest-v2", "priest": "priest-v2", "gunner": "gunner", "wizard": "wizard", "monk": "monk-v2", "archer": "archer", "forcemage": "forcemage", "spellsword": "spellsword", "timemage": "timemage", "enchanter": "enchanter", "bard": "bard", "rogue": "rogue", "ninja": "ninja"};
+const SK_CHOICE_MARKS = {"archer": {"before": [11, 43], "hit": [9, 41]}, "bard": {"before": [10, 48], "hit": [9, 48]}, "darkpriest": {"before": [11, 51], "hit": [9, 45]}, "darkpriest-v2": {"before": [11, 56], "hit": [11, 51]}, "druid": {"before": [11, 46], "hit": [11, 36]}, "druid-v2": {"before": [15, 43], "hit": [9, 36]}, "enchanter": {"before": [10, 54], "hit": [9, 49]}, "forcemage": {"before": [12, 64], "hit": [9, 63]}, "gunner": {"before": [9, 58], "hit": [9, 51]}, "monk": {"before": [10, 54], "hit": [10, 52]}, "monk-v2": {"before": [10, 54], "hit": [10, 53]}, "ninja": {"before": [9, 53], "hit": [10, 49]}, "paladin": {"before": [16, 51], "hit": [13, 34]}, "paladin-v2": {"before": [12, 43], "hit": [9, 39]}, "priest": {"before": [9, 50], "hit": [9, 39]}, "priest-v2": {"before": [12, 52], "hit": [9, 45]}, "rogue": {"before": [12, 52], "hit": [9, 50]}, "spellsword": {"before": [13, 57], "hit": [9, 56]}, "sword": {"before": [12, 45], "hit": [9, 41]}, "sword-v2": {"before": [10, 42], "hit": [9, 42]}, "timemage": {"before": [12, 57], "hit": [10, 58]}, "wizard": {"before": [9, 46], "hit": [12, 45]}};
+/* SKUP_LAYOUT_START — 스킬 강화 창 배치 (1013). 창(.suc-scene) 안 요소의 자리 · 크기를 이 표로 정한다 — SKILL_CHOICE_STYLE 의 CSS 값을 덮는다.
+   · 요소마다 {ax, ay, x, y, w, h} — 창 테두리 안 기준 px. ax: l 왼쪽에서 x · c 가운데에서 x(요소 가운데가 창 가운데에서) · r 오른쪽에서 x(요소 오른쪽 끝까지),
+     ay: t 위에서 y · b 아래에서 y. w · h 가 null 이면 글 크기대로. mw — 화면이 좁아 w 가 안 들어가면 양옆에 남길 여백(폰). tail — 선택지 말풍선 꼬리(l · c · r).
+     heading · footer 는 높이(h)만. scene — 창 크기(w · h, 테두리 포함)와 화면 가운데에서 옮긴 x · y(넓은 화면). 폰은 창 높이만 · sceneEnd 는 완료 화면 높이.
+   · 넓은 화면(pc)과 폰(mobile — 화면 폭 760 이하, CSS 의 폰 배치와 같은 기준)은 따로 정한다.
+   · marks — 학생 머리 옆 표시 둘(긴장 · 충격)은 두 화면 같이, 학생 그림 192 칸 기준 (아래 skChoiceMarkAt).
+   · swing — 휘두르는 부채가 '맞는 자리'(상자 · r 맞을 때 각도) · swingFrom — '시작 자리' {x, y 맞는 자리에서 옮긴 px, r 각도} (화면마다 · skChoiceSwing).
+     fan — 부채 둘 테두리 {c, w 그림 칸} · flip 휘두를 때 좌우 뒤집기 (두 화면 같이). 부채 그림은 그림 칸 정수배 크기로 그린다 (SK_CHOICE_FAN_PX).
+   · bg — 배경: 방 그림 대신 'SKILL UPGRADE' 가 적힌 두 색 띠가 번갈아 서서 홀수 띠는 위로 · 짝수 띠는 아래로 흐른다 (두 화면 같이 · skChoiceBg).
+   · scene.fitH — 넓은 화면에서 게임이 보는 세로가 이 값(기본 900) 이하면 창 전체를 세로 ÷ fitH 배로 줄인다 (zoom · 0.5 까지 · 0 이면 안 줄임 · skChoiceZoom).
+   · 맞추는 도구: tools/skill_upgrade_lab.html — 이 게임을 ?skuplab 으로 띄워 끌어 옮기고 손잡이로 크기를 바꾼다. 저장한 skup_layout.json 을
+     tools/gen/patch/ 에 두고 apply_skup.py 로 아래 SK_CHOICE_LAYOUT 줄에 넣는다. 처음 값은 재작업한 창(SKILL_CHOICE_STYLE)의 CSS 그대로다. */
+const SK_CHOICE_LAYOUT = /*SKUP_LAYOUT*/{"v":1,"pc":{"scene":{"x":0,"y":1,"w":1024,"h":740,"fitH":900},"heading":{"h":136},"points":{"ax":"r","ay":"t","x":22,"y":12,"w":null,"h":null},"slot1":{"ax":"c","ay":"t","x":-332,"y":212,"w":312,"h":178,"tail":"r"},"slot2":{"ax":"c","ay":"t","x":0,"y":112,"w":312,"h":178,"tail":"c"},"slot3":{"ax":"c","ay":"t","x":332,"y":212,"w":312,"h":178,"tail":"l"},"hero":{"ax":"c","ay":"b","x":0,"y":5,"w":384,"h":384},"swing":{"ax":"c","ay":"b","x":126,"y":275,"w":128,"h":null,"r":-60},"swingFrom":{"x":20,"y":-3,"r":35},"reroll":{"ax":"r","ay":"b","x":18,"y":134,"w":172,"h":null},"footer":{"h":116},"later":{"ax":"r","ay":"b","x":24,"y":16,"w":null,"h":null},"rules":{"ax":"l","ay":"b","x":18,"y":14,"w":null,"h":null},"sLabel":{"ax":"c","ay":"t","x":0,"y":30,"w":600,"h":null},"sTitle":{"ax":"c","ay":"t","x":0,"y":76,"w":900,"h":null},"sHero":{"ax":"c","ay":"t","x":0,"y":116,"w":384,"h":384},"sInfo":{"ax":"c","ay":"t","x":0,"y":512,"w":490,"h":null},"sDone":{"ax":"c","ay":"b","x":0,"y":22,"w":160,"h":null}},"mobile":{"scene":{"h":1080},"sceneEnd":{"h":668},"heading":{"h":142},"points":{"ax":"r","ay":"t","x":10,"y":10,"w":null,"h":null},"slot1":{"ax":"c","ay":"t","x":0,"y":146,"w":329,"h":178,"mw":10,"tail":"r"},"slot2":{"ax":"c","ay":"t","x":0,"y":330,"w":329,"h":178,"mw":10,"tail":"c"},"slot3":{"ax":"c","ay":"t","x":0,"y":514,"w":329,"h":178,"mw":10,"tail":"l"},"hero":{"ax":"c","ay":"b","x":0,"y":120,"w":192,"h":192},"swing":{"ax":"c","ay":"b","x":75,"y":268.5,"w":64,"h":null,"r":-60},"swingFrom":{"x":12,"y":-20,"r":35},"reroll":{"ax":"r","ay":"b","x":8,"y":100,"w":110,"h":null},"footer":{"h":116},"later":{"ax":"r","ay":"b","x":24,"y":16,"w":null,"h":null},"rules":{"ax":"l","ay":"b","x":18,"y":14,"w":null,"h":null},"sLabel":{"ax":"c","ay":"t","x":0,"y":30,"w":326,"h":null,"mw":12},"sTitle":{"ax":"c","ay":"t","x":0,"y":76,"w":326,"h":null,"mw":12},"sHero":{"ax":"c","ay":"t","x":0,"y":136,"w":192,"h":192},"sInfo":{"ax":"c","ay":"t","x":0,"y":360,"w":326,"h":null,"mw":12},"sDone":{"ax":"c","ay":"b","x":0,"y":120,"w":160,"h":null}},"marks":{"before":{"s":32,"d":[103,-16],"at":{"archer":[116,31],"bard":[115,34],"darkpriest-v2":[116,42],"druid-v2":[115,31],"enchanter":[117,41],"forcemage":[123,49],"gunner":[121,43],"monk-v2":[126,48],"ninja":[121,46],"paladin-v2":[113,30],"priest-v2":[115,38],"rogue":[120,45],"spellsword":[122,53],"sword-v2":[113,37],"timemage":[118,45],"wizard":[117,43]}},"hit":{"s":32,"d":[0,0],"at":{"archer":[131,47],"bard":[131,49],"darkpriest-v2":[132,52],"druid-v2":[131,45],"enchanter":[127,53],"forcemage":[127,56],"gunner":[126,55],"monk-v2":[130,58],"ninja":[128,52],"paladin-v2":[130,47],"priest-v2":[129,55],"rogue":[127,52],"spellsword":[128,57],"sword-v2":[125,51],"timemage":[127,59],"wizard":[118,56]}},"thinking":{"s":36,"d":[0,-7],"at":{"archer":[88,13],"bard":[85,22],"darkpriest-v2":[83,25],"enchanter":[74,21],"forcemage":[75,34],"gunner":[84,27],"monk-v2":[101,30],"ninja":[98,28],"priest-v2":[78,20],"rogue":[98,27],"spellsword":[105,34],"timemage":[75,30],"wizard":[75,14]}}},"bg":{"on":true,"a":"#e5edff","b":"#dbf5f3","ink":"#000000","inkA":0.25,"w":64,"tilt":20,"speed":30,"gap":160,"size":24,"end":"solid","endSat":30},"outline":{"c":"#3d2b1f","w":1},"fan":{"flip":true,"c":"#3d2b1f","w":1}};
+const SK_CHOICE_SEL = {heading:".suc-heading", points:".suc-points", slot1:".suc-choices>.suc-slot:nth-child(1)", slot2:".suc-choices>.suc-slot:nth-child(2)",
+  slot3:".suc-choices>.suc-slot:nth-child(3)", hero:".suc-hero", swing:".suc-swing", reroll:".suc-reroll", footer:".suc-footer", later:".suc-later", rules:".suc-rules",
+  sLabel:".suc-success>small", sTitle:".suc-success>h2", sHero:".suc-result-hero", sInfo:".suc-result-info", sDone:".suc-done"};
+const SK_CHOICE_FIT = {pc:{footer:65/116, fan:[108/150, 89/150]}, mobile:{footer:62/116, fan:[80/110, 66/110]}};   // 이름 띠 글 자리 · 부채 그림 크기 — 띠 높이 · 단추 폭에 맞춰
+const SK_CHOICE_FAN = "exotic-fan-v3.png"; // Red-tipped harisen, plain red grip, 64x64 RGB sprite.
+/* 효과음 (1013) — 제안이 나올 때 진화 · 각성 강화는 음을 올린다 (재생 빠르기 = 반음 2^(n/12) · 일반 0 · 진화 +4 · 각성 +7) */
+const SK_CHOICE_SFX_RATE = [1, Math.pow(2, 4 / 12), Math.pow(2, 7 / 12)];
+/* 이국의 부채 (1014) — SK_CHOICE_FAN 을 다른 그림으로 바꾸면 아래 둘도 맞춘다: SK_CHOICE_FAN_PX 그림 크기(칸) · SK_CHOICE_FAN_GRIP 손잡이 자리(% — 휘두를 때 이 점을 축으로 돈다).
+   부채 둘(단추 · 휘두르기)은 도트가 고르게 보이게 그림 칸의 정수배(64 · 128 · 192 …)로 그린다 — 배치표 w 에 가장 가까운 배수 (단추는 단추 폭 × SK_CHOICE_FIT.fan[0]).
+   휘두르기 — 배치표 swing 상자가 '맞는 자리'(r 맞을 때 각도 · 도, + 는 시계 방향), swingFrom {x, y, r} 이 '시작 자리'(맞는 자리에서 옮긴 px · 각도).
+   부채를 들면 시작 자리에 서고(.ready) 0.4초 동안 맞는 자리로 내려친다(.bonk — 가운데 쯤 조금 더 나갔다 돌아온다).
+   fan {flip 휘두를 때 좌우 뒤집기, c · w 테두리 색 · 두께(그림 칸)} — 두 화면 같이. 그림자는 부채가 돌아도 늘 오른쪽 아래로 떨어진다. */
+const SK_CHOICE_FAN_PX = [64, 64];
+const SK_CHOICE_FAN_GRIP = [22, 85];
+const SK_CHOICE_HIT_R = -60;                                       // 배치표 swing 에 r 이 없을 때 맞는 각도
+function skChoiceFanDef(){ return {flip:true, c:"#3d2b1f", w:1}; }
+function skChoiceSwingDef(mob){ return mob ? {x:12, y:-20, r:35} : {x:24, y:-40, r:35}; }
+function skChoiceFanNow(){ const T = (SKUP_LAB && SKUP_LAB.layout) || SK_CHOICE_LAYOUT; return Object.assign(skChoiceFanDef(), T.fan || {}); }
+function skChoiceFanSize(w){ const u = SK_CHOICE_FAN_PX[0]; return Math.max(1, Math.round((+w || u) / u)) * u; }   // 그림 칸 정수배
+function skChoiceFanFilter(k, r, flip, F){   // k — 그림 1칸의 px · r · flip — 부채가 돈 각도 · 뒤집기 (그림자를 화면 기준 오른쪽 아래로 되돌린다)
+  const n = v=> Math.round(v * 100) / 100, w = F.w > 0 ? n(F.w * k) : 0, c = F.c, a = (+r || 0) * Math.PI / 180, sx = k, sy = 2 * k;
+  let lx = sx * Math.cos(a) + sy * Math.sin(a); const ly = -sx * Math.sin(a) + sy * Math.cos(a);
+  if(flip) lx = -lx;
+  return (w ? `drop-shadow(${w}px 0 0 ${c}) drop-shadow(-${w}px 0 0 ${c}) drop-shadow(0 ${w}px 0 ${c}) drop-shadow(0 -${w}px 0 ${c}) ` : "") + `drop-shadow(${n(lx)}px ${n(ly)}px 0 rgba(37,42,55,.32))`;
 }
+function skChoiceSwingPose(L, mob){   // 휘두르기 — 시작 · 가운데(조금 더 나감) · 맞음 {x, y, r} (맞는 자리 상자 기준)
+  const b = L.swing || {}, fr = Object.assign(skChoiceSwingDef(mob), L.swingFrom || {}), to = {x:0, y:0, r:b.r != null ? +b.r : SK_CHOICE_HIT_R};
+  const k = skChoiceFanSize(b.w) / SK_CHOICE_FAN_PX[0];
+  return {k, from:{x:+fr.x || 0, y:+fr.y || 0, r:+fr.r || 0}, mid:{x:-(+fr.x || 0) * .25, y:-(+fr.y || 0) * .25 + 4 * k, r:to.r + (to.r - (+fr.r || 0)) * .3}, to};
+}
+function skChoiceSwing(L, mob){   // 휘두르는 부채 — 시작(.ready) · 내려치기(.bonk) CSS (배치를 놓을 때마다 · 화면마다)
+  const F = skChoiceFanNow(), P = skChoiceSwingPose(L, mob), n = v=> Math.round(v * 100) / 100;
+  const tf = p=> `translate(${n(p.x)}px,${n(p.y)}px) rotate(${n(p.r)}deg)${F.flip ? " scaleX(-1)" : ""}`, fl = p=> skChoiceFanFilter(P.k, p.r, !!F.flip, F);
+  const css = `.suc-scene .suc-swing.ready{transform:${tf(P.from)};filter:${fl(P.from)}}
+.suc-scene .suc-swing.bonk{animation-name:suc-bonk-fan;transform:${tf(P.to)};filter:${fl(P.to)}}
+@keyframes suc-bonk-fan{0%{transform:${tf(P.from)};filter:${fl(P.from)}}40%{transform:${tf(P.mid)};filter:${fl(P.mid)}}100%{transform:${tf(P.to)};filter:${fl(P.to)}}}`;
+  let st = document.getElementById("sucSwingCss");
+  if(!st){ st = document.createElement("style"); st.id = "sucSwingCss"; document.head.appendChild(st); }
+  if(st.textContent !== css) st.textContent = css;
+}
+/* 학생 머리 옆 표시 — before 긴장(anticipation.png · 부채 들기) · hit 충격(impact.png · 부채 맞음) · thinking 전구(고르기). 넓은 화면 · 폰 같이 (학생 그림 192 칸 기준이라 그림 크기를 따라간다).
+   SK_CHOICE_MARKS(직업 그림마다 · 기본 크기일 때 왼쪽 위) 위에 배치표 marks: s 너비(가운데 그대로 커진다) · d 모든 직업을 같이 옮긴 양 · at 직업 그림마다 따로 정한 자리(기본 크기 기준 왼쪽 위).
+   전구는 thinking.png 에 그려져 있다 — 16 직업 모두 같은 자리(SK_CHOICE_BULB · 28×27 · 몸은 y 48 아래라 겹치지 않는다). 그 칸을 가리고(.suc-think 마스크) 같은 그림에서 잘라(.suc-bulb) 따로 놓는다.
+   테두리 — 배치표 outline {c 색, w 두께(그림 칸)}: 표시 셋에 drop-shadow 네 방향 (창의 --suc-ol). */
+const SK_CHOICE_MARK_BOX = {before:[32, 32], hit:[32, 32], thinking:[28, 27]};   // 표시 기본 크기 (그림 칸 · 너비 · 높이)
+const SK_CHOICE_BULB = [82, 20];                                                     // thinking.png 의 전구 왼쪽 위 (그림 칸)
+function skChoiceMarkDef(){ return {before:{s:32, d:[0, 0], at:{}}, hit:{s:32, d:[0, 0], at:{}}, thinking:{s:28, d:[0, 0], at:{}}}; }
+function skChoiceOutlineDef(){ return {c:"#3d2b1f", w:1}; }
+function skChoiceMarkBase(key, state){ return state === "thinking" ? SK_CHOICE_BULB : ((SK_CHOICE_MARKS[key] && SK_CHOICE_MARKS[key][state]) || null); }
+function skChoiceMarkAt(key, state){   // [왼쪽, 위, 너비, 높이] — 그림 칸
+  const base = skChoiceMarkBase(key, state), box = SK_CHOICE_MARK_BOX[state]; if(!base || !box) return null;
+  const L = (SKUP_LAB && SKUP_LAB.layout) || SK_CHOICE_LAYOUT, m = (L.marks && L.marks[state]) || {}, d = m.d || [0, 0], w = m.s || box[0], h = w * box[1] / box[0];
+  const p = (m.at && m.at[key]) || [base[0] + d[0], base[1] + d[1]];
+  return [p[0] + box[0] / 2 - w / 2, p[1] + box[1] / 2 - h / 2, w, h];
+}
+function skChoiceMarkCss(key, state){
+  const r = skChoiceMarkAt(key, state); if(!r) return "";
+  const pc = v=> `${v / 192 * 100}%`;
+  return `left:${pc(r[0])};top:${pc(r[1])};width:${pc(r[2])};height:${pc(r[3])}`;
+}
+function skChoiceMarkApply(scene){
+  const pc = v=> `${v / 192 * 100}%`;
+  scene.querySelectorAll(".suc-mark[data-art]").forEach(el=>{ const r = skChoiceMarkAt(el.dataset.art, el.dataset.mark); if(r) Object.assign(el.style, {left:pc(r[0]), top:pc(r[1]), width:pc(r[2]), height:pc(r[3])}); });
+  const T = (SKUP_LAB && SKUP_LAB.layout) || SK_CHOICE_LAYOUT, O = Object.assign(skChoiceOutlineDef(), T.outline || {}), hero = scene.querySelector(".suc-hero");
+  const w = hero && O.w > 0 ? Math.round(hero.offsetWidth / 192 * O.w * 100) / 100 : 0, c = O.c;   // 그림 1칸 = 학생 너비 ÷ 192
+  scene.style.setProperty("--suc-ol", w ? `drop-shadow(${w}px 0 0 ${c}) drop-shadow(-${w}px 0 0 ${c}) drop-shadow(0 ${w}px 0 ${c}) drop-shadow(0 -${w}px 0 ${c})` : "none");
+}
+function skChoiceMobile(){ return !!(window.matchMedia && matchMedia("(max-width:760px)").matches); }
+function skChoiceLayoutNow(){ const L = (SKUP_LAB && SKUP_LAB.layout) || SK_CHOICE_LAYOUT; return (skChoiceMobile() ? L.mobile : L.pc) || {}; }
+function skChoiceW(b){ return b.w == null ? "" : (b.mw != null ? `min(${b.w}px, calc(100% - ${2 * b.mw}px))` : `${b.w}px`); }
+function skChoicePlace(el, b){
+  const s = el.style, w = skChoiceW(b);
+  s.position = "absolute"; s.margin = "0";
+  if(b.ax === "r"){ s.left = "auto"; s.right = `${b.x}px`; }
+  else if(b.ax === "c"){ s.right = "auto"; s.left = w ? `calc(50% + ${b.x}px - ${w} / 2)` : `calc(50% + ${b.x}px)`; }
+  else { s.right = "auto"; s.left = `${b.x}px`; }
+  if(b.ay === "b"){ s.top = "auto"; s.bottom = `${b.y}px`; } else { s.bottom = "auto"; s.top = `${b.y}px`; }
+  s.width = w; s.height = b.h == null ? "" : `${b.h}px`;
+}
+function skChoiceTail(slot, t){   // 말풍선 꼬리 — l 왼쪽 아래 · c 가운데 · r 오른쪽 아래 (CSS 의 nth-child 자리와 같다)
+  const set = (el, edge, half)=>{ if(!el) return; const s = el.style;
+    if(t === "l"){ s.left = edge; s.right = "auto"; } else if(t === "c"){ s.left = "auto"; s.right = `calc(50% - ${half}px)`; } else { s.left = "auto"; s.right = edge; } };
+  set(slot.querySelector(".suc-tail"), "14px", 18); set(slot.querySelector(".suc-tail-dot"), "4px", 11);
+}
+/* 배경 벨트 (1013 사용자: '뒷 배경은 SKILL UPGRADE 가 쓰인 두 색 띠가 하나는 위로, 하나는 아래로 벨트 스크롤') — 띠를 기울인 판(.suc-bg-rot)에 세워
+   띠마다 글 줄(.suc-bg-track)이 한 바퀴(글 + 간격) 만큼 흐르고 되돌아 이어진다. 시작 시각을 시계에 맞춰(animation-delay) 창을 다시 그려도 끊기지 않는다.
+   on 끄면 예전 방 그림 · a · b 띠 색 · ink 글자 색 · inkA 글자 진하기 · w 띠 폭 · tilt 기울기(도 — 띠 위쪽이 왼쪽으로) · speed 초당 px(0 멈춤) · gap 글 사이 · size 글자(12 · 24 · 36 · 48) */
+const SK_CHOICE_BG_DEF = {on:true, a:"#c2e5ff", b:"#c6faf6", ink:"#283231", inkA:.35, w:64, tilt:20, speed:30, gap:160, size:24, end:"solid", endSat:50};
+/* 완료 화면 (1013 사용자: '완료 창의 뒷배경은 업그레이드 된 스킬의 배경색을 채도를 더 낮게') — end: solid 등급 색 한 가지 · grade 등급 색 띠 · same 고르기와 같게 / endSat 채도 남기기 % */
+function skChoiceTone(hex, sat, dl){   // #rrggbb → 채도 × sat · 밝기 + dl → #rrggbb
+  const n = parseInt(String(hex).replace("#", "").slice(0, 6), 16); if(!Number.isFinite(n)) return hex;
+  let r = (n >> 16 & 255) / 255, g = (n >> 8 & 255) / 255, b = (n & 255) / 255;
+  const mx = Math.max(r, g, b), mn = Math.min(r, g, b); let h = 0, s = 0, l = (mx + mn) / 2;
+  if(mx !== mn){ const d = mx - mn; s = l > .5 ? d / (2 - mx - mn) : d / (mx + mn); h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h /= 6; }
+  s = Math.max(0, Math.min(1, s * sat)); l = Math.max(0, Math.min(1, l + dl));
+  const f = t=>{ const q = l < .5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q; t = (t + 1) % 1; return t < 1/6 ? p + (q - p) * 6 * t : t < .5 ? q : t < 2/3 ? p + (q - p) * (2/3 - t) * 6 : p; };
+  return "#" + [f(h + 1/3), f(h), f(h - 1/3)].map(v=> Math.round(v * 255).toString(16).padStart(2, "0")).join("");
+}
+function skChoiceCss(){                 // 전구 떼기 · 표시 테두리 · 이국의 부채 상자 (1013) · 강화 규칙 숨김 (1014 사용자 — 배치표 rules 는 그대로 둔다)
+  if(document.getElementById("sucMarkCss")) return;
+  const st = document.createElement("style"); st.id = "sucMarkCss";
+  const hole = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192' preserveAspectRatio='none'%3E%3Cpath fill-rule='evenodd' d='M0 0H192V192H0ZM82 20H110V47H82Z'/%3E%3C/svg%3E\")";
+  st.textContent = `.suc-layer.suc-think{-webkit-mask:${hole} 0 0/100% 100% no-repeat;mask:${hole} 0 0/100% 100% no-repeat}
+.suc-bulb{display:block;background-repeat:no-repeat;background-size:685.7143% 711.1111%;background-position:50% 12.1212%;image-rendering:pixelated}
+.suc-scene .suc-mark{filter:var(--suc-ol, none)}
+.suc-scene .suc-rules{display:none}
+.suc-scene .suc-reroll img,.suc-scene .suc-swing{filter:drop-shadow(2px 4px 0 rgba(37,42,55,.32))}
+.suc-scene .suc-reroll:disabled{opacity:1}.suc-scene .suc-reroll:disabled img{opacity:.65}
+.suc-reroll .suc-fan-tip{display:none;position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%);padding:7px 12px;border:3px double #ac8c59;background:#fff1d6;color:#493721;box-shadow:3px 4px #3c2c2466;text-shadow:none;white-space:nowrap;text-align:center;font-size:12px;line-height:1.5;z-index:30;pointer-events:none}
+.suc-reroll .suc-fan-tip b{display:block;font-weight:400}.suc-reroll .suc-fan-tip small{display:block;font-size:12px;color:#8a7350}
+.suc-reroll:hover .suc-fan-tip,.suc-reroll:focus-visible .suc-fan-tip{display:block}
+@media(hover:none){.suc-reroll .suc-fan-tip{display:block;bottom:calc(100% + 2px);padding:0;border:0;background:none;box-shadow:none;color:#fff4db;text-shadow:1px 0 #59432c,-1px 0 #59432c,0 1px #59432c,0 -1px #59432c}.suc-reroll .suc-fan-tip small{color:#fff4db}}`;
+  document.head.appendChild(st);
+}
+function skChoiceBgCss(){
+  if(document.getElementById("sucBgCss")) return;
+  const st = document.createElement("style"); st.id = "sucBgCss";
+  st.textContent = `.suc-bg{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.suc-bg-rot{position:absolute;left:50%;top:50%;display:flex;transform:translate(-50%,-50%) rotate(calc(-1deg * var(--tilt)))}
+.suc-bg-col{flex:0 0 var(--w);height:100%;overflow:hidden;background:var(--a)}.suc-bg-col:nth-child(even){background:var(--b)}
+.suc-bg-track{animation:suc-belt var(--dur) linear infinite;animation-delay:var(--dl);will-change:transform}
+.suc-bg-col:nth-child(even) .suc-bg-track{animation-direction:reverse}
+.suc-bg-track>i{display:block;height:var(--p);width:var(--w);writing-mode:vertical-rl;white-space:nowrap;text-align:center;font:400 var(--fs)/var(--w) Mulmaru,sans-serif;font-style:normal;color:var(--ink);opacity:var(--inkA)}
+@keyframes suc-belt{to{transform:translateY(calc(-1 * var(--p)))}}
+@media(prefers-reduced-motion:reduce){.suc-bg-track{animation:none}}
+.suc-scene.suc-belt .suc-success{background:none}
+.suc-scene.suc-belt .suc-success>small,.suc-scene.suc-belt .suc-success h2{text-shadow:2px 0 #493721,-2px 0 #493721,0 2px #493721,0 -2px #493721,2px 2px #493721}
+.suc-scene.suc-belt .suc-reroll{text-shadow:1px 0 #59432c,-1px 0 #59432c,0 1px #59432c,0 -1px #59432c,1px 2px #59432c}`;   /* 밝은 띠 위 글 — 테두리를 둘러 읽히게 · 완료 화면의 어둡게 덮던 막은 뺀다 */
+  document.head.appendChild(st);
+}
+function skChoiceBg(scene){
+  const T = (SKUP_LAB && SKUP_LAB.layout) || SK_CHOICE_LAYOUT, B = Object.assign({}, SK_CHOICE_BG_DEF, T.bg || {});
+  let bg = scene.querySelector(":scope > .suc-bg");
+  scene.classList.toggle("suc-belt", !!B.on);
+  if(!B.on){ if(bg) bg.remove(); scene.style.removeProperty("background"); return; }
+  skChoiceBgCss();
+  const info = scene.querySelector(".suc-success .suc-result-info");
+  if(info && B.end !== "same"){                                      // 완료 화면 — 고른 스킬 등급 색(결과 칸 배경)을 채도를 낮춰
+    const g = getComputedStyle(info).getPropertyValue("--grade-bg").trim() || "#d5cfc2", k = (B.endSat == null ? 50 : B.endSat) / 100;
+    if(B.end === "solid"){ if(bg) bg.remove(); scene.style.setProperty("background", skChoiceTone(g, k, 0)); return; }
+    B.a = skChoiceTone(g, k, 0); B.b = skChoiceTone(g, k, .06); B.ink = skChoiceTone(g, k, -.45);
+  }
+  scene.style.setProperty("background", B.a);                       // 방 그림 대신
+  if(!bg){ bg = document.createElement("div"); bg.className = "suc-bg"; bg.setAttribute("aria-hidden", "true"); scene.insertBefore(bg, scene.firstChild); }
+  const v = (k, x)=> bg.style.setProperty(k, x);
+  v("--a", B.a); v("--b", B.b); v("--ink", B.ink); v("--inkA", String(B.inkA)); v("--w", `${B.w}px`); v("--tilt", String(B.tilt)); v("--fs", `${B.size}px`);
+  const W = scene.clientWidth || 1016, H = scene.clientHeight || 732, t = Math.min(60, Math.abs(B.tilt)) * Math.PI / 180;
+  const RW = Math.ceil((W * Math.cos(t) + H * Math.sin(t) + 2 * B.w) / 128) * 128, RH = Math.ceil((W * Math.sin(t) + H * Math.cos(t) + 64) / 128) * 128;   // 돌린 판 — 창을 덮을 만큼 (128 단위 — 조금 바꿀 때마다 다시 짓지 않게)
+  const key = [B.w, B.gap, B.size, RW, RH].join(",");
+  if(bg.dataset.key !== key){
+    bg.dataset.key = key; bg.style.removeProperty("--p");
+    bg.innerHTML = `<div class="suc-bg-rot"><div class="suc-bg-col"><div class="suc-bg-track"><i>SKILL UPGRADE</i></div></div></div>`;
+    const len = bg.querySelector("i").scrollHeight || B.size * 7;   // 글 길이 (세로쓰기 — 높이)
+    const p = Math.max(16, Math.round(len + B.gap)), n = Math.ceil(RH / p) + 1, cols = Math.ceil(RW / B.w);
+    v("--p", `${p}px`); bg.dataset.t0 = String(performance.now() / 1000);
+    const col = `<div class="suc-bg-col"><div class="suc-bg-track">${"<i>SKILL UPGRADE</i>".repeat(n)}</div></div>`;
+    bg.innerHTML = `<div class="suc-bg-rot" style="width:${cols * B.w}px;height:${RH}px">${col.repeat(cols)}</div>`;
+    if(document.fonts && document.fonts.status !== "loaded") document.fonts.ready.then(()=>{ if(scene.isConnected && bg.isConnected){ bg.dataset.key = ""; skChoiceBg(scene); } });   // 글꼴이 늦게 오면 다시 잰다
+  }
+  const p = parseFloat(bg.style.getPropertyValue("--p")) || 1, dur = B.speed > 0 ? p / B.speed : 0;   // 시작 시각(t0)으로 시계에 맞춘다 — 창을 다시 그려도 띠가 같은 자리에서 이어진다
+  v("--dur", dur ? `${dur}s` : "0s"); v("--dl", dur ? `${-((+bg.dataset.t0 || 0) % dur)}s` : "0s");
+  bg.querySelectorAll(".suc-bg-track").forEach(tr=> tr.style.animationName = dur ? "" : "none");
+}
+function skChoiceZoom(L, mob){   // 넓은 화면 — 세로가 fitH(기본 900) 이하면 창 전체를 높이 비율로 줄인다 (1013 사용자: '세로 화면 높이가 900 이하일 경우 창의 전체적인 비율을 축소')
+  const f = L && L.scene && L.scene.fitH != null ? +L.scene.fitH : 900, h = window.innerHeight || 0;
+  if(mob || !(f > 0) || !h || h >= f) return 1;
+  return Math.max(.5, Math.round(h / f * 1000) / 1000);
+}
+function skChoiceLayoutApply(scene){
+  if(!scene || !scene.isConnected) return;
+  const L = skChoiceLayoutNow(), mob = skChoiceMobile(), fit = SK_CHOICE_FIT[mob ? "mobile" : "pc"], modal = scene.closest(".modal");
+  const done = scene.querySelector(".suc-success"), sc = L.scene || {}, zk = skChoiceZoom(L, mob);
+  skChoiceCss();
+  scene.style.zoom = zk < 1 ? String(zk) : "";                       // 창(.suc-scene)을 통째로 — 안의 값은 그대로 창 기준 px (offset · client 도 그대로)
+  if(modal){
+    if(!mob && sc.w) modal.style.setProperty("width", `min(${Math.round(sc.w * zk * 100) / 100}px, 100%)`, "important"); else modal.style.removeProperty("width");
+    modal.style.translate = (!mob && (sc.x || sc.y)) ? `${(sc.x || 0) * zk}px ${(sc.y || 0) * zk}px` : "";
+  }
+  const hh = (mob && done && L.sceneEnd) ? L.sceneEnd.h : sc.h;
+  if(hh){ scene.style.minHeight = `${hh}px`; scene.style.height = mob ? "" : `${hh}px`; }
+  skChoiceBg(scene);                                                  // 배경 벨트 — 창 크기를 정한 뒤
+  const ch = scene.querySelector(".suc-choices");   // 선택지 칸은 창 전체를 덮고(누르기는 통과) 말풍선이 창 기준 자리에 선다
+  if(ch) Object.assign(ch.style, {left:"0", top:"0", width:"100%", height:"100%", pointerEvents:"none"});
+  if(done) Object.assign(done.style, {position:"absolute", inset:"0", display:"block", padding:"0", minHeight:"0", height:"auto"});
+  for(const k in SK_CHOICE_SEL){
+    const el = scene.querySelector(SK_CHOICE_SEL[k]), b = L[k];
+    if(!el || !b) continue;
+    if(k === "heading" || k === "footer"){
+      if(b.h != null){ el.style.height = `${b.h}px`; if(k === "footer") el.style.paddingTop = `${Math.round(b.h * fit.footer)}px`; }
+      continue;
+    }
+    if(k === "swing"){                                               // 휘두르는 부채 — 그림 칸 정수배 정사각 · 손잡이를 축으로 (1014)
+      const z = skChoiceFanSize(b.w);
+      skChoicePlace(el, Object.assign({}, b, {w:z, h:Math.round(z * SK_CHOICE_FAN_PX[1] / SK_CHOICE_FAN_PX[0])}));
+      el.style.transformOrigin = `${SK_CHOICE_FAN_GRIP[0]}% ${SK_CHOICE_FAN_GRIP[1]}%`;
+      continue;
+    }
+    skChoicePlace(el, b);
+    if(k.startsWith("slot")){
+      el.style.pointerEvents = "auto"; el.style.transform = "none";
+      skChoiceTail(el, b.tail || {slot1:"r", slot2:"c", slot3:"l"}[k]);
+      const tip = el.querySelector(".suc-tip");                    // 넓은 화면 — 오른쪽에 선 말풍선은 설명을 왼쪽으로 (폰은 CSS 그대로 아래)
+      if(tip){ const left = !mob && (b.ax === "r" || (b.ax === "c" && b.x > 0)); tip.style.left = mob ? "" : (left ? "auto" : "calc(100% + 8px)"); tip.style.right = mob ? "" : (left ? "calc(100% + 8px)" : "auto"); }
+    }
+    if(k === "reroll"){ const im = el.querySelector("img"); if(im){                                  // 단추 그림 — 그림 칸 정수배 · 테두리 (1014)
+      const z = b.w ? skChoiceFanSize(b.w * fit.fan[0]) : SK_CHOICE_FAN_PX[0] * (mob ? 1 : 2);
+      im.style.width = `${z}px`; im.style.height = `${Math.round(z * SK_CHOICE_FAN_PX[1] / SK_CHOICE_FAN_PX[0])}px`; im.style.filter = skChoiceFanFilter(z / SK_CHOICE_FAN_PX[0], 0, false, skChoiceFanNow()); } }
+  }
+  skChoiceMarkApply(scene);
+  skChoiceSwing(L, mob);
+  skChoiceNameFit(scene);
+  if(done && hh){ skChoiceDoneFit(scene, hh, mob); skChoiceBg(scene); }   // 완료 화면이 길어졌으면 배경도
+}
+function skChoiceNameFit(scene){   // 스킬 이름 — 긴 낱말(영어 'Assassination' 등)이 칸보다 넓으면 글자 중간에서 끊지 않고 그 낱말이 들어가게 글자를 줄인다
+  scene.querySelectorAll(".suc-info strong, .suc-result-info strong").forEach(el=>{   // (acadNameFit 처럼 — 도트 폰트는 12 · 24px 사이 크기에서 조금 흐리다)
+    el.style.removeProperty("font-size"); el.style.removeProperty("line-height"); el.style.overflowWrap = "normal";
+    const w = el.clientWidth, over = el.scrollWidth;
+    if(!w || over <= w + .5) return;
+    const cs = getComputedStyle(el), f0 = parseFloat(cs.fontSize), r = (parseFloat(cs.lineHeight) || f0 * 1.15) / f0, f = Math.max(10, Math.floor(f0 * w / over * 2) / 2);
+    el.style.setProperty("font-size", `${f}px`, "important"); el.style.setProperty("line-height", `${f * r}px`, "important");
+  });
+}
+function skChoiceDoneFit(scene, hh, mob){   // 완료 화면 — 결과 글이 길어 확인 단추에 닿으면 예전 CSS(위에서 아래로 12px 간격)처럼 단추를 결과 칸 아래로 내리고 창을 늘린다
+  const info = scene.querySelector(".suc-result-info"), done = scene.querySelector(".suc-done");
+  if(!info || !done) return;
+  const need = info.offsetTop + info.offsetHeight + 12 - done.offsetTop;
+  if(need <= 0) return;
+  const grow = (px)=>{ scene.style.minHeight = `${hh + px}px`; if(!mob) scene.style.height = `${hh + px}px`; };
+  if(done.style.top === "auto") return grow(need);                     // 아래 기준 — 창이 길어지면 단추가 같이 내려간다
+  done.style.top = `${done.offsetTop + need}px`;
+  const over = done.offsetTop + done.offsetHeight + 12 - scene.clientHeight;
+  if(over > 0) grow(over);
+}
+function skChoiceLayoutWatch(scene){   // 화면 폭이 760 을 넘나들면(폰 ↔ 넓은 화면) · 창 크기가 바뀌면(세로로 줄이는 배율) 다시 놓는다
+  skChoiceLayoutApply(scene);
+  let raf = 0;
+  const rs = ()=>{ if(!scene.isConnected){ removeEventListener("resize", rs); return; } if(!raf) raf = requestAnimationFrame(()=>{ raf = 0; skChoiceLayoutApply(scene); }); };
+  addEventListener("resize", rs);
+  if(!window.matchMedia) return;
+  const mq = matchMedia("(max-width:760px)");
+  const h = ()=>{ if(!scene.isConnected){ if(mq.removeEventListener) mq.removeEventListener("change", h); else if(mq.removeListener) mq.removeListener(h); return; } skChoiceLayoutApply(scene); };
+  if(mq.addEventListener) mq.addEventListener("change", h); else if(mq.addListener) mq.addListener(h);
+}
+/* SKUP_LAYOUT_END */
+function skChoiceWord(ko,en){ return document.documentElement.lang==='en' ? en : ko; }
+function skChoiceAsset(job,file){return SK_CHOICE_ROOT+(SK_CHOICE_ART[job]||SK_CHOICE_ART.darkpriest)+'/'+file+'.png';}
+function skChoiceHero(st,state){
+  const key=SK_CHOICE_ART[st.job]||SK_CHOICE_ART.darkpriest, pos=SK_CHOICE_MARKS[key];   // 표시 자리 · 크기는 skChoiceMarkCss — 배치표(SK_CHOICE_LAYOUT.marks)를 더한다 (1013)
+  const file={thinking:'thinking',before:'before-fan',hit:'fan-hit',success:'success'}[state];
+  const img=(f,c)=>`<img class="${c}" src="${skChoiceAsset(st.job,f)}" alt="">`;
+  const bulb=state==='thinking'?`<i class="suc-mark suc-bulb" data-art="${key}" data-mark="thinking" style="${skChoiceMarkCss(key,'thinking')};background-image:url('${skChoiceAsset(st.job,'thinking')}')"></i>`:'';   // 1013 — 그림의 전구는 가리고(suc-think) 같은 그림에서 잘라 따로
+  return `${state==='success'?img('success-back','suc-layer'):''}${img(file,state==='thinking'?'suc-layer suc-think':'suc-layer')}${state==='success'?img('success-front','suc-layer'):''}${bulb}${pos&&pos[state]?`<img class="suc-mark" data-art="${key}" data-mark="${state}" src="${SK_CHOICE_ROOT}${state==='before'?'anticipation':'impact'}.png" style="${skChoiceMarkCss(key,state)}" alt="">`:''}`;
+}
+function skChoiceCard(st,o,i){
+  const d=skUpDiff(st,o), name=o.t.kind==='passive'?o.t.name:o.t.sk.name;
+  const cat=o.t.kind==='passive'?'패시브':o.t.sk.kind==='basic'?'일반 공격':o.t.sk.kind==='ult'?'필살기':'스킬';
+  return `<div class="suc-slot" data-grade="${SK_GRADE[d.g1]}" data-tier="${d.ev}" style="--delay:${i*300}ms">
+    <div class="suc-puff" aria-hidden="true">${Array.from({length:8},(_,n)=>`<i style="--x:${Math.round(Math.cos(n*Math.PI/4)*115)}px;--y:${Math.round(Math.sin(n*Math.PI/4)*70)}px"></i>`).join('')}</div>
+    <button class="suc-card" data-skopt="${i}" aria-describedby="suc-tip-${i}" aria-label="${esc(name)} · ${SK_TIER_N[d.ev]}">
+      <svg class="suc-cloud" viewBox="0 0 180 112" preserveAspectRatio="none" aria-hidden="true"><path d="M28 4H152V8H164V16H172V28H176V84H172V96H164V104H152V108H28V104H16V96H8V84H4V28H8V16H16V8H28Z"/></svg>
+      <span class="suc-tail" aria-hidden="true"></span><span class="suc-tail-dot" aria-hidden="true"></span><span class="suc-card-body"><span class="suc-stars" aria-hidden="true">${[0,1,2].map(n=>`<span class="${n>d.ev?'off':''}">★</span>`).join('')}</span>
+      ${skillIconHtml(d.id,SK_GRADE[d.g1],passiveJobOf(st))}<span class="suc-info"><small>${cat}</small><strong>${esc(name)}</strong><span>Lv.${d.lv0} → ${d.lv1}${d.lv1>=SK_LV_MAX?' MAX':''}</span><span>${SK_GRADE[d.g0]} → ${SK_GRADE[d.g1]}</span></span></span>
+    </button><div class="suc-tip" id="suc-tip-${i}" role="tooltip">${skUpLines(d).join('<br>')}</div></div>`;
+}
+/* 1013 — 완료 화면 (skillUpModal 의 choose · 배치 실험실이 같이 쓴다) */
+function skChoiceSuccessHtml(st,d,nm){
+  return `<div class="suc-success"><small>SKILL UPGRADE COMPLETE</small><h2>새로운 힘을 익혔어요!</h2><div class="suc-result-hero" aria-hidden="true">${skChoiceHero(st,'success')}</div><div class="suc-result-info" data-grade="${SK_GRADE[d.g1]}">${skillIconHtml(d.id,SK_GRADE[d.g1],passiveJobOf(st))}<div><strong>${esc(nm)}</strong><p>Lv.${d.lv0} → ${d.lv1} · ${SK_GRADE[d.g0]} → ${SK_GRADE[d.g1]}</p>${skUpLines(d).join('<br>')}</div></div><button class="suc-done">확인</button></div>`;
+}
+function skillUpModal(sid){
+  const st=S.students.find(x=>x.id===sid);
+  if(!st||!(st.sp>0))return;
+  if(!st.skOpts||!st.skOpts.length){
+    const gen=genSkillOptions(st);if(!gen.length){toast('모든 스킬이 최대 레벨이다.');return;}
+    st.skOpts=gen.map(o=>({id:optId(o.t),ev:o.ev}));save();
+  }
+  let opts=st.skOpts.map(o=>hydrateOpt(st,o)), busy=true, finished=false;
+  const count=()=>Math.max(0,Math.floor(Number(S.items&&S.items.exoticFan)||0));
+  showModal(`<section class="suc-scene" role="dialog" aria-modal="true" aria-labelledby="suc-title">
+    <header class="suc-heading"><small>SKILL UPGRADE</small><h2 id="suc-title">어떤 스킬을 키워 볼까요?</h2></header>
+    <span class="suc-points">${skChoiceWord('강화 포인트','Upgrade points')} <b>${st.sp}</b></span>
+    <div class="suc-choices"></div><div class="suc-hero" aria-hidden="true">${skChoiceHero(st,'thinking')}</div>
+    <img class="suc-swing" src="${SK_CHOICE_ROOT}${SK_CHOICE_FAN}" alt="">
+    <button class="suc-reroll" aria-describedby="suc-fan-tip"><img src="${SK_CHOICE_ROOT}${SK_CHOICE_FAN}" alt=""><span class="suc-fan-tip" id="suc-fan-tip" role="tooltip"></span></button>
+    <footer class="suc-footer">${dnH(st)}</footer><button class="suc-later" data-close>나중에</button>
+    <details class="suc-rules"><summary>강화 규칙</summary><div>${skChoiceWord('별 1개: 일반 · 2개: 진화 · 3개: 각성. 강화 시 레벨 +1. 진화는 등급 +1, 각성은 +2 (최대 EX).','1 star: Normal · 2: Evolution · 3: Awakening. Level +1; Evolution raises grade by 1, Awakening by 2 (up to EX).')}<br>${skChoiceWord('한 번 확인한 제안은 나중에 다시 열어도 유지됩니다.','Offers are saved when you leave and return.')}${skGradeTable()}</div></details>
+  </section>`,()=>{
+    const scene=$('#modalRoot .suc-scene'), modal=scene.closest('.modal');modal.classList.add('suc-modal');skChoiceLayoutWatch(scene);   // 1013 — 배치표(SK_CHOICE_LAYOUT)
+    const choices=scene.querySelector('.suc-choices'), fan=scene.querySelector('.suc-reroll'), hero=scene.querySelector('.suc-hero'), swing=scene.querySelector('.suc-swing');
+    // Detached scenes cannot spend items or reopen another modal after a timeout.
+    const later=(fn,ms)=>setTimeout(()=>{if(scene.isConnected&&!finished)fn();},ms);
+    const refreshFan=()=>{fan.disabled=busy||count()<1;const n=count(),t=skChoiceWord(`이국의 부채 (${n}개)`,`Exotic Fan (${n})`);fan.setAttribute('aria-label',t);fan.querySelector('.suc-fan-tip').innerHTML=`<b>${esc(t)}</b>${n>0?'':`<small>${skChoiceWord(`도구상에서 구입 · ${fmt(EXOTIC_FAN_PRICE)} G`,`Buy at the Tool Shop · ${fmt(EXOTIC_FAN_PRICE)} G`)}</small>`}`;};   // 1013 — 이름 (개수) · 마우스 오버 상자
+    const reveal=()=>{busy=true;choices.innerHTML=opts.map((o,i)=>skChoiceCard(st,o,i)).join('');skChoiceLayoutApply(scene);
+      choices.querySelectorAll('.suc-card').forEach(b=>b.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse'&&!b.disabled)sfxPlay('suc_hover');}));   // 1013 — 말풍선에 마우스
+      opts.forEach((o,i)=>later(()=>sfxPlay('suc_opt',SK_CHOICE_SFX_RATE[skUpDiff(st,o).ev]||1),560+i*300));   /* 말풍선이 나올 때 (CSS suc-appear 와 같은 때 · 진화 · 각성은 음을 올려) */
+      choices.className='suc-choices suc-reveal';choices.querySelectorAll('button').forEach(b=>{b.disabled=true;b.onclick=()=>choose(+b.dataset.skopt);});refreshFan();later(()=>{busy=false;choices.classList.remove('suc-reveal');choices.querySelectorAll('button').forEach(b=>b.disabled=false);refreshFan();},1500);};
+    const choose=i=>{
+      if(busy||finished||!scene.isConnected||!(st.sp>0))return;
+      busy=true;const o=opts[i], d=skUpDiff(st,o), nm=o.t.kind==='passive'?o.t.name:o.t.sk.name;
+      if(!applySkillUp(st,o)){busy=false;return;}
+      st.skOpts=null;save();finished=true;
+      scene.innerHTML=skChoiceSuccessHtml(st,d,nm);skChoiceLayoutApply(scene);sfxPlay('suc_done');   // 1013 — 완료 화면도 배치표(SK_CHOICE_LAYOUT)대로 · 1014 완료 소리
+      scene.querySelector('.suc-done').onclick=()=>{if(!scene.isConnected)return;closeModal();render();if(st.sp>0)skillUpModal(sid);};scene.querySelector('.suc-done').focus();
+    };
+    fan.onclick=()=>{
+      if(busy||finished||count()<1||!(st.sp>0)||!scene.isConnected)return;
+      const gen=genSkillOptions(st);if(!gen.length)return;
+      // Consume and persist replacement offers together, before visual-only timers.
+      S.items.exoticFan=count()-1;st.skOpts=gen.map(o=>({id:optId(o.t),ev:o.ev}));save();
+      opts=gen;busy=true;refreshFan();choices.querySelectorAll('button').forEach(b=>b.disabled=true);
+      hero.innerHTML=skChoiceHero(st,'before');swing.className='suc-swing ready';
+      later(()=>{hero.innerHTML=skChoiceHero(st,'hit');swing.className='suc-swing bonk';choices.style.visibility='hidden';sfxPlay('suc_hit');},650);
+      later(()=>{hero.innerHTML=skChoiceHero(st,'thinking');swing.className='suc-swing';choices.style.visibility='';sfxPlay('suc_bulb');reveal();},1100);
+    };
+    // Preload all expression/effect images while offers are appearing.
+    ['thinking','before-fan','fan-hit','success','success-back','success-front'].forEach(f=>{const im=new Image();im.src=skChoiceAsset(st.job,f);});
+    ['anticipation.png','impact.png',SK_CHOICE_FAN].forEach(f=>{const im=new Image();im.src=SK_CHOICE_ROOT+f;});
+    ['suc_later','suc_hover','suc_bulb','suc_hit','suc_opt','suc_done'].forEach(k=>sfxLoad(SFX[k].f));                                    // 1013 — 효과음 미리 받기
+    fan.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse')sfxPlay('suc_hover');});                                      // 부채에 마우스
+    scene.querySelector('.suc-later').addEventListener('click',()=>sfxPlay('suc_later'));                                            // 나중에
+    sfxPlay('suc_bulb');                                                                                                                // 창을 열면 전구
+    reveal();scene.querySelector('.suc-later').focus({preventScroll:true});   // 1013 — 폰에서 창이 맨 아래(나중에)로 내려가 열리지 않게
+  },true);
+}
+
+/* SKUP_LAB_START — 스킬 강화 창 배치 실험실 (1013). tools/skill_upgrade_lab.html 이 game.html?skuplab 을 틀(iframe)에 넣어 부른다.
+   실험실 쪽 게임은 아무것도 저장하지 않는다. 바깥 창이 보낸 배치(SK_CHOICE_LAYOUT 모양)로 창을 그리고, 요소를 끌면 옮기고 노란 손잡이를 끌면
+   크기를 바꿔 바깥 창에 알린다 (skup · pick · move · change · measure). 방향키 1px · Shift 10px. 배포 빌드에서는 빠진다 (build_strip.py). */
+const SKUP_LAB = /[?&]skuplab\b/.test(location.search) ? {layout:null, state:"choose", job:"paladin", sel:"hero", names:{}, all:true, guide:true, lock:false, key:""} : null;
+const SKUP_SHOW = {choose:["heading","points","slot1","slot2","slot3","hero","reroll","footer","later","markThink"],   // 강화 규칙(rules)은 숨겼다 (1014)
+  before:["heading","points","slot1","slot2","slot3","hero","swingFrom","reroll","footer","later","markBefore"],
+  hit:["heading","points","hero","swing","reroll","footer","later","markHit"],
+  success:["sLabel","sTitle","sHero","sInfo","sDone"]};
+const SKUP_WONLY = {swing:1, reroll:1};      // 그림이 든 것 — 폭만 정하고 높이는 그림 비율대로
+const SKUP_BAND = {heading:1, footer:1};      // 띠 — 높이만
+const SKUP_MARK = {markBefore:"before", markHit:"hit", markThink:"thinking"};   // 학생 머리 옆 표시 — 배치표 marks (넓은 화면 · 폰 같이 · 학생 그림 칸)
+const SKUP_SWF = {swingFrom:1};                // 휘두르는 부채 시작 자리 — 맞는 자리(swing)에서 옮긴 px (끌어 옮기기만 · 각도는 바깥 창에서)
+function skupPost(m){ try{ parent.postMessage(Object.assign({lab:"skup"}, m), "*"); }catch(e){} }
+function skupMode(){ return skChoiceMobile() ? "mobile" : "pc"; }
+function skupScene(){ return document.querySelector("#modalRoot .suc-scene"); }
+function skupBox(scene, el){                  // 창 테두리 안 기준 상자 (transform — 부채 휘두르기 — 은 보지 않는다)
+  let x = 0, y = 0, e = el;
+  while(e && e !== scene){ x += e.offsetLeft; y += e.offsetTop; e = e.offsetParent; }
+  return [x, y, el.offsetWidth, el.offsetHeight];
+}
+function skupZoom(scene){ return parseFloat(scene && scene.style.zoom) || 1; }
+function skupVis(scene, el){                  // 보이는 상자 (돌리고 옮긴 뒤 — 휘두르는 부채) · 창 테두리 안 기준
+  const zk = skupZoom(scene), a = el.getBoundingClientRect(), s = scene.getBoundingClientRect();
+  return [(a.left - s.left) / zk - scene.clientLeft, (a.top - s.top) / zk - scene.clientTop, a.width / zk, a.height / zk].map(v=> Math.round(v * 10) / 10);
+}
+function skupMeasure(){
+  const scene = skupScene(); if(!scene) return null;
+  const boxes = {};
+  for(const k in SK_CHOICE_SEL){ const el = scene.querySelector(SK_CHOICE_SEL[k]); if(el) boxes[k] = skupBox(scene, el).map(v=> Math.round(v * 10) / 10); }
+  scene.querySelectorAll(".suc-mark[data-mark]").forEach(el=>{ const k = {before:"markBefore", hit:"markHit", thinking:"markThink"}[el.dataset.mark]; if(k) boxes[k] = skupBox(scene, el).map(v=> Math.round(v * 10) / 10); });
+  const vis = {}, sw = scene.querySelector(".suc-swing");
+  if(sw && boxes.swing){ boxes.swingFrom = boxes.swing; if(/\b(ready|bonk)\b/.test(sw.className)) vis.swing = vis.swingFrom = skupVis(scene, sw); }   // 부채 — 보이는 자리에 테두리
+  return {mode:skupMode(), W:scene.clientWidth, H:scene.clientHeight, outer:[scene.offsetWidth, scene.offsetHeight], boxes, vis, zoom:skupZoom(scene), vh:window.innerHeight};
+}
+function skupKeyAt(scene){ return SKUP_LAB.state === "success" && skupMode() === "mobile" ? "sceneEnd" : "scene"; }
+function skupHandles(k){
+  if(SKUP_BAND[k]) return `<i class="skl-h" data-h="${k === "heading" ? "s" : "n"}"></i>`;
+  if(k === "scene" && skupMode() === "pc") return `<i class="skl-h" data-h="e"></i><i class="skl-h" data-h="s"></i><i class="skl-h" data-h="se"></i>`;
+  if(k === "scene" || k === "sceneEnd") return `<i class="skl-h" data-h="s"></i>`;
+  if(SKUP_MARK[k] || k === "swing") return ["nw","ne","se","sw"].map(h=> `<i class="skl-h" data-h="${h}"></i>`).join("");
+  if(SKUP_SWF[k]) return "";
+  return ["nw","n","ne","e","se","s","sw","w"].map(h=> `<i class="skl-h" data-h="${h}"></i>`).join("");
+}
+function skupDecorate(){
+  const L = SKUP_LAB, scene = skupScene(); if(!scene) return;
+  let ov = scene.querySelector(":scope > .skl-ov");
+  if(!ov){ ov = document.createElement("div"); ov.className = "skl-ov"; scene.appendChild(ov); ov.addEventListener("pointerdown", skupDown); }
+  const m = skupMeasure(), show = SKUP_SHOW[L.state] || [], nm = k=> esc(L.names[k] || k);
+  let html = (L.sel === "scene" || L.sel === "sceneEnd") ? `<div class="skl-b on scene top" data-k="${L.sel}">${skupHandles(L.sel)}<span class="skl-tag">${nm(L.sel)}</span></div>` : "";   // 창은 맨 아래 겹 — 요소 상자가 그 위
+  if(L.guide) html += `<i class="skl-mid"></i>`;
+  show.forEach(k=>{
+    const b = (m.vis && m.vis[k]) || m.boxes[k]; if(!b) return;
+    const on = L.sel === k;
+    if(!on && !L.all) return;
+    html += `<div class="skl-b${on ? " on" : ""}${SKUP_BAND[k] ? " band" : ""}${SKUP_MARK[k] ? " mark" : ""}${k === "swing" || SKUP_SWF[k] ? " fan" : ""}${b[1] < 26 ? " top" : ""}" data-k="${k}" style="left:${b[0]}px;top:${b[1]}px;width:${b[2]}px;height:${b[3]}px">`
+      + (on ? skupHandles(k) : "") + `<span class="skl-tag">${nm(k)}</span></div>`;
+  });
+  ov.innerHTML = html;
+  skupPost(Object.assign({type:"measure"}, m));
+}
+function skupAnchor(b0, x, y, w, h, W, H){       // 창 안 상자 → 그 요소의 기준(ax · ay)으로 잰 값
+  const v = Object.assign({}, b0), r = n=> Math.round(n * 2) / 2;
+  v.x = r(b0.ax === "r" ? W - (x + w) : b0.ax === "c" ? (x + w / 2) - W / 2 : x);
+  v.y = r(b0.ay === "b" ? H - (y + h) : y);
+  return v;
+}
+function skupDrag(k, hd, b0, box0, dx, dy, W, H, centered, lock, snap){
+  const v = Object.assign({}, b0), r = Math.round;
+  if(k === "scene" && skupMode() === "pc"){
+    if(!hd){ v.x = r((b0.x || 0) + dx); v.y = r((b0.y || 0) + dy); return v; }           // 창 옮기기 (화면 가운데에서)
+    if(/e/.test(hd)) v.w = Math.max(360, r(b0.w + 2 * dx));                                // 가운데 정렬이라 양쪽으로 커진다
+    if(/s/.test(hd)) v.h = Math.max(320, r(b0.h + (centered ? 2 : 1) * dy));
+    return v;
+  }
+  if(k === "scene" || k === "sceneEnd"){ if(hd) v.h = Math.max(320, r(b0.h + (centered ? 2 : 1) * dy)); return v; }
+  if(SKUP_BAND[k]){ if(hd) v.h = Math.max(24, r(box0[3] + (hd === "s" ? dy : -dy))); return v; }
+  let [x, y, w, h] = box0;
+  if(!hd){ x += dx; y += dy; }
+  else {
+    const ratio = box0[2] / Math.max(1, box0[3]);
+    if(/e/.test(hd)) w = box0[2] + dx;
+    if(/w/.test(hd)) w = box0[2] - dx;
+    if(/s/.test(hd)) h = box0[3] + dy;
+    if(/n/.test(hd)) h = box0[3] - dy;
+    w = Math.max(16, w); h = Math.max(12, h);
+    if(SKUP_WONLY[k] || lock){                    // 비율 그대로 — 모서리는 더 많이 움직인 쪽, 가장자리는 그 방향으로
+      if(hd === "n" || hd === "s") w = h * ratio;
+      else if(hd === "e" || hd === "w") h = w / ratio;
+      else if(Math.abs(w - box0[2]) >= Math.abs(h - box0[3]) * ratio) h = w / ratio; else w = h * ratio;
+    }
+    if(/w/.test(hd)) x = box0[0] + box0[2] - w;
+    if(/n/.test(hd)) y = box0[1] + box0[3] - h;
+  }
+  if(snap && !hd && b0.ax === "c" && Math.abs(x + w / 2 - W / 2) < 6) x = W / 2 - w / 2;   // 끌 때 가운데 근처면 가운데에 붙인다 (Alt 를 누르면 안 붙는다 · 방향키는 그대로)
+  const out = skupAnchor(b0, x, y, w, h, W, H);
+  if(hd){ out.w = r(w); if(!SKUP_WONLY[k]) out.h = r(h); }
+  if(hd && k === "swing"){ const z = skChoiceFanSize(w); Object.assign(out, skupAnchor(b0, x + (w - z) * (/w/.test(hd) ? 1 : 0), y + (w - z) * (/n/.test(hd) ? 1 : 0), z, z, W, H), {w:z}); }   // 부채 — 그림 칸 정수배로 붙인다
+  return out;
+}
+function skupEdit(k, hd, dx, dy, live, snap){            // 끌기 · 방향키 공통 — 지금 화면(pc · mobile)의 그 요소 값을 바꾸고 다시 놓는다
+  const L = SKUP_LAB, scene = skupScene(); if(!scene || !k) return null;
+  const mode = skupMode(), lay = L.layout[mode], m = skupMeasure(), modal = scene.closest(".modal");
+  if(!lay[k]) return null;
+  const centered = !!modal && modal.scrollHeight <= modal.clientHeight + 1;
+  const v = skupDrag(k, hd, live ? live.b0 : lay[k], live ? live.box0 : m.boxes[k], dx, dy, m.W, m.H, centered, L.lock, !!snap);
+  lay[k] = v; skChoiceLayoutApply(scene); skupDecorate();
+  return v;
+}
+function skupMarks(stt){                         // 배치표 marks 의 그 표시 (빠진 칸은 기본값으로)
+  const L = SKUP_LAB, def = skChoiceMarkDef()[stt];
+  L.layout.marks = L.layout.marks || {};
+  const m = Object.assign(def, L.layout.marks[stt] || {});
+  m.d = Array.isArray(m.d) ? m.d.slice(0, 2) : [0, 0]; m.at = Object.assign({}, m.at || {});
+  return (L.layout.marks[stt] = m);
+}
+function skupMarkEdit(stt, hd, ax, ay, b0){        // ax · ay — 학생 그림 칸으로 옮긴 양. 손잡이면 크기(모든 직업 · 가운데 그대로), 아니면 자리(모든 직업 같이 또는 이 직업 그림만)
+  const L = SKUP_LAB, key = SK_CHOICE_ART[L.job] || SK_CHOICE_ART.darkpriest, base = skChoiceMarkBase(key, stt);
+  if(!base) return null;
+  const v = JSON.parse(JSON.stringify(b0)), r = Math.round;
+  if(hd){
+    const sx = /e/.test(hd) ? 1 : -1, sy = /s/.test(hd) ? 1 : -1;
+    v.s = Math.max(8, Math.min(128, r(b0.s + sx * ax + sy * ay)));
+  } else {
+    const dx = r(ax), dy = r(ay);
+    if(L.markAll){ v.d = [b0.d[0] + dx, b0.d[1] + dy]; for(const k in v.at) v.at[k] = [b0.at[k][0] + dx, b0.at[k][1] + dy]; }
+    else {
+      const p = b0.at[key] || [base[0] + b0.d[0], base[1] + b0.d[1]], q = [p[0] + dx, p[1] + dy];
+      if(q[0] === base[0] + v.d[0] && q[1] === base[1] + v.d[1]) delete v.at[key]; else v.at[key] = q;   // 모든 직업 자리와 같으면 따로 둘 것 없다
+    }
+  }
+  L.layout.marks[stt] = v;
+  const scene = skupScene(); if(scene){ skChoiceMarkApply(scene); skupDecorate(); }
+  return v;
+}
+function skupSwf(mode){                        // 배치표의 시작 자리 (빠지면 기본값)
+  const lay = SKUP_LAB.layout[mode];
+  return (lay.swingFrom = Object.assign(skChoiceSwingDef(mode === "mobile"), lay.swingFrom || {}));
+}
+function skupSwfEdit(dx, dy, b0){
+  const scene = skupScene(), mode = skupMode(), v = Object.assign({}, b0, {x:Math.round(b0.x + dx), y:Math.round(b0.y + dy)});
+  SKUP_LAB.layout[mode].swingFrom = v;
+  if(scene){ skChoiceLayoutApply(scene); skupDecorate(); }
+  return v;
+}
+function skupPlay(){                           // 휘두르기 보기 — 게임과 같은 때 (들기 → 0.65초 내려치기 → 맞음) 뒤 지금 장면으로
+  const L = SKUP_LAB, scene = skupScene(); if(!scene || L.state === "success") return;
+  const st = skupStudent(L.job), hero = scene.querySelector(".suc-hero"), sw = scene.querySelector(".suc-swing"), ch = scene.querySelector(".suc-choices");
+  if(!hero || !sw) return;
+  clearTimeout(skupPlay.t1); clearTimeout(skupPlay.t2); skupPlay.on = true;
+  const ov = scene.querySelector(":scope > .skl-ov"); if(ov) ov.style.visibility = "hidden";
+  hero.innerHTML = skChoiceHero(st, "before"); sw.className = "suc-swing"; void sw.offsetWidth; sw.className = "suc-swing ready"; if(ch) ch.style.visibility = "";
+  skupPlay.t1 = setTimeout(()=>{ if(!scene.isConnected) return; hero.innerHTML = skChoiceHero(st, "hit"); sw.className = "suc-swing bonk"; if(ch) ch.style.visibility = "hidden"; }, 650);
+  skupPlay.t2 = setTimeout(()=>{ skupPlay.on = false; if(scene.isConnected) skupRender(); }, 1700);
+}
+function skupDown(ev){
+  if(ev.button !== 0) return;
+  const L = SKUP_LAB, scene = skupScene(); if(!scene) return;
+  ev.preventDefault();
+  const hEl = ev.target.closest(".skl-h"), bEl = ev.target.closest(".skl-b");
+  const k = bEl ? bEl.dataset.k : skupKeyAt(scene);
+  if(L.sel !== k){ L.sel = k; skupDecorate(); skupPost({type:"pick", key:k}); }
+  if(SKUP_SWF[k]){                                 // 휘두르기 시작 자리 — 끌면 맞는 자리에서 옮긴 px
+    const mode = skupMode(), b0 = Object.assign({}, skupSwf(mode)), px = ev.clientX, py = ev.clientY, zk = skupZoom(scene);
+    let v = null;
+    const mv = e=>{
+      const dx = (e.clientX - px) / zk, dy = (e.clientY - py) / zk;
+      if(!v && Math.abs(dx) + Math.abs(dy) < 3) return;
+      v = skupSwfEdit(dx, dy, b0); skupPost({type:"move", mode, key:"swingFrom", v});
+    };
+    const up = ()=>{ removeEventListener("pointermove", mv); removeEventListener("pointerup", up); removeEventListener("pointercancel", up);
+      if(v) skupPost({type:"change", mode, key:"swingFrom", v}); };
+    addEventListener("pointermove", mv); addEventListener("pointerup", up); addEventListener("pointercancel", up);
+    return;
+  }
+  if(SKUP_MARK[k]){                                // 표시 — 끌면 자리, 모서리 손잡이면 크기 (학생 그림 칸으로 바꿔 잰다)
+    const stt = SKUP_MARK[k], hero = scene.querySelector(".suc-hero"), fx = hero ? hero.offsetWidth / 192 : 1, fy = hero ? hero.offsetHeight / 192 : 1;
+    const b0 = JSON.parse(JSON.stringify(skupMarks(stt))), hd = hEl ? hEl.dataset.h : null, px = ev.clientX, py = ev.clientY, zk = skupZoom(scene);
+    let v = null, moved = false;
+    const mv = e=>{
+      const dx = (e.clientX - px) / zk, dy = (e.clientY - py) / zk;
+      if(!moved && Math.abs(dx) + Math.abs(dy) < 3) return;
+      moved = true;
+      const nv = skupMarkEdit(stt, hd, dx / fx, dy / fy, b0);
+      if(nv){ v = nv; skupPost({type:"move", mode:"marks", key:stt, v}); }
+    };
+    const up = ()=>{ removeEventListener("pointermove", mv); removeEventListener("pointerup", up); removeEventListener("pointercancel", up);
+      if(v) skupPost({type:"change", mode:"marks", key:stt, v}); };
+    addEventListener("pointermove", mv); addEventListener("pointerup", up); addEventListener("pointercancel", up);
+    return;
+  }
+  const mode = skupMode(), m = skupMeasure();
+  if(!L.layout[mode][k]) return;
+  const live = {b0:JSON.parse(JSON.stringify(L.layout[mode][k])), box0:m.boxes[k]}, hd = hEl ? hEl.dataset.h : null, px = ev.clientX, py = ev.clientY, zk = skupZoom(scene);
+  let v = null;
+  const mv = e=>{
+    const dx = (e.clientX - px) / zk, dy = (e.clientY - py) / zk;   // 줄인 창 — 화면에서 끈 만큼 창 기준으로
+    if(!v && Math.abs(dx) + Math.abs(dy) < 3) return;
+    v = skupEdit(k, hd, dx, dy, live, !e.altKey);
+    if(v) skupPost({type:"move", mode, key:k, v});
+  };
+  const up = ()=>{ removeEventListener("pointermove", mv); removeEventListener("pointerup", up); removeEventListener("pointercancel", up);
+    if(v) skupPost({type:"change", mode, key:k, v}); };
+  addEventListener("pointermove", mv); addEventListener("pointerup", up); addEventListener("pointercancel", up);
+}
+function skupNudge(dx, dy){
+  const L = SKUP_LAB;
+  if(SKUP_MARK[L.sel]){ const stt = SKUP_MARK[L.sel], v = skupMarkEdit(stt, null, dx, dy, JSON.parse(JSON.stringify(skupMarks(stt)))); if(v) skupPost({type:"change", mode:"marks", key:stt, v}); return; }   // 표시 — 그림 1칸씩
+  if(SKUP_SWF[L.sel]){ const mode = skupMode(), v = skupSwfEdit(dx, dy, Object.assign({}, skupSwf(mode))); skupPost({type:"change", mode, key:"swingFrom", v}); return; }   // 시작 자리 — 1px
+  if(!L.sel || (L.sel === "scene" && skupMode() !== "pc") || L.sel === "sceneEnd" || SKUP_BAND[L.sel]) return;
+  const v = skupEdit(L.sel, null, dx, dy, null, false);
+  if(v) skupPost({type:"change", mode:skupMode(), key:L.sel, v});
+}
+function skupTurn(d){                          // 부채 각도 — 맞는 자리(swing) · 시작 자리(swingFrom) · [ ] 키
+  const L = SKUP_LAB, mode = skupMode(), k = L.sel;
+  if(k !== "swing" && !SKUP_SWF[k]) return;
+  const v = k === "swing" ? Object.assign({}, L.layout[mode].swing) : Object.assign({}, skupSwf(mode));
+  v.r = Math.max(-360, Math.min(360, Math.round((v.r != null ? +v.r : SK_CHOICE_HIT_R) + d)));
+  L.layout[mode][k] = v;
+  const scene = skupScene(); if(scene){ skChoiceLayoutApply(scene); skupDecorate(); }
+  skupPost({type:"change", mode, key:k, v});
+}
+function skupStudent(job){                         // 직업마다 같은 학생 · 같은 선택지 (실험실 안에서만)
+  const id = "skuplab-" + job;
+  let st = S.students.find(x=> x.id === id);
+  if(!st){
+    withSeed(id, ()=>{ st = newStudent(1, "B", job); });
+    st.id = id; S.students.unshift(st);
+    withSeed(id + "-opts", ()=>{ st.skOpts = genSkillOptions(st).map(o=> ({id:optId(o.t), ev:o.ev})); });
+  }
+  st.sp = 3; S.items = S.items || {}; S.items.exoticFan = 2;
+  return st;
+}
+function skupRender(){
+  const L = SKUP_LAB, st = skupStudent(L.job), md0 = document.querySelector("#modalRoot .modal"), top = md0 ? md0.scrollTop : 0;
+  closeModal();
+  if(L.state === "success"){
+    const o = hydrateOpt(st, st.skOpts[0]), d = skUpDiff(st, o), nm = o.t.kind === "passive" ? o.t.name : o.t.sk.name;
+    showModal(`<section class="suc-scene" role="dialog" aria-modal="true">${skChoiceSuccessHtml(st, d, nm)}</section>`, ()=>{ skupScene().closest(".modal").classList.add("suc-modal"); });
+  } else skillUpModal(st.id);
+  const scene = skupScene(); if(!scene) return;
+  const ch = scene.querySelector(".suc-choices"), hero = scene.querySelector(".suc-hero"), sw = scene.querySelector(".suc-swing");
+  if(ch) ch.classList.remove("suc-reveal");                                                  // 나타나기 연출 없이 바로
+  if(L.state === "before" && hero && sw){ hero.innerHTML = skChoiceHero(st, "before"); sw.className = "suc-swing ready"; }
+  if(L.state === "hit" && hero && sw){ hero.innerHTML = skChoiceHero(st, "hit"); sw.className = "suc-swing bonk"; if(ch) ch.style.visibility = "hidden"; }
+  skChoiceLayoutApply(scene);
+  if(sw) sw.getAnimations().forEach(a=> a.finish());                                           // 맞음 — 내려친 끝 모습 그대로 (휘두르기 보기는 바깥 창 단추)
+  const md = scene.closest(".modal"); if(md) md.scrollTop = top;
+  skupDecorate();
+  skupPost({type:"mode", mode:skupMode()});
+}
+function skupLabBoot(){
+  try{ Storage.prototype.setItem = function(){}; Storage.prototype.removeItem = function(){}; }catch(e){}   // 실험실은 아무것도 저장하지 않는다
+  save = function(){};
+  newGame("배치 실험실");
+  UI.ceremonies = []; UI.view = "home";
+  try{ AUD.sfx = 0; AUD.on = false; }catch(e){}   // 실험실은 소리를 내지 않는다 (창을 다시 그릴 때마다 울리지 않게)
+  SKUP_LAB.layout = JSON.parse(JSON.stringify(SK_CHOICE_LAYOUT));
+  SKUP_LAB.markAll = true; ["before","hit","thinking"].forEach(skupMarks);
+  const css = document.createElement("style");
+  css.textContent = `.skl-ov{position:absolute;inset:0;z-index:60;cursor:default;font:12px/1.2 system-ui,"Malgun Gothic",sans-serif}
+    .skl-mid{position:absolute;left:50%;top:0;bottom:0;border-left:1px dashed #ff4fd8b0;pointer-events:none}
+    .skl-b{position:absolute;outline:1px dashed #ffffffc0;box-shadow:0 0 0 1px #00000050;cursor:move}
+    .skl-b.on{outline:2px solid #ffd84a;box-shadow:0 0 0 1px #1a1206,inset 0 0 0 9999px #ffd84a1c;z-index:2}
+    .skl-b.mark{z-index:4}.skl-b.mark.on{z-index:5}.skl-b.fan{z-index:3}.skl-b.fan.on{z-index:5}
+    .skl-b.band{cursor:pointer}.skl-b.scene{inset:0;outline-offset:-3px;box-shadow:none;z-index:0;background:none}
+    .skl-tag{position:absolute;left:-1px;bottom:100%;margin-bottom:3px;padding:3px 6px;background:#1a1206e0;color:#ffe9a0;white-space:nowrap;pointer-events:none;opacity:.8}
+    .skl-b:not(.on) .skl-tag{display:none}.skl-b:not(.on):hover .skl-tag{display:block}.skl-b.on .skl-tag{opacity:1}
+    .skl-b.top .skl-tag{bottom:auto;top:3px;left:3px}
+    .skl-h{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;background:#ffd84a;border:2px solid #1a1206;border-radius:2px;z-index:3}
+    .skl-h[data-h=nw]{left:0;top:0;cursor:nwse-resize}.skl-h[data-h=n]{left:50%;top:0;cursor:ns-resize}.skl-h[data-h=ne]{left:100%;top:0;cursor:nesw-resize}
+    .skl-h[data-h=e]{left:100%;top:50%;cursor:ew-resize}.skl-h[data-h=se]{left:100%;top:100%;cursor:nwse-resize}.skl-h[data-h=s]{left:50%;top:100%;cursor:ns-resize}
+    .skl-h[data-h=sw]{left:0;top:100%;cursor:nesw-resize}.skl-h[data-h=w]{left:0;top:50%;cursor:ew-resize}
+    .skl-b.band .skl-h[data-h=s]{top:calc(100% - 6px)}.skl-b.band .skl-h[data-h=n]{top:6px}
+    .skl-b.scene .skl-h[data-h=e]{left:calc(100% - 9px)}.skl-b.scene .skl-h[data-h=s]{top:calc(100% - 9px)}.skl-b.scene .skl-h[data-h=se]{left:calc(100% - 9px);top:calc(100% - 9px)}
+    #modalRoot .suc-scene .suc-choices{pointer-events:none}`;
+  document.head.appendChild(css);
+  addEventListener("message", e=>{
+    const d = e.data || {}, L = SKUP_LAB;
+    if(d.lab !== "skup") return;
+    if(d.type === "nudge"){ skupNudge(+d.dx || 0, +d.dy || 0); return; }
+    if(d.type === "play"){ skupPlay(); return; }
+    if(d.type !== "set") return;
+    if(d.layout) L.layout = JSON.parse(JSON.stringify(d.layout));
+    if(d.names) L.names = d.names;
+    if(d.layout) ["before","hit","thinking"].forEach(skupMarks);
+    ["all","guide","lock","markAll"].forEach(n=>{ if(d[n] != null) L[n] = !!d[n]; });
+    if(d.sel !== undefined) L.sel = d.sel;
+    if(d.state) L.state = d.state;
+    if(d.job && SK_CHOICE_ART[d.job]) L.job = d.job;
+    const key = JSON.stringify([L.state, L.job]);
+    const playing = !!skupPlay.on; clearTimeout(skupPlay.t1); clearTimeout(skupPlay.t2); skupPlay.on = false;   // 휘두르기 보기 중이면 멈추고 지금 장면으로
+    if(key !== L.key || !skupScene() || playing){ L.key = key; skupRender(); }
+    else { skChoiceLayoutApply(skupScene()); skupDecorate(); }
+  });
+  addEventListener("resize", ()=>{ const sc = skupScene(); if(sc){ skChoiceLayoutApply(sc); skupDecorate(); } skupPost({type:"mode", mode:skupMode()}); });
+  addEventListener("keydown", e=>{
+    if(e.code === "BracketLeft" || e.code === "BracketRight"){ e.preventDefault(); skupTurn((e.code === "BracketRight" ? 1 : -1) * (e.shiftKey ? 15 : 5)); return; }   // 부채 각도
+    if(!/^Arrow/.test(e.key)) return;
+    e.preventDefault();
+    const n = e.shiftKey ? 10 : 1;
+    skupNudge(e.key === "ArrowLeft" ? -n : e.key === "ArrowRight" ? n : 0, e.key === "ArrowUp" ? -n : e.key === "ArrowDown" ? n : 0);
+  });
+  render();
+  SKUP_LAB.key = JSON.stringify([SKUP_LAB.state, SKUP_LAB.job]);
+  skupRender();
+  const defs = JSON.parse(JSON.stringify(SK_CHOICE_LAYOUT));
+  defs.marks = Object.assign(skChoiceMarkDef(), defs.marks || {}); defs.bg = Object.assign({}, SK_CHOICE_BG_DEF, defs.bg || {}); defs.outline = Object.assign(skChoiceOutlineDef(), defs.outline || {});
+  defs.fan = Object.assign(skChoiceFanDef(), defs.fan || {});
+  ["pc","mobile"].forEach(m=>{ defs[m].swingFrom = Object.assign(skChoiceSwingDef(m === "mobile"), defs[m].swingFrom || {}); if(defs[m].swing && defs[m].swing.r == null) defs[m].swing.r = SK_CHOICE_HIT_R; });
+  const base = {}; Object.values(SK_CHOICE_ART).forEach(a=>{ base[a] = Object.assign({}, SK_CHOICE_MARKS[a] || {}, {thinking:SK_CHOICE_BULB.slice()}); });
+  skupPost({type:"ready", defaults:defs, mode:skupMode(), jobs:Object.keys(SK_CHOICE_ART).map(j=> [j, (JOBS[j] || {}).name || j]), art:SK_CHOICE_ART, marks:base});
+}
+/* SKUP_LAB_END */
+
 let SPR_BTSCROLL = 0;
 const ULT_STYLE={
  paladin:['#ffe79c','sanctuary'],sword:['#ffc28b','fracture'],monk:['#ff9c61','fists'],
@@ -23023,7 +23710,15 @@ const SFX = {
   csl_stu: {f:"counsel_type_student.ogg", v:.8},
   csl_mst: {f:"counsel_type_master.ogg", v:.8},
   /* 메뉴 단추 (1009) — 사이드 메뉴 · 큰 스케줄 단추 · 폰 메뉴 · 더보기 · 서브탭을 누를 때 (MENU_SFX_SEL). 원본 menu_click.mp3 — 끝의 무음을 잘라 0.25초 */
-  menu:    {f:"menu_click.ogg"}
+  menu:    {f:"menu_click.ogg"},
+  /* 스킬 강화 창 (1013) — 나중에 단추 · 스킬 말풍선과 이국의 부채에 마우스 · 전구가 뜰 때(창을 열 때 · 부채를 맞고 다시 생각할 때) · 부채로 칠 때 ·
+     제안이 하나씩 나올 때(진화 · 각성은 음을 올린다 — SK_CHOICE_SFX_RATE). 끝의 무음을 잘라 Ogg 로 (원본 mp3 도 bgm/ 에) */
+  suc_later:{f:"skillup_later.ogg"},
+  suc_hover:{f:"skillup_hover.ogg", v:.8},
+  suc_bulb: {f:"skillup_bulb.ogg"},
+  suc_hit:  {f:"skillup_hit.ogg"},
+  suc_opt:  {f:"skillup_option.ogg"},
+  suc_done: {f:"skillup_done.ogg"}      // 1014 — 스킬 강화 완료 화면
 };
 const SFX_GAP = 55;      // 같은 소리가 이보다 짧은 간격으로 겹치지 않게 막는다 (ms)
 const SFX_VOICE = 8;     // 한꺼번에 울릴 수 있는 소리 개수
@@ -23044,35 +23739,37 @@ function sfxPreload(){
   if(AWEB === false || sfxGain() <= 0) return;
   Object.keys(SFX).forEach(k=> sfxLoad(SFX[k].f));
 }
-function sfxPlay(key){
+function sfxPlay(key, rate){   // rate — 재생 빠르기(음 높이 · 1013 · 없으면 1)
   const t = SFX[key]; if(!t) return;
   const g = sfxGain(); if(g <= 0) return;
   const now = (typeof performance!=="undefined") ? performance.now() : Date.now();
   if(now - (ASLAST[key]||0) < SFX_GAP) return;
   ASLAST[key] = now;
   const v = (t.v == null ? 1 : t.v);
-  if(AWEB === false || ASBAD[t.f]) return sfxHtml(t, g*v);
+  if(AWEB === false || ASBAD[t.f]) return sfxHtml(t, g*v, rate);
   const ctx = audCtx();
-  if(!ctx){ AWEB = false; return sfxHtml(t, g*v); }
+  if(!ctx){ AWEB = false; return sfxHtml(t, g*v, rate); }
   if(ctx.state === "suspended") ctx.resume().catch(()=>{});
   const buf = ASBUF[t.f];
-  if(!buf){ ASLAST[key] = 0; sfxLoad(t.f, ()=> sfxPlay(key)); return; }   // 받자마자 한 번 울린다
+  if(!buf){ ASLAST[key] = 0; sfxLoad(t.f, ()=> sfxPlay(key, rate)); return; }   // 받자마자 한 번 울린다
   if(ASN >= SFX_VOICE) return;
   if(!ASG){ ASG = ctx.createGain(); ASG.connect(ctx.destination); }
   ASG.gain.value = g;
   try{
     const src = ctx.createBufferSource(); src.buffer = buf;
+    if(rate > 0 && rate !== 1) src.playbackRate.value = rate;
     const vg = ctx.createGain(); vg.gain.value = v;
     src.connect(vg); vg.connect(ASG); src.start();
     ASN++; src.onended = ()=>{ ASN = Math.max(0, ASN-1); };
   }catch(e){}
 }
-function sfxHtml(t, vol){
+function sfxHtml(t, vol, rate){
   let base = ASEL[t.f];
   if(!base){ base = ASEL[t.f] = new Audio(BGM_DIR + t.f); base.preload = "auto"; }
   try{
     const e = base.cloneNode();
     e.volume = clamp(vol, 0, 1);
+    if(rate > 0 && rate !== 1){ e.preservesPitch = e.mozPreservesPitch = e.webkitPreservesPitch = false; e.playbackRate = rate; }   // 빠르기만큼 음도 오른다
     e.play().catch(()=>{});
   }catch(x){}
 }
@@ -24257,12 +24954,13 @@ function bootAssets(done){
   show(); next();
 }
 function boot(){
-  if(FIELD_LAB) return bootMain();
+  if(FIELD_LAB || SKUP_LAB) return bootMain();
   bootAssets(bootMain);
 }
 function bootMain(){
   bootLoaderDone();
   if(FIELD_LAB) return fieldLabBoot();
+  if(SKUP_LAB) return skupLabBoot();       // 1013 — 스킬 강화 창 배치 실험실 (tools/skill_upgrade_lab.html)
   const had = load();
   if(!had) newGame();
   try{ if(leagueOn()) leagueId(); }catch(e){}   // 옛 저장이면 지금 브라우저의 리그 자리를 저장 안으로 옮겨 둔다

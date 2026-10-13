@@ -14,6 +14,7 @@ game.html 의 아래 기능은 손으로 쓴 코드가 아니라 이 폴더의 �
 | 상담 대사를 성격마다 (고민을 털어놓는 말 · 답변에 대한 반응 · 지침 무시 효과 문구 — 아래) | `patch/apply_cslpers.py` | 스크립트 안 (`BLOCK`) | — |
 | 상담창 (상담 메뉴를 누르면 뜨는 창 · 일지 › 상담 기록 — 아래) | `patch/apply_cslwin.py` (apply_cslpers 뒤) | `patch/cslwin_block.js` · `cslwin_block.css` | `mockups/counsel-window/art` → `assets/csl_art/` (WebP) |
 | 락커룸 창 (경기 직전 한마디 — 출전해 경기 화면에 들어서면 같이 뜨는 창 — 아래) | `patch/apply_lkwin.py` (apply_cslwin 뒤) | `patch/lkwin_block.js` · `lkwin_block.css` | — (쿼터뷰 지도 · 전투 도트 · 상담창 구름을 그대로 쓴다) |
+| 스킬 강화 창 배치 (창 안 요소의 자리 · 크기 · 넓은 화면 / 폰 따로 — 아래) | `patch/apply_skup.py` (아무 때나 — 한 줄만 바꾼다) | `patch/skup_layout.json` (배치 실험실 `tools/skill_upgrade_lab.html` 이 저장) | — |
 | 학생 명부 책 (가로 넓은 화면 — 책상의 펼친 책 · 메뉴의 학생 명부 · 팀 편성을 누르면 뜨는 책 — 아래) | `patch/apply_roster.py` | `patch/roster_block.js` · `roster_block.css` + 목업 원본 `mockups/student-roster/src/roster_tpl.html` 의 CORE_CSS · CORE_HTML | `mockups/student-roster/art/book.png` · `ribbon.png` → `assets/roster_art/` (WebP) |
 | PNG → WebP (게임이 받는 그림 일부 — 아래) | `patch/apply_webp.py` (다른 apply 를 다 돌린 뒤 · wrap 앞) | 스크립트 안 | 원래 PNG 옆에 같은 이름의 `.webp` |
 | 전투 치명타 숫자 높이 · 학원 이름 맞추기 · 친선전 전부 거절 재확인 · 고른 칸 강조선 · 3인 리그 · 봄 신인전 시내 대회 필드 · 대회 쿼터뷰 제목 칸 · 줌 · 클로즈업 · 쿼터뷰 지도 11장 · 쿼터뷰 경기 이름(BATTLE START 동안) · 진영 칸 나무판 · 범례 숨김 · 실험실 확대 · 이동을 받는 쿼터뷰 지도 · 이름 길이만큼 늘어나는 진영 칸 · 경기 이름 맞춤(왼쪽 · 가운데 · 오른쪽) · 화면 · 배너를 나무 테두리 가운데로 | `patch/apply_crit.py` · `apply_acadfit.py` · `apply_fdecline.py` · `apply_optsel.py` · `apply_lgfield.py` · `apply_rookiefield.py` · `apply_tq.py` → `apply_tqcam.py` → `apply_tqmaps.py` → `apply_tqui.py` → `apply_tqfield.py` → `apply_tqgrow.py` → `apply_tqalign.py` → `apply_tqcenter.py` | 스크립트 안 | — |
@@ -42,6 +43,7 @@ python tools/gen/patch/apply_cslpers.py game.html                               
 python tools/gen/patch/apply_cslwin.py game.html                                   # 상담창 (상담 책상 배치 · 창 블록을 고쳤으면 다시)
 python tools/gen/patch/apply_lkwin.py  game.html                                   # 락커룸 창 (apply_cslwin 뒤 — 창 블록을 고쳤으면 다시)
 python tools/gen/patch/apply_roster.py game.html                                   # 학생 명부 책 (목업 원본 · 책 그림 · 배치 · 책 블록을 고쳤으면 다시)
+python tools/gen/patch/apply_skup.py  game.html                                   # 스킬 강화 창 배치 (skup_layout.json 을 바꿨으면 — SK_CHOICE_LAYOUT 한 줄만)
 python tools/gen/patch/apply_webp.py  game.html                                   # PNG → WebP (바뀐 게 없으면 그대로)
 python tools/gen/patch/apply_optx.py  game.html                                   # 오프닝 글 (장면 · 글 · 효과를 고쳤으면 다시 — 글을 바꿨으면 optx_fonts.py 먼저)
 python wrap.py
@@ -195,6 +197,58 @@ python wrap_site.py
 - 점검 · 시험용 `lkwOpen({instant:true, pick:k})` — 기다림 · 글자 찍기 없이 그 단계까지 (pick 을 주면 그 말을 골라 결과까지 · 튜토리얼도 건너뛴다). `tools/i18n/check_layout.py` 의 `tour_match` · `tour_lkwin` · `tour_lkwres`.
 - 예전 락커룸 칸의 한마디 넷(2 × 2 단추 · `data-say`)은 없어졌다. `lockerHtml` · `bindLocker` 는 블록 안으로 옮겼다(apply 가 블록 밖의 예전 것을 지운다) — `bindLocker(t, L, my, rerender, {title, label, foe, field, start})`.
 
+### 스킬 강화 창 배치 (`apply_skup.py` · 1013)
+
+- 스킬 강화 창(`skillUpModal` — 1013 재작업 · CSS `SKILL_CHOICE_STYLE` · 그림 `assets/skill-upgrade/`) 안 요소의 자리 · 크기를 표 하나로 정한다 — game.html 의 `SKUP_LAYOUT` 블록
+  (`SK_CHOICE_MARKS` 아래): `const SK_CHOICE_LAYOUT = /*SKUP_LAYOUT*/{…};` 한 줄 + 놓는 코드(`skChoiceLayoutApply` — 인라인 style 로 CSS 를 덮는다).
+  apply_skup 은 **그 한 줄만** 바꾼다 (요소 이름 · 값 모양을 확인하고 모르는 이름이면 멈춘다 · 몇 번 돌려도 같음). 블록 파일은 없다 — 놓는 코드는 game.html 에서 직접 고친다.
+- 요소마다 `{ax, ay, x, y, w, h}` — 창 테두리 안 px. `ax` l 왼쪽에서 · c 가운데에서(요소 가운데가 창 가운데에서 x) · r 오른쪽에서, `ay` t 위에서 · b 아래에서. w · h 가 null 이면 글 크기대로.
+  `mw` — 폰에서 w 가 화면에 안 들어가면 양옆에 남길 여백. `tail` — 선택지 말풍선 꼬리(l · c · r). 제목 띠 · 이름 띠(`heading` · `footer`)는 높이만.
+  `scene` — 창 크기(w · h)와 화면 가운데에서 옮긴 x · y. 폰(`mobile` — 화면 폭 760 이하, CSS 의 폰 배치와 같은 기준)은 창 높이만 + 완료 화면 높이(`sceneEnd`).
+  넓은 화면 `scene.fitH`(기본 900) — 게임이 보는 세로가 이 값 이하면 창 전체를 세로 ÷ fitH 배로 줄인다 (`.suc-scene` 에 CSS zoom · 0.5 까지 · 0 이면 안 줄임 ·
+  창 크기가 바뀌면 다시 — `skChoiceZoom`). zoom 이라 창 안의 값 · offset · client 는 그대로 창 기준 px (실험실은 끈 거리를 배율로 나눠 쓴다).
+  요소: scene · heading · points(강화 포인트) · slot1~3(선택지) · hero(학생) · swing(부채 — 맞는 자리 · + r 각도) · swingFrom(부채 — 시작 자리 {x, y, r}) · reroll(이국의 부채 단추) · footer · later(나중에) · rules(강화 규칙) ·
+  완료 화면 sLabel · sTitle · sHero · sInfo(결과 칸) · sDone(확인) + 두 화면 같이 쓰는 `marks`(아래). 처음 값(지금 `skup_layout.json`)은 재작업한 CSS 그대로다.
+- 맞추는 도구 — **스킬 강화 창 배치 실험실** `tools/skill_upgrade_lab.html` (브라우저로 연다): 실제 게임을 `game.html?skuplab` 으로 띄워(세이브는 쓰지 않는다)
+  요소를 끌어 옮기고 노란 손잡이로 크기를 바꾼다. 빈 곳을 끌면 창 위치 · 방향키 1px(Shift 10px) · 가운데 기준 요소는 가운데 근처에서 붙는다(Alt 면 안 붙음).
+  왼쪽 칸에서 화면(넓은 화면 · 폰 · 크기) · 장면(고르기 · 부채 들기 · 부채 맞음 · 완료) · 학생 직업 · 기준 · 숫자 · 비율 고정 · 말풍선 꼬리 · 기본값.
+  '차이점 확인'이 게임 기본값과 다른 곳을 글로 · 'JSON 저장'이 `skup_layout.json` 을 내려받는다 → `tools/gen/patch/` 에 덮어쓰고 apply_skup → wrap.
+- 실험실 코드(`SKUP_LAB` 블록)는 배포 빌드에서 빠진다 (`build_strip.py`). 주고받기는 postMessage `lab:"skup"`.
+- 배경 벨트 `bg` (두 화면 같이) — 방 그림 대신 'SKILL UPGRADE' 가 쓰인 두 색 띠가 번갈아 서서 첫 색 띠는 위로 · 둘째 색 띠는 아래로 흐른다 (`skChoiceBg` ·
+  기울인 판 `.suc-bg-rot` 의 띠마다 글 줄이 한 바퀴(글 + 간격)씩 transform 으로 · 시작 시각을 시계에 맞춰 창을 다시 그려도 이어진다 · 움직임 줄이기면 멈춤).
+  `{on, a · b 띠 색, ink 글자 색, inkA 진하기, w 폭, tilt 기울기, speed 초당 px, gap 글 사이, size 12·24·36·48}` — 실험실 '배경' 칸. 켜면 창에 `suc-belt` —
+  밝은 띠 위 글(완료 머리글 · 제목 · 이국의 부채 글)에 테두리, 완료 화면을 어둡게 덮던 막은 뺀다. 제목 띠 · 이름 띠는 불투명(#5c94b0 — 재작업 CSS 에서 고침).
+- 전구(고르기) — thinking.png 에 그려져 있다(16 직업 모두 82, 20 · 28×27 — 몸은 y 48 아래). 그 칸을 `.suc-think`(SVG evenodd 구멍 마스크)로 가리고 같은 그림을 잘라 `.suc-bulb` 로
+  따로 놓는다 — `marks.thinking`(s 너비 · d · at — 아래 표시와 같은 방식). 표시 셋(전구 · 긴장 · 충격)은 `outline {c 색, w 그림 칸 0~3}` 테두리 — drop-shadow 네 방향(창의 `--suc-ol`).
+- 완료 화면 배경 `bg.end` — solid(기본 · 고른 스킬 등급 색(결과 칸 `--grade-bg`)을 채도 `bg.endSat`% 로 · 띠 없음) · grade(그 색 띠) · same(고르기와 같게) — `skChoiceTone`.
+- 이국의 부채 — 이름 · 개수는 '이국의 부채 (2개)'(0개면 '도구상에서 구입 · 1,000 G' 한 줄 더 — 1014)를 마우스 오버 · 키보드 초점 상자(`.suc-fan-tip`)로. 터치 기기(hover:none)는 부채 위 글.
+  구하는 곳 (1014 사용자: '도구점에서 1000G 에 구매 · 계절 당 2개') — 마을 · 시설의 **도구** 탭(쿠키 다음 · `exoticFanShopCard` · `buyExoticFan`). 정해진 값 `EXOTIC_FAN_PRICE` 1000
+  (도구상 할인 없음 — 쿠키와 같다) · 계절마다 `EXOTIC_FAN_LIMIT` 2개(`S.fanShop {key 연도-계절, bought}` — 쿠키의 `S.cookieShop` 과 같은 방식) · 보유는 `S.items.exoticFan` 개수.
+  도구 탭은 첫 시내 대회 뒤(`shopUnlocked`)에 열린다. `ITEMS.exoticFan` 은 pending 을 뺐다(price 1000 · ex 0 · consumable).
+  그림은 `assets/skill-upgrade/exotic-fan-v3.png`(`SK_CHOICE_FAN` · 1014 사용자가 바꿈 · 64×64 도트 · 붉은 끝 하리센 · 손잡이 왼쪽 아래). 예전 fan.svg · fan-v2.svg(`skup_fan.py` 로 만든 것) ·
+  exotic-fan-v2.png(초록 끝)는 그대로 둔다. 그림을 바꾸면 `SK_CHOICE_FAN_PX`(그림 크기 칸) · `SK_CHOICE_FAN_GRIP`(손잡이 % — 휘두르는 축)도 맞춘다.
+- 이국의 부채 그리기 (1014) — 부채 둘(단추 · 휘두르기)은 그림 칸 정수배(64 · 128 · 192 …)로 그린다(도트가 고르게 — 배치표 w 에 가장 가까운 배수 · 단추는 단추 폭 × `SK_CHOICE_FIT.fan[0]`).
+  테두리 · 그림자는 게임이 그린다 — 배치표 `fan {flip, c, w}`(두 화면 같이 · 실험실 '부채 테두리') → drop-shadow 네 방향(그림 1칸 = 그린 크기 ÷ 64) + 그림자(그림 1, 2칸 · `skChoiceFanFilter`).
+  휘두르기 — `swing` 상자가 **맞는 자리**(`r` 맞을 때 각도 · 도 · + 시계), `swingFrom {x, y, r}` 이 **시작 자리**(맞는 자리에서 옮긴 px · 각도) — 화면마다. 손잡이(`SK_CHOICE_FAN_GRIP`)를 축으로 돌고,
+  `flip` 이면 좌우를 뒤집어(손잡이가 오른쪽 — 오른쪽에서 머리를 내려친다) 그린다. 부채를 들면 시작 자리(.ready · 0.65초) → 0.4초 동안 맞는 자리로(.bonk · steps(4) · 40% 에 조금 더 나감 —
+  각도 0.3 배 · 자리 0.25 배 + 아래 4칸). CSS 는 배치를 놓을 때마다 `skChoiceSwing` 이 `#sucSwingCss` 에 다시 쓴다(keyframes `suc-bonk-fan` · 그림자는 각 자세의 각도만큼 되돌려 늘 오른쪽 아래).
+  실험실 — 장면 '부채 들기' 의 '부채 — 시작 자리'(끌기 · 방향키 · 각도) · '부채 맞음' 의 '부채 — 맞는 자리'(끌기 · 모서리 손잡이 64 단위 · 각도) · [ ] 키 5도(Shift 15도) ·
+  '▶ 휘두르기 보기'(게임과 같은 때) · 부채 테두리 · 휘두를 때 좌우 뒤집기. 1014 전 실험실 저장분의 swing(r 없음 — 예전 그림의 시작 자리)은 게임 값으로 바꿔 읽는다.
+- 강화 규칙(`.suc-rules` — 왼쪽 아래 '강화 규칙')은 숨겼다 (1014 사용자 · skChoiceCss 의 display:none — 배치표 rules 칸은 그대로 · 실험실 목록에서는 뺐다).
+- 말풍선 (1014) — 나오기 전 조각(`.suc-puff i`)은 64×56(예전 32×28 의 2배 · 가운데는 그대로). 꼬리 둘(`.suc-tail` 36×30 · `.suc-tail-dot` 22×20)은 픽셀 테두리 —
+  바깥(테두리 색)은 계단 2칸 · 안(::after · 등급 색)은 계단 1칸 clip-path 로 테두리 한 칸(3px · 점은 2px) 두께. 말풍선 · 꼬리 · 점 사이를 4px 띄웠다(bottom -29 · -53).
+  폰은 말풍선이 6px 간격으로 붙어 있어 꼬리 대부분이 다음 말풍선 뒤에 숨는다(배치 실험실에서 간격을 벌리면 보인다).
+- 효과음 (1013) — `SFX` 의 suc_later(나중에 단추) · suc_hover(말풍선 · 부채에 마우스 — 마우스만) · suc_bulb(창을 열 때 · 부채를 맞고 다시 생각할 때) ·
+  suc_hit(부채 타격 — 650ms) · suc_opt(말풍선이 하나씩 나올 때 — 560 + 300×i ms, CSS suc-appear 와 같은 때) · suc_done(완료 화면 — 1014). 파일 `bgm/skillup_*.ogg`(끝 무음을 잘라 48kHz Vorbis · 원본 mp3 도).
+  제안 소리는 진화 · 각성이면 음을 올린다 — `sfxPlay(key, rate)` 의 재생 빠르기(`SK_CHOICE_SFX_RATE` = 반음 0 · +4 · +7). 실험실은 소리를 끈다(AUD.sfx = 0).
+  단추 상자는 부채 그림만이라 예전(글 포함) 배치는 y 가 39 내려간다 — 1013 에 사용자 배치를 39 올려 그림 자리를 지켰다.
+- 학생 머리 옆 표시 둘 — 긴장(`anticipation.png` · 부채 들기) · 충격(`impact.png` · 부채 맞음): 배치표의 `marks` (넓은 화면 · 폰 같이 · 학생 그림 192 칸 기준이라 학생 크기를 따라간다).
+  직업 그림마다 자리가 있다(`SK_CHOICE_MARKS` — 크기 32 일 때 왼쪽 위 · 재작업 세션 것 그대로). `marks.before` · `marks.hit` = `{s 크기, d 모든 직업을 같이 옮긴 양 [x, y], at {직업 그림: [x, y]} 따로 정한 자리}`.
+  크기를 바꾸면 가운데 그대로 커진다. 실험실: 끌면 자리('모든 직업 같이 옮기기'를 끄면 지금 직업 그림만) · 모서리 손잡이로 크기 · 방향키 1칸. 표시가 없는 예전 JSON 도 받는다(기본값).
+- 스킬 이름이 칸보다 긴 낱말이면(영어 'Assassination' 등) 글자 중간에서 끊지 않고 그 낱말이 들어가게 글자를 줄인다 (`skChoiceNameFit` — 말풍선 너비를 줄여도 따라간다).
+- 완료 화면의 결과 칸은 높이가 글 길이대로라(효과 줄 1 ~ 2 · 폰은 이름도 두 줄) 확인 단추에 닿으면 단추를 결과 칸 아래 12px 로 내리고 창을 그만큼 늘린다
+  (`skChoiceDoneFit` — 재작업 CSS 의 세로 흐름과 같게). 배치를 바꾼 뒤에는 실험실에서 직업을 바꿔 가며 완료 화면을 본다.
+
 ### 학생 명부 책 (`apply_roster.py` · 1009)
 
 - 넓은 화면(`townMode` — 게임이 보는 폭 1100px 이상 · 1013 부터 방향은 안 본다)에서 책상의 펼친 책 · 메뉴의 **학생 명부** · **팀 편성**을 누르면 화면을 바꾸지 않고 책이 뜬다 — 목업(`mockups/student-roster/roster_mockup.html`) 그대로.
@@ -203,6 +257,10 @@ python wrap_site.py
 - 길목은 `render()` 의 앞 · 끝 한 줄씩 — 앞의 `RBK.intercept()` 는 `UI.view` 가 roster · team 이면 원래 보던 화면으로 되돌리고 책을 연다
   (책상의 마스터 육성 팝업 "master" 에서 왔으면 홈). 끝의 `RBK.after()` 는 책에서 연 게임 팝업(이름 변경 · 스킬 강화)이 끝나면 책을 다시 그린다.
 - 왼쪽 쪽 — 학생 목록. 정렬(학년 · 소속 팀 · 레벨 · 전투력 · 진로 평가 · 컨디션 · 이름 — `S.opts.rbsort`)을 원 아래 꼬리표가 따라간다.
+  강화 포인트가 남은 학생(`st.sp > 0` — '스킬 임의로 강화' 단추의 `spReady` 와 같은 기준)은 원 위쪽에 걸친 쪽지 **스킬 강화 가능!**(영어 SKILL UPGRADE! · 1014 —
+  모양은 원 아래 꼬리표 `.tag.tm` 그대로 · `.skb` · 원을 따라 옮긴다 · 팀 편성의 다른 팀 학생은 흐리게). 영어 단추 글은 'Auto-Upgrade'(1014 — 'Skills' 까지면 정렬 칸을 침범했다).
+  쪽지를 누르면(Enter · Space 도 — 칸 안의 `role=button` · 팀 편성 꼬리표와 같은 방식) 게임의 스킬 강화 팝업(`openSkillUp` — 학생 상세 쪽이면 그 학생을 고른 뒤 · 끌기는 시작하지 않는다).
+  그래서 학생 상세 스킬 칸의 '스킬 강화' 단추는 뺐다 (1014 사용자 — '강화 포인트 N' 글만 남는다).
   정렬 바로 왼쪽에 **스킬 임의로 강화** — 강화 포인트가 남은 학생이 있을 때만(`spReady` · 오른쪽 칸은 `spTotal`). 누르면 게임의 확인 창(`autoSkillUpConfirm`) → 결과 창 (예전 학생 명부 머리의 단추와 같다).
   오른쪽 쪽 — 학생 상세 또는 팀 편성 (명부 머리의 '팀 편성' 단추로 바꾼다).
 - 상세 — 이름 변경 ✎(게임의 `renameStudent` 팝업이 책 위에) · 스킬 칸 머리의 **스킬 강화**(강화 포인트가 있을 때만 — `skillUpModal`) ·
@@ -260,6 +318,7 @@ game.html 에서 블록 안을 직접 고치면 다음 apply 가 그 수정을 �
 - 책상: 책상 소품 배치판(`Claude outputs/desk_kit/desk_editor.html` — 사본 `kit/desk_editor.html`)에서 JSON 을 내보내 `patch/desk_layout.json` 을 바꾸고 `apply_desk.py game.html tools/gen/patch/desk_layout.json`.
   누를 수 있는 소품(말린 지도 · 책 더미 + 봉랍 · 안경 + 회중시계 · 펼친 책 · 두루마리)은 `desk_art.py` 의 `GROUPS` 에서 고른다.
 - 학생 명부 책: 학생 명부 배치판(`mockups/student-roster/roster_placer.html`)에서 저장한 `roster_layout.json` 을 `mockups/student-roster/art/` 에 덮어쓰고 apply_roster → wrap (목업 · 배치판도 다시 구우려면 목업 README).
+- 스킬 강화 창: 스킬 강화 창 배치 실험실(`tools/skill_upgrade_lab.html`)에서 'JSON 저장' → `patch/skup_layout.json` 에 덮어쓰고 `python tools/gen/patch/apply_skup.py game.html` → wrap.
 - 쿼터뷰 지도: `assets/battle-fields/quarter/` 의 그림을 바꿨으면 `python tools/gen/patch/apply_tqmaps.py game.html assets/battle-fields/quarter` — 그림 내용으로 `?v=` 를 새로 매겨 캐시를 넘긴다.
   지도 더하기 · 필드 잇기 · 클로즈업 가운데(mx · my)는 스크립트 위쪽 표(SRC · MXY)에서.
 - 전투 자리 · 직업 크기 · 필드(쿼터뷰 지도 포함) 확대 · 이동 · 쿼터뷰 경기 이름 · 진영 칸(자리 · 크기 · 글자 크기): 필드 배치 실험실(`tools/field_lab.html`)이 보여 주는 `BATTLE_TUNE_PATCH = {...}` 를 글 파일로 저장해

@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>스킬 강화 창 배치 — 용사 학원 키우기</title>
+<!--
+  스킬 강화 창 배치 실험실 (1013)
+  · 게임(../game.html)을 틀 안에 ?skuplab 으로 불러서, 실제 스킬 강화 창 그대로 요소의 자리와 크기를 맞춘다.
+  · 창 안에서 요소를 끌면 옮기고, 노란 손잡이를 끌면 크기가 바뀐다. 빈 곳을 누르면 '창' — 창을 끌면 화면 가운데에서 옮기고 손잡이로 창 크기를 바꾼다.
+  · 넓은 화면(PC)과 폰(화면 폭 760 이하) 배치는 따로다. 장면(고르기 · 부채 들기 · 부채 맞음 · 완료)마다 보이는 요소가 다르다.
+  · 넓은 화면에서 게임이 보는 세로가 '줄이기 시작'(창 · 기본 900) 이하면 게임은 창 전체를 세로 비율로 줄인다 — 크기 목록의 낮은 화면에서 그대로 보인다.
+  · 배경 칸 — 'SKILL UPGRADE' 두 색 띠 벨트(색 · 진하기 · 폭 · 기울기 · 속도 · 글 사이 · 글자 크기 · 끄면 예전 방 그림). 두 화면 같이.
+  · 휘두르는 부채 — '부채 들기' 장면의 '부채 — 시작 자리'(맞는 자리에서 옮긴 px · 각도)와 '부채 맞음' 장면의 '부채 — 맞는 자리'(상자 · 각도)를 따로 맞춘다.
+    각도는 칸 · ↺ ↻ 단추 · [ ] 키(5도 · Shift 15도). '▶ 휘두르기 보기' 로 게임과 같은 움직임을 본다. 부채 테두리 · 좌우 뒤집기는 두 화면 같이.
+  · 학생 머리 옆 표시 셋(전구 — 고르기 · 긴장 — 부채 들기 · 충격 — 부채 맞음)은 학생 그림 기준이라 두 화면 같이 · 직업 그림마다 자리가 있다 (모든 직업 같이 옮기거나 지금 직업만).
+  · 실험실 쪽 게임은 아무것도 저장하지 않는다 (세이브 · 설정 그대로). 작업 내용은 이 브라우저에 자동 저장된다.
+  · 게임에 넣기: 'JSON 저장' 으로 받은 skup_layout.json 을 tools/gen/patch/ 에 두고 Claude 에게 '스킬 강화 창 배치 넣어 줘' —
+    또는 '차이점 확인' 글을 복사해서 보낸다. apply_skup.py 가 game.html 의 SK_CHOICE_LAYOUT 에 넣는다.
+  · 여는 법: 이 파일을 브라우저로 연다 (heroschool 폴더 안 tools/skill_upgrade_lab.html). game.html 이 한 단계 위 폴더에 있어야 한다.
+-->
+<style>
+:root{--bg:#1d1b22;--panel:#2a2631;--line:#443d4f;--text:#efe7d8;--muted:#b3a894;--gold:#e0b458;--ok:#7cc79a;--bad:#e2837a}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:13px/1.45 system-ui,-apple-system,"Malgun Gothic",sans-serif}
+.app{display:grid;grid-template-columns:350px minmax(0,1fr);height:100vh}
+aside{border-right:1px solid var(--line);overflow:auto;padding:14px 14px 30px;background:var(--panel)}
+h1{font-size:17px;margin:0 0 2px}
+.sub{color:var(--muted);font-size:12px;margin:0 0 12px}
+section{border:1px solid var(--line);border-radius:8px;padding:10px 11px;margin-bottom:10px}
+section h2{font-size:13px;margin:0 0 8px;color:var(--gold);display:flex;justify-content:space-between;align-items:center;gap:8px}
+section h2 small{color:var(--muted);font-weight:400;text-align:right}
+.row{display:flex;align-items:center;gap:6px;margin:6px 0;flex-wrap:wrap}
+.row>label:first-child{min-width:74px;color:var(--muted)}
+select,input[type=number]{background:#191720;color:var(--text);border:1px solid var(--line);border-radius:5px;padding:5px 6px;font:inherit}
+select{flex:1;min-width:0}
+input[type=number]{width:78px}
+input[type=number].auto{color:var(--muted);font-style:italic}
+input[type=color]{width:40px;height:28px;padding:1px;border:1px solid var(--line);border-radius:5px;background:#191720;cursor:pointer}
+button{background:#3a3344;color:var(--text);border:1px solid #574d64;border-radius:5px;padding:5px 9px;font:inherit;cursor:pointer}
+button:hover{border-color:var(--gold)}
+button:disabled{opacity:.4;cursor:default;border-color:#574d64}
+button.on{background:var(--gold);color:#221a0c;border-color:var(--gold);font-weight:700}
+button.sm{padding:3px 7px;min-width:28px}
+button.wide{width:100%;margin-top:6px}
+button.primary{background:#6b5222;border-color:var(--gold)}
+.seg{display:flex;gap:4px;flex:1}
+.seg button{flex:1;padding:5px 4px}
+.hint{color:var(--muted);font-size:11.5px;margin:4px 0 0}
+.chk{display:flex;align-items:center;gap:5px;color:var(--muted);cursor:pointer}
+.items{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:2px 0 8px}
+.items button{padding:4px 6px;font-size:12px;text-align:left}
+.items button.mod::after,.seg button.mod::after{content:" •";color:var(--gold)}
+.items button.on.mod::after,.seg button.on.mod::after{color:#221a0c}
+.ed[hidden]{display:none}
+.unit{color:var(--muted);font-size:11.5px}
+.stagewrap{position:relative;overflow:hidden;background:#121016}
+.frame{position:absolute;left:0;top:0;transform-origin:0 0;border:0;background:#fff;box-shadow:0 0 0 1px #000,0 10px 40px #0008}
+.badge{position:absolute;left:12px;top:10px;background:#000a;padding:4px 9px;border-radius:12px;font-size:12px;z-index:3}
+.badge b{color:var(--gold)}
+.badge .warn{color:var(--bad)}
+.toast{position:absolute;right:14px;bottom:14px;background:#000c;border:1px solid var(--gold);padding:7px 12px;border-radius:8px;font-size:12.5px;z-index:4;opacity:0;transition:opacity .2s}
+.toast.show{opacity:1}
+#diffBox{display:none;position:fixed;inset:0;background:#000b;z-index:50;align-items:center;justify-content:center;padding:20px}
+#diffBox .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;max-width:820px;width:100%;padding:16px}
+#diffBox textarea{width:100%;height:380px;background:#15131a;color:var(--text);border:1px solid var(--line);border-radius:6px;padding:10px;font:12px/1.5 ui-monospace,Consolas,monospace}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+  <h1>스킬 강화 창 배치</h1>
+  <p class="sub">실제 게임의 스킬 강화 창을 띄워 요소를 끌어 옮기고, 노란 손잡이로 크기를 바꾼다.</p>
+
+  <section>
+    <h2>화면</h2>
+    <div class="row"><div class="seg"><button id="mPc">넓은 화면 (PC)</button><button id="mMob">폰</button></div></div>
+    <div class="row"><label>크기</label><select id="size"></select></div>
+    <p class="hint">넓은 화면 · 폰 배치는 따로 저장된다. 게임은 화면 폭 760 이하를 폰 배치로 본다.</p>
+  </section>
+
+  <section>
+    <h2>장면</h2>
+    <div class="row"><div class="seg" id="states"><button data-st="choose">고르기</button><button data-st="before">부채 들기</button><button data-st="hit">부채 맞음</button><button data-st="success">완료</button></div></div>
+    <div class="row"><label>학생 직업</label><select id="job"></select></div>
+    <p class="hint">장면마다 보이는 요소가 다르다 — 휘두르는 부채는 '부채 들기 · 맞음', 완료 화면 요소는 '완료'에서.</p>
+  </section>
+
+  <section>
+    <h2>요소 <small id="selName"></small></h2>
+    <div class="items" id="items"></div>
+    <div class="ed" id="edAnchor">
+      <div class="row"><label>가로 기준</label><div class="seg" id="ax"><button data-ax="l">왼쪽</button><button data-ax="c">가운데</button><button data-ax="r">오른쪽</button></div></div>
+      <div class="row"><label>세로 기준</label><div class="seg" id="ay"><button data-ay="t">위</button><button data-ay="b">아래</button></div></div>
+    </div>
+    <div class="ed" id="edX"><div class="row"><label id="lX">X</label><button class="sm" data-d="x" data-v="-1">◀</button><input type="number" id="vX" step="1"><button class="sm" data-d="x" data-v="1">▶</button><span class="unit" id="uX">px</span></div></div>
+    <div class="ed" id="edY"><div class="row"><label id="lY">Y</label><button class="sm" data-d="y" data-v="-1">▲</button><input type="number" id="vY" step="1"><button class="sm" data-d="y" data-v="1">▼</button><span class="unit" id="uY">px</span></div></div>
+    <div class="ed" id="edW"><div class="row"><label id="lW">너비</label><button class="sm" data-d="w" data-v="-2">－</button><input type="number" id="vW" step="1" min="16"><button class="sm" data-d="w" data-v="2">＋</button><button class="sm" id="autoW" title="글 크기대로">자동</button></div></div>
+    <div class="ed" id="edH"><div class="row"><label>높이</label><button class="sm" data-d="h" data-v="-2">－</button><input type="number" id="vH" step="1" min="12"><button class="sm" data-d="h" data-v="2">＋</button><button class="sm" id="autoH" title="글 크기대로">자동</button></div></div>
+    <div class="ed" id="edFit"><div class="row"><label>줄이기 시작</label><input type="number" id="vFit" step="10" min="0"><span class="unit">세로가 이 값 이하면 창 전체를 줄인다</span></div></div>
+    <div class="ed" id="edLock"><div class="row"><label class="chk"><input type="checkbox" id="lock"> 비율 고정 (손잡이로 키울 때)</label></div></div>
+    <div class="ed" id="edTail"><div class="row"><label>말풍선 꼬리</label><div class="seg" id="tail"><button data-tail="l">왼쪽</button><button data-tail="c">가운데</button><button data-tail="r">오른쪽</button></div></div></div>
+    <div class="ed" id="edMark">
+      <div class="row"><label class="chk"><input type="checkbox" id="markAll"> 모든 직업 같이 옮기기</label></div>
+      <p class="hint" id="markInfo"></p>
+      <button class="wide" id="resetMarkJob">이 직업만 따로 정한 자리 지우기</button>
+      <div class="row"><label>테두리</label><input type="color" id="olC"><select id="olW" style="flex:0 0 auto"><option value="0">없음</option><option value="1">1칸</option><option value="2">2칸</option></select><span class="unit">표시 셋 같이</span></div>
+    </div>
+    <div class="ed" id="edRot"><div class="row"><label id="lR">각도</label><button class="sm" data-d="r" data-v="-5" title="5도 반시계 ([ 키)">↺</button><input type="number" id="vR" step="1"><button class="sm" data-d="r" data-v="5" title="5도 시계 (] 키)">↻</button><span class="unit">도 (+ 시계 방향)</span></div></div>
+    <div class="ed" id="edFan">
+      <div class="row"><label>부채 테두리</label><input type="color" id="fanC"><select id="fanW" style="flex:0 0 auto"><option value="0">없음</option><option value="1">1칸</option><option value="2">2칸</option><option value="3">3칸</option></select><span class="unit">단추 · 휘두르기 같이</span></div>
+      <div class="row" id="fanFlipRow"><label class="chk"><input type="checkbox" id="fanFlip"> 휘두를 때 좌우 뒤집기</label></div>
+      <button class="wide" id="play">▶ 휘두르기 보기</button>
+    </div>
+    <button class="wide" id="resetOne">이 요소 기본값 (지금 화면)</button>
+    <p class="hint" id="edHint">끌면 옮기고, 노란 손잡이를 끌면 크기. 방향키 1px · Shift + 방향키 10px. 가운데 기준 요소는 끌 때 가운데 근처에서 가운데에 붙는다 (Alt 를 누르고 끌면 안 붙는다).</p>
+  </section>
+
+  <section>
+    <h2>배경 <small id="bgMod"></small></h2>
+    <div class="row"><label class="chk"><input type="checkbox" id="bgOn"> 흐르는 띠 (끄면 예전 방 그림)</label></div>
+    <div class="row"><label>띠 색</label><input type="color" id="bgA" title="홀수 띠 — 위로"><input type="color" id="bgB" title="짝수 띠 — 아래로"><label style="min-width:0;margin-left:8px">글자</label><input type="color" id="bgInk"></div>
+    <div class="row"><label>글자 진하기</label><input type="number" id="bgInkA" min="0" max="100" step="5"><span class="unit">%</span></div>
+    <div class="row"><label>띠 폭</label><input type="number" id="bgW" min="16" max="400" step="2"><span class="unit">px</span></div>
+    <div class="row"><label>기울기</label><input type="number" id="bgTilt" min="-60" max="60" step="1"><span class="unit">도 (+ 는 띠 위쪽이 왼쪽으로)</span></div>
+    <div class="row"><label>속도</label><input type="number" id="bgSpeed" min="0" max="400" step="2"><span class="unit">px/초 (0 = 멈춤)</span></div>
+    <div class="row"><label>글 사이</label><input type="number" id="bgGap" min="0" max="2000" step="10"><span class="unit">px</span></div>
+    <div class="row"><label>완료 화면</label><select id="bgEnd"><option value="solid">고른 스킬 등급 색 (한 가지)</option><option value="grade">고른 스킬 등급 색 띠</option><option value="same">고르기 화면과 같게</option></select></div>
+    <div class="row"><label>완료 채도</label><input type="number" id="bgEndSat" min="0" max="100" step="5"><span class="unit">% 남김 (결과 칸 색 기준)</span></div>
+    <div class="row"><label>글자 크기</label><select id="bgSize"><option value="12">12</option><option value="24">24</option><option value="36">36</option><option value="48">48</option></select></div>
+    <button class="wide" id="bgReset">배경 기본값</button>
+    <p class="hint">'SKILL UPGRADE' 가 쓰인 두 색 띠가 번갈아 서고, 첫 색 띠는 위로 · 둘째 색 띠는 아래로 흐른다. 넓은 화면 · 폰 같이. 움직임 줄이기를 켠 기기에서는 멈춰 있다.</p>
+  </section>
+
+  <section>
+    <h2>보기</h2>
+    <div class="row"><label class="chk"><input type="checkbox" id="all" checked> 모든 요소 테두리</label><label class="chk"><input type="checkbox" id="guide" checked> 가운데 선</label></div>
+  </section>
+
+  <section>
+    <h2>게임에 반영</h2>
+    <button class="wide" id="resetAll">게임 기본값으로 모두 되돌리기 (두 화면)</button>
+    <button class="wide primary" id="diff">게임 기본값과 차이점 확인</button>
+    <div class="row" style="margin-top:6px"><button id="save" style="flex:1">JSON 저장</button><button id="load" style="flex:1">JSON 불러오기</button><input type="file" id="file" accept=".json,application/json" hidden></div>
+    <p class="hint">저장한 <b>skup_layout.json</b> 을 heroschool 폴더의 tools/gen/patch/ 에 두거나, 차이점 창의 글을 복사해서 Claude 에게 보내면 게임에 넣는다. 작업 내용은 이 브라우저에 자동 저장된다.</p>
+  </section>
+</aside>
+<main class="stagewrap" id="wrap">
+  <div class="badge" id="badge">게임을 불러오는 중…</div>
+  <iframe class="frame" id="game" title="스킬 강화 창"></iframe>
+  <div class="toast" id="toast"></div>
+</main>
+</div>
+
+<div id="diffBox" role="dialog" aria-modal="true">
+  <div class="card">
+    <h2 style="margin:0 0 8px;font-size:15px">게임 기본값과 다른 곳</h2>
+    <textarea id="diffText" readonly></textarea>
+    <div class="row" style="justify-content:flex-end"><button id="copy" class="primary">복사</button><button id="close">닫기</button></div>
+  </div>
+</div>
+
+<script>
+const NAMES = {scene:"창", sceneEnd:"창 높이 (완료)", heading:"제목 띠", points:"강화 포인트", slot1:"선택지 1", slot2:"선택지 2", slot3:"선택지 3",
+  hero:"학생", swing:"부채 — 맞는 자리", swingFrom:"부채 — 시작 자리", reroll:"이국의 부채 단추", footer:"이름 띠", later:"나중에 단추", rules:"강화 규칙",
+  sLabel:"완료 머리글", sTitle:"완료 제목", sHero:"학생 (완료)", sInfo:"결과 칸", sDone:"확인 단추", markBefore:"긴장 표시", markHit:"충격 표시", markThink:"전구"};
+const SHOW = {choose:["scene","heading","points","slot1","slot2","slot3","hero","markThink","reroll","footer","later"],   // 강화 규칙은 게임에서 숨겼다 (1014)
+  before:["scene","heading","points","slot1","slot2","slot3","hero","swingFrom","markBefore","reroll","footer","later"],
+  hit:["scene","heading","points","hero","swing","markHit","reroll","footer","later"],
+  success:["scene","sLabel","sTitle","sHero","sInfo","sDone"]};
+const BAND = {heading:1, footer:1}, WONLY = {swing:1, reroll:1};
+const MK = {markBefore:"before", markHit:"hit", markThink:"thinking"};      // 학생 머리 옆 표시 — 배치의 marks (두 화면 같이 · 학생 그림 칸)
+const MARK_DEF = {before:{s:32, d:[0, 0], at:{}}, hit:{s:32, d:[0, 0], at:{}}, thinking:{s:28, d:[0, 0], at:{}}};
+const MARK_STATE = {before:"부채 들기", hit:"부채 맞음", thinking:"고르기"};
+const OL_DEF = {c:"#3d2b1f", w:1};
+const SWF = {swingFrom:1};                    // 휘두르기 시작 자리 — 맞는 자리(swing)에서 옮긴 px · 각도 (화면마다)
+const FAN_DEF = {flip:true, c:"#3d2b1f", w:1}; // 부채 둘 테두리 · 휘두를 때 좌우 뒤집기 (두 화면 같이)
+const BG_DEF = {on:true, a:"#c2e5ff", b:"#c6faf6", ink:"#283231", inkA:.35, w:64, tilt:20, speed:30, gap:160, size:24, end:"solid", endSat:50};
+const BG_NUM = {inkA:[0, 1], w:[16, 400], tilt:[-60, 60], speed:[0, 400], gap:[0, 2000], endSat:[0, 100]};
+const SIZES = {pc:[[1280,900,"노트북 1280×900"],[1280,720,"낮은 노트북 1280×720"],[1366,650,"노트북 1366×768 — 브라우저 안 1366×650"],[1440,900,"PC 1440×900"],[1920,1080,"PC 1920×1080"],[1100,733,"PC 좁은 창 900×600 — 1100×733 으로 그려 줄인다"],[1100,825,"태블릿 가로 1024×768 — 1100×825"]],
+               mobile:[[390,844,"폰 390×844"],[360,740,"폰 360×740"],[430,932,"폰 430×932"]]};
+const SAVE_KEY = "heroschool_skuplab_v1";
+const $ = q=> document.querySelector(q);
+const clone = o=> JSON.parse(JSON.stringify(o));
+const frame = $("#game");
+let D = null, JOBS = [], ART = {}, BASE_MARKS = {}, gameMode = null, meas = null;
+let st = {mode:"pc", size:{pc:0, mobile:0}, state:"choose", job:"paladin", sel:"hero", all:true, guide:true, lock:{hero:true, sHero:true}, markAll:true, layout:null};
+try{ const s = JSON.parse(localStorage.getItem(SAVE_KEY)); if(s && s.layout) st = Object.assign(st, s); }catch(e){}
+
+function persist(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(st)); }catch(e){} }
+function toast(t){ const el = $("#toast"); el.textContent = t; el.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(()=> el.classList.remove("show"), 1800); }
+function keyOf(k){ return k === "scene" && st.mode === "mobile" && st.state === "success" ? "sceneEnd" : k; }
+function cur(k){ return MK[k] ? ((st.layout || {}).marks || {})[MK[k]] : ((st.layout || {})[st.mode] || {})[k]; }
+function def(k){ return MK[k] ? ((D || {}).marks || MARK_DEF)[MK[k]] : ((D || {})[st.mode] || {})[k]; }
+/* 표시 — 이 직업 그림의 자리 [x, y] (크기 32 일 때 왼쪽 위 · 그림 칸) */
+function markPos(stt, art){
+  const o = st.layout.marks[stt], base = (BASE_MARKS[art] || {})[stt];
+  if(!base) return null;
+  return (o.at && o.at[art]) ? o.at[art].slice() : [base[0] + o.d[0], base[1] + o.d[1]];
+}
+function jobName(job){ const j = JOBS.find(x=> x[0] === job); return j ? j[1] : job; }
+function artJobs(art){ return JOBS.filter(j=> ART[j[0]] === art).map(j=> j[1]).join(" · ") || art; }
+function canon(o){ return JSON.stringify(o, (k, v)=> v && typeof v === "object" && !Array.isArray(v) ? Object.keys(v).sort().reduce((a, kk)=> (a[kk] = v[kk], a), {}) : v); }
+function same(a, b){ return canon(a) === canon(b); }   // 키 차례는 보지 않는다 (게임 기본값은 직업 그림 이름 차례 · 실험실은 고친 차례)
+/* 게임이 준 기본값에 맞춰 — 저장해 둔 배치에 빠진 요소는 기본값으로 채우고 모르는 요소는 버린다 */
+function merge(lay){
+  const out = {v:1};
+  ["pc","mobile"].forEach(m=>{ out[m] = {}; Object.keys(D[m]).forEach(k=>{ let v = lay && lay[m] && lay[m][k];
+    if(k === "swing" && v && v.r == null) v = null;     // 1014 전 배치의 휘두르는 부채는 예전 그림의 '시작' 자리 — 지금은 맞는 자리(+ 각도)라 게임 값으로
+    out[m][k] = v && typeof v === "object" ? Object.assign(clone(D[m][k]), v) : clone(D[m][k]); }); });
+  out.marks = {};                                      // 표시 — 예전에 저장한 배치(표시 없음)도 기본값으로 채운다
+  ["before","hit","thinking"].forEach(k=>{
+    const v = lay && lay.marks && lay.marks[k], o = clone((D.marks || MARK_DEF)[k] || MARK_DEF[k]);
+    if(v && typeof v === "object"){
+      if(Number.isFinite(v.s)) o.s = v.s;
+      if(Array.isArray(v.d) && v.d.length === 2 && v.d.every(Number.isFinite)) o.d = v.d.slice();
+      if(v.at && typeof v.at === "object") o.at = clone(v.at);
+    }
+    out.marks[k] = o;
+  });
+  const bd = Object.assign(clone(BG_DEF), D.bg || {}), bl = lay && lay.bg;   // 배경 — 예전 배치(배경 없음)는 게임 기본값
+  if(bl && typeof bl === "object"){
+    if(typeof bl.on === "boolean") bd.on = bl.on;
+    ["a","b","ink"].forEach(c=>{ if(/^#[0-9a-f]{6}$/i.test(bl[c] || "")) bd[c] = bl[c].toLowerCase(); });
+    Object.keys(BG_NUM).forEach(c=>{ if(Number.isFinite(bl[c])) bd[c] = Math.max(BG_NUM[c][0], Math.min(BG_NUM[c][1], bl[c])); });
+    if([12, 24, 36, 48].includes(bl.size)) bd.size = bl.size;
+    if(["solid","grade","same"].includes(bl.end)) bd.end = bl.end;
+  }
+  out.bg = bd;
+  const od = Object.assign(clone(OL_DEF), D.outline || {}), ol = lay && lay.outline;   // 표시 테두리
+  if(ol && typeof ol === "object"){ if(/^#[0-9a-f]{6}$/i.test(ol.c || "")) od.c = ol.c.toLowerCase(); if([0, 1, 2, 3].includes(ol.w)) od.w = ol.w; }
+  out.outline = od;
+  const fd = Object.assign(clone(FAN_DEF), D.fan || {}), fl = lay && lay.fan;     // 부채 — 테두리 · 좌우 뒤집기
+  if(fl && typeof fl === "object"){ if(typeof fl.flip === "boolean") fd.flip = fl.flip; if(/^#[0-9a-f]{6}$/i.test(fl.c || "")) fd.c = fl.c.toLowerCase(); if([0, 1, 2, 3].includes(fl.w)) fd.w = fl.w; }
+  out.fan = fd;
+  return out;
+}
+function send(){
+  if(!D) return;
+  frame.contentWindow.postMessage({lab:"skup", type:"set", layout:st.layout, state:st.state, job:st.job, sel:keyOf(st.sel), names:NAMES,
+    all:st.all, guide:st.guide, lock:!!st.lock[st.sel], markAll:!!st.markAll}, "*");
+}
+function push(){ persist(); send(); paint(); }
+
+/* ── 화면 크기 ── */
+function layout(){
+  const [w, h] = SIZES[st.mode][st.size[st.mode] | 0] || SIZES[st.mode][0];
+  frame.style.width = w + "px"; frame.style.height = h + "px";
+  const W = $("#wrap"), k = Math.min((W.clientWidth - 30) / w, (W.clientHeight - 50) / h, 1);
+  frame.style.transform = `translate(${(W.clientWidth - w * k) / 2}px, ${(W.clientHeight - h * k) / 2 + 12}px) scale(${k})`;
+  $("#badge").dataset.size = `${w}×${h} · ${Math.round(k * 100)}%`;
+  badge();
+}
+function badge(){
+  const b = $("#badge");
+  if(!D){ b.textContent = "게임을 불러오는 중… (game.html 이 한 단계 위 폴더에 있어야 한다)"; return; }
+  const mis = gameMode && gameMode !== st.mode;
+  const zk = meas && meas.mode === st.mode && meas.zoom < 1 ? meas.zoom : 0;
+  b.innerHTML = `<b>${st.mode === "pc" ? "넓은 화면" : "폰"}</b> · ${b.dataset.size || ""}${zk ? ` · 창 ${Math.round(zk * 100)}%로 줄임 (세로 ${meas.vh} ≤ ${(cur("scene") || {}).fitH})` : ""}${mis ? ` · <span class="warn">게임은 이 크기를 ${gameMode === "pc" ? "넓은 화면" : "폰"}으로 본다</span>` : ""}`;
+}
+
+/* ── 패널 ── */
+const AXL = {l:"왼쪽에서", c:"가운데에서", r:"오른쪽에서"}, AYL = {t:"위에서", b:"아래에서"};
+function paintBg(){
+  const g = st.layout.bg, dg = D.bg || BG_DEF, num = (id, val)=>{ const el = $(id); if(document.activeElement !== el) el.value = val; };
+  $("#bgOn").checked = !!g.on; $("#bgA").value = g.a; $("#bgB").value = g.b; $("#bgInk").value = g.ink;
+  num("#bgInkA", Math.round(g.inkA * 100)); num("#bgW", g.w); num("#bgTilt", g.tilt); num("#bgSpeed", g.speed); num("#bgGap", g.gap); $("#bgSize").value = String(g.size);
+  $("#bgEnd").value = g.end || "solid"; num("#bgEndSat", g.endSat == null ? 50 : g.endSat);
+  $("#bgMod").textContent = same(g, dg) ? "" : "바뀜";
+  document.querySelectorAll("#bgA,#bgB,#bgInk,#bgInkA,#bgW,#bgTilt,#bgSpeed,#bgGap,#bgSize,#bgEnd,#bgEndSat").forEach(el=> el.disabled = !g.on);
+  $("#bgEndSat").disabled = !g.on || g.end === "same";
+}
+function paint(){
+  if(!D) return;
+  paintBg();
+  $("#mPc").classList.toggle("on", st.mode === "pc"); $("#mMob").classList.toggle("on", st.mode === "mobile");
+  $("#size").innerHTML = SIZES[st.mode].map((s, i)=> `<option value="${i}" ${i === (st.size[st.mode] | 0) ? "selected" : ""}>${s[2]}</option>`).join("");
+  document.querySelectorAll("#states button").forEach(b=> b.classList.toggle("on", b.dataset.st === st.state));
+  $("#job").value = st.job;
+  const show = SHOW[st.state];
+  if(!show.includes(st.sel)) st.sel = show[0] === "scene" ? show[1] : show[0];
+  $("#items").innerHTML = show.map(k=>{ const kk = keyOf(k); return `<button data-k="${k}" class="${k === st.sel ? "on" : ""}${same(cur(kk), def(kk)) ? "" : " mod"}">${NAMES[kk]}</button>`; }).join("");
+  document.querySelectorAll("#items button").forEach(b=> b.onclick = ()=>{ st.sel = b.dataset.k; push(); });
+  const k = keyOf(st.sel), v = cur(k), m = meas && meas.mode === st.mode && meas.boxes ? meas.boxes[k] : null;
+  $("#selName").textContent = NAMES[k] + (same(v, def(k)) ? "" : " · 바뀜");
+  $("#edMark").hidden = !MK[k]; $("#lW").textContent = MK[k] ? "크기" : "너비"; $("#uX").textContent = $("#uY").textContent = MK[k] ? "칸" : "px";
+  $("#resetOne").textContent = MK[k] ? "이 표시 기본값 (모든 직업 · 크기)" : "이 요소 기본값 (지금 화면)";
+  paintFan(k, v);
+  if(MK[k]){ paintMark(k, v); badge(); return; }
+  if(SWF[k]){ paintSwf(k, v); badge(); return; }
+  const isScene = k === "scene" || k === "sceneEnd", band = !!BAND[k], box = !isScene && !band;
+  $("#edAnchor").hidden = !box; $("#edTail").hidden = !/^slot/.test(k); $("#edLock").hidden = !box || !!WONLY[k];
+  $("#edX").hidden = $("#edY").hidden = !(box || (k === "scene" && st.mode === "pc"));
+  $("#edW").hidden = !(box || (k === "scene" && st.mode === "pc"));
+  $("#edH").hidden = !!WONLY[k] ? true : false;
+  $("#edFit").hidden = !(k === "scene" && st.mode === "pc");
+  $("#autoW").hidden = $("#autoH").hidden = !box || !(def(k) && (def(k).w == null || def(k).h == null));
+  if(box){
+    document.querySelectorAll("#ax button").forEach(b=> b.classList.toggle("on", b.dataset.ax === v.ax));
+    document.querySelectorAll("#ay button").forEach(b=> b.classList.toggle("on", b.dataset.ay === v.ay));
+    $("#lX").textContent = AXL[v.ax] || "X"; $("#lY").textContent = AYL[v.ay] || "Y";
+    document.querySelectorAll("#tail button").forEach(b=> b.classList.toggle("on", b.dataset.tail === v.tail));
+    $("#lock").checked = !!st.lock[st.sel];
+  } else if(k === "scene"){ $("#lX").textContent = "화면 가운데에서 →"; $("#lY").textContent = "화면 가운데에서 ↓"; }
+  const num = (id, val, auto)=>{ const el = $(id); if(document.activeElement === el) return; el.value = val == null ? (auto != null ? Math.round(auto) : "") : val; el.classList.toggle("auto", val == null); };
+  num("#vX", v.x != null ? v.x : 0); num("#vY", v.y != null ? v.y : 0);
+  num("#vW", v.w, m ? m[2] : null);
+  num("#vH", v.h, m ? m[3] : (isScene ? v.h : null));
+  if(k === "scene" && st.mode === "pc") num("#vFit", v.fitH != null ? v.fitH : 900);
+  $("#edHint").textContent = isScene ? (st.mode === "pc" ? "창 — 빈 곳을 끌면 화면 가운데에서 옮기고, 오른쪽 · 아래 손잡이로 크기(테두리 포함). 창이 커져도 안의 요소는 기준(왼쪽 · 가운데 · 오른쪽 · 위 · 아래)에서 같은 거리에 남는다. "
+        + "게임이 보는 세로가 '줄이기 시작' 값 이하면 창 전체를 세로 ÷ 그 값 배로 줄인다 (0 이면 안 줄임) — 크기에서 낮은 화면을 골라 본다."
+      : "폰 창은 화면 폭에 맞춘다 — 아래 손잡이로 높이만. 창이 화면보다 길면 창 안에서 휠로 내려 본다.")
+    : band ? "띠 — 손잡이로 높이만. 비스듬한 모양은 높이에 맞춰 늘어난다."
+    : k === "swing" ? "부채가 맞는 자리 — 손잡이를 축으로 돌아 이 자리 · 각도에서 멈춘다. 끌면 옮기고 모서리 손잡이로 크기(그림 칸 64px 단위 — 도트가 고르게). "
+        + "시작 자리는 장면 '부채 들기' 의 '부채 — 시작 자리'. 각도는 [ ] 키로 5도씩 (Shift 15도). ▶ 휘두르기 보기로 움직임을 본다."
+    : k === "reroll" ? "이국의 부채 단추 — 폭을 정하면 그림은 그 폭에 맞춰 64px 단위(1배 · 2배 · 3배)로 그린다 (도트가 고르게). 마우스를 올리면 이름 상자가 뜬다."
+    : WONLY[k] ? "그림이 든 요소 — 폭만 정하고 높이는 그림 비율대로. 끌면 옮기고 손잡이로 크기."
+    : k === "sDone" ? "확인 단추 — 결과 글이 길어 결과 칸에 닿으면 게임이 단추를 결과 칸 아래 12px 로 내리고 창을 그만큼 늘린다 (그때는 상자가 숫자보다 아래에 보인다)."
+    : k === "sInfo" ? "결과 칸 — 높이는 글 길이대로(스킬마다 다르다). 길어져 확인 단추에 닿으면 단추가 아래로 밀린다. 직업을 바꿔 가며 확인한다."
+    : "끌면 옮기고, 노란 손잡이를 끌면 크기. 방향키 1px · Shift + 방향키 10px. 가운데 기준 요소는 끌 때 가운데 근처에서 가운데에 붙는다 (Alt 를 누르고 끌면 안 붙는다).";
+  badge();
+}
+function paintFan(k, v){                     // 부채 셋(맞는 자리 · 시작 자리 · 단추) — 각도 · 테두리 · 좌우 뒤집기 · 휘두르기 보기
+  const swing = k === "swing" || !!SWF[k], fan = swing || k === "reroll", F = st.layout.fan;
+  $("#edRot").hidden = !swing; $("#edFan").hidden = !fan; $("#fanFlipRow").hidden = $("#play").hidden = !swing;
+  if(fan){ $("#fanC").value = F.c; $("#fanW").value = String(F.w); $("#fanFlip").checked = !!F.flip; }
+  if(swing){ $("#lR").textContent = SWF[k] ? "시작 각도" : "맞을 때 각도"; const el = $("#vR"); if(document.activeElement !== el) el.value = v && v.r != null ? v.r : 0; }
+}
+function paintSwf(k, v){
+  ["#edAnchor","#edTail","#edLock","#edW","#edH","#edFit","#edMark"].forEach(id=> $(id).hidden = true);
+  $("#edX").hidden = $("#edY").hidden = false;
+  $("#lX").textContent = "맞는 자리에서 →"; $("#lY").textContent = "맞는 자리에서 ↓"; $("#uX").textContent = $("#uY").textContent = "px";
+  const num = (id, val)=>{ const el = $(id); if(document.activeElement === el) return; el.value = val; el.classList.remove("auto"); };
+  num("#vX", v.x || 0); num("#vY", v.y || 0);
+  $("#edHint").textContent = "부채를 든 자리 — 맞는 자리에서 옮긴 만큼(px)이라 맞는 자리를 옮기면 같이 따라간다. 끌거나 방향키로 옮기고(1px · Shift 10px) 각도로 기울인다([ ] 키 5도 · Shift 15도). "
+    + "게임에서는 이 자리에 0.65초 있다가 0.4초 동안 맞는 자리로 내려친다 — ▶ 휘두르기 보기.";
+}
+function paintMark(k, v){
+  const stt = MK[k], art = ART[st.job], p = markPos(stt, art);
+  ["#edAnchor","#edTail","#edLock","#edH","#edFit"].forEach(id=> $(id).hidden = true);
+  $("#edX").hidden = $("#edY").hidden = $("#edW").hidden = false; $("#autoW").hidden = true;
+  $("#lX").textContent = "그림 가로"; $("#lY").textContent = "그림 세로";
+  const num = (id, val)=>{ const el = $(id); if(document.activeElement === el) return; el.value = val; el.classList.remove("auto"); };
+  num("#vX", p ? p[0] : ""); num("#vY", p ? p[1] : ""); num("#vW", v.s);
+  $("#markAll").checked = !!st.markAll;
+  const own = !!(v.at && v.at[art]), others = Object.keys(v.at || {}).filter(a=> a !== art).length;
+  $("#resetMarkJob").hidden = !own;
+  $("#markInfo").textContent = `지금 직업: ${jobName(st.job)}` + (own ? " — 이 직업만 따로 정한 자리" : "") + (others ? ` · 따로 정한 직업 ${others}` : "")
+    + (st.markAll ? " · 끌면 모든 직업이 같이 움직인다" : " · 끌면 이 직업 그림만 움직인다");
+  $("#olC").value = st.layout.outline.c; $("#olW").value = String(st.layout.outline.w);
+  $("#edHint").textContent = `학생 머리 옆 표시(${MARK_STATE[stt]}) — 넓은 화면 · 폰 같이, 학생 그림 기준 칸(넓은 화면은 1칸 = 2px · 학생 크기를 바꾸면 같이 커진다). `
+    + `끌면 자리, 모서리 손잡이로 크기(모든 직업 같이 · 가운데 그대로 · 기본 ${MARK_DEF[stt].s} 의 1 · 2 배에서 또렷하다). 방향키 1칸 · Shift 10칸. 직업마다 머리 자리가 달라 직업을 바꿔 가며 본다.`
+    + (stt === "thinking" ? " 전구는 생각하는 그림에 그려진 것을 떼어 따로 놓는다 (16 직업 모두 처음 자리가 같다)." : "");
+}
+/* 기준을 바꿔도 요소가 그 자리에 있게 — 게임이 잰 상자로 값을 다시 잰다 */
+function reAnchor(k, ax, ay){
+  const v = cur(k), m = meas && meas.boxes && meas.boxes[k];
+  if(!m){ toast("상자를 아직 못 쟀다 — 잠시 뒤 다시"); return; }
+  const [x, y, w, h] = m, W = meas.W, H = meas.H, r = n=> Math.round(n * 2) / 2;
+  if(ax){ v.ax = ax; v.x = r(ax === "r" ? W - (x + w) : ax === "c" ? (x + w / 2) - W / 2 : x); if(ax === "c" && v.w == null) v.w = Math.round(w); }
+  if(ay){ v.ay = ay; v.y = r(ay === "b" ? H - (y + h) : y); }
+}
+function setNum(field, val){
+  const k = keyOf(st.sel), v = cur(k);
+  if(!Number.isFinite(val)) return;
+  if(MK[k]){                                            // 표시 — 크기는 모든 직업, 자리는 모든 직업 같이 또는 이 직업만
+    const stt = MK[k], art = ART[st.job], base = (BASE_MARKS[art] || {})[stt], p = markPos(stt, art);
+    if(field === "w") v.s = Math.max(8, Math.min(128, Math.round(val)));
+    else if(base && p && (field === "x" || field === "y")){
+      const i = field === "x" ? 0 : 1, nv = Math.round(val), dl = nv - p[i];
+      if(st.markAll){ v.d[i] += dl; Object.keys(v.at).forEach(a=> v.at[a][i] += dl); }
+      else { p[i] = nv; if(p[0] === base[0] + v.d[0] && p[1] === base[1] + v.d[1]) delete v.at[art]; else v.at[art] = p; }
+    }
+    push(); return;
+  }
+  if(field === "r"){ v.r = Math.max(-360, Math.min(360, Math.round(val))); push(); return; }
+  if(SWF[k]){ if(field === "x" || field === "y") v[field] = Math.round(val); push(); return; }
+  if(k === "swing" && field === "w"){ v.w = Math.max(64, Math.round(val / 64) * 64); push(); return; }   // 그림 칸 정수배
+  if(field === "w" || field === "h"){
+    val = Math.max(field === "w" ? 16 : 12, Math.round(val));
+    const m = meas && meas.boxes && meas.boxes[k];
+    if(st.lock[st.sel] && m && !BAND[k] && !(k === "scene" || k === "sceneEnd")){        // 비율 고정
+      const ratio = (v.w != null ? v.w : m[2]) / Math.max(1, v.h != null ? v.h : m[3]);
+      if(field === "w"){ v.w = val; v.h = Math.round(val / ratio); } else { v.h = val; v.w = Math.round(val * ratio); }
+    } else v[field] = val;
+  } else if(field === "fitH") v.fitH = Math.max(0, Math.min(4000, Math.round(val)));
+  else v[field] = Math.round(val * 2) / 2;
+  push();
+}
+
+$("#mPc").onclick = ()=>{ st.mode = "pc"; layout(); push(); };
+$("#mMob").onclick = ()=>{ st.mode = "mobile"; layout(); push(); };
+$("#size").onchange = e=>{ st.size[st.mode] = +e.target.value; layout(); push(); };
+document.querySelectorAll("#states button").forEach(b=> b.onclick = ()=>{ st.state = b.dataset.st; push(); });
+$("#job").onchange = e=>{ st.job = e.target.value; push(); };
+document.querySelectorAll("#ax button").forEach(b=> b.onclick = ()=>{ reAnchor(keyOf(st.sel), b.dataset.ax, null); push(); });
+document.querySelectorAll("#ay button").forEach(b=> b.onclick = ()=>{ reAnchor(keyOf(st.sel), null, b.dataset.ay); push(); });
+document.querySelectorAll("#tail button").forEach(b=> b.onclick = ()=>{ cur(keyOf(st.sel)).tail = b.dataset.tail; push(); });
+document.querySelectorAll("[data-d]").forEach(b=> b.onclick = ()=>{
+  const k = keyOf(st.sel), v = cur(k), f = b.dataset.d, d = +b.dataset.v, m = meas && meas.boxes && meas.boxes[k];
+  if(MK[k]){ const p = markPos(MK[k], ART[st.job]) || [0, 0]; setNum(f, (f === "x" ? p[0] : f === "y" ? p[1] : v.s) + d); return; }
+  const base = v[f] != null ? v[f] : (f === "w" && m ? m[2] : f === "h" && m ? m[3] : 0);
+  setNum(f, base + (k === "swing" && f === "w" ? Math.sign(d) * 64 : d));
+});
+["X","Y","W","H","R"].forEach(n=> $("#v" + n).onchange = e=> setNum(n.toLowerCase(), parseFloat(e.target.value)));
+$("#vFit").onchange = e=> setNum("fitH", parseFloat(e.target.value));
+$("#autoW").onclick = ()=>{ const v = cur(keyOf(st.sel)); if(v.ax === "c"){ toast("가운데 기준은 너비가 있어야 한다 — 기준을 바꾼 뒤에"); return; } v.w = null; push(); };
+$("#autoH").onclick = ()=>{ cur(keyOf(st.sel)).h = null; push(); };
+$("#lock").onchange = e=>{ st.lock[st.sel] = e.target.checked; push(); };
+$("#resetOne").onclick = ()=>{
+  const k = keyOf(st.sel);
+  if(MK[k]){ st.layout.marks[MK[k]] = clone(def(k)); push(); toast(NAMES[k] + " — 기본값 (모든 직업 · 크기)"); return; }
+  st.layout[st.mode][k] = clone(def(k)); push(); toast(NAMES[k] + " — 기본값");
+};
+$("#resetMarkJob").onclick = ()=>{ const k = keyOf(st.sel); if(!MK[k]) return; delete st.layout.marks[MK[k]].at[ART[st.job]]; push(); toast(jobName(st.job) + " — 모든 직업 자리로"); };
+$("#markAll").onchange = e=>{ st.markAll = e.target.checked; push(); };
+$("#resetAll").onclick = ()=>{ if(!confirm("넓은 화면 · 폰 배치를 모두 게임 기본값으로 되돌릴까요?")) return; st.layout = merge(null); push(); toast("모두 기본값"); };
+$("#all").onchange = e=>{ st.all = e.target.checked; push(); };
+$("#bgOn").onchange = e=>{ st.layout.bg.on = e.target.checked; push(); };
+[["#bgA","a"],["#bgB","b"],["#bgInk","ink"]].forEach(([id, k])=> $(id).oninput = e=>{ st.layout.bg[k] = e.target.value.toLowerCase(); push(); });
+[["#bgInkA","inkA",100],["#bgW","w",1],["#bgTilt","tilt",1],["#bgSpeed","speed",1],["#bgGap","gap",1],["#bgEndSat","endSat",1]].forEach(([id, k, div])=> $(id).onchange = e=>{
+  const v = parseFloat(e.target.value); if(!Number.isFinite(v)) return;
+  st.layout.bg[k] = Math.max(BG_NUM[k][0], Math.min(BG_NUM[k][1], Math.round(v) / div)); push();
+});
+$("#bgSize").onchange = e=>{ st.layout.bg.size = +e.target.value; push(); };
+$("#bgEnd").onchange = e=>{ st.layout.bg.end = e.target.value; if(st.state !== "success") toast("완료 화면에서 보인다 — 장면 '완료'"); push(); };
+$("#olC").oninput = e=>{ st.layout.outline.c = e.target.value.toLowerCase(); push(); };
+$("#fanC").oninput = e=>{ st.layout.fan.c = e.target.value.toLowerCase(); push(); };
+$("#fanW").onchange = e=>{ st.layout.fan.w = +e.target.value; push(); };
+$("#fanFlip").onchange = e=>{ st.layout.fan.flip = e.target.checked; push(); };
+$("#play").onclick = ()=>{ frame.contentWindow.postMessage({lab:"skup", type:"play"}, "*"); };
+$("#olW").onchange = e=>{ st.layout.outline.w = +e.target.value; push(); };
+$("#bgReset").onclick = ()=>{ st.layout.bg = clone(D.bg || BG_DEF); push(); toast("배경 — 기본값"); };
+$("#guide").onchange = e=>{ st.guide = e.target.checked; push(); };
+
+/* ── 저장 · 차이점 ── */
+function fileData(){
+  return Object.assign({"_":"스킬 강화 창 배치 — tools/skill_upgrade_lab.html 에서 저장. tools/gen/patch/skup_layout.json 에 두고 apply_skup.py 로 game.html 에 넣는다."}, clone(st.layout));
+}
+function describe(k, a, b){
+  const out = [];
+  if(!a || !b) return "";
+  const f = (v, ax)=> ax ? `${AXL[ax] || ""} ${v}` : String(v);
+  if(k === "swingFrom"){
+    if(a.x !== b.x || a.y !== b.y) out.push(`맞는 자리에서 옮김 ${a.x}, ${a.y} → ${b.x}, ${b.y} (px · → ↓)`);
+    if(a.r !== b.r) out.push(`각도 ${a.r} → ${b.r}`);
+    return out.join(" · ");
+  }
+  if(k === "scene" && a.w != null){ if(a.x !== b.x || a.y !== b.y) out.push(`위치 (화면 가운데에서) ${a.x || 0}, ${a.y || 0} → ${b.x || 0}, ${b.y || 0}`); }
+  if(k === "scene" && a.fitH !== b.fitH && b.fitH != null) out.push(`줄이기 시작 세로 ${a.fitH == null ? 900 : a.fitH} → ${b.fitH}${b.fitH ? "" : " (안 줄임)"}`);
+  if(a.ax !== b.ax || a.x !== b.x) if(b.ax) out.push(`가로 ${f(a.x, a.ax)} → ${f(b.x, b.ax)}`);
+  if(a.ay !== b.ay || a.y !== b.y) if(b.ay) out.push(`세로 ${AYL[a.ay] || ""} ${a.y} → ${AYL[b.ay] || ""} ${b.y}`);
+  if(a.w !== b.w) out.push(`너비 ${a.w == null ? "자동" : a.w} → ${b.w == null ? "자동" : b.w}`);
+  if(a.h !== b.h) out.push(`높이 ${a.h == null ? "자동" : a.h} → ${b.h == null ? "자동" : b.h}`);
+  if(a.tail !== b.tail) out.push(`꼬리 ${a.tail} → ${b.tail}`);
+  if(a.r !== b.r && b.r != null) out.push(`각도 ${a.r == null ? "-" : a.r} → ${b.r}`);
+  return out.join(" · ");
+}
+$("#diff").onclick = ()=>{
+  const lines = ["스킬 강화 창 배치 — 게임 기본값과 다른 곳 (tools/skill_upgrade_lab.html)", ""];
+  let n = 0;
+  [["pc","넓은 화면"],["mobile","폰"]].forEach(([m, label])=>{
+    const ch = Object.keys(D[m]).filter(k=> !same(D[m][k], st.layout[m][k]));
+    if(!ch.length) return;
+    lines.push(`[${label}]`);
+    ch.forEach(k=>{ lines.push(`· ${NAMES[k]}: ${describe(k, D[m][k], st.layout[m][k])}`); n++; });
+    lines.push("");
+  });
+  const ml = [];
+  ["before","hit","thinking"].forEach(stt=>{
+    const a = (D.marks || MARK_DEF)[stt] || MARK_DEF[stt], b = st.layout.marks[stt], out = [];
+    if(same(a, b)) return;
+    const mv = d=> (d[0] ? (d[0] > 0 ? `오른쪽 ${d[0]}` : `왼쪽 ${-d[0]}`) : "") + (d[0] && d[1] ? " · " : "") + (d[1] ? (d[1] > 0 ? `아래 ${d[1]}` : `위 ${-d[1]}`) : "") || "제자리";
+    if(a.s !== b.s) out.push(`크기 ${a.s} → ${b.s}`);
+    if(!same(a.d, b.d)) out.push(`모든 직업 ${mv(b.d)} (그림 칸 · 처음 자리에서)`);
+    new Set([...Object.keys(a.at || {}), ...Object.keys(b.at || {})]).forEach(art=>{
+      const x = (a.at || {})[art], y = (b.at || {})[art];
+      if(!same(x, y)) out.push(`${artJobs(art)} 따로 ${y ? y.join(", ") : "없앰"}`);
+    });
+    ml.push(`· ${NAMES[{before:"markBefore", hit:"markHit", thinking:"markThink"}[stt]]}: ${out.join(" · ")}`);
+  });
+  const oa = D.outline || OL_DEF, ob = st.layout.outline;
+  if(!same(oa, ob)) ml.push(`· 테두리: ${oa.c} ${oa.w}칸 → ${ob.c} ${ob.w}칸`);
+  if(ml.length){ lines.push("[학생 머리 옆 표시 — 두 화면 같이]", ...ml, ""); n += ml.length; }
+  const fa = Object.assign(clone(FAN_DEF), D.fan || {}), fb = st.layout.fan, fl = [];
+  if(fa.c !== fb.c || fa.w !== fb.w) fl.push(`테두리 ${fa.c} ${fa.w}칸 → ${fb.c} ${fb.w}칸`);
+  if(fa.flip !== fb.flip) fl.push(`휘두를 때 좌우 뒤집기 ${fa.flip ? "켬" : "끔"} → ${fb.flip ? "켬" : "끔"}`);
+  if(fl.length){ lines.push("[이국의 부채 — 두 화면 같이]", "· " + fl.join(" · "), ""); n++; }
+  const ga = Object.assign(clone(BG_DEF), D.bg || {}), gb = st.layout.bg, BGN = {on:"흐르는 띠", a:"띠 색 1", b:"띠 색 2", ink:"글자 색", inkA:"글자 진하기", w:"띠 폭", tilt:"기울기", speed:"속도", gap:"글 사이", size:"글자 크기", end:"완료 화면", endSat:"완료 채도"};
+  const bgl = Object.keys(BGN).filter(k=> ga[k] !== gb[k]).map(k=> `${BGN[k]} ${k === "on" ? (ga[k] ? "켬" : "끔") : ga[k]} → ${k === "on" ? (gb[k] ? "켬" : "끔") : gb[k]}`);
+  if(bgl.length){ lines.push("[배경 — 두 화면 같이]", "· " + bgl.join(" · "), ""); n++; }
+  if(!n) lines.push("(다른 곳 없음 — 게임 기본값 그대로)", "");
+  lines.push("아래 JSON 을 tools/gen/patch/skup_layout.json 에 넣고 apply_skup.py 로 game.html 에 반영:", JSON.stringify(fileData(), null, 1));
+  $("#diffText").value = lines.join("\n");
+  $("#diffBox").style.display = "flex";
+};
+$("#copy").onclick = async ()=>{ const t = $("#diffText"); try{ await navigator.clipboard.writeText(t.value); }catch(e){ t.select(); document.execCommand("copy"); } toast("복사했다"); };
+$("#close").onclick = ()=>{ $("#diffBox").style.display = "none"; };
+$("#save").onclick = ()=>{
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(fileData(), null, 1) + "\n"], {type:"application/json"}));
+  a.download = "skup_layout.json"; a.click(); setTimeout(()=> URL.revokeObjectURL(a.href), 1000);
+  toast("skup_layout.json 저장");
+};
+$("#load").onclick = ()=> $("#file").click();
+$("#file").onchange = async e=>{
+  try{
+    const d = JSON.parse(await e.target.files[0].text());
+    if(!d || d.v !== 1 || !d.pc || !d.mobile) throw Error("v:1 · pc · mobile 이 있는 배치 JSON 이 아니다");
+    st.layout = merge(d); push(); toast("불러왔다");
+  }catch(err){ toast("불러오기 실패 — " + err.message); }
+  e.target.value = "";
+};
+
+/* ── 게임에서 오는 소식 ── */
+addEventListener("message", e=>{
+  const d = e.data || {};
+  if(d.lab !== "skup") return;
+  if(d.type === "ready"){
+    D = clone(d.defaults); JOBS = d.jobs || []; ART = d.art || {}; BASE_MARKS = d.marks || {};
+    if(!D.marks) D.marks = clone(MARK_DEF);
+    $("#job").innerHTML = JOBS.map(([k, n])=> `<option value="${k}">${n}</option>`).join("");
+    if(!JOBS.some(j=> j[0] === st.job)) st.job = (JOBS[0] || ["paladin"])[0];
+    st.layout = merge(st.layout);
+    gameMode = d.mode; push(); return;
+  }
+  if(d.type === "mode"){ gameMode = d.mode; badge(); return; }
+  if(d.type === "measure"){ meas = d; paint(); return; }
+  if(d.type === "pick"){ const k = d.key === "sceneEnd" ? "scene" : d.key; if(st.sel !== k){ st.sel = k; persist(); send(); paint(); } return; }
+  if(d.type === "move" || d.type === "change"){
+    if(!st.layout || !st.layout[d.mode]) return;
+    st.layout[d.mode][d.key] = d.v;
+    if(d.type === "change") persist();
+    paint();
+  }
+});
+/* 패널에 초점이 있을 때도 방향키로 옮긴다 (숫자 칸 · 고르기 칸 안에서는 그대로) */
+addEventListener("keydown", e=>{
+  if((e.code === "BracketLeft" || e.code === "BracketRight") && !/^(INPUT|SELECT|TEXTAREA)$/.test((document.activeElement || {}).tagName || "")){   // 부채 각도 5도 · Shift 15도
+    const k = keyOf(st.sel); if(k !== "swing" && !SWF[k]) return;
+    e.preventDefault(); const v = cur(k); setNum("r", (v.r || 0) + (e.code === "BracketRight" ? 1 : -1) * (e.shiftKey ? 15 : 5)); return;
+  }
+  if(!/^Arrow/.test(e.key) || /^(INPUT|SELECT|TEXTAREA)$/.test((document.activeElement || {}).tagName || "")) return;
+  e.preventDefault();
+  const n = e.shiftKey ? 10 : 1;
+  frame.contentWindow.postMessage({lab:"skup", type:"nudge", dx:e.key === "ArrowLeft" ? -n : e.key === "ArrowRight" ? n : 0, dy:e.key === "ArrowUp" ? -n : e.key === "ArrowDown" ? n : 0}, "*");
+});
+addEventListener("resize", layout);
+frame.src = "../game.html?skuplab";
+layout(); badge();
+</script>
+</body>
+</html>

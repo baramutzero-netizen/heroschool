@@ -7,10 +7,15 @@
 /* 목업의 책상 · 무대 덮개는 쓰지 않는다 — 뒤는 게임 화면 (덮개는 .rbscrim 이 창 전체에) */
 #fitIn .desk,#fitIn > .scrim{display:none}
 #fitIn .book{outline:none}
-/* 스킬 강화 — 강화 포인트가 있을 때 카드 머리 오른쪽 (게임의 스킬 강화 팝업) */
+/* 강화 포인트 — 있을 때 스킬 카드 머리 오른쪽 (스킬 강화 단추는 1014 에 뺐다 — 왼쪽 목록의 '스킬 강화 가능!' 쪽지로 연다) */
 .skc .spr{position:absolute;right:6px;top:1px;display:flex;align-items:center;gap:6px;color:var(--ink3);line-height:18px;white-space:nowrap}
 .skc .spr b{font:12px/18px "Mulmaru Mono",Mulmaru;color:var(--brass);font-weight:400}
-.skc .spr .pbtn{height:20px;padding:0 8px;box-shadow:inset 2px 2px #fff0c980,inset -2px -2px #60422140,0 1px #30271e}
+/* 스킬 강화 가능 — 강화 포인트가 남은 학생(spReady 와 같은 기준)은 목록의 초상 원 위쪽에 걸친 쪽지 (1014 · 모양은 원 아래 꼬리표와 같다 · 원을 따라 옮긴다).
+   누르면(Enter · Space 도) 게임의 스킬 강화 팝업 — 학생 상세의 스킬 강화 단추 대신. 마우스를 올리면 소속 팀 꼬리표처럼 밝아진다 */
+.cell .skb{position:absolute;left:50%;top:15px;transform:translateX(-50%);translate:var(--lring-x,0px) var(--lring-y,0px);z-index:3;cursor:pointer}
+.cell .skb:hover{background:#fff3d6}
+.cell .skb:focus-visible{outline:2px dashed var(--sel);outline-offset:1px}
+.teammode .cell.oth .skb{opacity:.45}
 /* 유물 해제 — 장착한 칸 오른쪽 (예전 학생 상세의 '해제'와 같다 — 보관함으로) */
 .slot .rn{min-width:0}
 .slot .rn .rnm{overflow:hidden;text-overflow:ellipsis;min-width:0}

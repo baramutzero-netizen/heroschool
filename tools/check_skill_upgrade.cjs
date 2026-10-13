@@ -1,0 +1,47 @@
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE || 'playwright');
+const fs=require('fs');const assert=require('assert');
+(async()=>{const browser=await chromium.launch({channel:'msedge',headless:true});
+const page=await browser.newPage({viewport:{width:1280,height:900}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+await page.goto('file:///D:/heroschool/heroschool.html?hsf=1&lang=ko');await page.waitForTimeout(2000);
+console.log('frames',page.frames().map(f=>f.url()));
+const frame=page.frames().find(f=>f.url().includes('hsf=1'))||page.mainFrame();
+await frame.evaluate(()=>{newGame('강화 검증');S.students[0].job='paladin';S.students[0].sp=2;S.students[0].skOpts=null;skillUpModal(S.students[0].id);});await page.waitForTimeout(1700);
+assert.equal(await frame.locator('[data-skopt]').count(),3);assert(await frame.locator('.suc-reroll').isDisabled());
+await page.screenshot({path:'D:/heroschool/captures/skill-upgrade-choice-ko.png'});
+const saved=await frame.evaluate(()=>JSON.stringify(S.students[0].skOpts));
+await frame.locator('.suc-later').click();await frame.evaluate(()=>skillUpModal(S.students[0].id));await page.waitForTimeout(1600);
+assert.equal(await frame.evaluate(()=>JSON.stringify(S.students[0].skOpts)),saved);
+const before=await frame.evaluate(()=>{const st=S.students[0],o=hydrateOpt(st,st.skOpts[0]);return {sp:st.sp,d:skUpDiff(st,o)};});
+await frame.locator('[data-skopt="0"]').click();
+const after=await frame.evaluate(id=>({sp:S.students[0].sp,lv:skLevel(S.students[0],id),g:skG(S.students[0],id),opts:S.students[0].skOpts}),before.d.id);
+assert.equal(after.sp,before.sp-1);assert.equal(after.lv,before.d.lv1);assert.equal(after.g,before.d.g1);assert.equal(after.opts,null);
+await page.screenshot({path:'D:/heroschool/captures/skill-upgrade-result-ko.png'});
+await frame.locator('.suc-done').click();await page.waitForTimeout(1600);
+await frame.evaluate(()=>{S.items.exoticFan=2;skillUpModal(S.students[0].id);});await page.waitForTimeout(1600);
+const sp=await frame.evaluate(()=>S.students[0].sp);await frame.locator('.suc-reroll').click();await page.waitForTimeout(300);
+await page.screenshot({path:'D:/heroschool/captures/skill-upgrade-before-fan.png'});await page.waitForTimeout(370);
+await page.screenshot({path:'D:/heroschool/captures/skill-upgrade-fan-hit.png'});
+assert.equal(await frame.evaluate(()=>S.items.exoticFan),1);assert.equal(await frame.evaluate(()=>S.students[0].sp),sp);
+await frame.locator('.suc-later').click();const rerolled=await frame.evaluate(()=>JSON.stringify(S.students[0].skOpts));await page.waitForTimeout(2000);assert.equal(await frame.locator('.suc-scene').count(),0);
+await frame.evaluate(()=>skillUpModal(S.students[0].id));await page.waitForTimeout(1600);assert.equal(await frame.evaluate(()=>JSON.stringify(S.students[0].skOpts)),rerolled);
+const jobs=await frame.evaluate(()=>Object.keys(SK_CHOICE_ART));
+for(const job of jobs){await frame.evaluate(j=>{const st=S.students[0];st.job=j;st.skOpts=null;st.sp=1;skillUpModal(st.id);},job);await page.waitForTimeout(100);assert.equal(await frame.locator('[data-skopt]').count(),3);}
+await page.waitForTimeout(1600);
+const broken=await frame.locator('.suc-scene img').evaluateAll(imgs=>imgs.filter(i=>!i.complete||!i.naturalWidth).map(i=>i.src));assert.deepEqual(broken,[]);
+await page.setViewportSize({width:390,height:844});await page.waitForTimeout(300);await page.screenshot({path:'D:/heroschool/captures/skill-upgrade-mobile.png',fullPage:true});
+assert.equal(await frame.evaluate(()=>document.querySelector('.suc-scene').scrollWidth>document.querySelector('.suc-scene').clientWidth),false);
+await frame.locator('.suc-later').scrollIntoViewIfNeeded();await page.screenshot({path:'D:/heroschool/captures/skill-upgrade-mobile-bottom.png'});await frame.locator('.suc-later').click();assert.equal(await frame.locator('.suc-scene').count(),0);
+await page.goto('file:///D:/heroschool/heroschool.html?hsf=1&lang=en');await page.setViewportSize({width:1280,height:900});await page.waitForTimeout(1800);
+const en=page.frames().find(f=>f.url().includes('hsf=1'))||page.mainFrame();await en.evaluate(()=>{newGame('Upgrade QA');S.students[0].sp=1;S.students[0].job='paladin';S.students[0].skOpts=null;skillUpModal(S.students[0].id);});await page.waitForTimeout(1700);
+await page.screenshot({path:'D:/heroschool/captures/skill-upgrade-choice-en.png'});console.log('EN text',await en.locator('.suc-scene').innerText());
+assert.equal(await en.locator('.suc-card').first().evaluate(e=>getComputedStyle(e).boxShadow),'none');
+// Saved offers survive an actual page reload; normal opening never grants a fan.
+const persisted=await en.evaluate(()=>({id:S.students[0].id,opts:JSON.stringify(S.students[0].skOpts)}));
+await page.reload();await page.waitForTimeout(1800);await page.evaluate(id=>skillUpModal(id),persisted.id);await page.waitForTimeout(1600);assert.equal(await page.evaluate(()=>JSON.stringify(S.students[0].skOpts)),persisted.opts);
+const caps=await page.evaluate(()=>{const st=S.students[0],sk=skillsOf(st)[0],id=sk.id;st.sp=3;st.skOpts=[{id,ev:2},{id,ev:2},{id,ev:2}];modOf(st,id).grade=SK_G_MAX;skillUpModal(st.id);return {d:skUpDiff(st,hydrateOpt(st,st.skOpts[0])),sp:st.sp};});
+assert.equal(caps.d.ev,0);await page.waitForTimeout(1600);await page.locator('[data-skopt="0"]').click();assert.equal(await page.evaluate(()=>S.students[0].sp),caps.sp-1);
+await page.locator('.suc-done').click();await page.evaluate(()=>{closeModal();const st=S.students[0];for(const t of skUpPool(st))modOf(st,optId(t)).up=SK_LV_MAX-1;st.skOpts=null;skillUpModal(st.id);});assert.equal(await page.locator('.suc-scene').count(),0);
+// Every imported frame and mark is loadable from the built deployment page.
+await page.goto('file:///D:/heroschool/site/index.html?hsf=1&lang=en');await page.waitForTimeout(1700);
+const missing=await page.evaluate(async()=>{const urls=Object.values(SK_CHOICE_ART).flatMap(j=>['thinking','before-fan','fan-hit','success','success-back','success-front'].map(f=>SK_CHOICE_ROOT+j+'/'+f+'.png'));urls.push(SK_CHOICE_ROOT+'fan.svg',SK_CHOICE_ROOT+'anticipation.png',SK_CHOICE_ROOT+'impact.png',SK_CHOICE_ROOT+'room.webp');return (await Promise.all(urls.map(url=>new Promise(resolve=>{const im=new Image();im.onload=()=>resolve(null);im.onerror=()=>resolve(url);im.src=url;})))).filter(Boolean);});assert.deepEqual(missing,[]);
+assert.deepEqual(errors,[]);console.log('PASS: 16 jobs, persistence, real upgrade values, one-point spend, fan consumption, interrupted animation, mobile, EN');await browser.close();})().catch(e=>{console.error(e);process.exit(1)});

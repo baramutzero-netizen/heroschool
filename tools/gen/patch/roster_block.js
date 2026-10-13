@@ -188,7 +188,7 @@ function renderList(){
     const aria = tm ? ` title="${h(st.name)} — 누르면 ${h(into)}에 넣는다 · 끌어서 자리에 놓을 수도 있다"` : ` aria-pressed="${st.id === RB.sel}"`;
     return `<button class="cell${cls}" data-sid="${h(st.id)}"${aria}>
       <span class="epi" data-ed="lepi">${st.epithet ? "“" + h(st.epithet) + "”" : ""}</span>
-      ${faceHTML(st, "lring")}${listTag(st)}
+      ${faceHTML(st, "lring")}${listTag(st)}${st.sp > 0 ? `<span class="tag tm skb" data-skup="${h(st.id)}" role="button" tabindex="0" title="눌러서 스킬 강화 — 강화 포인트 ${st.sp}">스킬 강화 가능!</span>` : ""}
       <span class="nm" data-ed="lname">${h(st.name)}</span></button>`;
   }).join("") : `<p style="grid-column:1/-1;margin:20px 0;color:var(--ink3);text-align:center">학생이 없다.</p>`;
   $("tbtn").title = `재학생 ${L.length}명 — ${tm ? "누르면 학생 상세로 돌아간다" : "누르면 오른쪽 쪽에서 팀 · 진형 · 배치를 짠다"}`;
@@ -420,7 +420,7 @@ function openTeamPicker(tag){
 let DRAG = null, dragEat = false;
 function dragSrc(e){
   if(!RB.open || RB.mode !== "team" || e.button !== 0) return null;
-  if(e.target.closest("[data-tset],[data-unslot],.slip")) return null;
+  if(e.target.closest("[data-tset],[data-skup],[data-unslot],.slip")) return null;
   const cell = e.target.closest("#grid .cell");
   if(cell) return {kind: "stu", id: cell.dataset.sid};
   const fs = e.target.closest(".fs.fill[data-slot]");
@@ -492,7 +492,7 @@ function skillList(st){ return (st.passive ? [Object.assign({id:"passive", kindL
 function skillCard(st){
   const L = skillList(st);
   RB.sk = Math.max(0, Math.min(RB.sk, L.length - 1));
-  const up = st.sp > 0 ? `<span class="spr">강화 포인트 <b>${st.sp}</b><button class="pbtn pri" id="skUp" data-skup="${h(st.id)}">스킬 강화</button></span>` : "";
+  const up = st.sp > 0 ? `<span class="spr">강화 포인트 <b>${st.sp}</b></span>` : "";   // 스킬 강화 단추는 뺐다 (1014 사용자 — 왼쪽 목록의 '스킬 강화 가능!' 쪽지로 연다)
   return `<div class="card skc"><span class="cap">패시브 · 스킬<i>강화 상한 Lv.${SK_LV_MAX}</i></span>${up}
     <div class="sks">${L.map((s, i) => `<button class="sk${i === RB.sk ? " on" : ""}" data-sk="${i}">
       <span class="ic"><img class="fr" src="${h(SKILL_ICON_FRAME[s.grade] || SKILL_ICON_FRAME.D)}" alt=""><img class="ar" src="${h(s.icon || "")}" alt=""></span>
@@ -676,7 +676,6 @@ function bindDetail(st){
   });
   $$("#recCard .rt").forEach(b => b.onclick = () => setRecTab(b.dataset.rt));
   const e = $("ebtn"); if(e) e.onclick = () => { RB.want = true; renameStudent(st.id); };          // 게임의 이름 변경 팝업 (책 위에 뜬다)
-  const u = $("skUp"); if(u) u.onclick = () => { RB.want = true; skillUpModal(st.id); };           // 게임의 스킬 강화 팝업
   $$("#det [data-relic-go]").forEach(b => b.onclick = () => goRelic(b.dataset.relicGo));          // 빈 유물 칸 → 유물 보관고
   $$("#det [data-unequip]").forEach(b => b.onclick = () => {                                     // 유물 해제 — 예전 학생 상세와 같다 (보관함으로)
     const [sid, idx] = b.dataset.unequip.split("|"), s = rawById(sid);
@@ -709,6 +708,13 @@ function setRecTab(rt){                                  // 고른 탭은 다른
   bindDetail(st);
 }
 
+/* 스킬 강화 — 목록의 '스킬 강화 가능!' 쪽지 (1014). 학생 상세 쪽이면 그 학생을 고른 뒤 게임의 스킬 강화 팝업 (책 위에 · 닫으면 render() 끝에서 책을 다시 그린다) */
+function openSkillUp(id){
+  const st = stuById(id);
+  if(!st || !(st.sp > 0)) return;
+  if(RB.mode !== "team") select(id, true);
+  RB.want = true; skillUpModal(id);
+}
 /* ── 고르기 · 정렬 ── */
 function select(id, anim){
   if(RB.sel === id) return;
@@ -760,6 +766,8 @@ function wire(){
   $("spbtn").onclick = () => { RB.want = true; autoSkillUpConfirm(); };     // 게임의 임의 강화 확인 창 (책 위에) → 결과 창 · 책은 render() 끝에서 다시 그린다
   $("sort").onchange = e => setSort(e.target.value);
   $("grid").addEventListener("click", e => {
+    const su = e.target.closest("[data-skup]");                       // 스킬 강화 가능! 쪽지 — 게임의 스킬 강화 팝업 (1014)
+    if(su){ e.stopPropagation(); openSkillUp(su.dataset.skup); return; }
     const tg = e.target.closest("[data-tset]");                       // 팀 편성 — 꼬리표는 소속 팀 쪽지
     if(tg){ e.stopPropagation(); openTeamPicker(tg); return; }
     const c = e.target.closest(".cell");
@@ -767,6 +775,8 @@ function wire(){
     if(RB.mode === "team") placeFromList(c.dataset.sid); else select(c.dataset.sid, true);
   });
   $("grid").addEventListener("keydown", e => {
+    const su = e.target.closest && e.target.closest("[data-skup]");
+    if(su && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); e.stopPropagation(); openSkillUp(su.dataset.skup); return; }
     const tg = e.target.closest && e.target.closest("[data-tset]");
     if(tg && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); e.stopPropagation(); openTeamPicker(tg); return; }
     const cells = $$("#grid .cell");
