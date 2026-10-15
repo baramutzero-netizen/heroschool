@@ -1,0 +1,38 @@
+<!doctype html><html lang="ko"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>암흑 사제 · 영웅의 기상</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#10181e;color:#e8e1ce;font:15px 'Malgun Gothic',sans-serif}header,footer,.controls{max-width:1100px;margin:auto;padding:18px 24px}header{display:flex;justify-content:space-between;align-items:end}h1{margin:5px 0;font-size:26px}small{color:#a5b4bd}.eyebrow{color:#dcb674;letter-spacing:3px;font-size:12px}main{max-width:1100px;margin:auto;border:1px solid #806b44;background:#0a1017}canvas{display:block;width:100%;image-rendering:pixelated}.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}button,a{color:#f4dfad}button{background:#263642;border:1px solid #a18b60;padding:10px 16px;cursor:pointer;border-radius:4px}button:hover{background:#3a4d59}label{font-size:13px}input{accent-color:#dcb674}footer{font-size:13px;line-height:1.8;color:#aab6be}.row{display:flex;gap:20px;flex-wrap:wrap}.row a{font-size:13px}#status{min-width:180px;color:#e9c57d}@media(prefers-reduced-motion:reduce){canvas{scroll-behavior:auto}}</style>
+<header><div><div class="eyebrow">DARK PRIEST / HEROIC RESOLVE</div><h1>영웅의 기상</h1><small>의식 저하 상태의 피격을 계기로, 꺾이지 않는 의지를 드러내는 순간</small></div><small>전투 연출 시안 01 · 암흑 사제</small></header>
+<main><canvas id="screen" width="960" height="540" aria-label="암흑 사제 영웅의 기상 전투 연출 목업"></canvas></main>
+<div class="controls"><button id="replay">▶ 발동 연출 재생</button><button id="freeze">발동 포즈 보기</button><button id="idle">기존 전투 포즈</button><span id="status" aria-live="polite">준비 중</span></div>
+<div class="controls"><label><input id="back" type="checkbox" checked> 뒤쪽 후광</label><label><input id="front" type="checkbox" checked> 앞쪽 입자</label><label><input id="dim" type="checkbox" checked> 주변 암전</label><label><input id="zoom" type="checkbox" checked> 발동 순간 확대</label><label><input id="loop" type="checkbox"> 반복 재생</label></div>
+<footer><div class="row"><a href="resolve-character.png">캐릭터 투명 원화</a><a href="resolve-aura.png">후광 투명 원화</a><button id="export">현재 장면 PNG 저장</button></div>
+피격 → 짧은 정지 → 주변 암전·확대 → 결의 포즈와 후광 → 전투 복귀.<br>캐릭터·후광·앞쪽 입자는 독립적으로 표시됩니다. 신규 원화는 목업에서 축소 표시하며 최종 전투 시트 규격의 정리는 별도입니다.<br>확률 판정·HP 회복·상태 해제는 구현하지 않았습니다. 현재 시안은 발동을 강제로 재생하며 실제 게임 파일을 변경하지 않습니다.</footer>
+<script>
+const $=id=>document.getElementById(id), cv=$('screen'), ctx=cv.getContext('2d');
+const files={old:'darkpriest-existing.png',hero:'resolve-character.png',aura:'resolve-aura.png',bg:'battle-background.webp'},img={};
+let mode='freeze',start=0,t=2100,ready=false;
+const load=(k,p)=>new Promise((res,rej)=>{const i=new Image();i.onload=()=>{img[k]=i;res()};i.onerror=()=>rej(Error(p));i.src=p});
+function lowRes(im,size){const c=document.createElement('canvas');c.width=c.height=size;const x=c.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(im,0,0,size,size);return c}
+function text(s,x,y,size,color='#f7e8bf',align='center'){ctx.font='bold '+size+'px "Malgun Gothic",sans-serif';ctx.textAlign=align;ctx.fillStyle='#101720';ctx.fillText(s,x+2,y+2);ctx.fillStyle=color;ctx.fillText(s,x,y)}
+function oldSprite(x,y,row=0,frame=0,scale=1){ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);ctx.drawImage(img.old,frame*256,row*256,256,256,-128,-174,256,256);ctx.restore()}
+function particleLayer(p,x,y,scale){ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);for(let n=0;n<22;n++){let a=n*2.399,phase=(p*.43+n*.083)%1,r=35+phase*65;let px=Math.round(Math.cos(a)*r),py=Math.round(-15-Math.sin(a)*r-phase*42);ctx.globalAlpha=(1-phase)*.9;ctx.fillStyle=n%3?'#d5bbff':'#ff749c';let z=n%3?2:3;ctx.fillRect(px-z,py,z*2+1,1);ctx.fillRect(px,py-z,1,z*2+1)}ctx.restore()}
+function draw(ms){ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,960,540);ctx.drawImage(img.bg,0,0,960,540);ctx.fillStyle='rgba(7,16,23,.22)';ctx.fillRect(0,0,960,540);
+let active=ms>=850&&ms<3750, impact=ms>=480&&ms<850, fade=active?Math.min(1,(ms-850)/200,(3750-ms)/380):0;
+oldSprite(195,385,0,0,.85);oldSprite(320,405,0,0,.9);
+ctx.fillStyle='rgba(11,19,28,.84)';ctx.fillRect(26,24,220,54);text('전투 연출 테스트',42,47,13,'#e3d1a8','left');text('암흑 사제 · 의식 저하',42,67,14,'#dba790','left');
+ctx.fillStyle='rgba(11,19,28,.9)';ctx.fillRect(30,449,900,70);text('암흑 사제',52,476,16,'#fff0c7','left');ctx.fillStyle='#42343c';ctx.fillRect(52,488,170,9);ctx.fillStyle='#a95151';ctx.fillRect(52,488,17,9);text('HP · 위험',236,497,12,'#dca697','left');text('확률·회복·상태 변경 없이 연출만 재생',900,489,12,'#99aab5','right');
+if(active&&$('dim').checked){ctx.fillStyle='rgba(3,8,16,'+(.79*fade)+')';ctx.fillRect(0,0,960,540)}
+if(!active){oldSprite(475+(impact?Math.sin(ms*.1)*3:0),410,impact?2:0,0,1.2);if(impact)text('피격',480,273,22,'#efc1a2');}
+if(active){const z=$('zoom').checked?2.4:1.15,x=480,y=$('zoom').checked?404:410;ctx.save();ctx.globalAlpha=fade;ctx.translate(x,y);ctx.scale(z,z);
+if($('back').checked){ctx.globalAlpha=fade*.9;ctx.drawImage(img.auraPixel,-102,-186,204,204)}ctx.globalAlpha=fade;ctx.drawImage(img.heroPixel,-73,-136,146,146);ctx.restore();
+if($('front').checked)particleLayer((ms-850)/1000,x,y-50,z);
+ctx.globalAlpha=fade;ctx.fillStyle='rgba(12,21,28,.94)';ctx.fillRect(290,420,380,58);ctx.fillStyle='#c1a26c';ctx.fillRect(290,420,380,2);ctx.fillRect(290,477,380,1);text('영웅의 기상',480,456,27);text('이 어둠조차, 내 의지를 꺾지 못해.',480,503,15,'#e0d3bb');ctx.globalAlpha=1}
+if(ms>=3750&&ms<4600)text('전투 복귀',480,105,20,'#e7d2a0');
+}
+function animate(now){if(!ready)return; if(mode==='play'){t=now-start;if(t>4800){if($('loop').checked){start=now;t=0}else{mode='idle';t=0}}} draw(t);const msg=mode==='freeze'?'발동 순간 · 정지':t<480?'의식 저하 · 대기':t<850?'피격 · 짧은 정지':t<1200?'암전 · 기상 발동':t<3750?'결의 포즈 · 후광': '전투 복귀';if($('status').textContent!==msg)$('status').textContent=msg;requestAnimationFrame(animate)}
+$('replay').onclick=()=>{mode='play';start=performance.now();t=0};$('freeze').onclick=()=>{mode='freeze';t=2100};$('idle').onclick=()=>{mode='idle';t=0};
+$('export').onclick=()=>{const a=document.createElement('a');a.download='darkpriest-heroic-resolve-mockup.png';try{a.href=cv.toDataURL('image/png');a.click()}catch(e){$('status').textContent='브라우저의 로컬 이미지 저장 제한'}};
+Promise.all(Object.entries(files).map(([k,p])=>load(k,p))).then(()=>{img.heroPixel=lowRes(img.hero,256);img.auraPixel=lowRes(img.aura,256);ready=true;requestAnimationFrame(animate)}).catch(e=>{$('status').textContent='이미지를 불러오지 못했습니다: '+e.message});
+</script></html>
+
+
+

@@ -29,7 +29,7 @@ LOADER = '''<div id="bootLoader" role="status" aria-live="polite">
 #bootLoader .bl-skip{margin-top:16px;padding:7px 14px;border-radius:6px;border:1px solid var(--line-soft,#DEDCE8);background:transparent;color:var(--muted,#5B5D72);font:inherit;font-size:12px;cursor:pointer}
 #bootLoader .bl-skip:hover{color:var(--text,#191A24);border-color:var(--brass-b,#B98E23)}
 @media (prefers-reduced-motion:reduce){#bootLoader .bl-bar i{animation-duration:3s}}
-html[lang=en] #bootLoader .ko,html:not([lang=en]) #bootLoader .en{display:none}
+html[lang=en] #bootLoader .ko,html[lang=ja] #bootLoader .ko,html:not([lang=en]) #bootLoader .en,html:not([lang=ja]) #bootLoader .ja{display:none}
 </style>
 <div class="bl-in">
 <svg viewBox="0 0 40 40" aria-hidden="true" shape-rendering="crispEdges">
@@ -41,21 +41,27 @@ html[lang=en] #bootLoader .ko,html:not([lang=en]) #bootLoader .en{display:none}
         <path fill="#fff0be" d="M18 10h4v12h-4zM16 12h2v8h-2z"/>
         <path fill="#e7b953" d="M12 22h16v4h-6v4h-4v-4h-6zM18 30h4v2h-4zM10 14h2v2h-2zM28 14h2v2h-2z"/>
       </svg>
-<p class="bl-t"><span class="ko">용사 학원 키우기</span><span class="en">My Hero's Academy</span></p>
-<p class="bl-s"><span class="ko">학원이 망했다</span><span class="en">The Academy Went Under</span></p>
+<p class="bl-t"><span class="ko">용사 학원 키우기</span><span class="en">My Hero's Academy</span><span class="ja">わが英雄のアカデミー</span></p>
+<p class="bl-s"><span class="ko">학원이 망했다</span><span class="en">The Academy Went Under</span><span class="ja">学園がつぶれた</span></p>
 <div class="bl-bar" role="progressbar" aria-label="리소스 받기" aria-valuemin="0" aria-valuemax="100"><i></i></div>
-<p class="bl-m"><span class="ko">불러오는 중…</span><span class="en">Loading…</span></p>
+<p class="bl-m"><span class="ko">불러오는 중…</span><span class="en">Loading…</span><span class="ja">読み込み中…</span></p>
 </div>
 </div>
-<script>(function(){if(window.HS_LANG!=="en")return;document.title="My Hero's Academy - The Academy Went Under";var b=document.querySelector("#bootLoader .bl-bar");if(b)b.setAttribute("aria-label","Downloading resources");})();</script>
+<script>(function(){var L=window.HS_LANG,t,a;if(L==="en"){t="My Hero's Academy - The Academy Went Under";a="Downloading resources";}else if(L==="ja"){t="\u308f\u304c\u82f1\u96c4\u306e\u30a2\u30ab\u30c7\u30df\u30fc \u2015 \u5b66\u5712\u304c\u3064\u3076\u308c\u305f";a="\u30ea\u30bd\u30fc\u30b9\u3092\u8aad\u307f\u8fbc\u307f\u4e2d";}else return;document.title=t;var b=document.querySelector("#bootLoader .bl-bar");if(b)b.setAttribute("aria-label",a);})();</script>
 '''
 
 FONT_RE = re.compile(r"@font-face\{[^{}]*?url\(data:font/[^)]*\)[^{}]*\}")
+I18N_TAIL_RE = re.compile(r"\n?<!-- I18N_TAIL_START -->[\s\S]*?<!-- I18N_TAIL_END -->\n?")
 
 
 def boot_split(head, body):
-    """head 에서 data: 글꼴을 빼고, body 앞에 로딩 화면을 붙인다. 반환: (head, body, tail)"""
+    """head 에서 data: 글꼴을 빼고, body 앞에 로딩 화면을 붙인다. 반환: (head, body, tail)
+    1014 — 일본어 글꼴 스크립트(I18N_TAIL · tools/i18n/i18n_build.py)는 lateFonts 뒤로 옮긴다 — @font-face 는 뒤에 쓴 것이 앞선다."""
     fonts = FONT_RE.findall(head)
     head = FONT_RE.sub("", head)
     tail = ('<style id="lateFonts">\n' + "\n".join(fonts) + "\n</style>") if fonts else ""
+    m = I18N_TAIL_RE.search(body)
+    if m:
+        body = body[:m.start()] + "\n" + body[m.end():]
+        tail = (tail + "\n" if tail else "") + m.group(0).strip("\n")
     return head, LOADER + body, tail

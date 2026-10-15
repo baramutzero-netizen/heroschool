@@ -153,7 +153,122 @@ python3 ~/hs.py pack 이름            # 보낼 폴더 + 커밋 목록 (끝에 8
 - 학생 명부 책은 그림자 DOM(`#rbHost`) 안 — 테스트에서 `document.getElementById('rbHost').shadowRoot` 로 찾는다 (Playwright 의 `locator('#rbHost …')` 는 그대로 뚫고 들어간다).
   책은 넓은 화면(게임이 보는 폭 1100px 이상 — 1013 부터 방향은 안 본다)에서만 뜬다 — `open_game(p, w=1440, h=1000)`. 상태는 `RBK.isOpen()` · `RBK.state`.
 
-## 7. 최근 작업 · 현재 상태 (2026-10-14 · 빌드 1014-0103)
+## 7. 최근 작업 · 현재 상태 (2026-10-15 · 빌드 1015-1710)
+
+- **전투 배율 · 필살 게이지 · 장기전 + 스타일리시 숫자가 두 번 뜨던 것 (1015 · 빌드 1015-1710 · 규칙 8 → 9)** — 사용자: '스타일리시 전투 줌인 된 상태에서
+  피해 입는 부분이 보인 다음 줌아웃된 후에도 한번 더 피해입는게 보이고있어' · '모든 피해량/회복량/실드량 30% 증가, 받는 피해량 20% 증가, 필살 게이지는 행동마다 +26.5,
+  맞을 때 마다 +12.5, 장기전 규칙은 31번째 행동부터 적용되도록'.
+  - **버그** — `camLoop` 이 차례를 마치고 `i = e` 로 옮겨 camQuiet 로 다시 그릴 때 `unitHtml` 이 프레임 e 의 pop(피해 · 회복 · 보호막 · MISS · DOWN)을 또 그려
+    같은 숫자가 다시 떠올랐다 (줌인에서 `camPop` 이 이미 보였다). camQuiet 에서는 pop 을 그리지 않는다. 그 프레임이 외침 줄이면(e === j) 외침 · 필살기 그림(speech · ultimateCasts)도
+    다시 걸지 않는다. 시험 — scratchpad `cp_dup.py`(가상 시계 — 줌인의 숫자가 4초 안에 줌아웃 뒤 같은 유닛 · 같은 글로 다시 뜨는지: 고치기 전 113 중 71 → 0 · ×1 · ×3).
+  - **전투 배율 (runBattle)** — `DMG_K` 바로 아래 상수 `BAL_DEAL 1.3 · BAL_TAKE 1.2 · BAL_HEAL 1.3 · BAL_SHIELD 1.3` (학생 · 적 · 몬스터 · 마왕 모두 똑같이).
+    직접 피해(`dealDamage` × BAL_DEAL × BAL_TAKE = ×1.56) · 지속 피해(차례마다 `f.val` 에) · 회복(회복 스킬 · 필살기 회복 · 성역 · 대치유 — 부활 체력 포함 · 자연 회복 regen · regenAll ·
+    걸린 지속 회복 f.regen) · 보호막(보호막 스킬 · 성역 · ult_aoe 의 shieldDef · 팔라딘 수호 서약). 준 피해의 몇 % 인 것(흡혈 · drain · ult_drain · 저주 회복 · ult_aoe shieldSelf)은
+    따로 곱하지 않는다 — 피해를 따라 ×1.56. 마왕의 마지막 일격(`DEMON_FINAL` 99999)은 그대로.
+  - **필살 게이지** — `ULT_ACT 26.5`(행동 · 예전 17) · `ULT_HIT 12.5`(맞을 때 · 예전 7). × 필살 게이지 능력치 · 몽크 연공은 그대로, 스킬이 주는 게이지(+30 등)도 그대로.
+  - **장기전** — `FATIGUE_AT 30` — 31번째 행동부터 직접 피해 +2.5%씩 (최대 ×2.6 · 94번째부터) · 알림 줄도 31번째. 예전 61번째부터(×2.6 은 124번째).
+  - **설명 글** — 최대 체력 % 로 적힌 넷을 새 값으로 (game.html · en · ja `data.json`): 재생의 씨앗 3 → 3.9% · 야수화 6 → 7.8% · 수호 서약 8 → 10.4% · 자연 회복 3 → 3.9%.
+    전투 로그 '지속 회복 — 차례마다 최대 체력 N%' 도 × BAL_HEAL (소수 한 자리).
+  - **효과** (2년 자동 진행 32판 · 전투 1,542개를 같은 씨앗 8번씩 예전 규칙 · 새 규칙으로) — 행동 수 32.2 → 20.4 (−37% · 원정 −36 · 친선전 −36 · 봄 신인전 −38 · 가을 대회 −37) ·
+    장기전까지 가는 전투 6 → 13% · 우리 편 승률 75.9 → 74.5% (봄 신인전 76 → 71 · 가을 대회 53 → 50 · 원정 89 그대로) · 같은 전투에서 승패가 바뀌는 것 11%.
+    ×1 재생 시간 평균 — 심플 37 → 24초 · 스타일리시 3분 18초 → 2분 5초 (가상 시계로 잰 표본에 행동 · 필살기 · 시험 수 회귀 · 실시간 재생과 2% 차이).
+  - 시험 — scratchpad `cp_equiv.py`(새 빌드 runBattle == 예전 빌드 runBattle + 같은 수정 — 336 전투 모든 프레임 같음) · `bal_exp3.py`(위 효과) · `bal_time*.py` ·
+    `cp_regen.py`(한 · 영 · 일 설명 · 로그 · 수호 서약 10.4%) · `reg3y.py`(3년 오류 0) · `hs.py i18n` · `check_ja.py` 통과.
+
+- **마스터 노트 책상 소리 (1015 · 빌드 1015-1539)** — 사용자: '마스터 노트에서 마스터 육성/튜토리얼/스케줄/학생 명부 소품 클릭할 때 책 넘기는 사운드 추가 ·
+  마스터 육성에서 버튼들 클릭할 때 사운드 추가'.
+  - **책장 넘기는 소리** — `mdeskAct` 가 `MDESK_FLIP`(books · map · scroll · book — 학원 정보 패 info 는 빼고)이면 `bookFlipSfx()` — `book_flip1 ~ 3` 중 하나를 빠르기 0.94 ~ 1.06 으로.
+    책상(.mdesk-art)을 누르기 시작할 때 `bookFlipLoad()` 로 미리 받는다. 녹음 소리를 받을 수 없어(작업 공간 인터넷이 막혀 opengameart 의 CC0 소리를 못 받았다)
+    `tools/gen/sfx/book_flip.py` 가 종이 소리를 합성한다 (드는 바스락 → 휙 → 내려앉는 탁 · 씨앗 고정이라 몇 번 돌려도 같다) → `bgm/book_flip1 · 2 · 3.ogg`.
+    더 나은 녹음이 있으면 같은 이름으로 덮어쓰면 된다 (SFX 표 v .9).
+  - **마스터 육성 단추** — 메뉴 소리처럼 문서에 한 번 거는 `MASTER_SFX`(책상의 마스터 육성 창 · 메뉴의 마스터 육성 화면 · 남은 포인트 알림 창 `masterPointModal`):
+    + 는 메뉴 소리 ×1.12 · − 는 ×0.9 · 되돌리기 ×0.85 · 확정은 레벨업 소리 · 마스터 육성 창(`.mdesk-pop[data-mdpop="master"]`)의 닫기는 메뉴 소리. 막힌 단추는 소리 없음.
+  - 시험 — scratchpad `desk_sfx.py`(sfxPlay 를 가로채 소품 다섯 · 단추 일곱 · 막힌 단추 · 학원 정보 닫기).
+
+- **튜토리얼 닫기 · 후광 멈춤 (1015 · 빌드 1015-1517)** — 사용자: '게임 내에서 접근 가능한 튜토리얼에 닫기 버튼 추가. 현재는 모든 튜토리얼을 다 봐야지 닫을 수 있어' ·
+  '후광이 전부다 빙글빙글 돌고있는데 그러지 말아줘'.
+  - **튜토리얼** — `showTutorial` 이 게임 안에서 다시 보는 길(튜토리얼 단추 `#btnTut` · 마스터 노트 책상의 지도 `mdeskAct('map')` — `opt.start` 없음)이면
+    마지막 장이 아닌 모든 장에 '닫기'(`#tutClose` · ghost 단추 · 영어 Close · 일본어 閉じる — 표에 이미 있는 말)를 둔다. 마지막 장은 예전처럼 '다음' 자리가 '닫기'.
+    처음 시작 때(`opt.start`)는 그대로 '건너뛰기'만.
+  - **후광** — 영웅의 기상 장면의 후광(`.hr-aura`)이 14초에 한 바퀴 돌던 `hrAuraSpin` 을 지웠다 (나타나며 커지기 · 밝기 숨쉬기 · 반짝이 · 1.07배 커지기는 그대로).
+    herospirit `heroic-resolve-game-v3/` · 목업(battle-v1 ~ v4)은 그때 모습 그대로.
+  - 시험 — scratchpad `tut_close.py`(한 · 영 · 일 · 1280 · 760 — 닫기 단추 · 누르면 닫힘 · 마지막 장 · 지도 길 · 처음 시작은 건너뛰기만) · `aura_chk.py`(animation 에 hrAuraSpin 없음).
+
+- **전투 대사 — 선공 · 막타 · 첫 치명타 + 기절 두 번 쓰러짐 고침 (1015 · 빌드 1015-1452 · 규칙 그대로 8)** — 사용자: '기절 체크가 발생해 쓰러지고 대사를 말한 다음
+  한번 더 쓰러지고 있어' · '처음 행동하는 캐릭터는 선공 대사(성격) · 처음 크리티컬을 입힌 뒤(성격/직업) · 처음 크리티컬을 맞고 살아남고 기절 · 기상이 아니면(성격/직업 —
+  허세 예: 후후…네 공격을 맞고 살아남은 건 내가 처음이다!) · 막타는 체크포인트 ① 뒤 줌인 전에 마지막 일격 대사(성격)'. 고른 것: 크리 대사는 직업 × 성격마다 · 줌아웃 뒤 · 스타일리시만.
+  - **버그** — 스타일리시 차례가 끝나고 `draw()` 가 다시 그릴 때 `sprMot` 이 그 차례에 쓰러진 학생의 쓰러짐 동작을 처음부터 다시 틀었다 (정신력 시험에서 이미 쓰러뜨린 학생도).
+    `camFell`(시험에서 쓰러지는 모습을 보인 학생) 은 누운 채로.
+  - **대사 표** — `tools/gen/blines/lines.json`(한 · 영 · 일 342줄: first · last 성격 9 × 3 · crit · taken 직업 16 × 성격 9) → `python3 tools/gen/blines/apply_blines.py` 가
+    game.html `BL_LINES` 덩어리(`/* BL_LINES — 전투 대사` ~ `/* BL_LINES 끝 */` · hrFill 앞)와 en · ja battle.json 의 `_BL_LINES` 칸을 통째로 다시 쓴다 (몇 번 돌려도 같다).
+    영어 · 일본어는 하위 에이전트가 옮기고 검토 — 일본어는 글꼴 조각(ja-boast 한자 1,344자)에 있는 한자만 (아프다 → いたい 처럼 가나).
+  - **언제 · 누가 (openBattle 의 `BLP` — 전투 기록만 보고 미리 정한다 · 학생만, 몬스터 · 마왕은 성격이 없어 없음 · 스타일리시에서만)** —
+    선공: 첫 행동 학생 · 게이지가 찬 뒤 기술 선택 앞 (`camLine` · 푸른 테). 막타: 진 쪽이 모두 쓰러져 끝난 전투에서 마지막으로 쓰러진 프레임이 든 차례가 이긴 쪽 학생이면 ·
+    기술 선택 뒤 줌인 앞 (붉은 테 · 시간 종료 · 지속 피해 · 반격으로 끝나면 없음). 첫 치명타: 학생마다 처음 치명타를 입힌 차례(입힌 학생이 그 차례 끝까지 살아 있을 때 · 금빛 테) ·
+    처음 치명타를 맞고 버틴 차례(그 차례 끝까지 살아 있고 그 차례에 기절 · 기상이 없을 때 — 아니면 다음 치명타로) — 줌아웃 뒤 `camCritLines`(입힌 학생 → 맞은 학생 0.55초 간격) →
+    정신력 시험 대사 순. 막타 차례에는 치명타 대사 없음. 선공 · 막타 대사는 성격마다 셋 중 프레임 번호 해시로.
+  - `turnEnd(j)` — 차례 끝 계산을 한 곳으로 (camLoop · BLP). 반격 줄에 정신력 시험뿐 아니라 치명타가 있어도 그 반격 줄까지 이 차례로 묶는다 (반격 치명타 대사도 나오게).
+  - 시험 — scratchpad `cp_fell.py`(기절 학생 캔버스 data-t0 — 차례 뒤 0) · `cp_bl.py first · last · crit · critTest · full`(한 · 영 · 일 · ×1 ~ ×3) · `cp_mon.py` · `hs.py i18n` ·
+    `check_ja.py` 통과. 일본어 글꼴에 없는 글자 0.
+
+- **스타일리시 전투 체크포인트 ① 기술 선택 · ② 정신력 시험 — 게임에 넣음 (1015 · 빌드 1015-1321 · 규칙 8)** — 사용자: '정신력 시험하고 그 전에 작업한 스타일리시 전투
+  체크포인트 둘 다 게임에 적용해보자, 작업된 정신력 시험 이미지들은 webp 90으로 변환해서 적용하자' · '슬롯 관련 사운드들 · 두근두근 · 불굴의 의지 발생 · 기절 사운드도 같이'.
+  목업은 `mockups/stylish-checkpoint/`(①) · `mockups/heroic-resolve/`(② — README 에 판정 확률 · 연출 시간). 정리본 `tools/herospirit/heroic-resolve-game-v1/`(README · 대사 한영일 · 스크린숏).
+  - **판정 (runBattle — 규칙 7 → 8 · 리그는 이번 시즌을 예전 규칙으로 연 사람에게 그 시즌 LP 없음)** — `dealDamage` 에서 의식 저하 선 아래로 맞고 살아 있으면 한 번 굴린다:
+    기절 · 영웅의 기상 · 없음. 학생만(`hrStu` — 몬스터 · 마왕은 예전 그대로) · 학생의 기절은 새 정신력 계수(`hrMit` — 1 → ×1.951 · 99 → ×0.307) · 스킬 위력 감소와
+    명부의 '의식 저하 경감' 은 예전 계수. 기상 확률 `hrHeroP` = 지구력 · 정신력 평균으로 5 ~ 20% (체력과 상관없음) · 학생마다 한 전투에 한 번(`u.hrUsed`) · 기상 중엔 굴리지 않는다.
+    기상 넷(`HR_TYPES` · 무작위 — 공격 +20% · 방어 +20% · 명중 · 치명 +10% · 속도 +20%)은 효과(`fx.hero`) — 전투 끝까지 · 쓰러지면 풀린다. 프레임에 `test {u, k:"hero"|"faint", t}`.
+    반격 줄은 `frames[].ctr` (연출이 반격에서 나온 시험을 그 차례에 묶는다). 기술 선택은 `frames[call].pick {ap, pk, keep, vf, res}` — 기록만 (난수 순서 그대로).
+  - **연출 (openBattle — 넓은 화면 · 스타일리시)** — `camPick`(① camFill 뒤 · camTurn 앞 · 필살기 · 몬스터 · 마왕 빼고 · ×0.5 ×1 기본 `PK_FULL` · ×2 ×3 압축 `PK_SHORT`) ·
+    `camTurn` 안 `camTest`(② 맞는 순간 0.52초 뒤 시험받는 학생에게 줌 · 두근 · 글 띠 → 기상 `hrShowHero` 원화 + 후광 1.5배 · 가운데 59% · 1.07배 / 기절 흑백 · DOWN) →
+    줌아웃 → `camTestLines`(본인 대사 → 같은 편 0.7초 간격 · 줌아웃 변형이 끝난 뒤 자리를 잰다 `camSettle`). 대사 `HR_LINES`(성격 아홉) · 고르기는 프레임 번호 해시.
+    심플 모드 · 좁은 화면은 금빛 이름 팝(몇 장 이어서 · `hrPopMs`) · 금빛 테 `hr-buff` · 별 칩만. CSS `.cp-*` · `.hr-*` (`@keyframes camStreak` 뒤).
+  - **설정 '기술 선택 연출'** — `PREF.skillPick` all(기본) · mine · foe · off (`SKPICK_OPTS` · 전투 재생 속도 아래).
+  - **원화** — `tools/gen/heroic/heroic_art.py` → `assets/heroic/<직업>-character.webp` · `-aura.webp` (WebP 90 · 1254px · 32장 10.6MB · 드루이드 V2 · 몽크 V2 · 팔라딘 V4 ·
+    마법검사 V6) + `tools/gen/heroic/HR_ART.js.txt` 한 줄을 game.html `HR_ART` 에 그대로. 그 전투에 기상이 있으면 미리 받는다.
+  - **효과음** — `tools/gen/heroic/sfx_synth.py`(ffmpeg) → `bgm/pick_snap · pick_spin · pick_land · pick_fail · pick_hop · pick_choose · pick_resist · pick_ok · test_beat ·
+    test_hero · test_faint .ogg` · SFX 표 v 는 효과음 70 에서 목업 크기.
+  - **영어 · 일본어** — `tools/gen/heroic/i18n_hr.py` 가 en · ja 의 battle.json(114) · ui.json(6)에 넣는다 (몇 번 돌려도 같다). 일본어 대사는 새 한자 없이 (글꼴 조각에 없는 글자 0).
+  - **시험** — scratchpad `cp_test.py`(장면 찾기 hero · faint · resist · keep · ctr × 속도 × 언어 × 필드) · `cp_pickopt.py`(설정 넷) · `cp_simple*.py` · `cp_mon.py`(원정) ·
+    `cp_opt.py`(설정 칸 한영일) · `cp_doc.py` · `reg3y.py`(PC `test.py` 를 바깥 주소 막고 · 3년 오류 0) · `hs.py i18n` · `check_ja.py` 통과.
+    느린 화면(헤드리스 소프트웨어 그리기 3 ~ 5fps)에서 줌아웃이 늦게 시작해 말풍선이 줌인 자리로 가던 것을 `camSettle` 로 고쳤다.
+
+- **일본어판 공개 (1014 · 빌드 1014-1242)** — 사용자: '잘 된 거 같다, 나머지 작업 마무리하자' (번역 뒤 남은 것 = 공개).
+  - **언어 고르기** — `tools/i18n/config.json` 에 `"ja": true`. 브라우저 언어가 ja 면 일본어로 시작 · 설정 언어 칸에 日本語 (고르면 `hs_lang=ja` 로 기억) ·
+    `"ja": false` 로 돌리면 공개 전처럼 `?lang=ja` 로만 (`head_script` 의 `J` · `HS_LANG_JA` · `I18N.pubJa` · game.html `langPanel` · `langSwitch`).
+    그동안 영어로 하던 일본어 브라우저(세이브 있음 · `hs_lang0` 있음 · 고른 언어 없음)는 첫 방문에 영어로 기억한다 (`hs_lang0j` 표시 · 자동을 고르면 일본어).
+  - **공유** — `tools/i18n/og_ja.py` → `site/og-ja.png` · 맨 위 `ja/index.html`(일본어 og 태그 → `site/?lang=ja`). 일본어 공유 주소는 `…/ja/`.
+  - **itch** — 체험판은 영어 기본 그대로 (`build_itch.py` 가 바꾸는 `L=` 줄을 새 모양으로) · 설정에서 日本語 를 고를 수 있다 · 일본어 글꼴 다섯도 ZIP 에 든다.
+  - **한국어 설정 칸 설명** — '영어 · 일본어로 쓰인 지난 일지 · 상담 기록은 쓰인 그대로다.' (영어 · 일본어 표도).
+  - **시험** — `hs.py i18n`(새 '일본어 공개' 항목: ja-JP 새 방문 · 日本語 고르기 · 영어로 하던 사람 · 자동 · 영어 공개 전부터 하던 사람) · `check_ja.py` · `hs.py layout` 통과.
+
+- **일본어판 — 번역 (1014 · 빌드 1014-1149)** — 사용자: '영어에서 일본어로가 아니라 한국어에서 일본어로 · 제목은 내 영웅의 아카데미로' → Claude 가 わが英雄のアカデミー
+  (부제 学園がつぶれた) 를 권했고 '그렇게 진행하자'.
+  - **지침 · 용어집** — `tools/i18n/ja/GUIDE.md` (표 규칙 · 표기 · 성격별 말투 · 이름 · 용어집 · 번역하며 정한 말). 일본어 표를 고치거나 새 글을 옮길 때 먼저 읽는다.
+  - **표** — `tools/i18n/ja.json` + `ja/*.json` (영어 표와 같은 파일 나눔 · 5,300줄 · 번역 단위 5,334가지 중 5,279 — 남은 것은 조사 · 채팅 금칙어 · 개발용).
+    핵심 용어(core · battle · 1단계)는 Claude 가 먼저 옮기고, 나머지는 하위 에이전트 여덟이 GUIDE 를 따라 옮긴 뒤 검사(자리표 · 태그 · 한글 · 따옴표 · 이름 겹침) ·
+    여러 표에 걸친 용어 맞추기 · 화면 점검으로 고쳤다. 사용자는 일본어를 검수하지 못한다 — 고칠 곳이 보이면 GUIDE 의 말을 따라 고친다.
+  - **런타임 · game.html** — 조사 비우기 · 이름 모양(toCur · toKo: 어느 언어든 한국어로 되돌린 뒤 지금 언어로 — 「二つ名」名前 · 白銀勇者学園 · 古びた指輪) ·
+    지난 일지 옮기기(`I18N.line`) · `nameJa()` · `uiLoc` ja-JP · `dn` · `epiH` · 대사 따옴표 「」(`answerDefy` · `masterQ` — 암흑 사제는 『マスター』) · `relicSep` ·
+    그림(운영 안내는 글 · 튜토리얼 · 피드백 단추는 영어 그림 · 길드 편지 `guild4-spring-ja.webp`) · 설정 언어 칸(일본어로 띄웠을 때만 日本語 · 기억하지 않는다).
+  - **오프닝** — `optx_block.js` 의 `SC_JA`(캔버스 글 아홉 장면 · 타자기 제목 わが英雄のアカデミー) + 오프닝 글꼴 조각 둘(일본어판에서만 받는다) · 로딩 화면 · 페이지 제목(`build_boot.py`).
+  - **시험** — `check_layout.py --lang ja`(새 옵션 · 4크기 92화면 · 남은 한글 0 · 넘침은 겉보기만인 것 몇 개) · `check_save.py --lang ja`(새 옵션 · 한국어 ↔ 일본어 ↔ 영어 세이브 왕복 ·
+    서버 묶음은 한국어) · `check_ja.py` · `hs.py i18n` · `hs.py layout`(영어 그대로) · `check_save.py` 통과. 새 도구 `tools/i18n/unit_ctx.py`(단위가 쓰이는 곳 · `--todo ja`).
+  - 공개는 위 (빌드 1014-1242). 자세한 것은 `tools/i18n/README.md` 의 '일본어판'.
+
+- **일본어판 준비 — 글꼴 (1014 · 빌드 1014-0940)** — 사용자: '일본어 번역을 진행하고 싶은데 검수는 못 한다' → '일본 글꼴 사용 가능한 거부터' →
+  목업(`mockups/jp-font/` · 자리별 후보 · 라이선스 확인) → '모든 자리 너가 추천한 대로 작업 시작'.
+  - **넣은 것** — 물마루 자리 Fusion Pixel 12px ja · 물마루 Mono 자리 Fusion 고정폭(숫자 · 가나는 비례폭 판) · 허세 말풍선(봄바람체) 자리 Mochiy Pop One —
+    `tools/gen/fonts/ja_fonts.py` → `assets/fonts/ja/*.woff2`(233 · 12 · 461KB · 라이선스 글 둘) + `tools/i18n/ja_fonts.css`. 게임 글꼴 이름에 `@font-face` 를 하나 더 하는 방식이라
+    game.html 은 고치지 않았다 — 빌드(`i18n_build.ja_tail`)가 문서 맨 끝 `I18N_TAIL` 스크립트로 일본어일 때만 붙이고 `build_boot.boot_split` 이 `lateFonts` 뒤로 옮긴다 (뒤에 쓴 @font-face 가 앞선다).
+    도트 폰트를 껐을 때 — Google 글꼴 IBM Plex Sans JP · Shippori Mincho (head 스크립트가 일본어일 때 붙이고, 빌드가 게임 CSS 에서 덧규칙 `I18N_JACSS` 를 만든다).
+    줄바꿈 — keep-all 규칙마다 normal · `line-break:strict` (명부 책 그림자 DOM 은 `I18N_JARBCSS`).
+  - **언어** — `?lang=ja` 시험 접속에서만 (공개 · 설정 칸 없음). 런타임 `I18N.tab` = 지금 언어의 표 (영어 · 일본어 — `I18N.en` 은 없앴다 · game.html 은 쓰지 않는다).
+    일본어 표 `tools/i18n/ja.json` 은 1단계 시험 단어(메뉴 · 위쪽 칸 42줄 · 용어는 번역할 때 다시) — 나머지 글은 한국어로 보인다. 조사 · toCur · I18N.line · en_layout 은 아직 영어만.
+  - **아직 (번역할 때)** — 오프닝 캔버스 글 `SC_JA` + 그 글꼴(Shippori Mincho B1 ExtraBold · Kiwi Maru — `optx_fonts.py`) · 일본어 제목(정하지 않음) · 로딩 화면 · 이름 모양 ·
+    날짜 · 그림 속 글자. 연대기(진행 페이지 테스트 모드)는 배포 빌드에서 빠져 손글씨 · 붓 글꼴은 넣지 않았다 (목업에서 고른 것은 README 에).
+  - 시험 — `tools/i18n/check_ja.py`(새 · 일본어에서만 붙는지 · 12px 또렷 · keep-all · 도트 끔 · 명부 책) · `hs.py i18n` · `hs.py layout`(영어 화면 0) · `check_save.py` 통과 ·
+    `build_itch.py` 의 영어 기본 바꾸기(head 의 L= 줄)는 그대로 맞는다 (일본어 줄은 그 뒤에 따로 붙였다 — 고칠 때 조심). 자세한 것은 `tools/i18n/README.md` 의 '일본어판'.
 
 - **스킬 강화 창 배치 도구 (1013 · 빌드 1013-2120)** — 사용자: '지금 스킬 강화 창을 재작업했거든? 확인해보고 스킬 강화 창 위치/사이즈 변경 툴을 만들어줘'.
   재작업(다른 세션 — `skillUpModal` · CSS `SKILL_CHOICE_STYLE` · 그림 `assets/skill-upgrade/` · 영어 `en/skill-upgrade.json` · 시험 `tools/check_skill_upgrade.cjs`)은 그대로 두고
@@ -234,6 +349,11 @@ python3 ~/hs.py pack 이름            # 보낼 폴더 + 커밋 목록 (끝에 8
     `itemPrice` 는 할인 없는 1000. 도구 탭 클릭 처리에 exoticFan 갈래. 스킬 강화 창의 부채 상자(0개) 글 '획득 경로 추후 추가' → '도구상에서 구입 · 1,000 G'.
     영어 — 일지 · 알림 · 카드 줄 · 상자 글 (log.json · ui.json). `assets/skill-upgrade/README.md` 의 'pending' 줄도 고쳤다. 시험 scratchpad `skup/shop_fan_test.py`
     (넓은 화면 마을 · 좁은 화면 · 영어 · 한도 · 계절 바뀜 · 자금 부족 · 일지 · 스킬 강화 창 상자).
+  - **영어 체험판(itch) 빌드에 스킬 강화 창 그림** (1014) — 사용자: '영어 데모 버전 만들어줘'. `build_itch.py` 의 `collect()` 는 빌드된 HTML 에 적힌 이름으로
+    그림을 고르는데, 스킬 강화 창 그림은 `SK_CHOICE_ROOT + 직업 그림 + '/' + 표정 + '.png'` 로 이어 붙여 하나도 안 들어갔다(ZIP 에서 404) → `assets/skill-upgrade/` 의 PNG 는
+    직업 그림 이름(SK_CHOICE_ART 의 값)과 표정 이름이 따옴표로 적혀 있으면 넣는다(100개 · 약 2MB · 안 쓰는 exotic-fan-v2 는 빠진다). 효과음(skillup_*.ogg)은 원래 들어갔다.
+    클라우드에서 빌드 HTML(1014-0139-itch)을 ZIP 흉내 폴더로 띄워 — 한국어 브라우저에서도 영어 · 직업 넷 스킬 강화(들기 · 맞음 · 완료) 그림 · 소리 404 없음 ·
+    2년차 봄 2주차 영어 끝 화면 · 오류 없음 (세션 scratchpad `itch/test_demo.py`). ZIP 은 PC 에서 `tools\itch\build_itch.bat` (30MB 넘어 Claude 가 못 보낸다).
   - 시험: `tools/check_skill_upgrade.cjs`(경로 · 브라우저만 바꾸고 바깥 주소를 막아) 통과 · 실험실 조작 시험 · JSON → apply → 빌드 왕복 · 재작업 빌드와 픽셀 비교
     (세션 scratchpad `skup/labtest2.py` · `roundtrip.py` · `cmp.py`) · `hs.py layout --only skillup` · `hs.py i18n` · `check_modes.py` 통과.
 
@@ -356,6 +476,7 @@ python3 ~/hs.py pack 이름            # 보낼 폴더 + 커밋 목록 (끝에 8
     `Claude outputs/itch/heroschool_demo_en_<빌드>.zip`(index.html + 빌드된 HTML 이 부르는 assets 476 · bgm 69 · 약 156MB — itch 제한 1000개 · 500MB 를 확인하고 멈춘다).
     빌드 번호는 `<날짜-시각>-itch`(의견 보내기에 찍힌다). **ZIP 이 30MB 를 넘어 Claude 가 PC 로 못 보낸다** — PC 에서 build_itch.bat 을 돌린다(파이썬 표준 라이브러리만).
     클라우드에서 돌릴 때는 `--root /mnt/user-data/uploads/heroschool --out <scratchpad>`(작업 폴더에 없는 그림을 받아 둔 곳 · ZIP 을 작업 폴더에 만들지 않는다).
+    그림 주소를 코드에서 이어 붙이는 곳(쿼터뷰 지도 · 운영 안내 그림 · 스킬 강화 창 — 1014)은 `collect()` 에 따로 규칙이 있다 — 새로 그런 곳을 만들면 규칙도 더한다.
   - game.html: `DEMO_END`(보통 null) · `demoOver` · `demoEndShow`(끝 화면 — 새 학원으로 다시 하기 = 오프닝 · 학원 둘러보기) · 0.7초마다 보고 · 행사 · 대회 · 팝업이 끝나면 띄운다 ·
     `weekRunGo` 맨 앞에서 막는다. UISCALE: `EMBED`(itch 빌드만 true — 남의 iframe 안에서도 틀이 된다) · 폴더 주소(…/)면 `index.html` 을 붙인다(itch 는 폴더 요청에 403).
     시작 때 받기(`bootAssetList`)가 템플릿 자리(`${…}`)가 든 주소를 받으려다 404 나던 것 고침. 영어 5줄(en/ui.json).

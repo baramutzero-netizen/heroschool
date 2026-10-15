@@ -1625,5 +1625,13 @@
  "_rotateCheck()": "",
  "화면을 세로로 돌려 주세요": "Turn your phone upright",
  "폰에서는 세로 화면에 맞춰 보여 준다. 전투는 가로로 봐도 된다.": "On phones the game is laid out for portrait. Battles are fine sideways.",
- "가로로 돌리면 더 크게 보인다.": "Turn the tablet sideways for a bigger view."
+ "가로로 돌리면 더 크게 보인다.": "Turn the tablet sideways for a bigger view.",
+ "_SKPICK_OPTS": "",
+ "모든 학생": "All",
+ "자신의 학생만": "Mine only",
+ "상대의 학생만": "Opponents only",
+ "표시 안 함": "Off",
+ "_viewOpt() — 기술 선택 연출 (1015)": "",
+ "기술 선택 연출": "Skill Pick Scene",
+ "넓은 화면의 스타일리시 전투에서 차례가 온 학생의 머리 위에 기술 상자가 떠서 스킬이 뜨고 골라지는 모습을 보여 준다. 2배속 이상은 짧게. 몬스터와 필살기는 바로 줌인한다.": "In stylish battles on wide screens, skill boxes pop up over the acting student to show skills appearing and being picked. Shorter at 2× and above. Monsters and ultimates zoom in right away."
 }

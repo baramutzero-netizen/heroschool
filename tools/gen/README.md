@@ -18,6 +18,8 @@ game.html 의 아래 기능은 손으로 쓴 코드가 아니라 이 폴더의 �
 | 학생 명부 책 (가로 넓은 화면 — 책상의 펼친 책 · 메뉴의 학생 명부 · 팀 편성을 누르면 뜨는 책 — 아래) | `patch/apply_roster.py` | `patch/roster_block.js` · `roster_block.css` + 목업 원본 `mockups/student-roster/src/roster_tpl.html` 의 CORE_CSS · CORE_HTML | `mockups/student-roster/art/book.png` · `ribbon.png` → `assets/roster_art/` (WebP) |
 | PNG → WebP (게임이 받는 그림 일부 — 아래) | `patch/apply_webp.py` (다른 apply 를 다 돌린 뒤 · wrap 앞) | 스크립트 안 | 원래 PNG 옆에 같은 이름의 `.webp` |
 | 전투 치명타 숫자 높이 · 학원 이름 맞추기 · 친선전 전부 거절 재확인 · 고른 칸 강조선 · 3인 리그 · 봄 신인전 시내 대회 필드 · 대회 쿼터뷰 제목 칸 · 줌 · 클로즈업 · 쿼터뷰 지도 11장 · 쿼터뷰 경기 이름(BATTLE START 동안) · 진영 칸 나무판 · 범례 숨김 · 실험실 확대 · 이동을 받는 쿼터뷰 지도 · 이름 길이만큼 늘어나는 진영 칸 · 경기 이름 맞춤(왼쪽 · 가운데 · 오른쪽) · 화면 · 배너를 나무 테두리 가운데로 | `patch/apply_crit.py` · `apply_acadfit.py` · `apply_fdecline.py` · `apply_optsel.py` · `apply_lgfield.py` · `apply_rookiefield.py` · `apply_tq.py` → `apply_tqcam.py` → `apply_tqmaps.py` → `apply_tqui.py` → `apply_tqfield.py` → `apply_tqgrow.py` → `apply_tqalign.py` → `apply_tqcenter.py` | 스크립트 안 | — |
+| 스타일리시 전투 체크포인트 ① 기술 선택 · ② 정신력 시험 (영웅의 기상 원화 · 효과음 · 영어 · 일본어 표 — 아래) | game.html 을 직접 고쳤다 (블록 아님) · `heroic/i18n_hr.py` (영어 · 일본어 표) | — | `heroic/heroic_art.py` → `assets/heroic/` (WebP 90) + `heroic/HR_ART.js.txt` · `heroic/sfx_synth.py` → `bgm/pick_*` · `test_*` (.ogg) |
+| 전투 대사 — 선공 · 막타 · 첫 치명타 입힘 · 맞고 버팀 (스타일리시 · 학생만 — 아래) | `blines/apply_blines.py` (game.html 의 BL_LINES 덩어리 + 영어 · 일본어 표) | `blines/lines.json` (한 · 영 · 일) | — |
 
 모든 apply 는 몇 번을 돌려도 같은 결과다. 빌드 1007 의 game.html 에 그대로 돌리면 바뀌는 것이 없다 (Claude 작업 공간에서 확인 — game.html · 그림 모두 바이트 단위로 같음).
 다만 그 뒤 스타일시트 끝에 다른 CSS 가 붙어서, apply_sched · apply_desk 를 다시 돌리면 두 CSS 블록이 스타일시트 맨 끝으로 옮겨 간다 (자리만 바뀌고 내용은 같다).
@@ -303,6 +305,39 @@ python wrap_site.py
 - 그림을 `data:` 로 다시 넣는 pack 스크립트를 돌렸다면 `wrap.py` 를 한 번 돌려 파일로 뺀 뒤 `apply_webp.py` → `wrap.py`.
 - 새 그림을 PNG 로 더한 경우: 위 폴더면 apply_webp 가 다음에 같이 바꾼다. 다른 폴더는 `LOSSLESS_DIRS` · `Q90` 에 더한다.
 
+### 기술 선택 · 정신력 시험 (`tools/gen/heroic/` · 1015)
+
+- 스타일리시 전투 체크포인트 ①(기술 선택 — 목업 `mockups/stylish-checkpoint/`) · ②(정신력 시험 · 영웅의 기상 — 목업 `mockups/heroic-resolve/`)는 game.html 을 직접 고쳤다
+  (블록 아님 — 판정 `consOf` · `hrStu` · `hrMit` · `hrHeroP` · `HR_TYPES` · `dealDamage` · `runBattle` 의 `pick` 기록 / 연출 `openBattle` 의 `camPick` · `camTest` · `camTestLines` ·
+  그 위 `HR_*` · `hr*` 함수 · CSS `.cp-*` · `.hr-*` / 설정 `PREF.skillPick`). 설명 · 스크린숏 · 대사 한영일은 `tools/herospirit/heroic-resolve-game-v1/`.
+- 그림 · 소리 · 표를 다시 만들 때 (저장소 맨 위에서 · 셋 다 몇 번 돌려도 같다):
+
+```
+python tools/gen/heroic/heroic_art.py      # tools/herospirit 원화 → assets/heroic/*.webp (WebP 90) + tools/gen/heroic/HR_ART.js.txt
+python tools/gen/heroic/sfx_synth.py       # 목업의 삑 소리 → bgm/pick_* · test_* .ogg (ffmpeg 필요)
+python tools/gen/heroic/i18n_hr.py         # mockups/heroic-resolve/src/lines.json 의 영어 + 스크립트 안 일본어 → tools/i18n/en · ja 의 battle.json · ui.json
+```
+
+  - `heroic_art.py` — 직업마다 쓸 원화 판은 `PICK`(시안이 여러 벌이면 가장 최신 — 사용자 1015). 원화를 새 판으로 바꾸면 PICK 을 고쳐 돌린 뒤
+    `HR_ART.js.txt` 한 줄로 game.html 의 `const HR_ART = …` 줄을 바꾼다 (그림 주소 `?v=` · 캐릭터 불투명 범위 `bb` · 앞쪽 반짝이 두 색 `acc`).
+  - `sfx_synth.py` — 목업의 `beep(주파수, ms, 파형, 크기, 미끄럼, 늦춤)` 를 같은 파형으로 · 파일 봉우리 −6dB · 목업에서 들리던 크기는 game.html `SFX` 표의 v (스크립트가 찍는 V).
+  - `i18n_hr.py` — 대사 한국어를 고치면 game.html `HR_LINES` 와 lines.json 을 같이 고치고 다시 돌린다 (예전 한국어 키는 표에 남는다 — 지운다).
+    일본어 대사는 `tools/i18n/ja/GUIDE.md` 를 따른다 · 새 한자를 쓰면 빌드가 '일본어 글꼴에 없는 글자' 를 알린다 (글꼴 조각을 다시 굽거나 다른 말로).
+
+### 전투 대사 — 선공 · 막타 · 첫 치명타 (`tools/gen/blines/` · 1015)
+
+- 대사 원본은 `blines/lines.json` — `first`(선공) · `last`(막타)는 성격 9 × 3줄, `crit`(첫 치명타를 입힌 뒤) · `taken`(첫 치명타를 맞고 버텼을 때)은 직업 16 × 성격 9.
+  항목마다 `ko` · `en` · `ja`. 학생은 성별이 없다 · 허세의 ‘ ’ 는 혼잣말 표시 · 일본어는 `tools/i18n/ja/GUIDE.md` 와 일본어 글꼴 조각(ja-boast)에 있는 한자만.
+- 고친 뒤 `python tools/gen/blines/apply_blines.py` — game.html 의 `BL_LINES` 덩어리(`/* BL_LINES — 전투 대사` ~ `/* BL_LINES 끝 */`)와
+  `tools/i18n/en` · `ja` 의 battle.json `_BL_LINES` 칸을 통째로 다시 쓴다 (예전 줄은 지운다 · 몇 번 돌려도 같다). game.html 덩어리는 여기서 고치지 않는다.
+- 언제 누가 말하는지는 game.html `openBattle` 의 `BLP`(전투 기록만 보고 미리 정함) · `camLine`(선공 · 막타 — 줌 밖) · `camCritLines`(줌아웃 뒤) — 자세한 것은 HANDOFF 7.
+
+### 합성 효과음 (`tools/gen/sfx/` · 1015)
+
+- `python tools/gen/sfx/book_flip.py` — 마스터 노트 책상 소품을 누를 때의 책장 넘기는 소리 셋(`bgm/book_flip1 · 2 · 3.ogg`). 녹음 소리를 받을 수 없어 종이 소리를 합성했다
+  (numpy · scipy · ffmpeg · 씨앗 고정 — 몇 번 돌려도 바이트까지 같다). 녹음이 생기면 같은 이름의 .ogg 로 bgm/ 에 덮어쓰면 된다 (game.html SFX 표 `book_flip1 ~ 3`).
+- 스타일리시 전투 체크포인트 효과음은 `tools/gen/heroic/sfx_synth.py` (위 '기술 선택 · 정신력 시험').
+
 ## 꼭 지킬 것 — 블록은 블록 파일에서 고친다
 
 `/* SCHED_SCROLL_START … */ ~ /* SCHED_SCROLL_END */`, `/* MDESK_START … */ ~ /* MDESK_END */`, `/* CSLWIN_START … */ ~ /* CSLWIN_END */` · `/* LKWIN_START … */ ~ /* LKWIN_END */` (와 각 CSS 블록), `/* ROSTERBK_START … */ ~ /* ROSTERBK_END */`(책 CSS 는 이 블록 안의 문자열), `/* OPTX 시작 */ ~ /* OPTX 끝 */`(+ 글꼴 `/* OPTX-FONTS 시작 … 끝 */` · 지킴이 없음) 안은 apply 할 때마다 블록 파일 내용으로 **통째로 갈아 끼운다**.
@@ -337,3 +372,24 @@ game.html 에서 블록 안을 직접 고치면 다음 apply 가 그 수정을 �
 ## 글꼴
 
 `fonts/` — 갈무리(Galmuri, SIL OFL · `Galmuri-LICENSE.txt`)는 TTF 대신 작은 WOFF, 물마루는 WOFF2 로 넣었다. 그려지는 결과는 TTF 와 픽셀 단위로 같다.
+
+**일본어 글꼴 (1014)** — `fonts/ja_fonts.py FONTSRC` (원본 받는 곳은 파일 머리말) → `assets/fonts/ja/` 의 조각 글꼴 다섯 + 라이선스 넷 · `tools/i18n/ja_fonts.css`.
+일본어판(1014 · 일본어 브라우저 · 설정의 日本語 · `?lang=ja`)에서만 게임 글꼴 이름에 일본어 글자를 더한다 — 글꼴을 고른 목업은 `mockups/jp-font/`.
+
+| 자리 (게임 글꼴 이름) | 일본어 글꼴 | 파일 · 크기 | 글자 |
+|---|---|---|---|
+| 물마루 `Mulmaru` | Fusion Pixel 12px 비례폭 ja (OFL) | `ja-pixel.woff2` 233KB | JIS X 0208 전부(한자 6,355) + 라틴 · 기호 |
+| 물마루 Mono `Mulmaru Mono` | Fusion Pixel 12px 고정폭 ja — 숫자 · 가나 · 전각은 비례폭 판 | `ja-pixel-mono.woff2` 12KB | 한자 없이 (CSS 가 늘 `"Mulmaru Mono","Mulmaru"` 차례) |
+| 허세 말풍선 `HsBombaram21` | Mochiy Pop One (OFL) | `ja-boast.woff2` 224KB | 가나 · 기호 + **번역 표에 쓰인 한자만** |
+| 오프닝 명조 `OpTxSerifJa` (굵기 800) | Shippori Mincho B1 ExtraBold (OFL) | `ja-op-serif.woff2` 36KB | `optx_block.js` 의 `SC_JA` 글자만 |
+| 오프닝 돋움 `OpTxSansJa` | Kiwi Maru (OFL) | `ja-op-sans.woff2` 27KB | 같음 |
+
+- 이름은 그대로 두고 `@font-face` 를 하나 더 — 빌드 맨 끝(`lateFonts` 뒤 · `build_boot.py` 가 옮긴다)에서 일본어일 때만 붙여, 겹치는 글자(가나 · 라틴)도 일본어 글꼴이 앞선다.
+  한글은 원래 글꼴 그대로. 게임 CSS · JS(`PIXEL_SANS` 등)는 고치지 않는다. 오프닝 둘은 새 이름이라 unicode-range 없이 굵기만 맞춘다 (캔버스가 `800 46px OpTxSerifJa` 로 부른다).
+- 세로 값은 원래 글꼴과 같게 — 도트 둘은 물마루(위 10 · 아래 2 · 줄 간격 4px · 한자 · 한글이 같은 줄 −1 ~ 10), 허세는 봄바람체 줄 상자 1.2em 에 가나 · 한자 가운데를 한글 가운데에.
+  오프닝 둘은 원본 그대로 (캔버스가 글꼴 상자로 줄을 놓는다).
+- **번역 표(`tools/i18n/ja.json` · `ja/*.json`)나 `SC_JA` 를 고치면 다시 돌린다** — 허세 말풍선 · 오프닝은 쓰인 글자만 넣었다. 빌드가 `일본어 글꼴에 없는 글자 N` 으로 알려 준다
+  (도트 · 허세 글꼴 기준 · 일본어 글자만 센다).
+- 같은 원본 · 같은 글자면 같은 파일이 나온다(시각을 고치지 않는다) — 주소의 `?v=` 가 괜히 바뀌지 않는다.
+- 연대기(진행 페이지 테스트 모드)의 손글씨 · 붓 글꼴은 배포 빌드에서 빠지는 개발 기능이라 일본어 글꼴을 넣지 않았다 (목업에서 고른 것: Yomogi · Yuji Syuku).
+- 길드 4쪽 편지 일본어판 그림(`assets/story_art/guild4-spring-ja.webp`)의 손글씨는 Yomogi 로 그려 넣은 것 (그림이라 글꼴 파일은 넣지 않는다).

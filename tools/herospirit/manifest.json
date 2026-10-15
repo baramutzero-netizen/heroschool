@@ -1,0 +1,1118 @@
+[
+  {
+    "folder": "heroic-resolve-archer",
+    "file": "archer-existing.png",
+    "bytes": 785989,
+    "sha256": "833CF378BB9E59BCC461A3B657F4110B63881DE9FECFF125003540EA57620A30"
+  },
+  {
+    "folder": "heroic-resolve-archer",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-archer",
+    "file": "generation-prompts.txt",
+    "bytes": 2305,
+    "sha256": "350323050D3398814F6DE1A31D1DA7DECC65D8DAB713FB988B953298CB3F55A6"
+  },
+  {
+    "folder": "heroic-resolve-archer",
+    "file": "preview.html",
+    "bytes": 7145,
+    "sha256": "6F41F263AB7DFA587DECCEFB2ADBB7B78E85432583A8C3559C176653898FD010"
+  },
+  {
+    "folder": "heroic-resolve-archer",
+    "file": "resolve-aura.png",
+    "bytes": 1664905,
+    "sha256": "882724472CBEB38919963A463EAF12E8308498D4D78C7FF0024B014E6C94C95B"
+  },
+  {
+    "folder": "heroic-resolve-archer",
+    "file": "resolve-character.png",
+    "bytes": 1216913,
+    "sha256": "04AA80A488ED1FF895F02112E2F3F8369CCDB0AD42EDC8F95D53AD845555730B"
+  },
+  {
+    "folder": "heroic-resolve-bard",
+    "file": "bard-existing.png",
+    "bytes": 939384,
+    "sha256": "3F23FB32E037C11E6FE08CB1174B1AE02F0ECAAD9DC4CB45417499AC7CFF9EE6"
+  },
+  {
+    "folder": "heroic-resolve-bard",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-bard",
+    "file": "generation-prompts.txt",
+    "bytes": 2237,
+    "sha256": "E04AD17F182CE00B4D6F3B8D424347A875B27A5B258F9C8B74CB0A85923EADC3"
+  },
+  {
+    "folder": "heroic-resolve-bard",
+    "file": "preview.html",
+    "bytes": 7297,
+    "sha256": "A3510A4D0063C9FDFC0FD56CDCBF9A999DC49D9D710881FC72715C2110371422"
+  },
+  {
+    "folder": "heroic-resolve-bard",
+    "file": "resolve-aura.png",
+    "bytes": 1404444,
+    "sha256": "A3477705879FA4AE078E09081EB9A582782F2B69B25C72E6AC6A59F6E752A604"
+  },
+  {
+    "folder": "heroic-resolve-bard",
+    "file": "resolve-character.png",
+    "bytes": 933282,
+    "sha256": "F2001C050626C56A247606A79A38768FC4394A8B895256559F425A4D669D4E72"
+  },
+  {
+    "folder": "heroic-resolve-battle-v1",
+    "file": "README.md",
+    "bytes": 1677,
+    "sha256": "ECE4CFCB0F102C51441C9EB2D5CB003018A09AB710185DE8E8D32DF7B92ACEBA"
+  },
+  {
+    "folder": "heroic-resolve-battle-v1",
+    "file": "heroic_resolve_mockup.html",
+    "bytes": 4508356,
+    "sha256": "689737A3643D09CF6E317CF6F4BBC7F38E2BB7C401FC21BD1CF9E8CCCF5F67DD"
+  },
+  {
+    "folder": "heroic-resolve-battle-v1",
+    "file": "lines.json",
+    "bytes": 11532,
+    "sha256": "E6707E1CF4A74576ED073E9A99B087218255A251832C9115BF7967F0DF97DD23"
+  },
+  {
+    "folder": "heroic-resolve-battle-v2",
+    "file": "README.md",
+    "bytes": 1802,
+    "sha256": "DC31CE78DF61D2FDFFCA1AE7A44652F45737C33B7369DD271593869994B9788F"
+  },
+  {
+    "folder": "heroic-resolve-battle-v2",
+    "file": "heroic_resolve_mockup.html",
+    "bytes": 4509522,
+    "sha256": "A8C921D55E70A09F4B4455E3AD03EA836CAB178B30558710E2EFFA926556ADAF"
+  },
+  {
+    "folder": "heroic-resolve-battle-v2",
+    "file": "lines.json",
+    "bytes": 11532,
+    "sha256": "E6707E1CF4A74576ED073E9A99B087218255A251832C9115BF7967F0DF97DD23"
+  },
+  {
+    "folder": "heroic-resolve-battle-v3",
+    "file": "README.md",
+    "bytes": 1561,
+    "sha256": "F2B3EF0A8203B98286DE3C157AAA28E48F364E869067933625CA507F64ABE4A6"
+  },
+  {
+    "folder": "heroic-resolve-battle-v3",
+    "file": "heroic_resolve_mockup.html",
+    "bytes": 4509819,
+    "sha256": "37B0A1245923B78008305A8A925D424075D22907304FBFB55BB37042724B65B8"
+  },
+  {
+    "folder": "heroic-resolve-battle-v3",
+    "file": "lines.json",
+    "bytes": 11532,
+    "sha256": "E6707E1CF4A74576ED073E9A99B087218255A251832C9115BF7967F0DF97DD23"
+  },
+  {
+    "folder": "heroic-resolve-battle-v4",
+    "file": "README.md",
+    "bytes": 1534,
+    "sha256": "2DAEEF3E0CBE085E48CAB802962BCB98C01975B10DF53B75824E48A6EAD8C0F7"
+  },
+  {
+    "folder": "heroic-resolve-battle-v4",
+    "file": "heroic_resolve_mockup.html",
+    "bytes": 4514040,
+    "sha256": "282D9042AD92DCDB1516599C4F6BD52D4A6A60F5A525237F1C45C19B6B2AAD76"
+  },
+  {
+    "folder": "heroic-resolve-battle-v4",
+    "file": "lines.json",
+    "bytes": 15236,
+    "sha256": "10444BDB4485A02F70F1BCA6B41AE366C2A350BAD590896934D9A037A0F85D67"
+  },
+  {
+    "folder": "heroic-resolve-darkpriest",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-darkpriest",
+    "file": "darkpriest-existing.png",
+    "bytes": 802234,
+    "sha256": "696DC8B8008A68AAF681E499309A37CB138BC72FBED1E1C05A731921AC26439C"
+  },
+  {
+    "folder": "heroic-resolve-darkpriest",
+    "file": "generation-prompts.txt",
+    "bytes": 2715,
+    "sha256": "2F1F0172BBAB0EA0780F6D692E2F5FA455FAE039B6550CCA8A29515F68928F2F"
+  },
+  {
+    "folder": "heroic-resolve-darkpriest",
+    "file": "preview.html",
+    "bytes": 7198,
+    "sha256": "834BC488E25BE4A63B59D3EE3A6C8D486F35149533BA86F32C6745D82B35B1A6"
+  },
+  {
+    "folder": "heroic-resolve-darkpriest",
+    "file": "resolve-aura.png",
+    "bytes": 1488414,
+    "sha256": "1A351018E0C3FE954D46EEE18E9DBD74DD3A41FC3FA643925997FFC873BA2B9A"
+  },
+  {
+    "folder": "heroic-resolve-darkpriest",
+    "file": "resolve-character.png",
+    "bytes": 1080123,
+    "sha256": "D802FD3970C8DE2127D446341DFE24E5DB29F42B4FD90FEA445BCB79D782D1DB"
+  },
+  {
+    "folder": "heroic-resolve-druid",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-druid",
+    "file": "druid-existing.png",
+    "bytes": 872186,
+    "sha256": "E1E512F7EAF58C3DD8EB6188114ABFD6E00783016593F4608BAFAA86D4365259"
+  },
+  {
+    "folder": "heroic-resolve-druid",
+    "file": "generation-prompts.txt",
+    "bytes": 2675,
+    "sha256": "5C71A3113B8E2271420A98E4CF37D732A3F58B1EBAEDD149219559B4B3ED68A7"
+  },
+  {
+    "folder": "heroic-resolve-druid",
+    "file": "preview.html",
+    "bytes": 7172,
+    "sha256": "BBA80758D0B6CE426722BF6EAC8320A63F85E048725574DBF73579533617E312"
+  },
+  {
+    "folder": "heroic-resolve-druid",
+    "file": "resolve-aura.png",
+    "bytes": 1708193,
+    "sha256": "AEE85D7632FC8EF647232F094A30019D45F00C795290006BDAAADFE6DBD94215"
+  },
+  {
+    "folder": "heroic-resolve-druid",
+    "file": "resolve-character.png",
+    "bytes": 1062845,
+    "sha256": "AEE8812A53AECFADE22546ED393780D65B3CDA3BD1DEA7464935EA836A29FF58"
+  },
+  {
+    "folder": "heroic-resolve-druid-v2",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-druid-v2",
+    "file": "druid-existing.png",
+    "bytes": 872186,
+    "sha256": "E1E512F7EAF58C3DD8EB6188114ABFD6E00783016593F4608BAFAA86D4365259"
+  },
+  {
+    "folder": "heroic-resolve-druid-v2",
+    "file": "generation-prompts.txt",
+    "bytes": 2073,
+    "sha256": "9669F6682AF5497114550A6B4A4FD54F6BBEDCB2C6E144C9430A77635D7C3937"
+  },
+  {
+    "folder": "heroic-resolve-druid-v2",
+    "file": "preview.html",
+    "bytes": 7255,
+    "sha256": "5C8F3DCD3CBF22E76D50373BF58D1631D37D9A0632DFBC2CDB72D5F2AE155951"
+  },
+  {
+    "folder": "heroic-resolve-druid-v2",
+    "file": "resolve-aura.png",
+    "bytes": 1456571,
+    "sha256": "91EFEC603671B7C1BCB3A5475771EC05EAEADE110F00EC3EC713E104D60B4C46"
+  },
+  {
+    "folder": "heroic-resolve-druid-v2",
+    "file": "resolve-character.png",
+    "bytes": 905020,
+    "sha256": "3E1D549760BE322DA72FA85F7A12DE2EAC27A9380246E2EF4D2E874B1FBA0A5B"
+  },
+  {
+    "folder": "heroic-resolve-enchanter",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-enchanter",
+    "file": "enchanter-existing.png",
+    "bytes": 922116,
+    "sha256": "C3601BA96DAE1DE1743159ACDE91EF1BE4DBAA37FFE6BAD7AA9E7A6FE66D3E98"
+  },
+  {
+    "folder": "heroic-resolve-enchanter",
+    "file": "generation-prompts.txt",
+    "bytes": 2168,
+    "sha256": "DB02EB838DB45B690119244FEFBDC0317B192D43BCD9A3EB2CEDCAD5DACC2177"
+  },
+  {
+    "folder": "heroic-resolve-enchanter",
+    "file": "preview.html",
+    "bytes": 7162,
+    "sha256": "87F5D7204704CC582511FA982A3FEEA8C89ECBDEC56E06DE2599BC2C6CE5DAC9"
+  },
+  {
+    "folder": "heroic-resolve-enchanter",
+    "file": "resolve-aura.png",
+    "bytes": 1666518,
+    "sha256": "29B3F52E41E05F27D683764C5DDC88B9103FBEBAE82D9733BE405A2C8F04CA37"
+  },
+  {
+    "folder": "heroic-resolve-enchanter",
+    "file": "resolve-character.png",
+    "bytes": 1079542,
+    "sha256": "69094B8331F95DCF17EBF4A44BD0AE57996F06FADFB23BD563961BAB370D625E"
+  },
+  {
+    "folder": "heroic-resolve-forcemage",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-forcemage",
+    "file": "forcemage-existing.png",
+    "bytes": 935414,
+    "sha256": "FD90EB1C3813523A5046BF44567E698AAC43B859D4EB937623950E54D7040057"
+  },
+  {
+    "folder": "heroic-resolve-forcemage",
+    "file": "generation-prompts.txt",
+    "bytes": 2088,
+    "sha256": "11D8FEECC661E2C8296A7BBC1A2A2352C668FF77414C0583A79C99F68FA42E87"
+  },
+  {
+    "folder": "heroic-resolve-forcemage",
+    "file": "preview.html",
+    "bytes": 7318,
+    "sha256": "C02F5DFF4F1B5BAFC23C2F1A35ECD6165DC2CE72EE1A82A6CECED105431C20AC"
+  },
+  {
+    "folder": "heroic-resolve-forcemage",
+    "file": "resolve-aura.png",
+    "bytes": 1308669,
+    "sha256": "F6A49D7D136EFD81ED6B1E29AE79612BEE55AC886CFE71CFAD9E7642CC74E41F"
+  },
+  {
+    "folder": "heroic-resolve-forcemage",
+    "file": "resolve-character.png",
+    "bytes": 1273677,
+    "sha256": "23042F2199E2FE8D19DB7D15F7735949E464570CDE2CE4AFDBF79CCF9EA0EFE8"
+  },
+  {
+    "folder": "heroic-resolve-game-v1",
+    "file": "README.md",
+    "bytes": 7004,
+    "sha256": "65F08D625CD0B0FF57FB06DFADFF798BA866D20D54DFFE87FE3919D1E2C1AA90"
+  },
+  {
+    "folder": "heroic-resolve-game-v1",
+    "file": "lines.json",
+    "bytes": 21944,
+    "sha256": "686BBBBDEE0AAFCD8E9C3DEBA462FDADF2ADBD4BFDF34A053320C416765290A8"
+  },
+  {
+    "folder": "heroic-resolve-game-v1",
+    "file": "shot-1-pick.webp",
+    "bytes": 242344,
+    "sha256": "2E6A9DB20325087574BE03FD3D0D0C1AF0410733E21243019C95CE4BD42FC53C"
+  },
+  {
+    "folder": "heroic-resolve-game-v1",
+    "file": "shot-2-resist.webp",
+    "bytes": 243166,
+    "sha256": "6FED46F61EB59D659BBB2FB4B5F26D42A6082BD84878760768C90CB45B164C28"
+  },
+  {
+    "folder": "heroic-resolve-game-v1",
+    "file": "shot-3-test.webp",
+    "bytes": 135216,
+    "sha256": "7662F6DE7ED2EDAC39A783F061482947B6C300D3CC1C93DD29EE37361645611E"
+  },
+  {
+    "folder": "heroic-resolve-game-v1",
+    "file": "shot-4-hero.webp",
+    "bytes": 160996,
+    "sha256": "7CDE9DB764D10B16EFA6C148250D3BC0DEBF3F3277DEA4C1506C39BFA674CC1F"
+  },
+  {
+    "folder": "heroic-resolve-game-v1",
+    "file": "shot-5-hero-lines.webp",
+    "bytes": 243502,
+    "sha256": "512D0F8D973223F50EB884291F14935EBCA41BF2F921F974FDD1B77959BE840D"
+  },
+  {
+    "folder": "heroic-resolve-game-v1",
+    "file": "shot-6-faint.webp",
+    "bytes": 129628,
+    "sha256": "FF21175E74E725563F076A7ABCBF5EC7C71D2C504188F631CC5122631D848CB4"
+  },
+  {
+    "folder": "heroic-resolve-game-v1",
+    "file": "shot-7-faint-lines.webp",
+    "bytes": 242812,
+    "sha256": "381DD370BE3C8F53098F3B402F93D616D976EBD478C79C596436492C067FA6C8"
+  },
+  {
+    "folder": "heroic-resolve-game-v2",
+    "file": "README.md",
+    "bytes": 2224,
+    "sha256": "0CE869390250969A8AA132AA6BDF9F1FE502D379837085374D6FB2A35794C59F"
+  },
+  {
+    "folder": "heroic-resolve-game-v2",
+    "file": "shot-1-crit-lines.webp",
+    "bytes": 241876,
+    "sha256": "222B48BF45C2953C22B57FB57CEE793CED76616017CF99939FF7DC420EC1F6E4"
+  },
+  {
+    "folder": "heroic-resolve-game-v3",
+    "file": "README.md",
+    "bytes": 1045,
+    "sha256": "848E87EF17207E09EBEC4E603B96B84AE68A2727C9BD1168D6B41DF1CA500C80"
+  },
+  {
+    "folder": "heroic-resolve-game-v3",
+    "file": "shot-1-hero-still-aura.webp",
+    "bytes": 159996,
+    "sha256": "A798080407FA324072EF39E149B9A8DB5FE781CED934052761F11DBCD0FF9C44"
+  },
+  {
+    "folder": "heroic-resolve-gunner",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-gunner",
+    "file": "generation-prompts.txt",
+    "bytes": 2106,
+    "sha256": "D65949A1CEC0F8A5632F50388BA203FABFEF2FBEF3018AD7B419B8D10B11A90F"
+  },
+  {
+    "folder": "heroic-resolve-gunner",
+    "file": "gunner-existing.png",
+    "bytes": 843855,
+    "sha256": "F14493D514F943D2D93DAA3949FBC671AD83A759386916C2FF9A1EBA307FDE5B"
+  },
+  {
+    "folder": "heroic-resolve-gunner",
+    "file": "preview.html",
+    "bytes": 7264,
+    "sha256": "6A148EA7594BC113A0084F2937B60DA91D3D92EEFF4AA44B1D202643EF161BEE"
+  },
+  {
+    "folder": "heroic-resolve-gunner",
+    "file": "resolve-aura.png",
+    "bytes": 1116569,
+    "sha256": "5B52261DD8305AD5FE47B83CE23D470C315C43192E30323DED5951435A16374F"
+  },
+  {
+    "folder": "heroic-resolve-gunner",
+    "file": "resolve-character.png",
+    "bytes": 1080246,
+    "sha256": "B281B3657C4876107B0493F28A6A96146D285973B4D67F6FDF33601D769AD2E0"
+  },
+  {
+    "folder": "heroic-resolve-monk",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-monk",
+    "file": "generation-prompts.txt",
+    "bytes": 2034,
+    "sha256": "3430ABCFD112EAAD993AADB41C55289C47C07B039B481CCA89F0ADF665B99E2E"
+  },
+  {
+    "folder": "heroic-resolve-monk",
+    "file": "monk-existing.png",
+    "bytes": 667093,
+    "sha256": "E6CFB71D4A033817FB7F7FDF496E24EDE74BB7D1964156D9AA1B92CB0D452CB4"
+  },
+  {
+    "folder": "heroic-resolve-monk",
+    "file": "preview.html",
+    "bytes": 7135,
+    "sha256": "E794C4C1971AADFB524B8ABC1D961A93CAB6B3F2020DDE41FF500507DDBF84D5"
+  },
+  {
+    "folder": "heroic-resolve-monk",
+    "file": "resolve-aura.png",
+    "bytes": 1109846,
+    "sha256": "80E54EA2CB504B790A9540BF575BEBB6D0C7809671CDB6888399C36625C4AED8"
+  },
+  {
+    "folder": "heroic-resolve-monk",
+    "file": "resolve-character.png",
+    "bytes": 750949,
+    "sha256": "A46503D77ED3ADC2015E939A7151884CE644EAA6D58F8A6993F6541BE1B6D192"
+  },
+  {
+    "folder": "heroic-resolve-monk-v2",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-monk-v2",
+    "file": "generation-prompts.txt",
+    "bytes": 2053,
+    "sha256": "AC6D6D1418BDDE90C37F6B72DDB0DC859249644933569A47FCB8379C20092E9C"
+  },
+  {
+    "folder": "heroic-resolve-monk-v2",
+    "file": "monk-existing.png",
+    "bytes": 667093,
+    "sha256": "E6CFB71D4A033817FB7F7FDF496E24EDE74BB7D1964156D9AA1B92CB0D452CB4"
+  },
+  {
+    "folder": "heroic-resolve-monk-v2",
+    "file": "preview.html",
+    "bytes": 7271,
+    "sha256": "1A6196AD4FEEE4D521C0E226112147B027466A2C30F53F399D268CE9870DCD0F"
+  },
+  {
+    "folder": "heroic-resolve-monk-v2",
+    "file": "resolve-aura.png",
+    "bytes": 1296172,
+    "sha256": "B55B7C6BB77423F63BFB61634C3C386F74B8F7D753580A3496A03D299AEB55FE"
+  },
+  {
+    "folder": "heroic-resolve-monk-v2",
+    "file": "resolve-character.png",
+    "bytes": 1096716,
+    "sha256": "49D735389CF8A06B8489FB280061E6CBDF019E0349A818B34956895508D5AE17"
+  },
+  {
+    "folder": "heroic-resolve-ninja",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-ninja",
+    "file": "generation-prompts.txt",
+    "bytes": 2207,
+    "sha256": "5A5D7C24C2B63E614B0C203CC49722382977EE88383CB5F89619EC6AB28D7C29"
+  },
+  {
+    "folder": "heroic-resolve-ninja",
+    "file": "ninja-existing.png",
+    "bytes": 642376,
+    "sha256": "805085FB21A510B892551833FEC83DFA6C3178DCC06813056F9926B71BDD0445"
+  },
+  {
+    "folder": "heroic-resolve-ninja",
+    "file": "preview.html",
+    "bytes": 7144,
+    "sha256": "F832DF3290997F45026AE796DE6803997D99B8F7397B0BA2C689788D920D8BD9"
+  },
+  {
+    "folder": "heroic-resolve-ninja",
+    "file": "resolve-aura.png",
+    "bytes": 1369418,
+    "sha256": "1E95C07266D491F5EE6644E84912CE8428B9E6608FBF6EC85EEC8C6F23E03943"
+  },
+  {
+    "folder": "heroic-resolve-ninja",
+    "file": "resolve-character.png",
+    "bytes": 733115,
+    "sha256": "D7D4417D850F74486B449562FECCA50A4A09032CCE7D3AE1C79E98142169D839"
+  },
+  {
+    "folder": "heroic-resolve-paladin",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-paladin",
+    "file": "generation-prompts.txt",
+    "bytes": 2270,
+    "sha256": "B9418B573B71971C6BB4E0479A4056194247847831FE0360BCB80AF41B500D13"
+  },
+  {
+    "folder": "heroic-resolve-paladin",
+    "file": "original-prompt-heroic-pose.txt",
+    "bytes": 2131,
+    "sha256": "8161099BB77E5D90E1AAACEEE4CD54996B821974B15CB84E99D2A1AC437D872B"
+  },
+  {
+    "folder": "heroic-resolve-paladin",
+    "file": "paladin-existing.png",
+    "bytes": 719237,
+    "sha256": "2C6A63C07725B781F320F7C37B5757F8E77DDF08D72439136F517FDF37C8CCFF"
+  },
+  {
+    "folder": "heroic-resolve-paladin",
+    "file": "preview-v1.html",
+    "bytes": 7160,
+    "sha256": "B9BFE9F1E1DD6E3D446A5930661E5E241A6EA261378C069BF23FE695A819A32B"
+  },
+  {
+    "folder": "heroic-resolve-paladin",
+    "file": "preview-v2.html",
+    "bytes": 7178,
+    "sha256": "A155EFECD168DBAB442CDC67E4C4AFD30077EDEDD3B3B52A5973DF42AF3BB74F"
+  },
+  {
+    "folder": "heroic-resolve-paladin",
+    "file": "preview.html",
+    "bytes": 7218,
+    "sha256": "26D14356FF98F6095BC73E896AB6445F65ED5030BDDFF314B23DA1FC68376A46"
+  },
+  {
+    "folder": "heroic-resolve-paladin",
+    "file": "proportion-v2-prompt.txt",
+    "bytes": 2040,
+    "sha256": "42BD7CC15116F936BD7A44938966DBA245CB84ACDD7F861F021F314228CA9E1F"
+  },
+  {
+    "folder": "heroic-resolve-paladin",
+    "file": "resolve-aura-master.png",
+    "bytes": 1384473,
+    "sha256": "530D40A6EAE3D3A054590A7AC276FA91399D88200F342E2BF52964536296FE4C"
+  },
+  {
+    "folder": "heroic-resolve-paladin",
+    "file": "resolve-character-master.png",
+    "bytes": 931509,
+    "sha256": "26C4FAB45924CCE833CFD4E2663E4C0A9E73047173BE5DC54C4B0FAFA50F118F"
+  },
+  {
+    "folder": "heroic-resolve-paladin",
+    "file": "resolve-character-v2.png",
+    "bytes": 504508,
+    "sha256": "B89907C5C3817C0123FB754BBD5F6289617BFE33FC5724D79B2EEA55836C361E"
+  },
+  {
+    "folder": "heroic-resolve-paladin",
+    "file": "resolve-character-v3-original-prompt.png",
+    "bytes": 1121476,
+    "sha256": "421CE179760F586A858B6B0CC0921879454EBC00755A05141B46FF47120A7919"
+  },
+  {
+    "folder": "heroic-resolve-paladin-v4",
+    "file": "README.md",
+    "bytes": 1006,
+    "sha256": "06BDE00F13FA4A574AD40F1677FF24BB35349A8312C3966FBC1BCB7769222EF6"
+  },
+  {
+    "folder": "heroic-resolve-paladin-v4",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-paladin-v4",
+    "file": "generation-prompts.txt",
+    "bytes": 1881,
+    "sha256": "CA2AEFD3D8299BA57E87BABDF445BCDA1B3D9B2179EFE4673DADFA5F3542F0EF"
+  },
+  {
+    "folder": "heroic-resolve-paladin-v4",
+    "file": "paladin-existing.png",
+    "bytes": 719237,
+    "sha256": "2C6A63C07725B781F320F7C37B5757F8E77DDF08D72439136F517FDF37C8CCFF"
+  },
+  {
+    "folder": "heroic-resolve-paladin-v4",
+    "file": "pose-reference.png",
+    "bytes": 536100,
+    "sha256": "9E1FA3ADDC8DFF830B449F76DE4979239E1889E7E56F42C09FCA05437217CA09"
+  },
+  {
+    "folder": "heroic-resolve-paladin-v4",
+    "file": "preview.html",
+    "bytes": 7169,
+    "sha256": "79E13EB6C4DB95C201E2A0244B58E8596C9DB330894D38120C4A3605C1F53802"
+  },
+  {
+    "folder": "heroic-resolve-paladin-v4",
+    "file": "resolve-aura.png",
+    "bytes": 1052559,
+    "sha256": "125509B10FD9ACEF96A844981DDA4731564F26CC6EE379F51F9B445F58CC1A3E"
+  },
+  {
+    "folder": "heroic-resolve-paladin-v4",
+    "file": "resolve-character.png",
+    "bytes": 840634,
+    "sha256": "8B5D97E8F6117C58126FC0E7416709F21EC824E3F0071DE64373EA8611F08F85"
+  },
+  {
+    "folder": "heroic-resolve-priest",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-priest",
+    "file": "generation-prompts.txt",
+    "bytes": 2649,
+    "sha256": "03469D7A5789B5CA18E950C8CF9C401F3E44061E4276D327A8A18E2E2DC6C2BA"
+  },
+  {
+    "folder": "heroic-resolve-priest",
+    "file": "preview.html",
+    "bytes": 7172,
+    "sha256": "A1A505E98BB323B979C347D9153FF04C38B96B10081E743F033D50F088BF904E"
+  },
+  {
+    "folder": "heroic-resolve-priest",
+    "file": "priest-existing.png",
+    "bytes": 749903,
+    "sha256": "EDAC89DCBDDEAD0B4C9B175A473DDB20DB7C4597F47131C8A01C01944427CBD8"
+  },
+  {
+    "folder": "heroic-resolve-priest",
+    "file": "resolve-aura.png",
+    "bytes": 1217928,
+    "sha256": "63DA7A6D2EA99E81A4FFAF0953EA7D44714175F658CC7FD31DC5C67D6951B138"
+  },
+  {
+    "folder": "heroic-resolve-priest",
+    "file": "resolve-character.png",
+    "bytes": 1132595,
+    "sha256": "D9C3D67C3756C74155EDA70000474671E3F3D1931D3B1E9CD7E1D5D0BD5E155B"
+  },
+  {
+    "folder": "heroic-resolve-rogue",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-rogue",
+    "file": "generation-prompts.txt",
+    "bytes": 2224,
+    "sha256": "C041A2A6BC7D634CB8F39068FB3054E970EBA32C448C7D8B3B9EC51D4AEFE595"
+  },
+  {
+    "folder": "heroic-resolve-rogue",
+    "file": "preview.html",
+    "bytes": 7288,
+    "sha256": "CC882CE952BE34BD063320EE8B97B4DA68C529DEC2A6036E4251A0FB2FFB3A5E"
+  },
+  {
+    "folder": "heroic-resolve-rogue",
+    "file": "resolve-aura.png",
+    "bytes": 797487,
+    "sha256": "D1BDB97857C538AC31432FFEB86CF552B7DE7742B3F0A71A03A1684DB9A51435"
+  },
+  {
+    "folder": "heroic-resolve-rogue",
+    "file": "resolve-character.png",
+    "bytes": 1080409,
+    "sha256": "ABC176156DA7FA0DF084816F89B2A500DA7439225E23439D2E2E1FF253CE1C21"
+  },
+  {
+    "folder": "heroic-resolve-rogue",
+    "file": "rogue-existing.png",
+    "bytes": 877439,
+    "sha256": "B16D0704A7B4178F6FCD830D869628D2652C61D2BF4B5601A96A346E45BB90F5"
+  },
+  {
+    "folder": "heroic-resolve-spellsword",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-spellsword",
+    "file": "generation-prompts.txt",
+    "bytes": 2123,
+    "sha256": "7E372FC10984284CF49F5C93C2372926C04EF1963F1B8C3D349F696CE3E7F684"
+  },
+  {
+    "folder": "heroic-resolve-spellsword",
+    "file": "preview.html",
+    "bytes": 7197,
+    "sha256": "297EB234E18FD90B11C6E7F6591C4AB8F8D2C022D2832B28E6F5D78FE6713839"
+  },
+  {
+    "folder": "heroic-resolve-spellsword",
+    "file": "resolve-aura.png",
+    "bytes": 1415497,
+    "sha256": "B9CEECF511A63D99EC6B65307757FE931941E3BD5F476E7FB0DAD7B4266724E9"
+  },
+  {
+    "folder": "heroic-resolve-spellsword",
+    "file": "resolve-character.png",
+    "bytes": 1080813,
+    "sha256": "537AC4FB15D84D9BBC9FC246C8F1ED10AB0F916FE7AA45D046B94C267F363429"
+  },
+  {
+    "folder": "heroic-resolve-spellsword",
+    "file": "spellsword-existing.png",
+    "bytes": 716575,
+    "sha256": "05E3A9398AA7914A527487D14C29BD5D23BCDB15DCA75E5246E310E277EC545A"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v2",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v2",
+    "file": "generation-prompts.txt",
+    "bytes": 2072,
+    "sha256": "715B826F329F3D10AE97B9EFD8FE187DFB0D06FBC0E300DD3DC3BDC71FD2EC4E"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v2",
+    "file": "preview.html",
+    "bytes": 7279,
+    "sha256": "9CC4796845B1BD3F6B774B06E4A6DF99BDDAEE684D2A93C1CAC83A3EDBF45590"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v2",
+    "file": "resolve-aura.png",
+    "bytes": 1250639,
+    "sha256": "F4388F181C90CB06DE146889ACD8FA17804F430DBF133A68CDC065004ADB997C"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v2",
+    "file": "resolve-character.png",
+    "bytes": 1123079,
+    "sha256": "F62397B39697732A4630598D1830DC79CC1484A8768C29210E9CE113F791B10C"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v2",
+    "file": "spellsword-existing.png",
+    "bytes": 716575,
+    "sha256": "05E3A9398AA7914A527487D14C29BD5D23BCDB15DCA75E5246E310E277EC545A"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v3",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v3",
+    "file": "generation-prompts.txt",
+    "bytes": 2129,
+    "sha256": "1543876198EA8562099B7AB50FDD43C61F24F4985B29E58B3D50B594EC22EFB5"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v3",
+    "file": "preview.html",
+    "bytes": 7462,
+    "sha256": "5A408096A511104E9B6A1E2D3AE389FA4323FF97081B372FDDCF2971D09F0A41"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v3",
+    "file": "resolve-aura.png",
+    "bytes": 1105265,
+    "sha256": "41958839747618B26272DD695A66692DEB9370F02BC486A345933EEB608A105C"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v3",
+    "file": "resolve-character.png",
+    "bytes": 1450045,
+    "sha256": "C0AE0D5F6C0BDAEE565FA7080887B38CEA7E975784ED3B992F89526B57E685AA"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v3",
+    "file": "spellsword-existing.png",
+    "bytes": 716575,
+    "sha256": "05E3A9398AA7914A527487D14C29BD5D23BCDB15DCA75E5246E310E277EC545A"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v4",
+    "file": "README.md",
+    "bytes": 887,
+    "sha256": "C9B8E4AE9184A098E26B9569B8C84EE40CF753FF18D2421BCF121FB2269326D6"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v4",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v4",
+    "file": "generation-prompts.txt",
+    "bytes": 2090,
+    "sha256": "DA0F3F40DA7D4376A30622CD0379D4527FD51DD267C58A49D4BC0B023EA46938"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v4",
+    "file": "pose-reference.png",
+    "bytes": 23886,
+    "sha256": "17CEE3D49ECA0856E976BBA6D3A0CA6990BF79977D82CAD1581E8DB7B5CEB122"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v4",
+    "file": "preview.html",
+    "bytes": 7307,
+    "sha256": "BFB2F8BB5573BCC66CA86542A9DC25E3B4EA583BBF332CC1F8C2909173BF9417"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v4",
+    "file": "resolve-aura.png",
+    "bytes": 1588393,
+    "sha256": "8B8060A2532F295E1A8420035B1A7078DEBEED3E0A68727A336435C7889DCEA3"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v4",
+    "file": "resolve-character.png",
+    "bytes": 761610,
+    "sha256": "2ADEB61447EAA4A1EF7EB1C6BD7DF87CF39DB5F14B5DFF7635017C839D8CFEBA"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v4",
+    "file": "spellsword-existing.png",
+    "bytes": 716575,
+    "sha256": "05E3A9398AA7914A527487D14C29BD5D23BCDB15DCA75E5246E310E277EC545A"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v5",
+    "file": "README.md",
+    "bytes": 1131,
+    "sha256": "70FB2538571353B2B117ED3C02CCC1D5563750BD3DA2C17610D81DF33029E5F6"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v5",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v5",
+    "file": "edit-prompt.txt",
+    "bytes": 726,
+    "sha256": "6E8823EE15DAA002B98305084B4E3E81EA931D3DF59D7279099D60B260446807"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v5",
+    "file": "generation-prompts.txt",
+    "bytes": 2090,
+    "sha256": "DA0F3F40DA7D4376A30622CD0379D4527FD51DD267C58A49D4BC0B023EA46938"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v5",
+    "file": "pose-reference.png",
+    "bytes": 23886,
+    "sha256": "17CEE3D49ECA0856E976BBA6D3A0CA6990BF79977D82CAD1581E8DB7B5CEB122"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v5",
+    "file": "preview.html",
+    "bytes": 7307,
+    "sha256": "25465729EED089917A33FBF1CA39A55456C4DDF54D65459E8424F6AFCF81AF8F"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v5",
+    "file": "resolve-aura.png",
+    "bytes": 1588393,
+    "sha256": "8B8060A2532F295E1A8420035B1A7078DEBEED3E0A68727A336435C7889DCEA3"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v5",
+    "file": "resolve-character.png",
+    "bytes": 900604,
+    "sha256": "3174A9523CD3979DC5B71330F36E553D40E0836C83B3BA74C01C325E57708753"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v5",
+    "file": "spellsword-existing.png",
+    "bytes": 716575,
+    "sha256": "05E3A9398AA7914A527487D14C29BD5D23BCDB15DCA75E5246E310E277EC545A"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v6",
+    "file": "README.md",
+    "bytes": 1609,
+    "sha256": "FE681840C62928F7091A06A803644E2E71D6BBE980EB580AE3783A9890239BED"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v6",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v6",
+    "file": "edit-prompt.txt",
+    "bytes": 726,
+    "sha256": "6E8823EE15DAA002B98305084B4E3E81EA931D3DF59D7279099D60B260446807"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v6",
+    "file": "generation-prompts.txt",
+    "bytes": 2090,
+    "sha256": "DA0F3F40DA7D4376A30622CD0379D4527FD51DD267C58A49D4BC0B023EA46938"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v6",
+    "file": "hand-edit-prompt.txt",
+    "bytes": 731,
+    "sha256": "7E65A9CD663CA47F7B68368AEAFCE2E2CDF1FBC7AD8F2CC7606D0B66408F9D19"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v6",
+    "file": "pose-reference.png",
+    "bytes": 23886,
+    "sha256": "17CEE3D49ECA0856E976BBA6D3A0CA6990BF79977D82CAD1581E8DB7B5CEB122"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v6",
+    "file": "preview.html",
+    "bytes": 7309,
+    "sha256": "7E56031004736D95536A7D891FB0B866CB29B103B130740E68ACC10A0E33D313"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v6",
+    "file": "resolve-aura.png",
+    "bytes": 1588393,
+    "sha256": "8B8060A2532F295E1A8420035B1A7078DEBEED3E0A68727A336435C7889DCEA3"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v6",
+    "file": "resolve-character.png",
+    "bytes": 936992,
+    "sha256": "11A3D0FE6754EEA47349E2F18B17A98919D0C2091945820B537231D8DBA38D89"
+  },
+  {
+    "folder": "heroic-resolve-spellsword-v6",
+    "file": "spellsword-existing.png",
+    "bytes": 716575,
+    "sha256": "05E3A9398AA7914A527487D14C29BD5D23BCDB15DCA75E5246E310E277EC545A"
+  },
+  {
+    "folder": "heroic-resolve-sword",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-sword",
+    "file": "generation-prompts.txt",
+    "bytes": 2181,
+    "sha256": "D88F44CFA528F055A904B21BA89310B54BF1D4D227A34DC7FC1E44A6884F99E7"
+  },
+  {
+    "folder": "heroic-resolve-sword",
+    "file": "preview.html",
+    "bytes": 7154,
+    "sha256": "C7608A5159FB017A13A082C511895A230E1CDAAAF672877269024392E65371B1"
+  },
+  {
+    "folder": "heroic-resolve-sword",
+    "file": "resolve-aura.png",
+    "bytes": 1164368,
+    "sha256": "9E99ADEA372A8873839D66D9F0E3ABE8FFDEA3189134089E503390AA2022D02C"
+  },
+  {
+    "folder": "heroic-resolve-sword",
+    "file": "resolve-character.png",
+    "bytes": 858614,
+    "sha256": "09AACB2746AB3EA36215F34ED804190795F1741DBA490064918B72194491218F"
+  },
+  {
+    "folder": "heroic-resolve-sword",
+    "file": "sword-existing.png",
+    "bytes": 850953,
+    "sha256": "D92A5D6016BEDEF41499F921BD4FDE566D3821C1298EF376BEB3CC21079F84BF"
+  },
+  {
+    "folder": "heroic-resolve-timemage",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-timemage",
+    "file": "generation-prompts.txt",
+    "bytes": 2149,
+    "sha256": "2047CEF93D9A1ECBD3BE56B2BC869CE32ABBA6A44BE71791F6A69D05D3C92E8A"
+  },
+  {
+    "folder": "heroic-resolve-timemage",
+    "file": "preview.html",
+    "bytes": 7319,
+    "sha256": "F77323DE98250DFD90927241C46BFDA4A76229696ABB9D221DDAE9197AC3A5F7"
+  },
+  {
+    "folder": "heroic-resolve-timemage",
+    "file": "resolve-aura.png",
+    "bytes": 1182006,
+    "sha256": "7CFAC1B26C49368A34E5DC9657D462A29F04444FA4940695D5259C184AC7AAC4"
+  },
+  {
+    "folder": "heroic-resolve-timemage",
+    "file": "resolve-character.png",
+    "bytes": 1271217,
+    "sha256": "A96AAEDCE1B7373E795279B4E379BDB90C60F9AF1812D8DE788DD4C954BA6268"
+  },
+  {
+    "folder": "heroic-resolve-timemage",
+    "file": "timemage-existing.png",
+    "bytes": 1032818,
+    "sha256": "84F6AF9BE08E28A8494C5A94941341C011AE9703A191E82F3B74EDF9966CB60E"
+  },
+  {
+    "folder": "heroic-resolve-wizard",
+    "file": "battle-background.webp",
+    "bytes": 501666,
+    "sha256": "50009DF180D6382FBE5E1F94253F5D249B6C31C8BE1640992F6729F0690B76F6"
+  },
+  {
+    "folder": "heroic-resolve-wizard",
+    "file": "generation-prompts.txt",
+    "bytes": 2024,
+    "sha256": "F729E24884572F348AB1F0ED3DEBE5FFD6C25F871939603C09832FBAF0EB82D3"
+  },
+  {
+    "folder": "heroic-resolve-wizard",
+    "file": "preview.html",
+    "bytes": 7301,
+    "sha256": "F65C6C037BF27A196074FFA98B9868F0E9300162213E3D5D6C53E4BAB0CCCEE4"
+  },
+  {
+    "folder": "heroic-resolve-wizard",
+    "file": "resolve-aura.png",
+    "bytes": 1344352,
+    "sha256": "0AF622DAAC366195414D3C3F205EF6680CA2AF027648951F19343B33A7C2EFFC"
+  },
+  {
+    "folder": "heroic-resolve-wizard",
+    "file": "resolve-character.png",
+    "bytes": 1176318,
+    "sha256": "AAFD9B1C1224FBAF22647DAD3F2BBBACEB59ECE97DEA552D95E4AFAEAF0720C0"
+  },
+  {
+    "folder": "heroic-resolve-wizard",
+    "file": "wizard-existing.png",
+    "bytes": 775089,
+    "sha256": "9E5B259771EEAA5D6032B76CB3B986F69B3D034AD8273A47FD507BA43FA41B11"
+  }
+]

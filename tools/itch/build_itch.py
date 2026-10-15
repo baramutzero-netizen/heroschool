@@ -6,7 +6,7 @@
 
 wrap.py 와 같은 빌드(그림 빼기 · 테스트 기능 빼기 · 영어판 변환 · 로딩 화면)에 세 가지를 더한다.
 · 체험판 — game.html 의 DEMO_END 를 2년차 봄 2주차 시작으로: 그때 끝 화면을 띄우고 주를 더 넘기지 못한다 (demoOver · demoEndShow).
-· 영어가 기본 — 주소의 ?lang= · 설정에서 고른 언어(hs_lang)가 없으면 브라우저 언어와 상관없이 English.
+· 영어가 기본 — 주소의 ?lang= · 설정에서 고른 언어(hs_lang)가 없으면 브라우저 언어와 상관없이 English. 한국어 · 日本語(1014)는 설정에서 고른다.
 · 화면 크기 틀(UISCALE)을 itch 의 iframe 안에서도 켠다 (EMBED) — '전체 화면으로 실행'으로 큰 모니터에 띄워도 게임이 커진다.
 ZIP 에는 index.html 과 빌드된 HTML 에 적힌 그림 · 소리만 넣는다. itch 제한(파일 1000개 · 풀었을 때 500MB · 파일 하나 200MB)을 넘으면 멈춘다.
 빌드 번호는 '<날짜-시각>-itch' — 설정 화면 · 의견 보내기에 그대로 찍혀서 itch 에서 온 의견을 가릴 수 있다.
@@ -43,8 +43,8 @@ def build_html():
         return s.replace(old, new)
     src = once(src, 'const DEMO_END = null;', 'const DEMO_END = %s;' % DEMO_END, '체험판 끝')
     src = once(src, 'var EMBED = false;', 'var EMBED = true;', '화면 크기 틀 (iframe 안)')
-    src = once(src, r'L=(q==="en"||q==="ko")?q:(s==="en"||s==="ko")?s:P?(/^ko\b/i.test(n)?"ko":"en"):"ko";',
-               r'L=(q==="en"||q==="ko")?q:(s==="en"||s==="ko")?s:"en";', '영어 기본')
+    src = once(src, r'L=(q==="en"||q==="ko"||q==="ja")?q:(s==="en"||s==="ko"||(J&&s==="ja"))?s:P?(/^ko\b/i.test(n)?"ko":(J&&/^ja\b/i.test(n))?"ja":"en"):"ko";',
+               r'L=(q==="en"||q==="ko"||q==="ja")?q:(s==="en"||s==="ko"||(J&&s==="ja"))?s:"en";', '영어 기본')
     i = src.index('<div id="app">')
     head, body, tail = boot_split(src[:i], src[i:])
     out = f'''<!doctype html>
@@ -85,7 +85,7 @@ def collect(html, roots):
             if t[:j] in pool:
                 files[t[:j]] = pool[t[:j]]
                 break
-    # 2) assets/ 를 떼고 적힌 것 (HS_A["counsel-cookie/x.png"] 등) · 대회 쿼터뷰 지도(이름만) · 운영 안내 그림(번호로 만든다)
+    # 2) assets/ 를 떼고 적힌 것 (HS_A["counsel-cookie/x.png"] 등) · 대회 쿼터뷰 지도(이름만) · 운영 안내 그림(번호로 만든다) · 스킬 강화 창 그림(이어 붙인다 · 1014)
     for rel, full in pool.items():
         if not rel.startswith('assets/') or rel in files:
             continue
@@ -98,6 +98,12 @@ def collect(html, roots):
             files[rel] = full
         elif rel.startswith('assets/tutorial-illustrated/'):
             files[rel] = full
+        elif rel.startswith('assets/skill-upgrade/') and rel.endswith('.png'):   # 스킬 강화 창 (1014) — SK_CHOICE_ROOT + 직업 그림(SK_CHOICE_ART) + '/' + 표정 이름 + '.png' 로 만든다
+            name = parts[-1][:-4]
+            if len(parts) == 4 and re.search(r'["\']' + re.escape(parts[2]) + r'["\']', html) and re.search(r'["\']' + re.escape(name) + r'["\']', html):
+                files[rel] = full                                             # 직업 그림 폴더 — 표에 있는 직업 그림 · 코드에 적힌 표정 이름
+            elif len(parts) == 3 and re.search(r'["\'`]' + re.escape(name) + r'(\.png)?["\'`]', html):
+                files[rel] = full                                             # 표시 · 부채 (anticipation · impact · SK_CHOICE_FAN)
     # 3) 소리 — BGM_DIR("bgm/") 뒤에 붙는 이름은 표에 따옴표로 적혀 있다
     for rel, full in pool.items():
         if rel.startswith('bgm/') and re.search(r'["\'`]' + re.escape(rel[4:]) + r'["\'`]', html):

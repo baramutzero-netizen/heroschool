@@ -1,6 +1,6 @@
-"""영어판 화면 점검 (1010 · 2단계) — 영어로 띄운 화면에서 넘치거나 잘린 칸을 찾는다.
+"""영어판 화면 점검 (1010 · 2단계) — 영어로 띄운 화면에서 넘치거나 잘린 칸을 찾는다. 1014 — --lang ja 면 일본어판(?lang=ja)을 같은 방법으로.
 
-    python3 tools/i18n/check_layout.py [--sizes 1440x900,1100x700,900x1000,390x844] [--only home,plan] [--shots 폴더] [--years 3]
+    python3 tools/i18n/check_layout.py [--lang en|ja] [--sizes 1440x900,1100x700,900x1000,390x844] [--only home,plan] [--shots 폴더] [--years 3]
     크기 — 1440x900 넓은 화면 · 1100x700 넓은 화면의 가장 좁은 폭(1013 — PC 좁은 창 · 태블릿이 이 폭으로 그려 줄인다) ·
     900x1000 좁은 화면(화면 크기를 직접 키운 PC · 가로로 든 폰) · 390x844 폰
     hs.py 를 쓰는 세션이면:  python3 ~/hs.py layout   (빌드 뒤에)
@@ -168,11 +168,12 @@ HAN_JS = r"""() => {
 
 
 FULL = False
+LANG_KO = {'en': '영어', 'ja': '일본어'}
 
 
 def run(br, path, query, size, scenes_only, shots, years, tag):
     w, h = size
-    c = br.new_context(viewport={'width': w, 'height': h}, device_scale_factor=1, locale='ko-KR' if tag == 'ko' else 'en-US')   # 브라우저 언어도 맞춘다 (공개 뒤)
+    c = br.new_context(viewport={'width': w, 'height': h}, device_scale_factor=1, locale={'ko': 'ko-KR', 'ja': 'ja-JP'}.get(tag, 'en-US'))   # 브라우저 언어도 맞춘다 (공개 뒤)
     c.route(re.compile(r'^https?://'), lambda r: r.abort())
     c.add_init_script(C.INIT_JS)
     pg = c.new_page()
@@ -198,7 +199,7 @@ def run(br, path, query, size, scenes_only, shots, years, tag):
             continue
         pg.wait_for_timeout(1500 if n in ('report', 'cslwin', 'skillup') or n.startswith('tour') else 900 if n == 'battle' or n.startswith('rbook') or n in ('roster', 'team') else 250)
         m = pg.evaluate(MEASURE)
-        res[n] = {'issues': m['out'], 'lines': m['lines'], 'han': pg.evaluate(HAN_JS) if tag == 'en' else []}
+        res[n] = {'issues': m['out'], 'lines': m['lines'], 'han': pg.evaluate(HAN_JS) if tag != 'ko' else []}
         if shots:
             pg.screenshot(path=os.path.join(shots, '%s_%dx%d_%s.png' % (tag, w, h, n)), full_page=FULL and w < 1100)   # 가로 넓은 화면은 페이지 전체로 찍으면 세로가 되어 배치가 바뀐다
     c.close()
@@ -216,6 +217,7 @@ def main():
     ap.add_argument('--full', action='store_true', help='스크린샷을 페이지 전체로')
     ap.add_argument('--wrap', action='store_true', help='한국어보다 줄이 늘어난 칸도 하나하나 보여 준다 (넘침은 아님 · 기본은 개수만)')
     ap.add_argument('--ko-shots', action='store_true', help='한국어 화면도 찍는다 (견주기용)')
+    ap.add_argument('--lang', default='en', choices=['en', 'ja'], help='점검할 언어 (1014 — ja 는 ?lang=ja 일본어판 · 기본 en)')
     o = ap.parse_args()
     global FULL
     FULL = o.full
@@ -233,7 +235,7 @@ def main():
         with sync_playwright() as p:
             br = p.chromium.launch()
             for size in sizes:
-                en, e_err = run(br, pb, '?lang=en', size, only, o.shots, o.years, 'en')
+                en, e_err = run(br, pb, '?lang=' + o.lang, size, only, o.shots, o.years, o.lang)
                 ko, k_err = ({}, []) if o.no_ko else run(br, pb, '?lang=ko', size, only, o.shots if o.ko_shots else None, o.years, 'ko')
                 key = '%dx%d' % size
                 report[key] = {}
@@ -260,7 +262,7 @@ def main():
                             lines.append('      %-9s +%-4d %-38s %s' % (x['kind'], x['over'], x['el'][:38], x['text'][:60]))
                     elif soft:
                         info[0] += len(soft)
-                print('── %s · 화면 %d · 영어에서 새로 넘친 칸 %d · 남은 한글 %d%s' % (key, len(en), sum(1 for v in report[key].values() for x in v if x['kind'] not in ('wrap', 'han')),
+                print('── %s · 화면 %d · %s에서 새로 넘친 칸 %d · 남은 한글 %d%s' % (key, len(en), LANG_KO[o.lang], sum(1 for v in report[key].values() for x in v if x['kind'] not in ('wrap', 'han')),
                       sum(1 for v in report[key].values() for x in v if x['kind'] == 'han'),
                       (' · 오류 ' + ' / '.join(e_err[:2])) if e_err else ''))
                 print('\n'.join(lines) if lines else '  (없음)')

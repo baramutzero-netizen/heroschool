@@ -11,6 +11,7 @@
    리그 잠금 토스트 · 설정의 언어 칸을 본다. 설정에서 언어를 바꾸면 저장 후 다시 불러오는지도.
 4. 공개(config.json public:true) 뒤에는 — 브라우저 언어(크로미움 locale)로 고르는지 (ko-KR → 한국어 · en-US → 영어),
    공개 전부터 세이브가 있던 사람은 영어 브라우저여도 한국어로 기억되는지, 설정의 '자동'이 그 기억을 지우고 브라우저를 따르는지.
+   일본어 공개(config.json "ja" · 1014) 뒤에는 ja-JP → 일본어 · 설정의 日本語 · 그동안 영어로 하던 일본어 브라우저는 영어로 기억되는지도.
    한국어 견주기(2)는 한국어 브라우저(ko-KR)로 띄우고, B 에만 있는 설정의 언어 칸은 빼고 견준다.
 바깥 주소(firebase · 글꼴 등)는 전부 막는다. 끝나면 임시 폴더를 지운다 (--shots 를 주면 스크린샷을 거기에 남긴다).
 """
@@ -160,7 +161,9 @@ def real_errors(errs):
 
 
 T0_RE = re.compile(r'data-t0="[\d.]+"')     # 애니메이션 시작 때(performance.now) — 띄울 때마다 다르다
-PUBLIC = bool(json.load(open(os.path.join(ROOT, 'tools', 'i18n', 'config.json'), encoding='utf-8')).get('public'))
+CFG = json.load(open(os.path.join(ROOT, 'tools', 'i18n', 'config.json'), encoding='utf-8'))
+PUBLIC = bool(CFG.get('public'))
+JA_PUB = PUBLIC and bool(CFG.get('ja'))   # 1014 일본어 공개
 LANG_RE = re.compile(r'<section class="panel"><div class="optrow"><div class="optlab"><b>언어 · Language</b>[\s\S]*?</section>')   # 공개 뒤 — B 에만 있는 설정의 언어 칸
 
 
@@ -290,7 +293,7 @@ def main():
             pg.evaluate("() => { UI.view = 'opt'; render(); }")
             pg.wait_for_timeout(200)
             lp = pg.evaluate("() => [...document.querySelectorAll('[data-lang]')].map(b => b.dataset.lang + ':' + b.getAttribute('aria-pressed') + ':' + b.textContent)")
-            want_lp = (['auto:false:Auto', 'ko:false:한국어', 'en:true:English'] if PUBLIC else ['ko:false:한국어', 'en:true:English'])   # 주소의 ?lang=en 이 눌려 있다
+            want_lp = (['auto:false:Auto', 'ko:false:한국어', 'en:true:English'] if PUBLIC else ['ko:false:한국어', 'en:true:English']) + (['ja:false:日本語'] if JA_PUB else [])   # 주소의 ?lang=en 이 눌려 있다
             if lp != want_lp:
                 fails.append('영어: 설정의 언어 칸 %s' % lp)
             if o.shots:
@@ -339,7 +342,7 @@ def main():
                     fails.append('공개: 한국어 브라우저인데 한국어가 아니다 %s' % r2)
                 pg.evaluate("() => { __hsReset(9); closeModal(); newScenarioStart('전환 학원'); closeModal(); UI.view = 'opt'; render(); }")
                 lp2 = pg.evaluate(lpj)
-                if lp2 != ['auto:true:자동', 'ko:false:한국어', 'en:false:English']:
+                if lp2 != ['auto:true:자동', 'ko:false:한국어', 'en:false:English'] + (['ja:false:日本語'] if JA_PUB else []):
                     fails.append('공개: 한국어 설정의 언어 칸 %s' % lp2)
                 with pg.expect_navigation(timeout=30000):
                     pg.click('[data-lang=en]')
@@ -372,6 +375,48 @@ def main():
                 c.close()
                 print('공개 — 영어 브라우저 %s · 한국어 브라우저 %s · 언어 칸 %s · English %s · 자동 %s · 예전 세이브 %s → 자동 %s'
                       % (r1[0], r2[0], lp2, after[1], back[0], r3[0], r4[0]))
+                if JA_PUB:
+                    # 1014 일본어 공개 — 일본어 브라우저 새 방문은 일본어 · 설정에서 日本語 를 고르면 기억 · 그동안 영어로 하던 일본어 브라우저는 영어 그대로
+                    stj = "() => [I18N.lang, document.documentElement.lang, localStorage.getItem('hs_lang'), localStorage.getItem('hs_lang0j')]"
+                    c, pg, errs = open_page(pb, locale='ja-JP')
+                    j1 = pg.evaluate(stj)
+                    if j1 != ['ja', 'ja', None, '1']:
+                        fails.append('일본어 공개: 일본어 브라우저 · 새 방문인데 일본어가 아니다 %s' % j1)
+                    c.close()
+                    c, pg, errs = open_page(pb, locale='ko-KR')
+                    pg.evaluate("() => { __hsReset(9); closeModal(); newScenarioStart('전환 학원'); closeModal(); UI.view = 'opt'; render(); }")
+                    with pg.expect_navigation(timeout=30000):
+                        pg.click('[data-lang=ja]')
+                    reloaded(pg)
+                    j2 = pg.evaluate("() => [location.search, I18N.lang, localStorage.getItem('hs_lang'), S.acadName]")
+                    if j2 != ['', 'ja', 'ja', '전환 학원']:
+                        fails.append('일본어 공개: 日本語 를 누른 뒤 %s' % j2)
+                    pg.evaluate("() => { closeModal(); UI.view = 'opt'; render(); }")
+                    lpj2 = pg.evaluate(lpj)
+                    if lpj2 != ['auto:false:自動', 'ko:false:한국어', 'en:false:English', 'ja:true:日本語']:
+                        fails.append('일본어 공개: 일본어 설정의 언어 칸 %s' % lpj2)
+                    c.close()
+                    was_en = ('if(!sessionStorage.getItem("__old")){localStorage.setItem("heroacademy_v1", %s);localStorage.setItem("hs_lang0","1");sessionStorage.setItem("__old","1")}'
+                              % json.dumps(json.dumps({"v": 1})))
+                    c, pg, errs = open_page(pb, locale='ja-JP', init=was_en)
+                    j3 = pg.evaluate(stj)
+                    if j3 != ['en', 'en', 'en', '1']:
+                        fails.append('일본어 공개: 영어로 하던 일본어 브라우저 — 영어로 기억하지 않았다 %s' % j3)
+                    pg.evaluate("() => { closeModal(); UI.view = 'opt'; render(); }")
+                    with pg.expect_navigation(timeout=30000):
+                        pg.click('[data-lang=auto]')
+                    reloaded(pg)
+                    j4 = pg.evaluate(stj)
+                    if j4 != ['ja', 'ja', None, '1']:
+                        fails.append('일본어 공개: 자동을 고른 뒤 일본어 브라우저를 따르지 않는다 %s' % j4)
+                    c.close()
+                    c, pg, errs = open_page(pb, locale='ja-JP', init=old_save)
+                    j5 = pg.evaluate(stj)
+                    if j5[:3] != ['ko', 'ko', 'ko']:
+                        fails.append('일본어 공개: 영어 공개 전부터 하던 일본어 브라우저 — 한국어로 기억하지 않았다 %s' % j5)
+                    c.close()
+                    print('일본어 공개 — 일본어 브라우저 %s · 日本語 %s · 언어 칸 %s · 영어로 하던 사람 %s → 자동 %s · 영어 공개 전부터 %s'
+                          % (j1[0], j2[1], lpj2, j3[0], j4[0], j5[0]))
             br.close()
     finally:
         shutil.rmtree(tmp, ignore_errors=True)

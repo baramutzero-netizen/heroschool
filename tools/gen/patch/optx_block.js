@@ -81,7 +81,41 @@ const OPTX = (()=>{
       {t:["—Kingdom Year 230, Winter", "My father passed away."], y:[315.5, 403.5],
        at:[[110, 460, 485, 510, 535, 560, 585, 610, 660, 685, 710, 735, 760, 860, 960, 1060, 1410, 1435, 1460, 1485, 1510, 1535], [3360, 3400, 3460, 3496, 3532, 3568, 3604, 3640, 3760, 3796, 3832, 3868, 3904, 3940, 3990, 4030, 4070, 4110, 4160]], fade:[6470, 7100]}]}
   };
-  const SCX = (typeof I18N !== "undefined" && I18N.lang === "en") ? SC_EN : SC;
+  /* 일본어판 (1014) — 한국어에서 바로 옮긴 글 · 때는 SC 그대로 (at 는 글자 수에 맞춰 고르게 · 문장부호 뒤는 조금 쉰다).
+     글꼴은 Shippori Mincho B1 ExtraBold(OpTxSerifJa) · Kiwi Maru(OpTxSansJa) — 일본어판에서만 받는 조각 (tools/gen/fonts/ja_fonts.py · ja_fonts.css).
+     타자기 제목 わが英雄のアカデミー 은 타자 소리 일곱 번에 맞춰 오른쪽부터 조각 일곱(ミー · デ · アカ · の · 英雄 · が · わ), 부제는 여섯 */
+  const SERIF_JA = ["OpTxSerifJa", 800, 44, 2.2, 0.4];
+  const SANS_JA = ["OpTxSansJa", 400, 44, 1.6, 0.5];
+  const SC_JA = {
+    intro: {ms:29250, tail:300, look:"cream", font:SERIF_JA, st:[
+      {t:["王国暦236年―", "魔王軍の総攻撃が始まった。"], y:[318, 402], ln:[[110, 760], [1710, 2810]], fade:[4880, 5480]},
+      {t:["長きにわたる平和に浸りきっていた王国軍は", "なす術もなく崩れ去り、", "王国は未曾有の危機を迎えた。"], y:[274, 361, 448], ln:[[5760, 7360], [7960, 8760], [9360, 10660]], fade:[12720, 13300]},
+      {t:["だが、そんな王国にも希望はあった。", "史上ただ一人、あらゆる職業をマスターした", "人類最強の英雄――それがあなただ。"], y:[274, 361, 448], ln:[[13610, 15310], [16110, 17860], [18410, 19860]], fade:[21880, 22450]},
+      {t:["あなたは仲間たちと共に魔王を食い止めるため、", "危険を顧みず敵陣へと向かった。"], y:[318, 402], ln:[[22760, 24360], [24910, 26310]], fade:[28370, 28950]}]},
+    rift: {ms:19300, tail:300, look:"red", font:["OpTxSansJa", 400, 42, 1.4, 0.5],
+      glitch:[1700, 1750, 1800, 3400, 3450, 3500, 5150, 5200, 6800, 6850, 6900, 10250, 10300, 11900, 11950, 12000, 13600, 13650, 13700, 15300, 15350, 15400, 17000, 17050, 17100], st:[
+      {t:["目の前で時空が渦を巻き、揺らいでいる。", "そして周りのすべてを、貪るように吸い込み始めた。"], y:[318, 400], ln:[[110, 1610], [2060, 4410]], out:[[6360, 6960], [7010, 7910]], flash:8500, end:8700},
+      {t:["魔王は笑いながら、時空の彼方へ吸い込まれていく……", "共に戦った仲間たちも、なす術なく呑み込まれる。"], y:[318, 400], ln:[[9010, 11710], [12360, 14560]], out:[[16510, 17360], [17410, 18210]], flash:18800, end:19300}]},
+    danger: {ms:7000, tail:350, look:"red", font:["OpTxSansJa", 400, 50, 1.6, 0.55], glitch:[1700, 1750, 1800, 3400, 3450, 3500], st:[
+      {t:["あ、これはまずい……"], y:[359.5], at:[[110, 160, 460, 510, 560, 710, 760, 810, 1260, 1610]], mal:{t0:3700, tab:MAL_DANGER}}]},
+    date: {ms:4700, tail:300, look:"ink", font:SERIF_JA, light:true, st:[
+      {t:["―王国暦230年、秋"], y:[359.5], at:[[110, 460, 510, 610, 760, 860, 960, 1010, 1060, 1410]], fade:[3750, 4380]}]},
+    typer: {ms:5950, tail:300, light:true, reveal:"pop", ghost:[108, 150, 177], ghost2:[196, 92, 132], glitch:[100, 1700, 1750, 1800, 3400, 3450, 3500], st:[
+      {t:["わが英雄のアカデミー", "学園がつぶれた"], y:[299.5, 423.5], fonts:[["OpTxSansJa", 400, 96, 12, 4], ["OpTxSansJa", 400, 34, 7, 0.3]], looks:["metal", "metalSub"],
+       at:[[2700, 2250, 1850, 1850, 1400, 1000, 1000, 550, 100, 100], [2750, 2750, 2700, 2650, 2600, 2550, 2500]], cut:[4750, 4800], rule:{y:381.5, x0:72, x1:1207, grow:[100, 950], shrink:[4800, 5650]}}]},
+    dontsay: {ms:5050, tail:300, look:"dad", font:["OpTxSansJa", 400, 55, 2, 0.8], reveal:"fade", st:[
+      {t:["そんなこと言うなよ。"], y:[359.5], at:[[110, 190, 310, 610, 690, 910, 1010, 1110, 1310, 1560]], fade:[4050, 4750]}]},
+    dream: {ms:5050, tail:300, look:"dad", font:["OpTxSansJa", 400, 55, 2, 0.8], reveal:"fade", st:[
+      {t:["俺の夢は……"], y:[359.5], at:[[110, 410, 710, 910, 1260, 1510]], fade:[4000, 4720]}]},
+    hero: {ms:5100, tail:300, look:"dad", font:["OpTxSansJa", 400, 42, 2, 0.8], reveal:"fade", st:[
+      {t:["誇れる父さんみたいな英雄に、なることなんだから……"], y:[360],
+       at:[[110, 160, 210, 310, 360, 410, 510, 560, 610, 660, 760, 810, 860, 960, 1010, 1060, 1110, 1160, 1260, 1310, 1360, 1410, 1460, 1510, 1560]], fade:[4080, 4790]}]},
+    winter: {ms:7400, tail:300, look:"cream", font:SERIF_JA, st:[
+      {t:["―王国暦230年、冬", "父が亡くなった。"], y:[315.5, 403.5],
+       at:[[110, 460, 510, 610, 760, 860, 960, 1010, 1060, 1410], [3360, 3460, 3560, 3660, 3760, 3910, 4010, 4160]], fade:[6470, 7100]}]}
+  };
+  const OPTX_LANG = typeof I18N !== "undefined" ? I18N.lang : "ko";
+  const SCX = OPTX_LANG === "en" ? SC_EN : (OPTX_LANG === "ja" && I18N.tab) ? SC_JA : SC;   // 일본어 표가 없으면(빈 빌드) 한국어 그대로
   const meas = document.createElement("canvas").getContext("2d");
   const FILTER_OK = (()=>{ try{ const c = document.createElement("canvas").getContext("2d"); if(!("filter" in c)) return false; c.filter = "blur(2px)"; return c.filter === "blur(2px)"; }catch(e){ return false; } })();
   const isSpace = c=> c === " " || c === "　";
@@ -298,9 +332,10 @@ const OPTX = (()=>{
     if(fontP) return fontP;
     const all = Object.values(SCX).flatMap(sc=> sc.st.flatMap(sp=> sp.t)).join("");
     const load = (document.fonts && document.fonts.load)
-      ? Promise.all([SCX === SC_EN ? "800 46px OpTxSerifEn" : "800 46px OpTxSerif", "400 46px OpTxSans"].map(f=> document.fonts.load(f, all))).catch(()=>{})
+      ? Promise.all((SCX === SC_JA ? ["800 46px OpTxSerifJa", "400 46px OpTxSansJa"] : [SCX === SC_EN ? "800 46px OpTxSerifEn" : "800 46px OpTxSerif", "400 46px OpTxSans"])
+          .map(f=> document.fonts.load(f, all))).catch(()=>{})
       : Promise.resolve();
-    fontP = Promise.race([load, new Promise(r=> setTimeout(r, 2500))]);
+    fontP = Promise.race([load, new Promise(r=> setTimeout(r, SCX === SC_JA ? 5000 : 2500))]);   // 일본어 조각은 파일로 받는다 (data: 가 아니다)
     return fontP;
   }
   /* 예전 APNG 와 같은 클래스의 화면 폭 — 붙이기 전에 미리 그 크기로 글자를 굽는다 */

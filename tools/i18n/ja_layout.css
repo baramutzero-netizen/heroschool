@@ -1,0 +1,6 @@
+/* 일본어 화면 고침 (1014 · 준비 중) — 일본어일 때만 붙는다 (i18n_build.py · 영어의 en_layout.css 와 같은 자리).
+   빌드가 게임 CSS 에서 만드는 덧규칙(keep-all → normal · 도트 폰트를 껐을 때 IBM Plex Sans JP · Shippori Mincho) 뒤에 이어 붙는다.
+   일본어 글이 칸에서 넘치는 곳만 여기에 고친다. 주석은 빌드에서 빠진다. */
+
+/* 스케줄 두루마리의 개인 행동 명단 — 이름 칸 60px (전각 다섯 자). 일본어 가타카나 이름은 일곱 자까지 있어 넘치면 … 로 */
+html[lang="ja"] body .skwrap .skfit .skstage .sk-r .nm{text-overflow:ellipsis;white-space:nowrap}

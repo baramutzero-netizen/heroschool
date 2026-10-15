@@ -1,0 +1,657 @@
+{
+ "_": "정신력 시험 대사 표 — 게임 적용판 (1015 · 빌드에 들어간 그대로). {n} = 이름. 한국어는 game.html 의 HR_LINES · HR_TYPES · HR_TEST_TXT · HR_FAINT_TXT, 영어 · 일본어는 tools/i18n/en · ja 의 battle.json (tools/gen/heroic/i18n_hr.py 가 넣는다 — 대사는 {n} 그대로, 글 띠 둘(test · faintBanner)은 게임 표에서 {0}). 학생은 성별이 없다. 허세의 ‘ ’ 는 전투 외침과 같은 혼잣말 표시. react = 기상한 학생에게 같은 편이 · reactFaint = 기절한 학생에게 같은 편이. 일본어는 tools/i18n/ja/GUIDE.md 를 따랐다 (사용자는 일본어를 검수하지 못한다).",
+ "types": [
+  {
+   "k": "will",
+   "ko": "불굴의 의지",
+   "en": "Indomitable Will",
+   "fx": "공격력 +20%",
+   "fxEn": "ATK +20%",
+   "ja": "不屈の意志"
+  },
+  {
+   "k": "faith",
+   "ko": "굳건한 신념",
+   "en": "Unshaken Faith",
+   "fx": "방어력 +20%",
+   "fxEn": "DEF +20%",
+   "ja": "揺るがぬ信念"
+  },
+  {
+   "k": "clarity",
+   "ko": "맑아진 정신",
+   "en": "Clear Mind",
+   "fx": "명중 +10% · 치명타 +10%",
+   "fxEn": "Accuracy +10% · Crit +10%",
+   "ja": "澄みわたる心"
+  },
+  {
+   "k": "courage",
+   "ko": "샘솟는 용기",
+   "en": "Surging Courage",
+   "fx": "속도 +20%",
+   "fxEn": "SPD +20%",
+   "ja": "湧き上がる勇気"
+  }
+ ],
+ "test": {
+  "ko": "{n}의 정신력이 시험받고 있습니다…",
+  "en": "{n}'s spirit is being tested…",
+  "ja": "{n}の精神力が試されています…"
+ },
+ "faintBanner": {
+  "ko": "{n}, 의식을 잃었다",
+  "en": "{n} lost consciousness",
+  "ja": "{n}、意識を失った"
+ },
+ "hero": {
+  "will": {
+   "intro": {
+    "ko": "무, 무서워도… 여기서 물러나진 않을 거예요…!",
+    "en": "I-I'm scared… but I won't back down…!",
+    "ja": "こ、怖くても…ここで引き下がったりしません…！"
+   },
+   "hot": {
+    "ko": "이 정도로 꺼질 불꽃이 아니다!! 다시 간다!!",
+    "en": "My flame won't go out this easily!! Here I go again!!",
+    "ja": "この程度で消える炎じゃない！！もう一度いく！！"
+   },
+   "stone": {
+    "ko": "…아직 서 있다. 그럼 계속한다.",
+    "en": "…Still standing. Then I keep going.",
+    "ja": "…まだ立っている。ならば、続ける。"
+   },
+   "dilig": {
+    "ko": "맡은 몫은… 끝까지 해내겠습니다!",
+    "en": "I'll see my part through… to the very end!",
+    "ja": "任された務めは…最後までやり遂げます！"
+   },
+   "tsun": {
+    "ko": "흥… 이 정도로 쓰러질 줄 알았어?",
+    "en": "Hmph… you thought that would be enough to drop me?",
+    "ja": "ふん…この程度で倒れると思った？"
+   },
+   "lively": {
+    "ko": "헤헤… 아직 끝난 거 아니거든요~!",
+    "en": "Hehe… it's not over yet~!",
+    "ja": "えへへ…まだ終わってないですよ～！"
+   },
+   "boast": {
+    "ko": "‘크큭… 영웅은 쓰러진 뒤부터가 진짜지’",
+    "en": "‘Heh heh… a hero's tale truly begins after the fall’",
+    "ja": "‘くっくっ…英雄の真価は倒れてからだ’"
+   },
+   "plain": {
+    "ko": "아직이야…! 아직 할 수 있어!",
+    "en": "Not yet…! I can still do this!",
+    "ja": "まだだ…！まだやれる！"
+   },
+   "genius": {
+    "ko": "계산이 틀렸네요. 저는 아직 안 쓰러져요.",
+    "en": "Your math is off. I'm not going down yet.",
+    "ja": "計算違いですね。私はまだ倒れませんよ。"
+   }
+  },
+  "faith": {
+   "intro": {
+    "ko": "다, 다들 지킬 거예요… 이번엔 제가…!",
+    "en": "I-I'll protect everyone… this time it's my turn…!",
+    "ja": "み、みんなを守ります…今度は、私が…！"
+   },
+   "hot": {
+    "ko": "뒤에 동료가 있다!! 절대 안 비킨다!!",
+    "en": "My friends are behind me!! I'm not moving an inch!!",
+    "ja": "後ろには仲間がいる！！絶対にどかない！！"
+   },
+   "stone": {
+    "ko": "지킬 것이 있다. 그러니 버틴다.",
+    "en": "There's something to protect. So I hold.",
+    "ja": "守るものがある。だから、退かない。"
+   },
+   "dilig": {
+    "ko": "모두를 지키는 게 제 일이에요. 버티겠습니다!",
+    "en": "Protecting everyone is my job. I'll hold the line!",
+    "ja": "皆を守るのが私の役目です。持ちこたえてみせます！"
+   },
+   "tsun": {
+    "ko": "…착각하지 마. 너희 때문에 버티는 거 아니니까.",
+    "en": "…Don't get the wrong idea. I'm not holding on for you.",
+    "ja": "…勘違いしないで。あなたたちのために踏ん張ってるんじゃないから。"
+   },
+   "lively": {
+    "ko": "다 같이 웃으면서 돌아갈 거예요! 그러니까 안 져요!",
+    "en": "We're all going home smiling! So I won't lose!",
+    "ja": "みんなで笑って帰るんです！だから負けません！"
+   },
+   "boast": {
+    "ko": "‘이 몸이 무너지면 누가 이들을 지키겠나’",
+    "en": "‘If I crumble, who will shield them?’",
+    "ja": "‘この私が倒れれば、誰がこの者たちを守るのだ’"
+   },
+   "plain": {
+    "ko": "여기서 내가 버텨야 해. 버틸 거야.",
+    "en": "I have to hold on here. And I will.",
+    "ja": "ここで踏ん張らなきゃ。踏ん張ってみせる。"
+   },
+   "genius": {
+    "ko": "여기서 버티는 게 최선이에요. 확신해요.",
+    "en": "Holding here is the best move. I'm sure of it.",
+    "ja": "ここで持ちこたえるのが最善です。確信しています。"
+   }
+  },
+  "clarity": {
+   "intro": {
+    "ko": "어, 어라… 이상하게… 다 보여요…",
+    "en": "Uh, huh… somehow… I can see everything…",
+    "ja": "あ、あれ…不思議と…全部見えます…"
+   },
+   "hot": {
+    "ko": "보인다!! 머리가 시원하게 맑아졌다!!",
+    "en": "I can see it!! My head's crystal clear!!",
+    "ja": "見える！！頭がすっきり晴れわたった！！"
+   },
+   "stone": {
+    "ko": "…잡음이 사라졌다. 다 보인다.",
+    "en": "…The noise is gone. I see it all.",
+    "ja": "…雑音が消えた。すべて見える。"
+   },
+   "dilig": {
+    "ko": "침착하게… 하나씩. 이제 다 보여요.",
+    "en": "Calmly… one at a time. Now I see it all.",
+    "ja": "落ち着いて…一つずつ。もう全部見えます。"
+   },
+   "tsun": {
+    "ko": "…흥. 이제야 좀 제대로 보이네.",
+    "en": "…Hmph. Now I can finally see straight.",
+    "ja": "…ふん。やっとまともに見えてきた。"
+   },
+   "lively": {
+    "ko": "와아… 세상이 반짝반짝해 보여요!",
+    "en": "Whoa… everything looks so sparkly!",
+    "ja": "うわあ…世界がキラキラして見えます！"
+   },
+   "boast": {
+    "ko": "‘크큭… 이 눈에 모든 운명의 실이 보인다’",
+    "en": "‘Heh heh… these eyes see every thread of fate’",
+    "ja": "‘くっくっ…この目には運命の糸がすべて見える’"
+   },
+   "plain": {
+    "ko": "어? 머리가 맑아졌어. 이제 보인다.",
+    "en": "Huh? My head's clear. Now I can see.",
+    "ja": "あれ？頭がすっきりした。もう見える。"
+   },
+   "genius": {
+    "ko": "아, 이제 보이네요. 이미 끝났어요.",
+    "en": "Ah, now I see it. It's already over.",
+    "ja": "ああ、見えましたね。もう終わっていますよ。"
+   }
+  },
+  "courage": {
+   "intro": {
+    "ko": "용기… 내 볼게요. 한 발만 더…!",
+    "en": "I'll… find my courage. Just one more step…!",
+    "ja": "勇気…出してみます。あと一歩だけ…！"
+   },
+   "hot": {
+    "ko": "몸이 가볍다!! 이대로 끝까지 달린다!!",
+    "en": "My body feels light!! I'll charge all the way!!",
+    "ja": "体が軽い！！このまま最後まで突っ走る！！"
+   },
+   "stone": {
+    "ko": "몸이 가볍다. 지금 끝낸다.",
+    "en": "My body is light. I end this now.",
+    "ja": "体が軽い。今、終わらせる。"
+   },
+   "dilig": {
+    "ko": "힘이 솟아요…! 조금만 더 달려 볼게요!",
+    "en": "Strength is welling up…! I'll push a little further!",
+    "ja": "力が湧いてきます…！もう少しだけ走ってみます！"
+   },
+   "tsun": {
+    "ko": "따, 딱히 힘이 나서 그러는 거 아니거든!",
+    "en": "I-It's not like I'm fired up or anything!",
+    "ja": "べ、別に元気が出たからってわけじゃないから！"
+   },
+   "lively": {
+    "ko": "우와, 힘이 막 솟아요! 가자가자~!",
+    "en": "Whoa, I'm bursting with energy! Let's go, let's go~!",
+    "ja": "うわあ、力がどんどん湧いてきます！いこういこう～！"
+   },
+   "boast": {
+    "ko": "‘크큭… 바람조차 이 몸을 따라오지 못하리라’",
+    "en": "‘Heh heh… not even the wind shall keep pace with me’",
+    "ja": "‘くっくっ…風さえもこの私には追いつけまい’"
+   },
+   "plain": {
+    "ko": "좋아, 힘이 난다! 다시 가 보자!",
+    "en": "Alright, I've got my strength back! Let's go again!",
+    "ja": "よし、力が出てきた！もう一回いこう！"
+   },
+   "genius": {
+    "ko": "몸이 가볍네요. 이제 따라올 수 있으려나요?",
+    "en": "I feel light. Think you can keep up now?",
+    "ja": "体が軽いですね。さて、ついて来られますか？"
+   }
+  }
+ },
+ "react": {
+  "intro": [
+   {
+    "ko": "{n}… 다, 다행이에요…!",
+    "en": "{n}… th-thank goodness…!",
+    "ja": "{n}…よ、よかった…！"
+   },
+   {
+    "ko": "저, 저도… 힘낼게요…!",
+    "en": "I-I'll do my best too…!",
+    "ja": "わ、私も…がんばります…！"
+   },
+   {
+    "ko": "……멋져요, {n}.",
+    "en": "……That was amazing, {n}.",
+    "ja": "……かっこいいです、{n}。"
+   }
+  ],
+  "hot": [
+   {
+    "ko": "그래, 그거다 {n}!!",
+    "en": "Yeah, that's it, {n}!!",
+    "ja": "そうだ、それだ{n}！！"
+   },
+   {
+    "ko": "우오오, 나도 질 수 없지!!",
+    "en": "Whoa, I can't lose to that!!",
+    "ja": "うおおっ、負けてられない！！"
+   },
+   {
+    "ko": "불타오른다아아!!",
+    "en": "I'm all fired up now!!",
+    "ja": "燃えてきたあああ！！"
+   }
+  ],
+  "stone": [
+   {
+    "ko": "…흐름이 바뀌었다.",
+    "en": "…The tide has turned.",
+    "ja": "…流れが変わった。"
+   },
+   {
+    "ko": "{n}, 등은 맡겨.",
+    "en": "{n}, I've got your back.",
+    "ja": "{n}、背中は任せろ。"
+   },
+   {
+    "ko": "지금이다. 밀어붙인다.",
+    "en": "Now. We push.",
+    "ja": "今だ。押し切る。"
+   }
+  ],
+  "dilig": [
+   {
+    "ko": "{n}, 대단해요! 끝까지 함께할게요!",
+    "en": "{n}, that was incredible! I'm with you to the end!",
+    "ja": "{n}、すごいです！最後まで一緒に戦います！"
+   },
+   {
+    "ko": "다들 조금만 더 힘내요!",
+    "en": "Just a little more, everyone!",
+    "ja": "みなさん、あと少しがんばりましょう！"
+   },
+   {
+    "ko": "빈틈은 제가 메울게요!",
+    "en": "I'll cover any gaps!",
+    "ja": "隙は私が埋めます！"
+   }
+  ],
+  "tsun": [
+   {
+    "ko": "…흥, 걱정한 거 아니거든.",
+    "en": "…Hmph, it's not like I was worried.",
+    "ja": "…ふん、心配なんかしてないから。"
+   },
+   {
+    "ko": "느, 늦었잖아… 그래도 다행이네.",
+    "en": "Y-You took your time… but I'm glad.",
+    "ja": "お、遅い…でも、よかった。"
+   },
+   {
+    "ko": "{n} 주제에… 멋있는 척은.",
+    "en": "Look at {n}… acting all cool.",
+    "ja": "{n}のくせに…かっこつけちゃって。"
+   }
+  ],
+  "lively": [
+   {
+    "ko": "와아! {n} 최고!",
+    "en": "Wow! {n}, you're the best!",
+    "ja": "わあ！{n}、最高！"
+   },
+   {
+    "ko": "헤헤, 이제 우리 차례다~!",
+    "en": "Hehe, now it's our turn~!",
+    "ja": "えへへ、今度はこっちの番だよ～！"
+   },
+   {
+    "ko": "분위기 좋다~ 가자가자!",
+    "en": "Great vibes~ let's go, let's go!",
+    "ja": "いい感じ～！いこういこう！"
+   }
+  ],
+  "boast": [
+   {
+    "ko": "‘크큭… 역시 내가 인정한 동료다’",
+    "en": "‘Heh heh… truly a comrade worthy of my recognition’",
+    "ja": "‘くっくっ…さすがはこの私が認めた仲間だ’"
+   },
+   {
+    "ko": "‘좋다, 이 몸도 진심을 보여 주지’",
+    "en": "‘Very well, I too shall show my true power’",
+    "ja": "‘よかろう、この私も本気を見せてやろう’"
+   },
+   {
+    "ko": "‘영웅의 각성이라… 나쁘지 않군’",
+    "en": "‘A hero's awakening… not bad at all’",
+    "ja": "‘英雄の覚醒か…悪くない’"
+   }
+  ],
+  "plain": [
+   {
+    "ko": "{n}, 괜찮은 거지? 다행이다!",
+    "en": "{n}, you okay? Phew!",
+    "ja": "{n}、大丈夫なんだね？よかった！"
+   },
+   {
+    "ko": "우리도 힘내자!",
+    "en": "Let's keep it up too!",
+    "ja": "私たちもがんばろう！"
+   },
+   {
+    "ko": "좋아, 아직 할 수 있어!",
+    "en": "Alright, we can still do this!",
+    "ja": "よし、まだやれる！"
+   }
+  ],
+  "genius": [
+   {
+    "ko": "역시 그럴 줄 알았어요.",
+    "en": "I knew you'd pull through.",
+    "ja": "やっぱり、そうなると思っていました。"
+   },
+   {
+    "ko": "{n}, 좋아요. 이어서 갈게요.",
+    "en": "{n}, nice. I'll follow up.",
+    "ja": "{n}、いいですね。私が続きます。"
+   },
+   {
+    "ko": "이제야 계산이 맞네요.",
+    "en": "Now the numbers add up.",
+    "ja": "これで計算が合いますね。"
+   }
+  ]
+ },
+ "faint": {
+  "intro": [
+   {
+    "ko": "죄, 죄송해요… 더는…",
+    "en": "S-Sorry… I can't…",
+    "ja": "ご、ごめんなさい…もう…"
+   },
+   {
+    "ko": "……미안해요…",
+    "en": "……I'm sorry…",
+    "ja": "……すみません…"
+   }
+  ],
+  "hot": [
+   {
+    "ko": "크윽… 여기까지인가…!",
+    "en": "Ngh… is this… my limit…!",
+    "ja": "くっ…ここまでか…！"
+   },
+   {
+    "ko": "아직… 불꽃은… 안 꺼졌는데…",
+    "en": "My flame… isn't out… yet…",
+    "ja": "まだ…炎は…消えてないのに…"
+   }
+  ],
+  "stone": [
+   {
+    "ko": "…한계, 인가.",
+    "en": "…So this… is my limit.",
+    "ja": "…限界、か。"
+   },
+   {
+    "ko": "…뒤를, 부탁한다.",
+    "en": "…I leave the rest… to you.",
+    "ja": "…後は、頼む。"
+   }
+  ],
+  "dilig": [
+   {
+    "ko": "끝까지… 해내고 싶었는데…",
+    "en": "I wanted… to see it through…",
+    "ja": "最後まで…やり遂げたかったのに…"
+   },
+   {
+    "ko": "다들… 죄송합니다…",
+    "en": "Everyone… I'm sorry…",
+    "ja": "みなさん…申し訳ありません…"
+   }
+  ],
+  "tsun": [
+   {
+    "ko": "흥… 조, 조금 쉬는 것뿐이야…",
+    "en": "Hmph… I'm j-just resting a bit…",
+    "ja": "ふん…ちょ、ちょっと休むだけなんだから…"
+   },
+   {
+    "ko": "보, 보지 마… 이런 모습…",
+    "en": "D-Don't look… at me like this…",
+    "ja": "み、見ないで…こんな姿…"
+   }
+  ],
+  "lively": [
+   {
+    "ko": "에헤헤… 잠깐만… 쉴게요…",
+    "en": "Ehehe… just… a little rest…",
+    "ja": "えへへ…ちょっとだけ…休みます…"
+   },
+   {
+    "ko": "어라… 눈앞이… 빙글빙글…",
+    "en": "Huh… everything's… spinning…",
+    "ja": "あれ…目の前が…ぐるぐる…"
+   }
+  ],
+  "boast": [
+   {
+    "ko": "‘크윽… 오늘은… 이쯤 해 두지…’",
+    "en": "‘Ngh… I'll let you off… for today…’",
+    "ja": "‘くっ…今日のところは…このくらいにしておこう…’"
+   },
+   {
+    "ko": "‘영웅에게도… 휴식은… 필요한 법…’",
+    "en": "‘Even heroes… need their rest…’",
+    "ja": "‘英雄にも…休息は…必要なもの…’"
+   }
+  ],
+  "plain": [
+   {
+    "ko": "미안… 다들, 부탁해…",
+    "en": "Sorry… I'm counting on you all…",
+    "ja": "ごめん…みんな、頼んだ…"
+   },
+   {
+    "ko": "윽… 더는 못 버티겠어…",
+    "en": "Ugh… I can't hold on anymore…",
+    "ja": "うっ…もう、もたない…"
+   }
+  ],
+  "genius": [
+   {
+    "ko": "…이건, 예상 못 했네요…",
+    "en": "…Didn't see… that coming…",
+    "ja": "…これは、予想外でしたね…"
+   },
+   {
+    "ko": "…계산이… 어긋났…",
+    "en": "…My calculations… were off…",
+    "ja": "…計算が…狂っ…"
+   }
+  ]
+ },
+ "reactFaint": {
+  "intro": [
+   {
+    "ko": "{n}…! 괘, 괜찮은 거죠…?",
+    "en": "{n}…! Y-you're okay, right…?",
+    "ja": "{n}…！だ、大丈夫ですよね…？"
+   },
+   {
+    "ko": "어, 어떡해요… 제, 제가 버틸게요…!",
+    "en": "Wh-what now… I-I'll hold on…!",
+    "ja": "ど、どうしよう…わ、私が持ちこたえます…！"
+   },
+   {
+    "ko": "{n} 몫까지… 저, 저도 해 볼게요…!",
+    "en": "For {n}'s sake… I-I'll try too…!",
+    "ja": "{n}の分まで…わ、私もやってみます…！"
+   }
+  ],
+  "hot": [
+   {
+    "ko": "{n}!! 네 몫까지 내가 싸운다!!",
+    "en": "{n}!! I'll fight for both of us!!",
+    "ja": "{n}！！その分まで戦ってみせる！！"
+   },
+   {
+    "ko": "이 빚은 열 배로 갚아 준다!!",
+    "en": "I'll pay you back tenfold for this!!",
+    "ja": "この借りは十倍にして返す！！"
+   },
+   {
+    "ko": "푹 쉬어, {n}!! 금방 끝내 줄게!!",
+    "en": "Get some rest, {n}!! I'll finish this fast!!",
+    "ja": "ゆっくり休め、{n}！！すぐに終わらせる！！"
+   }
+  ],
+  "stone": [
+   {
+    "ko": "…{n}, 쉬어 둬. 뒤는 맡는다.",
+    "en": "…Lie still, {n}. I've got this.",
+    "ja": "…{n}、休んでいろ。後は引き受ける。"
+   },
+   {
+    "ko": "…빈자리는 내가 메운다.",
+    "en": "…I'll fill the gap.",
+    "ja": "…空いた穴は埋める。"
+   },
+   {
+    "ko": "흔들리지 마. 아직 끝나지 않았다.",
+    "en": "Steady. It's not over yet.",
+    "ja": "揺らぐな。まだ終わっていない。"
+   }
+  ],
+  "dilig": [
+   {
+    "ko": "{n}! 그 몫까지 제가 해낼게요!",
+    "en": "{n}! I'll carry your share too!",
+    "ja": "{n}！その分まで私がやり遂げます！"
+   },
+   {
+    "ko": "다들 침착하게! 대열을 다시 맞춰요!",
+    "en": "Stay calm, everyone! Let's re-form the line!",
+    "ja": "みなさん落ち着いて！隊列を立て直しましょう！"
+   },
+   {
+    "ko": "{n}, 쉬고 있어요. 꼭 이길게요!",
+    "en": "{n}, rest for now. We'll win, I promise!",
+    "ja": "{n}、休んでいてください。必ず勝ちます！"
+   }
+  ],
+  "tsun": [
+   {
+    "ko": "흥… 그러게 누가 무리하래.",
+    "en": "Hmph… who told you to overdo it?",
+    "ja": "ふん…だから無理するなって言ったのに。"
+   },
+   {
+    "ko": "{n} 몫까지 해 줄게… 이, 이번만이야.",
+    "en": "I'll cover for {n}… j-just this once.",
+    "ja": "{n}の分までやってあげる…こ、今回だけだから。"
+   },
+   {
+    "ko": "…걱정 안 했거든. 얼른 일어나기나 해.",
+    "en": "…I wasn't worried. Just hurry up and get up.",
+    "ja": "…心配なんかしてない。早く起きて。"
+   }
+  ],
+  "lively": [
+   {
+    "ko": "{n}~! 일어나면 같이 맛있는 거 먹자!",
+    "en": "{n}~! Let's get snacks when you wake up!",
+    "ja": "{n}～！起きたら一緒においしいもの食べよう！"
+   },
+   {
+    "ko": "괜찮아, 괜찮아! 우리가 있잖아~!",
+    "en": "It's okay, it's okay! You've got us~!",
+    "ja": "大丈夫、大丈夫！私たちがいるよ～！"
+   },
+   {
+    "ko": "으앗, {n}! 조금만 기다려~!",
+    "en": "Wah, {n}! Hang on a little~!",
+    "ja": "うわっ、{n}！ちょっと待っててね～！"
+   }
+  ],
+  "boast": [
+   {
+    "ko": "‘크큭… {n}의 몫까지, 이 몸이 짊어지지’",
+    "en": "‘Heh heh… I shall bear {n}'s burden as well’",
+    "ja": "‘くっくっ…{n}の分まで、この私が背負おう’"
+   },
+   {
+    "ko": "‘이 몸의 동료를 건드린 대가는 비싸다’",
+    "en": "‘Touching my comrade comes at a steep price’",
+    "ja": "‘この私の仲間に手を出した報い、受けてもらおう’"
+   },
+   {
+    "ko": "‘잠들어라, {n}… 깨어나면 끝나 있으리라’",
+    "en": "‘Sleep, {n}… it shall be over when you wake’",
+    "ja": "‘眠るがいい、{n}…目覚めた時には終わっているだろう’"
+   }
+  ],
+  "plain": [
+   {
+    "ko": "{n}! 괜찮아?!",
+    "en": "{n}! You okay?!",
+    "ja": "{n}！大丈夫？！"
+   },
+   {
+    "ko": "큰일이다… 그래도 버텨야 해!",
+    "en": "This is bad… but we have to hold on!",
+    "ja": "まずい…でも、踏ん張らなきゃ！"
+   },
+   {
+    "ko": "{n} 몫까지 힘내자!",
+    "en": "Let's keep going, for {n} too!",
+    "ja": "{n}の分までがんばろう！"
+   }
+  ],
+  "genius": [
+   {
+    "ko": "변수가 생겼네요. 다시 계산할게요.",
+    "en": "A new variable. I'll recalculate.",
+    "ja": "変数が増えましたね。計算し直します。"
+   },
+   {
+    "ko": "{n}, 쉬어요. 나머지는 제가 맞춰 볼게요.",
+    "en": "{n}, rest. I'll make the numbers work.",
+    "ja": "{n}、休んでください。残りは私が埋め合わせます。"
+   },
+   {
+    "ko": "…예상보다 빠르네요. 그래도 승산은 있어요.",
+    "en": "…Earlier than calculated. We can still win.",
+    "ja": "…予想より早いですね。それでも勝算はあります。"
+   }
+  ]
+ }
+}

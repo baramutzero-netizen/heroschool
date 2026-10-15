@@ -10,22 +10,31 @@ game.html 은 한국어로만 쓴다. 영어는 빌드할 때 붙는다 — 한�
 | `en.json` | 영어 표 — 1단계 시험 단어(제목 · 로딩 · 메뉴 · 위쪽 칸 · 언어 칸) |
 | `en/*.json` | 영어 표 — 2단계: `ui`(화면 · 창 · 단추 · 토스트) · `log`(학원 일지 · 알림) · `tut`(운영 안내 · 도감) · `battle`(전투 화면 · 로그) · `core`(화면에 바로 보이는 작은 데이터 이름 — 직업 · 성격 · 멘탈리티 · 카드 · 시설 · 도구 · 원정지 · 진로 · 목표 …). 3단계: `data`(직업 설명 · 스킬 · 패시브 · 원정 몬스터 · 보스) · `names`(학생 이름 · 한국식 성 · 이름 · 학원 이름 조각 · 이명 · 유물 이름 조각 · NPC 학원 · 몬스터 · 머리색 — 이명 말고는 모두 문맥 키 `NAME_POOL|가웨인`). 4단계: `dialogue`(성격별 대사 · 상담 · 지침 무시 · 인사 · 신뢰 · 진로 사유 · 상점 주인 말) · `story`(이야기 팝업 — 불꽃놀이 · 발렌타인 · 길드 · 합숙 깨달음 · 의뢰처 이야기 · 이명 사연 · 입학식 · 졸업식 …) · `opening`(오프닝 대화 · 아버지의 마지막 · 프롤로그). 맨 위 선언(함수 · 표) 이름으로 `_이름` 머리줄을 달아 묶었다 |
 | `en_layout.css` · `en_layout_rbook.css` | 영어 글이 길어 넘치는 칸만 고치는 CSS (영어일 때만 붙는다 · 게임 CSS 는 그대로). rbook 은 학생 명부 책(그림자 DOM) 안 |
+| `ja.json` · `ja/*.json` | 일본어 표 (1014 — 아래 '일본어판') · `ja/GUIDE.md` 번역 지침 · 말투 · 용어집 |
+| `ja_fonts.css` | 일본어 글꼴 `@font-face` — `tools/gen/fonts/ja_fonts.py` 가 만든다 (손으로 고치지 않는다) |
+| `ja_layout.css` | 일본어 화면 고침 (손으로) — 빌드가 만든 덧규칙 뒤에 붙는다 |
 | `config.json` | `public` — **true (10/11 · 5단계에서 켰다)**: 첫 실행은 브라우저 언어 · 설정에 언어 칸. false 면 `?lang=en` 주소로만 영어 |
 | `check_i18n.py` | 시험 — `hs.py i18n` (아래) |
 | `check_layout.py` | 영어 화면 점검 — `hs.py layout` (아래) |
 | `check_save.py` | 세이브 · 서버의 데이터 글이 언어를 따라가는지 (아래 · 3단계) |
+| `check_ja.py` | 일본어판 시험 — 일본어 글꼴 · CSS 가 `?lang=ja` 에서만 붙는지 (아래 '일본어판') · 화면 넘침은 `check_layout.py --lang ja` |
 | `og_en.py` | 영어 공유 미리보기 — `site/og-en.png`(1200×630) · 맨 위 `en/index.html`(영어 공유 링크) 를 만든다 (아래 5단계) |
+| `og_ja.py` | 일본어 공유 미리보기 — `site/og-ja.png` · 맨 위 `ja/index.html`(일본어 공유 링크 → `site/?lang=ja`) · og_en.py 의 틀을 그대로 쓴다 (1014) |
+| `unit_ctx.py` | 번역 단위가 game.html 어디에 쓰이는지 (맨 위 선언 · 줄 · 자리표 식 · 조사 자리) · `--todo ja` 일본어 표에 아직 없는 단위 (1014) |
 | `todo_en.py` | 영어 표에 아직 없는 단위 — 갈래별 수 · 작업 칸 TSV 뽑기(`--cat data --out a.tsv`) · 채운 TSV 를 en/*.json 에 넣기(`--merge a.tsv en/data.json`) |
 | `extract_ko.cjs` · `classify_ko.py` | 번역할 글 목록 뽑기 → 갈래 요약 + CSV (Node + acorn · 쓰는 법은 파일 머리말) |
 
 ## 언어 정하기
 
-`<head>` 맨 앞 스크립트가 게임보다 먼저 정한다: 주소 `?lang=en|ko` > (공개 뒤) 설정에서 고른 값(localStorage `hs_lang`) > (공개 뒤) 브라우저 언어(ko 로 시작하면 한국어) > 한국어.
+`<head>` 맨 앞 스크립트가 게임보다 먼저 정한다: 주소 `?lang=en|ko|ja` > (공개 뒤) 설정에서 고른 값(localStorage `hs_lang`) > (공개 뒤) 브라우저 언어(ko 로 시작하면 한국어 · ja 면 일본어 · 그 밖은 영어) > 한국어.
+일본어(1014)는 `config.json` 의 `"ja": true` 로 공개한다 — false 로 돌리면 주소 `?lang=ja` 로만 (설정 칸에서도 빠진다 · 기억한 `hs_lang=ja` 는 무시하고 브라우저를 따른다).
 `<html lang>` · `window.HS_LANG` 도 여기서. 바꾸면 저장한 뒤 다시 불러온다 (직업 · 스킬 이름 같은 데이터 글은 불러올 때 정해진다).
-설정 맨 위 '언어 · Language' 칸 — 공개 전에는 `?lang=` 시험 접속에서만 보이고 주소의 lang 을 바꾼다. 공개 뒤에는 늘 보이고 자동 · 한국어 · English
+설정 맨 위 '언어 · Language' 칸 — 공개 전에는 `?lang=` 시험 접속에서만 보이고 주소의 lang 을 바꾼다. 공개 뒤에는 늘 보이고 자동 · 한국어 · English · 日本語
 (고르면 `hs_lang` 에 기억 · 자동은 기억을 지운다 · 주소에 `?lang=` 이 있으면 지금 보이는 그 언어가 눌려 있다).
 공개 뒤 **첫 방문**(`hs_lang0` 표시가 없을 때)에 세이브(`heroacademy_v1`)가 이미 있으면 공개 전부터 한국어로 하던 사람이라 보고 브라우저가 영어여도 한국어로 기억한다
 (`i18n_build.py` 의 `head_script` · 세이브 키는 game.html 의 `SAVE_KEY` 에서 읽는다). 표시는 남으므로 그 뒤에 자동을 고르면 브라우저를 따른다.
+일본어 공개 뒤 **첫 방문**(`hs_lang0j` 표시가 없을 때)에 브라우저가 일본어 · 세이브 있음 · 고른 언어 없음 · 영어 공개 뒤에 와 본 적 있음(`hs_lang0`)이면
+그동안 영어로 하던 사람이라 보고 영어로 기억한다 (자동을 고르면 그때부터 일본어). 시험은 `check_i18n.py` 의 '일본어 공개'.
 
 ## 번역 단위 — 영어 표의 키
 
@@ -98,6 +107,43 @@ game.html 은 한국어로만 쓴다. 영어는 빌드할 때 붙는다 — 한�
   - 거꾸로(영어로 쓴 일지를 한국어판에서)는 하지 않는다 — 설정의 언어 칸 설명이 그렇게 알린다.
 - **전체 점검** — `check_layout.py` 가 영어 화면에 남은 한글도 찾는다(언어 이름 '한국어' · 'Language · 언어' 말고는 실패). 시험의 학원 이름은 기본 모양(`백은 용사 학원`)이라 영어에서도 바뀐다.
   공개 뒤의 언어 고르기 · 예전 세이브 · 자동은 `check_i18n.py` 가 본다.
+
+## 일본어판 (1014)
+
+사용자가 일본어판을 만들기로 했다 (검수는 못 한다 — Claude 가 옮긴다). **한국어에서 바로** 옮겼다 (영어는 짧은 UI 글의 뜻 확인용).
+제목은 **わが英雄のアカデミー ― 学園がつぶれた** (사용자가 고른 '내 영웅의 아카데미'). 글꼴을 고른 과정은 `mockups/jp-font/`.
+번역 지침 · 말투 · 용어집: **`ja/GUIDE.md`** (일본어 표를 고치거나 새 글을 옮길 때 먼저 읽는다).
+
+- **언어 · 공개** (1014 · 빌드 1014-1242) — `config.json` `"ja": true`: 일본어 브라우저는 일본어로 시작 · 설정 칸에 `日本語` (고르면 `hs_lang=ja`).
+  공유 링크는 맨 위 `ja/` (`og_ja.py` — `site/og-ja.png` · 일본어 og 태그 → `site/?lang=ja`). itch 체험판은 영어 기본 그대로 · 설정에서 日本語 를 고를 수 있다.
+  `"ja": false` 로 돌리면 공개 전처럼 `?lang=ja` 시험 접속에서만 (`I18N.pubJa` · `HS_LANG_JA`).
+- **표** — `ja.json` + `ja/*.json` (영어 표와 같은 키 · 같은 파일 나눔 · 같은 문맥 키 + 일본어에서만 더한 문맥 키). 5,300줄 · 번역 단위 5,334가지 중 5,279
+  (남은 것은 조사 · 채팅 금칙어 · 개발용). 런타임 `I18N.tab` 이 지금 언어의 표. 표에 없는 글은 한국어로 보인다.
+- **조사** — 일본어 표가 있으면 영어처럼 `jo` · `ro` 를 비운다. 일본어 조사는 표의 값에 직접 쓴다 (조사 자리 `{n}` 은 쓰지 않는다).
+- **이름 · 데이터 글 (toCur · toKo)** — 영어 · 일본어 어느 쪽으로 쌓인 글이든 먼저 한국어로 되돌린 뒤 지금 언어로 (`i18n_runtime.js` 의 `cur1` · `koEn` · `koJa`).
+  일본어 모양: `「二つ名」名前`(빈칸 없음 · `dn()` · `epiH()`) · `白銀勇者学園` · `古びた指輪`(유물 형용사+명사를 붙인다 — `relicSep()`) · `キム・ドユン`.
+  값 하나에 한국어가 여럿인 것은 `KO_PREF.ja` (斬撃 → 베기 · 経験値 → 경험치). 서버로는 늘 한국어 원문.
+- **지난 일지 · 상담 기록(`I18N.line`)** — 일본어판도 한국어 글을 표에 거꾸로 맞춰 일본어로 (이명은 「 」 · 암흑 사제의 ‘마스터’ 는 『マスター』).
+- **따옴표** — 일본어 대사는 「 」. 코드가 대사를 가르는 곳(`answerDefy` · `masterQ`)은 “ ” 와 「 」 를 다 읽는다. 1년차 암흑 사제는 『マスター』.
+- **날짜 · 숫자** — `uiLoc()` = ja-JP.
+- **그림 속 글자** — 운영 안내는 영어처럼 글 안내 · 튜토리얼 · 피드백 단추는 영어 그림 · 길드 4쪽 편지는 `assets/story_art/guild4-spring-ja.webp`
+  (한글 손글씨를 지우고 Yomogi 로 '私たちも、学園を守りたいです。' · 무손실 · `STORY_ART_JA`).
+- **오프닝 캔버스 글** — `optx_block.js` 의 `SC_JA` (Shippori Mincho B1 ExtraBold `OpTxSerifJa` · Kiwi Maru `OpTxSansJa` — 일본어판에서만 받는 조각 · `ja_fonts.css`).
+  타자기 제목 `わが英雄のアカデミー` 은 타자 소리 일곱 번에 맞춰 오른쪽부터 조각 일곱 · 부제 `学園がつぶれた` 는 여섯. 로딩 화면 · 페이지 제목도 일본어(`build_boot.py`).
+- **글꼴** — 게임 글꼴 이름(`Mulmaru` · `Mulmaru Mono` · `HsBombaram21`)에 일본어 조각 글꼴을 더한다 (`ja_fonts.css` · 파일은 `assets/fonts/ja/` · 만들기는 `tools/gen/README.md` 의 '글꼴').
+  빌드가 문서 맨 끝에 `<!-- I18N_TAIL_START -->` 스크립트를 넣고 `build_boot.boot_split` 이 `lateFonts` 뒤로 옮긴다 — `@font-face` 는 뒤에 쓴 것이 앞서므로 가나 · 라틴처럼
+  물마루에도 있는 글자도 일본어 글꼴로 나온다. 한글은 물마루 그대로. head 스크립트가 일본어일 때 도트 글꼴을 미리 받는다(http(s) 일 때만 — file:// 은 CORS 로 막힌다).
+  **표를 고치면 `ja_fonts.py` 를 다시 돌린다** — 도트 글꼴은 JIS 1 · 2수준 전부라 거의 그대로지만, 허세 말풍선 · 오프닝 글꼴은 표 · SC_JA 에 쓰인 글자만 넣었다.
+  빌드 끝 줄 `일본어 글꼴에 없는 글자 N` 이 그 수다 (일본어 글자만 센다 — − ✓ 같은 기호는 물마루가 그린다).
+- **도트 폰트를 껐을 때** — head 스크립트가 일본어일 때 Google 글꼴 IBM Plex Sans JP · Shippori Mincho 를 붙이고, 빌드가 게임 CSS 에서 `"IBM Plex Sans KR"` · `"Gowun Batang"` 이 든 규칙마다
+  `html[lang="ja"]:not([data-font="pixel"]) …{font-family: JP 글꼴, 원래 목록}` 덧규칙을 만든다 (`i18n_build.ja_css` → `I18N_JACSS` · 일본어일 때만 head 에 붙는다).
+- **줄바꿈** — `word-break:keep-all` 은 일본어를 아예 줄바꿈하지 못하게 막는다 → 같은 덧규칙에서 keep-all 규칙마다 `normal` (인라인 style 은 `[style*="keep-all"]`) ·
+  `html[lang="ja"]{line-break:strict}` (금칙). 학생 명부 책(그림자 DOM) 안은 `I18N_JARBCSS`. 손으로 고칠 것은 `ja_layout.css` (스케줄 명단의 긴 가타카나 이름은 … 로).
+- **고친 game.html** (1014) — `nameJa()` · `uiLoc` · `dn` · `epiH` · `answerDefy` · `masterQ` · `relicSep` · `FB_ICON` · `TUT_ICON` · 운영 안내 `illOn` · `langPanel` · `langSwitch` · `STORY_ART_JA`.
+- 시험 — `hs.py i18n` · `hs.py layout` 은 한국어 · 영어 그대로 통과해야 한다. 일본어는 `python3 tools/i18n/check_ja.py` (빌드 뒤 · 15초 — 글꼴 · CSS 가 `?lang=ja` 에서만 붙는지)와
+  `python3 tools/i18n/check_layout.py --lang ja` (영어와 같은 화면 92가지 · 일본어에서 새로 넘친 칸 · 남은 한글 — 1014 기준 남은 한글 0, 넘침은 겉보기만인 것 몇 개:
+  육각형 위 'チームワーク' · SP 상점 · 시설 카드의 줄바꿈 판정).
+- **남은 것** — 공개(브라우저 언어 · 설정 칸 · 일본어 공유 미리보기 og) · `check_save.py` 일본어판 · 사용자가 일본어 화면을 보고 고를 것.
 
 ## 건너뛰는 곳 · 영어에서 달라지는 것
 

@@ -2045,6 +2045,136 @@ html:not([data-bf-grid="on"]) .bf-slot{opacity:0}
 .cam-fx .cs span:nth-child(3){top:21px;height:2px;--sw:330px;--sd:.7s;background-image:linear-gradient(90deg,transparent 0 20%,#fff 55%,transparent 80%);background-size:330px 100%;opacity:.9}
 .cam-fx .cs span:nth-child(4){top:27px;height:4px;--sw:700px;--sd:1.6s;background-image:linear-gradient(90deg,transparent 0 45%,var(--sc) 75%,transparent 100%);background-size:700px 100%;opacity:.7}
 @keyframes camStreak{from{background-position-x:0}to{background-position-x:var(--sw,420px)}}
+/* ── 스타일리시 체크포인트 ① 기술 선택 (1015 · mockups/stylish-checkpoint) — 머리 위 상자 줄 (카메라 .bf-cam 안) ── */
+.cp-row{position:absolute;z-index:450;transform:translate(-50%,-100%);display:flex;gap:6px;padding:8px 9px;pointer-events:none;transition:opacity .22s ease,transform .22s ease}
+.cp-row::before{content:"";position:absolute;inset:0;border-radius:10px;background:linear-gradient(#24202fe8,#15121ce8);border:1px solid #e9c97a80;box-shadow:0 5px 16px #000a,inset 0 1px 0 #ffffff1c;transform:scaleX(0);transition:transform .18s cubic-bezier(.2,.9,.3,1.2)}
+.cp-row::after{content:"";position:absolute;left:50%;bottom:-7px;width:12px;height:12px;margin-left:-6px;background:#15121c;border-right:1px solid #e9c97a80;border-bottom:1px solid #e9c97a80;transform:rotate(45deg) scale(0);transition:transform .18s ease .08s}
+.cp-row.open::before{transform:none}
+.cp-row.open::after{transform:rotate(45deg)}
+.cp-row.out{opacity:0;transform:translate(-50%,-100%) scale(.85)}
+.cp-name{position:absolute;left:50%;bottom:100%;margin-bottom:14px;transform:translateX(-50%);white-space:nowrap;font-size:14px;line-height:1;color:#fff;padding:5px 9px 4px;border-radius:7px;background:#1c1826e6;border:1px solid #e9c97a90;opacity:0;transition:opacity .12s}
+.cp-name.on{opacity:1}
+.cp-name.basic{border-color:#9fb2c8a0}
+.cp-name b{font-weight:400;color:#ffd970}
+.cp-name.basic b{color:#cfe0f5}
+.cp-box{position:relative;width:44px;height:44px;border-radius:7px;background:#0b0a12;box-shadow:inset 0 0 0 2px #463f5c,inset 0 7px 9px -5px #000,inset 0 -7px 9px -5px #000;opacity:0;transform:translateY(6px) scale(.5);transition:opacity .14s ease,transform .16s cubic-bezier(.2,1.5,.4,1)}
+.cp-box.in{opacity:1;transform:none}
+.cp-box.basic{background:#141a24;box-shadow:inset 0 0 0 2px #50627a,inset 0 7px 9px -5px #000,inset 0 -7px 9px -5px #000}
+.cp-win{position:absolute;inset:3px;overflow:hidden;border-radius:5px}
+.cp-reel{position:absolute;left:0;top:0;width:100%;animation:cpSpin var(--sp,.3s) linear infinite;filter:blur(1.4px) brightness(.9)}
+.cp-reel i{display:block;width:38px;height:38px;position:relative}
+.cp-reel i img,.cp-ic img{position:absolute;image-rendering:pixelated}
+.cp-reel i img.fr,.cp-ic img.fr{inset:0;width:100%;height:100%}
+.cp-reel i img.ar,.cp-ic img.ar{left:8%;top:8%;width:84%;height:84%}
+@keyframes cpSpin{from{transform:translateY(-50%)}to{transform:translateY(0)}}
+.cp-ic{position:absolute;inset:3px;opacity:0}
+.cp-box.land .cp-ic{opacity:1;animation:cpLand .3s cubic-bezier(.2,1.7,.45,1)}
+.cp-box.snap .cp-ic{opacity:1;animation:cpSnap .22s ease-out}
+@keyframes cpLand{0%{transform:translateY(-70%)}100%{transform:none}}
+@keyframes cpSnap{0%{transform:scale(1.5);filter:brightness(3)}100%{transform:none;filter:none}}
+.cp-box.land::after,.cp-box.snap::after{content:"";position:absolute;inset:-4px;border-radius:9px;border:2px solid #fff3c2;opacity:0;animation:cpRing .4s ease-out}
+@keyframes cpRing{0%{opacity:1;transform:scale(.8)}100%{opacity:0;transform:scale(1.35)}}
+.cp-tag{position:absolute;left:50%;top:100%;margin-top:3px;transform:translateX(-50%);font-size:9px;line-height:1;color:#b8c7da;white-space:nowrap;opacity:0;transition:opacity .2s;text-shadow:0 1px 2px #000}
+.cp-box.in .cp-tag{opacity:.9}
+.cp-box.fail .cp-win{background:#120f17}
+.cp-box.fail .cp-win::before{content:"?";position:absolute;inset:0;display:grid;place-items:center;font-size:18px;color:#3b3548}
+.cp-x{position:absolute;inset:0;pointer-events:none}
+.cp-x::before,.cp-x::after{content:"";position:absolute;left:50%;top:50%;width:46px;height:6px;margin:-3px 0 0 -23px;border-radius:3px;background:#ff4a45;box-shadow:0 0 0 2px #2a0c10,0 0 8px #ff4a4599;transform:rotate(45deg) scaleX(0);transform-origin:50% 50%}
+.cp-x::after{transform:rotate(-45deg) scaleX(0)}
+.cp-box.fail .cp-x::before{animation:cpX1 .12s ease-out forwards}
+.cp-box.fail .cp-x::after{animation:cpX2 .12s ease-out .1s forwards}
+@keyframes cpX1{from{transform:rotate(45deg) scaleX(0)}to{transform:rotate(45deg) scaleX(1)}}
+@keyframes cpX2{from{transform:rotate(-45deg) scaleX(0)}to{transform:rotate(-45deg) scaleX(1)}}
+.cp-box.fail{animation:cpShake .22s ease-out}
+@keyframes cpShake{0%,100%{translate:0}25%{translate:-3px}55%{translate:3px}80%{translate:-1px}}
+.cp-box.hl{transform:translateY(-6px);box-shadow:0 0 0 3px #ffe27a,0 0 16px 5px #ffc94bb0,inset 0 0 0 2px #fff6cf;transition:transform .06s,box-shadow .06s}
+.cp-box.hl.basic{box-shadow:0 0 0 3px #bfe3ff,0 0 16px 5px #7cc4ffb0,inset 0 0 0 2px #f2fbff}
+.cp-box.hl::before{content:"";position:absolute;left:50%;top:-13px;margin-left:-6px;border:6px solid transparent;border-top:7px solid #ffe27a;filter:drop-shadow(0 1px 1px #000)}
+.cp-box.hl.basic::before{border-top-color:#bfe3ff}
+.cp-box.pick{animation:cpPick .5s ease-out}
+@keyframes cpPick{0%{scale:1}30%{scale:1.22}60%{scale:.96}100%{scale:1}}
+.cp-box.dim .cp-win,.cp-box.dim .cp-ic{filter:brightness(.5) saturate(.5)}
+.cp-box.dim .cp-x{opacity:.6}
+.cp-resist{position:absolute;left:50%;top:50%;z-index:3;font-family:"Mulmaru",sans-serif;font-weight:400;font-size:11px;line-height:1;letter-spacing:.5px;color:#fff;background:#d6332c;padding:4px 4px 3px;border:2px solid #fff;border-radius:3px;box-shadow:0 2px 0 #4a0d0b,0 0 10px #ff3b30aa;opacity:0;transform:translate(-50%,-50%) rotate(-16deg);white-space:nowrap}
+.cp-box.resist .cp-resist{animation:cpStamp .34s cubic-bezier(.3,1.4,.5,1) forwards}
+@keyframes cpStamp{0%{opacity:0;transform:translate(-50%,-50%) rotate(-16deg) scale(2.8)}55%{opacity:1;transform:translate(-50%,-50%) rotate(-16deg) scale(.88)}100%{opacity:1;transform:translate(-50%,-50%) rotate(-16deg) scale(1)}}
+.cp-box.resist .cp-win,.cp-box.resist .cp-ic{filter:grayscale(.85) brightness(.6)}
+.cp-box.cast-ok::after{content:"";position:absolute;inset:-6px;border-radius:10px;border:2px solid #ffe27a;opacity:0;animation:cpRing .45s ease-out}
+.cp-box.wobble{animation:cpWob .36s ease-in-out}
+@keyframes cpWob{0%,100%{rotate:0deg}20%{rotate:-6deg}45%{rotate:5deg}70%{rotate:-3deg}}
+.cp-row.go .cp-box:not(.final){opacity:0;transform:scale(.6)}
+.cp-row.go::before,.cp-row.go::after{opacity:0;transition:opacity .15s}
+.cp-row.go .cp-box.final{transform:translateY(-10px) scale(1.25);transition:transform .2s ease}
+@media (prefers-reduced-motion:reduce){.cp-reel{animation-duration:1.2s}}
+/* ── 스타일리시 체크포인트 ② 정신력 시험 (1015 · mockups/heroic-resolve) ── */
+.bf-stage .bf-unit.hr-dim{opacity:.18!important;transition:opacity .5s ease}
+.bf-stage.hr-test .bf-unit:not(.hr-tgt){opacity:0!important;transition:opacity .4s ease}   /* 시험 동안은 시험받는 학생만 — 크게 다가가면 다른 유닛이 테두리 밖으로 밀려난다 */
+.hr-vig{position:absolute;inset:0;z-index:5;pointer-events:none;opacity:0;transition:opacity .7s ease;background:radial-gradient(ellipse 46% 52% at 50% 44%,transparent 38%,#0a0610cc 100%)}
+.bf-stage.hr-test .hr-vig{opacity:1}
+.bf-stage.hr-test .tq-map img{filter:saturate(.55) brightness(.72);transition:filter .9s ease}
+.bf-stage .bf-unit.hr-beat canvas.spr{animation:hrBeat .8s ease-in-out infinite}
+@keyframes hrBeat{0%,100%{scale:1}14%{scale:1.05}28%{scale:1}42%{scale:1.03}}
+.bf-stage .bf-unit.hr-beat .bf-meter.hp{animation:hrBlink .8s steps(2) infinite}
+@keyframes hrBlink{50%{opacity:.35}}
+.hr-flash{position:absolute;inset:0;z-index:630;pointer-events:none;background:#fffbea;opacity:0}
+.hr-flash.go{animation:hrFlash .45s ease-out}
+@keyframes hrFlash{0%{opacity:.92}100%{opacity:0}}
+.hr-banner{position:absolute;left:50%;bottom:13%;z-index:640;transform:translateX(-50%);pointer-events:none;opacity:0;transition:opacity .35s ease;min-width:56%;padding:14px 46px 13px;text-align:center;white-space:nowrap;
+  background:linear-gradient(90deg,transparent,#120d18e8 16%,#120d18e8 84%,transparent);border-top:1px solid transparent;border-bottom:1px solid transparent;border-image:linear-gradient(90deg,transparent,#e2c46e99,transparent) 1}
+.hr-banner.on{opacity:1}
+.hr-banner .t{font-size:26px;line-height:1.2;color:#efe6d3;text-shadow:0 2px 0 #000,0 0 10px #000}
+.hr-banner .t i{font-style:normal;opacity:0;display:inline-block;animation:hrChar .3s ease forwards}
+@keyframes hrChar{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.hr-banner .t .dots i{animation:hrChar .3s ease forwards,hrDot 1.1s ease-in-out infinite}
+@keyframes hrDot{50%{opacity:.25}}
+.hr-banner.hero .t{font-size:46px;letter-spacing:.06em;color:transparent;background:linear-gradient(180deg,#fff6cf 10%,#ffd35a 55%,#d9962c 90%);-webkit-background-clip:text;background-clip:text;text-shadow:none;filter:drop-shadow(0 2px 0 #3a2208) drop-shadow(0 0 14px #ffcf5a99);animation:hrTitle .6s cubic-bezier(.2,1.4,.4,1)}
+@keyframes hrTitle{0%{opacity:0;transform:scale(1.5);letter-spacing:.4em}100%{opacity:1;transform:none;letter-spacing:.06em}}
+.hr-banner.hero{border-image:linear-gradient(90deg,transparent,#ffd35acc,transparent) 1}
+.hr-banner.faint .t{color:#c9c2d6;font-size:26px}
+.hr-banner.faint{border-image:linear-gradient(90deg,transparent,#8a7fa099,transparent) 1}
+/* 기상 순간 — 클로즈업 띠의 경계선을 걷고 뒤쪽(지도 · 유닛)을 전부 흐리게, 원화는 그 위 한 겹 (나무 테두리 · 학원 이름 · 글 띠는 흐리지 않는다) */
+.bf-stage .bf-unit.hr-on canvas.spr{visibility:hidden}
+.bf-stage .bf-unit.hr-on .bf-gauges,.bf-stage .bf-unit.hr-on .bf-name,.bf-stage .bf-unit.hr-on .bf-status{opacity:0;transition:opacity .2s}
+.bf-stage.hr-hero .cam-fx{opacity:0!important;transition:opacity .2s ease}
+.hr-blur{position:absolute;inset:0;z-index:90;pointer-events:none;opacity:0;transition:opacity .35s ease;-webkit-backdrop-filter:blur(7px) brightness(.72) saturate(.85);backdrop-filter:blur(7px) brightness(.72) saturate(.85)}
+.bf-stage.hr-hero .hr-blur{opacity:1}
+.hr-hero-layer{position:absolute;inset:0;z-index:95;pointer-events:none;overflow:hidden}
+.hr-grow{position:absolute;inset:0;transition:transform var(--grow-t,2s) linear}
+.hr-flipbox{position:absolute;inset:0}
+.hr-hero-layer img,.hr-hero-layer canvas{position:absolute;max-width:none}
+.hr-hero-layer.out{transition:opacity .25s ease;opacity:0}
+.hr-aura{opacity:0;animation:hrAuraIn .7s ease-out forwards,hrAuraPulse 1.6s ease-in-out infinite}   /* 1015 — 후광은 돌지 않는다 (사용자) · 나타나며 커지고 밝기만 숨쉬듯 */
+@keyframes hrAuraIn{from{opacity:0;scale:.6}to{opacity:.92;scale:1}}
+@keyframes hrAuraPulse{50%{filter:brightness(1.25)}}
+.hr-char{animation:hrPop .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes hrPop{0%{scale:.82;filter:brightness(3)}60%{scale:1.05}100%{scale:1;filter:none}}
+/* 기상 상태 — 은은한 금빛 테 · 작은 금빛 반짝이 · 상태 칸의 금빛 별 (늘어난 능력치는 보이지 않는다) */
+.bf-stage .bf-unit.hr-buff .spr-anchor{filter:drop-shadow(0 0 1.5px #fff6b0) drop-shadow(0 0 1.5px #ffcc33) drop-shadow(0 0 6px #ff9a1a);animation:hrBuff 1.8s ease-in-out infinite}
+@keyframes hrBuff{50%{filter:drop-shadow(0 0 1.5px #fffbe0) drop-shadow(0 0 2px #ffd84a) drop-shadow(0 0 10px #ff9a1a)}}
+.hr-spark{position:absolute;left:50%;top:18px;width:0;height:0;pointer-events:none;z-index:3}
+.hr-spark i{position:absolute;font-style:normal;font-size:13px;line-height:1;color:#ffe066;text-shadow:0 0 2px #6b3f00,0 0 6px #ff9a1a;opacity:0;animation:hrSpark 2.2s ease-out infinite}
+.hr-spark i:nth-child(1){left:-30px;top:40px;animation-delay:0s}
+.hr-spark i:nth-child(2){left:22px;top:30px;animation-delay:.55s;font-size:10px}
+.hr-spark i:nth-child(3){left:-12px;top:10px;animation-delay:1.1s;font-size:11px}
+.hr-spark i:nth-child(4){left:30px;top:56px;animation-delay:1.65s;font-size:9px}
+@keyframes hrSpark{0%{opacity:0;transform:translateY(8px) scale(.6)}25%{opacity:1}100%{opacity:0;transform:translateY(-26px) scale(1)}}
+.bf-effect.hero{background:#fff6d8f0;color:#a06a10;border-color:#d9a43a}
+.pop.hero{color:#FFD35A;font-size:18px;letter-spacing:.04em;font-family:"Mulmaru",sans-serif;font-weight:400}
+/* 기절 — 흑백 */
+.bf-stage .bf-unit.hr-faint canvas.spr{filter:grayscale(.85) brightness(.75);transition:filter .6s ease}
+/* 말풍선 — 전투판 위(카메라 밖)에 띄운다. 모양은 게임 .bf-speech (성격별 글꼴 · 테두리) */
+.hr-say{position:absolute;z-index:600;width:0;height:0;pointer-events:none}
+.bf-stage .hr-say .bf-speech{bottom:6px;font-size:15px;line-height:1.35;max-width:230px;white-space:normal;animation:hrSay .25s cubic-bezier(.2,1.5,.4,1)}
+.bf-stage .hr-say .bf-speech.intro{font-size:14px}
+.bf-stage .hr-say .bf-speech.hr-hero{border:2px solid #d9a43a;box-shadow:0 0 16px #ffd86799;background:#fffdf3}
+.bf-stage .hr-say .bf-speech.hr-faint{background:#ecebf1;color:#5d5a6c;border-color:#a7a3b5}
+/* 전투 대사 (1015) — 선공 · 막타 · 첫 치명타 입힘 (맞고 버팀은 그대로) */
+.bf-stage .hr-say .bf-speech.bl-first{border-color:#5aa9ff;box-shadow:0 0 12px #5aa9ff66}
+.bf-stage .hr-say .bf-speech.bl-last{border-color:#ff6a55;box-shadow:0 0 14px #ff6a5577}
+.bf-stage .hr-say .bf-speech.bl-crit{border-color:#e9b230;box-shadow:0 0 12px #f2b20066}
+.hr-say.out .bf-speech{transition:opacity .3s ease;opacity:0}
+@keyframes hrSay{from{opacity:0;transform:translateX(-50%) translateY(6px) scale(.9)}to{opacity:1;transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.hr-aura,.hr-char,.hr-spark i,.bf-stage .bf-unit.hr-buff .spr-anchor,.bf-stage .bf-unit.hr-beat canvas.spr{animation-duration:1ms;animation-iteration-count:1}.hr-grow{transition:none}}
 .bf-stage .bf-unit{position:absolute;width:110px;height:132px;transform:translate(-50%,-50%);border:0!important;padding:0;background:transparent!important;box-shadow:none!important;overflow:visible}
 .bf-stage .bf-unit:focus-visible{outline:2px solid var(--brass);outline-offset:8px}
 .bf-stage .bf-unit.act::before{content:"";position:absolute;bottom:24px;left:12px;width:84px;height:19px;border-radius:50%;background:#ffd16a50;box-shadow:0 0 18px #ffce7670;z-index:-1}
@@ -3287,8 +3417,8 @@ const FX_IMG=HS_A["fx_img.webp"];
 const FIELD_IMG={"spring":"assets/field_img/spring.webp?v=66c40f96","summer":"assets/field_img/summer.webp?v=ead0b161","fall":"assets/field_img/fall.webp?v=60a4f20d","winter":"assets/field_img/winter.webp?v=81258736","citytournament":"assets/field_img/citytournament.webp?v=80e84f65","areatournament":"assets/field_img/areatournament.webp?v=9c4db436","final":"assets/field_img/final.webp?v=c2fe6d58","jolupseng":"assets/field_img/jolupseng.webp?v=bb87d046","brine":"assets/field_img/brine.webp?v=a9b2ab8e","dummy":"assets/field_img/dummy.webp?v=c1dae1ec","gargoyle":"assets/field_img/gargoyle.webp?v=0accf091","guardian":"assets/field_img/guardian.webp?v=6d1e1c5e","wraith":"assets/field_img/wraith.webp?v=9a885fc1","demonking":"assets/field_img/demonking.webp?v=3ef553b3"};
 /* 파스텔 필터(ILLUS_FILTER_SPEC §4.1)를 입힌 전투 배경 — tools/bake_field_pastel.py 로 굽는다. 설정에서 끄면 원본(FIELD_IMG) */
 const FIELD_PASTEL={"areatournament":"assets/field_pastel/areatournament.webp?v=f0e68224","brine":"assets/field_pastel/brine.webp?v=77113596","citytournament":"assets/field_pastel/citytournament.webp?v=0e3e2353","demonking":"assets/field_pastel/demonking.webp?v=a20b14a0","dummy":"assets/field_pastel/dummy.webp?v=7f6bb410","fall":"assets/field_pastel/fall.webp?v=c24352d1","final":"assets/field_pastel/final.webp?v=0dc4781c","gargoyle":"assets/field_pastel/gargoyle.webp?v=230f5055","guardian":"assets/field_pastel/guardian.webp?v=ad19bac1","jolupseng":"assets/field_pastel/jolupseng.webp?v=5215b42b","spring":"assets/field_pastel/spring.webp?v=87520ef8","summer":"assets/field_pastel/summer.webp?v=bce21271","winter":"assets/field_pastel/winter.webp?v=e5e7f4ef","wraith":"assets/field_pastel/wraith.webp?v=4240b025"};
-const FB_ICON=(typeof I18N!=="undefined"&&I18N.lang==="en")? "assets/fb_icon_a_en.webp?v=a1" : "assets/fb_icon_a.webp?v=a1";   // 0930 — 검은 바탕을 걷어낸(투명) 판 · 1010 영어판은 글자만 영어로 다시 구운 판
-const TUT_ICON=(typeof I18N!=="undefined"&&I18N.lang==="en")? "assets/tut_icon_a_en.webp?v=a1" : "assets/tut_icon_a.webp?v=a1";   // 0930 — 둥근 액자 바깥 모서리를 투명하게 한 판 · 1010 영어판 (같은 그림 · 띠 글자만 TUTORIAL)
+const FB_ICON=(typeof I18N!=="undefined"&&(I18N.lang==="en"||(I18N.lang==="ja"&&I18N.tab)))? "assets/fb_icon_a_en.webp?v=a1" : "assets/fb_icon_a.webp?v=a1";   // 0930 — 검은 바탕을 걷어낸(투명) 판 · 1010 영어판은 글자만 영어로 다시 구운 판
+const TUT_ICON=(typeof I18N!=="undefined"&&(I18N.lang==="en"||(I18N.lang==="ja"&&I18N.tab)))? "assets/tut_icon_a_en.webp?v=a1" : "assets/tut_icon_a.webp?v=a1";   // 0930 — 둥근 액자 바깥 모서리를 투명하게 한 판 · 1010 영어판 (같은 그림 · 띠 글자만 TUTORIAL)
 const TUT_IMG={"1":"assets/tut_img/1.webp?v=5c18ef9f","2":"assets/tut_img/2.webp?v=726ab4c7","3":"assets/tut_img/3.webp?v=7e63bf9a","4":"assets/tut_img/4.webp?v=263eec4a","5":"assets/tut_img/5.webp?v=720735dc","6":"assets/tut_img/6.webp?v=847cc25b","7":"assets/tut_img/7.webp?v=8fd0914b","8":"assets/tut_img/8.webp?v=a946cebf","9":"assets/tut_img/9.webp?v=30bfee6f","10":"assets/tut_img/10.webp?v=d2617b1e","11":"assets/tut_img/11.webp?v=bc305587","12":"assets/tut_img/12.webp?v=42850253"};
 const PROL_IMG={"1":"assets/prol_img/1.webp?v=f8ddf596","2":"assets/prol_img/2.webp?v=83c67738","3":"assets/prol_img/3.webp?v=d4affae4"};
 const VICT_IMG={"paladin":"assets/vict_img/paladin.webp?v=59b9ae54","rogue":"assets/vict_img/rogue.webp?v=9d21f67b","forcemage":"assets/vict_img/forcemage.webp?v=974e6141","ninja":"assets/vict_img/ninja.webp?v=697d2112","spellsword":"assets/vict_img/spellsword.webp?v=c61cea2c","druid":"assets/vict_img/druid.webp?v=bf940093","sword":"assets/vict_img/sword.webp?v=8410e9aa","gunner":"assets/vict_img/gunner.webp?v=e9318d49","darkpriest":"assets/vict_img/darkpriest.webp?v=e72d0c97","priest":"assets/vict_img/priest.webp?v=e145e946","monk":"assets/vict_img/monk.webp?v=07b36c81","wizard":"assets/vict_img/wizard.webp?v=3a13afae","archer":"assets/vict_img/archer.webp?v=e2f0f613","bard":"assets/vict_img/bard.webp?v=450f51ce","enchanter":"assets/vict_img/enchanter.webp?v=2d160b78","timemage":"assets/vict_img/timemage.webp?v=f6dc5b3f"};
@@ -3891,8 +4021,8 @@ const JOBS = {
     grow:{hp:66,atk:5.4,def:5.0,spd:2.2},
     skills:[
       {id:"dr_b",fx:"slash",el:"poison",kind:"basic",name:"가시 채찍",type:"dmg",target:"enemy_front",power:.96,proc:1,dur:0,txt:"덩굴을 휘둘러 후려친다"},
-      {id:"dr_1",fx:"heal",el:"heal",name:"재생의 씨앗",type:"regen",target:"ally_low",power:.03,proc:.2,dur:2,txt:"상처 위에 생명을 틔운다 — 대상이 자기 차례마다 최대 체력의 3%를 회복한다"},
-      {id:"dr_2",fx:"aura",el:"buff",name:"야수화",type:"buff",target:"self",power:.3,pow2:.1,stat2:"spd",regen:.06,proc:.2,dur:3,stat:"def",txt:"야수의 몸으로 바뀐다 — 방어·속도 상승, 차례마다 최대 체력의 6% 회복"},
+      {id:"dr_1",fx:"heal",el:"heal",name:"재생의 씨앗",type:"regen",target:"ally_low",power:.03,proc:.2,dur:2,txt:"상처 위에 생명을 틔운다 — 대상이 자기 차례마다 최대 체력의 3.9%를 회복한다"},
+      {id:"dr_2",fx:"aura",el:"buff",name:"야수화",type:"buff",target:"self",power:.3,pow2:.1,stat2:"spd",regen:.06,proc:.2,dur:3,stat:"def",txt:"야수의 몸으로 바뀐다 — 방어·속도 상승, 차례마다 최대 체력의 7.8% 회복"},
       {id:"dr_u",fx:"burst",el:"poison",kind:"ult",name:"대자연의 진노",type:"ult_aoe",target:"enemy_all",power:1.8,proc:1,dur:2,heal:.3,txt:"전체 피해와 방어 저하 · 회복"}
     ]},
   forcemage:{ name:"배틀메이지", role:"dps", sub:"근접 마력", tone:"dps", row:"front",
@@ -3972,7 +4102,7 @@ const JOB_KEYS = Object.keys(JOBS);
    직업 패시브 — 전투 내내 상시 적용
    ============================================================ */
 const PASSIVES = {
-  paladin:   {n:"수호 서약",  d:"전투 시작 시 자신을 제외한 아군에게 각자 최대 체력 8%의 보호막을 두른다", onStart:"shieldAll"},
+  paladin:   {n:"수호 서약",  d:"전투 시작 시 자신을 제외한 아군에게 각자 최대 체력 10.4%의 보호막을 두른다", onStart:"shieldAll"},
   sword:     {n:"반격 자세",   d:"단일 공격의 대상이 되면 그만큼 되받아친다 (피해 0.2 · 필살 게이지는 오르지 않는다)", counter:.2},
   monk:      {n:"연공",       d:"일반 공격으로 얻는 필살 게이지가 25% 늘어난다", ultBasic:.25},
   archer:    {n:"저격 자세",  d:"후열의 적에게 주는 피해가 12% 늘어난다", vsBack:.12},
@@ -3980,7 +4110,7 @@ const PASSIVES = {
   priest:    {n:"기도",       d:"자신이 디버프에 걸릴 때마다 행동 게이지가 10% 회복된다", atbOnDebuff:.10},
   timemage:  {n:"예지",       d:"전투 시작 시 자신의 행동 게이지가 40% 차 있다", onStart:"atbSelf"},
   wizard:    {n:"원소 공명",  d:"자신이 쓰는 광역 스킬의 피해가 15% 늘어난다 (화염 폭발 · 중력 반전)", aoe:.15},
-  druid:     {n:"자연 회복",  d:"자기 차례마다 아군 전체가 각자 최대 체력의 3%를 회복한다", regenAll:.03},
+  druid:     {n:"자연 회복",  d:"자기 차례마다 아군 전체가 각자 최대 체력의 3.9%를 회복한다", regenAll:.03},
   forcemage: {n:"마력 육체",  d:"받는 피해가 항상 10% 줄어든다", take:.10},
   enchanter: {n:"상시 각인",  d:"전투 시작 시 아군 전체의 스킬 성공률이 5%p 오른다", onStart:"skAccAll"},
   darkpriest:{n:"암흑 계약", d:"팀 전원의 피흡이 6%p 오른다", leechAll:.06},
@@ -4558,6 +4688,7 @@ function relicAffixPick(n){
   }
   return out;
 }
+function relicSep(){ return (typeof nameJa === "function" && nameJa()) ? "" : " "; }   // 1014 — 유물 이름 사이 빈칸 (일본어판은 붙인다 · 세이브를 옮길 때는 i18n 런타임이 모양을 맞춘다)
 const RELIC_NOUN = ["반지","목걸이","문장","부적","깃털","조각","성물","인장","고리","서약서","향로","나침반"];
 const RELIC_ADJ  = {C:["낡은","무명의","흔한"],B:["연마된","견고한","은빛"],A:["고대의","봉인된","황금"],S:["용사의","신탁의","불멸의"],
                     "S+":["초월한","영겁의","찬란한"]};
@@ -4584,7 +4715,7 @@ function makeRelic(grade){
     if(a.int) v = Math.max(1,Math.round(v)); else v = Math.round(v*1000)/1000;
     return {k:a.k,n:a.n,v};
   });
-  return {id:"r"+RNG().toString(36).slice(2,9), grade, name:pick(RELIC_ADJ[grade])+" "+pick(RELIC_NOUN), aff};
+  return {id:"r"+RNG().toString(36).slice(2,9), grade, name:pick(RELIC_ADJ[grade])+relicSep()+pick(RELIC_NOUN), aff};
 }
 
 /* ============================================================
@@ -5269,7 +5400,7 @@ const OPT_FIELD_PASTEL = false;     // 전투 배경 파스텔 필터 켜고 끄
 const OPT_XFER_FILE    = false;     // 이어하기 — 파일로 내보내기 · 파일에서 불러오기
 const OPT_PIXEL_FONT   = false;     // 도트 폰트 켜고 끄기 (1004 — 숨긴 동안은 모두 기본값: 켬)
 const OPT_BATTLE_CAM   = false;     // 전투 연출 심플 · 스타일리시 (1004 — 숨긴 동안은 모두 기본값: 스타일리시)
-const PREF = {bspeed: 280, reportSpeed: 2, chronicleTest: false, uiConcept: "riso-pixel", uiV: 4, lvPopup: true, fieldPastel: false, pixelFont: true, bfGrid: false, battleCam: "stylish", schedScroll: true};
+const PREF = {bspeed: 280, reportSpeed: 2, chronicleTest: false, uiConcept: "riso-pixel", uiV: 4, lvPopup: true, fieldPastel: false, pixelFont: true, bfGrid: false, battleCam: "stylish", schedScroll: true, skillPick: "all"};
 /* uiV 4 — 삽화를 기본으로 적용하고 이전 화면 분위기 선택은 숨긴다. */
 try{
   const j = JSON.parse(localStorage.getItem(PREF_KEY) || "null");
@@ -5284,6 +5415,7 @@ try{
   if(j && typeof j.pixelFont === "boolean" && OPT_PIXEL_FONT) PREF.pixelFont = j.pixelFont;   // 설정을 숨긴 동안은 모두 기본값(켬 — 1004)
   if(j && typeof j.bfGrid === "boolean") PREF.bfGrid = j.bfGrid;
   if(j && typeof j.schedScroll === "boolean") PREF.schedScroll = j.schedScroll;   // 두루마리 스케줄 (1006)
+  if(j && ["all","mine","foe","off"].includes(j.skillPick)) PREF.skillPick = j.skillPick;   // 기술 선택 연출 (1015 — 기본은 모든 학생)
   if(j && j.sign && Array.isArray(j.sign.s) && j.sign.s.length) PREF.sign = j.sign;          // 결재 서명 — 이 브라우저에 남는다 (1006)
   if(j && ["simple","stylish"].includes(j.battleCam) && OPT_BATTLE_CAM) PREF.battleCam = j.battleCam;   // 0930 — 스타일리시가 기본. 예전 "basic" 저장값은 한 번 무시한다 · 설정을 숨긴 동안은 모두 기본값(1004)
 }catch(e){}
@@ -5651,13 +5783,15 @@ const EPI_TITLES = {
 /* 표시용 이름 — 이명이 있으면 이름 앞에 붙는다 */
 /* 이벤트 팝업(의식)을 그리는 동안에는 이명을 빼고 이름만 쓴다 (0929) — NAME_PLAIN 이 켜져 있을 때 */
 let NAME_PLAIN = false;
-function dn(st){ if(!st) return ""; return (st.epithet && !NAME_PLAIN) ? (nameEnFirst() ? st.name + " \u201c" + st.epithet + "\u201d" : "\u201c" + st.epithet + "\u201d " + st.name) : st.name; }
+function dn(st){ if(!st) return ""; return (st.epithet && !NAME_PLAIN) ? (nameEnFirst() ? st.name + " \u201c" + st.epithet + "\u201d" : nameJa() ? "\u300c" + st.epithet + "\u300d" + st.name : "\u201c" + st.epithet + "\u201d " + st.name) : st.name; }
 /* 저장된 이름 문자열도 그대로 받아 이명 부분만 황동색으로 */
 function epiH(nm){
   const v = String(nm==null? "" : nm);
   const m = v.match(/^\u201c([^\u201d]+)\u201d\s+([\s\S]+)$/);
   const e = !m && v.match(/^([\s\S]+?)\s+\u201c([^\u201d]+)\u201d$/);   // 1010 영어판 — 이름 먼저 (Gawain “the Unbroken Wall”)
   if(e) return NAME_PLAIN ? esc(e[1]) : `${esc(e[1])} <span class="epi">\u201c${esc(e[2])}\u201d</span>`;
+  const j = !m && v.match(/^\u300c([^\u300d]+)\u300d\s*([\s\S]+)$/);   // 1014 일본어판 — 「二つ名」名前
+  if(j) return NAME_PLAIN ? esc(j[2]) : `<span class="epi">\u300c${esc(j[1])}\u300d</span>${esc(j[2])}`;
   if(m && NAME_PLAIN) return esc(m[2]);
   return m ? `<span class="epi">\u201c${esc(m[1])}\u201d</span> ${esc(m[2])}` : esc(v);
 }
@@ -5956,11 +6090,29 @@ function consOf(u){
   const sev  = Math.max(0, 30 - hpP);
   return {
     skill: clamp(1 - (mild*.01 + sev*.02)*mit, .15, 1),
-    ko:    clamp((mild*.001 + sev*.005)*mit, 0, .85),
+    ko:    clamp((mild*.001 + sev*.005)*(u.consMit==null && hrStu(u) ? hrMit(u.ment.will) : mit), 0, .85),   // 1015 — 학생의 기절은 새 정신력 계수
     thr, hpP, lv: hpP<30? 2 : 1
   };
 }
 function aliveOf(team){ return team.filter(u=>u.alive); }
+/* ── 정신력 시험 (1015 — 스타일리시 전투 체크포인트 ②) ──
+   의식 저하 선 아래에서 맞고 살아 있으면 한 번 굴린다: 0 ~ 기절 → 기절 · 기절 ~ 기절+기상 → 영웅의 기상 · 나머지 → 아무 일 없음.
+   학생만 (몬스터 · 마왕은 예전 그대로) — 기절은 새 정신력 계수(정신력 1 → ×1.951 · 99 → ×0.307 · 같은 비율로 줄어든다),
+   기상은 체력과 상관없이 지구력 · 정신력 평균으로 5% → 20%. 기상은 학생마다 한 전투에 한 번 (쓰러졌다 일어나도 다시 없다) ·
+   기상 상태인 동안은 굴리지 않는다. 기상 상태는 전투가 끝날 때까지 — 쓰러지면 다른 효과처럼 풀린다. 의식 저하의 스킬 위력 감소는 그대로.
+   화면에는 이름만 나오고 늘어난 능력치 · '영웅의 기상' 이라는 말은 나오지 않는다 */
+const HR_MIT_LO = .40/.205, HR_MIT_HI = .307;
+function hrStu(u){ return !!u && !u.fixed && !(JOBS[u.job] && JOBS[u.job].mon); }
+function hrMit(will){ return HR_MIT_LO * Math.pow(HR_MIT_HI/HR_MIT_LO, (clamp(will||1, 1, 99) - 1)/98); }
+function hrHeroP(u){ const m = u.ment||{}; return .05 + .15*clamp(((Math.min(m.stam||1, 99) + Math.min(m.will||1, 99))/2 - 1)/98, 0, 1); }
+const HR_TYPES = [
+  {k:"will",    n:"불굴의 의지", stat:"atk", mode:"mul", val:.2},
+  {k:"faith",   n:"굳건한 신념", stat:"def", mode:"mul", val:.2},
+  {k:"clarity", n:"맑아진 정신", stats:["acc","crit"], val:.1},
+  {k:"courage", n:"샘솟는 용기", stat:"spd", mode:"mul", val:.2}
+];
+function hrType(k){ return HR_TYPES.find(t=> t.k===k) || HR_TYPES[0]; }
+const hrPopMs = sp=> clamp(sp*6, 900, 2400);   // 심플 모드 전투 화면의 기상 이름이 떠 있는 시간 (1015)
 
 function hasFx(t, sk){ return !!(t && t.fx && t.fx.some(f=> f.name===sk.name && f.turns>1)); }
 function freshFirst(pool, actor, sk){
@@ -6026,6 +6178,14 @@ function pickTarget(actor, foes, allies, sk){
 }
 
 let DMG_K = 1.8, DEF_K = 290;
+/* 전투 배율 (1015 — 사용자: 전투를 짧게) — 모든 유닛(학생 · 적 · 몬스터 · 마왕) 똑같이.
+   주는 피해 +30% · 받는 피해 +20% (곱해서 ×1.56 — 직접 피해 · 지속 피해) · 회복 +30% · 보호막 +30% (스킬 · 필살기 · 패시브 · 지속 회복 · 부활 체력).
+   흡혈 · 흡수 회복 · 저주 회복 · '가른 만큼' 보호막처럼 준 피해의 몇 % 인 것은 피해를 따라 커진다 (따로 곱하지 않는다). 마왕의 마지막 일격(고정 99999)은 그대로 */
+const BAL_DEAL = 1.3, BAL_TAKE = 1.2, BAL_HEAL = 1.3, BAL_SHIELD = 1.3;
+/* 필살 게이지 (1015) — 행동할 때 · 맞을 때 오르는 양 (× 필살 게이지 능력치 · 몽크 연공). 예전 17 · 7 */
+const ULT_ACT = 26.5, ULT_HIT = 12.5;
+/* 장기전 (1015) — 양쪽 행동 수(차례 + 필살기 발동)가 이 수를 넘으면 행동 하나마다 직접 피해 +2.5% (최대 +160% · ×2.6). 예전 60 (61번째 행동부터) */
+const FATIGUE_AT = 30;
 /* 명중 보정 (1013 — 사용자) — dealDamage 의 명중 확률(명중 − 회피)에 더한다. 명중 확률은 35 ~ 100% (예전 35 ~ 99%).
    피해를 주는 스킬(스킬 1 · 2 — 중독의 첫 타 포함) +10%p · 필살기 +20%p · 기본기 · 반격은 보정 없음.
    양쪽 모두(적 · 마왕 포함) · 스킬의 시전 판정(스킬 성공률 − 저항)과는 따로 */
@@ -6211,7 +6371,7 @@ function runBattle(teamA, teamB, opt){
   // 패시브 — 전투 개시
   [[A,"A"],[B,"B"]].forEach(([U])=> U.forEach(u=>{
     const P = u.pas; if(!P || !P.onStart) return;
-    if(P.onStart==="shieldAll") U.forEach(a=>{ if(a!==u) a.shield = Math.max(a.shield, Math.round(a.maxHp*.08*P.k)); });
+    if(P.onStart==="shieldAll") U.forEach(a=>{ if(a!==u) a.shield = Math.max(a.shield, Math.round(a.maxHp*.08*P.k*BAL_SHIELD)); });
     if(P.onStart==="atbSelf")   u.atb = Math.max(u.atb, Math.round(400*P.k));
     if(P.onStart==="atbAll")    U.forEach(a=> a.atb = Math.max(a.atb, Math.round(150*P.k)));
     if(P.onStart==="skAccAll")  U.forEach(a=> a.base.skAcc = (a.base.skAcc||0) + .05*P.k);
@@ -6220,7 +6380,7 @@ function runBattle(teamA, teamB, opt){
   const frames = [];
   const snap = ()=> all.map(u=>({hp:u.hp,maxHp:u.maxHp,sh:u.shield,ult:u.ult,atb:clamp(u.atb/1000,0,1),alive:u.alive,
     cs:consOf(u).lv, dd:u.dDealt|0, dh:u.dHeal|0, dt:u.dTaken|0,
-    fx:u.fx.map(f=>({n:f.name,k:f.kind,stat:f.stat||null,regen:!!f.regen,mir:!!f.mir,taunt:!!f.taunt,allT:!!f.allT}))}));
+    fx:u.fx.map(f=>({n:f.name,k:f.kind,stat:f.stat||null,regen:!!f.regen,mir:!!f.mir,taunt:!!f.taunt,allT:!!f.allT,hero:f.hero||null}))}));
   /* 쓰러지는 순간의 행동 · 필살 게이지를 적어 둔다 (1003) — 부활하면 0 이 아니라 이 값에서 다시 시작한다 */
   const downAt = t=>{ t.koAtb = t.atb; t.koUlt = t.ult; };
   /* 누적 기록 — 피해 / 회복 / 받은 피해 */
@@ -6232,7 +6392,7 @@ function runBattle(teamA, teamB, opt){
   push(`<b>${opt.titleA||"우리 팀"}</b> 대 <b>${opt.titleB||"상대"}</b> — 전투 개시`,"sec");
 
   let guard=0, winner=null, totalActs=0, fatigueNoted=false, capHit=false;
-  const fatigue = ()=> 1 + Math.min(1.6, Math.max(0, totalActs-60)*.025);
+  const fatigue = ()=> 1 + Math.min(1.6, Math.max(0, totalActs-FATIGUE_AT)*.025);   // 1015 — FATIGUE_AT + 1 번째 행동부터
   while(guard++ < 3000){
     if(opt.turnCap && totalActs >= opt.turnCap){ capHit = true; break; }   // 마왕 대항전 — 턴 상한
     // 필살기 — 게이지가 차는 즉시 행동 게이지와 무관하게 발동한다
@@ -6246,7 +6406,7 @@ function runBattle(teamA, teamB, opt){
         const uSk = uSKL.find(x=>x.kind==="ult");
         if(uSk){
           totalActs++;
-          if(totalActs===61 && !fatigueNoted){ fatigueNoted=true; push(`장기전 — 양측 모두 지쳐 주고받는 피해가 커진다`,"sec"); }
+          if(totalActs===FATIGUE_AT+1 && !fatigueNoted){ fatigueNoted=true; push(`장기전 — 양측 모두 지쳐 주고받는 피해가 커진다`,"sec"); }
           push(`<b>${epiH(uu.name)}</b> — 필살 게이지 개방`,"ult",uu.uid);   // 이 줄까지는 게이지가 100 으로 보인다
           uu.ult = 0;
           resolve(uu, uSk, ufoes, uallies, true);
@@ -6269,11 +6429,11 @@ function runBattle(teamA, teamB, opt){
     const u = ready[0];
     u.atb -= 1000;
     u.acted++; totalActs++;
-    if(totalActs===61 && !fatigueNoted){ fatigueNoted=true; push(`장기전 — 양측 모두 지쳐 주고받는 피해가 커진다`,"sec"); }
+    if(totalActs===FATIGUE_AT+1 && !fatigueNoted){ fatigueNoted=true; push(`장기전 — 양측 모두 지쳐 주고받는 피해가 커진다`,"sec"); }
     // 지속 효과 정리
     let dotDmg = 0; const dotHeal = [];
     u.fx = u.fx.filter(f=>{
-      if(f.kind==="dot"){ dotDmg += f.val; if(f.heal && f.src!=null) dotHeal.push([f.src, f.val]); }
+      if(f.kind==="dot"){ dotDmg += f.val*BAL_DEAL*BAL_TAKE; if(f.heal && f.src!=null) dotHeal.push([f.src, f.val]); }
       f.turns--; return f.turns>0;
     });
     if(dotDmg>0){
@@ -6304,7 +6464,7 @@ function runBattle(teamA, teamB, opt){
     {
       const Pr = u.pas;
       if(Pr && Pr.regen && u.hp < u.maxHp){
-        const h = Math.min(u.maxHp-u.hp, Math.round(u.maxHp*Pr.regen));
+        const h = Math.min(u.maxHp-u.hp, Math.round(u.maxHp*Pr.regen*BAL_HEAL));
         if(h>0){ u.hp += h; recHeal(u, h); push(`<b>${epiH(u.name)}</b> 자연 회복 ${fmt(h)}`,"heal",u.uid); }
       }
       /* 자연 회복 — 아군 전체 */
@@ -6312,7 +6472,7 @@ function runBattle(teamA, teamB, opt){
         const pp = [];
         aliveOf(u.side==="A"? A : B).forEach(a=>{
           if(a.hp >= a.maxHp) return;
-          const h = Math.min(a.maxHp-a.hp, Math.round(a.maxHp*Pr.regenAll));
+          const h = Math.min(a.maxHp-a.hp, Math.round(a.maxHp*Pr.regenAll*BAL_HEAL));
           if(h>0){ a.hp += h; recHeal(u, h); pp.push({u:a.uid,v:h,k:"heal"}); }
         });
         if(pp.length) push(`아군 전체 자연 회복`,"heal",u.uid,null,pp);
@@ -6320,7 +6480,7 @@ function runBattle(teamA, teamB, opt){
       /* 걸려 있는 지속 회복 — 시전자에게 공로가 간다 */
       u.fx.forEach(f=>{
         if(!f.regen || u.hp >= u.maxHp) return;
-        const h = Math.min(u.maxHp-u.hp, Math.round(u.maxHp*f.regen));
+        const h = Math.min(u.maxHp-u.hp, Math.round(u.maxHp*f.regen*BAL_HEAL));
         if(h<=0) return;
         u.hp += h;
         const sv = (f.src!=null) ? all.find(x=> x.uid===f.src) : null;
@@ -6338,19 +6498,22 @@ function runBattle(teamA, teamB, opt){
 
     let chosen = null;
     const isUlt = false;
+    let pk = null;                       // 1015 — 스타일리시 체크포인트 ① 이 보여 줄 ④ ~ ⑦ (뜬 스킬 · 고른 것 · 그만둠 · 실패)
     {
       // 스킬 출현 판정 — 천재성
       const proc = acts.filter(s=> RNG() < skProc(u, s, u.ment.genius));
+      pk = {ap: proc.map(s=> s.id)};
       if(proc.length){
         if(proc.length>1 && RNG() < u.ment.aggr/100){
           // 적극성: 상황에 맞는 쪽을 고른다
           proc.sort((a,b)=> actValue(b,u,foes,allies) - actValue(a,u,foes,allies));
           chosen = proc[0];
         } else chosen = pick(proc);
+        pk.pk = chosen.id;
         // 적극성 — 이미 유지 중인 효과를 다시 걸지 않는다
         if(chosen !== basic && actValue(chosen,u,foes,allies) < .2 && RNG() < u.ment.aggr/100){
           push(`<b>${epiH(u.name)}</b> — ${chosen.name}${eunn(chosen.name)} 아직 유지 중, 다시 걸지 않는다`,"",u.uid);
-          chosen = basic;
+          chosen = basic; pk.keep = 1;
         }
         // 시전 성공 판정
         if(chosen !== basic){
@@ -6360,18 +6523,20 @@ function runBattle(teamA, teamB, opt){
           const vsFoe = tgt0.length && chosen.target.startsWith("enemy");
           const res = vsFoe ? tgt0.reduce((a,t)=> a + eff(t,"skRes"), 0) / tgt0.length : 0;
           const pOk = clamp(eff(u,"skAcc") - res, .25, 1);
+          pk.vf = vsFoe ? 1 : 0;
           if(RNG() > pOk){
             const why = !vsFoe ? "" : tgt0.length > 1
               ? ` · 적 ${tgt0.length}명 평균 스킬 저항 ${Math.round(res*100)}%`
               : ` · ${epiH(tgt0[0].name)}의 스킬 저항 ${Math.round(res*100)}%`;
             push(`<b>${epiH(u.name)}</b>의 ${chosen.name} — 시전 실패 <span style="color:var(--dim)">(성공 ${Math.round(pOk*100)}%${why})</span>`,"",u.uid);
-            chosen = basic;
+            chosen = basic; pk.res = 1;
           }
         }
       } else chosen = basic;
     }
     const fAct = frames.length;          // 이 행동의 첫 줄 — 아래 필살 게이지 몫을 여기서부터 보이게 한다
     resolve(u, chosen, foes, allies, isUlt);
+    if(pk && acts.length) for(let q = fAct; q < frames.length; q++) if(frames[q].call && frames[q].actor === u.uid){ frames[q].pick = pk; break; }   // 1015 — 외침 줄에 ④ ~ ⑦
     if(chosen !== basic) mirGain(u);
     /* 앙코르 — 같은 기본기·스킬을 한 번 더 (필살기 제외) */
     {
@@ -6385,7 +6550,7 @@ function runBattle(teamA, teamB, opt){
       const Pm = u.pas;
       const bb = (Pm && Pm.ultBasic && chosen && chosen.kind==="basic") ? 1+Pm.ultBasic : 1;
       const u0 = u.ult;
-      if(u.alive) u.ult = clamp(u.ult + 17*eff(u,"ultGain")*bb, 0, 100);   // 행동 중에 쓰러졌으면 (반격 등) 게이지는 쓰러진 순간 그대로 둔다 (1003)
+      if(u.alive) u.ult = clamp(u.ult + ULT_ACT*eff(u,"ultGain")*bb, 0, 100);   // 행동 중에 쓰러졌으면 (반격 등) 게이지는 쓰러진 순간 그대로 둔다 (1003)
       /* 행동으로 얻는 필살 게이지 (1001) — 예전에는 행동이 다 끝난 뒤에 더해서 다음 사람 차례 줄에야 보였다.
          행동 첫 줄(외침) 다음부터 이미 오른 값으로 적어 두어, 공격이 들어가는 순간 같이 차오르게 한다 */
       const add = u.ult - u0, ku = all.indexOf(u);
@@ -6456,7 +6621,7 @@ function runBattle(teamA, teamB, opt){
     if(RNG()>hitP){ push(`<b>${epiH(tgt.name)}</b> 회피`,"",src.uid,null,[{u:tgt.uid,k:"miss"}]); return 0; }
     const pierce = o.pierce||0;
     const d = eff(tgt,"def")*(1-pierce);
-    let dmg = eff(src,"atk") * mult * (1 - d/(d+DEF_K)) * rnd(.93,1.07) * fatigue() * DMG_K * passiveDmgMul(src,tgt,o);
+    let dmg = eff(src,"atk") * mult * (1 - d/(d+DEF_K)) * rnd(.93,1.07) * fatigue() * DMG_K * BAL_DEAL * BAL_TAKE * passiveDmgMul(src,tgt,o);
     // 진형 — 주는 쪽 / 받는 쪽
     if(src.fOut) dmg *= (1 + src.fOut);
     if(tgt.fIn)  dmg *= (1 + tgt.fIn);
@@ -6485,7 +6650,7 @@ function runBattle(teamA, teamB, opt){
     const lee = eff(src,"leech");
     let leeched = 0;
     if(lee>0 && dmg>0){ const hb=src.hp; src.hp = Math.min(src.maxHp, src.hp + Math.round(dmg*lee)); leeched = src.hp-hb; recHeal(src, leeched); }
-    if(!o.noUlt) tgt.ult = clamp(tgt.ult + 7*eff(tgt,"ultGain"),0,100);
+    if(!o.noUlt) tgt.ult = clamp(tgt.ult + ULT_HIT*eff(tgt,"ultGain"),0,100);
     const pop = [];
     if(absorbed) pop.push({u:tgt.uid, v:absorbed, k:"absorb"});
     if(dmg>0 || !absorbed) pop.push({u:tgt.uid, v:dmg, k:crit?"crit":"dmg"});
@@ -6494,17 +6659,30 @@ function runBattle(teamA, teamB, opt){
     if(tgt.hp<=0){ downAt(tgt); tgt.alive=false; tgt.fx=[]; push(`<b>${epiH(tgt.name)}</b> 전투 불능`,"die",src.uid,null,[{u:tgt.uid,k:"die"}]); return dmg; }
     if(dmg>0){
       const cs = consOf(tgt);
-      if(cs.ko>0 && RNG()<cs.ko){
-        downAt(tgt); tgt.alive=false; tgt.fx=[]; tgt.hp = Math.max(1, tgt.hp);
-        push(`<b>${epiH(tgt.name)}</b> 의식을 잃고 쓰러졌다`,"die",src.uid,null,[{u:tgt.uid,k:"die"}]);
+      if(cs.ko>0 && !tgt.fx.some(f=> f.hero)){                                  // 1015 — 기상 상태면 굴리지 않는다
+        const pH = (hrStu(tgt) && !tgt.hrUsed) ? hrHeroP(tgt) : 0;           // 기상은 학생마다 한 전투에 한 번
+        const r = RNG();
+        if(r < cs.ko){
+          downAt(tgt); tgt.alive=false; tgt.fx=[]; tgt.hp = Math.max(1, tgt.hp);
+          push(`<b>${epiH(tgt.name)}</b> 의식을 잃고 쓰러졌다`,"die",src.uid,null,[{u:tgt.uid,k:"die"}]);
+          if(hrStu(tgt)) frames[frames.length-1].test = {u:tgt.uid, k:"faint"};
+        } else if(r < cs.ko + pH){
+          const T = pick(HR_TYPES);
+          tgt.hrUsed = true;
+          addFx(tgt, {name:T.n, kind:"b", turns:9999, stat:T.stat||null, stats:T.stats||null, mode:T.mode||null, val:T.val, hero:T.k});
+          push(`<b>${epiH(tgt.name)}</b> — ${T.n}!`,"good",src.uid,null,[{u:tgt.uid,k:"hero",t:T.k}]);
+          frames[frames.length-1].test = {u:tgt.uid, k:"hero", t:T.k};
+        }
       }
     }
     /* 반격 자세 — 단일 공격을 받으면 그만큼 되받아친다 */
     if(dmg>0 && tgt.alive && src.alive && !o.counter && singleHit(o)){
       const Pc = tgt.pas;
       if(Pc && Pc.counter){
+        const c0 = frames.length;
         push(`<b>${epiH(tgt.name)}</b> 반격`,"",tgt.uid);
         dealDamage(tgt, src, Pc.counter, {counter:true, noUlt:true, type:"dmg"});
+        for(let q = c0; q < frames.length; q++) frames[q].ctr = 1;            // 1015 — 반격 줄 (스타일리시 연출이 반격에서 나온 정신력 시험을 그 차례에 묶는다)
       }
     }
     return dmg;
@@ -6573,14 +6751,14 @@ function runBattle(teamA, teamB, opt){
         if(hit.length) push(`${hit.length>1? `적 ${hit.length}인` : `<b>${epiH(hit[0].name)}</b>`} 중독 (${dur}턴)`,"",u.uid);
         break; }
       case "heal": {
-        const h = Math.round(eff(u,"atk")*p*2.0*healMulOf(u));
+        const h = Math.round(eff(u,"atk")*p*2.0*healMulOf(u)*BAL_HEAL);
         tg.forEach(t=>{ const b=Math.min(t.maxHp-t.hp,h); t.hp+=b; recHeal(u, b);
           let cl=null;
           if(sk.cleanse){ for(let c=0;c<sk.cleanse;c++){ const i=t.fx.findIndex(f=>f.kind==="d"||f.kind==="dot"); if(i<0) break; cl = t.fx.splice(i,1)[0].name; } }
           push(`<b>${epiH(t.name)}</b> 회복 ${fmt(b)}${cl?` · <b>${esc(cl)}</b> 해제`:""}`,"heal",u.uid,null,[{u:t.uid,v:b,k:"heal"}]); });
         break; }
       case "shield": {
-        const sh = Math.round(eff(u, sk.scale||"def")*p*2.9);
+        const sh = Math.round(eff(u, sk.scale||"def")*p*2.9*BAL_SHIELD);
         tg.forEach(t=>{ t.shield = sh; addFx(t,{name:"보호막",kind:"s",turns:dur+1,stat:null,val:0}); });
         push(`아군 ${tg.length}인 보호막 ${fmt(sh)}`,"heal",u.uid,null, tg.map(t=>({u:t.uid,v:sh,k:"shield"})));
         break; }
@@ -6617,16 +6795,16 @@ function runBattle(teamA, teamB, opt){
         tg.forEach(t=>{ t.atb = Math.max(0, t.atb - 1000*p); addFx(t,{name:sk.name,kind:"d",turns:dur+1,stat:"spd",mode:"mul",val:-p*.5}); });
         push(`<b>${epiH(tg[0].name)}</b> 행동 게이지 -${Math.round(p*100)}%`,"",u.uid);
         break; }
-      case "ult_single": tg.forEach(t=> t.alive && dealDamage(u, t, p + (sk.mirBonus? sk.mirBonus*(u.mir|0) : 0), sk)); if(sk.heal){ const h=Math.round(u.maxHp*sk.heal*.35); const h0=u.hp; u.hp=Math.min(u.maxHp,u.hp+h); recHeal(u, u.hp-h0); push(`<b>${epiH(u.name)}</b> 회복 ${fmt(h)}`,"heal",u.uid,null,[{u:u.uid,v:u.hp-h0,k:"heal"}]);} break;
+      case "ult_single": tg.forEach(t=> t.alive && dealDamage(u, t, p + (sk.mirBonus? sk.mirBonus*(u.mir|0) : 0), sk)); if(sk.heal){ const h=Math.round(u.maxHp*sk.heal*.35*BAL_HEAL); const h0=u.hp; u.hp=Math.min(u.maxHp,u.hp+h); recHeal(u, u.hp-h0); push(`<b>${epiH(u.name)}</b> 회복 ${fmt(h)}`,"heal",u.uid,null,[{u:u.uid,v:u.hp-h0,k:"heal"}]);} break;
       case "ult_aoe": { let tot = 0;
         tg.forEach(t=>{ if(t.alive) tot += dealDamage(u,t,p,sk); });
         if(!sk.noBreak) tg.forEach(t=> t.alive && addFx(t,{name:"방어 붕괴",kind:"d",turns:dur+1,stat:"def",mode:"mul",val:-.25}));
         if((sk.shieldSelf || sk.shieldDef) && tot>0){
-          const sh = Math.round(tot*(sk.shieldSelf||0) + (sk.shieldDef? eff(u,"def")*sk.shieldDef : 0));
+          const sh = Math.round(tot*(sk.shieldSelf||0) + (sk.shieldDef? eff(u,"def")*sk.shieldDef*BAL_SHIELD : 0));
           u.shield += sh; u.shBy = u.uid;
           push(`<b>${epiH(u.name)}</b> 보호막 ${fmt(sh)} — 가른 만큼 몸을 두른다`,"heal",u.uid,null,[{u:u.uid,v:sh,k:"shield"}]);
         }
-        if(sk.heal){ const h=Math.round(u.maxHp*sk.heal*.3); const h0=u.hp; u.hp=Math.min(u.maxHp,u.hp+h); recHeal(u, u.hp-h0); push(`<b>${epiH(u.name)}</b> 회복 ${fmt(h)}`,"heal",u.uid,null,[{u:u.uid,v:u.hp-h0,k:"heal"}]); }
+        if(sk.heal){ const h=Math.round(u.maxHp*sk.heal*.3*BAL_HEAL); const h0=u.hp; u.hp=Math.min(u.maxHp,u.hp+h); recHeal(u, u.hp-h0); push(`<b>${epiH(u.name)}</b> 회복 ${fmt(h)}`,"heal",u.uid,null,[{u:u.uid,v:u.hp-h0,k:"heal"}]); }
         break; }
       case "drain": {
         let d = 0;
@@ -6659,7 +6837,7 @@ function runBattle(teamA, teamB, opt){
           if(ug) pt.push(`필살 게이지 +${ug}`);
           push(`아군 전체 ${pt.join(" · ")}`,"heal",u.uid); } break; }
       case "ult_guard": {
-        const h=Math.round(eff(u,"atk")*p*1.9*healMulOf(u)), sh=Math.round(eff(u,"def")*p*2.9);
+        const h=Math.round(eff(u,"atk")*p*1.9*healMulOf(u)*BAL_HEAL), sh=Math.round(eff(u,"def")*p*2.9*BAL_SHIELD);
         { const pp=[];
           tg.forEach(t=>{ const h0=t.hp; t.hp=Math.min(t.maxHp,t.hp+h); recHeal(u, t.hp-h0); t.shield=Math.max(t.shield,sh);
             if(t.hp>h0) pp.push({u:t.uid,v:t.hp-h0,k:"heal"});
@@ -6667,7 +6845,7 @@ function runBattle(teamA, teamB, opt){
             addFx(t,{name:"성역",kind:"b",turns:dur+1,stat:"def",mode:"mul",val:.35}); });
           push(`아군 전체 회복 ${fmt(h)} · 보호막 ${fmt(sh)} · 방어 강화`,"heal",u.uid,null,pp); } break; }
       case "ult_heal": {
-        const h=Math.round(eff(u,"atk")*p*2.9*healMulOf(u));
+        const h=Math.round(eff(u,"atk")*p*2.9*healMulOf(u)*BAL_HEAL);
         { const pp=[]; const back=[];
           tg.forEach(t=>{ const h0=t.hp; t.hp=Math.min(t.maxHp,t.hp+h); recHeal(u, t.hp-h0); if(t.hp>h0) pp.push({u:t.uid,v:t.hp-h0,k:"heal"});
             t.fx=t.fx.filter(f=>f.kind!=="d"&&f.kind!=="dot"); });
@@ -6686,7 +6864,7 @@ function runBattle(teamA, teamB, opt){
       case "regen": {
         tg.forEach(t=>{ if(!t.alive) return;
           addFx(t,{name:sk.name,kind:"b",turns:dur+1,stat:null,val:0,regen:p,src:u.uid}); });
-        push(`${tg.length>1?`아군 ${tg.length}인`:`<b>${epiH(tg[0].name)}</b>`} 지속 회복 — 차례마다 최대 체력 ${Math.round(p*100)}% (${dur}턴)`,"heal",u.uid);
+        push(`${tg.length>1?`아군 ${tg.length}인`:`<b>${epiH(tg[0].name)}</b>`} 지속 회복 — 차례마다 최대 체력 ${+(p*BAL_HEAL*100).toFixed(1)}% (${dur}턴)`,"heal",u.uid);
         break; }
       case "charge": {
         const g = sk.ultGive|0;
@@ -8572,7 +8750,7 @@ function synthRoll(plan){
   const plus = RNG() < SYNTH_PLUS_P;
   if(plus) out.forEach(a=> a.v = affRound(a.k, a.v*SYNTH_PLUS_MUL));
   const grade = plus ? "S+" : "S";
-  return {id:"r"+RNG().toString(36).slice(2,9), grade, name:pick(RELIC_ADJ[grade])+" "+pick(RELIC_NOUN), aff:affSorted(out), synth:true};
+  return {id:"r"+RNG().toString(36).slice(2,9), grade, name:pick(RELIC_ADJ[grade])+relicSep()+pick(RELIC_NOUN), aff:affSorted(out), synth:true};
 }
 /* 합성 팝업 */
 function synthOpen(id){
@@ -9955,8 +10133,8 @@ function answerDefy(pi, oi, win){   // win — 상담창(1008): 화면을 다시
     ? `지침 무시 상담 — <b>${dnH(st)}</b>(${personaOf(st).n})${iga(st.name)} 마스터의 뜻을 받아들였다.${byLead? ` <span style="color:var(--brass)">지도력으로 설득</span>`:""}${gain? ` <b style="color:var(--ok)">${gain.n} +${gain.d}</b>${dbl? ` <span style="color:var(--brass)">(호소력 2배)</span>`:""}`:""}${cookie? ` <span style="color:var(--brass)">(쿠키 상승량 2배)</span>`:""}${cond? ` · 컨디션 +${cond}`:""} · 신뢰 증가 · 앞으로 한동안 지침을 잘 따를 것 같다.`
     : `지침 무시 상담 — <b>${dnH(st)}</b>(${personaOf(st).n})${eunn(st.name)} 납득하지 못한 표정이다. 신뢰 감소 · 일단은 지침을 따를 것 같다.`, ok? "good" : "");
   save();
-  const rx = masterQ(ok ? R2[0] : R2[1], st, true), rq = rx.match(/“([^”]*)”/);   // 1008 — 상담창
-  const res = {ok, fit, byLead, byTrust, cookie, gain, dbl, capped, cond, say: rq ? rq[1] : rx, r: rx.replace(/“[^”]*”/, "").trim(), trustUp: trustRaw(st) > tr0, trustDown: trustRaw(st) < tr0, band: tb1 !== tb0 ? tb1 : null};
+  const rx = masterQ(ok ? R2[0] : R2[1], st, true), rq = rx.match(/“([^”]*)”|「([^」]*)」/);   // 1008 — 상담창 · 1014 일본어판 「」
+  const res = {ok, fit, byLead, byTrust, cookie, gain, dbl, capped, cond, say: rq ? (rq[1] !== undefined ? rq[1] : rq[2]) : rx, r: rx.replace(/“[^”]*”|「[^」]*」/, "").trim(), trustUp: trustRaw(st) > tr0, trustDown: trustRaw(st) < tr0, band: tb1 !== tb0 ? tb1 : null};
   if(win) return res;
   render();
   toast(ok ? `${dn(st)} — 지침을 따르겠다고 한다${gain? ` · ${gain.n} +${gain.d}${dbl?" (2배)":""}`:""}` : `${dn(st)} — 납득하지 못했지만 일단 따르겠다고 한다`);
@@ -12076,8 +12254,8 @@ const UNIQ_GREET = {
 /* 그 학생의 말 속 마스터를 ‘마스터’로. inQuote 면 “ ” 안의 말만 바꾼다 (졸업 사유처럼 서술이 섞인 글) */
 function masterQ(t, who, inQuote){
   if(!t || !who || who.uniq !== "dp1") return t;
-  const q = s => s.replace(/‘?마스터’?/g, "‘마스터’").replace(/‘?\bMaster\b’?/g, "‘Master’");   // 1010 — 영어판도 같은 따옴표
-  return inQuote ? String(t).replace(/“[^”]*”/g, q) : q(String(t));
+  const q = s => s.replace(/‘?마스터’?/g, "‘마스터’").replace(/‘?\bMaster\b’?/g, "‘Master’").replace(/[『‘]?マスター[』’]?/g, "『マスター』");   // 1010 — 영어판도 같은 따옴표 · 1014 일본어판 『マスター』
+  return inQuote ? String(t).replace(/“[^”]*”|「[^」]*」/g, q) : q(String(t));
 }
 function greetLine(st){
   const k = trustLineKey(trustOf(st));
@@ -12753,7 +12931,7 @@ function mdeskBox(x, y, w, h){
 /* 팝업 — 마을 상점처럼 책상 위에 뜬다 (책상은 흐려진다). 학원 정보 = 예전 '학원 정보' 서브탭 (튜토리얼 단추는 말린 지도가 맡는다) */
 function mdeskPop(k){
   const body = k === "info" ? viewHome({desk:true}) : viewMaster();
-  return `<div class="townpop mdesk-pop" role="dialog" aria-label="${k === "info" ? "학원 정보" : "마스터 육성"}">${body}`
+  return `<div class="townpop mdesk-pop" data-mdpop="${k}" role="dialog" aria-label="${k === "info" ? "학원 정보" : "마스터 육성"}">${body}`
     + `<div class="townpop-foot"><button type="button" class="btn primary" data-deskdone>닫기</button></div></div>`;
 }
 function viewHomeDesk(){
@@ -12779,8 +12957,12 @@ function viewHomeDesk(){
     + `</div></div></div><img class="town-frame mdesk-frame" src="${mdeskFrame()}" alt="" draggable="false"></div>`
     + (pop ? mdeskPop(pop) : "") + `</section>`;
 }
+const MDESK_FLIP = ["books", "map", "scroll", "book"];                  // 1015 — 책장 넘기는 소리를 내는 소품 (마스터 육성 · 튜토리얼 · 스케줄 · 학생 명부)
+function bookFlipSfx(){ sfxPlay("book_flip" + (1 + Math.floor(Math.random()*3)), .94 + Math.random()*.12); }   // 연출 — 게임 난수와 상관없다
+function bookFlipLoad(){ if(AWEB !== false && sfxGain() > 0) ["book_flip1", "book_flip2", "book_flip3"].forEach(k=> sfxLoad(SFX[k].f)); }
 function mdeskAct(k){
   if(MDESK_GOING) return;
+  if(MDESK_FLIP.includes(k)) bookFlipSfx();
   if(k === "map"){ showTutorial(0, {}); return; }
   if(k === "books"){ UI.mdeskPop = "master"; render(); return; }
   if(k === "info"){ UI.mdeskPop = "info"; render(); return; }
@@ -12806,6 +12988,7 @@ function bindMasterDesk(v){
   };
   art.addEventListener("pointermove", e=>{ if(!MDESK_GOING) hot(at(e)); });
   art.addEventListener("pointerleave", ()=> hot(0));
+  art.addEventListener("pointerdown", bookFlipLoad);                   // 1015 — 처음 누를 때도 늦지 않게 소리를 미리 받는다
   art.addEventListener("click", e=>{ const g = at(e); if(g) mdeskAct(MDESK_GEO.groups[g - 1].k); });
   sec.querySelectorAll(".mdk").forEach(b=>{
     b.onclick = (e)=>{ e.stopPropagation(); mdeskAct(b.dataset.mdesk); };
@@ -14802,7 +14985,7 @@ const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
    그러니 전투 계산이 한 줄이라도 달라지면 같은 시즌인데 순위표가 갈린다.
    전투에 닿는 수치를 고칠 때마다 이 번호를 올린다. 번호가 어긋난 시즌은 정산하지 않는다. */
-const RULES_VER = 7;   // 7 (1008): 스킬 수치를 등급 · 레벨 표로 (등급 6단계 D·C·B·A·S·EX — 효과량 · 출현 확률 · 지속 시간, 적 · 마왕도 같은 표) · 6 (1003): 부활하면 쓰러질 때의 행동 · 필살 게이지에서 다시 시작 (전에는 행동 0), 행동 중에 쓰러지면 그 행동의 필살 게이지는 오르지 않는다 · 5 (1002):소드맨 철벽 자세 방어 +30% · 공격 +15% (전 42 · 21), 대지 가르기 방어 붕괴 없앰, 전수받은 기술도 지금 수치로 · 4 (0929):여러 명을 치는 스킬의 시전 판정이 맞는 적 전체의 평균 저항으로 · 3 (0924): 리그 정보 보정을 보는 사람이 아니라 각 팀의 등록값(mi)으로 · 유닛을 시드 밖에서 세운다
+const RULES_VER = 9;   // 9 (1015): 전투 배율 — 주는 피해 · 회복 · 보호막 +30% · 받는 피해 +20% · 필살 게이지 행동 26.5 · 피격 12.5 (예전 17 · 7) · 장기전 31번째 행동부터 (예전 61) · 8 (1015): 정신력 시험 — 의식 저하 선 아래에서 맞으면 기절 · 영웅의 기상 · 없음을 한 번에 굴린다 (학생만 · 기절은 새 정신력 계수 · 기상 5 ~ 20% · 한 전투에 한 번 · 기상 4종은 전투 끝까지 공격 · 방어 · 명중+치명 · 속도) · 7 (1008): 스킬 수치를 등급 · 레벨 표로 (등급 6단계 D·C·B·A·S·EX — 효과량 · 출현 확률 · 지속 시간, 적 · 마왕도 같은 표) · 6 (1003): 부활하면 쓰러질 때의 행동 · 필살 게이지에서 다시 시작 (전에는 행동 0), 행동 중에 쓰러지면 그 행동의 필살 게이지는 오르지 않는다 · 5 (1002):소드맨 철벽 자세 방어 +30% · 공격 +15% (전 42 · 21), 대지 가르기 방어 붕괴 없앰, 전수받은 기술도 지금 수치로 · 4 (0929):여러 명을 치는 스킬의 시전 판정이 맞는 적 전체의 평균 저항으로 · 3 (0924): 리그 정보 보정을 보는 사람이 아니라 각 팀의 등록값(mi)으로 · 유닛을 시드 밖에서 세운다
 /* 시즌 번호와 시작 시각은 시계에서 바로 뽑는다 —
    그래야 서로 상의하지 않아도 모두가 같은 번호, 같은 시작 시각을 말하게 된다. */
 /* ── 서버 시계 ──
@@ -16573,28 +16756,31 @@ function openAvatarLab(){showModal(`<div class="panel-h"><h2>애니메이션 테
    (공개 뒤 첫 방문에 세이브가 이미 있으면 한국어로 기억해 둔다 — tools/i18n/i18n_build.py head_script)
    바꾸면 저장한 뒤 다시 불러온다 — 직업 · 스킬 이름 같은 데이터 글은 불러올 때 정해진다.
    글은 따로 떼어 둔다 — 템플릿 안에 한글을 섞으면 HTML 째로 영어 표의 키가 된다 */
-function uiLoc(){ return (typeof I18N !== "undefined" && I18N.lang === "en") ? "en-US" : "ko-KR"; }   // 날짜 · 시각 표기 (영어판은 en-US)
+function uiLoc(){ return (typeof I18N !== "undefined" && I18N.lang === "en") ? "en-US" : nameJa() ? "ja-JP" : "ko-KR"; }   // 날짜 · 시각 표기 (영어판은 en-US · 1014 일본어판 ja-JP)
 /* 1010 영어판 3단계 — 세이브 · 서버에 글 그대로 남는 데이터 글(학생 이름 · 이명 · 유물 · 학원 이름 · 진로 · 스킬 이름).
    I18N(빌드가 넣는 번역 장치 — tools/i18n/i18n_runtime.js)이 없으면 그대로 돌려준다 */
 function koData(x){ return (typeof I18N !== "undefined" && I18N.toKo) ? I18N.toKo(x) : x; }      // 서버로 — 언어와 상관없이 한국어 원문 (받는 쪽이 자기 언어로 바꾼다)
 function curData(x){ return (typeof I18N !== "undefined" && I18N.toCur) ? I18N.toCur(x) : x; }   // 세이브 · 서버에서 — 지금 언어로
 function curLog(s){ return (typeof I18N !== "undefined" && I18N.line) ? I18N.line(s) : s; }      // 1010 5단계 — 세이브에 글로 남은 문장(일지 · 상담 기록)을 보여 줄 때: 영어판이면 지난 한국어 글을 영어 표에 맞춰 영어로 (세이브는 그대로)
 function nameEnFirst(){ return typeof I18N !== "undefined" && I18N.lang === "en"; }                // 영어판 — 이름 먼저: Gawain “the Unbroken Wall”
-function langOn(){ return typeof I18N !== "undefined" && (I18N.pub || /[?&]lang=(en|ko)\b/.test(location.search)); }
+function nameJa(){ return typeof I18N !== "undefined" && I18N.lang === "ja" && I18N.tab !== null; }   // 1014 일본어판 — 이명은 「二つ名」名前 · 대사 따옴표 「」 · 유물 이름은 빈칸 없이
+function langOn(){ return typeof I18N !== "undefined" && (I18N.pub || /[?&]lang=(en|ko|ja)\b/.test(location.search)); }
 function langSaved(){ try{ return localStorage.getItem("hs_lang") || ""; }catch(e){ return ""; } }
 function langPanel(){
   if(!langOn()) return "";
   const url = new URLSearchParams(location.search).get("lang");
-  const cur = I18N.pub ? ((url === "en" || url === "ko") ? url : (langSaved() || "auto")) : I18N.lang;   // 주소의 ?lang= 이 있으면 지금 보이는 그 언어가 눌려 있다
-  const opts = (I18N.pub ? [["auto", "자동"]] : []).concat([["ko", /*no-i18n*/"한국어"], ["en", "English"]]);   // 언어 이름은 늘 그 언어로
+  const jaOn = I18N.pubJa || I18N.lang === "ja";   // 1014 일본어 — 공개(config.json "ja") 뒤에는 늘 · 그 전에는 ?lang=ja 시험 접속에서만
+  const sv = langSaved(), cur = I18N.pub ? ((url === "en" || url === "ko" || (url === "ja" && jaOn)) ? url : ((sv === "ja" && !jaOn) ? "auto" : (sv || "auto"))) : I18N.lang;   // 주소의 ?lang= 이 있으면 지금 보이는 그 언어가 눌려 있다
+  const opts = (I18N.pub ? [["auto", "자동"]] : []).concat([["ko", /*no-i18n*/"한국어"], ["en", "English"]], jaOn ? [["ja", "日本語"]] : []);   // 언어 이름은 늘 그 언어로
   const lab = "언어 · Language", grp = "언어";
-  const desc = (I18N.pub ? "게임 글을 보여 줄 언어. 자동은 브라우저 언어를 따른다." : "영어판 준비 중 — 주소에 ?lang= 을 붙인 시험 접속에서만 보인다.")
-    + " " + "바꾸면 저장한 뒤 다시 불러온다." + " " + (I18N.lang === "en" ? "한국어로 쓰인 지난 일지 · 상담 기록도 맞춰 볼 수 있는 줄은 영어로 보여 준다." : "영어로 쓰인 지난 일지 · 상담 기록은 영어 그대로다.");
+  const desc = [I18N.pub ? "게임 글을 보여 줄 언어. 자동은 브라우저 언어를 따른다." : "영어판 준비 중 — 주소에 ?lang= 을 붙인 시험 접속에서만 보인다.",
+    "바꾸면 저장한 뒤 다시 불러온다.", (I18N.lang === "en" ? "한국어로 쓰인 지난 일지 · 상담 기록도 맞춰 볼 수 있는 줄은 영어로 보여 준다." : I18N.lang === "ja" ? "한국어로 쓰인 지난 일지 · 상담 기록도 맞춰 볼 수 있는 줄은 일본어로 보여 준다." : "영어 · 일본어로 쓰인 지난 일지 · 상담 기록은 쓰인 그대로다.")].join(nameJa() ? "" : " ");   // 일본어는 문장 사이 빈칸 없이
   return `<section class="panel"><div class="optrow"><div class="optlab"><b>${lab}</b><span>${desc}</span></div><div class="ui-concept-picker" role="group" aria-label="${grp}">${
     opts.map(([k, n])=>`<button type="button" class="btn" data-lang="${k}" aria-pressed="${cur===k}">${n}</button>`).join("")}</div></div></section>`;
 }
 function langSwitch(k){
   if(typeof I18N === "undefined") return;
+  if(k === "ja" && !I18N.pubJa) return;           // 1014 — 일본어 공개(config.json "ja") 전에는 ?lang=ja 시험 접속에서만 (기억하지 않는다)
   const q = new URLSearchParams(location.search);
   if(I18N.pub){
     try{ if(k === "auto") localStorage.removeItem("hs_lang"); else localStorage.setItem("hs_lang", k); }catch(e){}
@@ -16712,6 +16898,15 @@ function viewOpt(){
       </div>
       <div class="optctl">
         <span class="btnpair">${BSPEEDS.map(v=>`<button class="btn sm${bspeedNow()===v?" primary":""}" data-bsp="${v}">${bspeedLabel(v)}</button>`).join("")}</span>
+      </div>
+    </div>
+    <div class="optrow" style="margin-top:12px">
+      <div class="optlab">
+        <b>기술 선택 연출</b>
+        <span>넓은 화면의 스타일리시 전투에서 차례가 온 학생의 머리 위에 기술 상자가 떠서 스킬이 뜨고 골라지는 모습을 보여 준다. 2배속 이상은 짧게. 몬스터와 필살기는 바로 줌인한다.</span>
+      </div>
+      <div class="optctl">
+        <span class="btnpair">${SKPICK_OPTS.map(([v, l])=>`<button class="btn sm${(PREF.skillPick||"all")===v?" primary":""}" data-skpick="${v}">${l}</button>`).join("")}</span>
       </div>
     </div>
     <div class="fxdemo" id="fxDemo">
@@ -17861,8 +18056,9 @@ const STORY_ART = {"guild1": "assets/story_art/guild1-spring.webp?v=f2da1d2b", "
 /* STORY_ART_END */
 /* 1010 영어판 — 편지 글만 영어로 다시 쓴 판 (STORY_ART 블록은 sprites/story.py 가 쓰므로 밖에 둔다) */
 const STORY_ART_EN = {"guild4": "assets/story_art/guild4-spring-en.webp?v=127079db"};
+const STORY_ART_JA = {"guild4": "assets/story_art/guild4-spring-ja.webp?v=b9df3e1b"};   // 1014 일본어판 — 한글 손글씨를 지우고 Yomogi 로 '私たちも、学園を守りたいです。' (무손실)
 function storyArt(k, alt){
-  const src = (nameEnFirst() && STORY_ART_EN[k]) || ((typeof STORY_ART!=="undefined") && STORY_ART[k]);
+  const src = (nameEnFirst() && STORY_ART_EN[k]) || (nameJa() && STORY_ART_JA[k]) || ((typeof STORY_ART!=="undefined") && STORY_ART[k]);
   return src ? `<div class="valentine-art story-art"><img src="${src}" alt="${esc(alt)}" draggable="false"></div>` : "";
 }
 const GUILD_WYVERN = 5000, GUILD_CHORES = 300;
@@ -19112,6 +19308,7 @@ function bindView(){
       fxDemoStart();
     } else if(FX_DEMO_T){ clearInterval(FX_DEMO_T); FX_DEMO_T = 0; }
     v.querySelectorAll("[data-bsp]").forEach(b=> b.onclick = ()=>{ bspeedSet(+b.dataset.bsp); render(); });
+    v.querySelectorAll("[data-skpick]").forEach(b=> b.onclick = ()=>{ PREF.skillPick = b.dataset.skpick; prefSave(); render(); });   // 1015 — 기술 선택 연출
   }
   {
     const bo = $("#bgmOn");
@@ -19505,7 +19702,7 @@ function tutGuideHTML(k){
   // Illustrated guides, WebP quality 90. Other pages retain their existing guide.
   const illustrated = {1:"01",2:"02",3:"03",4:"04",5:"05",12:"12"};
   /* 1010 영어판 — 그림 속 글자가 한국어라, 영어판 그림이 나올 때까지 영어에서는 예전 글 안내를 쓴다 (I18N 은 빌드가 넣는다 · tools/i18n) */
-  const illOn = !(typeof I18N !== "undefined" && I18N.lang === "en");
+  const illOn = !(typeof I18N !== "undefined" && (I18N.lang === "en" || (I18N.lang === "ja" && I18N.tab)));   // 1014 일본어판도 글 안내
   if(illOn && Object.prototype.hasOwnProperty.call(illustrated, String(k))){
     return `<article class="tg-illustrated" data-guide="${esc(String(k))}" aria-label="${esc(d.title)}" style="margin:0;padding:0"><img src="assets/tutorial-illustrated/${illustrated[k]}.webp?v=20261010-1" alt="${esc(d.title)}" style="display:block;width:100%;height:auto;image-rendering:auto"></article>`;
   }
@@ -20851,6 +21048,7 @@ function battleStatusIcon(effect){
     buff:'M12 21V4m-7 7 7-7 7 7',
     debuff:'M12 3v17m-7-7 7 7 7-7'
   };
+  if(e.hero) return `<button type="button" class="bf-effect positive hero" title="${esc(e.n)}" aria-label="${esc(e.n)}" data-effect-label="${esc(e.n)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.4 5.2 5.6.6-4.2 3.8 1.2 5.6L12 15.4 7 18.2l1.2-5.6L4 8.8l5.6-.6z"/></svg></button>`;   // 1015 — 영웅의 기상: 금빛 별 · 이름만 (늘어난 능력치는 보이지 않는다)
   const key=e.k==='mind'?'mind':e.mir?'mir':e.taunt?'taunt':e.k==='s'?'def':e.k==='dot'?'dot':e.regen?'heal':e.allT?'all':paths[e.stat]?e.stat:(negative?'debuff':'buff');
   const label=(e.k==='mind'?'상태':negative?'디버프':'버프')+' · '+e.n;
   return `<button type="button" class="bf-effect ${negative?'negative':'positive'}" title="${esc(label)}" aria-label="${esc(label)}" data-effect-label="${esc(label)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="${paths[key]}"/></svg><span class="bf-effect-sign" aria-hidden="true">${negative?'−':'+'}</span></button>`;
@@ -21707,6 +21905,216 @@ function tournamentLayoutFit(){const m=document.querySelector('.tournament-quart
  document.querySelectorAll('.bt-banner').forEach(bannerPlace);}   // 창 크기가 바뀌면 배너도 새 자리로
 addEventListener('resize',tournamentLayoutFit);
 
+/* ══ 스타일리시 전투 체크포인트 (1015 · 사용자: '스타일리시 전투에 체크포인트 두 군데를 더해 더 보여 준다') ══
+   ① 기술 선택 — 차례가 온 학생 머리 위에 기본기 · 스킬 상자 (openBattle 의 camPick · mockups/stylish-checkpoint)
+   ② 정신력 시험 — 의식 저하 선 아래에서 맞아 기절 · 영웅의 기상이 나오면 그 학생에게 다가가 시험 → 결과 → 대사 (camTest · mockups/heroic-resolve)
+   판정은 runBattle 이 하고 프레임에 적어 둔다(F.pick · F.test) — 여기는 보여 주기만 */
+const PK_BASIC = "기본기";
+const HR_SPARK = '<span class="hr-spark" aria-hidden="true"><i>\u2726</i><i>\u2726</i><i>\u2726</i><i>\u2726</i></span>';   // 기상 상태 — 몸 둘레에서 떠오르는 작은 금빛 반짝이
+const SKPICK_OPTS = [["all", "모든 학생"], ["mine", "자신의 학생만"], ["foe", "상대의 학생만"], ["off", "표시 안 함"]];   // 설정 '기술 선택 연출' (1014 사용자 — 기본은 모든 학생)
+const HR_TEST_TXT  = n=> `${n}의 정신력이 시험받고 있습니다…`;
+const HR_FAINT_TXT = n=> `${n}, 의식을 잃었다`;
+/* 영웅의 기상 원화 · 뒤쪽 후광 (tools/herospirit → tools/gen/heroic/heroic_art.py — WebP 품질 90 · 직업마다 가장 최신 시안) ·
+   bb = 원화 안 캐릭터의 불투명 범위 (0 ~ 1) · acc = 앞쪽 반짝이 두 색 */
+const HR_ART = {"archer":{"c":"assets/heroic/archer-character.webp?v=2aaf9f3464","a":"assets/heroic/archer-aura.webp?v=a58c04555b","bb":[0.0662,0.0726,0.9801,0.933],"acc":["#fff1bf","#c8f5b0"]},"bard":{"c":"assets/heroic/bard-character.webp?v=07b26c3a3e","a":"assets/heroic/bard-aura.webp?v=a7e63a0774","bb":[0.1914,0.118,0.8278,0.9442],"acc":["#fff1bf","#e2b06e"]},"darkpriest":{"c":"assets/heroic/darkpriest-character.webp?v=1dc2aae89e","a":"assets/heroic/darkpriest-aura.webp?v=a040ae2fe8","bb":[0.1077,0.071,0.929,0.9346],"acc":["#ffd0e0","#ff6f9e"]},"druid":{"c":"assets/heroic/druid-character.webp?v=113da3293c","a":"assets/heroic/druid-aura.webp?v=c4bff44613","bb":[0.1579,0.1228,0.7679,0.9187],"acc":["#fff1bf","#b7c481"]},"enchanter":{"c":"assets/heroic/enchanter-character.webp?v=735ecb45b8","a":"assets/heroic/enchanter-aura.webp?v=581e0ac6d4","bb":[0.0774,0.1212,0.9147,0.9482],"acc":["#fff1bf","#8195c6"]},"forcemage":{"c":"assets/heroic/forcemage-character.webp?v=e32fb68e67","a":"assets/heroic/forcemage-aura.webp?v=0a2a23b285","bb":[0.0383,0.0893,0.9809,0.9314],"acc":["#fff1bf","#ee8278"]},"gunner":{"c":"assets/heroic/gunner-character.webp?v=e4a9b2c43c","a":"assets/heroic/gunner-aura.webp?v=769db6bdaa","bb":[0.11,0.0853,0.9912,0.9306],"acc":["#fff1bf","#a3afb4"]},"monk":{"c":"assets/heroic/monk-character.webp?v=ae5bc705f9","a":"assets/heroic/monk-aura.webp?v=126769bf87","bb":[0.0718,0.0112,0.9617,0.9761],"acc":["#fff1bf","#f6a762"]},"ninja":{"c":"assets/heroic/ninja-character.webp?v=0f7584a4e3","a":"assets/heroic/ninja-aura.webp?v=eb0b6db0bc","bb":[0.1659,0.0774,0.7847,0.941],"acc":["#fff1bf","#9d85d1"]},"paladin":{"c":"assets/heroic/paladin-character.webp?v=49ea020317","a":"assets/heroic/paladin-aura.webp?v=eb3958e3ae","bb":[0.2456,0.1483,0.7424,0.9226],"acc":["#fff1bf","#a8e7ff"]},"priest":{"c":"assets/heroic/priest-character.webp?v=8196b3186b","a":"assets/heroic/priest-aura.webp?v=668165c946","bb":[0.13,0.0766,0.8533,0.9147],"acc":["#fff1bf","#a8e7ff"]},"rogue":{"c":"assets/heroic/rogue-character.webp?v=b30caf41c6","a":"assets/heroic/rogue-aura.webp?v=aea70ba874","bb":[0.1212,0.1722,0.9123,0.9226],"acc":["#d7e2ff","#7d9cff"]},"spellsword":{"c":"assets/heroic/spellsword-character.webp?v=60e966ff1c","a":"assets/heroic/spellsword-aura.webp?v=d63bf94942","bb":[0.1308,0.0526,0.7919,0.9729],"acc":["#fff1bf","#dc7d76"]},"sword":{"c":"assets/heroic/sword-character.webp?v=ff8e4845e0","a":"assets/heroic/sword-aura.webp?v=f090e1fd6c","bb":[0.2384,0.0933,0.7807,0.9043],"acc":["#fff1bf","#a8e7ff"]},"timemage":{"c":"assets/heroic/timemage-character.webp?v=9c5464d327","a":"assets/heroic/timemage-aura.webp?v=fd8db72916","bb":[0.0399,0.1411,0.9737,0.8876],"acc":["#fff1bf","#b08ccc"]},"wizard":{"c":"assets/heroic/wizard-character.webp?v=be9b4c19f6","a":"assets/heroic/wizard-aura.webp?v=26a8b6873c","bb":[0.11,0.1037,0.8884,0.9219],"acc":["#ffe39a","#c9a2ff"]}};
+/* 기상 원화 자리 (1015 사용자) — 원화 · 후광은 처음 목업의 1.8배가 크다고 해서 1.5배 = 캐릭터 키가 전투판 높이의 43% ·
+   캐릭터 가운데를 높이의 59% 에 (발끝이 아래 글 띠 뒤로 조금 숨는다) · 줌아웃 전까지 1.07배까지 천천히 커진다 */
+const HR_ART_H = .43, HR_ART_Y = .59, HR_GROW = 1.07;
+/* 정신력 시험 대사 (mockups/heroic-resolve/src/lines.json) — {n} = 이름 (바로 뒤에 조사를 붙이지 않는다). 학생은 성별이 없다 · 허세의 ‘ ’ 는 전투 외침처럼 혼잣말 */
+const HR_LINES = {
+  hero: {      /* 기상 대사 — 종류 × 성격 */
+    will:{intro:"무, 무서워도… 여기서 물러나진 않을 거예요…!", hot:"이 정도로 꺼질 불꽃이 아니다!! 다시 간다!!", stone:"…아직 서 있다. 그럼 계속한다.", dilig:"맡은 몫은… 끝까지 해내겠습니다!", tsun:"흥… 이 정도로 쓰러질 줄 알았어?", lively:"헤헤… 아직 끝난 거 아니거든요~!", boast:"‘크큭… 영웅은 쓰러진 뒤부터가 진짜지’", plain:"아직이야…! 아직 할 수 있어!", genius:"계산이 틀렸네요. 저는 아직 안 쓰러져요."},
+    faith:{intro:"다, 다들 지킬 거예요… 이번엔 제가…!", hot:"뒤에 동료가 있다!! 절대 안 비킨다!!", stone:"지킬 것이 있다. 그러니 버틴다.", dilig:"모두를 지키는 게 제 일이에요. 버티겠습니다!", tsun:"…착각하지 마. 너희 때문에 버티는 거 아니니까.", lively:"다 같이 웃으면서 돌아갈 거예요! 그러니까 안 져요!", boast:"‘이 몸이 무너지면 누가 이들을 지키겠나’", plain:"여기서 내가 버텨야 해. 버틸 거야.", genius:"여기서 버티는 게 최선이에요. 확신해요."},
+    clarity:{intro:"어, 어라… 이상하게… 다 보여요…", hot:"보인다!! 머리가 시원하게 맑아졌다!!", stone:"…잡음이 사라졌다. 다 보인다.", dilig:"침착하게… 하나씩. 이제 다 보여요.", tsun:"…흥. 이제야 좀 제대로 보이네.", lively:"와아… 세상이 반짝반짝해 보여요!", boast:"‘크큭… 이 눈에 모든 운명의 실이 보인다’", plain:"어? 머리가 맑아졌어. 이제 보인다.", genius:"아, 이제 보이네요. 이미 끝났어요."},
+    courage:{intro:"용기… 내 볼게요. 한 발만 더…!", hot:"몸이 가볍다!! 이대로 끝까지 달린다!!", stone:"몸이 가볍다. 지금 끝낸다.", dilig:"힘이 솟아요…! 조금만 더 달려 볼게요!", tsun:"따, 딱히 힘이 나서 그러는 거 아니거든!", lively:"우와, 힘이 막 솟아요! 가자가자~!", boast:"‘크큭… 바람조차 이 몸을 따라오지 못하리라’", plain:"좋아, 힘이 난다! 다시 가 보자!", genius:"몸이 가볍네요. 이제 따라올 수 있으려나요?"}
+  },
+  react: {     /* 기상한 학생에게 같은 편이 한마디씩 — {n} = 기상한 학생 */
+    intro:["{n}… 다, 다행이에요…!", "저, 저도… 힘낼게요…!", "……멋져요, {n}."],
+    hot:["그래, 그거다 {n}!!", "우오오, 나도 질 수 없지!!", "불타오른다아아!!"],
+    stone:["…흐름이 바뀌었다.", "{n}, 등은 맡겨.", "지금이다. 밀어붙인다."],
+    dilig:["{n}, 대단해요! 끝까지 함께할게요!", "다들 조금만 더 힘내요!", "빈틈은 제가 메울게요!"],
+    tsun:["…흥, 걱정한 거 아니거든.", "느, 늦었잖아… 그래도 다행이네.", "{n} 주제에… 멋있는 척은."],
+    lively:["와아! {n} 최고!", "헤헤, 이제 우리 차례다~!", "분위기 좋다~ 가자가자!"],
+    boast:["‘크큭… 역시 내가 인정한 동료다’", "‘좋다, 이 몸도 진심을 보여 주지’", "‘영웅의 각성이라… 나쁘지 않군’"],
+    plain:["{n}, 괜찮은 거지? 다행이다!", "우리도 힘내자!", "좋아, 아직 할 수 있어!"],
+    genius:["역시 그럴 줄 알았어요.", "{n}, 좋아요. 이어서 갈게요.", "이제야 계산이 맞네요."]
+  },
+  faint: {     /* 기절 대사 — 성격 */
+    intro:["죄, 죄송해요… 더는…", "……미안해요…"],
+    hot:["크윽… 여기까지인가…!", "아직… 불꽃은… 안 꺼졌는데…"],
+    stone:["…한계, 인가.", "…뒤를, 부탁한다."],
+    dilig:["끝까지… 해내고 싶었는데…", "다들… 죄송합니다…"],
+    tsun:["흥… 조, 조금 쉬는 것뿐이야…", "보, 보지 마… 이런 모습…"],
+    lively:["에헤헤… 잠깐만… 쉴게요…", "어라… 눈앞이… 빙글빙글…"],
+    boast:["‘크윽… 오늘은… 이쯤 해 두지…’", "‘영웅에게도… 휴식은… 필요한 법…’"],
+    plain:["미안… 다들, 부탁해…", "윽… 더는 못 버티겠어…"],
+    genius:["…이건, 예상 못 했네요…", "…계산이… 어긋났…"]
+  },
+  reactFaint: {   /* 기절한 학생에게 같은 편이 한마디씩 — {n} = 기절한 학생 */
+    intro:["{n}…! 괘, 괜찮은 거죠…?", "어, 어떡해요… 제, 제가 버틸게요…!", "{n} 몫까지… 저, 저도 해 볼게요…!"],
+    hot:["{n}!! 네 몫까지 내가 싸운다!!", "이 빚은 열 배로 갚아 준다!!", "푹 쉬어, {n}!! 금방 끝내 줄게!!"],
+    stone:["…{n}, 쉬어 둬. 뒤는 맡는다.", "…빈자리는 내가 메운다.", "흔들리지 마. 아직 끝나지 않았다."],
+    dilig:["{n}! 그 몫까지 제가 해낼게요!", "다들 침착하게! 대열을 다시 맞춰요!", "{n}, 쉬고 있어요. 꼭 이길게요!"],
+    tsun:["흥… 그러게 누가 무리하래.", "{n} 몫까지 해 줄게… 이, 이번만이야.", "…걱정 안 했거든. 얼른 일어나기나 해."],
+    lively:["{n}~! 일어나면 같이 맛있는 거 먹자!", "괜찮아, 괜찮아! 우리가 있잖아~!", "으앗, {n}! 조금만 기다려~!"],
+    boast:["‘크큭… {n}의 몫까지, 이 몸이 짊어지지’", "‘이 몸의 동료를 건드린 대가는 비싸다’", "‘잠들어라, {n}… 깨어나면 끝나 있으리라’"],
+    plain:["{n}! 괜찮아?!", "큰일이다… 그래도 버텨야 해!", "{n} 몫까지 힘내자!"],
+    genius:["변수가 생겼네요. 다시 계산할게요.", "{n}, 쉬어요. 나머지는 제가 맞춰 볼게요.", "…예상보다 빠르네요. 그래도 승산은 있어요."]
+  }
+};
+/* BL_LINES — 전투 대사 (1015 · 스타일리시 전투 — 학생만): 선공 · 막타 · 첫 치명타(입힘 · 맞고 버팀). 원본 tools/gen/blines/lines.json → apply_blines.py 가 이 덩어리를 통째로 쓴다 (여기서 고치지 않는다) */
+const BL_LINES = {
+  first: {   /* 선공 — 전투에서 처음 행동하는 학생 · 성격마다 셋 */
+    intro:["제, 제가 먼저… 가도 되는 거죠…?", "머, 먼저 움직일게요…!", "서, 선수를… 잡았어요…!"],
+    hot:["선공은 내 거다!! 간다아!!", "누구보다 빠르게!! 첫 타는 내가 친다!!", "몸이 먼저 움직였다!! 가자!!"],
+    stone:["…먼저 간다.", "…선수는 받았다.", "…늦었군. 내가 먼저다."],
+    dilig:["선공입니다! 연습한 대로 가겠습니다!", "제가 먼저 길을 열겠습니다!", "첫 수, 확실하게 두겠습니다!"],
+    tsun:["흥, 느려 터졌네. 내가 먼저야.", "따, 딱히 서두른 건 아니거든!", "선공은 내가 받았어. 불만 있어?"],
+    lively:["헤헤, 내가 일등이다~!", "먼저 간다~ 따라와 봐~!", "와아, 첫 차례다! 신난다~!"],
+    boast:["‘크큭… 선수를 쥐는 것도 영웅의 숙명’", "‘이 몸보다 빠른 자는 없다…’", "‘개전의 종은 이 몸이 울리지’"],
+    plain:["좋아, 선공이다! 가 보자!", "먼저 간다!", "선수 잡았다! 이대로 밀어붙이자!"],
+    genius:["역시 제가 먼저네요. 계산대로예요.", "선공이요? 당연하죠.", "첫 수는 제가 둘게요. 이미 정해 뒀거든요."]
+  },
+  last: {   /* 막타 — 진 쪽 마지막 학생을 쓰러뜨리는 차례 · 성격마다 셋 */
+    intro:["이, 이걸로… 끝이에요…!", "마, 마지막… 해 볼게요…!", "제, 제가 끝낼게요… 부디…!"],
+    hot:["이걸로 끝이다아아!!", "마지막 한 방!! 전부 실어서 간다!!", "끝까지 불태운다!! 받아라!!"],
+    stone:["…끝낸다.", "…이걸로 마지막이다.", "…길었다. 정리한다."],
+    dilig:["마지막까지 최선을 다하겠습니다!", "이 한 수로 마무리하겠습니다!", "끝까지 집중! 마무리합니다!"],
+    tsun:["흥, 이걸로 끝이야. 각오해.", "끝내 줄게. 딱히 너희를 위해서는 아니야.", "이, 이번엔 내가 마무리할 거야!"],
+    lively:["자~ 피날레다~!", "이걸로 끝! 다들 박수~!", "마지막 한 방, 신나게 간다~!"],
+    boast:["‘크큭… 막을 내릴 시간이다’", "‘마지막 장은 이 몸이 장식하지’", "‘잠들어라… 이것이 종언의 일격’"],
+    plain:["이걸로 끝내자!", "마지막이다, 간다!", "좋아, 마무리한다!"],
+    genius:["체크메이트예요.", "이걸로 끝이네요. 계산 그대로예요.", "마무리할게요. 더 볼 것도 없어요."]
+  },
+  crit: {   /* 첫 치명타를 입힌 뒤 — 직업 × 성격 */
+    sword:{intro:"베, 베었어요…! 제, 제대로 들어갔어요…!", hot:"제대로 베었다!! 이게 내 검이다!!", stone:"…빈틈이었다.", dilig:"배운 자세 그대로, 정확히 베었습니다!", tsun:"흥, 방패만 드는 줄 알았지?", lively:"싹둑~! 깔끔하게 들어갔다~!", boast:"‘크큭… 방패 뒤에 숨은 검을 몰랐겠지’", plain:"좋아, 제대로 베었어!", genius:"막는 각도까지 계산해 뒀어요."},
+    paladin:{intro:"비, 빛이… 닿았어요…! 정말로…!", hot:"정의의 일격이다!! 불타올라라!!", stone:"…빛은 빗나가지 않는다.", dilig:"맹세에 걸고, 정확히 닿았습니다!", tsun:"흥, 성스러운 일격을 우습게 봤지?", lively:"반짝반짝~ 빛의 일격 명중~!", boast:"‘크큭… 신성한 심판을 받아라’", plain:"됐다, 빛이 제대로 닿았어!", genius:"신의 가호도 결국 계산할 수 있어요."},
+    monk:{intro:"수, 수련한 보람이… 있었어요…!", hot:"주먹에 혼을 실었다!! 어떠냐!!", stone:"…급소다.", dilig:"매일 단련한 일격입니다!", tsun:"흥, 이 주먹을 우습게 보더니.", lively:"퍽~! 기분 좋은 소리가 났다~!", boast:"‘크큭… 천 번 단련한 주먹의 무게다’", plain:"좋았어, 정통으로 꽂혔다!", genius:"기의 흐름이 다 보였거든요."},
+    archer:{intro:"마, 맞았어요…! 급소에…!", hot:"한가운데 명중이다!! 우오오!!", stone:"…한 발이면 된다.", dilig:"조준한 그대로, 급소에 꽂혔습니다!", tsun:"흥, 내 화살을 피할 줄 알았어?", lively:"빙고~! 한가운데 명중~!", boast:"‘크큭… 매의 눈을 피할 수는 없다’", plain:"명중! 급소에 맞았어!", genius:"바람까지 계산했으니 당연하죠."},
+    rogue:{intro:"빠, 빈틈이… 보였어요…!", hot:"약점을 꿰뚫었다!! 이게 내 실력이다!!", stone:"…약점이다.", dilig:"노리던 약점을 정확히 찔렀습니다!", tsun:"흥, 등 뒤가 너무 허술하던데?", lively:"살금살금~ 쿡! 성공~!", boast:"‘크큭… 그림자는 약점을 놓치지 않는다’", plain:"약점 찔렀다! 좋아!", genius:"빈틈은 처음부터 보였어요."},
+    priest:{intro:"어, 어라…? 제, 제가 이렇게 세게…?", hot:"치유만 하는 줄 알았냐!! 신성한 힘이다!!", stone:"…신께서 거드셨다.", dilig:"기도가 닿았습니다! 계속 돕겠습니다!", tsun:"흥, 사제라고 얕보지 마.", lively:"와아~ 신성 파동 대성공~!", boast:"‘크큭… 신벌이 내렸도다’", plain:"와, 이렇게 세게 들어갈 줄은!", genius:"치유도 공격도 원리는 같아요."},
+    timemage:{intro:"타, 타이밍이… 딱 맞았어요…!", hot:"시간도 내 편이다!! 완벽한 한 박자!!", stone:"…그 순간을 기다렸다.", dilig:"예지한 순간에 정확히 맞혔습니다!", tsun:"흥, 이 순간이 올 줄 다 알았거든.", lively:"째깍째깍~ 딱 맞았다~!", boast:"‘크큭… 이 순간은 이미 예언되어 있었다’", plain:"타이밍 완벽했어!", genius:"1초 뒤가 다 보이는걸요."},
+    wizard:{intro:"주, 주문이… 제대로 들어갔어요…!", hot:"마력 폭발이다!! 불타올라라!!", stone:"…술식은 정확했다.", dilig:"외운 주문 그대로, 정확히 명중했습니다!", tsun:"흥, 마법을 우습게 보더니.", lively:"펑~! 마법 대성공~!", boast:"‘크큭… 금단의 술식 앞에 엎드려라’", plain:"됐다, 마법이 제대로 먹혔어!", genius:"공식대로라면 이 정도는 나와요."},
+    druid:{intro:"수, 숲이… 도와줬어요…!", hot:"대지의 분노다!! 받아라!!", stone:"…숲은 용서하지 않는다.", dilig:"자연의 힘을 빌려 정확히 맞혔습니다!", tsun:"흥, 가시가 이렇게 아플 줄 몰랐지?", lively:"찰싹~! 가시가 제대로 박혔다~!", boast:"‘크큭… 대자연의 이빨을 맛봐라’", plain:"가시가 제대로 박혔어!", genius:"식물도 급소는 알거든요."},
+    forcemage:{intro:"마, 마력이… 한꺼번에 실렸어요…!", hot:"마력을 전부 실었다!! 부서져라!!", stone:"…마력을 주먹에 실었다.", dilig:"마력 전환, 완벽하게 실었습니다!", tsun:"흥, 마법사가 직접 때릴 줄은 몰랐지?", lively:"쾅~! 마력 충전 완료~!", boast:"‘크큭… 봉인된 힘의 일부를 보여 주지’", plain:"좋아, 마력이 다 실렸어!", genius:"마력 출력, 정확히 최대예요."},
+    enchanter:{intro:"가, 각인이… 빛났어요…!", hot:"각인이 불타오른다!! 터져라!!", stone:"…새긴 대로다.", dilig:"새긴 각인이 제대로 발동했습니다!", tsun:"흥, 내 각인이 실패할 리 없잖아.", lively:"반짝~! 각인 대성공~!", boast:"‘크큭… 고대 문자가 깨어났도다’", plain:"각인이 제대로 터졌어!", genius:"문자 한 획까지 계산했어요."},
+    darkpriest:{intro:"어, 어둠이… 깊이 들어갔어요…!", hot:"어둠아, 전부 삼켜 버려라!!", stone:"…어둠이 닿았다.", dilig:"의식대로, 깊이 파고들었습니다!", tsun:"흥, 어둠을 얕보면 이렇게 돼.", lively:"히히, 어둠이 쏙~ 들어갔다~!", boast:"‘크큭… 심연이 네 영혼을 맛보았다’", plain:"어둠이 깊이 들어갔어!", genius:"생명력, 맛있게 받아 갈게요."},
+    bard:{intro:"주, 줄이… 딱 맞았어요…!", hot:"최고의 한 음이다!! 들었냐!!", stone:"…정확한 음이었다.", dilig:"박자 그대로, 정확히 들어갔습니다!", tsun:"흥, 음악을 얕보지 마.", lively:"띠링~! 클라이맥스다~!", boast:"‘크큭… 영혼을 울리는 선율이다’", plain:"좋은 음이었어! 제대로 꽂혔다!", genius:"음정, 박자, 위력. 완벽하네요."},
+    spellsword:{intro:"마, 마검이… 제대로 베었어요…!", hot:"검과 마법이 하나가 됐다!! 간다!!", stone:"…검에 실은 주문, 닿았다.", dilig:"검과 주문, 완벽하게 맞췄습니다!", tsun:"흥, 검도 마법도 내가 최고야.", lively:"번쩍~! 마검 베기 성공~!", boast:"‘크큭… 이 마검의 진짜 힘을 봤나’", plain:"검이랑 마법, 제대로 맞물렸어!", genius:"검로도 술식도 계산대로예요."},
+    gunner:{intro:"며, 명중이에요…! 정말로…!", hot:"한가운데 명중이다!! 박수 쳐라!!", stone:"…틈새를 쐈다.", dilig:"갑옷 틈새를 정확히 노렸습니다!", tsun:"흥, 이 정도는 인사일 뿐이야.", lively:"탕~! 오늘 무대 최고다~!", boast:"‘크큭… 이 총성이 너의 진혼곡이다’", plain:"명중! 틈새에 정확히 들어갔어!", genius:"갑옷 틈새는 다 보이거든요."},
+    ninja:{intro:"쿠, 쿠나이가… 꽂혔어요…!", hot:"이게 인법의 진수다!! 어떠냐!!", stone:"…급소를 꿰뚫었다.", dilig:"수련한 인법 그대로, 정확히 맞혔습니다!", tsun:"흥, 그림자를 쫓을 수 있을 줄 알았어?", lively:"슝~ 쿡! 닌자 대성공~!", boast:"‘크큭… 물그림자에서 벗어날 자는 없다’", plain:"급소에 꽂혔어! 좋아!", genius:"물 흐르듯, 계산대로예요."}
+  },
+  taken: {   /* 첫 치명타를 맞고 버텼을 때 (쓰러지지 않고 · 기절 · 영웅의 기상이 아닐 때) — 직업 × 성격 */
+    sword:{intro:"아, 아파요… 그, 그래도 방패는… 안 놓쳤어요…!", hot:"그 정도로 내 방패가 깨질 것 같냐!!", stone:"…방패 너머까지 왔군. 그래도 선다.", dilig:"자세를 다시 잡겠습니다! 아직 막을 수 있어요!", tsun:"흥, 하나도 안 아프거든… 아, 아주 조금만 아파.", lively:"아야야… 그래도 방패 덕분에 멀쩡~!", boast:"‘후후… 네 공격을 맞고 살아남은 건 내가 처음이다!’", plain:"윽… 세다. 그래도 아직 버틸 수 있어!", genius:"방패를 1도만 틀었어도 막았을 텐데요."},
+    paladin:{intro:"가, 가호가… 지켜 줬어요… 다행이에요…", hot:"맹세가 있는 한 안 쓰러진다!!", stone:"…맹세는 꺾이지 않는다.", dilig:"수호의 맹세, 아직 지키고 있습니다!", tsun:"흥, 이 정도로 무릎 꿇을 것 같아?", lively:"아얏! 그래도 빛이 지켜 줬다~!", boast:"‘크큭… 신의 방패는 그리 쉽게 깨지지 않는다’", plain:"아프긴 해도… 아직 지킬 수 있어!", genius:"가호가 있는 한 버틸 확률은 충분해요."},
+    monk:{intro:"다, 단련한 몸이라… 버, 버텼어요…", hot:"단련한 몸은 이 정도로 안 무너진다!!", stone:"…수련이 부족했군. 다음은 안 맞는다.", dilig:"수련한 만큼 버틸 수 있습니다!", tsun:"흥, 이 정도 충격은 수련 때 매일 받거든.", lively:"으앗, 짜릿하다~! 그래도 멀쩡~!", boast:"‘크큭… 강철의 육체에 흠집 하나 냈을 뿐이다’", plain:"윽, 아파… 그래도 아직 서 있어!", genius:"급소는 피했어요. 숨만 고르면 돼요."},
+    archer:{intro:"뒤, 뒤에 있었는데… 여, 여기까지…", hot:"후열이라고 약할 줄 알았냐!! 아직이다!!", stone:"…활은 아직 쥐고 있다.", dilig:"자리를 지키겠습니다! 조준은 흔들리지 않아요!", tsun:"흥, 화살 쏘는 손은 멀쩡하거든.", lively:"으아, 깜짝이야! 그래도 활은 무사~!", boast:"‘크큭… 매는 날개가 꺾여도 사냥을 멈추지 않는다’", plain:"여기까지 날아오다니… 그래도 괜찮아!", genius:"사거리 계산을 다시 해야겠네요."},
+    rogue:{intro:"피, 피하지 못했어요… 그, 그래도 아직…", hot:"한 대 맞았으면 두 대 돌려준다!!", stone:"…그림자도 가끔은 잡히는군.", dilig:"방심했습니다! 다시 숨겠습니다!", tsun:"흥, 피할 수 있었는데 봐준 거야.", lively:"아얏! 들켰다~ 그래도 살았다~!", boast:"‘크큭… 이 정도 상처는 암살자의 훈장이다’", plain:"윽, 들켰나… 그래도 아직 괜찮아!", genius:"회피 계산에 오차가 있었네요. 고칠게요."},
+    priest:{intro:"아, 아파요… 그, 그래도 제가 쓰러지면 안 돼요…", hot:"치유사가 먼저 쓰러질 순 없지!!", stone:"…상처는 고치면 된다.", dilig:"괜찮습니다! 치유는 계속하겠습니다!", tsun:"흥, 내 상처쯤은 내가 고쳐.", lively:"아야… 호~ 하면 금방 나아요~!", boast:"‘크큭… 신께서 아직 이 몸을 부르지 않으셨군’", plain:"아파… 그래도 다들 고쳐 줘야 해!", genius:"이 정도면 치유 한 번이면 돼요."},
+    timemage:{intro:"예, 예지에… 없던 일격이에요…", hot:"시간이 날 버려도 난 안 쓰러진다!!", stone:"…예지가 빗나갔다. 다시 읽는다.", dilig:"예지를 다시 맞추겠습니다! 아직 괜찮습니다!", tsun:"흐, 흥… 알고 있었거든. 일부러 맞은 거야.", lively:"으앗, 시간 되돌리고 싶다~!", boast:"‘크큭… 운명조차 이 몸을 쓰러뜨리지 못했다’", plain:"이건 못 봤어… 그래도 아직이야!", genius:"흥미롭네요. 제 예지를 넘다니."},
+    wizard:{intro:"겨, 결계가… 아슬아슬하게…", hot:"로브가 찢어졌잖아!! 이자까지 갚아 주마!!", stone:"…술식을 다시 짠다.", dilig:"집중을 잃지 않겠습니다! 주문은 계속돼요!", tsun:"흥, 마법사는 몸이 약할 줄 알았어?", lively:"아야야… 모자는 무사하다~!", boast:"‘크큭… 마력의 장벽은 아직 건재하다’", plain:"아파… 그래도 주문은 외울 수 있어!", genius:"결계를 미리 쳐 둔 게 정답이었네요."},
+    druid:{intro:"뿌, 뿌리처럼… 버텨 볼게요…", hot:"숲은 이 정도로 안 쓰러진다!!", stone:"…고목은 바람에 꺾이지 않는다.", dilig:"숲의 수호자로서, 끝까지 버티겠습니다!", tsun:"흥, 나무껍질처럼 단단하거든.", lively:"으앗! 그래도 새싹처럼 다시 쑥~!", boast:"‘크큭… 대지에 뿌리내린 자는 쓰러지지 않는다’", plain:"세다… 그래도 뿌리는 단단해!", genius:"회복이 피해보다 빨라요. 문제없어요."},
+    forcemage:{intro:"마, 마력으로 몸을 굳혀서… 겨, 겨우…", hot:"마력 육체는 그 정도로 안 부서진다!!", stone:"…마력으로 받아 냈다.", dilig:"마력을 방어로 돌리겠습니다! 아직 싸울 수 있어요!", tsun:"흥, 마력으로 다 막았거든. 거의.", lively:"찌릿찌릿~ 그래도 버텼다~!", boast:"‘크큭… 봉인된 육체가 이 정도로 깨질까’", plain:"윽… 마력으로 겨우 버텼어!", genius:"충격 흡수율, 예상 범위 안이에요."},
+    enchanter:{intro:"가, 각인한 갑옷 덕분에… 살았어요…", hot:"내 각인은 그 정도로 안 깨진다!!", stone:"…새긴 문자가 지켰다.", dilig:"방어 각인이 제대로 버텨 줬습니다!", tsun:"흥, 각인을 대충 새긴 줄 알았어?", lively:"휴~ 각인아, 고마워~!", boast:"‘크큭… 고대 문자의 가호가 이 몸을 지켰도다’", plain:"각인 덕분에 살았다… 아직 괜찮아!", genius:"각인을 하나 더 새겨 둘 걸 그랬네요."},
+    darkpriest:{intro:"이, 이 아픔도… 어둠의 양식이에요…", hot:"고통이 어둠을 더 키운다!!", stone:"…아픔은 계약의 대가다.", dilig:"이 정도 상처는 의식으로 메우겠습니다!", tsun:"흥, 아픈 척해 준 거야.", lively:"아야~ 그래도 금방 빨아들이면 돼~!", boast:"‘크큭… 고통이야말로 어둠의 축복이다’", plain:"아프다… 그래도 어둠으로 메우면 돼!", genius:"받은 만큼 돌려받으면 계산이 맞죠."},
+    bard:{intro:"바, 박자를 놓쳤어요… 그, 그래도 계속…", hot:"곡은 아직 안 끝났다!! 연주는 계속된다!!", stone:"…줄 하나쯤 끊어져도 된다.", dilig:"박자를 다시 맞추겠습니다! 연주는 계속됩니다!", tsun:"흥, 음 하나 틀렸다고 멈출 줄 알아?", lively:"삐끗~ 그래도 노래는 계속돼요~!", boast:"‘크큭… 위대한 곡에는 시련의 악장이 있는 법’", plain:"음이 흔들렸어… 그래도 계속할 수 있어!", genius:"애드리브로 넘기면 돼요."},
+    spellsword:{intro:"마, 마검으로… 겨우 흘렸어요…", hot:"검을 쥔 손은 절대 안 놓는다!!", stone:"…검으로 흘렸다. 아직 벤다.", dilig:"자세를 바로 하겠습니다! 검은 무사합니다!", tsun:"흥, 아직 검을 놓을 생각 없거든.", lively:"아얏! 그래도 마검은 반짝반짝~!", boast:"‘크큭… 마검의 주인을 쓰러뜨리기엔 모자라군’", plain:"세다… 그래도 검은 놓지 않았어!", genius:"검으로 흘리는 각도가 조금 모자랐네요."},
+    gunner:{intro:"무, 무대에서… 내려가진 않을게요…", hot:"공연은 아직 안 끝났다!! 앙코르다!!", stone:"…총은 아직 쏠 수 있다.", dilig:"자세를 다시 잡겠습니다! 다음 탄 준비 완료!", tsun:"흥, 이 정도로 무대를 망칠 줄 알아?", lively:"아야~ 그래도 쇼는 계속돼요~!", boast:"‘크큭… 진정한 스타는 상처마저 연출이지’", plain:"아파… 그래도 아직 쏠 수 있어!", genius:"관객 서비스로 한 번 맞아 준 거예요."},
+    ninja:{intro:"무, 물그림자가… 늦었어요…", hot:"닌자는 이 정도로 안 쓰러진다!!", stone:"…인법이 반 박자 늦었다.", dilig:"수련이 부족했습니다! 다음엔 그림자로 받겠습니다!", tsun:"흐, 흥… 방심한 거 아니거든!", lively:"으앗, 들켰다~ 그래도 무사~!", boast:"‘크큭… 이 몸의 본체를 맞히다니, 제법이군’", plain:"윽, 본체가 맞았어… 그래도 괜찮아!", genius:"물그림자 계산이 한 겹 모자랐네요."}
+  }
+};
+/* BL_LINES 끝 */
+function hrFill(s, n){ return String(s||"").replace(/\{n\}/g, n); }
+function hrHash(s){ let h = 2166136261; for(let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; } return h >>> 0; }
+/* 이름표의 이명을 뗀 이름 — “이명” 이름 · 이름 “이명” · 「二つ名」名前 */
+function hrBare(nm){
+  const v = String(nm == null ? "" : nm);
+  const m = v.match(/^“[^”]+”\s+([\s\S]+)$/) || v.match(/^「[^」]+」\s*([\s\S]+)$/);
+  if(m) return m[1];
+  const e = v.match(/^([\s\S]+?)\s+“[^”]+”$/);
+  return e ? e[1] : v;
+}
+/* 도트 칸(256)의 대기 첫 장에서 잰 몸 범위 (0 ~ 1) — hy 머리 맨 위 · hx 머리 가운데 · fy 발끝 · cx 몸 가운데 (상자 · 말풍선 자리) */
+const SPR_BOX = {};
+function sprBox(job){
+  if(SPR_BOX[job]) return SPR_BOX[job];
+  const o = {hy:.25, hx:.5, fy:.72, cx:.5};
+  try{
+    const ji = SPR_IDX[job], cv = ji != null ? sprCellCv(ji, -1, 0, 0) : null;
+    if(!cv) return o;
+    const Wd = cv.width, Ht = cv.height, d = cv.getContext("2d").getImageData(0, 0, Wd, Ht).data;
+    let top = -1, bot = -1;
+    for(let y = 0; y < Ht; y++) for(let x = 0; x < Wd; x++) if(d[(y*Wd + x)*4 + 3] > 40){ if(top < 0) top = y; bot = y; }
+    if(top < 0) return o;
+    const hxs = [], axs = [];
+    for(let y = top; y <= bot; y++) for(let x = 0; x < Wd; x++) if(d[(y*Wd + x)*4 + 3] > 40){ axs.push(x); if(y < top + 30) hxs.push(x); }
+    const med = a=> a.sort((p, q)=> p - q)[a.length >> 1];
+    return (SPR_BOX[job] = {hy: top/Ht, hx: med(hxs)/Wd, fy: bot/Ht, cx: med(axs)/Wd});
+  }catch(e){ return o; }
+}
+/* 전투판 위 한 겹들 — 주변 암전 · 뒤쪽 흐림 · 하얀 번쩍 · 아래 글 띠 (draw 가 전투판을 다시 그리면 함께 사라진다) */
+function hrStageFx(stage){
+  if(stage && !stage.querySelector(".hr-banner"))
+    stage.insertAdjacentHTML("beforeend", '<div class="hr-vig" aria-hidden="true"></div><div class="hr-blur" aria-hidden="true"></div><div class="hr-flash" aria-hidden="true"></div><div class="hr-banner" aria-live="polite"><div class="t"></div></div>');
+}
+function hrBanner(stage, text, cls, letters, rate){
+  const b = stage && stage.querySelector(".hr-banner"); if(!b) return;
+  const t = b.querySelector(".t"); b.className = "hr-banner on " + (cls || "");
+  if(letters){
+    const dots = text.endsWith("…"), body = dots ? text.slice(0, -1) : text, r = rate || 1;
+    t.innerHTML = [...body].map((c, i)=> `<i style="animation-delay:${Math.round(i*38/r)}ms">${c === " " ? "&nbsp;" : esc(c)}</i>`).join("")
+      + (dots ? `<span class="dots"><i style="animation-delay:${Math.round(body.length*38/r)}ms">…</i></span>` : "");
+  } else t.textContent = text;
+}
+function hrBannerHide(stage){ const b = stage && stage.querySelector(".hr-banner"); if(b) b.classList.remove("on"); }
+/* 영웅의 기상 원화 — 전투판 위 따로 한 겹(z 95 · 뒤쪽은 .hr-blur 가 흐린다) · 화면 가운데 · 줌아웃 전까지 천천히 커진다. 걷는 함수를 돌려준다 */
+function hrShowHero(stage, job, flip, holdMs){
+  const H = HR_ART[job]; if(!H || !stage) return null;
+  const sw = stage.clientWidth, sh = stage.clientHeight, bb = H.bb, Sz = sh*HR_ART_H/Math.max(.2, bb[3] - bb[1]);
+  const cx = sw/2, cy = sh*HR_ART_Y, L = cx - (bb[0] + bb[2])/2*Sz, T = cy - (bb[1] + bb[3])/2*Sz;
+  const SA = Sz*1.5, acx = L + Sz/2, acy = T + Sz/2 - Sz*.16, cw = Math.round(SA*2*Math.min(2, window.devicePixelRatio || 1));
+  const lay = document.createElement("div"); lay.className = "hr-hero-layer"; lay.setAttribute("aria-hidden", "true");
+  lay.innerHTML = `<div class="hr-grow" style="transform-origin:${cx}px ${cy}px"><div class="hr-flipbox" style="transform-origin:${cx}px ${cy}px${flip ? ";transform:scaleX(-1)" : ""}">`
+    + `<img class="hr-aura" alt="" src="${H.a}" style="left:${acx - SA/2}px;top:${acy - SA/2}px;width:${SA}px;height:${SA}px">`
+    + `<img class="hr-char" alt="" src="${H.c}" style="left:${L}px;top:${T}px;width:${Sz}px;height:${Sz}px">`
+    + `<canvas class="hr-pt" width="${cw}" height="${cw}" style="left:${acx - SA}px;top:${acy - SA}px;width:${SA*2}px;height:${SA*2}px"></canvas></div></div>`;
+  stage.appendChild(lay); stage.classList.add("hr-hero");
+  /* 앞쪽 반짝이 — 원을 그리며 떠오른다 (herospirit 목업의 입자 그대로) */
+  const cv = lay.querySelector("canvas"), x = cv.getContext("2d"), t0 = performance.now(), sc = cw/260, acc = H.acc;
+  let alive = true;
+  const tick = now=>{
+    if(!alive) return; requestAnimationFrame(tick);
+    const p = (now - t0)/1000; x.clearRect(0, 0, cw, cw); x.save(); x.translate(cw/2, cw/2 + 10*sc); x.scale(sc, sc);
+    for(let n = 0; n < 22; n++){
+      const a = n*2.399, ph = (p*.43 + n*.083) % 1, r = 35 + ph*65, px = Math.round(Math.cos(a)*r), py = Math.round(-15 - Math.sin(a)*r - ph*42), z = n % 3 ? 2 : 3;
+      x.globalAlpha = (1 - ph)*.9; x.fillStyle = n % 3 ? acc[0] : acc[1];
+      x.fillRect(px - z, py, z*2 + 1, 1); x.fillRect(px, py - z, 1, z*2 + 1);
+    }
+    x.restore();
+  };
+  requestAnimationFrame(tick);
+  const g = lay.querySelector(".hr-grow"); g.style.setProperty("--grow-t", (holdMs/1000).toFixed(2) + "s");
+  requestAnimationFrame(()=> requestAnimationFrame(()=>{ g.style.transform = `scale(${HR_GROW})`; }));
+  return ()=>{ lay.classList.add("out"); stage.classList.remove("hr-hero"); setTimeout(()=>{ alive = false; lay.remove(); }, 260); };
+}
+/* 말풍선 — 전투판 위(카메라 밖) · 그 학생 머리 위 (쓰러졌으면 누운 몸 위). 모양은 게임 .bf-speech + 성격 (넓은 화면에서도 읽히게) */
+function hrSay(stage, uid, job, text, cls, ms, pers, rate){
+  const el = stage && stage.querySelector(`.bf-unit[data-uid="${uid}"]`); if(!el || !text) return;
+  const sr = stage.getBoundingClientRect(), k = (sr.width / stage.offsetWidth) || 1, cv = el.querySelector("canvas.spr"), hb = sprBox(job);
+  let x, y;
+  if(cv){
+    const r = cv.getBoundingClientRect(), dn = el.classList.contains("dead") || +cv.dataset.m === SPR_M.down;
+    x = (r.left + r.width*(cv.classList.contains("flip") ? 1 - hb.hx : hb.hx) - sr.left)/k;
+    y = (r.top + r.height*(dn ? hb.fy - 34/256 : hb.hy) - sr.top)/k - 4;
+  } else { const r = el.getBoundingClientRect(); x = (r.left + r.width/2 - sr.left)/k; y = (r.top - sr.top)/k; }
+  const w = document.createElement("div"); w.className = "hr-say"; w.style.left = x + "px"; w.style.top = Math.max(30, y) + "px";
+  const tone = cls === "hr-faint" ? "" : pers === "hot" ? "hot" : pers === "intro" ? "intro" : pers === "boast" ? "boast" : "";
+  w.innerHTML = `<div class="bf-speech hr-line ${tone} ${cls || ""}"></div>`; w.firstChild.textContent = text;
+  stage.appendChild(w);
+  const half = w.firstChild.offsetWidth/2 + 6; w.style.left = clamp(x, half, Math.max(half, stage.clientWidth - half)) + "px";
+  const life = Math.max(ms/(rate || 1), 1300);
+  setTimeout(()=> w.classList.add("out"), life - 300); setTimeout(()=> w.remove(), life);
+}
 function openBattle(res, opt, onDone){
   stylishSkillFxPreload();
   SPR_BTSCROLL = 0;
@@ -21730,6 +22138,8 @@ function openBattle(res, opt, onDone){
   let ultimateCasts=[];
   let speechFrame = -1;
   const uids = (()=>{ let a=0,b=0; return names.map(n=> n.side==="A" ? "A"+(a++) : "B"+(b++)); })();
+  if(!opt.lab) (res.frames||[]).forEach(f=>{ const t = f.test, n = t && t.k === "hero" ? names[uids.indexOf(t.u)] : null, H = n && HR_ART[n.job];   // 1015 — 기상 원화를 미리 받는다
+    if(H) [H.c, H.a].forEach(s=>{ const im = new Image(); im.decoding = "async"; im.src = s; }); });
   const formTag = (fk, pl)=>{
     if(!fk || !FORMS[fk]) return `<span class="fmtag none">진형 없음</span>`;
     const F = formData(fk, !!pl);
@@ -21764,10 +22174,11 @@ function openBattle(res, opt, onDone){
     res.frames.forEach((fr,fi)=> fr.units.forEach((u,k)=>{ if(!u.alive && a[k]<0) a[k]=fi; }));
     return a;
   })();
+  const camFell = new Set();                                          // 1015 — 스타일리시 차례 안에서 이미 쓰러지는 모습을 보인 학생 (정신력 시험의 기절)
   const sprMot = (f,k)=>{
     const u = f.units[k];
     const last = (i>=res.frames.length-1);
-    if(!u.alive) return ["down", (deadAt[k]===i || (deadAt[k]>drawnPrev && deadAt[k]<=i)) ? SPR_T0 : 0];   // 스타일리시 연출은 몇 장씩 건너뛴다
+    if(!u.alive) return ["down", (!camFell.has(uids[k]) && (deadAt[k]===i || (deadAt[k]>drawnPrev && deadAt[k]<=i))) ? SPR_T0 : 0];   // 스타일리시 연출은 몇 장씩 건너뛴다 · 시험에서 쓰러진 학생은 누운 채로
     if(last && res.winner === names[k].side) return ["win", 0];
     if(camQuiet) return ["idle", 0];                                      // 연출이 끝난 뒤 — 공격 · 피격을 다시 틀지 않는다
     if(f.actor === uids[k]) return ["attack", SPR_T0];
@@ -21785,13 +22196,17 @@ function openBattle(res, opt, onDone){
         ? fxHTML(fo.n, fo.e, Math.max(18, Math.round(speed/(typeof FX_N!=="undefined"?FX_N:8)))/SPR_PLAYBACK_RATE, fo.u?1.16:1)
         : "";
       /* 머리 위로 떠오르는 숫자 — 프레임마다 DOM 을 새로 그리므로 애니메이션이 저절로 다시 돈다 */
-      const pops = (f.pop||[]).filter(x=> x.u===uids[k]);
+      const camMode = camOn();
+      const pops = camQuiet ? [] : (f.pop||[]).filter(x=> x.u===uids[k] && !(x.k==="hero" && camMode));   // 1015 — 스타일리시는 기상 이름을 시험 연출의 띠로 보인다 · 줌아웃 뒤 다시 그릴 때(camQuiet)는 띄우지 않는다 (줌인에서 camPop 으로 이미 보였다)
+      if(!camMode && f === res.frames[i]) for(let q = 1; q <= 12 && i-q >= 0 && q*speed < hrPopMs(speed); q++)       // 기상 이름은 몇 장 더 이어서 — 한 번 떠오르는 것처럼
+        (res.frames[i-q].pop||[]).forEach(x=>{ if(x.u===uids[k] && x.k==="hero") pops.unshift(Object.assign({ago: q*speed}, x)); });
       const popHtml = pops.length ? `<div class="popwrap">${pops.map((x,pi)=>{
-        const dur = clamp(speed*1.6, 380, 1100);
+        const dur = x.k==="hero" ? hrPopMs(speed) : clamp(speed*1.6, 380, 1100);
         const txt = x.k==="miss" ? "MISS"
                   : x.k==="die"  ? "DOWN"
+                  : x.k==="hero" ? esc(hrType(x.t).n)                                             // 1015 — 영웅의 기상 (이름만)
                   : (x.k==="heal"||x.k==="shield" ? "+" : "") + fmt(x.v||0);
-        return `<span class="pop ${x.k}" style="--pd:${dur}ms;animation-delay:${pi*90}ms;top:${pi*17}px">${
+        return `<span class="pop ${x.k}" style="--pd:${dur}ms;animation-delay:${x.ago ? -x.ago : pi*90}ms;top:${pi*17}px">${
           x.k==="crit" ? `<b class="popcrit">CRITICAL!!</b>` : ""}${txt}</span>`;
       }).join("")}</div>` : "";
       let spr = "";
@@ -21826,11 +22241,12 @@ function openBattle(res, opt, onDone){
       const y=soloBoss?17:P.y;
       const talk=speech.get(uids[k]), age=talk?performance.now()-talk.at:Infinity;
       const say=talk&&age<1600&&u.alive?battleCallout(talk.call,talk.frame):null;
-      return `<div class="unit bf-unit team-${side} ${boss?'bf-boss':''} ${big?'bf-big':''} ${mobU?'bf-mob':''} ${u.alive?'':'dead'} ${act?'act':''}"
+      const heroOn = u.alive && u.fx.some(x=> x.hero);                                     // 1015 — 영웅의 기상 상태
+      return `<div class="unit bf-unit team-${side} ${boss?'bf-boss':''} ${big?'bf-big':''} ${mobU?'bf-mob':''} ${u.alive?'':'dead'} ${act?'act':''} ${heroOn?'hr-buff':''}"
         style="left:${x}%;top:${y}%;z-index:${Math.round(y)};--us:${bfJobScale(n.job)}" data-slot="${soloBoss?'boss':`${side}-${row}-${col}`}" data-uid="${uids[k]}" tabindex="0"
         aria-label="${esc(n.name)} 체력 ${hideHp? "???" : `${Math.round(u.hp)} / ${u.maxHp}`}, 행동 ${Math.round(u.atb*100)}%, 필살기 ${Math.round(u.ult)}%"
         title="${esc(n.name)} · ${JOBS[n.job].name} · ${row==='front'?'전열':'후열'} / 체력 ${hideHp? "???" : `${fmt(u.hp)} / ${fmt(u.maxHp)}`}${u.sh>0?' · 보호막 '+fmt(u.sh):''} / 행동 ${Math.round(u.atb*100)}% · ${esc(n.ult||ultName(n.job))} ${Math.round(u.ult)}%">
-        ${popHtml}${fxc}${spr}${ultFX}
+        ${popHtml}${fxc}${spr}${ultFX}${heroOn ? HR_SPARK : ""}
         ${say?`<div class="bf-speech ${say.tone} ${talk.call.kind==='ult'?'ultimate':''}${talk.call.pers==='intro'?' timid':talk.call.pers==='boast'?' boast':''}" style="animation-delay:-${Math.round(age)}ms">${esc(say.text)}</div>`:''}
         <div class="bf-gauges" aria-hidden="true">
           <div class="bf-ult ${u.ult>=100?'ready':''}" style="--charge:${clamp(u.ult,0,100)}%"><span>${Math.round(u.ult)}</span></div>
@@ -21860,8 +22276,8 @@ function openBattle(res, opt, onDone){
     SPR_T0 = performance.now();
     const f = res.frames[i];
     if(speechFrame!==i){
-      if(f.call&&f.actor) speech.set(f.actor,{call:f.call,at:performance.now(),frame:i});
-      if(f.call&&f.call.kind==='ult'&&f.fx){
+      if(f.call&&f.actor&&!camQuiet) speech.set(f.actor,{call:f.call,at:performance.now(),frame:i});   // 1015 — 줌아웃 뒤 다시 그릴 때는 외침 · 필살기 그림을 다시 틀지 않는다 (줌인에서 보였다)
+      if(f.call&&f.call.kind==='ult'&&f.fx&&!camQuiet){
         const actor=names[uids.indexOf(f.actor)];
         if(actor&&ULT_STYLE[actor.job]) ultimateCasts.push({actor:f.actor,job:actor.job,targets:f.fx.t||[],at:performance.now()});
       }
@@ -21951,12 +22367,87 @@ function openBattle(res, opt, onDone){
     }
     return true;
   };
+  /* 한 차례가 끝나는 프레임 — 같은 학생의 줄까지. 반격 줄에서 정신력 시험이나 치명타가 나왔으면 그 반격 줄(과 뒤따르는 같은 학생의 줄)까지 이 차례로 (1015) */
+  const turnEnd = j=>{
+    const F = res.frames, a = F[j].actor;
+    let e = j; while(e+1 < F.length && !F[e+1].call && F[e+1].actor === a && F[e+1].cls !== "sec") e++;
+    let c = e; while(c+1 < F.length && !F[c+1].call && F[c+1].cls !== "sec" && (F[c+1].ctr || F[c+1].actor === a)) c++;
+    for(let q = e+1; q <= c; q++) if(F[q].test || (F[q].pop||[]).some(x=> x.k === "crit")) return c;
+    return e;
+  };
+  /* ══ 전투 대사 (1015) ══ 선공 · 막타 · 첫 치명타(입힘 · 맞고 버팀) — 스타일리시에서만 · 학생만 (몬스터 · 마왕은 성격이 없다).
+     전투 기록만 보고 미리 정한다 (다시 봐도 같은 장면 · 같은 대사). 대사 표는 BL_LINES (tools/gen/blines) */
+  const blStu = k=>{ const J = names[k] && JOBS[names[k].job]; return !!(J && !J.mon && !J.fixed); };
+  const blPers = k=> (res.A.concat(res.B)[k] || {}).pers || "plain";
+  const BLP = (()=>{
+    const F = res.frames || [], P = {first:-1, last:-1, crit:new Map()};
+    const calls = []; for(let j = 0; j < F.length; j++) if(F[j].call) calls.push(j);
+    if(opt.lab || !calls.length) return P;
+    /* 선공 — 이 전투에서 처음 행동하는 학생 */
+    const k0 = uids.indexOf(F[calls[0]].actor); if(k0 >= 0 && blStu(k0)) P.first = calls[0];
+    /* 막타 — 진 쪽이 모두 쓰러져 끝난 전투에서 마지막으로 쓰러진 프레임이 든 차례 · 이긴 쪽 학생의 차례일 때만 (시간 종료 판정 · 지속 피해 · 반격으로 끝나면 없음) */
+    const W = res.winner, LS = W === "A" ? "B" : W === "B" ? "A" : null, Z = F[F.length-1];
+    if(LS && Z){
+      let fEnd = -1, all = true;
+      names.forEach((n, k)=>{ if(n.side !== LS) return; if(Z.units[k].alive){ all = false; return; }
+        for(let q = F.length-1; q > 0; q--) if(!F[q].units[k].alive && F[q-1].units[k].alive){ fEnd = Math.max(fEnd, q); break; } });
+      if(all && fEnd > 0){
+        let j = -1; for(const c of calls){ if(c <= fEnd) j = c; else break; }
+        const k = j >= 0 ? uids.indexOf(F[j].actor) : -1;
+        if(k >= 0 && turnEnd(j) >= fEnd && names[k].side === W && blStu(k)) P.last = j;
+      }
+    }
+    /* 첫 치명타 — 학생마다 처음 치명타를 입힌 차례 · 처음 치명타를 맞고 버틴 차례 (그 차례 끝까지 살아 있고 정신력 시험(기절 · 기상)이 없을 때).
+       말할 수 있을 때만 쓴다 (입힌 학생이 그 차례에 쓰러졌으면 다음 치명타로) · 막타 차례는 빼고 */
+    const dealt = new Set(), taken = new Set();
+    calls.forEach(j=>{
+      if(j === P.last) return;
+      const e = turnEnd(j), EF = F[e], tu = new Set(), ev = [];
+      for(let q = j; q <= e; q++) if(F[q].test) tu.add(F[q].test.u);
+      for(let q = j; q <= e; q++) (F[q].pop||[]).forEach(x=>{
+        if(x.k !== "crit") return;
+        const d = F[q].actor, kd = uids.indexOf(d), kt = uids.indexOf(x.u);
+        if(kd >= 0 && blStu(kd) && !dealt.has(d) && EF.units[kd].alive){ dealt.add(d); ev.push({u:d, k:"crit"}); }
+        if(kt >= 0 && kt !== kd && blStu(kt) && !taken.has(x.u) && EF.units[kt].alive && !tu.has(x.u)){ taken.add(x.u); ev.push({u:x.u, k:"taken"}); }
+      });
+      if(ev.length) P.crit.set(j, ev);
+    });
+    return P;
+  })();
+  /* 줌 밖 한마디 — 선공(게이지가 찬 뒤 · 기술 선택 앞) · 막타(기술 선택 뒤 · 줌인 앞). 그 차례 학생 머리 위 · 말풍선이 사라질 때까지 기다린다 */
+  const camLine = async (tok, j, cat)=>{
+    const stage = document.querySelector("#modalRoot .bf-stage"), a = res.frames[j].actor, k = uids.indexOf(a), n = names[k];
+    const A = k >= 0 && BL_LINES[cat] ? (BL_LINES[cat][blPers(k)] || BL_LINES[cat].plain) : null;
+    if(!stage || !n || !A || !A.length) return true;
+    if(cat === "last" && !await camWm(tok, 260, 220)) return false;      // 기술 상자 줄이 사라지는 동안
+    await camSettle(stage, 1200); if(camRun !== tok) return false;
+    hrSay(stage, a, n.job, A[hrHash(j + ":" + cat + ":" + k) % A.length], "bl-" + cat, Math.max(1700/camSf(), 1300), blPers(k), 1);
+    return camWm(tok, 1700, 1300);
+  };
+  /* 줌아웃 뒤 — 첫 치명타를 입힌 학생 → 맞고 버틴 학생 차례로 0.55초 간격 (직업 × 성격 대사) · 마지막 말풍선이 읽힐 만큼 기다린다 */
+  const camCritLines = async (tok, ev)=>{
+    const stage = document.querySelector("#modalRoot .bf-stage"); if(!stage) return true;
+    if(!await camWm(tok, 300, 250)) return false;
+    await camSettle(stage, 1500); if(camRun !== tok) return false;
+    const rate = camSf(), stag = Math.max(550/rate, 450), fin = Math.max(1700/rate, 1300);
+    const L = ev.map(x=>{ const k = uids.indexOf(x.u), n = names[k], T = k >= 0 && BL_LINES[x.k] && n ? BL_LINES[x.k][n.job] : null;
+      return T ? {x, k, n, text: T[blPers(k)] || T.plain} : null; }).filter(y=> y && y.text);
+    for(let q = 0; q < L.length; q++){
+      const y = L[q];
+      hrSay(stage, y.x.u, y.n.job, y.text, "bl-" + y.x.k, stag*(L.length-1-q) + fin, blPers(y.k), 1);
+      if(q < L.length-1 && !await camWm(tok, 550, 450)) return false;
+    }
+    return L.length ? camWm(tok, 1700, 1300) : true;
+  };
   const camTurn = async (tok, j, e)=>{
     const F = res.frames[j], LF = res.frames[e], a = F.actor, ka = uids.indexOf(a), side = names[ka].side;
     const stage = document.querySelector("#modalRoot .bf-stage"), cam = stage && stage.querySelector(".bf-cam");
     const ae = uEl(a);
     if(!stage || !cam || !ae) return true;
-    const pops = []; for(let q=j; q<=e; q++) (res.frames[q].pop||[]).forEach(x=> pops.push(x));
+    /* 정신력 시험 (1015 — 체크포인트 ②) — 이 행동에서 의식 저하 선 아래로 맞아 기절 · 기상이 나온 학생. 그 DOWN · 기상 이름은 시험이 끝날 때 보인다 */
+    const tests = []; for(let q=j; q<=e; q++){ const t = res.frames[q].test; if(t && uids.includes(t.u) && !tests.some(x=> x.u === t.u)) tests.push(t); }
+    const faintT = new Set(tests.filter(t=> t.k === "faint").map(t=> t.u));
+    const pops = []; for(let q=j; q<=e; q++) (res.frames[q].pop||[]).forEach(x=>{ if(x.k === "hero" || (x.k === "die" && faintT.has(x.u))) return; pops.push(x); });
     const sideOf = u=> (names[uids.indexOf(u)]||{}).side;
     const tg = [...new Set([...((F.fx&&F.fx.t)||[]), ...pops.map(x=> x.u)])].filter(u=> u!==a && uids.includes(u));
     const HIT = ["dmg","crit","absorb"];
@@ -21993,6 +22484,12 @@ function openBattle(res, opt, onDone){
     const byU = {}; pops.forEach(x=> (byU[x.u] = byU[x.u] || []).push(x));
     Object.keys(byU).forEach(u=> camPop(uEl(u), byU[u]));
     camBars(LF);
+    if(tests.length){
+      /* 정신력 시험 — 1.5초 흐름 대신 맞는 순간을 조금 보여 준 뒤 맞은 학생에게 천천히 다가간다 (camTest) */
+      const held = await camW(tok, 520);
+      stopSkillFx();
+      if(!held || !await camTest(tok, tests, ae, CS)) return false;
+    } else {
     /* 1.5초 멈춤 — 카메라가 천천히 흐른다 (0930 — 우리 편 기준 공격은 오른쪽 + 3도, 보조는 왼쪽. 상대 편은 반대) */
     const dir = attack ? L : -L;
     stage.style.setProperty("--cam-t", T(1.5)); stage.style.setProperty("--cam-e", "linear");
@@ -22000,6 +22497,7 @@ function openBattle(res, opt, onDone){
     const held = await camW(tok, 1500);
     stopSkillFx();
     if(!held) return false;
+    }
     /* 줌아웃 — 제자리로 · 공격 4장 · 피격 3 · 4장 */
     stage.style.setProperty("--cam-t", T(.5)); stage.style.setProperty("--cam-u", T(.5)); stage.style.setProperty("--cam-e", "ease");
     stage.style.setProperty("--cam", "none");
@@ -22007,10 +22505,192 @@ function openBattle(res, opt, onDone){
     stage.classList.remove("cam-focus");
     const say = ae.querySelector(".cam-say"); if(say) say.remove();
     setMot(ae, "attack", 3);
+    faintT.forEach(u=>{ camFell.add(u); const el = uEl(u); if(el){ setMot(el, "down", 3); el.classList.add("dead", "hr-faint"); } });   // 1015 — 정신력 시험에서 기절한 학생은 누운 채 (차례 뒤 다시 그려도 다시 쓰러지지 않게)
     for(let f = 2; f <= 3; f++){
-      tg.forEach(u=>{ if(hit.has(u)) setMot(uEl(u), "hit", f); });
+      tg.forEach(u=>{ if(hit.has(u) && !faintT.has(u)) setMot(uEl(u), "hit", f); });
       if(!await camW(tok, f < 3 ? 160 : 340)) return false;
     }
+    const blEv = BLP.crit.get(j);
+    if(blEv && !await camCritLines(tok, blEv)) return false;               // 1015 — 첫 치명타 대사 (입힌 학생 → 맞고 버틴 학생)
+    if(tests.length && !await camTestLines(tok, tests, j, LF)) return false;   // 1015 — 기상 · 기절 대사 · 같은 편 반응
+    return true;
+  };
+  const camWm = (tok, ms, min)=> new Promise(r=> setTimeout(r, Math.max(ms / camSf(), min||0))).then(()=> camRun === tok);   // 글을 읽을 시간은 남긴다
+  /* 카메라 · 유닛 자리 옮김(transform · left · top · scale)이 다 끝날 때까지 — 화면 그리기가 느린 기기에서 줌아웃이 늦게 시작해도 말풍선 자리를 줌인 상태로 재지 않게 (1015). 길어도 cap ms */
+  const camSettle = (stage, cap)=>{
+    const an = (stage && stage.getAnimations ? stage.getAnimations({subtree: true}) : []).filter(a=> a.playState !== "finished" && /^(transform|left|top|scale)$/.test(a.transitionProperty || ""));
+    return an.length ? Promise.race([Promise.all(an.map(a=> a.finished.catch(()=> 0))), new Promise(r=> setTimeout(r, cap))]) : Promise.resolve();
+  };
+  /* ══ 체크포인트 ② — 정신력 시험 (1015) ══ 맞은 학생에게 천천히 다가가며(1.7초) 주변이 어두워지고 심장이 뛴다 · 글 띠 '○○의 정신력이 시험받고 있습니다…' →
+     기상: 하얗게 번쩍 · 뒤쪽 흐림 · 원화 + 후광 + 반짝이(줌아웃 전까지 천천히 커짐) · 금빛 이름 / 기절: 쓰러짐 · 흑백 · DOWN · '○○, 의식을 잃었다' */
+  const camTest = async (tok, tests, ae, CS)=>{
+    const stage = document.querySelector("#modalRoot .bf-stage"); if(!stage) return true;
+    const sw = stage.clientWidth, sh = stage.clientHeight, rate = camSf(), T = x=> `${x/rate}s`;
+    hrStageFx(stage);
+    const s0 = ae && ae.querySelector(".cam-say"); if(s0) s0.remove();
+    stage.classList.add("hr-test"); if(ae) ae.classList.add("hr-dim");
+    for(const t of tests){
+      const tu = uEl(t.u), k = uids.indexOf(t.u); if(!tu || k < 0) continue;
+      const nm = hrBare(names[k].name), Z = CS*1.6;
+      const fx = parseFloat(tu.style.left)/100*sw, fy = parseFloat(tu.style.top)/100*sh - 2;     // 몸 위쪽을 화면 가운데 조금 위로
+      const tx = -Z*(fx - sw/2), ty = (sh*.42 - sh/2) - Z*(fy - sh/2);
+      stage.style.setProperty("--cam-t", T(1.7)); stage.style.setProperty("--cam-e", "cubic-bezier(.4,0,.2,1)");
+      stage.style.setProperty("--cam", `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${Z.toFixed(3)})`);
+      stage.querySelectorAll(".bf-unit.hr-tgt").forEach(el=> el.classList.remove("hr-tgt"));
+      tu.classList.add("hr-beat", "hr-tgt"); tu.classList.remove("hr-dim");   // 반격으로 행동한 학생이 시험받으면 그 학생이 주인공
+      hrBanner(stage, HR_TEST_TXT(nm), "", true, rate);
+      sfxPlay("test_beat");
+      const beat = setInterval(()=>{ if(camRun === tok && tu.classList.contains("hr-beat")) sfxPlay("test_beat"); }, 800/rate);
+      const ok = await camWm(tok, 1800, 1300);
+      clearInterval(beat); tu.classList.remove("hr-beat");
+      if(!ok) return false;
+      if(t.k === "hero"){
+        const fl = stage.querySelector(".hr-flash"); if(fl){ fl.classList.remove("go"); void fl.offsetWidth; fl.classList.add("go"); }
+        const hold = Math.max(2000/rate, 1400), cv = tu.querySelector("canvas.spr");
+        tu.classList.add("hr-on");
+        const undo = hrShowHero(stage, names[k].job, !!(cv && cv.classList.contains("flip")), hold);
+        sfxPlay("test_hero");
+        hrBanner(stage, hrType(t.t).n, "hero", false, rate);
+        const held = await camWm(tok, 2000, 1400);
+        hrBannerHide(stage);
+        if(undo) undo();                                                          // 원화는 줌아웃이 시작될 때 걷는다 — 그 뒤는 금빛 테 · 별 칩
+        tu.classList.remove("hr-on"); tu.classList.add("hr-buff");
+        if(!tu.querySelector(".hr-spark")) tu.insertAdjacentHTML("beforeend", HR_SPARK);
+        if(!held) return false;
+      } else {
+        setMot(tu, "down", 0); tu.classList.add("hr-faint"); sfxPlay("test_faint");
+        for(let f = 1; f <= 3; f++){ if(!await camW(tok, 130)) return false; setMot(tu, "down", f); }
+        camPop(tu, [{u:t.u, k:"die"}]);
+        hrBanner(stage, HR_FAINT_TXT(nm), "faint", false, rate);
+        const held = await camWm(tok, 1300, 1000);
+        hrBannerHide(stage);
+        if(!held) return false;
+      }
+    }
+    stage.classList.remove("hr-test"); if(ae) ae.classList.remove("hr-dim");
+    stage.querySelectorAll(".bf-unit.hr-tgt").forEach(el=> el.classList.remove("hr-tgt"));
+    return true;
+  };
+  /* 줌아웃 뒤 대사 — 기상: 본인(종류 × 성격) → 0.7초 간격으로 같은 편이 한마디씩(성격) / 기절: 본인(성격) → 같은 편이 한마디씩(성격).
+     같은 편 = 그 행동이 끝났을 때 깨어 있는 학생 (몬스터 · 마왕 빼고). 어느 대사를 고를지는 프레임 번호로 정해 다시 봐도 같다 */
+  const camTestLines = async (tok, tests, j, LF)=>{
+    const stage = document.querySelector("#modalRoot .bf-stage"); if(!stage) return true;
+    const rate = camSf();
+    if(!await camWm(tok, 350, 300)) return false;
+    await camSettle(stage, 1500); if(camRun !== tok) return false;
+    for(const t of tests){
+      const k = uids.indexOf(t.u), n = names[k], U0 = res.A.concat(res.B)[k]; if(k < 0 || !n || !U0) continue;
+      const nm = hrBare(n.name), pers = U0.pers || "plain";
+      const sel = (a, salt)=> a[hrHash(j + ":" + k + ":" + salt) % a.length];
+      const mates = names.map((x, q)=> q).filter(q=> q !== k && names[q].side === n.side && LF.units[q] && LF.units[q].alive && !(JOBS[names[q].job] && (JOBS[names[q].job].mon || JOBS[names[q].job].fixed)));
+      if(t.k === "hero"){
+        const T0 = HR_LINES.hero[t.t] || HR_LINES.hero.will;
+        hrSay(stage, t.u, n.job, T0[pers] || T0.plain, "hr-hero", 2600, pers, rate);
+      } else hrSay(stage, t.u, n.job, sel(HR_LINES.faint[pers] || HR_LINES.faint.plain, "f"), "hr-faint", 2600, pers, rate);
+      if(!await camWm(tok, 1300, 900)) return false;
+      const RT = t.k === "hero" ? HR_LINES.react : HR_LINES.reactFaint;
+      for(const q of mates){
+        const P = (res.A.concat(res.B)[q] || {}).pers || "plain";
+        hrSay(stage, uids[q], names[q].job, hrFill(sel(RT[P] || RT.plain, q), nm), "", 2300, P, rate);
+        if(!await camWm(tok, 700, 500)) return false;
+      }
+      if(!await camWm(tok, 2000, 1500)) return false;
+    }
+    return true;
+  };
+  /* ══ 체크포인트 ① — 기술 선택 (1015) ══ camFill 다음 · camTurn 앞. 차례가 온 학생 머리 위에 기본기 · 스킬 상자가 한 줄로 뜨고
+     ④ 스킬 출현(기본기는 바로 촥 · 스킬은 슬롯 → 꽂힘 / 빨간 X) → ⑤ ⑥ 하이라이트가 돌다 멈춤(⑥ 이미 걸려 있어 그만두면 기본기) →
+     ⑦ 시전 판정(적에게 거는 스킬은 늘 · 실패면 RESIST 딱지 → 기본기로) → ⑧ 고른 상자만 남았다 판째 사라지고 줌인.
+     F.pick(runBattle 이 적은 ④ ~ ⑦)을 보여 주기만 한다. ×0.5 · ×1 은 기본, ×2 · ×3 은 압축 (1014 사용자) ·
+     설정 '기술 선택 연출'(PREF.skillPick) — 모든 학생 · 자신의 학생만(우리 편) · 상대의 학생만 · 표시 안 함. 몬스터 · 마왕 · 필살기는 늘 바로 줌인 */
+  const PK_FULL  = {open:160, inB:90, inS:60, reel:.26, spin:520, stop:300, after4:200, laps:n=> n >= 4 ? 2 : 3, hop0:55, hop1:300, pick:520, wob:380, resist:520, move:560, ok:360, go:230};
+  const PK_SHORT = {open:70,  inB:35, inS:25, reel:.16, spin:170, stop:110, after4:50,  laps:()=> 1,             hop0:45, hop1:110, pick:200, wob:150, resist:260, move:230, ok:110, go:130};
+  const pickShow = k=>{
+    const n = names[k], J = n && JOBS[n.job], w = PREF.skillPick || "all";
+    if(!n || !J || J.mon || J.fixed) return false;
+    return w === "all" || (w === "mine" && n.side === "A") || (w === "foe" && n.side === "B");
+  };
+  const camPick = async (tok, j)=>{
+    const F = res.frames[j], P = F.pick, a = F.actor, ka = uids.indexOf(a), U0 = res.A.concat(res.B)[ka];
+    if(!P || !U0 || !F.fx || !pickShow(ka)) return true;
+    const SKL = U0.skills || JOBS[U0.job].skills, basic = SKL.find(s=> s.kind === "basic"), acts = SKL.filter(s=> !s.kind);
+    if(!basic || !acts.length) return true;
+    const stage = document.querySelector("#modalRoot .bf-stage"), cam = stage && stage.querySelector(".bf-cam"), ae = uEl(a);
+    if(!stage || !cam || !ae) return true;
+    const TM = speed >= 280 ? PK_FULL : PK_SHORT;
+    const boxes = [{sk:basic, basic:true, ap:true}].concat(acts.map(s=> ({sk:s, basic:false, ap:(P.ap||[]).indexOf(s.id) >= 0})));
+    const iP = P.pk ? boxes.findIndex(b=> b.sk.id === P.pk) : 0, iStop = (P.keep || iP < 0) ? 0 : iP, iFin = boxes.findIndex(b=> b.sk.id === F.fx.skillId);
+    if(iFin < 0) return true;
+    const icon = sk=> `<img class="fr" src="${SKILL_ICON_FRAME[skGrade(U0, sk.id)] || SKILL_ICON_FRAME.D || ""}" alt=""><img class="ar" src="${SKILL_ICON_ART[sk.id] || ""}" alt="">`;
+    const all = boxes.map(b=> b.sk);
+    const row = document.createElement("div"); row.className = "cp-row"; row.setAttribute("aria-hidden", "true");
+    const nameEl = document.createElement("div"); nameEl.className = "cp-name"; row.appendChild(nameEl);
+    const els = boxes.map((b, i)=>{
+      const el = document.createElement("div"); el.className = "cp-box" + (b.basic ? " basic" : "");
+      const reel = b.basic ? "" : `<div class="cp-reel" style="--sp:${(TM.reel + i*.03).toFixed(2)}s">${all.concat(all).map(s=> `<i>${icon(s)}</i>`).join("")}</div>`;
+      el.innerHTML = `<div class="cp-win">${reel}</div><div class="cp-ic">${icon(b.sk)}</div><i class="cp-x"></i><b class="cp-resist">${P.vf === 0 ? "FAIL" : "RESIST"}</b>`
+        + (b.basic ? `<span class="cp-tag">${esc(PK_BASIC)}</span>` : "");
+      row.appendChild(el); return el;
+    });
+    cam.appendChild(row);
+    /* 자리 — 도트의 머리 맨 위 10px 위 (카메라가 제자리일 때 잰다) · 판 밖으로 나가면 안쪽으로 민다 */
+    const k = (stage.getBoundingClientRect().width / stage.offsetWidth) || 1, cr = cam.getBoundingClientRect(), cv = ae.querySelector("canvas.spr");
+    let hx, hy;
+    if(cv){ const r = cv.getBoundingClientRect(), hb = sprBox(names[ka].job), fl = cv.classList.contains("flip");
+      hx = (r.left + r.width*(fl ? 1 - hb.hx : hb.hx) - cr.left)/k; hy = (r.top + r.height*hb.hy - cr.top)/k; }
+    else { const r = ae.getBoundingClientRect(); hx = (r.left + r.width/2 - cr.left)/k; hy = (r.top - cr.top)/k; }
+    const half = row.offsetWidth/2 + 8, cw = cam.offsetWidth || stage.offsetWidth;
+    row.style.left = clamp(hx, half, Math.max(half, cw - half)) + "px"; row.style.top = Math.max(row.offsetHeight + 30, hy - 10) + "px";
+    let spinT = 0;
+    const stop = ()=>{ if(spinT){ clearInterval(spinT); spinT = 0; } };
+    const W = async ms=>{ const ok = await camW(tok, ms); if(!ok){ stop(); row.remove(); } return ok; };
+    void row.offsetWidth; row.classList.add("open");
+    if(!await W(TM.open)) return false;
+    /* ④ 기본기는 확정이라 바로 촥 · 스킬은 슬롯이 돌다 0.3초 간격으로 멈춘다 (뜬 스킬은 그림이 꽂히고, 안 뜬 스킬은 빨간 X) */
+    for(let i = 0; i < boxes.length; i++){
+      els[i].classList.add("in");
+      if(boxes[i].basic){ els[i].classList.add("snap"); sfxPlay("pick_snap"); }
+      if(!await W(boxes[i].basic ? TM.inB : TM.inS)) return false;
+    }
+    spinT = setInterval(()=>{ if(camRun === tok) sfxPlay("pick_spin", .93 + Math.random()*.14); }, 70);
+    if(!await W(TM.spin)) return false;
+    for(let i = 0; i < boxes.length; i++){
+      if(boxes[i].basic) continue;
+      const rl = els[i].querySelector(".cp-reel"); if(rl) rl.remove();
+      if(boxes[i].ap){ els[i].classList.add("land"); sfxPlay("pick_land"); } else { els[i].classList.add("fail"); sfxPlay("pick_fail"); }
+      if(!await W(TM.stop)) return false;
+    }
+    stop();
+    if(!await W(TM.after4)) return false;
+    /* ⑤ ⑥ 하이라이트 — 뜬 상자들 사이로 처음엔 빠르게, 점점 느려지다 멈춘다 · 판 위에 지금 가리키는 기술 이름 */
+    const setHL = i=>{ els.forEach((el, q)=> el.classList.toggle("hl", q === i));
+      nameEl.className = "cp-name on" + (boxes[i].basic ? " basic" : ""); nameEl.innerHTML = `<b>${esc(boxes[i].sk.name)}</b>`; };
+    const cand = boxes.map((b, i)=> i).filter(i=> boxes[i].ap), path = [];
+    if(cand.length > 1){ for(let l = 0; l < TM.laps(cand.length); l++) cand.forEach(i=> path.push(i)); for(const i of cand){ path.push(i); if(i === iStop) break; } }
+    else path.push(iStop);
+    for(let s = 0; s < path.length; s++){
+      setHL(path[s]); sfxPlay("pick_hop");
+      const tt = path.length > 1 ? s/(path.length - 1) : 1;
+      if(!await W(TM.hop0 + TM.hop1*tt*tt*tt)) return false;
+    }
+    const pe = els[iStop]; pe.classList.add("pick"); sfxPlay("pick_choose");
+    els.forEach((el, q)=>{ if(q !== iStop && !boxes[q].ap) el.classList.add("dim"); });
+    if(!await W(TM.pick)) return false;
+    /* ⑦ 시전 판정 — 적에게 거는 스킬은 늘 보이고, 아군 · 자신에게 거는 스킬은 실패했을 때만 (FAIL) */
+    if(iStop !== 0 && (P.vf || P.res)){
+      pe.classList.remove("pick"); void pe.offsetWidth; pe.classList.add("wobble");
+      if(!await W(TM.wob)) return false;
+      if(P.res){
+        pe.classList.add("resist"); sfxPlay("pick_resist");
+        if(!await W(TM.resist)) return false;
+        setHL(iFin); sfxPlay("pick_hop"); els[iFin].classList.add("pick"); sfxPlay("pick_choose");
+        if(!await W(TM.move)) return false;
+      } else { pe.classList.add("cast-ok"); sfxPlay("pick_ok"); if(!await W(TM.ok)) return false; }
+    }
+    /* ⑧ 고른 상자만 남았다가 판째 사라지고 줌인 */
+    els[iFin].classList.add("final"); row.classList.add("go");
+    if(!await W(TM.go)) return false;
+    row.classList.add("out"); setTimeout(()=> row.remove(), 260);
     return true;
   };
   const camLoop = async (tok)=>{
@@ -22026,7 +22706,10 @@ function openBattle(res, opt, onDone){
       const ultNow = res.frames[j].call && res.frames[j].call.kind === "ult";
       if(!ultNow && !await camFill(tok, a, res.frames[i], res.frames[j])) return;
       while(i < j-1){ i++; draw(); if(!ultNow && !await camW(tok, speed*.6)) return; }
-      let e = j; while(e+1 < res.frames.length && !res.frames[e+1].call && res.frames[e+1].actor === a && res.frames[e+1].cls !== "sec") e++;
+      if(j === BLP.first && !await camLine(tok, j, "first")) return;      // 1015 — 선공 대사 (게이지가 찬 뒤 · 기술 선택 앞)
+      if(!ultNow && !await camPick(tok, j)) return;                       // 1015 — 체크포인트 ① 기술 선택
+      if(j === BLP.last && !await camLine(tok, j, "last")) return;        // 1015 — 막타 대사 (기술 선택 뒤 · 줌인 앞)
+      const e = turnEnd(j);                                               // 반격에서 정신력 시험 · 치명타가 나왔으면 그 반격 줄까지
       if(!await camTurn(tok, j, e)) return;
       i = e; if(i >= res.frames.length-1) bgmEnd(); camQuiet = true; draw(); camQuiet = false;
     }
@@ -23718,7 +24401,26 @@ const SFX = {
   suc_bulb: {f:"skillup_bulb.ogg"},
   suc_hit:  {f:"skillup_hit.ogg"},
   suc_opt:  {f:"skillup_option.ogg"},
-  suc_done: {f:"skillup_done.ogg"}      // 1014 — 스킬 강화 완료 화면
+  suc_done: {f:"skillup_done.ogg"},     // 1014 — 스킬 강화 완료 화면
+  /* 스타일리시 전투 체크포인트 (1015) — 목업의 짧은 삑을 같은 파형으로 합성한 것 (tools/gen/heroic/sfx_synth.py · 파일 봉우리 −6dB ·
+     v 는 목업에서 들리던 크기 — 설정 효과음 70 에서 같다). ① 기술 선택: 기본기 촥 · 슬롯 도는 소리 · 꽂힘 · X · 하이라이트 · 고름 · RESIST · 시전 성공 /
+     ② 정신력 시험: 두근 · 영웅의 기상 · 기절 */
+  pick_snap:  {f:"pick_snap.ogg",   v:.183},
+  pick_spin:  {f:"pick_spin.ogg",   v:.049},
+  pick_land:  {f:"pick_land.ogg",   v:.183},
+  pick_fail:  {f:"pick_fail.ogg",   v:.179},
+  pick_hop:   {f:"pick_hop.ogg",    v:.122},
+  pick_choose:{f:"pick_choose.ogg", v:.282},
+  pick_resist:{f:"pick_resist.ogg", v:.417},
+  pick_ok:    {f:"pick_ok.ogg",     v:.199},
+  test_beat:  {f:"test_beat.ogg",   v:.703},
+  test_hero:  {f:"test_hero.ogg",   v:.287},
+  test_faint: {f:"test_faint.ogg",  v:.2},
+  /* 마스터 노트 책상 (1015) — 소품(마스터 육성 · 튜토리얼 · 스케줄 · 학생 명부)을 누를 때 책장 넘기는 소리 셋 중 하나 (bookFlipSfx · 빠르기 ±6%).
+     녹음을 받을 수 없어 종이 소리를 합성했다 (tools/gen/sfx/book_flip.py) — 같은 이름의 .ogg 를 bgm/ 에 덮어쓰면 소리만 바뀐다 */
+  book_flip1:{f:"book_flip1.ogg", v:.9},
+  book_flip2:{f:"book_flip2.ogg", v:.9},
+  book_flip3:{f:"book_flip3.ogg", v:.9}
 };
 const SFX_GAP = 55;      // 같은 소리가 이보다 짧은 간격으로 겹치지 않게 막는다 (ms)
 const SFX_VOICE = 8;     // 한꺼번에 울릴 수 있는 소리 개수
@@ -23800,6 +24502,17 @@ const MENU_SFX_SEL = "#nav button, #sideSched, #navm button, .subnav [data-subvi
 function menuSfxAt(e){ const b = e.target && e.target.closest ? e.target.closest(MENU_SFX_SEL) : null; return b && !b.disabled && !b.dataset.lock ? b : null; }   // 1010 — 잠긴 메뉴(data-lock)는 소리 없이
 document.addEventListener("pointerdown", e => { if(menuSfxAt(e) && AWEB !== false && sfxGain() > 0) sfxLoad(SFX.menu.f); }, true);
 document.addEventListener("click", e => { if(menuSfxAt(e)) sfxPlay("menu"); }, true);
+/* 마스터 육성 단추 소리 (1015) — 책상의 마스터 육성 창 · 남은 포인트 알림 창. + 는 메뉴 소리를 조금 높게 · − 는 낮게 · 되돌리기는 더 낮게 ·
+   확정은 레벨업 소리 · 마스터 육성 창의 닫기는 메뉴 소리. 막힌 단추(disabled)는 소리 없이 */
+const MASTER_SFX = [["[data-mpt],[data-mp]", "menu", 1.12], ["[data-mpt-minus],[data-mp-minus]", "menu", .9], ["#btnMpOk,#mpOk2", "levelup", 1],
+  ["#btnMpNo,#mpNo2", "menu", .85], ['.mdesk-pop[data-mdpop="master"] [data-deskdone]', "menu", 1]];
+function masterSfxAt(e){
+  const t = e.target && e.target.closest ? e.target : null; if(!t) return null;
+  for(const m of MASTER_SFX){ const b = t.closest(m[0]); if(b) return b.disabled ? null : m; }
+  return null;
+}
+document.addEventListener("pointerdown", e => { const m = masterSfxAt(e); if(m && AWEB !== false && sfxGain() > 0) sfxLoad(SFX[m[1]].f); }, true);
+document.addEventListener("click", e => { const m = masterSfxAt(e); if(m) sfxPlay(m[1], m[2]); }, true);
 /* 한 프레임에 실린 소리 */
 function sfxFrame(f, rate=1, active=()=>true){
   if(!f || !f.fx || !f.fx.s)return;
@@ -24021,7 +24734,41 @@ const OPTX = (()=>{
       {t:["—Kingdom Year 230, Winter", "My father passed away."], y:[315.5, 403.5],
        at:[[110, 460, 485, 510, 535, 560, 585, 610, 660, 685, 710, 735, 760, 860, 960, 1060, 1410, 1435, 1460, 1485, 1510, 1535], [3360, 3400, 3460, 3496, 3532, 3568, 3604, 3640, 3760, 3796, 3832, 3868, 3904, 3940, 3990, 4030, 4070, 4110, 4160]], fade:[6470, 7100]}]}
   };
-  const SCX = (typeof I18N !== "undefined" && I18N.lang === "en") ? SC_EN : SC;
+  /* 일본어판 (1014) — 한국어에서 바로 옮긴 글 · 때는 SC 그대로 (at 는 글자 수에 맞춰 고르게 · 문장부호 뒤는 조금 쉰다).
+     글꼴은 Shippori Mincho B1 ExtraBold(OpTxSerifJa) · Kiwi Maru(OpTxSansJa) — 일본어판에서만 받는 조각 (tools/gen/fonts/ja_fonts.py · ja_fonts.css).
+     타자기 제목 わが英雄のアカデミー 은 타자 소리 일곱 번에 맞춰 오른쪽부터 조각 일곱(ミー · デ · アカ · の · 英雄 · が · わ), 부제는 여섯 */
+  const SERIF_JA = ["OpTxSerifJa", 800, 44, 2.2, 0.4];
+  const SANS_JA = ["OpTxSansJa", 400, 44, 1.6, 0.5];
+  const SC_JA = {
+    intro: {ms:29250, tail:300, look:"cream", font:SERIF_JA, st:[
+      {t:["王国暦236年―", "魔王軍の総攻撃が始まった。"], y:[318, 402], ln:[[110, 760], [1710, 2810]], fade:[4880, 5480]},
+      {t:["長きにわたる平和に浸りきっていた王国軍は", "なす術もなく崩れ去り、", "王国は未曾有の危機を迎えた。"], y:[274, 361, 448], ln:[[5760, 7360], [7960, 8760], [9360, 10660]], fade:[12720, 13300]},
+      {t:["だが、そんな王国にも希望はあった。", "史上ただ一人、あらゆる職業をマスターした", "人類最強の英雄――それがあなただ。"], y:[274, 361, 448], ln:[[13610, 15310], [16110, 17860], [18410, 19860]], fade:[21880, 22450]},
+      {t:["あなたは仲間たちと共に魔王を食い止めるため、", "危険を顧みず敵陣へと向かった。"], y:[318, 402], ln:[[22760, 24360], [24910, 26310]], fade:[28370, 28950]}]},
+    rift: {ms:19300, tail:300, look:"red", font:["OpTxSansJa", 400, 42, 1.4, 0.5],
+      glitch:[1700, 1750, 1800, 3400, 3450, 3500, 5150, 5200, 6800, 6850, 6900, 10250, 10300, 11900, 11950, 12000, 13600, 13650, 13700, 15300, 15350, 15400, 17000, 17050, 17100], st:[
+      {t:["目の前で時空が渦を巻き、揺らいでいる。", "そして周りのすべてを、貪るように吸い込み始めた。"], y:[318, 400], ln:[[110, 1610], [2060, 4410]], out:[[6360, 6960], [7010, 7910]], flash:8500, end:8700},
+      {t:["魔王は笑いながら、時空の彼方へ吸い込まれていく……", "共に戦った仲間たちも、なす術なく呑み込まれる。"], y:[318, 400], ln:[[9010, 11710], [12360, 14560]], out:[[16510, 17360], [17410, 18210]], flash:18800, end:19300}]},
+    danger: {ms:7000, tail:350, look:"red", font:["OpTxSansJa", 400, 50, 1.6, 0.55], glitch:[1700, 1750, 1800, 3400, 3450, 3500], st:[
+      {t:["あ、これはまずい……"], y:[359.5], at:[[110, 160, 460, 510, 560, 710, 760, 810, 1260, 1610]], mal:{t0:3700, tab:MAL_DANGER}}]},
+    date: {ms:4700, tail:300, look:"ink", font:SERIF_JA, light:true, st:[
+      {t:["―王国暦230年、秋"], y:[359.5], at:[[110, 460, 510, 610, 760, 860, 960, 1010, 1060, 1410]], fade:[3750, 4380]}]},
+    typer: {ms:5950, tail:300, light:true, reveal:"pop", ghost:[108, 150, 177], ghost2:[196, 92, 132], glitch:[100, 1700, 1750, 1800, 3400, 3450, 3500], st:[
+      {t:["わが英雄のアカデミー", "学園がつぶれた"], y:[299.5, 423.5], fonts:[["OpTxSansJa", 400, 96, 12, 4], ["OpTxSansJa", 400, 34, 7, 0.3]], looks:["metal", "metalSub"],
+       at:[[2700, 2250, 1850, 1850, 1400, 1000, 1000, 550, 100, 100], [2750, 2750, 2700, 2650, 2600, 2550, 2500]], cut:[4750, 4800], rule:{y:381.5, x0:72, x1:1207, grow:[100, 950], shrink:[4800, 5650]}}]},
+    dontsay: {ms:5050, tail:300, look:"dad", font:["OpTxSansJa", 400, 55, 2, 0.8], reveal:"fade", st:[
+      {t:["そんなこと言うなよ。"], y:[359.5], at:[[110, 190, 310, 610, 690, 910, 1010, 1110, 1310, 1560]], fade:[4050, 4750]}]},
+    dream: {ms:5050, tail:300, look:"dad", font:["OpTxSansJa", 400, 55, 2, 0.8], reveal:"fade", st:[
+      {t:["俺の夢は……"], y:[359.5], at:[[110, 410, 710, 910, 1260, 1510]], fade:[4000, 4720]}]},
+    hero: {ms:5100, tail:300, look:"dad", font:["OpTxSansJa", 400, 42, 2, 0.8], reveal:"fade", st:[
+      {t:["誇れる父さんみたいな英雄に、なることなんだから……"], y:[360],
+       at:[[110, 160, 210, 310, 360, 410, 510, 560, 610, 660, 760, 810, 860, 960, 1010, 1060, 1110, 1160, 1260, 1310, 1360, 1410, 1460, 1510, 1560]], fade:[4080, 4790]}]},
+    winter: {ms:7400, tail:300, look:"cream", font:SERIF_JA, st:[
+      {t:["―王国暦230年、冬", "父が亡くなった。"], y:[315.5, 403.5],
+       at:[[110, 460, 510, 610, 760, 860, 960, 1010, 1060, 1410], [3360, 3460, 3560, 3660, 3760, 3910, 4010, 4160]], fade:[6470, 7100]}]}
+  };
+  const OPTX_LANG = typeof I18N !== "undefined" ? I18N.lang : "ko";
+  const SCX = OPTX_LANG === "en" ? SC_EN : (OPTX_LANG === "ja" && I18N.tab) ? SC_JA : SC;   // 일본어 표가 없으면(빈 빌드) 한국어 그대로
   const meas = document.createElement("canvas").getContext("2d");
   const FILTER_OK = (()=>{ try{ const c = document.createElement("canvas").getContext("2d"); if(!("filter" in c)) return false; c.filter = "blur(2px)"; return c.filter === "blur(2px)"; }catch(e){ return false; } })();
   const isSpace = c=> c === " " || c === "　";
@@ -24238,9 +24985,10 @@ const OPTX = (()=>{
     if(fontP) return fontP;
     const all = Object.values(SCX).flatMap(sc=> sc.st.flatMap(sp=> sp.t)).join("");
     const load = (document.fonts && document.fonts.load)
-      ? Promise.all([SCX === SC_EN ? "800 46px OpTxSerifEn" : "800 46px OpTxSerif", "400 46px OpTxSans"].map(f=> document.fonts.load(f, all))).catch(()=>{})
+      ? Promise.all((SCX === SC_JA ? ["800 46px OpTxSerifJa", "400 46px OpTxSansJa"] : [SCX === SC_EN ? "800 46px OpTxSerifEn" : "800 46px OpTxSerif", "400 46px OpTxSans"])
+          .map(f=> document.fonts.load(f, all))).catch(()=>{})
       : Promise.resolve();
-    fontP = Promise.race([load, new Promise(r=> setTimeout(r, 2500))]);
+    fontP = Promise.race([load, new Promise(r=> setTimeout(r, SCX === SC_JA ? 5000 : 2500))]);   // 일본어 조각은 파일로 받는다 (data: 가 아니다)
     return fontP;
   }
   /* 예전 APNG 와 같은 클래스의 화면 폭 — 붙이기 전에 미리 그 크기로 글자를 굽는다 */
@@ -24877,12 +25625,14 @@ function showTutorial(i, opt){
       <button class="btn sm" id="tutPrev" ${i>0?"":"disabled"}>이전</button>
       <button class="btn sm primary" id="tutNext">${last? (opt.start? "학원을 맡는다" : "닫기") : "다음"}</button>
       ${opt.start && !last? `<button class="btn sm ghost" id="tutSkip">건너뛰기</button>`:""}
+      ${!opt.start && !last? `<button class="btn sm ghost" id="tutClose">닫기</button>`:""}
       <span class="tg-page-count">${i+1} / ${ks.length}</span><span class="tutdots">${ks.map((_,k)=>`<i class="${k===i?"on":""}"></i>`).join("")}</span>
     </div>`, ()=>{
     const done = ()=>{ closeModal(); if(opt.after) opt.after(); };
     const pv = $("#tutPrev"); if(pv) pv.onclick = ()=> showTutorial(i-1, opt);
     const nx = $("#tutNext"); if(nx) nx.onclick = ()=> last? done() : showTutorial(i+1, opt);
     const sk = $("#tutSkip"); if(sk) sk.onclick = done;
+    const cl = $("#tutClose"); if(cl) cl.onclick = done;                // 1015 — 게임 안에서 다시 보는 튜토리얼은 아무 장에서나 닫는다 (처음 시작 때는 건너뛰기)
   }, true);
 }
 /* 첫 접속 로딩 화면 걷기 (0925) — build_boot.py 가 <body> 바로 뒤에 넣는다. 파일을 다 받고 여기까지 오면 치운다 */

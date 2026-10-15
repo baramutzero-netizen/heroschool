@@ -63,5 +63,6 @@
   "영어판 준비 중 — 주소에 ?lang= 을 붙인 시험 접속에서만 보인다.": "English version in progress — this only shows when ?lang= is added to the address.",
   "바꾸면 저장한 뒤 다시 불러온다.": "Changing it saves and reloads the game.",
   "한국어로 쓰인 지난 일지 · 상담 기록도 맞춰 볼 수 있는 줄은 영어로 보여 준다.": "Older journal and counseling entries written in Korean are shown in English where possible.",
-  "영어로 쓰인 지난 일지 · 상담 기록은 영어 그대로다.": "Older journal and counseling entries written in English stay in English."
+  "한국어로 쓰인 지난 일지 · 상담 기록도 맞춰 볼 수 있는 줄은 일본어로 보여 준다.": "Older journal and counseling entries written in Korean are shown in Japanese where possible.",
+  "영어 · 일본어로 쓰인 지난 일지 · 상담 기록은 쓰인 그대로다.": "Older journal and counseling entries written in English or Japanese stay as written."
 }
