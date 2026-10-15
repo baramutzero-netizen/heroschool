@@ -495,7 +495,7 @@ function skillCard(st){
   const up = st.sp > 0 ? `<span class="spr">강화 포인트 <b>${st.sp}</b></span>` : "";   // 스킬 강화 단추는 뺐다 (1014 사용자 — 왼쪽 목록의 '스킬 강화 가능!' 쪽지로 연다)
   return `<div class="card skc"><span class="cap">패시브 · 스킬<i>강화 상한 Lv.${SK_LV_MAX}</i></span>${up}
     <div class="sks">${L.map((s, i) => `<button class="sk${i === RB.sk ? " on" : ""}" data-sk="${i}">
-      <span class="ic"><img class="fr" src="${h(SKILL_ICON_FRAME[s.grade] || SKILL_ICON_FRAME.D)}" alt=""><img class="ar" src="${h(s.icon || "")}" alt=""></span>
+      <span class="ic"><img class="bg" src="${h(SKILL_ICON_BG[s.grade] || SKILL_ICON_BG.D)}" alt=""><img class="ar" src="${h(s.icon || "")}" alt=""><img class="fr" src="${h(SKILL_ICON_FRAME[s.grade] || SKILL_ICON_FRAME.D)}" alt=""></span>
       <span class="sn" style="color:${GC_PAGE[s.grade]}">${h(s.name)}</span>
       <span class="sl"><b class="num" style="color:var(--ink)">Lv.${s.lv}</b> · <b style="color:${GC_PAGE[s.grade]}">${h(s.grade)}</b></span></button>`).join("")}</div>
     <div class="skd" id="skd"></div></div>`;

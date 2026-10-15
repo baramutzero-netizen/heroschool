@@ -91,6 +91,8 @@ python3 ~/hs.py pack 이름            # 보낼 폴더 + 커밋 목록 (끝에 8
 | `mockups/ui-scale/` · `mockups/screen-modes/` | 화면 크기 틀 · 화면 모드 목업 (gitignore — PC 에만) |
 | `mockups/counsel-window/` | 상담창 목업 · 상담 책상 배치판 · 그림 (gitignore — PC 에만) |
 | `mockups/student-roster/` | 학생 명부 목업 · 학생 명부 배치판 · 견본 학생 · 책 그림 (gitignore — PC 에만 · README 에 굽는 법) |
+| `tools/newskillicon/` | 새 스킬 아이콘 묶음 (사용자 · 1015 — 96 × 96 아이콘 80 · 공용 테두리 · 원화 source). 게임 그림은 `apply_skicon` 이 `assets/skill-icons/` 로 굽는다 |
+| `mockups/new-skill-icon/` | 새 스킬 아이콘 목업 (등급 테두리 · 안쪽 바탕 넷 · 게임 화면 새/지금 — gitignore · PC 에만) |
 | `Claude outputs/` | 예전 결과물 · 스케줄/책상 배치판 키트 (gitignore) |
 | `sprites/` · `ui/` · `events/` · `reports/` · `captures/` | 원본 · 작업 폴더 (gitignore) |
 | `test.py` | Playwright 3년 회귀 테스트 (오래 걸린다 — 전투 · 성장 수치를 건드렸을 때만) |
@@ -98,7 +100,7 @@ python3 ~/hs.py pack 이름            # 보낼 폴더 + 커밋 목록 (끝에 8
 
 ## 4. 빌드 · 패치 요점
 
-- apply 순서 (`tools/gen/README.md` 쓰는 법): sched → desk → exped3 → skgrade → cslpers → cslwin → lkwin → roster → webp → wrap → wrap_site.
+- apply 순서 (`tools/gen/README.md` 쓰는 법): sched → desk → exped3 → skgrade → cslpers → cslwin → lkwin → roster → skicon → webp → wrap → wrap_site.
   모두 몇 번 돌려도 같은 결과라 **고친 것만** 다시 돌리면 된다. `hs.py apply 이름 [인자…]` = `python tools/gen/patch/apply_이름.py game.html [인자…]`.
 - `hs.py build` 는 TZ=Asia/Seoul — 빌드 번호(`MMDD-HHMM`)가 한국 시간. 리눅스의 wrap 은 LF 로 쓰므로 heroschool.html · site/index.html 을 PC 원본처럼 CRLF 로 바꿔 둔다 (git 내용은 같다).
   split_assets 는 `assets/spr_img.webp.js` 등 test 묶음 파일이 없으면 멈춘다 — 빌드하려면 test 묶음도 받는다.
@@ -153,7 +155,45 @@ python3 ~/hs.py pack 이름            # 보낼 폴더 + 커밋 목록 (끝에 8
 - 학생 명부 책은 그림자 DOM(`#rbHost`) 안 — 테스트에서 `document.getElementById('rbHost').shadowRoot` 로 찾는다 (Playwright 의 `locator('#rbHost …')` 는 그대로 뚫고 들어간다).
   책은 넓은 화면(게임이 보는 폭 1100px 이상 — 1013 부터 방향은 안 본다)에서만 뜬다 — `open_game(p, w=1440, h=1000)`. 상태는 `RBK.isOpen()` · `RBK.state`.
 
-## 7. 최근 작업 · 현재 상태 (2026-10-15 · 빌드 1015-1710)
+## 7. 최근 작업 · 현재 상태 (2026-10-15 · 빌드 1015-2055)
+
+- **새 스킬 아이콘 — 등급 테두리 · 둥근 광택 바탕 (1015 · 빌드 1015-2055 · 규칙 그대로 9)** — 사용자: '새로운 스킬 아이콘들하고 테두리를 tools/newskillicon 폴더에 넣어두고
+  readme.md 도 넣어뒀어. 테두리는 등급에 맞춰서 색 변조해서 쓰고 새로운 아이콘 적용한 목업을 한번 만들어줘' → '옅은 등급색인데 살짝 그라데이션하고 글로스를 줘볼수있을까?
+  목업에서 볼수있게' → '둥근 광택으로 게임에 적용'. 목업 PC `mockups/new-skill-icon/` (README — 바탕 넷 · 게임 화면 새/지금 · 기술 ↔ 새 아이콘 표).
+  - **그림** — 새 스크립트 `tools/gen/patch/apply_skicon.py` (apply 순서 roster 뒤 · 몇 번 돌려도 같다): `tools/newskillicon/icons` 80장을 무손실 WebP 96 × 96 으로
+    `assets/skill-icons/` 의 예전 파일 자리에 덮어쓴다(이름은 예전 것 — 남는 파일 없음 · 예전 그림은 1254 × 1254 · 80장 5.2MB → 1.1MB) · 등급 테두리 `frame-<등급>.webp`
+    (공용 테두리의 네 색만 등급 색 — `FRAME_PAL`) · 안쪽 바탕 `bg-<등급>.webp` (옅은 등급색 + 그라데이션 + 위쪽 반달 광택 + 반짝임 — `bg_of` · `BG_STYLE = "arc"`).
+    game.html 의 `SKILL_ICON_ART` · `PASSIVE` · `FRAME` · 새 `SKILL_ICON_BG` 네 줄의 `?v=` 만 쓴다.
+  - **칸 그리기** — 바탕 · 그림 · 테두리 img 셋을 칸 가득 (테두리가 맨 위 · 예전은 테두리 아래 그림 84%): `skillIconHtml` · `.skill-icon` CSS ·
+    스타일리시 기술 선택 상자(`camPick` 의 `icon` · `.cp-reel` / `.cp-ic` CSS) — game.html 직접 · 학생 명부 책 — `roster_block.js` + 목업 원본 `roster_tpl.html` 의 `.sk .ic` → apply_roster
+    (명부 목업의 `roster_build.images` 도 바탕을 넣는다). 그림은 48 이하 부드럽게 · 스킬 강화 창 80 은 픽셀 그대로(선택지가 `<button>` 이라 도트 테마의
+    `button img{auto}` 를 `.suc-scene .skill-icon>img:is(…)` 로 이긴다) · 바탕 · 테두리는 늘 픽셀 그대로.
+  - 시험: 게임 화면 넷(강화 창 · 명부 책 · 학생 화면 카드 · 기술 선택 상자)을 목업의 둥근 광택 스크린숏과 견줘 같음 (명부 책은 픽셀까지 같다) · 한/영 그림 셋 다 읽힘 ·
+    `hs.py i18n` 통과 · 번역 단위 그대로(5791 · 영어 표에만 있는 키 0). `hs.py` 묶음: patch 에 apply_skicon · roster 에 bg 여섯 · 새 묶음 `skicon`(묶음 그림 81 — 다시 구울 때).
+- **의뢰 등급 하나로 — 보수 등급 + 단골 이벤트 · 진행은 '의뢰를 한 주' (1015 · 빌드 1015-1812 · 규칙 그대로 9)** — 사용자: '둘을 병합해서 하나의 등급으로 관리.
+  진행을 학생당이 아니라 해당 의뢰를 진행한 주가 있으면 1회로 카운트 · 1등급 기본 보수 100G, 멘탈리티 x0.5/x1.5 · 2등급 2회 진행 시 첫번째 단골 이벤트 ·
+  3등급 5회 진행 시 200G, x0.7/x1.3 · 4등급 9회 진행 시 두번째 단골 이벤트 · 5등급 15회 진행 시 300G, x1/x1'.
+  - **규칙** — `JOB_GRADES` 다섯 칸(min 0 · 2 · 5 · 9 · 15 — ev 1 · 2 가 단골 이벤트 등급). 의뢰처마다 `S.jobW`(의뢰한 주) · `S.jobGr`(등급 번호 0 ~ 4).
+    `doJob` 이 `S.jobDone = {at:'년-계절-주', k}` 를 적고, 주가 끝날 때(`weekRunEnd`) `jobWeekTally` 가 그 의뢰처 +1주 → `tryJobGrade` 가 등급을 올리며 `jobGradeNews`
+    (단골 이벤트 등급은 'jobev' 팝업 = 의뢰인 이야기 · 나머지는 'jobgrade' 보수 팝업 · 일지 한 줄). 팝업 머리 `jobCerWhen` — 'N주를 마치고 · 의뢰처 N주 · N등급'.
+    `jobEvLv` 는 등급에서 읽는다(`jobEvOfGrade`) — churchLv · 식단 · 할인 · 마을 손님 그대로. 마을 손님 조건과 처음 여섯 주 '안 해 본 곳' 은 `jobW ≥ 1`.
+    `tryJobEvents` · `JOB_EV_AT` · `jobGMap` 은 없앴다. `S.jobN`(학생 · 하루)은 기록으로만 계속 센다.
+  - **옛 세이브** — `jobGradeMigrate` (bootMain · S.jobGr 가 없을 때 한 번): 예전 누적 15회 = 1주(`JOB_MIGRATE_N` — 예전 단계 20 · 100 · 200 · 500회가 2 · 3 · 4 · 5등급에 맞다) ·
+    이미 연 것(보수 등급 S.jobG · 공용 등급 S.jobGrade · 단골 이벤트 S.jobEv)보다 낮아지지 않게. 그래서 새로 열린 단골 이벤트 · 오른 보수는 일지 + 팝업(다음 주 끝).
+  - **화면** — 두루마리 의뢰 쪽지 '의뢰한 주 N / 다음 등급 주' (블록 — `sched_block.js` 와 game.html 블록을 같은 글로 고치고 지문만 다시 적었다) · 예전 화면 이번 주 의뢰 칸
+    `jobProgTxt`('의뢰한 주 N / M · 다음 단골 이벤트 | 보수 N G/일') · 운영 안내 13장(글 · 의뢰처 여섯 곳 'N등급 · 주' · 등급 다섯 칸). 영어 · 일본어 표 — 옛 키 지우고 그 자리에
+    (`tutGuideVisual|{0}주` · `jobProgTxt|보수 {0} G/일` 문맥 키). 남는 키 0 · 일본어 글꼴에 없는 글자 0.
+  - **도구** — `apply_job.py` 의 '이미 넣음' 표시가 새 코드(jobGrMap · jobCerWhen)도 알아본다. `apply_sched.py` 가 PREF 자리(`schedScroll: true` 뒤에 skillPick 이 붙음)에서
+    멈추던 것을 고쳤다 — 이제 돌리면 블록 내용은 같고(그림 줄 data: · CSS 자리만 다름) 빌드에 쓰지는 않았다.
+  - 자동 진행(임의 학생) 기준 — 1년차 끝 의뢰처당 1 ~ 4주(1 ~ 2등급) · 2년차 끝 5 ~ 13주(3 ~ 4등급) · 3년차 끝 10 ~ 18주(4 ~ 5등급).
+  - 시험 — scratchpad `jobi18n/cp_job.py`(한 주에 한 번 · 2 · 5 · 9 · 15주 등급 · 팝업 · 보수 · 배율 · 단골 효과 · 옛 세이브 옮기기 · 한영일) · `cp_jobshot.py`(운영 안내 13장 ·
+    두루마리 쪽지 · 예전 화면 · 팝업 둘 · 한영일 스크린숏) · `reg3y.py` 오류 0 · `hs.py i18n` · `check_ja.py`.
+
+- **학원 전투 연습장 마물 체력 −25% (1015 · 빌드 1015-1736 · 규칙 그대로 9 — 원정은 리그 전투가 아니다)** — 사용자: '제일 처음 원정 연습장 몬스터들의 체력을 25% 감소 시키자'.
+  `DUNGEONS` d1 에 `monHp:.75` — `genMonsterOne` 이 `st.mul.hp` 에 곱한다 (없으면 1). 잡몹(목검 훈련병 · 마력 표적구) · 보스(훈련용 강철 인형) · 그뉵이용 모두 · 체력만 (공격 · 방어 · 속도 그대로).
+  구간마다 그때 만들므로 진행 중인 원정도 다음 구간부터.
+  - 효과 (`tools/gen/sim/exped_sim.js` · B급 3인 · 1000번 — 바꾸기 전 → 뒤): 역할 팀 쐐기진 Lv.1 완주 60 → 78% (전멸 34 → 14%) · Lv.3 87 → 92% · Lv.5 94 → 93%(의식 리타이어 몫) ·
+    무작위 직업 Lv.1 43 → 66% · Lv.3 78 → 87% · 구간 전투 행동 수 약 −17%. 시험 — scratchpad `exped_run.py`(exped_sim.js 를 바깥 주소 모두 막고 · monHp 를 바꿔 견준다) · `reg3y.py` 오류 0.
 
 - **전투 배율 · 필살 게이지 · 장기전 + 스타일리시 숫자가 두 번 뜨던 것 (1015 · 빌드 1015-1710 · 규칙 8 → 9)** — 사용자: '스타일리시 전투 줌인 된 상태에서
   피해 입는 부분이 보인 다음 줌아웃된 후에도 한번 더 피해입는게 보이고있어' · '모든 피해량/회복량/실드량 30% 증가, 받는 피해량 20% 증가, 필살 게이지는 행동마다 +26.5,

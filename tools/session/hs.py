@@ -5,7 +5,7 @@
 PC(D:\\heroschool)에서 받은(stage) 파일은 /mnt/user-data/uploads/heroschool/<경로> 에 PC 와 같은 모양으로 쌓인다.
 그 사본으로 작업 폴더를 만들고 → 고치고 → 빌드 → 바뀐 파일만 골라 PC 에 쓸 목록(device_commit_files 입력)을 만든다.
 
-  python3 hs.py list core patch          받을 파일 목록 — device_stage_files 의 paths 로 그대로 (50개씩) · 묶음: core patch counsel test placer rbook roster schedkit i18n locker
+  python3 hs.py list core patch          받을 파일 목록 — device_stage_files 의 paths 로 그대로 (50개씩) · 묶음: core patch counsel test placer rbook roster schedkit i18n locker skicon
   python3 hs.py init                     지금까지 받은 파일 → 작업 폴더 ~/hs/work + PC 원본 ~/hs/base (+ 블록 지문)
   python3 hs.py sync                     나중에 더 받은 파일 반영 — PC 쪽이 바뀌었으면 3-way 병합
   python3 hs.py status                   PC 원본과 달라진 파일
@@ -57,7 +57,7 @@ PROPS = ["blotter", "book_pair", "book_stack", "candle", "candlestick", "coin_st
          "paperweight", "pen", "plant", "pocket_watch", "pouch", "rolled_map", "spectacles", "teacup", "teapot", "vase_flowers"]
 PATCH = ["apply_acadfit.py", "apply_crit.py", "apply_cslpers.py", "apply_cslwin.py", "apply_defy.py", "apply_desk.py",
          "apply_exped3.py", "apply_fdecline.py", "apply_job.py", "apply_lgfield.py", "apply_optsel.py", "apply_rookiefield.py",
-         "apply_roster.py", "apply_sched.py", "apply_skgrade.py", "apply_tq.py", "apply_tqalign.py", "apply_tqcam.py", "apply_tqcenter.py",
+         "apply_roster.py", "apply_sched.py", "apply_skgrade.py", "apply_skicon.py", "apply_tq.py", "apply_tqalign.py", "apply_tqcam.py", "apply_tqcenter.py",
          "apply_tqfield.py", "apply_tqgrow.py", "apply_tqmaps.py", "apply_tqui.py", "apply_tune.py", "apply_webp.py",
          "blockguard.py", "blocks.sha.json", "cslwin_block.css", "cslwin_block.js", "desk_art.py", "desk_layout.json",
          "mdesk_block.css", "mdesk_block.js", "roster_block.css", "roster_block.js",
@@ -75,6 +75,17 @@ SKILL_ICONS = {   # assets/skill-icons/<직업>/<이름>.webp — 직업마다 �
     "priest": ["blessing", "greater-heal", "holy-wave", "prayer", "revival"], "rogue": ["ambush", "assassinate", "poison", "shadow-step", "weakness"],
     "spellsword": ["arcane-slash", "awakening", "echo", "thousand-blades", "triple"], "sword": ["counter", "earth-cleaver", "iron-wall", "slash", "taunt"],
     "timemage": ["delay", "foresight", "haste", "time-shard", "time-stop"], "wizard": ["arcane-bolt", "fire-burst", "frost-field", "gravity", "resonance"],
+}
+# 새 스킬 아이콘 묶음 (1015 · tools/newskillicon/icons/<폴더>/<이름>-96.png) — apply_skicon.py 의 ICONS 와 같다 (소드맨 폴더는 swordsman)
+NEW_SKILL_ICONS = {
+    "archer": ["aimed-shot", "piercing-arrow", "hawks-eye", "meteor-arrow", "sniper-stance"], "bard": ["pluck", "march", "dissonance", "victory", "harmony"],
+    "darkpriest": ["dark-touch", "blood-rite", "curse", "dark-communion", "dark-pact"], "druid": ["thorn-whip", "regeneration-seed", "beast-form", "natures-wrath", "natural-recovery"],
+    "enchanter": ["rune-shot", "weapon-rune", "magic-seal", "all-rune", "permanent-rune"], "forcemage": ["mana-strike", "shattering-strike", "mana-overcharge", "unsealing", "mana-body"],
+    "gunner": ["greeting", "waltz", "knock", "finale", "encore"], "monk": ["double-strike", "qi-wave", "inner-circulation", "white-hot-fist", "martial-focus"],
+    "ninja": ["kunai", "swamp", "water-dragon", "fuma", "water-mirage"], "paladin": ["holy-strike", "protective-oath", "healing-light", "sanctuary", "guardian-vow"],
+    "priest": ["holy-wave", "greater-heal", "blessing", "revival", "prayer"], "rogue": ["ambush", "poison", "shadow-step", "assassination", "weakness"],
+    "spellsword": ["arcane-slash", "triple-v2", "awakening", "thousand-blades", "echo"], "swordsman": ["slash", "taunt", "iron-wall", "earth-cleaver", "counter"],
+    "timemage": ["time-fragment", "haste", "delay", "time-stop", "foresight"], "wizard": ["arcane-bolt", "flame-explosion", "frost-barrier", "gravity-reversal", "elemental-resonance"],
 }
 PROFILES = {
     # 빌드에 늘 필요한 것 + 이 도우미 (빌드 결과물도 받는다 — 바뀐 그림 판정 · 커밋 mtime)
@@ -120,10 +131,13 @@ PROFILES = {
                                            "roster_tpl.html", "placer_tpl.html")]
               + ["assets/mdesk_art/%s.webp" % k for k in ("base", "items", "props", "vig")]
               + ["assets/student-portraits-v2/%s-512.png" % j for j in JOBS]
-              + ["assets/skill-icons/frame-%s.webp" % g for g in ("D", "C", "B", "A", "S", "EX")]
+              + ["assets/skill-icons/%s-%s.webp" % (k, g) for k in ("frame", "bg") for g in ("D", "C", "B", "A", "S", "EX")]   # 1015 — 안쪽 바탕 bg-<등급>
               + ["assets/skill-icons/%s/%s.webp" % (j, n) for j in JOBS for n in SKILL_ICONS[j]],
     # 영어판 글 목록을 다시 뽑을 때 (1010 · core 와 같이) — extract_ko.cjs 는 acorn 이 필요하다 (저장소 밖에서 npm i acorn acorn-walk)
     # 영어 공유 미리보기(og_en.py → site/og-en.png · en/index.html)를 다시 만들 때도 (5단계)
+    # 스킬 아이콘을 다시 구울 때 (1015 · patch 와 같이 — apply_skicon 이 읽는다): 새 아이콘 80 · 공용 테두리
+    "skicon": ["tools/newskillicon/frame/square-frame-96.png"]
+              + ["tools/newskillicon/icons/%s/%s-96.png" % (f, n) for f in NEW_SKILL_ICONS for n in NEW_SKILL_ICONS[f]],
     "i18n": ["tools/i18n/README.md", "tools/i18n/extract_ko.cjs", "tools/i18n/classify_ko.py",
              "tools/i18n/og_en.py", "site/og-en.png", "en/index.html"],
 }

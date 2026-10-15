@@ -86,7 +86,7 @@ def apply(src, layout_path):
     src = sub1(src, old, old + '\n  if(UI.view==="plan" && document.querySelector("#view .skstage")) bindSchedScroll(v);   // 두루마리 스케줄 — 깃펜 · 서명 · 카드 끌기 (1006)',
                'bindSchedScroll(v);')
     # PREF — 기본 켬 · 저장된 서명
-    src = sub1(src, 'bfGrid: false, battleCam: "stylish"};', 'bfGrid: false, battleCam: "stylish", schedScroll: true};', 'schedScroll: true};')
+    src = sub1(src, 'bfGrid: false, battleCam: "stylish"};', 'bfGrid: false, battleCam: "stylish", schedScroll: true};', 'schedScroll: true')   # 1015 — 뒤에 다른 설정(skillPick 등)이 붙어도 이미 넣은 것으로
     old = '  if(j && typeof j.bfGrid === "boolean") PREF.bfGrid = j.bfGrid;'
     src = sub1(src, old, old + '\n  if(j && typeof j.schedScroll === "boolean") PREF.schedScroll = j.schedScroll;   // 두루마리 스케줄 (1006)'
                + '\n  if(j && j.sign && Array.isArray(j.sign.s) && j.sign.s.length) PREF.sign = j.sign;          // 결재 서명 — 이 브라우저에 남는다 (1006)',

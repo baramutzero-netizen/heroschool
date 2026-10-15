@@ -1,0 +1,5 @@
+holy-strike: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+guardian-vow: content fit 85x86 px; canvas 96x96; RGBA; transparent background; no frame
+protective-oath: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+healing-light: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+sanctuary: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame

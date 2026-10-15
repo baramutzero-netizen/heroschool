@@ -236,18 +236,18 @@ function viewPlanScroll(){
       + `<canvas class="sk-sig" width="107" height="33"></canvas><span class="who">학원장</span><span class="how">${how}</span>`
       + `${tw([[2, 2], [125, 3], [126, 68], [2, 70]])}</button>`); }
   /* 의뢰 쪽지 (1006) — 이번 주 의뢰를 미리 보인다(weekJobPlan — 주를 시작하기 전에 정해 둔다): 의뢰 이름 · 의뢰인 · 보수 ·
-     오르는 멘탈리티 ▲ · 내리는 멘탈리티 ▼ · 그 의뢰처의 누적과 등급(의뢰처마다 따로) · 이번 주 맡은 학생. 계절 마무리 주에는 의뢰가 없어 뺀다 */
+     오르는 멘탈리티 ▲ · 내리는 멘탈리티 ▼ · 그 의뢰처에서 의뢰한 주와 등급(의뢰처마다 따로 · 1015 — 한 주에 한 번) · 이번 주 맡은 학생. 계절 마무리 주에는 의뢰가 없어 뺀다 */
   { const J = weekJobPlan();
     if(J){
-      const L = G.slip, g = jobGradeIdx(J.k), nx = JOB_GRADES[g+1], cnt = jobN(J.k), pay = jobPay(J.k);
+      const L = G.slip, g = jobGradeIdx(J.k), nx = jobNext(J.k), cnt = jobW(J.k), pay = jobPay(J.k);
       const nj = S.students.filter(s=> actOf(s) === "job").length;
       P.push(`<div class="sk-slip" style="left:${L.x*2}px;top:${L.y*2}px;${skBg("slip")}" title="${esc(J.who)} — “${esc(J.line)}”">`
         + `<div class="hd" style="left:12px;top:10px"><span class="sk-h" style="color:#8a5e1c">${esc(J.n)}</span><span class="gr">${g+1}등급</span></div>`
         + `<span class="sk-fade" style="left:12px;top:38px">${esc(J.who)}</span>`
         + `<span style="left:12px;top:54px"><span class="sk-ink2">보수 </span><span class="sk-brass">${fmt(pay)} G/일</span><span class="sk-ink2"> · 컨디션 </span><span class="sk-red">-${JOB_COND}/일</span></span>`
         + `<span style="left:12px;top:68px"><span class="sk-ink2">${esc(mentShort(J.up))} </span><span class="sk-grn">▲</span><span class="sk-ink2"> · ${esc(mentShort(J.down))} </span><span class="sk-red">▼</span></span>`
-        + (nx ? `<span style="left:12px;top:82px"><span class="sk-ink2">누적 </span>${fmt(cnt)} / ${fmt(nx.min)}회</span><span class="bar" style="left:150px;top:84px;width:84px"><i style="width:${Math.round(80 * clamp(cnt / nx.min, 0, 1))}px"></i></span>`
-              : `<span style="left:12px;top:82px"><span class="sk-ink2">누적 </span>${fmt(cnt)}회<span class="sk-brass"> · 최대 등급</span></span>`)
+        + (nx ? `<span style="left:12px;top:82px"><span class="sk-ink2">의뢰한 주 </span>${fmt(cnt)} / ${fmt(nx.min)}</span><span class="bar" style="left:150px;top:84px;width:84px"><i style="width:${Math.round(80 * clamp(cnt / nx.min, 0, 1))}px"></i></span>`
+              : `<span style="left:12px;top:82px"><span class="sk-ink2">의뢰한 주 </span>${fmt(cnt)}<span class="sk-brass"> · 최대 등급</span></span>`)
         + `<span style="left:12px;top:96px">${nj? `<span class="sk-ink2">이번 주 </span><span class="sk-brass">의뢰 ${nj}명</span><span class="sk-ink2"> · 최대 </span><span class="sk-brass">+${fmt(pay * nj * WEEK_DAYS)} G</span>` : `<span class="sk-fade">이번 주 의뢰를 맡은 학생이 없다</span>`}</span></div>`);
     } }
   /* ── 무대 ── */

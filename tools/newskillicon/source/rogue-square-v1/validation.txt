@@ -1,0 +1,5 @@
+ambush: content fit 86x85 px; canvas 96x96; RGBA; transparent background; no frame
+weakness: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+poison: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+shadow-step: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+assassination: content fit 86x85 px; canvas 96x96; RGBA; transparent background; no frame

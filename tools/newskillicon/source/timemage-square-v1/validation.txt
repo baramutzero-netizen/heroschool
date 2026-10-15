@@ -1,0 +1,5 @@
+time-fragment: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+foresight: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+haste: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+delay: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+time-stop: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame

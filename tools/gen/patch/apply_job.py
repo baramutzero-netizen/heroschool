@@ -9,7 +9,8 @@
 import sys
 
 def sub1(src, old, new, done_mark):
-    if done_mark in src: return src
+    marks = done_mark if isinstance(done_mark, tuple) else (done_mark,)   # 1015 — 뒤에 다시 바뀐 자리는 그 표시도 '이미 넣음' 으로
+    if any(m in src for m in marks): return src
     if old not in src: raise RuntimeError("자리를 못 찾았다: " + old[:90])
     if src.count(old) != 1: raise RuntimeError("자리가 여러 곳이다: " + old[:90])
     return src.replace(old, new, 1)
@@ -58,7 +59,7 @@ function tryJobGrade(){
     queueCeremony({type:"jobgrade", k:J.k, grade:g, max, year:S.year, phase:S.phase, week:S.week+1, count:jobN(J.k)});
   });
 }'''
-    src = sub1(src, old, new, 'function jobGMap(){')
+    src = sub1(src, old, new, ('function jobGMap(){', 'function jobGrMap(){'))   # 1015 — 의뢰 등급을 하나로 (jobGrMap · 의뢰한 주)
     old = '''function jobGradeCeremony(c){
   const G = JOB_GRADES[c.grade] || jobGrade();
   return `<div class="cerhead">
@@ -69,7 +70,7 @@ function tryJobGrade(){
   return `<div class="cerhead">
       <div class="eyebrow">${yrName(c.year)} ${(PHASES[c.phase]||PHASES.spring).n} ${c.week}주를 마치고 · ${J? `${esc(J.n)} 누적` : "누적 의뢰"} ${fmt(c.count)}회</div>
       <h2 style="font-size:24px;margin-top:2px">${J? `${esc(J.n)} — ` : ""}의뢰 등급 상승</h2>'''
-    src = sub1(src, old, new, 'const J = c.k ? jobDef(c.k) : null, G = JOB_GRADES[c.grade]')
+    src = sub1(src, old, new, ('const J = c.k ? jobDef(c.k) : null, G = JOB_GRADES[c.grade]', 'function jobCerWhen('))
     src = sub1(src, 'function jobPay(){ return jobGrade().pay; }', 'function jobPay(k){ return jobGrade(k).pay; }', 'function jobPay(k){')
     # ── 이번 주 의뢰를 미리 ──
     old = '''/* 이번 주 의뢰 — 처음 의뢰가 나온 순간 정한다. 배경은 시설 배경 중 하나 (보여주기용이라 게임 난수는 쓰지 않는다)

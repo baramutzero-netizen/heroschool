@@ -1,0 +1,642 @@
+[
+  {
+    "class": "paladin",
+    "id": "guardian-vow",
+    "png": "icons/paladin/guardian-vow-96.png",
+    "aseprite": "source/paladin-square-v2/guardian-vow-96.aseprite",
+    "source": "source/paladin-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "paladin",
+    "id": "healing-light",
+    "png": "icons/paladin/healing-light-96.png",
+    "aseprite": "source/paladin-square-v2/healing-light-96.aseprite",
+    "source": "source/paladin-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "paladin",
+    "id": "holy-strike",
+    "png": "icons/paladin/holy-strike-96.png",
+    "aseprite": "source/paladin-square-v2/holy-strike-96.aseprite",
+    "source": "source/paladin-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "paladin",
+    "id": "protective-oath",
+    "png": "icons/paladin/protective-oath-96.png",
+    "aseprite": "source/paladin-square-v2/protective-oath-96.aseprite",
+    "source": "source/paladin-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "paladin",
+    "id": "sanctuary",
+    "png": "icons/paladin/sanctuary-96.png",
+    "aseprite": "source/paladin-square-v2/sanctuary-96.aseprite",
+    "source": "source/paladin-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "swordsman",
+    "id": "counter",
+    "png": "icons/swordsman/counter-96.png",
+    "aseprite": "source/swordsman-square-v2/counter-96.aseprite",
+    "source": "source/swordsman-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "swordsman",
+    "id": "earth-cleaver",
+    "png": "icons/swordsman/earth-cleaver-96.png",
+    "aseprite": "source/swordsman-square-v2/earth-cleaver-96.aseprite",
+    "source": "source/swordsman-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "swordsman",
+    "id": "iron-wall",
+    "png": "icons/swordsman/iron-wall-96.png",
+    "aseprite": "source/swordsman-square-v2/iron-wall-96.aseprite",
+    "source": "source/swordsman-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "swordsman",
+    "id": "slash",
+    "png": "icons/swordsman/slash-96.png",
+    "aseprite": "source/swordsman-square-v2/slash-96.aseprite",
+    "source": "source/swordsman-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "swordsman",
+    "id": "taunt",
+    "png": "icons/swordsman/taunt-96.png",
+    "aseprite": "source/swordsman-square-v2/taunt-96.aseprite",
+    "source": "source/swordsman-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "priest",
+    "id": "blessing",
+    "png": "icons/priest/blessing-96.png",
+    "aseprite": "source/priest-square-v2/blessing-96.aseprite",
+    "source": "source/priest-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "priest",
+    "id": "greater-heal",
+    "png": "icons/priest/greater-heal-96.png",
+    "aseprite": "source/priest-square-v2/greater-heal-96.aseprite",
+    "source": "source/priest-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "priest",
+    "id": "holy-wave",
+    "png": "icons/priest/holy-wave-96.png",
+    "aseprite": "source/priest-square-v2/holy-wave-96.aseprite",
+    "source": "source/priest-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "priest",
+    "id": "prayer",
+    "png": "icons/priest/prayer-96.png",
+    "aseprite": "source/priest-square-v2/prayer-96.aseprite",
+    "source": "source/priest-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "priest",
+    "id": "revival",
+    "png": "icons/priest/revival-96.png",
+    "aseprite": "source/priest-square-v2/revival-96.aseprite",
+    "source": "source/priest-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "darkpriest",
+    "id": "blood-rite",
+    "png": "icons/darkpriest/blood-rite-96.png",
+    "aseprite": "source/darkpriest-square-v2/blood-rite-96.aseprite",
+    "source": "source/darkpriest-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "darkpriest",
+    "id": "curse",
+    "png": "icons/darkpriest/curse-96.png",
+    "aseprite": "source/darkpriest-square-v2/curse-96.aseprite",
+    "source": "source/darkpriest-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "darkpriest",
+    "id": "dark-communion",
+    "png": "icons/darkpriest/dark-communion-96.png",
+    "aseprite": "source/darkpriest-square-v2/dark-communion-96.aseprite",
+    "source": "source/darkpriest-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "darkpriest",
+    "id": "dark-pact",
+    "png": "icons/darkpriest/dark-pact-96.png",
+    "aseprite": "source/darkpriest-square-v2/dark-pact-96.aseprite",
+    "source": "source/darkpriest-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "darkpriest",
+    "id": "dark-touch",
+    "png": "icons/darkpriest/dark-touch-96.png",
+    "aseprite": "source/darkpriest-square-v2/dark-touch-96.aseprite",
+    "source": "source/darkpriest-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "monk",
+    "id": "double-strike",
+    "png": "icons/monk/double-strike-96.png",
+    "aseprite": "source/monk-square-v1/double-strike-96.aseprite",
+    "source": "source/monk-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "monk",
+    "id": "inner-circulation",
+    "png": "icons/monk/inner-circulation-96.png",
+    "aseprite": "source/monk-square-v1/inner-circulation-96.aseprite",
+    "source": "source/monk-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "monk",
+    "id": "martial-focus",
+    "png": "icons/monk/martial-focus-96.png",
+    "aseprite": "source/monk-square-v1/martial-focus-96.aseprite",
+    "source": "source/monk-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "monk",
+    "id": "qi-wave",
+    "png": "icons/monk/qi-wave-96.png",
+    "aseprite": "source/monk-square-v1/qi-wave-96.aseprite",
+    "source": "source/monk-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "monk",
+    "id": "white-hot-fist",
+    "png": "icons/monk/white-hot-fist-96.png",
+    "aseprite": "source/monk-square-v1/white-hot-fist-96.aseprite",
+    "source": "source/monk-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "wizard",
+    "id": "arcane-bolt",
+    "png": "icons/wizard/arcane-bolt-96.png",
+    "aseprite": "source/wizard-square-v1/arcane-bolt-96.aseprite",
+    "source": "source/wizard-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "wizard",
+    "id": "elemental-resonance",
+    "png": "icons/wizard/elemental-resonance-96.png",
+    "aseprite": "source/wizard-square-v1/elemental-resonance-96.aseprite",
+    "source": "source/wizard-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "wizard",
+    "id": "flame-explosion",
+    "png": "icons/wizard/flame-explosion-96.png",
+    "aseprite": "source/wizard-square-v1/flame-explosion-96.aseprite",
+    "source": "source/wizard-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "wizard",
+    "id": "frost-barrier",
+    "png": "icons/wizard/frost-barrier-96.png",
+    "aseprite": "source/wizard-square-v1/frost-barrier-96.aseprite",
+    "source": "source/wizard-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "wizard",
+    "id": "gravity-reversal",
+    "png": "icons/wizard/gravity-reversal-96.png",
+    "aseprite": "source/wizard-square-v1/gravity-reversal-96.aseprite",
+    "source": "source/wizard-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "druid",
+    "id": "beast-form",
+    "png": "icons/druid/beast-form-96.png",
+    "aseprite": "source/druid-square-v1/beast-form-96.aseprite",
+    "source": "source/druid-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "druid",
+    "id": "natural-recovery",
+    "png": "icons/druid/natural-recovery-96.png",
+    "aseprite": "source/druid-square-v1/natural-recovery-96.aseprite",
+    "source": "source/druid-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "druid",
+    "id": "natures-wrath",
+    "png": "icons/druid/natures-wrath-96.png",
+    "aseprite": "source/druid-square-v1/natures-wrath-96.aseprite",
+    "source": "source/druid-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "druid",
+    "id": "regeneration-seed",
+    "png": "icons/druid/regeneration-seed-96.png",
+    "aseprite": "source/druid-square-v1/regeneration-seed-96.aseprite",
+    "source": "source/druid-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "druid",
+    "id": "thorn-whip",
+    "png": "icons/druid/thorn-whip-96.png",
+    "aseprite": "source/druid-square-v1/thorn-whip-96.aseprite",
+    "source": "source/druid-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "timemage",
+    "id": "delay",
+    "png": "icons/timemage/delay-96.png",
+    "aseprite": "source/timemage-square-v1/delay-96.aseprite",
+    "source": "source/timemage-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "timemage",
+    "id": "foresight",
+    "png": "icons/timemage/foresight-96.png",
+    "aseprite": "source/timemage-square-v1/foresight-96.aseprite",
+    "source": "source/timemage-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "timemage",
+    "id": "haste",
+    "png": "icons/timemage/haste-96.png",
+    "aseprite": "source/timemage-square-v1/haste-96.aseprite",
+    "source": "source/timemage-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "timemage",
+    "id": "time-fragment",
+    "png": "icons/timemage/time-fragment-96.png",
+    "aseprite": "source/timemage-square-v1/time-fragment-96.aseprite",
+    "source": "source/timemage-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "timemage",
+    "id": "time-stop",
+    "png": "icons/timemage/time-stop-96.png",
+    "aseprite": "source/timemage-square-v1/time-stop-96.aseprite",
+    "source": "source/timemage-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "archer",
+    "id": "aimed-shot",
+    "png": "icons/archer/aimed-shot-96.png",
+    "aseprite": "source/archer-square-v2/aimed-shot-96.aseprite",
+    "source": "source/archer-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "archer",
+    "id": "hawks-eye",
+    "png": "icons/archer/hawks-eye-96.png",
+    "aseprite": "source/archer-square-v2/hawks-eye-96.aseprite",
+    "source": "source/archer-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "archer",
+    "id": "meteor-arrow",
+    "png": "icons/archer/meteor-arrow-96.png",
+    "aseprite": "source/archer-square-v2/meteor-arrow-96.aseprite",
+    "source": "source/archer-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "archer",
+    "id": "piercing-arrow",
+    "png": "icons/archer/piercing-arrow-96.png",
+    "aseprite": "source/archer-square-v2/piercing-arrow-96.aseprite",
+    "source": "source/archer-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "archer",
+    "id": "sniper-stance",
+    "png": "icons/archer/sniper-stance-96.png",
+    "aseprite": "source/archer-square-v2/sniper-stance-96.aseprite",
+    "source": "source/archer-square-v2",
+    "version": "v2"
+  },
+  {
+    "class": "forcemage",
+    "id": "mana-body",
+    "png": "icons/forcemage/mana-body-96.png",
+    "aseprite": "source/forcemage-square-v1/mana-body-96.aseprite",
+    "source": "source/forcemage-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "forcemage",
+    "id": "mana-overcharge",
+    "png": "icons/forcemage/mana-overcharge-96.png",
+    "aseprite": "source/forcemage-square-v1/mana-overcharge-96.aseprite",
+    "source": "source/forcemage-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "forcemage",
+    "id": "mana-strike",
+    "png": "icons/forcemage/mana-strike-96.png",
+    "aseprite": "source/forcemage-square-v1/mana-strike-96.aseprite",
+    "source": "source/forcemage-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "forcemage",
+    "id": "shattering-strike",
+    "png": "icons/forcemage/shattering-strike-96.png",
+    "aseprite": "source/forcemage-square-v1/shattering-strike-96.aseprite",
+    "source": "source/forcemage-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "forcemage",
+    "id": "unsealing",
+    "png": "icons/forcemage/unsealing-96.png",
+    "aseprite": "source/forcemage-square-v1/unsealing-96.aseprite",
+    "source": "source/forcemage-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "bard",
+    "id": "dissonance",
+    "png": "icons/bard/dissonance-96.png",
+    "aseprite": "source/bard-square-v1/dissonance-96.aseprite",
+    "source": "source/bard-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "bard",
+    "id": "harmony",
+    "png": "icons/bard/harmony-96.png",
+    "aseprite": "source/bard-square-v1/harmony-96.aseprite",
+    "source": "source/bard-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "bard",
+    "id": "march",
+    "png": "icons/bard/march-96.png",
+    "aseprite": "source/bard-square-v1/march-96.aseprite",
+    "source": "source/bard-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "bard",
+    "id": "pluck",
+    "png": "icons/bard/pluck-96.png",
+    "aseprite": "source/bard-square-v1/pluck-96.aseprite",
+    "source": "source/bard-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "bard",
+    "id": "victory",
+    "png": "icons/bard/victory-96.png",
+    "aseprite": "source/bard-square-v1/victory-96.aseprite",
+    "source": "source/bard-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "rogue",
+    "id": "ambush",
+    "png": "icons/rogue/ambush-96.png",
+    "aseprite": "source/rogue-square-v1/ambush-96.aseprite",
+    "source": "source/rogue-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "rogue",
+    "id": "assassination",
+    "png": "icons/rogue/assassination-96.png",
+    "aseprite": "source/rogue-square-v1/assassination-96.aseprite",
+    "source": "source/rogue-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "rogue",
+    "id": "poison",
+    "png": "icons/rogue/poison-96.png",
+    "aseprite": "source/rogue-square-v1/poison-96.aseprite",
+    "source": "source/rogue-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "rogue",
+    "id": "shadow-step",
+    "png": "icons/rogue/shadow-step-96.png",
+    "aseprite": "source/rogue-square-v1/shadow-step-96.aseprite",
+    "source": "source/rogue-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "rogue",
+    "id": "weakness",
+    "png": "icons/rogue/weakness-96.png",
+    "aseprite": "source/rogue-square-v1/weakness-96.aseprite",
+    "source": "source/rogue-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "enchanter",
+    "id": "all-rune",
+    "png": "icons/enchanter/all-rune-96.png",
+    "aseprite": "source/enchanter-square-v1/all-rune-96.aseprite",
+    "source": "source/enchanter-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "enchanter",
+    "id": "magic-seal",
+    "png": "icons/enchanter/magic-seal-96.png",
+    "aseprite": "source/enchanter-square-v1/magic-seal-96.aseprite",
+    "source": "source/enchanter-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "enchanter",
+    "id": "permanent-rune",
+    "png": "icons/enchanter/permanent-rune-96.png",
+    "aseprite": "source/enchanter-square-v1/permanent-rune-96.aseprite",
+    "source": "source/enchanter-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "enchanter",
+    "id": "rune-shot",
+    "png": "icons/enchanter/rune-shot-96.png",
+    "aseprite": "source/enchanter-square-v1/rune-shot-96.aseprite",
+    "source": "source/enchanter-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "enchanter",
+    "id": "weapon-rune",
+    "png": "icons/enchanter/weapon-rune-96.png",
+    "aseprite": "source/enchanter-square-v1/weapon-rune-96.aseprite",
+    "source": "source/enchanter-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "spellsword",
+    "id": "arcane-slash",
+    "png": "icons/spellsword/arcane-slash-96.png",
+    "aseprite": "source/spellsword-square-v1/arcane-slash-96.aseprite",
+    "source": "source/spellsword-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "spellsword",
+    "id": "awakening",
+    "png": "icons/spellsword/awakening-96.png",
+    "aseprite": "source/spellsword-square-v1/awakening-96.aseprite",
+    "source": "source/spellsword-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "spellsword",
+    "id": "echo",
+    "png": "icons/spellsword/echo-96.png",
+    "aseprite": "source/spellsword-square-v1/echo-96.aseprite",
+    "source": "source/spellsword-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "spellsword",
+    "id": "thousand-blades",
+    "png": "icons/spellsword/thousand-blades-96.png",
+    "aseprite": "source/spellsword-square-v1/thousand-blades-96.aseprite",
+    "source": "source/spellsword-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "spellsword",
+    "id": "triple-v2",
+    "png": "icons/spellsword/triple-v2-96.png",
+    "aseprite": "source/spellsword-square-v1/triple-v2-96.aseprite",
+    "source": "source/spellsword-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "gunner",
+    "id": "encore",
+    "png": "icons/gunner/encore-96.png",
+    "aseprite": "source/gunner-square-v1/encore-96.aseprite",
+    "source": "source/gunner-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "gunner",
+    "id": "finale",
+    "png": "icons/gunner/finale-96.png",
+    "aseprite": "source/gunner-square-v1/finale-96.aseprite",
+    "source": "source/gunner-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "gunner",
+    "id": "greeting",
+    "png": "icons/gunner/greeting-96.png",
+    "aseprite": "source/gunner-square-v1/greeting-96.aseprite",
+    "source": "source/gunner-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "gunner",
+    "id": "knock",
+    "png": "icons/gunner/knock-96.png",
+    "aseprite": "source/gunner-square-v1/knock-96.aseprite",
+    "source": "source/gunner-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "gunner",
+    "id": "waltz",
+    "png": "icons/gunner/waltz-96.png",
+    "aseprite": "source/gunner-square-v1/waltz-96.aseprite",
+    "source": "source/gunner-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "ninja",
+    "id": "fuma",
+    "png": "icons/ninja/fuma-96.png",
+    "aseprite": "source/ninja-square-v1/fuma-96.aseprite",
+    "source": "source/ninja-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "ninja",
+    "id": "kunai",
+    "png": "icons/ninja/kunai-96.png",
+    "aseprite": "source/ninja-square-v1/kunai-96.aseprite",
+    "source": "source/ninja-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "ninja",
+    "id": "swamp",
+    "png": "icons/ninja/swamp-96.png",
+    "aseprite": "source/ninja-square-v1/swamp-96.aseprite",
+    "source": "source/ninja-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "ninja",
+    "id": "water-dragon",
+    "png": "icons/ninja/water-dragon-96.png",
+    "aseprite": "source/ninja-square-v1/water-dragon-96.aseprite",
+    "source": "source/ninja-square-v1",
+    "version": "v1"
+  },
+  {
+    "class": "ninja",
+    "id": "water-mirage",
+    "png": "icons/ninja/water-mirage-96.png",
+    "aseprite": "source/ninja-square-v1/water-mirage-96.aseprite",
+    "source": "source/ninja-square-v1",
+    "version": "v1"
+  }
+]

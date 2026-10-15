@@ -6,7 +6,7 @@ game.html 의 아래 기능은 손으로 쓴 코드가 아니라 이 폴더의 �
 | 기능 | 넣는 스크립트 | 블록 원본 | 그림 |
 |---|---|---|---|
 | 두루마리 스케줄 (넓은 화면) | `patch/apply_sched.py` | `patch/sched_block.js` · `sched_block.css` | `patch/sched_art.py` → `assets/sched_art/` (WebP) |
-| 의뢰 (이번 주 의뢰 · 의뢰처별 등급) | `patch/apply_job.py` (apply_sched 가 같이 부른다) | 스크립트 안 | — |
+| 의뢰 (이번 주 의뢰 · 의뢰처별 등급) | `patch/apply_job.py` (apply_sched 가 같이 부른다 · 1015 — 의뢰 등급을 하나로 합친 뒤에도 '이미 넣음' 으로 지나간다. 그 합치기는 game.html 을 직접 고쳤고, 두루마리 의뢰 쪽지는 `sched_block.js` 와 game.html 블록을 같은 글로 고친 뒤 지문만 다시 적었다) | 스크립트 안 | — |
 | 마스터 노트 책상 | `patch/apply_desk.py` | `patch/mdesk_block.js` · `mdesk_block.css` | `patch/desk_art.py` → `patch/desk_out/` → `assets/mdesk_art/` (WebP) |
 | 원정 3구간 (원정지 깊이 · 구간 보상 · 잡몹 배율 — 아래) | `patch/apply_exped3.py` | 스크립트 안 | — |
 | 행동 지침 무시 (주 시작 판정 · 상담 이벤트 · 결산 창 문구 · 튜토리얼 14 — 아래) | `patch/apply_defy.py` | 스크립트 안 | — |
@@ -16,6 +16,7 @@ game.html 의 아래 기능은 손으로 쓴 코드가 아니라 이 폴더의 �
 | 락커룸 창 (경기 직전 한마디 — 출전해 경기 화면에 들어서면 같이 뜨는 창 — 아래) | `patch/apply_lkwin.py` (apply_cslwin 뒤) | `patch/lkwin_block.js` · `lkwin_block.css` | — (쿼터뷰 지도 · 전투 도트 · 상담창 구름을 그대로 쓴다) |
 | 스킬 강화 창 배치 (창 안 요소의 자리 · 크기 · 넓은 화면 / 폰 따로 — 아래) | `patch/apply_skup.py` (아무 때나 — 한 줄만 바꾼다) | `patch/skup_layout.json` (배치 실험실 `tools/skill_upgrade_lab.html` 이 저장) | — |
 | 학생 명부 책 (가로 넓은 화면 — 책상의 펼친 책 · 메뉴의 학생 명부 · 팀 편성을 누르면 뜨는 책 — 아래) | `patch/apply_roster.py` | `patch/roster_block.js` · `roster_block.css` + 목업 원본 `mockups/student-roster/src/roster_tpl.html` 의 CORE_CSS · CORE_HTML | `mockups/student-roster/art/book.png` · `ribbon.png` → `assets/roster_art/` (WebP) |
+| 스킬 아이콘 (그림 80 · 등급 테두리 · 안쪽 바탕 둥근 광택 — 아래) | `patch/apply_skicon.py` (아무 때나 — 그림과 지도 네 줄만) | 스크립트 안 (`ICONS` · `FRAME_PAL` · `bg_of`) | `tools/newskillicon` → `assets/skill-icons/` (무손실 WebP) |
 | PNG → WebP (게임이 받는 그림 일부 — 아래) | `patch/apply_webp.py` (다른 apply 를 다 돌린 뒤 · wrap 앞) | 스크립트 안 | 원래 PNG 옆에 같은 이름의 `.webp` |
 | 전투 치명타 숫자 높이 · 학원 이름 맞추기 · 친선전 전부 거절 재확인 · 고른 칸 강조선 · 3인 리그 · 봄 신인전 시내 대회 필드 · 대회 쿼터뷰 제목 칸 · 줌 · 클로즈업 · 쿼터뷰 지도 11장 · 쿼터뷰 경기 이름(BATTLE START 동안) · 진영 칸 나무판 · 범례 숨김 · 실험실 확대 · 이동을 받는 쿼터뷰 지도 · 이름 길이만큼 늘어나는 진영 칸 · 경기 이름 맞춤(왼쪽 · 가운데 · 오른쪽) · 화면 · 배너를 나무 테두리 가운데로 | `patch/apply_crit.py` · `apply_acadfit.py` · `apply_fdecline.py` · `apply_optsel.py` · `apply_lgfield.py` · `apply_rookiefield.py` · `apply_tq.py` → `apply_tqcam.py` → `apply_tqmaps.py` → `apply_tqui.py` → `apply_tqfield.py` → `apply_tqgrow.py` → `apply_tqalign.py` → `apply_tqcenter.py` | 스크립트 안 | — |
 | 스타일리시 전투 체크포인트 ① 기술 선택 · ② 정신력 시험 (영웅의 기상 원화 · 효과음 · 영어 · 일본어 표 — 아래) | game.html 을 직접 고쳤다 (블록 아님) · `heroic/i18n_hr.py` (영어 · 일본어 표) | — | `heroic/heroic_art.py` → `assets/heroic/` (WebP 90) + `heroic/HR_ART.js.txt` · `heroic/sfx_synth.py` → `bgm/pick_*` · `test_*` (.ogg) |
@@ -46,6 +47,7 @@ python tools/gen/patch/apply_cslwin.py game.html                                
 python tools/gen/patch/apply_lkwin.py  game.html                                   # 락커룸 창 (apply_cslwin 뒤 — 창 블록을 고쳤으면 다시)
 python tools/gen/patch/apply_roster.py game.html                                   # 학생 명부 책 (목업 원본 · 책 그림 · 배치 · 책 블록을 고쳤으면 다시)
 python tools/gen/patch/apply_skup.py  game.html                                   # 스킬 강화 창 배치 (skup_layout.json 을 바꿨으면 — SK_CHOICE_LAYOUT 한 줄만)
+python tools/gen/patch/apply_skicon.py game.html                                   # 스킬 아이콘 (tools/newskillicon 의 그림 · 테두리 색 · 바탕을 바꿨으면 — 그림 92장 · 지도 네 줄)
 python tools/gen/patch/apply_webp.py  game.html                                   # PNG → WebP (바뀐 게 없으면 그대로)
 python tools/gen/patch/apply_optx.py  game.html                                   # 오프닝 글 (장면 · 글 · 효과를 고쳤으면 다시 — 글을 바꿨으면 optx_fonts.py 먼저)
 python wrap.py
@@ -250,6 +252,25 @@ python wrap_site.py
 - 스킬 이름이 칸보다 긴 낱말이면(영어 'Assassination' 등) 글자 중간에서 끊지 않고 그 낱말이 들어가게 글자를 줄인다 (`skChoiceNameFit` — 말풍선 너비를 줄여도 따라간다).
 - 완료 화면의 결과 칸은 높이가 글 길이대로라(효과 줄 1 ~ 2 · 폰은 이름도 두 줄) 확인 단추에 닿으면 단추를 결과 칸 아래 12px 로 내리고 창을 그만큼 늘린다
   (`skChoiceDoneFit` — 재작업 CSS 의 세로 흐름과 같게). 배치를 바꾼 뒤에는 실험실에서 직업을 바꿔 가며 완료 화면을 본다.
+
+### 스킬 아이콘 (`apply_skicon.py` · 1015)
+
+- 사용자: '새로운 스킬 아이콘들하고 테두리를 tools/newskillicon 폴더에 넣어두고 … 테두리는 등급에 맞춰서 색 변조해서 쓰고' → 목업 `mockups/new-skill-icon/`(PC) →
+  '옅은 등급색인데 살짝 그라데이션하고 글로스를' → '둥근 광택으로 게임에 적용'.
+- **그림** — `tools/newskillicon/icons/<폴더>/<이름>-96.png` 80장(96 × 96 · 투명 바탕)을 무손실 WebP 로 `assets/skill-icons/` 에 굽는다.
+  자리는 지금 `SKILL_ICON_ART`(64) · `SKILL_ICON_PASSIVE`(16)가 가리키는 파일 그대로 덮어쓴다 — 파일 이름은 예전 것(`pierce.webp` 등)이라 남는 파일이 없다.
+  기술 ↔ 새 그림 표는 스크립트의 `ICONS` (직업마다 기본기 · 스킬 1 · 스킬 2 · 필살기 · 패시브 · 소드맨만 묶음 폴더가 `swordsman`).
+  `assets/skill-icons/manifest.json`(자리 · 기술 이름 · 원본 · 크기 · 해시)도 쓴다 — 같은 폴더 `README.md` 는 손으로 쓴 설명.
+- **등급 테두리** — 공용 테두리 `frame/square-frame-96.png` 의 네 색(외곽선 · 어두운 면 · 가운데 · 밝은 면)만 등급 색으로 바꾼다(`FRAME_PAL` — 예전 테두리와 같은 차례:
+  D 회색 · C 초록 · B 파랑 · A 보라 · S 금(원래 색) · EX 분홍) → `frame-<등급>.webp` 96 × 96 (가운데가 비어 있다).
+- **안쪽 바탕** — `bg-<등급>.webp` 96 × 96 도트: 옅은 등급색(예전 테두리의 가운데 색 `TINT`)에서 위 · 왼쪽 밝게(흰색 35%) · 아래 · 오른쪽 등급 색(테두리 가운데 색 38%) +
+  위쪽 반달 흰 광택(72% → 30% · 아래 끝이 또렷한 곡선) + 왼쪽 위 반짝임. `BG_STYLE` 을 `tint` · `grad` · `diag` 로 바꾸면 목업의 다른 바탕 (세기는 `GRAD_*` · `GLOSS_*`).
+- **game.html 지도 네 줄** — `SKILL_ICON_ART` · `SKILL_ICON_PASSIVE` · `SKILL_ICON_FRAME` · `SKILL_ICON_BG` 의 `?v=`(sha256 앞 10자리)만 다시 쓴다 (`SKILL_ICON_BG` 줄이 없으면 FRAME 다음에 넣는다).
+- **칸 그리기 (손으로 쓴 코드)** — 칸마다 바탕 · 그림 · 테두리 img 셋을 칸 가득 겹친다 (테두리가 맨 위 · 새 그림은 안에 여백이 있어 예전처럼 84% 로 줄이지 않는다):
+  `skillIconHtml`(기술 카드 · 전수 · 비교 창 · 스킬 강화 창 — `.skill-icon`) · 스타일리시 기술 선택 상자(`camPick` 의 `icon` — `.cp-reel` · `.cp-ic`) ·
+  학생 명부 책(`roster_block.js` · CSS 는 목업 원본 `roster_tpl.html` 의 `.sk .ic` → apply_roster).
+  그리기: 그림은 48 이하 부드럽게(`auto` — 픽셀 그대로 줄이면 점이 빠져 지글거린다) · 스킬 강화 창 80 은 픽셀 그대로 · 바탕 · 테두리는 늘 픽셀 그대로.
+  스킬 강화 창 선택지는 `<button>` 이라 도트 테마의 `html[data-ui-finish="pixel"] … button img{auto}` 가 이기지 않게 `.suc-scene .skill-icon>img:is(…)` (0,3,1).
 
 ### 학생 명부 책 (`apply_roster.py` · 1009)
 

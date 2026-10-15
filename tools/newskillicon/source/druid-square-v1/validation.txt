@@ -1,0 +1,5 @@
+thorn-whip: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+natural-recovery: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+regeneration-seed: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+beast-form: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+natures-wrath: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame

@@ -1,0 +1,5 @@
+slash: content fit 86x85 px; canvas 96x96; RGBA; transparent background; no frame
+counter: content fit 86x85 px; canvas 96x96; RGBA; transparent background; no frame
+taunt: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+iron-wall: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+earth-cleaver: content fit 85x86 px; canvas 96x96; RGBA; transparent background; no frame

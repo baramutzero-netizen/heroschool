@@ -1,0 +1,5 @@
+arcane-bolt: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+elemental-resonance: content fit 86x85 px; canvas 96x96; RGBA; transparent background; no frame
+flame-explosion: content fit 86x84 px; canvas 96x96; RGBA; transparent background; no frame
+frost-barrier: content fit 85x86 px; canvas 96x96; RGBA; transparent background; no frame
+gravity-reversal: content fit 86x85 px; canvas 96x96; RGBA; transparent background; no frame

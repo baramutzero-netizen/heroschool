@@ -1,0 +1,5 @@
+holy-wave: content fit 86x85 px; canvas 96x96; RGBA; transparent background; no frame
+prayer: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+greater-heal: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+blessing: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+revival: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame

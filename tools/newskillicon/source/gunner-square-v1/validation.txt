@@ -1,0 +1,5 @@
+greeting: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+encore: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+waltz: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+knock: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
+finale: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
