@@ -42,6 +42,10 @@ private/
 /site/bgm/
 /sprites/
 /ui/
+# 개발 도구 · 원본 · 세션 문서 (1016 — 사용자: '깃헙에 tools 폴더 올릴 필요 없을꺼같은데').
+# 빌드(wrap.py · wrap_site.py)가 읽는 영어 · 일본어 표 tools/i18n 만 올린다 — 없으면 한국어만으로 빌드된다
+/tools/*
+!/tools/i18n/
 
 # 음악 · 효과음 원본 (게임은 bgm/*.ogg 만 읽는다)
 /bgm/*.wav

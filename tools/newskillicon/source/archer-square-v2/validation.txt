@@ -1,5 +1,0 @@
-aimed-shot: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
-sniper-stance: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
-piercing-arrow: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
-hawks-eye: content fit 86x84 px; canvas 96x96; RGBA; transparent background; no frame
-meteor-arrow: content fit 86x78 px; canvas 96x96; RGBA; transparent background; no frame

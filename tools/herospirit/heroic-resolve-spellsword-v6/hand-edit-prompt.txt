@@ -1,3 +1,0 @@
-Edit existing V5 full-body chibi pixel-art spellsword. Preserve identity, proportions, red high ponytail, blue bow, navy white gold outfit, brown tall leather boots, both eyes closed, meditative passionate buildup pose.
-Both hands anatomically natural, exactly five fingers including thumb. Raised hand: one extended index finger pointing up, middle/ring/little fingers curled into palm, single thumb resting across them. No extra digits or duplicated knuckles. Lower hand naturally grips sword hilt, thumb and four fingers with natural occlusion.
-Entire body and fingertip within canvas, transparent margins. Transparent background, no text, no additional effects. ImageGen edit from V5; no palette conversion or rim recoloring.

@@ -1,5 +1,0 @@
-rune-shot: content fit 86x85 px; canvas 96x96; RGBA; transparent background; no frame
-permanent-rune: content fit 86x85 px; canvas 96x96; RGBA; transparent background; no frame
-weapon-rune: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
-magic-seal: content fit 85x86 px; canvas 96x96; RGBA; transparent background; no frame
-all-rune: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame

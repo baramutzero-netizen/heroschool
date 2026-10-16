@@ -1,5 +1,0 @@
-arcane-slash: content fit 84x86 px; canvas 96x96; RGBA; transparent background; no frame
-echo: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
-triple: content fit 86x85 px; canvas 96x96; RGBA; transparent background; no frame
-awakening: content fit 85x86 px; canvas 96x96; RGBA; transparent background; no frame
-thousand-blades: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame

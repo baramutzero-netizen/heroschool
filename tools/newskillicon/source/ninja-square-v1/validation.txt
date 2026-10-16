@@ -1,5 +1,0 @@
-kunai: content fit 86x85 px; canvas 96x96; RGBA; transparent background; no frame
-water-mirage: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
-swamp: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
-water-dragon: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
-fuma: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame

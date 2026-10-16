@@ -1,5 +1,0 @@
-double-strike: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
-martial-focus: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
-qi-wave: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
-inner-circulation: content fit 86x85 px; canvas 96x96; RGBA; transparent background; no frame
-white-hot-fist: content fit 86x84 px; canvas 96x96; RGBA; transparent background; no frame

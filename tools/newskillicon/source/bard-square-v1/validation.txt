@@ -1,5 +1,0 @@
-pluck: content fit 86x85 px; canvas 96x96; RGBA; transparent background; no frame
-harmony: content fit 86x85 px; canvas 96x96; RGBA; transparent background; no frame
-march: content fit 86x85 px; canvas 96x96; RGBA; transparent background; no frame
-dissonance: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
-victory: content fit 86x85 px; canvas 96x96; RGBA; transparent background; no frame

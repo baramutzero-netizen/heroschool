@@ -1,5 +1,0 @@
-mana-strike: content fit 86x85 px; canvas 96x96; RGBA; transparent background; no frame
-mana-body: content fit 86x85 px; canvas 96x96; RGBA; transparent background; no frame
-shattering-strike: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
-mana-overcharge: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
-unsealing: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame

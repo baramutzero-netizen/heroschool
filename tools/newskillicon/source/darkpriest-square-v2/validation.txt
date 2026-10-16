@@ -1,5 +1,0 @@
-dark-touch: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
-dark-pact: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
-blood-rite: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
-curse: content fit 85x86 px; canvas 96x96; RGBA; transparent background; no frame
-dark-communion: content fit 86x86 px; canvas 96x96; RGBA; transparent background; no frame
