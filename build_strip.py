@@ -5,6 +5,7 @@ game.html(개발본)에는 그대로 남기고, heroschool.html · site/index.ht
   설정의 켜기 칸. 게임이 부르는 viewPlan · bindChronicle · chronicleAdvance 는 원래 화면으로 가는 껍데기만 남긴다.
 · 애니메이션 테스트 — AVATAR_LAB 블록 전체와 설정의 열기 칸.
 · 스킬 강화 창 배치 실험실 (1013) — SKUP_LAB 블록 전체 (tools/skill_upgrade_lab.html 이 game.html?skuplab 으로만 쓴다).
+· 마을 건물 안 배치 실험실 (1016) — TINLAB 블록 전체 (tools/townin_lab.html 이 game.html?tinlab 으로만 쓴다).
 """
 import re
 
@@ -19,6 +20,11 @@ SKUP_STUB = ("/* SKUP_LAB_START */\n"
              "const SKUP_LAB = null;\n"
              "function skupLabBoot(){}\n"
              "/* SKUP_LAB_END */")
+TINLAB_STUB = ("/* TINLAB_START */\n"
+               "/* 배포 빌드 — 마을 건물 안 배치 실험실은 빠져 있다 (build_strip.py) */\n"
+               "const TIN_LAB = null;\n"
+               "function tinLabBoot(){}\n"
+               "/* TINLAB_END */")
 AVATAR_STUB = ("/* AVATAR_LAB_START */\n"
                "/* 배포 빌드 — 애니메이션 테스트는 빠져 있다 (build_strip.py) */\n"
                "function openAvatarLab(){}\n"
@@ -47,6 +53,7 @@ def strip_dev(src):
     src = _cut(src, "/* CHRONICLE_JS_START */", "/* CHRONICLE_JS_END */", CHRON_JS_STUB, "chron-js")
     src = _cut(src, "/* AVATAR_LAB_START */", "/* AVATAR_LAB_END */", AVATAR_STUB, "avatar")
     src = _cut(src, "/* SKUP_LAB_START", "/* SKUP_LAB_END */", SKUP_STUB, "skup-lab")   # 1013 — 스킬 강화 창 배치 실험실 (?skuplab)
+    src = _cut(src, "/* TINLAB_START", "/* TINLAB_END */", TINLAB_STUB, "tin-lab")   # 1016 — 마을 건물 안 배치 실험실 (?tinlab)
     src = _cut_panel(src, "진행 페이지 테스트 모드", "진행 페이지 테스트 모드")
     src = _cut_panel(src, "애니메이션 테스트", "애니메이션 테스트")
     print(f"build_strip: 테스트 기능 제외 -{(before-len(src))/1e6:.2f}MB")

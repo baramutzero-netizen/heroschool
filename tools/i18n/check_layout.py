@@ -27,7 +27,9 @@ import check_i18n as C
 SCENES = r"""(() => {
   const RBC = () => { if (window.RBK && RBK.isOpen()) RBK.close(true); };
   const V = v => () => { RBC(); closeModal(); UI.view = v; render(); };
-  const fac = k => () => { RBC(); closeModal(); UI.view = 'facil'; UI.facTab = k; render(); };
+  /* 1016 — 넓은 화면 마을은 건물 안 창(TOWNIN) — facil_* 는 상품 단계로 넘겨 잰다 (글자 찍기 · 효과 기다림 없이) */
+  const tinGo = step => { if (typeof TIN === 'undefined' || !document.querySelector('#view .tin')) return; tinStop(); TIN.typed = true; TIN.rwdOn = !!TIN.rwd; TIN.step = step; render(); };
+  const fac = k => () => { RBC(); closeModal(); UI.view = 'facil'; UI.facTab = k; render(); tinGo('shop'); };
   const sc = {};
   ['home','master','roster','team','plan','relic','skill','counsel','league','lgentry','spshop','rank','log','csllog','record','codex','opt']
     .forEach(v => sc[v] = V(v));
@@ -37,6 +39,11 @@ SCENES = r"""(() => {
     sc['rbook_team'] = () => { RBC(); closeModal(); UI.view = 'home'; render(); RBK.open({mode: 'team'}); };
   }
   facTabs().forEach(t => sc['facil_' + t.k] = fac(t.k));
+  if (typeof TIN !== 'undefined') {   // 1016 — 건물 안 창의 인사 · 선택지 (도구점) · 평소 없는 손님(주점 — 효과 · 닫기). 좁은 화면은 예전 마을 그대로
+    sc['facil_tin'] = () => { RBC(); closeModal(); tinReset(); UI.view = 'facil'; UI.facTab = 'item'; render(); tinGo('menu'); };
+    sc['facil_tinev'] = () => { RBC(); closeModal(); tinReset(); UI.view = 'facil'; UI.facTab = null; townEvState().cur = {k: 'tavern', ph: townEvKey()}; render();
+      if (tinOn()) { tinOpen('tavern'); tinGo('menu'); } };
+  }
   sc['mission'] = () => { RBC(); closeModal(); UI.view = 'home'; render(); missionModal(); };
   sc['newscen'] = () => { RBC(); closeModal(); UI.view = 'home'; render(); askAcademyName(); };   // 새 시나리오 — 학원 이름 · 난이도 · 시작 빚 (1011)
   [1,2,3,4,5,6,7,8,9,10,11,12,13,14].forEach(k => sc['tut' + k] = () => { RBC(); closeModal(); showModal(tutGuideHTML(k)); });

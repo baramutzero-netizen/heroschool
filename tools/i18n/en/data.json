@@ -406,5 +406,16 @@
  "신탁의 목걸이": "Oracle's Pendant",
  "봉인된 인장": "Sealed Signet",
  "_FORM_PLUS_SUFFIX": "",
- "·改": "+"
+ "·改": "+",
+ "_TIN_NPC": "",
+ "건축을 부탁한다": "Request a Build",
+ "작업장을 나선다": "Leave the Workshop",
+ "물건을 구입한다": "Buy Goods",
+ "가게를 나선다": "Leave the Shop",
+ "은행을 이용한다": "Use the Bank",
+ "은행을 나선다": "Leave the Bank",
+ "교회에 들어간다": "Enter the Church",
+ "교회를 나선다": "Leave the Church",
+ "드래프트 홀에 들어간다": "Enter the Draft Hall",
+ "드래프트 홀을 나선다": "Leave the Draft Hall"
 }
