@@ -13,7 +13,7 @@ check_i18n.py 와 같은 빌드(변환함 · 그림은 저장소 것)를 같은 
 를 모은다. 같은 화면을 한국어로도 재서 한국어에도 있는 것은 빼고 영어에서 새로 생긴 것만 알린다 (하나라도 있으면 실패).
 영어 화면에 남은 한글(글 · title · aria-label 등)도 모은다 — 언어 이름 '한국어' · 'Language · 언어' 말고는 하나라도 있으면 실패 (5단계).
 단추 · 제목 · 표 머리처럼 짧은 칸이 한국어보다 줄이 늘어난 것은 넘침이 아니라 개수만 알린다 (--wrap 이면 목록).
-화면: 메뉴 화면 전부 · 마을 탭 · 학생 명부 책 · 목표 · 새 시나리오(난이도) · 운영 안내 14장 · 스킬 강화 · 상담창 · 이야기 팝업(4단계 — cer_*) · 프롤로그 · 마을 손님
+화면: 메뉴 화면 전부 · 마을 탭 · 학생 명부 책(유물 보관고 — rbook_vault · rbook_vault_sel) · 목표 · 새 시나리오(난이도) · 운영 안내 14장 · 스킬 강화 · 상담창 · 이야기 팝업(4단계 — cer_*) · 프롤로그 · 마을 손님
     · 경과 보고 · 대회(시내 · 광역 · 신인전) · 전투.
 바깥 주소는 전부 막는다. --shots 를 주면 영어 화면을 크기별로 찍어 둔다 (--ko-shots 면 한국어도 · --full 이면 세로 화면은 페이지 전체).
 """
@@ -37,6 +37,12 @@ SCENES = r"""(() => {
   if (window.RBK && RBK.on()) {
     sc['rbook_detail'] = () => { RBC(); closeModal(); UI.view = 'home'; render(); RBK.open({mode: 'detail', sel: S.students[0].id}); };
     sc['rbook_team'] = () => { RBC(); closeModal(); UI.view = 'home'; render(); RBK.open({mode: 'team'}); };
+    /* 1017 · 유물 보관고(3단계) — 책의 왼쪽 쪽 · 보관함 첫 유물을 고른 살펴보기 */
+    if (RBK.vault) {
+      sc['rbook_vault'] = () => { RBC(); closeModal(); UI.view = 'home'; render(); RBK.open({mode: 'detail', sel: S.students[0].id, vault: true}); };
+      sc['rbook_vault_sel'] = () => { RBC(); closeModal(); UI.view = 'home'; render(); RBK.open({mode: 'detail', sel: S.students[0].id, vault: true});
+        const t = document.getElementById('rbHost').shadowRoot.querySelector('#vgrid .rvt'); if (t) RBK.vault.select(t.dataset.u); };
+    }
   }
   facTabs().forEach(t => sc['facil_' + t.k] = fac(t.k));
   if (typeof TIN !== 'undefined') {   // 1016 — 건물 안 창의 인사 · 선택지 (도구점) · 평소 없는 손님(주점 — 효과 · 닫기). 좁은 화면은 예전 마을 그대로

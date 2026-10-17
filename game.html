@@ -4950,7 +4950,7 @@ const RELIC_DB = {
     {"k":"trea","n":"보물","g":["A","S"],"d":"이름난 물건. 여러 개 생길 수 있지만 드물다."},
     {"k":"legend","n":"전설","g":["S"],"d":"세상에 하나뿐 — 학원에 있으면 다시 나오지 않는다. 이계에서만, 같은 S 물건보다 다섯 배 드물게.","unique":1,"w":0.2},
   ],
-  jobTier:{"k":"job","n":"직업 유물","g":["B","A","S"],"unique":1,"d":"그 직업 학생이 알아보는 물건. 세상에 하나뿐 — 잠든 채(B)로 와서, 그 직업 학생이 끼고 이길수록 깨어난다."},
+  jobTier:{"k":"job","n":"공명 유물","g":["B","A","S"],"unique":1,"d":"그 직업 학생이 알아보는 물건. 세상에 하나뿐 — 잠든 채(B)로 와서, 그 직업 학생이 끼고 이길수록 깨어난다."},
   scopes:{"party":{"n":"장착 원정대","one":1},"wearer":{"n":"장착 학생"},"academy":{"n":"학원 · 보유 시","one":1},"match":{"n":"출전 · 보유 시","one":1}},
   oneTxt:"동일 효과는 가장 높은 하나만",
   fx:{
@@ -5232,7 +5232,32 @@ function relicRec(how, o){ return Object.assign({y:S.year, ph:S.phase, wk:S.week
 function relicMake(K, g, rec){
   const r = {id:"r" + RNG().toString(36).slice(2, 9), kind:K.id, grade:g, name:K.n, aff:relicAffOf(K, g), rec:rec || null};
   if(K.job) r.wins = 0;                              // 깨어남 — 그 직업 학생이 끼고 이긴 전투 (2단계)
+  return relicFresh(r);
+}
+/* 얻은 차례 · 새로 얻음 (3단계 — 책의 유물 보관고: '최근 얻은 순' · 빨간 점) — r.t = S.relicSeq (하나씩 오른다) · r.nw = 1 (누르거나 끼면 지운다).
+   새로 얻는 곳: relicMake(원정 · 마을 손님) · SP 상점 EX · 합성. 난수는 쓰지 않는다 */
+function relicFresh(r, old){
+  if(!r || !S) return r;
+  if(typeof r.t !== "number"){ S.relicSeq = (S.relicSeq | 0) + 1; r.t = S.relicSeq; }
+  if(!old) r.nw = 1;
   return r;
+}
+/* 차례가 없는 유물(예전 세이브 · 새 학생이 가져온 것)에 매긴다 — 찾은 때(rec) · 보관함 → 학생 차례. 새로 얻음은 달지 않는다 */
+function relicStampAll(){
+  if(!S) return;
+  const L = (S.relicPool || []).concat(...(S.students || []).map(st=> st.relics || [])).filter(r=> r && typeof r.t !== "number");
+  if(!L.length) return;
+  const PH = Object.keys(PHASES), when = r=> r.rec ? ((r.rec.y | 0) * 10 + Math.max(0, PH.indexOf(r.rec.ph))) * 100 + (r.rec.wk | 0) : -1;
+  L.map((r, i)=> ({r, i, w:when(r)})).sort((a, b)=> a.w - b.w || a.i - b.i).forEach(o=> relicFresh(o.r, true));
+}
+/* 학생의 첫 빈 칸에 (칸 사이의 빈 칸부터 — 3단계: 해제는 자리대로라 st.relics 사이에 null 이 있다). 새로 얻음은 지운다 */
+function relicPutFirst(st, r){
+  if(!st || !r) return;
+  st.relics = st.relics || [];
+  delete r.nw;
+  const n = relicSlots(st);
+  for(let i = 0; i < n; i++) if(!st.relics[i]){ st.relics[i] = r; return; }
+  st.relics.push(r);
 }
 /* 원정에서 얻는 유물 — 이긴 구간마다 (그뉵이용은 확정) · 직업 유물은 그 직업 학생이 알아본다. res.relics · res.charmN · res.jobFinds 를 채운다 */
 function relicExpedDrops(dg, team, res){
@@ -5352,6 +5377,7 @@ function relicMigrate(){
   (S.relicPool || []).forEach(fix);
   (S.students || []).forEach(st=> (st.relics || []).forEach(fix));
   (S.graduates || []).forEach(g=> (g && g.relics || []).forEach(fix));
+  relicStampAll();                                   // 3단계 — 얻은 차례 (보관고의 최근 얻은 순)
 }
 /* 서버로 보내는 유물 이름 — 128종은 한국어 원문 (koData 가 되돌리지 못하는 이름도) */
 function relicKoName(r){ const K = relicKindOf(r); return K ? K.ko : String((r && r.name) || ""); }
@@ -10050,7 +10076,7 @@ function synthDo(){
   S.gold -= cost;
   const R = synthRoll(plan);
   S.relicPool = (S.relicPool||[]).filter(r=> r!==A && r!==B);
-  S.relicPool.push(R);
+  S.relicPool.push(relicFresh(R));   // 1017 · 3단계 — 얻은 차례 · 새로 얻음
   const plus = R.grade === "S+";
   logE(`유물 합성 — <b style="color:${GRADE_COLOR.S}">${esc(A.name)}</b> + <b style="color:${GRADE_COLOR.S}">${esc(B.name)}</b> → <b style="color:${GRADE_COLOR[R.grade]}">${esc(R.name)}</b> (${R.grade}) · 자금 -${fmt(cost)}`, plus? "big" : "good");
   UI.synth = null;
@@ -10125,7 +10151,7 @@ function relicSwapModal(poolIdx, sid){
       if(want.grade==="EX" && old.grade!=="EX" && exCount(s) >= EX_PER_STUDENT) return;
       const cur = S.relicPool.indexOf(want); if(cur<0) return;
       S.relicPool.splice(cur,1);
-      s.relics[pick] = want;
+      s.relics[pick] = want; delete want.nw;
       addRelicToPool(old);
       logE(`<b>${dnH(s)}</b> 유물 교체 — <b style="color:${GRADE_COLOR[old.grade]}">${esc(old.name)}</b> → <b style="color:${GRADE_COLOR[want.grade]}">${esc(want.name)}</b>`,"good");
       closeModal(); save(); render(); toast(`${dn(s)} · ${want.name} 장착`);
@@ -12166,7 +12192,8 @@ function cslRecHtml(d){
    · 책의 모양(CSS) · 뼈대(HTML)는 목업 원본(roster_tpl.html 의 CORE_CSS · CORE_HTML)을 apply_roster 가 그대로 가져와 넣는다 — 이 파일은 그 위에서 도는 게임 쪽 코드
    · 그림자 DOM(#rbHost) 안에 그린다 — 게임 CSS(.tag · .slot · 도트 테마의 button 등)와 책 CSS 가 서로 섞이지 않게. 글꼴은 게임의 @font-face 를 그대로 쓴다
    · 왼쪽 쪽: 학생 목록(정렬을 따라가는 꼬리표 · S.opts.rbsort) / 오른쪽 쪽: 학생 상세 또는 팀 편성(명부 머리의 '팀 편성'으로 바꾼다)
-   · 게임에 바로 반영 — 팀 편성은 S.teams 를 게임 함수(teamAssign · autoFillAllTeams · formOf …)로, 이름 변경 ✎ · 스킬 강화 · 스킬 임의로 강화(정렬 옆)는 게임 팝업, 유물 해제는 보관함으로.
+   · 게임에 바로 반영 — 팀 편성은 S.teams 를 게임 함수(teamAssign · autoFillAllTeams · formOf …)로, 이름 변경 ✎ · 스킬 강화 · 스킬 임의로 강화(정렬 옆)는 게임 팝업.
+     유물(1017 · 3단계)은 왼쪽 쪽이 유물 보관고로 바뀌어 끌어서 장착 — rvault_block.js (apply_roster 가 자리표 RB_VAULT 에 넣는다) · rvault_block.css.
      신뢰 한마디 · 훈련 성공률 · 부상 · 개인 행동은 넣지 않았다 (사용자 요청)
    · 배치(art/roster_layout.json — 학생 명부 배치판)는 RB_LAYOUT 으로 들어간다. 책은 창 크기에 맞춰 통째로 줄인다(1배까지)
    · 닫기: × · Esc · 책 바깥 누르기. 닫으면 게임 화면을 다시 그린다 */
@@ -12174,10 +12201,12 @@ const ROSTER_ART = {"book":"assets/roster_art/book.webp?v=b5899c72","ribbon":"as
 /* 전투 능력치 탭의 이름 (1011) — 게임의 BATTLE 이름과 같은 한국어지만 맨 위 선언을 따로 두어, 영어는 책 칸에 맞춘 짧은 이름으로 옮긴다
    (영어 표 문맥 키 `RB_BAT_N|스킬 성공률` 등 → Skill Acc. · Skill Res. · Crit Res. · Daze Res. · Cond. — 학생 상세 · 유물 같은 다른 화면은 그대로) */
 const RB_BAT_N = {skAcc:"스킬 성공률", skRes:"스킬 저항률", critRes:"받는 크리 감소", willCut:"의식 저하 경감", cond:"컨디션"};
+/* 유물 보관고(1017 · 3단계)의 짧은 단추 글 — 다른 화면의 같은 한국어와 뜻이 달라(경과 보고의 '해제' = Removed 등) 맨 위 선언을 따로 둔다 (영어 표 문맥 키 RV_TXT|해제 …) */
+const RV_TXT = {un:"해제", eq:"장착", syn:"합성", res:"공명"};
 (() => {
 const RB_LAYOUT_SRC = {"items":{"lring":{"x":-1,"y":2,"size":100},"ltag":{"x":0,"y":0},"lepi":{"x":0,"y":0},"lname":{"x":0,"y":0},"dring":{"x":0,"y":0,"size":108},"dname":{"x":11,"y":0},"dtags":{"x":10,"y":0},"bub":{"x":0,"y":0},"xbtn":{"x":-8,"y":9},"sort":{"x":0,"y":0},"ebtn":{"x":0,"y":0},"rtabs":{"x":0,"y":0},"ribbon":{"x":20,"y":22},"tbtn":{"x":0,"y":0},"spbtn":{"x":0,"y":0}},"face":{"jobs":{"paladin":{"scale":0.93,"x":0,"y":9.5},"sword":{"scale":0.95,"x":0,"y":4},"monk":{"scale":1.04,"x":-5.5,"y":2},"archer":{"scale":1.02,"x":0,"y":9},"rogue":{"scale":1.02,"x":0,"y":2.5},"priest":{"scale":0.98,"x":0.5,"y":8},"timemage":{"scale":1.03,"x":-2,"y":4.5},"wizard":{"scale":1.09,"x":2,"y":5},"druid":{"scale":1,"x":2,"y":8.5},"forcemage":{"scale":1.03,"x":0,"y":5},"enchanter":{"scale":0.94,"x":0,"y":6.5},"darkpriest":{"scale":1.04,"x":0,"y":11},"bard":{"scale":0.94,"x":-2,"y":5},"spellsword":{"scale":1.03,"x":0.5,"y":2.5},"gunner":{"scale":1.02,"x":2.5,"y":9},"ninja":{"scale":0.95,"x":-4,"y":4}}}};
-const RB_CSS = "/* ── 무대 — 마스터 노트 책상(2배) 위에 창. 색 · 글꼴은 무대 안에서만 (배치판의 화면 색과 섞이지 않게) ── */\n#fitIn{\n  --ink:#35291f; --ink2:#5b4632; --ink3:#8a7356; --brass:#8a6a15; --brass-b:#b98e23;\n  --edge:#a1845b; --frame:#654a30; --dark:#30271e; --paper:#faf0d8; --paper2:#efdfba; --paper3:#e6d4b0;\n  --ok:#2f7f58; --warn:#b5661a; --bad:#b33f32;\n  --tank:#3c6e9e; --dps:#a5432f; --heal:#2f7f58; --supp:#6d4ba8;\n  --sel:#c8902e;\n  position:absolute;left:0;top:0;width:1214px;height:980px;transform-origin:top left;\n  color:var(--ink);font:12px/18px Mulmaru,\"IBM Plex Sans KR\",system-ui,sans-serif;letter-spacing:0;\n  -webkit-font-smoothing:none;font-synthesis:none;text-align:left}\n#fitIn *{box-sizing:border-box}\n#fitIn button,#fitIn select{font:inherit;color:inherit;letter-spacing:0}\n#fitIn .num{font-family:\"Mulmaru Mono\",\"Mulmaru\",monospace}\n.desk{position:absolute;left:0;top:0;width:1214px;height:932px;image-rendering:pixelated;\n  background:none 0 0/1214px 932px no-repeat}\n.desk .hit{position:absolute;left:440px;top:732px;width:180px;height:132px;cursor:pointer}\n.desk .tip{position:absolute;left:478px;top:706px;padding:0 6px;background:#2a1d14;color:#f6e7c4;border:2px solid #f6e7c4;opacity:0;transition:opacity .15s;pointer-events:none}\n.desk .hit:hover + .tip{opacity:1}\n.scrim{position:absolute;left:0;top:0;width:1214px;height:932px;background:rgba(10,11,15,.62);transition:opacity .2s}\n.closed .scrim{opacity:0;pointer-events:none}\n\n/* ── 책 창 ── */\n.book{position:absolute;left:19px;top:14px;width:1176px;height:948px;image-rendering:pixelated;\n  background:var(--rb-book) 0 0/1176px 948px no-repeat;filter:drop-shadow(6px 8px 0 rgba(0,0,0,.35));\n  transition:opacity .2s ease,transform .2s ease}\n.closed .book{opacity:0;transform:translateY(10px) scale(.985);pointer-events:none}\n.book *{image-rendering:auto}\n/* 책갈피 끈 — 책 그림과 따로 (art/ribbon.png 1배 8 × 52 → 2배). 쪽의 글 · 칸 밑에 깔리고, 누르기를 막지 않는다 */\n.book .ribbon{position:absolute;left:598px;top:844px;width:16px;height:104px;background:var(--rb-ribbon) 0 0/16px 104px no-repeat;\n  image-rendering:pixelated;pointer-events:none}\n.page{position:absolute;top:24px;height:832px;width:502px}\n.page.l{left:48px}\n.page.r{left:626px}\n.xbtn{position:absolute;right:-6px;top:-8px;width:32px;height:32px;padding:0;background:#e5cda5;color:#45321f;cursor:pointer;\n  border:2px solid var(--frame);box-shadow:inset 2px 2px #fff0c980,inset -2px -2px #60422140,0 2px #30271e;font:24px/24px Mulmaru}\n.xbtn:active{box-shadow:inset 2px 2px #30271e70}\n\n/* 쪽 머리 */\n.ph{display:flex;align-items:flex-end;gap:10px;height:34px}\n.ph h2{font:24px/28px Mulmaru;margin:0;color:var(--ink);letter-spacing:0}\n.ph .cnt{color:var(--ink3);padding-bottom:3px}\n.ph .sp{flex:1}\n.sel{appearance:none;-webkit-appearance:none;height:28px;padding:0 26px 0 8px;background:#f6e7c4;color:var(--ink);cursor:pointer;\n  border:2px solid var(--frame);box-shadow:inset 2px 2px #fff0c980,inset -2px -2px #60422140,0 2px #30271e;\n  background-image:linear-gradient(45deg,transparent 50%,var(--frame) 50%),linear-gradient(135deg,var(--frame) 50%,transparent 50%);\n  background-position:calc(100% - 13px) 11px,calc(100% - 8px) 11px;background-size:5px 5px;background-repeat:no-repeat}\n.rule{height:10px;margin:6px 0 4px;position:relative;\n  background:linear-gradient(var(--paper3),var(--paper3)) 0 4px/100% 2px no-repeat}\n.rule::after{content:\"\";position:absolute;left:50%;top:1px;width:8px;height:8px;margin-left:-4px;transform:rotate(45deg);\n  background:var(--paper);border:2px solid #c4ac84}\n\n/* 왼쪽 — 학생 목록 */\n.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0 4px;max-height:778px;overflow:auto;padding:2px 2px 0;scrollbar-width:thin;scrollbar-color:#c4ac84 transparent}\n.cell{position:relative;display:flex;flex-direction:column;align-items:center;padding:0;border:0;background:none;cursor:pointer;color:var(--ink)}\n.cell .epi{height:20px;line-height:20px;color:var(--brass);white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}\n.cell .nm{margin-top:10px;height:18px;line-height:18px;white-space:nowrap}\n.cell:hover .ring{--ring-c:#a8703a}\n.cell.on .ring{--ring-c:var(--sel)}\n.cell.on .ring::after{content:\"\";position:absolute;inset:-7px;border-radius:50%;border:2px solid var(--sel);opacity:.55}\n.cell.on .nm{color:var(--brass)}\n/* 원 아래에 걸친 꼬리표 — 정렬을 따라 학년 · 소속 팀 · 레벨 · 전투력 (진로 평가 · 컨디션 · 이름은 없다) */\n.cell .lt{position:absolute;left:50%;transform:translateX(-50%);z-index:2;gap:3px}\n.cell:focus-visible{outline:2px dashed var(--sel);outline-offset:-2px}\n\n/* 초상 — 원 안만 보인다 · 속배경은 투명 (아래 종이가 비친다)\n   틀 색(--ring-c)은 .ring 에서 정한다 — 바깥 페이지의 같은 이름 변수를 물려받으면 테두리가 통째로 사라진다 (배치판의 --r: 6px 이 그랬다) */\n.ring{--ring-c:#8b5a2b;position:relative;flex:none;border-radius:50%}\n.ring .face{position:absolute;inset:0;border-radius:50%;overflow:hidden}\n.ring .face img{display:block;width:100%;height:100%;object-fit:cover}\n.ring::before{content:\"\";position:absolute;inset:0;border-radius:50%;border:4px solid var(--ring-c,#8b5a2b);z-index:1;\n  box-shadow:inset 0 0 0 1px rgba(255,240,201,.35)}\n\n/* 꼬리표 */\n.tag{display:inline-flex;align-items:center;height:20px;padding:0 5px;border:2px solid currentColor;background:#fff7e3;color:var(--ink2);white-space:nowrap;line-height:16px}\n.tag.tm{background:#f6e7c4;color:var(--frame);height:20px}\n.tag.tm.none{color:var(--ink3);border-style:dashed}\n.tag.g-D{color:#82849a}.tag.g-C{color:#5b5d72}.tag.g-B{color:var(--tank)}.tag.g-A{color:var(--supp)}.tag.g-S{color:var(--brass)}.tag.g-EX{color:#b02e6b}\n.tag.r-tank{color:var(--tank)}.tag.r-dps{color:var(--dps)}.tag.r-heal{color:var(--heal)}.tag.r-supp{color:var(--supp)}\n.tag.yr{color:var(--ink2)}\n.tag.lv{color:var(--ink);background:none;border-color:transparent;padding:0 2px}\n.ebtn{width:24px;height:24px;padding:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;background:#e5cda5;color:#45321f;\n  border:2px solid var(--frame);box-shadow:inset 2px 2px #fff0c980,inset -2px -2px #60422140,0 2px #30271e}\n\n/* 오른쪽 — 상세 */\n.det{position:relative;height:100%;display:flex;flex-direction:column;transition:opacity .16s ease,transform .16s ease}\n.det > *{flex:none}\n.det.turn{opacity:0;transform:translateX(8px)}\n.hd{display:flex;gap:16px;min-height:112px;align-items:flex-start}\n.hd .who{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;padding-top:0}\n.hd .nmrow{display:flex;align-items:baseline;gap:8px;white-space:nowrap}\n.hd .nmrow .epi{color:var(--brass)}\n.hd .nmrow .nm{font:24px/28px Mulmaru}\n.hd .nmrow .ebtn{align-self:center;margin-left:-2px}           /* 이름 변경 — 이름 바로 뒤 (이름 길이를 따라간다) */\n.hd .tags{display:flex;gap:4px;align-items:center;flex-wrap:wrap}\n.bub{position:relative;align-self:flex-start;max-width:350px;margin:3px 0 0 10px;padding:6px 10px;background:#fffdf8;color:#2d241b;\n  border:2px solid #83603f;box-shadow:2px 2px 0 #5a3f2826;word-break:keep-all}\n.bub::before{content:\"\";position:absolute;left:-10px;top:8px;border:6px solid transparent;border-right:8px solid #83603f;border-left:0}\n.bub::after{content:\"\";position:absolute;left:-6px;top:10px;border:4px solid transparent;border-right:6px solid #fffdf8;border-left:0}\n.bub.boast{font:14px/18px HsBombaram21,Mulmaru;-webkit-font-smoothing:antialiased}\n.bub.timid{font-size:12px;color:#6b5a48}\n.note-band{margin-top:8px;padding:2px 8px;background:#e9d29c66;border-left:4px solid var(--brass-b);color:var(--ink2)}\n.note-band b{color:var(--brass);font-weight:400}\n.pers{display:flex;align-items:center;gap:6px 8px;margin-top:6px;flex-wrap:wrap}\n.pers .k{color:var(--ink3)}\n.pers .eff{display:inline-flex;align-items:center;gap:3px}\n.pers .eff.up{color:#b8382c}.pers .eff.dn{color:#2f63b5}\n.pdesc{color:var(--ink3);margin-top:2px}\n\n/* 카드 — 책장 위에 연필로 두른 칸 */\n.card{position:relative;border:2px solid var(--edge);box-shadow:inset 0 0 0 2px #fff7e2aa;background:#fbf3df80;padding:24px 10px 8px}\n.card > .cap{position:absolute;left:-2px;top:-2px;height:22px;padding:0 8px;background:var(--edge);color:#fff7e2;line-height:22px;white-space:nowrap}\n.card > .cap i{font-style:normal;color:#f6e1ac;margin-left:6px}\n.det > .row2{flex:1 1 auto;min-height:250px;display:grid;grid-template-columns:260px 1fr;gap:12px;margin-top:10px}   /* 남는 높이를 육각형 · 유물 줄이 받는다 */\n\n/* 멘탈리티 육각형 — 책장 위에 잉크로 그린 도트 (1배로 그려 2배로 본다) · 학생 값만 매끈한 SVG */\n.hex{min-height:0;padding:0}\n.hex canvas{position:absolute;image-rendering:pixelated}\n.hex .hexsv{position:absolute;overflow:visible;pointer-events:none}   /* 학생 값(면 · 테두리)은 매끈하게 — 캔버스와 같은 자리 · 같은 1배 좌표 */\n.hex .lab{position:absolute;line-height:16px;white-space:nowrap;text-align:center}\n.hex .lab .n{color:var(--brass)}\n.hex .lab .v{font:12px/16px \"Mulmaru Mono\",Mulmaru;color:var(--ink)}\n.hex .lab .v b{font-weight:400;margin-left:4px}\n.hex .lab.L{text-align:right}\n.hex .lab.R{text-align:left}\n\n/* 유물 */\n.rel{min-height:0;display:flex;flex-direction:column;gap:4px;padding:24px 4px 6px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#c4ac84 transparent}\n.slot{flex:none;display:flex;gap:6px;padding:3px 3px 3px 4px;border:2px solid #d6c09a;border-left-width:4px;background:#fffaf0aa}\n.slot .bd{min-width:0;flex:1}\n.slot .rn{display:flex;align-items:center;gap:5px;white-space:nowrap}\n.slot .rn .sc{margin-left:auto;color:var(--ink3)}\n.slot .af{color:var(--ink2);line-height:16px;margin-top:1px;display:flex;flex-wrap:wrap;gap:0 5px}\n.slot .af span{white-space:nowrap}\n.slot.empty{height:30px;border-style:dashed;border-left-width:2px;background:none;color:var(--ink3);align-items:center}\nbutton.slot.empty{width:100%;font:inherit;text-align:left;cursor:pointer}   /* 빈 칸 — 누르면 유물 보관고로 */\nbutton.slot.empty:hover{border-color:var(--sel);background:#fff3d6;color:var(--ink)}\nbutton.slot.empty:focus-visible{outline:2px dashed var(--sel);outline-offset:1px}\n.slot.empty .pl{width:20px;text-align:center}\n.slot.lock{height:30px;border-left-width:2px;border-style:dashed;border-color:#e0cfaa;background:repeating-linear-gradient(135deg,#efdfba33 0 6px,transparent 6px 12px);color:#b29c78;align-items:center}\n\n/* 스킬 */\n.skc{margin-top:10px;height:170px}\n.sks{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}\n.sk{display:flex;flex-direction:column;align-items:center;gap:2px;padding:2px 0 4px;border:2px solid transparent;background:none;cursor:pointer;color:var(--ink);text-align:center}\n.sk:hover,.sk.on{border-color:#d6c09a;background:#fffaf0aa}\n.sk .ic{position:relative;width:48px;height:48px;flex:none}\n.sk .ic img{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}   /* 1015 — 새 스킬 아이콘: 바탕 · 그림 · 테두리를 칸 가득 (테두리가 맨 위) */\n.sk .ic .ar{image-rendering:auto}\n.sk .sn{height:18px;max-width:94px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}\n.sk .sl{color:var(--ink3);height:16px;line-height:16px}\n.sk .sl b{font-weight:400}\n.skd{margin-top:4px;padding-top:4px;border-top:2px dotted #d6c09a;height:42px;overflow:hidden;color:var(--ink2);line-height:18px}\n.skd b{color:var(--ink);font-weight:400}\n.skd .m{color:var(--ink3)}\n\n/* 학적 · 전투 능력치 — 머리띠 탭으로 바꿔 본다 (고른 탭은 학생을 바꿔도 그대로) */\n.rec{margin-top:10px;height:136px;padding:23px 10px 4px}\n.rec > .tabs{position:absolute;left:-2px;top:-2px;display:flex;height:22px}\n.rec .rt{height:22px;padding:0 8px;border:2px solid var(--edge);margin-right:-2px;background:#fbf3df;color:var(--ink3);line-height:18px;cursor:pointer}\n.rec .rt.on{background:var(--edge);color:#fff7e2}\n.rec .rt:not(.on):hover{color:var(--ink)}\n.rec > .pw{position:absolute;right:8px;top:2px;color:var(--ink3);line-height:18px}\n.rec > .pw b{font:12px/18px \"Mulmaru Mono\",Mulmaru;color:var(--ink);font-weight:400;margin-left:4px}\n.rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px 12px}\n.rgrid .it{min-width:0}\n.rgrid .k{color:var(--brass);height:18px;line-height:16px;border-bottom:2px dotted #e6d4b0}   /* 이름은 황동 + 점선 밑줄 — 값(잉크) · 덧말(옅은 잉크)과 갈리게 */\n.rgrid .v{color:var(--ink);line-height:18px;word-break:keep-all}\n.rgrid .s{color:var(--ink3);line-height:16px}\n.rgrid .v .sub{color:var(--ink3)}\n.rgrid .hearts{display:flex;gap:2px;margin-top:2px}\n.bgrid{display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;gap:4px 14px;padding-top:3px}\n.bgrid .b{display:flex;gap:6px;justify-content:space-between;white-space:nowrap;line-height:18px;border-bottom:2px dotted #e6d4b0}\n.bgrid .b .k{color:var(--ink3)}\n.bgrid .b .v{font-family:\"Mulmaru Mono\",Mulmaru;color:var(--ink)}\n#fitIn .c-brass{color:var(--brass)!important}#fitIn .c-bad{color:var(--bad)!important}#fitIn .c-warn{color:var(--warn)!important}\n#fitIn .c-dim{color:var(--ink3)!important}#fitIn .c-ok{color:var(--ok)!important}\n.tag.inj{color:var(--bad);height:18px;padding:0 3px;margin-left:4px}\n\n/* ── 팀 편성 — 명부 머리의 '팀 편성'으로 바꿔 본다. 오른쪽 쪽은 팀 · 진형 · 배치, 왼쪽 꼬리표는 소속 팀 고르기 ── */\n#fitIn [hidden]{display:none!important}\n.pbtn{height:28px;padding:0 10px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;background:#f6e7c4;color:var(--ink);white-space:nowrap;\n  border:2px solid var(--frame);box-shadow:inset 2px 2px #fff0c980,inset -2px -2px #60422140,0 2px #30271e}\n.pbtn:hover{background:#fff3d6}\n.pbtn:active{box-shadow:inset 2px 2px #30271e70,0 1px #30271e}\n.pbtn:focus-visible{outline:2px dashed var(--sel);outline-offset:2px}\n.pbtn:disabled{opacity:.45;cursor:default;background:#f6e7c4}\n.pbtn.pri{background:#ecd08a;color:#3a2a10}\n.pbtn.pri:hover{background:#f4dc9f}\n.pbtn.tog{flex:none}\n.pbtn.tog[aria-pressed=\"true\"]{background:var(--frame);color:#fff7e2;box-shadow:inset 2px 2px #1f160e8c,inset -2px -2px #fff0c926,0 2px #30271e}\n.pbtn.tog[aria-pressed=\"true\"]:hover{background:#755638}\n/* 스킬 임의로 강화 — 강화 포인트가 남은 학생이 있을 때만 정렬 옆에. 오른쪽 작은 칸에 남은 포인트 합 */\n.ph #spbtn{flex:none;padding:0 4px 0 10px}\n.ph #spbtn .spn{min-width:20px;height:20px;padding:0 4px;display:inline-flex;align-items:center;justify-content:center;\n  background:var(--frame);color:#fff7e2;font:12px/20px \"Mulmaru Mono\",Mulmaru}\n/* 왼쪽 — 지금 팀은 금색 틀, 다른 팀은 흐리게. 꼬리표를 누르면 소속 팀 쪽지 */\n.teammode .grid .cell{touch-action:none}\n.teammode .cell.cur .ring{--ring-c:var(--sel)}\n.teammode .cell.oth .ring,.teammode .cell.oth .epi,.teammode .cell.oth .nm{opacity:.45}\n.teammode .cell.lift{opacity:.4}\n.cell .tag.tset{cursor:pointer;max-width:150px}\n.cell .tag.tset .tx{overflow:hidden;text-overflow:ellipsis}\n.cell .tag.tset .mkr{flex:none}\n.cell .tag.tset:hover,.cell .tag.tset.open{background:#fff3d6}\n.cell .tag.tset.cur{background:var(--frame);border-color:var(--frame);color:#fff7e2}\n.cell .tag.tset.cur:hover,.cell .tag.tset.cur.open{background:#7a5a3a}\n.cell .tag.tset:focus-visible{outline:2px dashed var(--sel);outline-offset:1px}\n.page.l.dropout .grid{outline:2px dashed var(--bad);outline-offset:-2px;background:#b33f320f}\n.page.l.dropout::after{content:\"여기에 놓으면 팀에서 뺀다\";position:absolute;left:50%;top:48px;transform:translateX(-50%);padding:0 8px;line-height:20px;\n  background:var(--bad);color:#fff7e2;z-index:6;pointer-events:none;white-space:nowrap}\n/* 오른쪽 — 팀 탭(카드 머리) · 진형 넷 · 전열 / 후열 세 자리 */\n.tmc{padding:38px 10px 10px;margin-top:2px}\n.tmc > .ttabs{position:absolute;left:-2px;top:-2px;display:flex;height:28px}\n.tmc .tt{height:28px;padding:0 12px;margin-right:-2px;display:inline-flex;align-items:center;gap:6px;border:2px solid var(--edge);background:#f3e6c6;color:var(--ink3);cursor:pointer;white-space:nowrap}\n.tmc .tt:not(.on):not(.lock):hover{color:var(--ink);background:#f8eed6}\n.tmc .tt.on{background:var(--edge);color:#fff7e2}\n.tmc .tt .tc.ok{color:var(--ok)}\n.tmc .tt.on .tc.ok{color:#e2f4d2}\n.tmc .tt.lock{border-style:dashed;border-color:#d6c09a;background:none;color:#b29c78;cursor:default;gap:4px}\n.tmc .tt:focus-visible{outline:2px dashed var(--sel);outline-offset:1px;z-index:1}\n.tmc > .pw{position:absolute;right:8px;top:5px;color:var(--ink3);line-height:18px;display:flex;align-items:center;gap:4px}\n.tmc > .pw b{font:12px/18px \"Mulmaru Mono\",Mulmaru;color:var(--ink);font-weight:400}\n.tmc .th{display:flex;align-items:baseline;gap:8px;line-height:18px;white-space:nowrap;min-width:0}\n.tmc .th b{font-weight:400;color:var(--brass);flex:none}\n.tmc .th .st{margin-left:auto;flex:none}\n.tmc .fos{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0 12px;padding-bottom:12px;border-bottom:2px dotted #e6d4b0}\n.tmc .fo{position:relative;display:flex;flex-direction:column;gap:4px;padding:6px 9px 7px;border:2px solid #d6c09a;background:#fffaf0aa;color:var(--ink);cursor:pointer;text-align:left}\n.tmc .fo:hover{border-color:#c4ac84;background:#fffcf4}\n.tmc .fo.on{border-color:var(--brass-b);background:#fff3d2;box-shadow:inset 0 0 0 2px #fffaf0}\n.tmc .fo:focus-visible{outline:2px dashed var(--sel);outline-offset:2px}\n.tmc .fo .fh{display:flex;align-items:center;gap:8px;height:20px}\n.tmc .fo.on .fnm{color:var(--brass)}\n.tmc .fo .fsh{color:var(--ink3)}\n.tmc .fo .fck{margin-left:auto;display:flex}\n.tmc .fo .fx{display:flex;flex-direction:column;color:var(--ink2);line-height:16px;word-break:keep-all}\n.tmc .fld{display:flex;flex-direction:column;gap:6px;margin-top:6px}\n.tmc .frow{display:grid;grid-template-columns:20px repeat(3,minmax(0,1fr));gap:6px}\n.tmc .frl{writing-mode:vertical-rl;text-orientation:upright;align-self:center;justify-self:center;color:var(--ink3);letter-spacing:6px}\n.fs{position:relative;height:160px;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;\n  border:2px solid #d6c09a;background:#fffaf0cc;color:var(--ink);cursor:pointer;outline:none;text-align:center}\n.fs.fill{justify-content:flex-start;padding-top:10px}\n.fs:hover{border-color:#c4ac84}\n.fs:focus-visible{outline:2px dashed var(--sel);outline-offset:2px}\n.fs.empty{border-style:dashed;border-color:#c4ac84;background:#fbf3df80}\n.fs.empty .fe{color:var(--ink2)}\n.fs .fw{color:var(--ink3);line-height:16px}\n.fs .fw b{font-weight:400}\n.fs.on{border-style:solid;border-color:var(--sel);background:#fff3d6;box-shadow:0 0 0 2px #c8902e4d}\n.fs.off{border:2px dashed #e0cfaa;background:repeating-linear-gradient(135deg,#efdfba40 0 6px,transparent 6px 12px);cursor:default}\n.fs.off .fe{color:#b29c78}\n.fs .ring{width:64px;height:64px;margin-bottom:5px}\n.fs .ring::before{border-width:3px}\n.fs .fn{display:flex;align-items:center;gap:4px;white-space:nowrap;max-width:100%;line-height:18px}\n.fs .fn .nm{overflow:hidden;text-overflow:ellipsis}\n.fs .ft{display:flex;align-items:center;gap:4px;white-space:nowrap}\n.fs .tag{height:18px;padding:0 3px;line-height:14px}\n.fs .tag.lv{padding:0}\n.fs .fp,.fs .fc{color:var(--ink3);line-height:16px;white-space:nowrap}\n.fs .fp b,.fs .fc b{font-weight:400;color:var(--ink);margin-left:4px}\n.fs .x{position:absolute;right:2px;top:2px;width:20px;height:20px;padding:0;display:grid;place-items:center;border:0;background:none;color:var(--ink3);cursor:pointer;opacity:.5}\n.fs:hover .x,.fs .x:focus-visible{opacity:1}\n.fs .x:hover{color:var(--bad)}\n.fs.drop{border-style:solid;border-color:var(--sel);background:#fff0c8}\n.fs.lift{opacity:.45}\n@keyframes fsflash{0%{box-shadow:0 0 0 5px #e9c77acc;background:#fff0c0}100%{box-shadow:0 0 0 0 #e9c77a00}}\n.fs.flash{animation:fsflash .9s ease-out}\n.tmbar{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}\n.tmhint{margin:10px 2px 0;color:var(--ink3);line-height:18px;word-break:keep-all}\n.tmhint b{font-weight:400;color:var(--brass)}\n#fitIn .c-tank{color:var(--tank)}#fitIn .c-dps{color:var(--dps)}#fitIn .c-heal{color:var(--heal)}#fitIn .c-supp{color:var(--supp)}\n/* 쪽지 — 꼬리표의 소속 팀 고르기 · 팀 이름 바꾸기 */\n.slip{position:absolute;z-index:30;min-width:170px;padding:4px;background:#fffaf0;border:2px solid var(--frame);box-shadow:3px 3px 0 #30271e59;color:var(--ink);text-align:left}\n.slip .slip-h{padding:1px 6px 4px;margin-bottom:3px;border-bottom:2px dotted #e6d4b0;color:var(--ink3);white-space:nowrap}\n.slip .so{display:flex;width:100%;align-items:center;gap:6px;padding:3px 6px;border:0;background:none;color:var(--ink);cursor:pointer;white-space:nowrap;text-align:left}\n.slip .so:hover:not(:disabled),.slip .so:focus-visible{background:#f6e7c4;outline:none}\n.slip .so.on{color:var(--brass)}\n.slip .so .sp0{width:18px;flex:none}\n.slip .so .sd{margin-left:auto;padding-left:12px;color:var(--ink3)}\n.slip .so:disabled{color:#b29c78;cursor:default}\n.slip .so:disabled .sd{color:#c9b48f}\n.slip .so.dis{cursor:default}\n.slip .sws{display:flex;flex-wrap:wrap;gap:4px;padding:1px 6px 5px 30px}\n.slip .sw{height:22px;padding:0 6px;display:inline-flex;align-items:center;gap:4px;border:2px solid #d6c09a;background:#fffaf0;color:var(--ink);cursor:pointer;white-space:nowrap}\n.slip .sw i{font-style:normal;color:var(--ink3)}\n.slip .sw:hover,.slip .sw:focus-visible{border-color:var(--sel);background:#fff3d6;outline:none}\n.slip .sin{display:block;width:220px;height:28px;margin:2px 4px 6px;padding:0 6px;background:#fffdf8;color:var(--ink);border:2px solid var(--frame);font:inherit;outline:none}\n.slip .sin:focus{border-color:var(--sel)}\n.slip .sbtns{display:flex;gap:6px;padding:0 4px 4px}\n.slip .shint{padding:0 4px 2px;color:var(--ink3)}\n.tm-ghost{position:absolute;z-index:40;width:56px;height:56px;pointer-events:none;rotate:-6deg;filter:drop-shadow(3px 4px 0 rgba(48,39,30,.4))}\n.tm-ghost .ring{display:block;width:56px;height:56px}\nbody.tm-drag,body.tm-drag *{cursor:grabbing!important}\n@media (prefers-reduced-motion:reduce){.fs.flash{animation:none}}\n\n/* ── 배치 (art/roster_layout.json — 학생 명부 배치판에서 정한다)\n   기본 자리에서 옮긴 양(--○-x · --○-y)과 원 지름(--○-s). 단위는 게임 화면 px. 초상 그림은 원 안에서 --fs 배율 · --fx --fy (원 지름의 %) ── */\n.cell{height:calc(var(--lring-s,100px) + 52px)}\n.cell .ring{width:var(--lring-s,100px);height:var(--lring-s,100px);translate:var(--lring-x,0px) var(--lring-y,0px)}\n.cell .lt{top:calc(var(--lring-s,100px) + 4px);translate:calc(var(--lring-x,0px) + var(--ltag-x,0px)) calc(var(--lring-y,0px) + var(--ltag-y,0px))}\n.cell .epi{translate:var(--lepi-x,0px) var(--lepi-y,0px)}\n.cell .nm{translate:var(--lname-x,0px) var(--lname-y,0px)}\n.book #sort{translate:var(--sort-x,0px) var(--sort-y,0px)}\n.book #tbtn{translate:var(--tbtn-x,0px) var(--tbtn-y,0px)}\n.book #spbtn{translate:var(--spbtn-x,0px) var(--spbtn-y,0px)}\n.book .xbtn{translate:var(--xbtn-x,0px) var(--xbtn-y,0px)}\n.hd .ring{width:var(--dring-s,108px);height:var(--dring-s,108px);translate:var(--dring-x,0px) var(--dring-y,0px)}\n.hd .nmrow{translate:var(--dname-x,0px) var(--dname-y,0px)}\n.hd .tags{translate:var(--dtags-x,0px) var(--dtags-y,0px)}\n.hd .ebtn{translate:var(--ebtn-x,0px) var(--ebtn-y,0px)}\n.hd .bub{translate:var(--bub-x,0px) var(--bub-y,0px)}\n.rec > .tabs{translate:var(--rtabs-x,0px) var(--rtabs-y,0px)}\n.book .ribbon{translate:var(--ribbon-x,0px) var(--ribbon-y,0px)}\n.ring .face img{transform:translate(var(--fx,0%),var(--fy,2%)) scale(var(--fs,1.04))}\n/* ROSTERBK_CSS — 학생 명부 책 (1009 · apply_roster.py) ─ 그림자 DOM(#rbHost) 안에서만 쓴다.\n   목업 원본(roster_tpl.html 의 CORE_CSS)을 apply_roster 가 앞에 붙이고, 이 파일은 게임에서만 필요한 것 */\n.rbw{position:absolute;inset:0;overflow:hidden;-webkit-tap-highlight-color:transparent;font-synthesis:none}\n.rbscrim{position:absolute;inset:0;background:rgba(10,11,15,.62);transition:opacity .2s}\n.rbw.closed .rbscrim{opacity:0;pointer-events:none}\n.rbw.tm-drag,.rbw.tm-drag *{cursor:grabbing!important}\n/* 목업의 책상 · 무대 덮개는 쓰지 않는다 — 뒤는 게임 화면 (덮개는 .rbscrim 이 창 전체에) */\n#fitIn .desk,#fitIn > .scrim{display:none}\n#fitIn .book{outline:none}\n/* 강화 포인트 — 있을 때 스킬 카드 머리 오른쪽 (스킬 강화 단추는 1014 에 뺐다 — 왼쪽 목록의 '스킬 강화 가능!' 쪽지로 연다) */\n.skc .spr{position:absolute;right:6px;top:1px;display:flex;align-items:center;gap:6px;color:var(--ink3);line-height:18px;white-space:nowrap}\n.skc .spr b{font:12px/18px \"Mulmaru Mono\",Mulmaru;color:var(--brass);font-weight:400}\n/* 스킬 강화 가능 — 강화 포인트가 남은 학생(spReady 와 같은 기준)은 목록의 초상 원 위쪽에 걸친 쪽지 (1014 · 모양은 원 아래 꼬리표와 같다 · 원을 따라 옮긴다).\n   누르면(Enter · Space 도) 게임의 스킬 강화 팝업 — 학생 상세의 스킬 강화 단추 대신. 마우스를 올리면 소속 팀 꼬리표처럼 밝아진다 */\n.cell .skb{position:absolute;left:50%;top:15px;transform:translateX(-50%);translate:var(--lring-x,0px) var(--lring-y,0px);z-index:3;cursor:pointer}\n.cell .skb:hover{background:#fff3d6}\n.cell .skb:focus-visible{outline:2px dashed var(--sel);outline-offset:1px}\n.teammode .cell.oth .skb{opacity:.45}\n/* 유물 해제 — 장착한 칸 오른쪽 (예전 학생 상세의 '해제'와 같다 — 보관함으로) */\n.slot .rn{min-width:0}\n.slot .rn .rnm{overflow:hidden;text-overflow:ellipsis;min-width:0}\n.slot .uq{flex:none;align-self:center;height:20px;padding:0 5px;border:2px solid #c4ac84;background:#fffaf0;color:var(--ink2);cursor:pointer;line-height:16px;white-space:nowrap}\n.slot .uq:hover{border-color:var(--bad);color:var(--bad)}\n.slot .uq:focus-visible{outline:2px dashed var(--sel);outline-offset:1px}\n";
-const RB_HTML = "<div id=\"fitIn\">\n  <div class=\"desk\"><div class=\"hit\" id=\"deskBook\" title=\"학생 명부\"><\/div><div class=\"tip\">학생 명부<\/div><\/div>\n  <div class=\"scrim\" id=\"scrim\"><\/div>\n  <div class=\"book\" id=\"book\" role=\"dialog\" aria-label=\"학생 명부\">\n    <i class=\"ribbon\" data-ed=\"ribbon\" aria-hidden=\"true\"><\/i>\n    <button class=\"xbtn\" id=\"xbtn\" data-ed=\"xbtn\" aria-label=\"닫기\">×<\/button>\n    <section class=\"page l\">\n      <div class=\"ph\"><h2>학생 명부<\/h2><button class=\"pbtn tog\" id=\"tbtn\" data-ed=\"tbtn\" aria-pressed=\"false\">팀 편성<\/button><span class=\"sp\"><\/span>\n        <button class=\"pbtn pri\" id=\"spbtn\" data-ed=\"spbtn\" hidden><\/button><select class=\"sel\" id=\"sort\" data-ed=\"sort\" aria-label=\"정렬\"><\/select><\/div>\n      <div class=\"rule\"><\/div>\n      <div class=\"grid\" id=\"grid\"><\/div>\n    <\/section>\n    <section class=\"page r\"><div class=\"det\" id=\"det\"><\/div><div class=\"det tmw\" id=\"tmw\" hidden><\/div><\/section>\n  <\/div>\n<\/div>";
+const RB_CSS = "/* ── 무대 — 마스터 노트 책상(2배) 위에 창. 색 · 글꼴은 무대 안에서만 (배치판의 화면 색과 섞이지 않게) ── */\n#fitIn{\n  --ink:#35291f; --ink2:#5b4632; --ink3:#8a7356; --brass:#8a6a15; --brass-b:#b98e23;\n  --edge:#a1845b; --frame:#654a30; --dark:#30271e; --paper:#faf0d8; --paper2:#efdfba; --paper3:#e6d4b0;\n  --ok:#2f7f58; --warn:#b5661a; --bad:#b33f32;\n  --tank:#3c6e9e; --dps:#a5432f; --heal:#2f7f58; --supp:#6d4ba8;\n  --sel:#c8902e;\n  position:absolute;left:0;top:0;width:1214px;height:980px;transform-origin:top left;\n  color:var(--ink);font:12px/18px Mulmaru,\"IBM Plex Sans KR\",system-ui,sans-serif;letter-spacing:0;\n  -webkit-font-smoothing:none;font-synthesis:none;text-align:left}\n#fitIn *{box-sizing:border-box}\n#fitIn button,#fitIn select{font:inherit;color:inherit;letter-spacing:0}\n#fitIn .num{font-family:\"Mulmaru Mono\",\"Mulmaru\",monospace}\n.desk{position:absolute;left:0;top:0;width:1214px;height:932px;image-rendering:pixelated;\n  background:none 0 0/1214px 932px no-repeat}\n.desk .hit{position:absolute;left:440px;top:732px;width:180px;height:132px;cursor:pointer}\n.desk .tip{position:absolute;left:478px;top:706px;padding:0 6px;background:#2a1d14;color:#f6e7c4;border:2px solid #f6e7c4;opacity:0;transition:opacity .15s;pointer-events:none}\n.desk .hit:hover + .tip{opacity:1}\n.scrim{position:absolute;left:0;top:0;width:1214px;height:932px;background:rgba(10,11,15,.62);transition:opacity .2s}\n.closed .scrim{opacity:0;pointer-events:none}\n\n/* ── 책 창 ── */\n.book{position:absolute;left:19px;top:14px;width:1176px;height:948px;image-rendering:pixelated;\n  background:var(--rb-book) 0 0/1176px 948px no-repeat;filter:drop-shadow(6px 8px 0 rgba(0,0,0,.35));\n  transition:opacity .2s ease,transform .2s ease}\n.closed .book{opacity:0;transform:translateY(10px) scale(.985);pointer-events:none}\n.book *{image-rendering:auto}\n/* 책갈피 끈 — 책 그림과 따로 (art/ribbon.png 1배 8 × 52 → 2배). 쪽의 글 · 칸 밑에 깔리고, 누르기를 막지 않는다 */\n.book .ribbon{position:absolute;left:598px;top:844px;width:16px;height:104px;background:var(--rb-ribbon) 0 0/16px 104px no-repeat;\n  image-rendering:pixelated;pointer-events:none}\n.page{position:absolute;top:24px;height:832px;width:502px}\n.page.l{left:48px}\n.page.r{left:626px}\n.xbtn{position:absolute;right:-6px;top:-8px;width:32px;height:32px;padding:0;background:#e5cda5;color:#45321f;cursor:pointer;\n  border:2px solid var(--frame);box-shadow:inset 2px 2px #fff0c980,inset -2px -2px #60422140,0 2px #30271e;font:24px/24px Mulmaru}\n.xbtn:active{box-shadow:inset 2px 2px #30271e70}\n\n/* 쪽 머리 */\n.ph{display:flex;align-items:flex-end;gap:10px;height:34px}\n.ph h2{font:24px/28px Mulmaru;margin:0;color:var(--ink);letter-spacing:0}\n.ph .cnt{color:var(--ink3);padding-bottom:3px}\n.ph .sp{flex:1}\n.sel{appearance:none;-webkit-appearance:none;height:28px;padding:0 26px 0 8px;background:#f6e7c4;color:var(--ink);cursor:pointer;\n  border:2px solid var(--frame);box-shadow:inset 2px 2px #fff0c980,inset -2px -2px #60422140,0 2px #30271e;\n  background-image:linear-gradient(45deg,transparent 50%,var(--frame) 50%),linear-gradient(135deg,var(--frame) 50%,transparent 50%);\n  background-position:calc(100% - 13px) 11px,calc(100% - 8px) 11px;background-size:5px 5px;background-repeat:no-repeat}\n.rule{height:10px;margin:6px 0 4px;position:relative;\n  background:linear-gradient(var(--paper3),var(--paper3)) 0 4px/100% 2px no-repeat}\n.rule::after{content:\"\";position:absolute;left:50%;top:1px;width:8px;height:8px;margin-left:-4px;transform:rotate(45deg);\n  background:var(--paper);border:2px solid #c4ac84}\n\n/* 왼쪽 — 학생 목록 */\n.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0 4px;max-height:778px;overflow:auto;padding:2px 2px 0;scrollbar-width:thin;scrollbar-color:#c4ac84 transparent}\n.cell{position:relative;display:flex;flex-direction:column;align-items:center;padding:0;border:0;background:none;cursor:pointer;color:var(--ink)}\n.cell .epi{height:20px;line-height:20px;color:var(--brass);white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}\n.cell .nm{margin-top:10px;height:18px;line-height:18px;white-space:nowrap}\n.cell:hover .ring{--ring-c:#a8703a}\n.cell.on .ring{--ring-c:var(--sel)}\n.cell.on .ring::after{content:\"\";position:absolute;inset:-7px;border-radius:50%;border:2px solid var(--sel);opacity:.55}\n.cell.on .nm{color:var(--brass)}\n/* 원 아래에 걸친 꼬리표 — 정렬을 따라 학년 · 소속 팀 · 레벨 · 전투력 (진로 평가 · 컨디션 · 이름은 없다) */\n.cell .lt{position:absolute;left:50%;transform:translateX(-50%);z-index:2;gap:3px}\n.cell:focus-visible{outline:2px dashed var(--sel);outline-offset:-2px}\n\n/* 초상 — 원 안만 보인다 · 속배경은 투명 (아래 종이가 비친다)\n   틀 색(--ring-c)은 .ring 에서 정한다 — 바깥 페이지의 같은 이름 변수를 물려받으면 테두리가 통째로 사라진다 (배치판의 --r: 6px 이 그랬다) */\n.ring{--ring-c:#8b5a2b;position:relative;flex:none;border-radius:50%}\n.ring .face{position:absolute;inset:0;border-radius:50%;overflow:hidden}\n.ring .face img{display:block;width:100%;height:100%;object-fit:cover}\n.ring::before{content:\"\";position:absolute;inset:0;border-radius:50%;border:4px solid var(--ring-c,#8b5a2b);z-index:1;\n  box-shadow:inset 0 0 0 1px rgba(255,240,201,.35)}\n\n/* 꼬리표 */\n.tag{display:inline-flex;align-items:center;height:20px;padding:0 5px;border:2px solid currentColor;background:#fff7e3;color:var(--ink2);white-space:nowrap;line-height:16px}\n.tag.tm{background:#f6e7c4;color:var(--frame);height:20px}\n.tag.tm.none{color:var(--ink3);border-style:dashed}\n.tag.g-D{color:#82849a}.tag.g-C{color:#5b5d72}.tag.g-B{color:var(--tank)}.tag.g-A{color:var(--supp)}.tag.g-S{color:var(--brass)}.tag.g-EX{color:#b02e6b}\n.tag.r-tank{color:var(--tank)}.tag.r-dps{color:var(--dps)}.tag.r-heal{color:var(--heal)}.tag.r-supp{color:var(--supp)}\n.tag.yr{color:var(--ink2)}\n.tag.lv{color:var(--ink);background:none;border-color:transparent;padding:0 2px}\n.ebtn{width:24px;height:24px;padding:0;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;background:#e5cda5;color:#45321f;\n  border:2px solid var(--frame);box-shadow:inset 2px 2px #fff0c980,inset -2px -2px #60422140,0 2px #30271e}\n\n/* 오른쪽 — 상세 */\n.det{position:relative;height:100%;display:flex;flex-direction:column;transition:opacity .16s ease,transform .16s ease}\n.det > *{flex:none}\n.det.turn{opacity:0;transform:translateX(8px)}\n.hd{display:flex;gap:16px;min-height:112px;align-items:flex-start}\n.hd .who{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;padding-top:0}\n.hd .nmrow{display:flex;align-items:baseline;gap:8px;white-space:nowrap}\n.hd .nmrow .epi{color:var(--brass)}\n.hd .nmrow .nm{font:24px/28px Mulmaru}\n.hd .nmrow .ebtn{align-self:center;margin-left:-2px}           /* 이름 변경 — 이름 바로 뒤 (이름 길이를 따라간다) */\n.hd .tags{display:flex;gap:4px;align-items:center;flex-wrap:wrap}\n.bub{position:relative;align-self:flex-start;max-width:350px;margin:3px 0 0 10px;padding:6px 10px;background:#fffdf8;color:#2d241b;\n  border:2px solid #83603f;box-shadow:2px 2px 0 #5a3f2826;word-break:keep-all}\n.bub::before{content:\"\";position:absolute;left:-10px;top:8px;border:6px solid transparent;border-right:8px solid #83603f;border-left:0}\n.bub::after{content:\"\";position:absolute;left:-6px;top:10px;border:4px solid transparent;border-right:6px solid #fffdf8;border-left:0}\n.bub.boast{font:14px/18px HsBombaram21,Mulmaru;-webkit-font-smoothing:antialiased}\n.bub.timid{font-size:12px;color:#6b5a48}\n.note-band{margin-top:8px;padding:2px 8px;background:#e9d29c66;border-left:4px solid var(--brass-b);color:var(--ink2)}\n.note-band b{color:var(--brass);font-weight:400}\n.pers{display:flex;align-items:center;gap:6px 8px;margin-top:6px;flex-wrap:wrap}\n.pers .k{color:var(--ink3)}\n.pers .eff{display:inline-flex;align-items:center;gap:3px}\n.pers .eff.up{color:#b8382c}.pers .eff.dn{color:#2f63b5}\n.pdesc{color:var(--ink3);margin-top:2px}\n\n/* 카드 — 책장 위에 연필로 두른 칸 */\n.card{position:relative;border:2px solid var(--edge);box-shadow:inset 0 0 0 2px #fff7e2aa;background:#fbf3df80;padding:24px 10px 8px}\n.card > .cap{position:absolute;left:-2px;top:-2px;height:22px;padding:0 8px;background:var(--edge);color:#fff7e2;line-height:22px;white-space:nowrap}\n.card > .cap i{font-style:normal;color:#f6e1ac;margin-left:6px}\n.det > .row2{flex:1 1 auto;min-height:250px;display:grid;grid-template-columns:260px 1fr;gap:12px;margin-top:10px}   /* 남는 높이를 육각형 · 유물 줄이 받는다 */\n\n/* 멘탈리티 육각형 — 책장 위에 잉크로 그린 도트 (1배로 그려 2배로 본다) · 학생 값만 매끈한 SVG */\n.hex{min-height:0;padding:0}\n.hex canvas{position:absolute;image-rendering:pixelated}\n.hex .hexsv{position:absolute;overflow:visible;pointer-events:none}   /* 학생 값(면 · 테두리)은 매끈하게 — 캔버스와 같은 자리 · 같은 1배 좌표 */\n.hex .lab{position:absolute;line-height:16px;white-space:nowrap;text-align:center}\n.hex .lab .n{color:var(--brass)}\n.hex .lab .v{font:12px/16px \"Mulmaru Mono\",Mulmaru;color:var(--ink)}\n.hex .lab .v b{font-weight:400;margin-left:4px}\n.hex .lab.L{text-align:right}\n.hex .lab.R{text-align:left}\n\n/* 유물 */\n.rel{min-height:0;display:flex;flex-direction:column;gap:4px;padding:24px 4px 6px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#c4ac84 transparent}\n.slot{flex:none;display:flex;gap:6px;padding:3px 3px 3px 4px;border:2px solid #d6c09a;border-left-width:4px;background:#fffaf0aa}\n.slot .bd{min-width:0;flex:1}\n.slot .rn{display:flex;align-items:center;gap:5px;white-space:nowrap}\n.slot .rn .sc{margin-left:auto;color:var(--ink3)}\n.slot .af{color:var(--ink2);line-height:16px;margin-top:1px;display:flex;flex-wrap:wrap;gap:0 5px}\n.slot .af span{white-space:nowrap}\n.slot.empty{height:30px;border-style:dashed;border-left-width:2px;background:none;color:var(--ink3);align-items:center}\nbutton.slot.empty{width:100%;font:inherit;text-align:left;cursor:pointer}   /* 빈 칸 — 누르면 유물 보관고로 */\nbutton.slot.empty:hover{border-color:var(--sel);background:#fff3d6;color:var(--ink)}\nbutton.slot.empty:focus-visible{outline:2px dashed var(--sel);outline-offset:1px}\n.slot.empty .pl{width:20px;text-align:center}\n.slot.lock{height:30px;border-left-width:2px;border-style:dashed;border-color:#e0cfaa;background:repeating-linear-gradient(135deg,#efdfba33 0 6px,transparent 6px 12px);color:#b29c78;align-items:center}\n\n/* 스킬 */\n.skc{margin-top:10px;height:170px}\n.sks{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}\n.sk{display:flex;flex-direction:column;align-items:center;gap:2px;padding:2px 0 4px;border:2px solid transparent;background:none;cursor:pointer;color:var(--ink);text-align:center}\n.sk:hover,.sk.on{border-color:#d6c09a;background:#fffaf0aa}\n.sk .ic{position:relative;width:48px;height:48px;flex:none}\n.sk .ic img{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}   /* 1015 — 새 스킬 아이콘: 바탕 · 그림 · 테두리를 칸 가득 (테두리가 맨 위) */\n.sk .ic .ar{image-rendering:auto}\n.sk .sn{height:18px;max-width:94px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}\n.sk .sl{color:var(--ink3);height:16px;line-height:16px}\n.sk .sl b{font-weight:400}\n.skd{margin-top:4px;padding-top:4px;border-top:2px dotted #d6c09a;height:42px;overflow:hidden;color:var(--ink2);line-height:18px}\n.skd b{color:var(--ink);font-weight:400}\n.skd .m{color:var(--ink3)}\n\n/* 학적 · 전투 능력치 — 머리띠 탭으로 바꿔 본다 (고른 탭은 학생을 바꿔도 그대로) */\n.rec{margin-top:10px;height:136px;padding:23px 10px 4px}\n.rec > .tabs{position:absolute;left:-2px;top:-2px;display:flex;height:22px}\n.rec .rt{height:22px;padding:0 8px;border:2px solid var(--edge);margin-right:-2px;background:#fbf3df;color:var(--ink3);line-height:18px;cursor:pointer}\n.rec .rt.on{background:var(--edge);color:#fff7e2}\n.rec .rt:not(.on):hover{color:var(--ink)}\n.rec > .pw{position:absolute;right:8px;top:2px;color:var(--ink3);line-height:18px}\n.rec > .pw b{font:12px/18px \"Mulmaru Mono\",Mulmaru;color:var(--ink);font-weight:400;margin-left:4px}\n.rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px 12px}\n.rgrid .it{min-width:0}\n.rgrid .k{color:var(--brass);height:18px;line-height:16px;border-bottom:2px dotted #e6d4b0}   /* 이름은 황동 + 점선 밑줄 — 값(잉크) · 덧말(옅은 잉크)과 갈리게 */\n.rgrid .v{color:var(--ink);line-height:18px;word-break:keep-all}\n.rgrid .s{color:var(--ink3);line-height:16px}\n.rgrid .v .sub{color:var(--ink3)}\n.rgrid .hearts{display:flex;gap:2px;margin-top:2px}\n.bgrid{display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;gap:4px 14px;padding-top:3px}\n.bgrid .b{display:flex;gap:6px;justify-content:space-between;white-space:nowrap;line-height:18px;border-bottom:2px dotted #e6d4b0}\n.bgrid .b .k{color:var(--ink3)}\n.bgrid .b .v{font-family:\"Mulmaru Mono\",Mulmaru;color:var(--ink)}\n#fitIn .c-brass{color:var(--brass)!important}#fitIn .c-bad{color:var(--bad)!important}#fitIn .c-warn{color:var(--warn)!important}\n#fitIn .c-dim{color:var(--ink3)!important}#fitIn .c-ok{color:var(--ok)!important}\n.tag.inj{color:var(--bad);height:18px;padding:0 3px;margin-left:4px}\n\n/* ── 팀 편성 — 명부 머리의 '팀 편성'으로 바꿔 본다. 오른쪽 쪽은 팀 · 진형 · 배치, 왼쪽 꼬리표는 소속 팀 고르기 ── */\n#fitIn [hidden]{display:none!important}\n.pbtn{height:28px;padding:0 10px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;background:#f6e7c4;color:var(--ink);white-space:nowrap;\n  border:2px solid var(--frame);box-shadow:inset 2px 2px #fff0c980,inset -2px -2px #60422140,0 2px #30271e}\n.pbtn:hover{background:#fff3d6}\n.pbtn:active{box-shadow:inset 2px 2px #30271e70,0 1px #30271e}\n.pbtn:focus-visible{outline:2px dashed var(--sel);outline-offset:2px}\n.pbtn:disabled{opacity:.45;cursor:default;background:#f6e7c4}\n.pbtn.pri{background:#ecd08a;color:#3a2a10}\n.pbtn.pri:hover{background:#f4dc9f}\n.pbtn.tog{flex:none}\n.pbtn.tog[aria-pressed=\"true\"]{background:var(--frame);color:#fff7e2;box-shadow:inset 2px 2px #1f160e8c,inset -2px -2px #fff0c926,0 2px #30271e}\n.pbtn.tog[aria-pressed=\"true\"]:hover{background:#755638}\n/* 스킬 임의로 강화 — 강화 포인트가 남은 학생이 있을 때만 정렬 옆에. 오른쪽 작은 칸에 남은 포인트 합 */\n.ph #spbtn{flex:none;padding:0 4px 0 10px}\n.ph #spbtn .spn{min-width:20px;height:20px;padding:0 4px;display:inline-flex;align-items:center;justify-content:center;\n  background:var(--frame);color:#fff7e2;font:12px/20px \"Mulmaru Mono\",Mulmaru}\n/* 왼쪽 — 지금 팀은 금색 틀, 다른 팀은 흐리게. 꼬리표를 누르면 소속 팀 쪽지 */\n.teammode .grid .cell{touch-action:none}\n.teammode .cell.cur .ring{--ring-c:var(--sel)}\n.teammode .cell.oth .ring,.teammode .cell.oth .epi,.teammode .cell.oth .nm{opacity:.45}\n.teammode .cell.lift{opacity:.4}\n.cell .tag.tset{cursor:pointer;max-width:150px}\n.cell .tag.tset .tx{overflow:hidden;text-overflow:ellipsis}\n.cell .tag.tset .mkr{flex:none}\n.cell .tag.tset:hover,.cell .tag.tset.open{background:#fff3d6}\n.cell .tag.tset.cur{background:var(--frame);border-color:var(--frame);color:#fff7e2}\n.cell .tag.tset.cur:hover,.cell .tag.tset.cur.open{background:#7a5a3a}\n.cell .tag.tset:focus-visible{outline:2px dashed var(--sel);outline-offset:1px}\n.page.l.dropout .grid{outline:2px dashed var(--bad);outline-offset:-2px;background:#b33f320f}\n.page.l.dropout::after{content:\"여기에 놓으면 팀에서 뺀다\";position:absolute;left:50%;top:48px;transform:translateX(-50%);padding:0 8px;line-height:20px;\n  background:var(--bad);color:#fff7e2;z-index:6;pointer-events:none;white-space:nowrap}\n/* 오른쪽 — 팀 탭(카드 머리) · 진형 넷 · 전열 / 후열 세 자리 */\n.tmc{padding:38px 10px 10px;margin-top:2px}\n.tmc > .ttabs{position:absolute;left:-2px;top:-2px;display:flex;height:28px}\n.tmc .tt{height:28px;padding:0 12px;margin-right:-2px;display:inline-flex;align-items:center;gap:6px;border:2px solid var(--edge);background:#f3e6c6;color:var(--ink3);cursor:pointer;white-space:nowrap}\n.tmc .tt:not(.on):not(.lock):hover{color:var(--ink);background:#f8eed6}\n.tmc .tt.on{background:var(--edge);color:#fff7e2}\n.tmc .tt .tc.ok{color:var(--ok)}\n.tmc .tt.on .tc.ok{color:#e2f4d2}\n.tmc .tt.lock{border-style:dashed;border-color:#d6c09a;background:none;color:#b29c78;cursor:default;gap:4px}\n.tmc .tt:focus-visible{outline:2px dashed var(--sel);outline-offset:1px;z-index:1}\n.tmc > .pw{position:absolute;right:8px;top:5px;color:var(--ink3);line-height:18px;display:flex;align-items:center;gap:4px}\n.tmc > .pw b{font:12px/18px \"Mulmaru Mono\",Mulmaru;color:var(--ink);font-weight:400}\n.tmc .th{display:flex;align-items:baseline;gap:8px;line-height:18px;white-space:nowrap;min-width:0}\n.tmc .th b{font-weight:400;color:var(--brass);flex:none}\n.tmc .th .st{margin-left:auto;flex:none}\n.tmc .fos{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0 12px;padding-bottom:12px;border-bottom:2px dotted #e6d4b0}\n.tmc .fo{position:relative;display:flex;flex-direction:column;gap:4px;padding:6px 9px 7px;border:2px solid #d6c09a;background:#fffaf0aa;color:var(--ink);cursor:pointer;text-align:left}\n.tmc .fo:hover{border-color:#c4ac84;background:#fffcf4}\n.tmc .fo.on{border-color:var(--brass-b);background:#fff3d2;box-shadow:inset 0 0 0 2px #fffaf0}\n.tmc .fo:focus-visible{outline:2px dashed var(--sel);outline-offset:2px}\n.tmc .fo .fh{display:flex;align-items:center;gap:8px;height:20px}\n.tmc .fo.on .fnm{color:var(--brass)}\n.tmc .fo .fsh{color:var(--ink3)}\n.tmc .fo .fck{margin-left:auto;display:flex}\n.tmc .fo .fx{display:flex;flex-direction:column;color:var(--ink2);line-height:16px;word-break:keep-all}\n.tmc .fld{display:flex;flex-direction:column;gap:6px;margin-top:6px}\n.tmc .frow{display:grid;grid-template-columns:20px repeat(3,minmax(0,1fr));gap:6px}\n.tmc .frl{writing-mode:vertical-rl;text-orientation:upright;align-self:center;justify-self:center;color:var(--ink3);letter-spacing:6px}\n.fs{position:relative;height:160px;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px;\n  border:2px solid #d6c09a;background:#fffaf0cc;color:var(--ink);cursor:pointer;outline:none;text-align:center}\n.fs.fill{justify-content:flex-start;padding-top:10px}\n.fs:hover{border-color:#c4ac84}\n.fs:focus-visible{outline:2px dashed var(--sel);outline-offset:2px}\n.fs.empty{border-style:dashed;border-color:#c4ac84;background:#fbf3df80}\n.fs.empty .fe{color:var(--ink2)}\n.fs .fw{color:var(--ink3);line-height:16px}\n.fs .fw b{font-weight:400}\n.fs.on{border-style:solid;border-color:var(--sel);background:#fff3d6;box-shadow:0 0 0 2px #c8902e4d}\n.fs.off{border:2px dashed #e0cfaa;background:repeating-linear-gradient(135deg,#efdfba40 0 6px,transparent 6px 12px);cursor:default}\n.fs.off .fe{color:#b29c78}\n.fs .ring{width:64px;height:64px;margin-bottom:5px}\n.fs .ring::before{border-width:3px}\n.fs .fn{display:flex;align-items:center;gap:4px;white-space:nowrap;max-width:100%;line-height:18px}\n.fs .fn .nm{overflow:hidden;text-overflow:ellipsis}\n.fs .ft{display:flex;align-items:center;gap:4px;white-space:nowrap}\n.fs .tag{height:18px;padding:0 3px;line-height:14px}\n.fs .tag.lv{padding:0}\n.fs .fp,.fs .fc{color:var(--ink3);line-height:16px;white-space:nowrap}\n.fs .fp b,.fs .fc b{font-weight:400;color:var(--ink);margin-left:4px}\n.fs .x{position:absolute;right:2px;top:2px;width:20px;height:20px;padding:0;display:grid;place-items:center;border:0;background:none;color:var(--ink3);cursor:pointer;opacity:.5}\n.fs:hover .x,.fs .x:focus-visible{opacity:1}\n.fs .x:hover{color:var(--bad)}\n.fs.drop{border-style:solid;border-color:var(--sel);background:#fff0c8}\n.fs.lift{opacity:.45}\n@keyframes fsflash{0%{box-shadow:0 0 0 5px #e9c77acc;background:#fff0c0}100%{box-shadow:0 0 0 0 #e9c77a00}}\n.fs.flash{animation:fsflash .9s ease-out}\n.tmbar{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}\n.tmhint{margin:10px 2px 0;color:var(--ink3);line-height:18px;word-break:keep-all}\n.tmhint b{font-weight:400;color:var(--brass)}\n#fitIn .c-tank{color:var(--tank)}#fitIn .c-dps{color:var(--dps)}#fitIn .c-heal{color:var(--heal)}#fitIn .c-supp{color:var(--supp)}\n/* 쪽지 — 꼬리표의 소속 팀 고르기 · 팀 이름 바꾸기 */\n.slip{position:absolute;z-index:30;min-width:170px;padding:4px;background:#fffaf0;border:2px solid var(--frame);box-shadow:3px 3px 0 #30271e59;color:var(--ink);text-align:left}\n.slip .slip-h{padding:1px 6px 4px;margin-bottom:3px;border-bottom:2px dotted #e6d4b0;color:var(--ink3);white-space:nowrap}\n.slip .so{display:flex;width:100%;align-items:center;gap:6px;padding:3px 6px;border:0;background:none;color:var(--ink);cursor:pointer;white-space:nowrap;text-align:left}\n.slip .so:hover:not(:disabled),.slip .so:focus-visible{background:#f6e7c4;outline:none}\n.slip .so.on{color:var(--brass)}\n.slip .so .sp0{width:18px;flex:none}\n.slip .so .sd{margin-left:auto;padding-left:12px;color:var(--ink3)}\n.slip .so:disabled{color:#b29c78;cursor:default}\n.slip .so:disabled .sd{color:#c9b48f}\n.slip .so.dis{cursor:default}\n.slip .sws{display:flex;flex-wrap:wrap;gap:4px;padding:1px 6px 5px 30px}\n.slip .sw{height:22px;padding:0 6px;display:inline-flex;align-items:center;gap:4px;border:2px solid #d6c09a;background:#fffaf0;color:var(--ink);cursor:pointer;white-space:nowrap}\n.slip .sw i{font-style:normal;color:var(--ink3)}\n.slip .sw:hover,.slip .sw:focus-visible{border-color:var(--sel);background:#fff3d6;outline:none}\n.slip .sin{display:block;width:220px;height:28px;margin:2px 4px 6px;padding:0 6px;background:#fffdf8;color:var(--ink);border:2px solid var(--frame);font:inherit;outline:none}\n.slip .sin:focus{border-color:var(--sel)}\n.slip .sbtns{display:flex;gap:6px;padding:0 4px 4px}\n.slip .shint{padding:0 4px 2px;color:var(--ink3)}\n.tm-ghost{position:absolute;z-index:40;width:56px;height:56px;pointer-events:none;rotate:-6deg;filter:drop-shadow(3px 4px 0 rgba(48,39,30,.4))}\n.tm-ghost .ring{display:block;width:56px;height:56px}\nbody.tm-drag,body.tm-drag *{cursor:grabbing!important}\n@media (prefers-reduced-motion:reduce){.fs.flash{animation:none}}\n\n/* ── 배치 (art/roster_layout.json — 학생 명부 배치판에서 정한다)\n   기본 자리에서 옮긴 양(--○-x · --○-y)과 원 지름(--○-s). 단위는 게임 화면 px. 초상 그림은 원 안에서 --fs 배율 · --fx --fy (원 지름의 %) ── */\n.cell{height:calc(var(--lring-s,100px) + 52px)}\n.cell .ring{width:var(--lring-s,100px);height:var(--lring-s,100px);translate:var(--lring-x,0px) var(--lring-y,0px)}\n.cell .lt{top:calc(var(--lring-s,100px) + 4px);translate:calc(var(--lring-x,0px) + var(--ltag-x,0px)) calc(var(--lring-y,0px) + var(--ltag-y,0px))}\n.cell .epi{translate:var(--lepi-x,0px) var(--lepi-y,0px)}\n.cell .nm{translate:var(--lname-x,0px) var(--lname-y,0px)}\n.book #sort{translate:var(--sort-x,0px) var(--sort-y,0px)}\n.book #tbtn{translate:var(--tbtn-x,0px) var(--tbtn-y,0px)}\n.book #spbtn{translate:var(--spbtn-x,0px) var(--spbtn-y,0px)}\n.book .xbtn{translate:var(--xbtn-x,0px) var(--xbtn-y,0px)}\n.hd .ring{width:var(--dring-s,108px);height:var(--dring-s,108px);translate:var(--dring-x,0px) var(--dring-y,0px)}\n.hd .nmrow{translate:var(--dname-x,0px) var(--dname-y,0px)}\n.hd .tags{translate:var(--dtags-x,0px) var(--dtags-y,0px)}\n.hd .ebtn{translate:var(--ebtn-x,0px) var(--ebtn-y,0px)}\n.hd .bub{translate:var(--bub-x,0px) var(--bub-y,0px)}\n.rec > .tabs{translate:var(--rtabs-x,0px) var(--rtabs-y,0px)}\n.book .ribbon{translate:var(--ribbon-x,0px) var(--ribbon-y,0px)}\n.ring .face img{transform:translate(var(--fx,0%),var(--fy,2%)) scale(var(--fs,1.04))}\n/* ROSTERBK_CSS — 학생 명부 책 (1009 · apply_roster.py) ─ 그림자 DOM(#rbHost) 안에서만 쓴다.\n   목업 원본(roster_tpl.html 의 CORE_CSS)을 apply_roster 가 앞에 붙이고, 이 파일은 게임에서만 필요한 것 */\n.rbw{position:absolute;inset:0;overflow:hidden;-webkit-tap-highlight-color:transparent;font-synthesis:none}\n.rbscrim{position:absolute;inset:0;background:rgba(10,11,15,.62);transition:opacity .2s}\n.rbw.closed .rbscrim{opacity:0;pointer-events:none}\n.rbw.tm-drag,.rbw.tm-drag *{cursor:grabbing!important}\n/* 목업의 책상 · 무대 덮개는 쓰지 않는다 — 뒤는 게임 화면 (덮개는 .rbscrim 이 창 전체에) */\n#fitIn .desk,#fitIn > .scrim{display:none}\n#fitIn .book{outline:none}\n/* 강화 포인트 — 있을 때 스킬 카드 머리 오른쪽 (스킬 강화 단추는 1014 에 뺐다 — 왼쪽 목록의 '스킬 강화 가능!' 쪽지로 연다) */\n.skc .spr{position:absolute;right:6px;top:1px;display:flex;align-items:center;gap:6px;color:var(--ink3);line-height:18px;white-space:nowrap}\n.skc .spr b{font:12px/18px \"Mulmaru Mono\",Mulmaru;color:var(--brass);font-weight:400}\n/* 스킬 강화 가능 — 강화 포인트가 남은 학생(spReady 와 같은 기준)은 목록의 초상 원 위쪽에 걸친 쪽지 (1014 · 모양은 원 아래 꼬리표와 같다 · 원을 따라 옮긴다).\n   누르면(Enter · Space 도) 게임의 스킬 강화 팝업 — 학생 상세의 스킬 강화 단추 대신. 마우스를 올리면 소속 팀 꼬리표처럼 밝아진다 */\n.cell .skb{position:absolute;left:50%;top:15px;transform:translateX(-50%);translate:var(--lring-x,0px) var(--lring-y,0px);z-index:3;cursor:pointer}\n.cell .skb:hover{background:#fff3d6}\n.cell .skb:focus-visible{outline:2px dashed var(--sel);outline-offset:1px}\n.teammode .cell.oth .skb{opacity:.45}\n/* 유물 칸 · 유물 보관고(왼쪽 쪽)는 rvault_block.css (1017 · 3단계 — 해제는 칸에 올리면 오른쪽 위 ×) */\n\n/* RVAULT_CSS — 유물 보관고 · 책의 왼쪽 쪽 (1017 · 유물의 법칙 3단계 · apply_roster.py 가 roster_block.css 뒤에 붙인다 — 그림자 DOM #rbHost 안에서만).\n   목업 mockups/relic-vault/src/vault.css 를 게임으로 — 빈 유물 칸을 누르면 왼쪽 쪽이 학생 명부 대신 보관고가 된다. 오른쪽 쪽(학생 상세)은 그대로 — 유물 칸이 끌어 놓을 자리 */\n#fitIn{--res:#8e3a8c;--set:#c25a0c;--off:#a39d92}      /* 공명(자주) · 세트(주황) · 미장착(회색) — 1017 사용자 */\n.book.vaultmode .page.l > :not(.vlt){display:none!important}\n.vlt{position:relative;height:100%;display:flex;flex-direction:column;transition:opacity .16s ease,transform .16s ease}\n.vlt > *{flex:none}\n.vlt.turn,.page.l .turn{opacity:0;transform:translateX(-8px)}\n.page.l > .ph,.page.l > .grid{transition:opacity .16s ease,transform .16s ease}\n.vlt .ph{gap:8px}\n.vlt .ph h2{white-space:nowrap}\n.vlt .ph .cnt{white-space:nowrap}\n#vback{padding:0 9px 0 7px;flex:none}\n#vback .mkr{margin-right:1px}\n#vsort{min-width:0;max-width:210px}\n\n/* 거르기 — 등급 넷 · 공명 · 전투 밖 효과 · 다른 학생 것도 (눌린 칸은 밝은 금색 — 1017) */\n.vchips{display:flex;align-items:center;gap:4px;height:24px;margin:0 2px 8px;white-space:nowrap}\n.vchips .lab{color:var(--ink3);margin-right:2px}\n.vchips .gap{width:6px;flex:none}\n.vchip{height:22px;padding:0 6px;display:inline-flex;align-items:center;gap:4px;border:2px solid #d6c09a;background:#fffaf0aa;color:var(--ink2);cursor:pointer;line-height:18px;white-space:nowrap}\n.vchip:hover{border-color:#c4ac84;background:#fffcf4}\n.vchip[aria-pressed=\"true\"]{border-color:var(--sel);background:#ffe49c;color:#3a2a10;box-shadow:0 0 0 2px #c8902e4d}\n.vchip[aria-pressed=\"true\"]:hover{background:#ffeab4}\n.vchip.rs{color:var(--res)}\n.vchip.g{min-width:24px;justify-content:center;padding:0 4px;color:var(--gc);border-color:var(--gc);background:#fffaf0}\n.vchip.g[aria-pressed=\"true\"]{background:#ffe49c;color:var(--gc);border-color:var(--gc);box-shadow:0 0 0 2px #c8902e4d}\n.vchip:focus-visible{outline:2px dashed var(--sel);outline-offset:1px}\n.vchip .n{font:12px/18px \"Mulmaru Mono\",Mulmaru;opacity:.75}\n.g-C{--gc:#5b5d72}.g-B{--gc:#3c6e9e}.g-A{--gc:#6d4ba8}.g-S{--gc:#8a6a15}.g-Sp{--gc:#2a9d74}.g-EX{--gc:#b02e6b}.g-D{--gc:#82849a}\n\n/* 보관함 — 아이콘 칸 (다키스트 던전의 장신구 가방처럼) */\n.vbox{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;padding:28px 4px 6px}\n.vbox > .vacts{position:absolute;right:-2px;top:-2px;display:flex;height:22px}\n.vact{height:22px;padding:0 8px;margin-left:-2px;border:2px solid var(--edge);background:#fbf3df;color:var(--ink2);cursor:pointer;line-height:18px;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}\n.vact:hover:not(:disabled){color:var(--ink);background:#fffaf0}\n.vact:disabled{color:#b29c78;cursor:default}\n.vact:focus-visible{outline:2px dashed var(--sel);outline-offset:1px;z-index:1}\n.vact.pri{background:#ecd08a;color:#3a2a10}\n.vact.pri:hover:not(:disabled){background:#f4dc9f}\n.vact.pri:disabled{background:#f3e6c6;color:#b29c78}\n.vgrid{flex:1 1 auto;min-height:0;overflow-y:auto;display:grid;grid-template-columns:repeat(7,60px);grid-auto-rows:60px;gap:6px 8px;justify-content:center;align-content:start;\n  padding:4px 4px 6px;scrollbar-width:thin;scrollbar-color:#c4ac84 transparent}\n.vempty{grid-column:1/-1;padding:40px 10px;text-align:center;color:var(--ink3);line-height:20px;word-break:keep-all}\n.rvt{position:relative;width:60px;height:60px;padding:0;border:2px solid var(--gc);cursor:grab;color:var(--ink);\n  background:radial-gradient(circle at 50% 44%,#fffdf6 0 34%,color-mix(in srgb,var(--gc) 13%,#f1e1bd) 100%);\n  box-shadow:inset 0 0 0 2px #fff7e2b3,0 2px 0 #3a2a1a26;touch-action:pan-y;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}\n.rvt img{position:absolute;left:4px;top:4px;width:48px;height:48px;pointer-events:none;filter:drop-shadow(0 1px 0 #3a2a1a40)}\n.rvt .gt{position:absolute;right:-2px;bottom:-2px;min-width:16px;height:16px;padding:0 3px;background:var(--gc);color:#fff7e2;font:12px/16px Mulmaru;text-align:center}\n.rvt:hover{box-shadow:inset 0 0 0 2px #fff7e2,0 0 0 2px #c8902e66,0 2px 0 #3a2a1a26}\n.rvt.on{outline:2px solid var(--sel);outline-offset:2px;box-shadow:inset 0 0 0 2px #fff7e2,0 0 0 5px #c8902e33}\n.rvt:focus-visible{outline:2px dashed var(--sel);outline-offset:2px}\n.rvt.nw::after{content:\"\";position:absolute;right:3px;top:3px;width:6px;height:6px;background:#d8443a;box-shadow:0 0 0 2px #fffaf0}\n.rvt .rs{position:absolute;left:-2px;top:-2px;height:16px;padding:0 3px;background:var(--res);color:#fff7e2;font:12px/16px Mulmaru;white-space:nowrap}\n.rvt .jb{position:absolute;left:0;top:0;width:0;height:0;border-style:solid;border-width:10px 10px 0 0;border-color:var(--res) transparent transparent transparent}\n.rvt .gn{position:absolute;left:-2px;bottom:-2px;height:16px;padding:0 3px;background:#fffaf0;border:1px solid #d6c09a;font:12px/14px \"Mulmaru Mono\",Mulmaru;color:var(--ink3)}\n.rvt .gn.up{color:var(--ok)}.rvt .gn.dn{color:var(--bad)}\n.rvt.worn{background:repeating-linear-gradient(135deg,#efdfba66 0 6px,transparent 6px 12px),radial-gradient(circle at 50% 44%,#fffdf6 0 34%,color-mix(in srgb,var(--gc) 13%,#f1e1bd) 100%)}\n.rvt.worn img{opacity:.78}\n.rvt .wf{position:absolute;left:-3px;bottom:-3px;width:22px;height:22px}\n.rvt .wf .ring{display:block;width:22px;height:22px}\n.rvt .wf .ring::before{border-width:2px}\n.rvt.lift{opacity:.3}\n.rvt.lg img{opacity:.9}\n@keyframes vtin{0%{box-shadow:0 0 0 6px #e9c77acc}100%{box-shadow:0 0 0 0 #e9c77a00}}\n.rvt.flash{animation:vtin .9s ease-out}\n\n/* 살펴보기 — 올린(누른) 유물 · 장착하면 바뀌는 전투력 · 장착 / 처분 */\n.vdet{height:350px;margin-top:8px;padding:26px 10px 8px;display:flex;flex-direction:column}\n.vdb{flex:1;min-height:0;display:flex;flex-direction:column}\n.vd-body{flex:1;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#c4ac84 transparent}\n.vd-top{display:flex;gap:10px;align-items:flex-start}\n.vd-ic{position:relative;width:80px;height:80px;flex:none;border:2px solid var(--gc);display:grid;place-items:center;\n  background:radial-gradient(circle at 50% 44%,#fffdf6 0 38%,color-mix(in srgb,var(--gc) 16%,#f1e1bd) 100%);box-shadow:inset 0 0 0 2px #fff7e2b3}\n.vd-ic img{width:72px;height:72px;filter:drop-shadow(0 2px 0 #3a2a1a40)}\n.vd-hd{min-width:0;flex:1}\n.vd-nm{font:24px/28px Mulmaru;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}\n.vd-tags{display:flex;align-items:center;gap:4px;margin-top:3px;flex-wrap:wrap}\n.vd-tags .tag{height:18px;padding:0 4px;line-height:14px}\n:is(.vd-tags,.rtg) .tag.neg{color:var(--bad)}\n:is(.vd-tags,.rtg) .tag.ow{color:#7a4fc4}\n:is(.vd-tags,.rtg) .tag.uq{color:var(--brass)}\n:is(.vd-tags,.rtg) .tag.rs{color:var(--res)}\n:is(.vd-tags,.rtg) .tag.rs.on{background:var(--res);border-color:var(--res);color:#fff7e2}\n:is(.vd-tags,.rtg) .tag.set{color:var(--set)}\n.rtg .tag.set.on{background:var(--set);border-color:var(--set);color:#fff7e2}\n.vd-tags .sc{margin-left:auto;color:var(--ink3);white-space:nowrap}\n.vd-tags .sc b{font:12px/18px \"Mulmaru Mono\",Mulmaru;color:var(--ink);font-weight:400}\n.vd-af{display:grid;grid-template-columns:1fr 1fr;gap:0 12px;margin-top:5px;line-height:18px}\n.vd-af span{white-space:nowrap;display:flex;justify-content:space-between;gap:6px;border-bottom:2px dotted #e6d4b0;min-width:0}\n.vd-af b{font:12px/18px \"Mulmaru Mono\",Mulmaru;font-weight:400;color:var(--ink)}\n.vd-af .neg,.vd-af .neg b{color:var(--bad)}\n.vd-ln{margin-top:3px;line-height:18px;color:var(--ink2);word-break:keep-all}\n.vd-ln b{font-weight:400;color:var(--brass)}\n.vd-ln.fx{color:#2f5f8a}.vd-ln.fx i,.vd-ln.neg i{font-style:normal;color:var(--ink3)}\n.vd-ln.neg{color:var(--bad)}\n.vd-ln.res{color:var(--res)}\n.vd-ln.set{color:var(--set)}\n.vd-ln.set .off{color:var(--off)}\n.vd-ln.setfx{margin-top:0;padding-left:40px;color:var(--set)}\n.vd-ln.setfx.off{color:var(--off)}\n.vd-ln.old{color:var(--ink3)}\n.vd-lore{margin-top:5px;color:var(--ink3);line-height:18px;word-break:keep-all}\n.vd-rec{margin-top:3px;color:var(--ink3);line-height:16px;word-break:keep-all}\n/* 아래 줄 — 누구 (Slot) → 누구 (Slot) · 단추 / 전투력 변동 / 능력치 변동 */\n.vd-act{flex:none;display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:8px;row-gap:1px;align-items:center;margin-top:6px;padding-top:6px;border-top:2px dotted #e6d4b0}\n.vd-act .who{grid-column:1;grid-row:1;color:var(--ink2);line-height:18px;word-break:keep-all;min-width:0}\n.vd-act .who b{font-weight:400;color:var(--ink)}\n.vd-act .vd-bt{grid-column:2;grid-row:1;display:flex;gap:6px}\n.vd-act .vd-r{grid-column:1 / -1;display:flex;gap:8px;line-height:16px;color:var(--ink2)}\n.vd-act .vd-r .k{flex:none;min-width:36px;color:var(--ink3)}\n.vd-act .vd-r .v{min-width:0;word-break:keep-all}\n.vd-act .vd-r b{font-weight:400;color:var(--ink)}\n.vd-act .num{font-family:\"Mulmaru Mono\",Mulmaru}\n.vd-act .up{color:var(--ok)!important}.vd-act .dn{color:var(--bad)!important}.vd-act .dim{color:var(--ink3)}\n.vd-hint{flex:1;display:grid;place-items:center;color:var(--ink3);line-height:20px;text-align:center;word-break:keep-all}\n\n/* 학생 띠 — 눌러서 오른쪽 쪽의 학생을 바꾼다 · 유물을 얼굴에 놓으면 그 학생의 빈 칸에 · 모두 추천 장착 */\n.vstrip{margin-top:8px;padding:26px 6px 6px}\n.vstrip > .cap{max-width:calc(100% - 150px);overflow:hidden;text-overflow:ellipsis}\n.vstrip > .vall{position:absolute;right:-2px;top:-2px}\n.vfaces{display:flex;gap:2px;justify-content:center;overflow-x:auto;scrollbar-width:none;padding:3px 2px 1px}\n.vf{position:relative;width:30px;height:30px;padding:0;border:0;background:none;cursor:pointer;flex:none}\n.vf .ring{width:30px;height:30px;display:block}\n.vf .ring::before{border-width:2px}\n.vf:hover .ring{--ring-c:#a8703a}\n.vf.on .ring{--ring-c:var(--sel)}\n.vf.on::after{content:\"\";position:absolute;inset:-3px;border-radius:50%;border:2px solid var(--sel);opacity:.55}\n.vf .ve{position:absolute;right:-4px;top:-4px;z-index:2;min-width:15px;height:15px;padding:0 3px;border-radius:8px;background:var(--brass-b);color:#fff7e2;font:12px/15px \"Mulmaru Mono\",Mulmaru;text-align:center}\n.vf.drop .ring{--ring-c:var(--sel)}\n.vf.drop::after{content:\"\";position:absolute;inset:-4px;border-radius:50%;border:2px dashed var(--sel)}\n.vf.bad::after{content:\"\";position:absolute;inset:-4px;border-radius:50%;border:2px dashed var(--bad)}\n.vf:focus-visible{outline:2px dashed var(--sel);outline-offset:3px}\n\n/* 오른쪽 쪽 — 유물 칸 (두 줄 · 아이콘 · 끌어 놓을 자리) */\n.card.rel{position:relative}\n.card.rel > .vgo{position:absolute;right:-2px;top:-2px;height:22px;padding:0 8px;border:2px solid var(--edge);background:#fbf3df;color:var(--ink2);cursor:pointer;line-height:18px;white-space:nowrap}\n.card.rel > .vgo:hover{color:var(--ink);background:#fffaf0}\n.card.rel > .vgo:focus-visible{outline:2px dashed var(--sel);outline-offset:1px}\n.slot.has{position:relative;align-items:center;cursor:pointer}\n.slot.has:hover{background:#fffcf4}\n.slot.has:focus-visible{outline:2px dashed var(--sel);outline-offset:1px}\n.vaultmode .slot.has{cursor:grab;touch-action:pan-y;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}\n/* 낀 칸 — 두 줄: 아이콘 · 이름 / 태그 (점수 · 능력은 보관고 밖에서 올리면 상자로 · 보관고 안에서는 살펴보기 — 1017 여섯째) */\n.card.rel .slot.has{align-items:center;gap:6px;padding:4px 4px 4px 5px}\n.slot .ri{flex:none;width:36px;height:36px;pointer-events:none;filter:drop-shadow(0 1px 0 #3a2a1a40)}\n.slot .ri.lg{opacity:.9}\n.slot .rn{min-width:0}\n.slot .rn .rnm{overflow:hidden;text-overflow:ellipsis;min-width:0}\n.slot.has .rn{padding-right:16px;line-height:18px}\n.slot .rtg{display:flex;gap:3px;margin-top:2px;overflow:hidden}\n.slot .rtg .tag{flex:none;height:18px;padding:0 3px;line-height:14px}\n.slot > .vun{position:absolute;right:1px;top:1px;width:20px;height:20px;padding:0;display:grid;place-items:center;border:0;background:none;color:var(--ink3);cursor:pointer;opacity:0}\n.slot.has:hover > .vun,.slot > .vun:focus-visible{opacity:1}\n.slot > .vun:hover{color:var(--bad)}\n.slot > .vun:focus-visible{outline:2px dashed var(--sel);outline-offset:1px}\n/* 능력 상자 — 보관고 밖에서 낀 칸에 올리면 (칸의 왼쪽 · 쪽지와 같은 모양) */\n.vtip{position:absolute;z-index:35;width:236px;padding:5px 8px 6px;background:#fffaf0;border:2px solid var(--frame);box-shadow:3px 3px 0 #30271e59;\n  color:var(--ink);line-height:18px;word-break:keep-all;pointer-events:none}\n#fitIn .vtip[hidden]{display:none!important}\n.vtp-sec + .vtp-sec{margin-top:5px;padding-top:5px;border-top:2px dotted #e6d4b0}\n.vtp-ln{color:var(--ink2)}\n.vtp-ln.res{color:var(--res)}\n.vtp-st{display:flex;justify-content:space-between;gap:8px;border-bottom:2px dotted #efe2c4;white-space:nowrap}\n.vtp-st b{font:12px/18px \"Mulmaru Mono\",Mulmaru;font-weight:400;color:var(--ink)}\n.vtp-st.neg,.vtp-st.neg b{color:var(--bad)}\n.vtp-ln.res + .vtp-st{margin-top:3px}\n.vtp-ln.fx{color:#2f5f8a}.vtp-ln.fx i,.vtp-ln.neg i{font-style:normal;color:var(--ink3)}\n.vtp-ln.neg{color:var(--bad)}\n.vtp-ln.set{color:var(--set)}\n.vtp-ln.pc,.vtp-ln.setfx{padding-left:12px;color:var(--set)}\n.vtp-ln.setfx{margin-top:2px}\n.vtp-ln.off{color:var(--off)}\n.slot.empty .tg{margin-left:auto;margin-right:4px;color:var(--brass)}\n.vaultmode .slot.empty{border-color:#c4ac84}\n.slot.tgt{border-style:solid!important;border-color:var(--sel)!important;background:#fff3d6;animation:vtgt 1.4s ease-in-out infinite}\n.slot.has.tgt{border-left-color:var(--sel)!important}\n@keyframes vtgt{0%,100%{box-shadow:0 0 0 0 #c8902e00}50%{box-shadow:0 0 0 3px #c8902e55}}\n.book.v-dragging .card.rel .slot:not(.lock){border-color:#c8902e99}\n.slot.vdrop{border-style:solid!important;border-color:var(--sel)!important;background:#fff0c8!important;box-shadow:0 0 0 2px #c8902e4d}\n.slot.vbad{border-color:var(--bad)!important;background:#b33f3214!important;color:var(--bad)}\n.slot.lift{opacity:.35}\n.slot.flash{animation:fsflash .9s ease-out}\n\n/* 끌기 — 왼쪽 쪽에 놓을 때의 글(--vdrop-txt)은 rvault_block.js 가 번역된 글로 넣는다 (CSS 안의 글은 번역되지 않는다) */\n.v-ghost{position:absolute;z-index:40;width:64px;height:64px;pointer-events:none;rotate:-6deg;border:2px solid var(--gc);\n  background:radial-gradient(circle at 50% 44%,#fffdf6 0 34%,color-mix(in srgb,var(--gc) 16%,#f1e1bd) 100%);filter:drop-shadow(3px 4px 0 rgba(48,39,30,.4))}\n.v-ghost img{position:absolute;left:4px;top:4px;width:52px;height:52px}\n.v-ghost .vchp{position:absolute;left:50%;top:100%;margin-top:6px;translate:-50% 0;rotate:6deg;height:20px;padding:0 6px;background:#2a1d14;color:#f6e7c4;border:2px solid #f6e7c4;\n  line-height:16px;white-space:nowrap}\n.v-ghost .vchp.up{color:#bfe8a8}.v-ghost .vchp.dn{color:#ffb4a8}.v-ghost .vchp.bad{color:#ffb4a8}\n.rbw.v-drag,.rbw.v-drag *{cursor:grabbing!important}\n.page.l.vdrop .vlt::after{content:\"\";position:absolute;inset:-4px -6px;border:2px dashed var(--sel);background:#c8902e14;pointer-events:none;z-index:5}\n.page.l.vdrop .vbox::after{content:var(--vdrop-txt,\"\");position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:2px 10px;line-height:20px;\n  background:var(--brass);color:#fff7e2;z-index:6;pointer-events:none;white-space:nowrap;box-shadow:2px 2px 0 #30271e59}\n@media (prefers-reduced-motion:reduce){.slot.tgt,.rvt.flash,.slot.flash{animation:none}}\n";
+const RB_HTML = "<div id=\"fitIn\">\n  <div class=\"desk\"><div class=\"hit\" id=\"deskBook\" title=\"명부\"><\/div><div class=\"tip\">명부<\/div><\/div>\n  <div class=\"scrim\" id=\"scrim\"><\/div>\n  <div class=\"book\" id=\"book\" role=\"dialog\" aria-label=\"명부\">\n    <i class=\"ribbon\" data-ed=\"ribbon\" aria-hidden=\"true\"><\/i>\n    <button class=\"xbtn\" id=\"xbtn\" data-ed=\"xbtn\" aria-label=\"닫기\">×<\/button>\n    <section class=\"page l\">\n      <div class=\"ph\"><h2>명부<\/h2><button class=\"pbtn tog\" id=\"tbtn\" data-ed=\"tbtn\" aria-pressed=\"false\">팀 편성<\/button><span class=\"sp\"><\/span>\n        <button class=\"pbtn pri\" id=\"spbtn\" data-ed=\"spbtn\" hidden><\/button><select class=\"sel\" id=\"sort\" data-ed=\"sort\" aria-label=\"정렬\"><\/select><\/div>\n      <div class=\"rule\"><\/div>\n      <div class=\"grid\" id=\"grid\"><\/div>\n    <\/section>\n    <section class=\"page r\"><div class=\"det\" id=\"det\"><\/div><div class=\"det tmw\" id=\"tmw\" hidden><\/div><\/section>\n  <\/div>\n<\/div>";
 const RB = {host: null, root: null, open: false, mode: "detail", sel: null, sk: 0, rt: "rec", team: "A", slot: null,
   back: "home", want: false, vm: new Map(), wired: false, mq: false, ovf: ""};
 const $ = id => RB.root ? RB.root.getElementById(id) : null;
@@ -12283,7 +12312,7 @@ function vmOf(st){
     relicSlots: slots,
     relics: Array.from({length: slots}, (_, i) => {
       const r = (st.relics || [])[i];
-      return r ? {name: relicNameOf(r), grade: r.grade, score: relicScore(r), aff: relicAffSorted(relicAffEff(r, st)).map(a => ({n: a.n, v: relicValTxt(a), neg: a.v < 0})), info: relicInfoLines(r, st)} : null;   // 1017 — 128종 유물: 종류 이름 · 양날(음수)
+      return r ? {name: relicNameOf(r), grade: r.grade, score: relicScore(r), aff: relicAffSorted(relicAffEff(r, st)).map(a => ({n: a.n, v: relicValTxt(a), neg: a.v < 0}))} : null;   // 1017 — 128종 유물: 종류 이름 · 양날(음수)
     }),
     passive: pas ? {n: pas.n, d: pas.d, grade: skGrade(st, "passive"), lv: skLevel(st, "passive"), icon: SKILL_ICON_PASSIVE[pj] || ""} : null,
     skills: skillsOf(st).map(sk => ({
@@ -12463,6 +12492,7 @@ function refreshTeam(flash, changed){
 function setRosterMode(m){
   m = m === "team" ? "team" : "detail";
   if(RB.mode === m) return;
+  if(m === "team" && VS.open) vClose(false);             // 팀 편성으로 바꾸면 유물 보관고는 닫힌다 (3단계)
   RB.mode = m; RB.slot = null; closeSlip();
   showMode();
   const show = m === "team" ? $("tmw") : $("det");
@@ -12633,23 +12663,32 @@ function dragClean(){
 function hexCard(st){
   return `<div class="card hex" id="hexCard" title="꼭짓점 표식 — 성격(${h(st.pers.n)})이 빨간 ▲ 올림 · 파란 ▼ 내림 · 흰 ● 영향 없음"><span class="cap">멘탈리티</span><canvas id="hexCv"></canvas><svg class="hexsv" id="hexSv" aria-hidden="true"></svg><div id="hexLab"></div></div>`;
 }
+/* 유물 칸 (1017 · 3단계 — 목업 mockups/relic-vault) — 두 줄(아이콘 36 · 이름 / 태그) · 끌어 놓을 자리 · 보관고가 열려 있으면 고른 칸(금색).
+   칸은 자리대로 (st.relics 사이의 null 은 빈 칸). 보관고 밖에서 낀 칸에 올리면 능력 상자(#vtip — rvault_block.js) · 브라우저 말풍선(title)은 겹치니 aria 로 */
 function relicCard(st){
-  const ROW = [];
-  const have = st.relics.filter(Boolean).length;
+  const raw = rawById(st.id), L = (raw && raw.relics) || [], have = L.filter(Boolean).length, rows = [];
   for(let i = 0; i < RELIC_SLOT_MAX; i++){
     if(i >= st.relicSlots){
-      ROW.push(`<div class="slot lock">${dots(BM.lock, "#c4ac84", "#8a7356")}<span>Lv.${i * RELIC_SLOT_EVERY} 에 열린다</span></div>`);
+      rows.push(`<div class="slot lock" data-vlock="${i}">${dots(BM.lock, "#c4ac84", "#8a7356")}<span>Lv.${i * RELIC_SLOT_EVERY} 에 열린다</span></div>`);
       continue;
     }
-    const r = st.relics[i];
-    if(!r){ ROW.push(`<button class="slot empty" data-relic-go="${h(st.id)}" title="Slot ${i + 1} — 비어 있다. 누르면 유물 보관고로 (이 학생에게 장착할 유물을 고른다)"><span class="pl">+</span><span>Slot ${i + 1}</span></button>`); continue; }
-    const c = GC_PAGE[r.grade] || GC_PAGE.C;
-    ROW.push(`<div class="slot" style="border-left-color:${c}" title="${h(r.name)} — ${h(r.aff.map(a => a.n + " " + a.v).join(" · "))}${(r.info || []).length ? h("\n" + r.info.join("\n")) : ""}"><div class="bd">
-      <div class="rn"><span class="rnm" style="color:${c}">${h(r.name)}</span>${gradeTag(r.grade)}<span class="sc num">${r.score}점</span></div>
-      <div class="af">${r.aff.map(a => `<span>${h(a.n)} <b style="color:${a.neg ? "var(--bad)" : "var(--ink)"};font-weight:400">${h(a.v)}</b></span>`).join("")}</div></div>
-      <button class="uq" data-unequip="${h(st.id)}|${i}" title="해제 — 유물 보관함으로 돌아간다">${"해제"}</button></div>`);   // 1017 — 단추 글은 따로 (영어 문맥 키 (IIFE)|해제 = Unequip · 전역 '해제'는 경과 보고의 Removed)
+    const r = L[i], tg = VS.open && VS.tgt === i;
+    if(!r){
+      const t = VS.open ? `Slot ${i + 1} — 비어 있다. 보관함의 유물을 여기로 끌어다 놓는다 (누르면 이 칸을 고른다)` : `Slot ${i + 1} — 비어 있다. 누르면 왼쪽 쪽이 유물 보관고로 (이 칸에 낄 유물을 고른다)`;
+      rows.push(`<button class="slot empty${tg ? " tgt" : ""}" data-vslot="${i}" title="${h(t)}"><span class="pl">+</span><span>Slot ${i + 1}</span>${tg ? `<span class="tg">여기에 장착</span>` : ""}</button>`);
+      continue;
+    }
+    const g = r.grade, c = GC_PAGE[g] || GC_PAGE.C, nm = relicNameOf(r);
+    const hint = VS.open ? `${nm} ${g} — 끌어서 다른 칸으로 · 왼쪽 쪽으로 끌어 내면 해제 · 누르면 이 칸을 고른다(바꿀 칸)` : `${nm} ${g} — 누르면 왼쪽 쪽에서 바꿀 유물을 고른다`;
+    rows.push(`<div class="slot has${tg ? " tgt" : ""}" data-vslot="${i}" data-u="${vid(r)}" tabindex="0" role="button" aria-pressed="${tg}" style="border-left-color:${c}" ${VS.open ? `title="${h(hint)}"` : `aria-label="${h(hint)}" aria-describedby="vtip"`}>
+      <img class="ri${relicKindOf(r) ? "" : " lg"}" src="${h(relicIconOf(r))}" alt="" draggable="false"><div class="bd">
+      <div class="rn"><span class="rnm" style="color:${c}">${h(nm)}</span></div>
+      <div class="rtg">${vTags(r, raw, true)}</div></div>
+      <button class="vun" data-vun="${i}" title="해제 — 유물 보관함으로 돌아간다" aria-label="${h(`${nm} 해제`)}">${ICO.x}</button></div>`);
   }
-  return `<div class="card rel"><span class="cap">유물<i>${have} / ${st.relicSlots}칸</i></span>${ROW.join("")}</div>`;
+  const btn = VS.open ? (have ? `<button class="vgo" data-vall title="이 학생의 유물을 모두 보관함으로">모두 해제</button>` : "")
+    : `<button class="vgo" data-vgo title="왼쪽 쪽에 유물 보관고를 연다">보관고</button>`;
+  return `<div class="card rel${VS.open ? " vopen" : ""}" id="relCard"><span class="cap">유물<i>${have} / ${st.relicSlots}칸</i></span>${btn}${rows.join("")}</div>`;
 }
 function skillList(st){ return (st.passive ? [Object.assign({id:"passive", kindLabel:"패시브", kind:"passive", txt:st.passive.d, name:st.passive.n}, st.passive)] : []).concat(st.skills); }
 function skillCard(st){
@@ -12830,6 +12869,14 @@ function drawHex(st){
     const w = el.offsetWidth;
     el.style.left = Math.max(4, Math.min(cw - 4 - w, Math.round(+el.dataset.x - w / 2))) + "px";
   });
+  // 위 · 아래 이름(60px 칸)이 그보다 길면(일본어 チームワーク 등) 칸을 글에 맞추고 꼭짓점 가운데로 (1017)
+  lab.querySelectorAll(".lab.C").forEach(el => {
+    const n = el.querySelector(".n");
+    if(!n || n.scrollWidth <= el.clientWidth) return;
+    const w = n.scrollWidth;
+    el.style.width = w + "px";
+    el.style.left = Math.max(4, Math.min(cw - 4 - w, Math.round(+el.dataset.x - w / 2))) + "px";
+  });
 }
 
 function bindDetail(st){
@@ -12839,29 +12886,10 @@ function bindDetail(st){
   });
   $$("#recCard .rt").forEach(b => b.onclick = () => setRecTab(b.dataset.rt));
   const e = $("ebtn"); if(e) e.onclick = () => { RB.want = true; renameStudent(st.id); };          // 게임의 이름 변경 팝업 (책 위에 뜬다)
-  $$("#det [data-relic-go]").forEach(b => b.onclick = () => goRelic(b.dataset.relicGo));          // 빈 유물 칸 → 유물 보관고
-  $$("#det [data-unequip]").forEach(b => b.onclick = () => {                                     // 유물 해제 — 예전 학생 상세와 같다 (보관함으로)
-    const [sid, idx] = b.dataset.unequip.split("|"), s = rawById(sid);
-    if(!s || !s.relics) return;
-    const r = s.relics.splice(+idx, 1)[0];
-    if(r) addRelicToPool(r);
-    save(); refreshAll();
-    if(r) toast(`${r.name} — 해제했다 (유물 보관함으로)`);
-  });
-}
-/* 빈 유물 칸 → 책을 닫고 유물 보관고로 (일단은 — 1009). 보관고 유물마다의 '장착할 학생'을 이 학생으로 골라 둔다 */
-function goRelic(sid){
-  rbClose(true);
-  UI.view = "relic"; render();
-  const v = document.getElementById("view");
-  if(!v || !sid) return;
-  v.querySelectorAll("select[data-eqsel]").forEach(sel => {
-    if(![...sel.options].some(o => o.value === sid)) return;
-    sel.value = sid;
-    if(typeof sel.onchange === "function") sel.onchange();             // 장착 미리보기도 이 학생으로
-  });
+  /* 유물 칸 — 누르기 · 해제 · 끌기 · 능력 상자는 rvault_block.js 가 #det 에 한 번 건다 (1017 · 3단계 — 빈 칸을 누르면 왼쪽 쪽이 유물 보관고) */
 }
 function setRecTab(rt){                                  // 고른 탭은 다른 학생을 봐도 그대로
+  if(!VS.rtAuto) VS.rtBack = null;                       // 보관고 안에서 탭을 직접 바꾸면 나올 때 되돌리지 않는다 (3단계)
   if(RB.rt === rt) return;
   RB.rt = rt;
   const st = stuById(RB.sel), old = $("recCard");
@@ -12881,9 +12909,12 @@ function openSkillUp(id){
 /* ── 고르기 · 정렬 ── */
 function select(id, anim){
   if(RB.sel === id) return;
+  vTipHide();
+  if(VS.open){ const t = rawById(id), e = t ? vEmptyIdx(t) : -1; VS.tgt = e >= 0 ? e : null; VS.hovSlot = null; }   // 보관고 — 고른 칸은 그 학생의 첫 빈 칸
   RB.sel = id; RB.sk = 0;
   $$("#grid .cell").forEach(c => { const on = c.dataset.sid === id; c.classList.toggle("on", on); c.setAttribute("aria-pressed", on); });
   renderDetail(anim);
+  if(VS.open){ vRenderGrid(); vRenderStrip(); vRenderDetail(); vCount(); }
 }
 function setSort(k){ if(!S.opts) S.opts = {}; S.opts.rbsort = k; $("sort").value = k; save(); renderList(); }
 function pickSel(){
@@ -12895,6 +12926,7 @@ function pickSel(){
 function refreshAll(){
   buildVM(); pickSel(); closeSlip();
   showMode(); renderList(); renderRight(); applyLayout();
+  vRefreshVault();                                       // 유물 보관고가 열려 있으면 (게임 팝업 — 합성 등 — 뒤에도)
 }
 
 /* ── 열고 닫기 · 창에 맞추기 ── */
@@ -12975,6 +13007,7 @@ function wire(){
   bk.addEventListener("pointerdown", e => { const src = dragSrc(e); if(src) DRAG = {src, x: e.clientX, y: e.clientY, on: false}; });
   bk.addEventListener("click", e => { if(dragEat){ dragEat = false; e.stopPropagation(); e.preventDefault(); } }, true);   // 끌기가 끝나며 따라오는 누르기 하나는 버린다
   RB.root.addEventListener("pointerdown", e => { if(SLIP && !SLIP.el.contains(e.target) && !SLIP.anchor.contains(e.target)) closeSlip(); }, true);
+  vInit();                                               // 유물 보관고 — 왼쪽 쪽 자리 · 유물 칸 · 끌기 (1017 · 3단계)
   if(RB.wired) return;
   RB.wired = true;
   document.addEventListener("pointermove", e => {
@@ -12994,7 +13027,10 @@ function wire(){
     const mr = document.getElementById("modalRoot");
     if(mr && mr.firstChild) return;
     e.preventDefault();
+    if(VD){ vDragCancel(); return; }                     // 유물 끌기 그만 (3단계)
+    if(VTIP) vTipHide();
     if(SLIP){ closeSlip(true); return; }
+    if(VS.open){ vClose(true); return; }                 // 유물 보관고 → 명부 (책은 그대로)
     if(RB.mode === "team" && RB.slot){ RB.slot = null; refreshTeam(); return; }
     rbClose();
   });
@@ -13009,6 +13045,7 @@ function rbOpen(opt){
     const onMq = () => { if(RB.open && !townMode()){ const m = RB.mode, sel = RB.sel; rbClose(true); UI.view = m === "team" ? "team" : "roster"; if(sel) UI.sel = sel; render(); } };
     if(TOWN_MQ.addEventListener) TOWN_MQ.addEventListener("change", onMq); else if(TOWN_MQ.addListener) TOWN_MQ.addListener(onMq);
   }
+  if(opt.mode === "team" && VS.open) vReset();           // 팀 편성으로 열면 유물 보관고는 닫는다 (3단계)
   if(opt.mode) RB.mode = opt.mode === "team" ? "team" : "detail";
   if(opt.sel) RB.sel = opt.sel;
   RB.slot = null;
@@ -13019,7 +13056,9 @@ function rbOpen(opt){
   RB.host.style.display = "block";
   if(!was){ RB.ovf = document.documentElement.style.overflow; document.documentElement.style.overflow = "hidden"; }
   fit();
+  if(!was && VS.open) vReset();
   refreshAll();
+  if(opt.vault && RB.mode !== "team") vOpen(opt.slot != null ? opt.slot : null);   // 메뉴의 유물 보관고 · 대회 정비 (3단계)
   if(!was){
     const fi = $("fitIn"), w = RB.root.getElementById("rbw");
     void fi.offsetWidth;
@@ -13030,7 +13069,7 @@ function rbOpen(opt){
 function rbClose(quiet){
   if(!RB.open) return;
   RB.open = false; RB.want = false; DRAG = null;
-  closeSlip(); dragClean();
+  closeSlip(); dragClean(); vReset();
   const fi = $("fitIn"), w = RB.root.getElementById("rbw");
   fi.classList.add("closed"); w.classList.add("closed");
   setTimeout(() => { if(!RB.open && RB.host) RB.host.style.display = "none"; }, 200);
@@ -13039,6 +13078,11 @@ function rbClose(quiet){
 }
 /* render() 맨 앞 — 가로 넓은 화면에서 학생 명부 · 팀 편성으로 가려 하면 책을 연다 (화면은 원래 보던 곳 그대로) */
 function rbIntercept(){
+  if(UI.view === "relic" && rbOn()){                    // 1017 · 3단계 — 유물 보관고는 책의 왼쪽 쪽 (뒤 화면은 같은 메뉴의 스킬 보관고 · 서브탭으로 유물 보관고를 다시 연다)
+    UI.view = "skill";
+    rbOpen({mode: "detail", vault: true});
+    return;
+  }
   if(UI.view === "roster" || UI.view === "team"){
     if(!rbOn()) return;
     const mode = UI.view === "team" ? "team" : "detail", sel = UI.view === "roster" && UI.sel ? UI.sel : null;
@@ -13048,7 +13092,827 @@ function rbIntercept(){
 }
 /* render() 맨 끝 — 책에서 연 게임 팝업(이름 변경 · 스킬 강화 · 임의 강화)이 끝나면 책을 다시 그린다 */
 function rbAfter(){ if(RB.open && RB.want){ RB.want = false; refreshAll(); } }
-window.RBK = {open: rbOpen, close: rbClose, on: rbOn, intercept: rbIntercept, after: rbAfter, isOpen: () => RB.open, state: RB};
+/* ══════ 유물 보관고 — 책의 왼쪽 쪽 (1017 · 유물의 법칙 3단계 · 목업 mockups/relic-vault) ══════
+   빈 유물 칸(+ Slot n) · 찬 칸 · 유물 카드의 '보관고' · 메뉴의 유물 보관고 → 왼쪽 쪽이 명부 대신 보관고 (오른쪽 쪽은 그 학생 그대로 · 누른 칸이 '고른 칸').
+   다키스트 던전의 장신구 가방처럼 — 보관함의 유물을 오른쪽 칸으로 끌어 놓으면 장착 · 찬 칸이면 바꾸기(있던 것은 보관함으로) ·
+   칸의 유물을 왼쪽 쪽으로 끌면 해제 · 칸끼리는 자리 바꾸기 · 아래 학생 띠의 얼굴에 놓으면 그 학생의 첫 빈 칸에.
+   두 번 누르기 · 오른쪽 버튼 = 바로 (보관함 → 고른 칸 · 없으면 첫 빈 칸 / 칸 → 해제). 터치는 길게(0.23초) 눌러 끈다. 키보드 — 화살표 · Enter · Delete. Esc — 명부로.
+   칸은 자리대로 — 해제하면 그 칸만 빈다 (st.relics 사이에 null · 끝의 빈 칸은 줄인다). 게임 데이터(S.relicPool · st.relics)를 바로 고치고 save() 한다.
+   처분은 지금 게임 그대로 — 도구 상점이 열린 뒤 · RELIC_SELL · 판매가 효과(relicSellPrice) · addGold · 유일(전설 · 공명 유물) · EX 는 막는다 · S 급은 한 번 더 묻는다.
+   EX 유물은 한 명당 하나 (EX_PER_STUDENT). 옛 S 급 유물은 유물 합성기가 있으면 살펴보기에 '합성' (게임 팝업).
+   이 파일은 roster_block.js 의 IIFE 안에 들어간다 (apply_roster.py — 자리표 RB_VAULT) — $ · $$ · h · RB · stuById · rawById · dots · ICO · GC_PAGE · openSlip … 를 그대로 쓴다 */
+const VID = new WeakMap();                                      // 유물 → 화면 id (세이브는 건드리지 않는다)
+let vidN = 0;
+function vid(r){ let u = VID.get(r); if(!u){ u = "u" + (++vidN); VID.set(r, u); } return u; }
+let VMAP = new Map();                                           // 화면 id → 유물 (보관함 + 학생) — vIndex 가 다시 만든다
+function vIndex(){
+  VMAP = new Map();
+  relicStampAll();                                             // 얻은 차례(r.t)가 없는 유물 — 찾은 때 · 보관함 차례로 매긴다 (최근 얻은 순)
+  (S.relicPool || []).forEach(r => { if(r) VMAP.set(vid(r), r); });
+  S.students.forEach(st => (st.relics || []).forEach(r => { if(r) VMAP.set(vid(r), r); }));
+}
+function vGet(u){ if(!u) return null; let r = VMAP.get(u); if(!r){ vIndex(); r = VMAP.get(u); } return r || null; }   // 없으면 다시 센다 (보관고 밖 — 능력 상자)
+const VS = {open: false, sel: null, hov: null, hovSlot: null, tgt: null, sort: "recent", g: [], job: false, fx: false, oth: false, ver: 0, rtBack: null, rtAuto: false};
+const V_SORT = [
+  {k: "recent", n: "최근 얻은 순"}, {k: "gain", n: "이 학생에게"}, {k: "grade", n: "등급 높은 순"},
+  {k: "score", n: "점수 높은 순"}, {k: "tier", n: "격 높은 순"}, {k: "name", n: "이름"}
+];
+function vSortKey(){ const k = (S.opts && S.opts.rvsort) || VS.sort; return V_SORT.some(o => o.k === k) ? k : "recent"; }
+const ICO_BACK = dots(["..#...", ".##...", "######", ".##...", "..#..."], "currentColor");
+const VGORD = {D: 0, C: 1, B: 2, A: 3, S: 4, "S+": 5, EX: 6};
+const gcls = g => g === "S+" ? "Sp" : String(g || "C");           // CSS 클래스 (g-S+ 는 선택자로 못 쓴다)
+
+/* ── 학생 · 유물 하나 ── */
+function vCur(){ return rawById(RB.sel); }
+function vNm(st){ const v = st && stuById(st.id); return v ? v.name : (st ? st.name : ""); }
+function vPow(st){ return Math.round(power(st)); }
+function vPowWith(st, slots){ return Math.round(power(Object.assign({}, st, {relics: slots}))); }
+function vScore(r, st){ return relicScore({aff: relicAffEff(r, st)}); }
+function vWearer(r){ for(const st of S.students){ const i = (st.relics || []).indexOf(r); if(i >= 0) return {st, i}; } return null; }
+function vInPool(r){ return (S.relicPool || []).indexOf(r) >= 0; }
+function vEmptyIdx(st){ const L = st.relics || [], n = relicSlots(st); for(let i = 0; i < n; i++) if(!L[i]) return i; return -1; }
+function vEmptyN(st){ const L = st.relics || [], n = relicSlots(st); let c = 0; for(let i = 0; i < n; i++) if(!L[i]) c++; return c; }
+function vHave(st){ return (st.relics || []).filter(Boolean).length; }
+function vFull(st){ const L = (st.relics || []).slice(), n = relicSlots(st); while(L.length < n) L.push(null); return L; }
+function vSgn(d){ return d > 0 ? "+" + fmt(d) : d < 0 ? "-" + fmt(-d) : "±0"; }
+function vWornKinds(st){ const o = {}; ((st && st.relics) || []).forEach(r => { const K = relicKindOf(r); if(K) o[K.id] = 1; }); return o; }
+/* EX 유물은 한 명당 하나 — 칸 i 에 EX 가 있으면 그것과는 바꿀 수 있다 */
+function vExOk(r, st, i){
+  if(!r || r.grade !== "EX") return true;
+  const L = st.relics || [], w = vWearer(r);
+  if(w && w.st === st) return true;
+  return exCount(st) < EX_PER_STUDENT || !!(L[i] && L[i].grade === "EX");
+}
+function vExMsg(st){ const n = vNm(st); return `${n}${eunn(n)} 이미 EX 유물을 차고 있다. 한 명당 하나까지다.`; }
+/* 처분 — 지금 게임 그대로 */
+function vSellWhy(r){
+  if(!shopUnlocked()) return "도구 상점이 열리면 유물을 처분할 수 있다";
+  if(!RELIC_SELL[r.grade]) return "SP 로 얻은 유물은 처분할 수 없다";
+  if(relicUnique(r)) return "유일 유물은 처분하지 않는다";
+  return "";
+}
+
+/* ── 이 학생에게 — 고른 칸(없으면 빈 칸)에 끼우면, 칸이 다 찼으면 가장 나은 칸과 바꾸면 오르는 전투력 ── */
+let GAINC = {key: "", m: new Map()};
+function vGain(r, st){
+  const key = st.id + "|" + VS.ver + "|" + VS.tgt;
+  if(GAINC.key !== key) GAINC = {key, m: new Map()};
+  const u = vid(r);
+  if(GAINC.m.has(u)) return GAINC.m.get(u);
+  const L = vFull(st), w = vWearer(r), p0 = vPow(st), n = relicSlots(st);
+  let best = null;
+  const at = i => { if(!vExOk(r, st, i)) return; const s = L.slice(); if(w && w.st === st) s[w.i] = s[i]; s[i] = r; const d = vPowWith(st, s) - p0; if(!best || d > best.d) best = {i, d}; };
+  const t = VS.tgt != null && VS.tgt < n ? VS.tgt : vEmptyIdx(st);
+  if(w && w.st === st) best = {i: w.i, d: 0};
+  else if(t >= 0) at(t); else for(let i = 0; i < n; i++) at(i);
+  GAINC.m.set(u, best);
+  return best;
+}
+
+/* ── 장착 · 해제 — 게임 데이터를 바로. 바꾼 뒤 vApply 가 저장 · 전투력 · 화면을 다시 ── */
+function vTrim(st){ const L = st.relics || []; while(L.length && !L[L.length - 1]) L.pop(); }   // 끝의 빈 칸만 줄인다 (사이의 빈 칸은 자리대로)
+function vEquip(r, st, i){                // r 을 st 의 칸 i 에. 있던 유물은 보관함으로 · 같은 학생의 다른 칸에서 왔으면 자리 바꾸기 · 다른 학생 것이면 빼 온다
+  if(!r || !st || i < 0 || i >= relicSlots(st)) return null;
+  st.relics = st.relics || [];
+  const L = st.relics, from = vWearer(r), old = L[i] || null;
+  if(from && from.st === st){ if(from.i === i) return null; L[from.i] = old; L[i] = r; vTrim(st); return {kind: "move", from, old}; }
+  if(!vExOk(r, st, i)) return null;
+  if(from){ from.st.relics[from.i] = null; vTrim(from.st); }
+  else { const k = (S.relicPool || []).indexOf(r); if(k < 0) return null; S.relicPool.splice(k, 1); }
+  if(old) addRelicToPool(old);
+  while(L.length < i) L.push(null);
+  L[i] = r;
+  delete r.nw;
+  return {kind: from ? "take" : "equip", from, old};
+}
+function vUnequip(st, i){ const L = st.relics || [], r = L[i]; if(!r) return null; L[i] = null; vTrim(st); addRelicToPool(r); return r; }
+function vApply(fn, opt){
+  opt = opt || {};
+  const st = vCur(), p0 = st ? vPow(st) : 0, set0 = !!(st && relicSetOn(st, st.job));
+  const res = fn();
+  if(res == null || res === false) return res;
+  save(); buildVM(); VS.ver++;
+  vFixState();
+  vRefreshAll(opt);
+  let msg = typeof opt.msg === "function" ? opt.msg(res) : opt.msg;
+  if(msg){
+    const p1 = st ? vPow(st) : 0, d = p1 - p0;
+    if(d) msg += ` · 전투력 ${fmt(p0)} → ${fmt(p1)} (${vSgn(d)})`;
+    if(st && !set0 && relicSetOn(st, st.job)){ const P = RELIC_DB.pairs[st.job]; if(P) msg += ` · 세트 '${P.n}'`; }
+    toast(msg);
+  }
+  return res;
+}
+/* 고른 칸 · 고른 유물이 아직 맞는지 (바꾼 뒤 · 게임 팝업 뒤) */
+function vFixState(){
+  vIndex();
+  const st = vCur();
+  if(st && VS.tgt != null && (VS.tgt >= relicSlots(st) || (st.relics || [])[VS.tgt])){ const e = vEmptyIdx(st); VS.tgt = e >= 0 ? e : null; }
+  if(VS.sel){ const r = vGet(VS.sel), w = r && vWearer(r); if(!r || (!vInPool(r) && !(VS.oth && w && w.st !== st))) VS.sel = null; }
+  if(VS.hov && !vGet(VS.hov)) VS.hov = null;
+}
+function vQuick(r, at){                    // 바로 장착 — 고른 칸 → 없으면 첫 빈 칸
+  const st = vCur();
+  if(!st || !r) return;
+  const w = vWearer(r);
+  if(w && w.st === st) return;
+  const n = relicSlots(st);
+  const i = at != null && at >= 0 ? at : VS.tgt != null && VS.tgt < n ? VS.tgt : vEmptyIdx(st);
+  if(i < 0){ toast(`${vNm(st)} — 빈 슬롯 없음`); return; }
+  if(!vExOk(r, st, i)){ toast(vExMsg(st)); return; }
+  const old = (st.relics || [])[i] || null, from = w ? w.st : null, nm = relicNameOf(r);
+  vApply(() => vEquip(r, st, i), {flash: i, flashFace: from && from.id,
+    msg: () => {
+      let m = `${nm} → ${vNm(st)} Slot ${i + 1}`;
+      if(old){ const o = relicNameOf(old); m += ` (${o}${eunn(o)} 보관함으로)`; }
+      if(from) m += ` · ${vNm(from)}에게서 가져왔다`;
+      return m;
+    }});
+}
+function vDoUnequip(i){
+  const st = vCur(), r = st && (st.relics || [])[i];
+  if(!r) return;
+  const nm = relicNameOf(r);
+  vApply(() => vUnequip(st, i), {flashTile: vid(r), msg: `${nm} — 해제 (보관함으로)`});
+}
+function vUnequipAll(){
+  const st = vCur();
+  if(!st || !vHave(st)) return;
+  const nm = vNm(st);
+  vApply(() => { let n = 0; (st.relics || []).forEach((r, i) => { if(r && vUnequip(st, i)) n++; }); st.relics = []; return n; },
+    {msg: n => `${nm} — 유물 ${n}개를 모두 보관함으로`});
+}
+/* 추천 장착 — 이 학생의 빈 칸마다 전투력이 가장 많이 오르는 유물 (보관함에서 · EX 는 한 명당 하나) */
+function vAutoFor(st){
+  const got = [];
+  for(;;){
+    const i = vEmptyIdx(st);
+    if(i < 0) break;
+    const L = vFull(st), p0 = vPowWith(st, L);
+    let best = null;
+    (S.relicPool || []).forEach(r => { if(!r || !vExOk(r, st, i)) return; const s = L.slice(); s[i] = r; const d = vPowWith(st, s) - p0; if(!best || d > best.d) best = {r, d}; });
+    if(!best || best.d <= 0) break;
+    vEquip(best.r, st, i); got.push(relicNameOf(best.r));
+  }
+  return got;
+}
+function vAuto(){
+  const st = vCur();
+  if(!st) return;
+  if(vEmptyIdx(st) < 0){ toast(`${vNm(st)} — 빈 슬롯 없음`); return; }
+  const nm = vNm(st);
+  const got = vApply(() => { const g = vAutoFor(st); return g.length ? g : null; }, {msg: g => `추천 장착 — ${nm}: ${g.join(" · ")}`});
+  if(!got) toast((S.relicPool || []).length ? "끼워서 전투력이 오르는 유물이 없다" : "보관함이 비었다");
+}
+/* 모두 추천 장착 — 빈 칸이 있는 학생마다 (전투력 높은 학생부터 · 예전 유물 보관고의 '추천 장착'처럼 모든 학생) */
+function vAutoAll(){
+  const who = S.students.filter(st => vEmptyN(st) > 0).sort((a, b) => power(b) - power(a));
+  if(!who.length){ toast("빈 칸이 있는 학생이 없다"); return; }
+  const res = vApply(() => {
+    const out = [];
+    who.forEach(st => { const g = vAutoFor(st); if(g.length) out.push({s: st, n: g.length}); });
+    return out.length ? out : null;
+  }, {flashFace: null});
+  if(!res){ toast((S.relicPool || []).length ? "끼워서 전투력이 오르는 유물이 없다" : "보관함이 비었다"); return; }
+  const n = res.reduce((a, w) => a + w.n, 0);
+  logE(`추천 장착 — ${res.map(w => `${dnH(w.s)} ${w.n}개`).join(", ")}`, "good");
+  save();
+  toast(`${res.length}명에게 유물 ${n}개 장착`);
+}
+/* 처분 — 낱개 (S · S+ 는 쪽지로 한 번 더) · 일괄(등급마다 — A 급 위는 한 번 더) */
+function vSell(r, btn){
+  if(!r || !vInPool(r) || vSellWhy(r)) return;
+  if((r.grade === "S" || r.grade === "S+") && btn){ vSellAsk(r, btn); return; }
+  const p = relicSellPrice(r), nm = relicNameOf(r);
+  vApply(() => { const k = S.relicPool.indexOf(r); if(k < 0) return null; S.relicPool.splice(k, 1); addGold(p); if(VS.sel === vid(r)) VS.sel = null; return true; },
+    {msg: `${nm} 처분 — +${fmt(p)} G`});
+}
+function vSellAsk(r, btn){
+  if(SLIP && SLIP.anchor === btn){ closeSlip(true); return; }
+  const p = relicSellPrice(r);
+  const el = openSlip(btn, `<div class="slip-h">${r.grade}급 유물 처분 — 되돌릴 수 없다</div>
+    <div class="sbtns"><button class="pbtn" data-vsok style="border-color:var(--bad);color:var(--bad)">처분한다 <span class="num">+${fmt(p)}</span>G</button><button class="pbtn" data-vsno>취소</button></div>`, {role: "dialog", above: true});
+  el.addEventListener("click", e => {
+    if(e.target.closest("[data-vsno]")){ closeSlip(true); return; }
+    if(e.target.closest("[data-vsok]")){ closeSlip(); vSell(r, null); }
+  });
+}
+function vSellList(g){ return (S.relicPool || []).filter(r => r && r.grade === g && !vSellWhy(r)); }
+function vSellGrade(g){
+  const sold = vSellList(g);
+  if(!sold.length) return;
+  const gain = sold.length * relicSellPrice({grade: g});
+  vApply(() => {
+    const out = new Set(sold);
+    S.relicPool = (S.relicPool || []).filter(r => !out.has(r));
+    addGold(gain);
+    logE(`유물 ${g}급 ${sold.length}개 일괄 처분 — 자금 +${fmt(gain)}`, "good");
+    return true;
+  }, {});
+  toast(`${g}급 ${sold.length}개를 처분했다.`);
+}
+const V_SELL_G = ["C", "B", "A", "S", "S+"];
+function vSellSlip(btn){
+  if(SLIP && SLIP.anchor === btn){ closeSlip(true); return; }
+  const rows = () => V_SELL_G.map(g => {
+    const L = vSellList(g);
+    if(g === "S+" && !L.length) return "";
+    const tot = L.length * relicSellPrice({grade: g});
+    return `<button class="so" data-vsellg="${g}" role="menuitem"${L.length ? "" : " disabled"}><i class="sp0"></i><span><b style="font-weight:400;color:${GC_PAGE[g]}">${g}급</b> ${L.length}개 처분</span><span class="sd">+${fmt(tot)} G</span></button>`;
+  }).join("");
+  const el = openSlip(btn, `<div class="slip-h">일괄 처분 — 보관함의 유물만</div>${rows()}<div class="shint">장착 중 · 유일 유물(전설 · 공명 유물) · EX 는 처분하지 않는다</div>`, {});
+  el.addEventListener("click", e => {
+    const ok = e.target.closest("[data-vsellok]");
+    if(ok){ closeSlip(true); vSellGrade(ok.dataset.vsellok); return; }
+    if(e.target.closest("[data-vsellno]")){ closeSlip(true); return; }
+    const b = e.target.closest("[data-vsellg]");
+    if(!b || b.disabled) return;
+    const g = b.dataset.vsellg;
+    if(VGORD[g] < VGORD.A){ closeSlip(true); vSellGrade(g); return; }
+    const L = vSellList(g), tot = L.length * relicSellPrice({grade: g});      // A 급 위는 한 번 더 묻는다 (예전 유물 보관고와 같다)
+    el.innerHTML = `<div class="slip-h">${g}급 유물 ${L.length}개 처분 — 되돌릴 수 없다</div>
+      <div class="sbtns"><button class="pbtn" data-vsellok="${g}" style="border-color:var(--bad);color:var(--bad)">처분한다 <span class="num">+${fmt(tot)}</span>G</button><button class="pbtn" data-vsellno>취소</button></div>`;
+    const f = el.querySelector("[data-vsellno]"); if(f) f.focus({preventScroll: true});
+  });
+}
+/* 합성 — 옛 S 급 유물 · 유물 합성기 (게임 팝업 — 끝나면 render() 끝에서 책을 다시 그린다) */
+function vSynth(r){
+  if(!r || !(r.grade === "S" && !r.kind && synthOn()) || !vInPool(r)) return;
+  if(!r.id) r.id = "rv" + Date.now().toString(36) + (++vidN);
+  RB.want = true; synthOpen(r.id);
+}
+
+/* ── 다시 그리기 ── */
+function vRefreshRel(flash){
+  const st = stuById(RB.sel), old = $("relCard");
+  vTipHide();
+  if(!st || !old) return;
+  const sc = old.scrollTop, tmp = document.createElement("div");
+  tmp.innerHTML = relicCard(st);
+  const nw = tmp.firstElementChild;
+  old.replaceWith(nw); nw.scrollTop = sc;
+  if(flash != null){ const s = nw.querySelector(`.slot[data-vslot="${flash}"]`); if(s){ s.classList.add("flash"); s.scrollIntoView({block: "nearest"}); } }
+}
+function vRefreshRec(){
+  const st = stuById(RB.sel), old = $("recCard");
+  if(!st || !old) return;
+  const tmp = document.createElement("div");
+  tmp.innerHTML = recordCard(st);
+  old.replaceWith(tmp.firstElementChild);
+  $$("#recCard .rt").forEach(b => b.onclick = () => setRecTab(b.dataset.rt));
+}
+function vRefreshAll(opt){
+  opt = opt || {};
+  vRefreshRel(opt.flash);
+  vRefreshRec();
+  if(VS.open){ vRenderChips(); vRenderGrid(opt.flashTile); vRenderStrip(opt.flashFace); vRenderDetail(); vCount(); }
+  renderList();
+}
+function vRefreshVault(){ if(!VS.open) return; vFixState(); vRenderChips(); vRenderGrid(); vRenderStrip(); vRenderDetail(); vCount(); }
+
+/* ── 왼쪽 쪽 — 보관고 ── */
+function vRender(){
+  const el = $("vlt");
+  if(!el) return;
+  const sk = vSortKey(), sellOk = shopUnlocked();
+  el.innerHTML = `<div class="ph"><button class="pbtn" id="vback" title="명부로 돌아간다 (Esc)">${ICO_BACK}<span>명부</span></button><h2>유물</h2><span class="cnt" id="vcnt"></span><span class="sp"></span>
+      <select class="sel" id="vsort" aria-label="정렬">${V_SORT.map(o => `<option value="${o.k}"${o.k === sk ? " selected" : ""}>정렬 — ${o.n}</option>`).join("")}</select></div>
+    <div class="rule"></div>
+    <div class="vchips" id="vchips"></div>
+    <div class="card vbox"><span class="cap">보관함<i id="vboxN"></i></span>
+      <span class="vacts"><button class="vact pri" id="vauto" title="이 학생의 빈 칸마다 전투력이 가장 많이 오르는 유물을 낀다">추천 장착</button><button class="vact" id="vsell" aria-haspopup="menu" title="${h(sellOk ? "등급마다 한꺼번에 처분" : "도구 상점이 열리면 유물을 처분할 수 있다")}"${sellOk ? "" : " disabled"}>처분 ${ICO.caret}</button></span>
+      <div class="vgrid" id="vgrid" role="listbox" aria-label="보관함 유물 — 끌어서 오른쪽 칸에 놓으면 장착"></div></div>
+    <div class="card vdet"><span class="cap">살펴보기</span><div class="vdb" id="vdb" aria-live="polite"></div></div>
+    <div class="card vstrip"><span class="cap">학생<i>눌러서 바꾸기 · 유물을 얼굴에 놓으면 그 학생의 빈 칸에</i></span>
+      <button class="vact vall" id="vautoall" title="빈 칸이 있는 학생마다 전투력이 가장 많이 오르는 유물을 낀다 (전투력 높은 학생부터)"></button>
+      <div class="vfaces" id="vfaces"></div></div>`;
+  $("vsort").onchange = e => { VS.sort = e.target.value; if(!S.opts) S.opts = {}; S.opts.rvsort = VS.sort; save(); vRenderGrid(); };
+  $("vback").onclick = () => vClose(true);
+  $("vauto").onclick = () => vAuto();
+  $("vautoall").onclick = () => vAutoAll();
+  $("vsell").onclick = e => vSellSlip(e.currentTarget);
+  vRenderChips(); vRenderGrid(); vRenderDetail(); vRenderStrip(); vCount();
+}
+function vCount(){
+  const c = $("vcnt"), st = vCur();
+  if(c) c.textContent = `보관 ${(S.relicPool || []).length}개`;
+  const a = $("vauto");
+  if(a && st){ const e = vEmptyN(st); a.disabled = !e || !(S.relicPool || []).length; a.innerHTML = e ? `추천 장착 <span class="num" style="opacity:.75">${e}칸</span>` : "추천 장착"; }
+  const all = $("vautoall");
+  if(all){ const n = S.students.filter(s => vEmptyN(s) > 0).length; all.disabled = !n || !(S.relicPool || []).length; all.innerHTML = n ? `모두 추천 장착 <span class="num" style="opacity:.75">${n}명</span>` : "모두 추천 장착"; }
+}
+function vList(st){
+  let L = (S.relicPool || []).filter(Boolean);
+  if(VS.oth) S.students.forEach(s => { if(s !== st) (s.relics || []).forEach(r => { if(r) L.push(r); }); });
+  if(VS.g.length) L = L.filter(r => VS.g.includes(r.grade === "S+" ? "S" : r.grade));
+  if(VS.job) L = L.filter(r => { const K = relicKindOf(r); return !!(K && K.job); });
+  if(VS.fx) L = L.filter(r => { const K = relicKindOf(r); return !!(K && K.fx); });
+  const nm = (a, b) => relicNameOf(a).localeCompare(relicNameOf(b), uiLoc());
+  const tr = r => { const K = relicKindOf(r); return !K ? 0 : K.job ? 2.5 : K.t + 1; };
+  const gn = r => (vGain(r, st) || {d: -1e9}).d;
+  const go = r => VGORD[r.grade] != null ? VGORD[r.grade] : 0;
+  const s = vSortKey(), idx = new Map(L.map((r, i) => [r, i]));
+  if(s === "grade") L.sort((a, b) => go(b) - go(a) || vScore(b, st) - vScore(a, st) || nm(a, b));
+  else if(s === "score") L.sort((a, b) => vScore(b, st) - vScore(a, st) || nm(a, b));
+  else if(s === "gain") L.sort((a, b) => gn(b) - gn(a) || vScore(b, st) - vScore(a, st) || nm(a, b));
+  else if(s === "tier") L.sort((a, b) => tr(b) - tr(a) || go(b) - go(a) || nm(a, b));
+  else if(s === "name") L.sort(nm);
+  else L.sort((a, b) => (b.t || 0) - (a.t || 0) || idx.get(b) - idx.get(a));
+  return L;
+}
+function vTileHTML(r, st){
+  const g = r.grade, w = vWearer(r), K = relicKindOf(r), res = relicResOn(r, st.job), u = vid(r), on = VS.sel === u, nm = relicNameOf(r);
+  const jn = K && K.job ? (JOBS[K.job] || {}).name || "" : "";
+  let extra = "";
+  if(res) extra += `<span class="rs">${RV_TXT.res}</span>`;
+  else if(K && K.job) extra += `<span class="jb" title="공명 — ${h(jn)} 장착 시 능력 ×${RELIC_DB.resMul}"></span>`;
+  if(w) extra += `<span class="wf">${faceHTML(stuById(w.st.id) || w.st, "")}</span>`;
+  else if(vSortKey() === "gain"){ const G = vGain(r, st); if(G) extra += `<span class="gn ${G.d > 0 ? "up" : G.d < 0 ? "dn" : ""}">${vSgn(G.d)}</span>`; }
+  let lab = `${nm} ${g}급`;
+  if(K && K.job) lab += res ? ` · 공명 ${jn} (지금 학생)` : ` · 공명 ${jn}`;
+  if(w) lab += ` · ${vNm(w.st)} 장착 중`;
+  if(r.nw && !w) lab += " · 새로 얻음";
+  return `<button class="rvt g-${gcls(g)}${on ? " on" : ""}${w ? " worn" : ""}${r.nw && !w ? " nw" : ""}${K ? "" : " lg"}" data-u="${u}" role="option" aria-selected="${on}" aria-label="${h(lab)}"><img src="${h(relicIconOf(r))}" alt="" draggable="false"><span class="gt">${h(g)}</span>${extra}</button>`;
+}
+function vRenderGrid(flashUid){
+  const el = $("vgrid"), st = vCur();
+  if(!el || !st) return;
+  const sc = el.scrollTop, L = vList(st), pool = (S.relicPool || []).length;
+  el.innerHTML = L.length ? L.map(r => vTileHTML(r, st)).join("")
+    : `<div class="vempty">${pool || VS.oth ? "거른 조건에 맞는 유물이 없다." : "보관 중인 유물이 없다.<br>원정 · 마을 손님에게서 얻는다."}</div>`;
+  el.scrollTop = sc;
+  const shown = L.filter(vInPool).length, nb = $("vboxN");
+  if(nb) nb.textContent = shown === pool && L.length === shown ? `${pool}` : VS.oth ? `${L.length} / ${pool} (+ 장착 중)` : `${L.length} / ${pool}`;
+  if(flashUid){ const t = el.querySelector(`.rvt[data-u="${flashUid}"]`); if(t){ t.classList.add("flash"); t.scrollIntoView({block: "nearest"}); } }
+}
+function vRenderChips(){
+  const el = $("vchips");
+  if(!el) return;
+  const P = (S.relicPool || []).filter(Boolean);
+  const cnt = g => P.filter(r => (r.grade === "S+" ? "S" : r.grade) === g).length;
+  const nJob = P.filter(r => { const K = relicKindOf(r); return !!(K && K.job); }).length;
+  const nFx = P.filter(r => { const K = relicKindOf(r); return !!(K && K.fx); }).length;
+  const gs = ["C", "B", "A", "S"].concat(P.some(r => r.grade === "EX") || VS.g.includes("EX") ? ["EX"] : []);
+  el.innerHTML = `<span class="lab">등급</span>${gs.map(g => `<button class="vchip g g-${g}" data-vg="${g}" aria-pressed="${VS.g.includes(g)}" title="${g}급만 보기 (여럿 고를 수 있다 · 다시 누르면 풀린다)">${g}<span class="n">${cnt(g)}</span></button>`).join("")}<span class="gap"></span>`
+    + `<button class="vchip rs" data-vf="job" aria-pressed="${VS.job}" title="공명 유물만 — 그 직업 장착 시 능력 ×${RELIC_DB.resMul} · 세트">공명<span class="n">${nJob}</span></button>`
+    + `<button class="vchip" data-vf="fx" aria-pressed="${VS.fx}" title="전투 밖 효과가 있는 유물만">전투 밖 효과<span class="n">${nFx}</span></button>`
+    + `<button class="vchip" data-vf="oth" aria-pressed="${VS.oth}" title="다른 학생이 끼고 있는 유물도 — 끌어 오면 그 학생에게서 빼서 낀다">다른 학생 것도</button>`;
+}
+function vRenderStrip(flashSid){
+  const el = $("vfaces");
+  if(!el) return;
+  el.innerHTML = sorted(students()).map(s => { const raw = rawById(s.id), e = raw ? vEmptyN(raw) : 0, on = s.id === RB.sel;
+    return `<button class="vf${on ? " on" : ""}" data-vsid="${h(s.id)}" aria-pressed="${on}" title="${h(s.name)} — 유물 ${raw ? vHave(raw) : 0} / ${s.relicSlots}칸${e ? ` · 빈 칸 ${e}` : ""}">${faceHTML(s, "")}${e ? `<span class="ve num">${e}</span>` : ""}</button>`; }).join("");
+  if(flashSid){ const f = el.querySelector(`.vf[data-vsid="${flashSid}"]`); if(f && f.animate) f.animate([{transform: "scale(1.25)"}, {transform: "scale(1)"}], {duration: 500, easing: "ease-out"}); }
+}
+/* 살펴보기 — 끌고 있는 것 > 올린 보관함 유물 > 올린 칸에 낀 유물(누른 유물이 있어도) > 빈 칸에 올리면 누른 유물을 그 칸에 >
+   누른 유물(고른 칸과 견주어) > 아무것도 안 눌렀으면 고른 칸에 낀 유물 (찬 칸을 누르면 그 유물이 남는다 — 해제 단추) */
+function vDetailCtx(){
+  const st = vCur();
+  if(VD && VD.on) return {uid: VD.src.uid, at: VD.over && VD.over.t === "slot" ? VD.over.i : undefined, out: !!(VD.over && VD.over.t === "out")};
+  if(VS.hov) return {uid: VS.hov};
+  if(VS.hovSlot != null && st){
+    const r = (st.relics || [])[VS.hovSlot];
+    if(r) return {uid: vid(r)};
+    const s = vGet(VS.sel), w = s && vWearer(s);
+    if(s && !(w && w.st === st)) return {uid: VS.sel, at: VS.hovSlot};
+  }
+  if(VS.sel) return {uid: VS.sel};
+  if(st && VS.tgt != null && (st.relics || [])[VS.tgt]) return {uid: vid(st.relics[VS.tgt])};
+  return null;
+}
+function vRenderDetail(){
+  const el = $("vdb"), st = vCur();
+  if(!el) return;
+  const c = vDetailCtx(), r = c && vGet(c.uid);
+  if(!r || !st){ el.innerHTML = `<div class="vd-hint">유물 클릭 시 자세한 설명 확인 가능</div>`; return; }
+  el.innerHTML = `<div class="vd-body">${vInfoHTML(r, st)}</div><div class="vd-act">${vActHTML(r, st, c)}</div>`;
+}
+/* 태그 — 살펴보기는 길게(공명 · 직업 · 설명 말풍선) · 오른쪽 유물 칸은 짧게(공명 · 말풍선 없음 · 세트가 켜지면 채움) */
+function vTags(r, st, short){
+  const K = relicKindOf(r), res = !!(st && relicResOn(r, st.job)), T = [gradeTag(r.grade)];
+  const tt = t => short ? "" : ` title="${h(t)}"`;
+  if(!K){ if(r.grade !== "EX") T.push(`<span class="tag">옛 유물</span>`); }
+  else if(K.job){ const jn = (JOBS[K.job] || {}).name || "";
+    T.push(`<span class="tag rs${res ? " on" : ""}"${tt(`공명 — ${jn} 장착 시 능력 ×${RELIC_DB.resMul}`)}>${short ? "공명" : `공명 · ${h(jn)}`}</span>`); }
+  else T.push(`<span class="tag">${h(relicTierOf(K).n)}</span>`);
+  if(relicUniqueK(K)) T.push(`<span class="tag uq">유일</span>`);
+  if(K && K.job){ const P = RELIC_DB.pairs[K.job] || {}, on = !!(short && st && relicSetOn(st, K.job));
+    T.push(`<span class="tag set${on ? " on" : ""}"${tt(`세트 '${P.n || ""}' — ${RELIC_JOBR.filter(x => x.job === K.job).map(x => x.n).join(" · ")}`)}>세트</span>`); }
+  if(K && K.neg) T.push(`<span class="tag neg"${tt(`양날 — ${K.negWhy || ""}`)}>양날</span>`);
+  if(r.rec && r.rec.ow) T.push(`<span class="tag ow">이계</span>`);
+  return T.join("");
+}
+function vAwake(r, K){
+  const w = r.wins | 0, jn = (JOBS[K.job] || {}).name || "";
+  const cur = RELIC_DB.awake.find(a => a.g === r.grade) || RELIC_DB.awake[0];
+  const nx = RELIC_DB.awake.find(a => RELIC_GI[a.g] === RELIC_GI[r.grade] + 1);
+  if(nx && nx.g === "A") return `<div class="vd-ln">${h(cur.n)} — ${h(jn)}${gwa(jn)} 함께 이긴 전투 <b class="num">${w} / ${nx.need}</b> 이면 깨어난다 (A)</div>`;
+  if(nx) return `<div class="vd-ln">${h(cur.n)} — ${h(jn)}${gwa(jn)} 함께 이긴 전투 <b class="num">${w} / ${nx.need}</b> 이면 완전히 깨어난다 (S)</div>`;
+  return `<div class="vd-ln">${h(cur.n)} — ${h(jn)}${gwa(jn)} 함께 이긴 전투 ${w}번</div>`;
+}
+function vInfoHTML(r, st){
+  const K = relicKindOf(r), g = r.grade, c = GC_PAGE[g] || GC_PAGE.C, L = [];
+  if(K && K.fx){ const F = RELIC_DB.fx[K.fx];
+    L.push(`<div class="vd-ln ${F.neg ? "neg" : "fx"}">◆ ${h(relicFxTxt(r))} <i>— ${h(relicScopeTxt(K))}</i></div>`); }   // 효과 이름은 쓰지 않는다 (1017)
+  if(K && K.job){
+    const jn = (JOBS[K.job] || {}).name || "", P = RELIC_DB.pairs[K.job] || {}, worn = vWornKinds(st), on = relicSetOn(st, K.job);
+    L.push(`<div class="vd-ln res">공명 — ${h(jn)} 장착 시 능력 ×${RELIC_DB.resMul} · ${h(K.res)}</div>`);
+    L.push(vAwake(r, K));
+    L.push(`<div class="vd-ln set">세트 — '${h(P.n || "")}' ${RELIC_JOBR.filter(x => x.job === K.job).map(x => `<span class="${worn[x.id] ? "pc" : "off"}" title="${worn[x.id] ? `${h(vNm(st))} 장착 중` : "미장착"}">${h(x.n)}</span>`).join(" · ")}</div>`);
+    L.push(`<div class="vd-ln setfx${on ? "" : " off"}" title="${on ? "세트 효과 — 켜져 있다" : "세트 효과 — 그 직업 학생이 두 유물을 함께 장착하면"}">${h(P.d || "")}</div>`);
+  }
+  if(!K && g === "EX") L.push(`<div class="vd-ln old">SP 상점의 EX 유물 — 한 명당 하나 · 처분할 수 없다</div>`);
+  else if(!K) L.push(`<div class="vd-ln old">옛 무작위 유물 — 세이브에 있던 이름 · 능력 그대로 (새로는 나오지 않는다 · 아이콘은 공용 하나)</div>`);
+  const rec = relicRecText(r);
+  return `<div class="vd-top"><div class="vd-ic g-${gcls(g)}"><img src="${h(relicIconOf(r))}" alt=""></div><div class="vd-hd">
+      <div class="vd-nm" style="color:${c}">${h(relicNameOf(r))}</div>
+      <div class="vd-tags">${vTags(r, st)}<span class="sc">점수<b class="num"> ${vScore(r, st)}</b></span></div>
+      <div class="vd-af">${relicAffSorted(relicAffEff(r, st)).map(a => `<span${a.v < 0 ? ' class="neg"' : ""}>${h(a.n)}<b>${h(relicValTxt(a))}</b></span>`).join("")}</div></div></div>
+    ${L.join("")}
+    ${K && K.lore ? `<div class="vd-lore">“${h(K.lore)}”</div>` : ""}
+    <div class="vd-rec">${rec ? `기록 — ${h(rec)}` : "기록 없음 — 기록을 남기기 전에 얻은 유물"}</div>`;
+}
+/* 능력 상자 — 보관고 밖에서 오른쪽 유물 칸에 올리면 (1017 여섯째 — 사용자가 정한 차례)
+   공명 효과 1 · 2 → 능력 1 ~ 5 / 전투 밖 효과 / 세트 이름 · 세트 장비 1 · 2(이 학생이 끼면 색) · 세트 효과(켜지면 색).
+   공명은 이 학생의 직업이 맞을 때 자주색 · 아니면 회색. 점수 · 깨어남 · 사연 · 기록은 넣지 않는다 (보관고의 살펴보기에) */
+function vTipHTML(r, st){
+  const K = relicKindOf(r), sec = [], top = [];
+  if(K && K.job){ const o = relicResOn(r, st.job) ? "" : " off", jn = (JOBS[K.job] || {}).name || "";
+    top.push(`<div class="vtp-ln res${o}">공명 — ${h(jn)} 장착 시 능력 ×${RELIC_DB.resMul}</div>`, `<div class="vtp-ln res${o}">공명 — ${h(K.res)}</div>`); }
+  top.push(...relicAffSorted(relicAffEff(r, st)).map(a => `<div class="vtp-st${a.v < 0 ? " neg" : ""}"><span>${h(a.n)}</span><b>${h(relicValTxt(a))}</b></div>`));
+  sec.push(`<div class="vtp-sec">${top.join("")}</div>`);
+  if(K && K.fx){ const F = RELIC_DB.fx[K.fx];
+    sec.push(`<div class="vtp-sec"><div class="vtp-ln ${F.neg ? "neg" : "fx"}">◆ ${h(relicFxTxt(r))} <i>— ${h(relicScopeTxt(K))}</i></div></div>`); }
+  if(K && K.job){ const P = RELIC_DB.pairs[K.job] || {}, w = vWornKinds(st), on = relicSetOn(st, K.job);
+    sec.push(`<div class="vtp-sec"><div class="vtp-ln set">세트 — '${h(P.n || "")}'</div>${RELIC_JOBR.filter(x => x.job === K.job).map(x => `<div class="vtp-ln pc${w[x.id] ? "" : " off"}">${h(x.n)}</div>`).join("")}<div class="vtp-ln setfx${on ? "" : " off"}">${h(P.d || "")}</div></div>`); }
+  return sec.join("");
+}
+let VTIP = null;                                                  // 상자가 붙은 칸 (요소)
+function vTipShow(s){
+  const st = vCur(), r = st && s && vGet(s.dataset.u);
+  if(!r || VS.open || (VD && VD.on)){ vTipHide(); return; }
+  const bk = $("book");
+  let t = $("vtip");
+  if(!t){ t = document.createElement("div"); t.id = "vtip"; t.className = "vtip"; t.setAttribute("role", "tooltip"); t.hidden = true; bk.append(t); }
+  if(VTIP !== s || t.hidden) t.innerHTML = vTipHTML(r, st);
+  t.hidden = false; VTIP = s;
+  const b = bk.getBoundingClientRect(), k = b.width / bk.offsetWidth || 1, rc = s.getBoundingClientRect();
+  const L = (rc.left - b.left) / k, R = (rc.right - b.left) / k, T = (rc.top - b.top) / k;
+  let x0 = L - t.offsetWidth - 8;                                   // 칸의 왼쪽에 (다른 칸을 가리지 않게) — 자리가 없으면 오른쪽
+  if(x0 < 4) x0 = R + 8;
+  t.style.left = Math.round(x0) + "px";
+  t.style.top = Math.round(Math.max(4, Math.min(T - 2, bk.offsetHeight - t.offsetHeight - 4))) + "px";
+}
+function vTipHide(){ const t = $("vtip"); if(t) t.hidden = true; VTIP = null; }
+/* 바뀌는 것 — 이 학생의 전투력 변동 · 능력치 변동 (게임 relicDiffText 처럼 능력마다 순증감 · BATTLE 차례) */
+function vChange(st, slots, r, old, removing){
+  const p0 = vPow(st), p1 = vPowWith(st, slots), d = p1 - p0, m = new Map();
+  const add = (L, sg) => L.forEach(a => m.set(a.k, (m.get(a.k) || 0) + sg * a.v));
+  if(removing) add(relicAffEff(r, st), -1);
+  else { add(relicAffEff(r, st), 1); if(old) add(relicAffEff(old, st), -1); }
+  const ord = k => BATTLE.findIndex(b => b.k === k);
+  const sv = [...m.entries()].filter(([, v]) => Math.abs(v) > 1e-9).sort((a, b) => ord(a[0]) - ord(b[0]))
+    .map(([k, v]) => `<span class="${v > 0 ? "up" : "dn"}">${h(RELIC_AFFN[k] || k)} ${h(relicValTxt({k, v: Math.round(v * 1000) / 1000}))}</span>`).join(" · ");
+  return `<div class="vd-r"><span class="k">전투력</span><span class="v"><span class="num">${fmt(p0)}</span> → <b class="num">${fmt(p1)}</b> <b class="num ${d > 0 ? "up" : d < 0 ? "dn" : "dim"}">${vSgn(d)}</b></span></div>`
+    + `<div class="vd-r"><span class="k">능력치</span><span class="v">${sv || `<span class="dim">변동 없음</span>`}</span></div>`;
+}
+/* 아래 줄 — 누구(Slot) → 누구(Slot) · 단추 / 전투력 변동 / 능력치 변동 */
+function vActHTML(r, st, c){
+  const w = vWearer(r), at = (s, i) => `${h(vNm(s))} (Slot ${i + 1})`;
+  if(w && w.st === st){
+    const s = vFull(st); s[w.i] = null;
+    return `<div class="who"><b>${at(st, w.i)}</b> <span class="dim">장착 중 — 해제 시</span></div>`
+      + `<div class="vd-bt"><button class="pbtn" data-vact="un" data-i="${w.i}">${RV_TXT.un}</button></div>${vChange(st, s, r, null, true)}`;
+  }
+  const n = relicSlots(st);
+  const i = c.at != null ? c.at : VS.tgt != null && VS.tgt < n ? VS.tgt : vEmptyIdx(st);
+  const other = w ? w.st : null;
+  let who, rows = "", label = RV_TXT.eq, ok = false;
+  if(i < 0) who = `<b>${h(vNm(st))}</b> <span class="dim">— 빈 슬롯 없음</span>`;
+  else {
+    const s = vFull(st), old = s[i] || null, on = old ? relicNameOf(old) : "";
+    s[i] = r;
+    who = `${other ? at(other, w.i) + " → " : ""}<b>${at(st, i)}</b>${old ? ` <span class="dim">· ${h(on)}${gwa(on)} 바꾸기</span>` : ""}`;
+    ok = vExOk(r, st, i);
+    rows = ok ? vChange(st, s, r, old) : `<div class="vd-r"><span class="v c-bad">${h(vExMsg(st))}</span></div>`;
+    label = other ? `가져오기 → Slot ${i + 1}` : old ? `Slot ${i + 1}에 바꿔 끼기` : `Slot ${i + 1}에 장착`;
+  }
+  let side = "";
+  if(!w){
+    const why = vSellWhy(r);
+    side = `<button class="pbtn" data-vact="sell" title="${h(why || "처분 — 유물 판매가 (판매가 효과 포함)")}"${why ? " disabled" : ""}>처분 <span class="num">+${fmt(relicSellPrice(r))}</span>G</button>`;
+    if(r.grade === "S" && !r.kind && synthOn()) side = `<button class="pbtn" data-vact="synth" title="유물 합성기 — S급 유물 둘을 합성한다">${RV_TXT.syn}</button>` + side;
+  }
+  return `<div class="who">${who}</div><div class="vd-bt"><button class="pbtn pri" data-vact="eq" data-i="${i}"${ok ? "" : " disabled"}>${label}</button>${side}</div>${rows}`;
+}
+
+/* ── 열고 닫기 ── */
+function vOpen(i){
+  const st = vCur();
+  if(!st || !RB.root) return;
+  if(RB.mode === "team") setRosterMode("detail");
+  closeSlip(); vTipHide();
+  const e = vEmptyIdx(st);
+  VS.tgt = i != null && i >= 0 && i < relicSlots(st) ? i : e >= 0 ? e : null;
+  VS.hov = null; VS.hovSlot = null;
+  vIndex();
+  if(!VS.open){
+    VS.open = true;
+    VS.sort = vSortKey();
+    if(RB.rt === "rec"){ VS.rtAuto = true; setRecTab("bat"); VS.rtBack = "rec"; VS.rtAuto = false; }   // 끼우면 바뀌는 능력치가 바로 보이게 (나오면 되돌린다)
+    const el = $("vlt");
+    el.hidden = false;
+    $("book").classList.add("vaultmode");
+    vRender();
+    el.classList.add("turn");
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.remove("turn")));
+  } else { vRenderGrid(); vRenderDetail(); vCount(); }
+  vRefreshRel();
+}
+function vClose(focusBack){
+  if(!VS.open) return;
+  vReset();
+  renderList(); applyLayout();
+  const parts = [RB.root.querySelector(".page.l > .ph"), $("grid")].filter(Boolean);
+  parts.forEach(p => p.classList.add("turn"));
+  requestAnimationFrame(() => requestAnimationFrame(() => parts.forEach(p => p.classList.remove("turn"))));
+  vRefreshRel();
+  if(focusBack){ const c = RB.root.querySelector(`#grid .cell[data-sid="${RB.sel}"]`); if(c) c.focus({preventScroll: true}); }
+}
+/* 보관고 상태만 닫는다 (책을 닫을 때 · vClose) — 고른 칸 · 고른 유물 · 탭 */
+function vReset(){
+  if(VD){ clearTimeout(VD.timer); VD = null; vDragClean(); }
+  const was = VS.open;
+  VS.open = false; VS.tgt = null; VS.sel = null; VS.hov = null; VS.hovSlot = null;
+  closeSlip(); vTipHide();
+  if(VS.rtBack && RB.rt === "bat") setRecTab(VS.rtBack);
+  VS.rtBack = null;
+  if(!was || !RB.root) return;
+  $("book").classList.remove("vaultmode");
+  const el = $("vlt"); if(el) el.hidden = true;
+}
+function vSelect(u){
+  VS.sel = u;
+  const r = vGet(u);
+  if(r && r.nw){ delete r.nw; save(); const t = RB.root.querySelector(`#vgrid .rvt[data-u="${u}"]`); if(t) t.classList.remove("nw"); }
+  $$("#vgrid .rvt").forEach(t => { const on = t.dataset.u === u; t.classList.toggle("on", on); t.setAttribute("aria-selected", on); });
+  vRenderDetail();
+}
+
+/* ── 끌어 놓기 — 보관함 → 칸(장착 · 바꾸기) · 칸 → 칸(자리 바꾸기) · 칸 → 왼쪽 쪽(해제) · → 학생 띠 얼굴(그 학생의 빈 칸). 마우스 · 펜 · 터치(길게 눌러) ── */
+let VD = null, vEat = false, vLastPT = "mouse";
+function vSrc(e){
+  if(!VS.open || e.button !== 0) return null;
+  if(e.target.closest("[data-vun],.slip")) return null;
+  const t = e.target.closest("#vgrid .rvt[data-u]");
+  if(t) return {kind: "tile", uid: t.dataset.u};
+  const s = e.target.closest("#det .slot.has[data-vslot]");
+  if(s) return {kind: "slot", uid: s.dataset.u, i: +s.dataset.vslot};
+  return null;
+}
+function vDragStart(){
+  const r = vGet(VD.src.uid);
+  if(!r){ VD = null; return; }
+  VD.on = true; closeSlip(); vTipHide();
+  const g = document.createElement("div");
+  g.className = "v-ghost g-" + gcls(r.grade);
+  g.innerHTML = `<img src="${h(relicIconOf(r))}" alt=""><span class="vchp" hidden></span>`;
+  $("book").append(g); VD.g = g;
+  RB.root.getElementById("rbw").classList.add("v-drag");
+  $("book").classList.add("v-dragging");
+  const from = VD.src.kind === "tile" ? RB.root.querySelector(`#vgrid .rvt[data-u="${VD.src.uid}"]`) : RB.root.querySelector(`#det .slot[data-vslot="${VD.src.i}"]`);
+  if(from) from.classList.add("lift");
+  VS.hov = null; VS.hovSlot = null; VD.key = "";
+  vRenderDetail();
+}
+function vOverAt(cx, cy){
+  const el = RB.root.elementFromPoint(cx, cy), c = sel => el && el.closest ? el.closest(sel) : null;
+  const lk = c("#det .slot.lock");
+  if(lk) return {t: "lock", i: +lk.dataset.vlock, el: lk};
+  const sl = c("#det .slot[data-vslot]");
+  if(sl) return {t: "slot", i: +sl.dataset.vslot, el: sl};
+  const f = c("#vfaces .vf[data-vsid]");
+  if(f) return {t: "face", sid: f.dataset.vsid, el: f};
+  if(VD.src.kind === "slot" && c(".page.l")) return {t: "out"};
+  return null;
+}
+function vOverInfo(o){                                   // 끌기 미리보기 — 고스트 아래 쪽지
+  const st = vCur(), r = vGet(VD.src.uid);
+  if(!o || !st || !r) return null;
+  if(o.t === "lock") return {txt: `Lv.${o.i * RELIC_SLOT_EVERY} 에 열린다`, cls: "bad"};
+  if(o.t === "out"){ const s = vFull(st); s[VD.src.i] = null; const d = vPowWith(st, s) - vPow(st); return {txt: `해제 ${vSgn(d)}`, cls: d < 0 ? "dn" : "up"}; }
+  if(o.t === "slot"){
+    if(VD.src.kind === "slot"){ if(VD.src.i === o.i) return null; return {txt: "자리 바꾸기", cls: ""}; }
+    if(!vExOk(r, st, o.i)) return {txt: "EX 유물은 한 명당 하나", cls: "bad"};
+    const s = vFull(st), w = vWearer(r);
+    if(w && w.st === st) s[w.i] = s[o.i];
+    const had = s[o.i]; s[o.i] = r;
+    const d = vPowWith(st, s) - vPow(st);
+    return {txt: had ? `바꾸기 · 전투력 ${vSgn(d)}` : `전투력 ${vSgn(d)}`, cls: d > 0 ? "up" : d < 0 ? "dn" : ""};
+  }
+  if(o.t === "face"){
+    const t = rawById(o.sid);
+    if(!t || (t === st && VD.src.kind === "slot")) return null;
+    const i = vEmptyIdx(t);
+    if(i < 0) return {txt: `${vNm(t)} — 빈 슬롯 없음`, cls: "bad"};
+    if(!vExOk(r, t, i)) return {txt: "EX 유물은 한 명당 하나", cls: "bad"};
+    const s = vFull(t); s[i] = r;
+    const d = vPowWith(t, s) - vPow(t);
+    return {txt: `${vNm(t)} Slot ${i + 1} ${vSgn(d)}`, cls: d > 0 ? "up" : d < 0 ? "dn" : ""};
+  }
+  return null;
+}
+function vDragMove(cx, cy){
+  const bk = $("book"), b = bk.getBoundingClientRect(), s = b.width / bk.offsetWidth || 1;
+  VD.g.style.left = Math.round((cx - b.left) / s - 32) + "px";
+  VD.g.style.top = Math.round((cy - b.top) / s - 32) + "px";
+  const o = vOverAt(cx, cy);
+  VD.over = o;
+  const key = o ? o.t + (o.i != null ? o.i : "") + (o.sid || "") : "";
+  if(key === VD.key) return;
+  VD.key = key;
+  $$("#book .vdrop, #book .vbad, #vfaces .drop, #vfaces .bad").forEach(z => z.classList.remove("vdrop", "vbad", "drop", "bad"));
+  const pl = RB.root.querySelector(".page.l"); if(pl) pl.classList.toggle("vdrop", !!(o && o.t === "out"));
+  const inf = vOverInfo(o), chp = VD.g.querySelector(".vchp");
+  if(o && o.el){
+    if(o.t === "face") o.el.classList.add(inf && inf.cls === "bad" ? "bad" : "drop");
+    else o.el.classList.add(o.t === "lock" || (inf && inf.cls === "bad") ? "vbad" : "vdrop");
+  }
+  chp.hidden = !inf; if(inf){ chp.textContent = inf.txt; chp.className = "vchp " + (inf.cls || ""); }
+  vRenderDetail();
+}
+function vDrop(d){
+  const o = d.over, st = vCur();
+  if(!o || !st) return;
+  const r = vGet(d.src.uid);
+  if(!r) return;
+  const nm = relicNameOf(r);
+  if(o.t === "lock"){ toast(`Slot ${o.i + 1} — Lv.${o.i * RELIC_SLOT_EVERY} 에 열린다`); return; }
+  if(o.t === "out"){ if(d.src.kind === "slot") vDoUnequip(d.src.i); return; }
+  if(o.t === "slot"){
+    if(d.src.kind === "slot"){
+      if(d.src.i === o.i) return;
+      vApply(() => vEquip(r, st, o.i), {flash: o.i, msg: `${nm} — Slot ${d.src.i + 1} → Slot ${o.i + 1}`});
+      return;
+    }
+    vQuick(r, o.i); return;
+  }
+  if(o.t === "face"){
+    const t = rawById(o.sid);
+    if(!t) return;
+    if(t === st){ if(d.src.kind === "tile") vQuick(r); return; }
+    const i = vEmptyIdx(t);
+    if(i < 0){ toast(`${vNm(t)} — 빈 슬롯 없음`); return; }
+    if(!vExOk(r, t, i)){ toast(vExMsg(t)); return; }
+    vApply(() => vEquip(r, t, i), {flashFace: t.id, msg: `${nm} → ${vNm(t)} Slot ${i + 1}`});
+  }
+}
+function vDragClean(){
+  if(!RB.root) return;
+  $$(".v-ghost").forEach(g => g.remove());
+  $$("#book .vdrop, #book .vbad, #book .lift, #vfaces .drop, #vfaces .bad").forEach(z => z.classList.remove("vdrop", "vbad", "lift", "drop", "bad"));
+  const pl = RB.root.querySelector(".page.l"); if(pl) pl.classList.remove("vdrop");
+  const w = RB.root.getElementById("rbw"); if(w) w.classList.remove("v-drag");
+  const bk = $("book"); if(bk) bk.classList.remove("v-dragging");
+}
+function vDragCancel(){ if(!VD) return; clearTimeout(VD.timer); const on = VD.on; VD = null; if(on){ vDragClean(); vRenderDetail(); } }
+
+/* ── 처음 한 번 (책을 만들 때) — 왼쪽 쪽에 보관고 자리 · 이벤트 ── */
+function vInit(){
+  if($("vlt")) return;
+  const el = document.createElement("div");
+  el.className = "vlt"; el.id = "vlt"; el.hidden = true;
+  el.style.setProperty("--vdrop-txt", JSON.stringify("여기에 놓으면 보관함으로"));   // 칸의 유물을 왼쪽 쪽으로 끌 때의 글 (CSS 안의 글은 번역되지 않아 여기서)
+  RB.root.querySelector(".page.l").append(el);
+  const bk = $("book"), det = $("det");
+  bk.addEventListener("pointerdown", e => {
+    vLastPT = e.pointerType || "mouse";
+    const src = vSrc(e);
+    if(!src) return;
+    VD = {src, x: e.clientX, y: e.clientY, cx: e.clientX, cy: e.clientY, on: false, id: e.pointerId, touch: e.pointerType === "touch"};
+    if(VD.touch) VD.timer = setTimeout(() => { if(VD && !VD.on){ vDragStart(); if(VD) vDragMove(VD.cx, VD.cy); if(navigator.vibrate) navigator.vibrate(12); } }, 230);
+  });
+  bk.addEventListener("click", e => { if(vEat){ vEat = false; e.stopPropagation(); e.preventDefault(); } }, true);   // 끌기가 끝나며 따라오는 누르기 하나는 버린다
+  /* 오른쪽 쪽 — 칸 누르기 · 해제 · 보관고 열기 */
+  det.addEventListener("click", e => {
+    const un = e.target.closest("[data-vun]");
+    if(un){ e.stopPropagation(); vDoUnequip(+un.dataset.vun); return; }
+    if(e.target.closest("[data-vgo]")){ vOpen(null); return; }
+    if(e.target.closest("[data-vall]")){ vUnequipAll(); return; }
+    const s = e.target.closest(".slot[data-vslot]");
+    if(s){
+      const i = +s.dataset.vslot;
+      if(!VS.open){ vOpen(i); return; }
+      VS.tgt = VS.tgt === i ? null : i;
+      if(s.classList.contains("has") && VS.sel){                      // 낀 유물을 누르면 보관함 쪽 고른 유물은 풀린다 — 살펴보기는 그 칸의 유물
+        VS.sel = null;
+        $$("#vgrid .rvt.on").forEach(t => { t.classList.remove("on"); t.setAttribute("aria-selected", "false"); });
+      }
+      vRefreshRel(); vRenderDetail(); if(vSortKey() === "gain") vRenderGrid();
+      return;
+    }
+    const lk = e.target.closest(".slot.lock");
+    if(lk && VS.open) toast(`Slot ${+lk.dataset.vlock + 1} — Lv.${+lk.dataset.vlock * RELIC_SLOT_EVERY} 에 열린다`);
+  });
+  det.addEventListener("keydown", e => {                            // 칸 — Enter 고르기(닫혀 있으면 보관고) · Delete 해제
+    const s = e.target.closest && e.target.closest(".slot.has[data-vslot]");
+    if(!s || e.target !== s) return;
+    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); s.click(); }
+    else if(e.key === "Delete" || e.key === "Backspace"){ e.preventDefault(); vDoUnequip(+s.dataset.vslot); }
+  });
+  det.addEventListener("dblclick", e => { const s = e.target.closest(".slot.has[data-vslot]"); if(s && VS.open) vDoUnequip(+s.dataset.vslot); });
+  det.addEventListener("contextmenu", e => { const s = e.target.closest(".slot.has[data-vslot]"); if(!s || !VS.open) return; e.preventDefault(); if(vLastPT !== "touch") vDoUnequip(+s.dataset.vslot); });
+  det.addEventListener("pointerover", e => {
+    if(e.pointerType !== "mouse" || (VD && VD.on)) return;
+    if(VS.open){
+      const s = e.target.closest(".slot[data-vslot]"), i = s ? +s.dataset.vslot : null;
+      if(i !== VS.hovSlot){ VS.hovSlot = i; vRenderDetail(); }
+      return;
+    }
+    const s = e.target.closest("#relCard .slot.has[data-u]");        // 보관고 밖 — 낀 칸에 올리면 능력 상자 (보관고 안에서는 살펴보기가 맡는다)
+    if(s) vTipShow(s); else if(VTIP) vTipHide();
+  });
+  det.addEventListener("pointerleave", () => { if(VS.hovSlot != null){ VS.hovSlot = null; if(VS.open) vRenderDetail(); } if(VTIP) vTipHide(); });
+  det.addEventListener("focusin", e => {                             // 키보드로 칸에 오면 (마우스로 눌러 생긴 초점은 빼고)
+    const s = e.target.closest && e.target.closest("#relCard .slot.has[data-u]");
+    if(s && e.target === s && !VS.open && s.matches(":focus-visible")) vTipShow(s);
+  });
+  det.addEventListener("focusout", e => { if(VTIP && e.target === VTIP) vTipHide(); });
+  det.addEventListener("scroll", () => { if(VTIP) vTipHide(); }, true);
+  /* 왼쪽 쪽 — 보관고 */
+  el.addEventListener("click", e => {
+    const ch = e.target.closest("[data-vg]");
+    if(ch){ const g = ch.dataset.vg; VS.g = VS.g.includes(g) ? VS.g.filter(z => z !== g) : VS.g.concat(g); vRenderChips(); vRenderGrid(); return; }
+    const f = e.target.closest("[data-vf]");
+    if(f){ const k = f.dataset.vf; VS[k] = !VS[k]; vRenderChips(); vRenderGrid(); return; }
+    const t = e.target.closest("#vgrid .rvt[data-u]");
+    if(t){ vSelect(t.dataset.u); return; }
+    const a = e.target.closest("[data-vact]");
+    if(a && !a.disabled){
+      const c = vDetailCtx(), r = c && vGet(c.uid);
+      if(!r) return;
+      if(a.dataset.vact === "eq") vQuick(r, +a.dataset.i);
+      else if(a.dataset.vact === "sell") vSell(r, a);
+      else if(a.dataset.vact === "un") vDoUnequip(+a.dataset.i);
+      else if(a.dataset.vact === "synth") vSynth(r);
+      return;
+    }
+    const fc = e.target.closest("#vfaces .vf[data-vsid]");
+    if(fc) select(fc.dataset.vsid, true);
+  });
+  el.addEventListener("dblclick", e => { const t = e.target.closest("#vgrid .rvt[data-u]"); if(t) vQuick(vGet(t.dataset.u)); });
+  el.addEventListener("contextmenu", e => { const t = e.target.closest("#vgrid .rvt[data-u]"); if(!t) return; e.preventDefault(); if(vLastPT !== "touch"){ vSelect(t.dataset.u); vQuick(vGet(t.dataset.u)); } });
+  el.addEventListener("pointerover", e => {
+    if((VD && VD.on) || e.pointerType !== "mouse") return;
+    const t = e.target.closest("#vgrid .rvt[data-u]"), u = t ? t.dataset.u : null;
+    if(u !== VS.hov){ VS.hov = u; vRenderDetail(); }
+  });
+  el.addEventListener("pointerleave", () => { if(VS.hov){ VS.hov = null; vRenderDetail(); } });
+  /* 커서 아래의 칸 · 유물이 새로 그려진 채(누르기 등) 커서가 밖으로 나가면 크롬이 pointerleave 를 안 보낼 때가 있다 → 책 안의 pointerover 로 지운다 */
+  RB.root.addEventListener("pointerover", e => {
+    if(e.pointerType !== "mouse" || (VD && VD.on)) return;
+    let ch = false;
+    if(VS.hovSlot != null && !det.contains(e.target)){ VS.hovSlot = null; ch = true; }
+    if(VS.hov && !el.contains(e.target)){ VS.hov = null; ch = true; }
+    if(VTIP && !(e.target.closest && e.target.closest("#relCard .slot.has"))) vTipHide();
+    if(ch && VS.open) vRenderDetail();
+  });
+  el.addEventListener("keydown", e => {                              // 보관함 — 화살표로 고르고 Enter 로 바로 장착
+    const t = e.target.closest && e.target.closest("#vgrid .rvt[data-u]");
+    if(!t) return;
+    const tiles = $$("#vgrid .rvt"), i = tiles.indexOf(t);
+    let cols = 0; for(const z of tiles){ if(z.offsetTop !== tiles[0].offsetTop) break; cols++; }
+    const mv = {ArrowRight: 1, ArrowLeft: -1, ArrowDown: cols || 1, ArrowUp: -(cols || 1)}[e.key];
+    if(mv != null){ e.preventDefault(); const j = Math.max(0, Math.min(tiles.length - 1, i + mv)); tiles[j].focus(); vSelect(tiles[j].dataset.u); return; }
+    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); if(VS.sel === t.dataset.u) vQuick(vGet(t.dataset.u)); else vSelect(t.dataset.u); }
+  });
+  if(RB.vwired) return;                                             // 문서에 거는 것은 한 번만
+  RB.vwired = true;
+  document.addEventListener("pointermove", e => {
+    if(!VD || e.pointerId !== VD.id) return;
+    VD.cx = e.clientX; VD.cy = e.clientY;
+    if(!VD.on){
+      const d = Math.abs(e.clientX - VD.x) + Math.abs(e.clientY - VD.y);
+      if(VD.touch){ if(d > 10){ clearTimeout(VD.timer); VD = null; } return; }      // 터치 — 길게 누르기 전에 움직이면 넘기기(스크롤)
+      if(d < 6) return;
+      vDragStart();
+      if(!VD) return;
+    }
+    e.preventDefault(); vDragMove(e.clientX, e.clientY);
+  });
+  document.addEventListener("touchmove", e => { if(VD && VD.on) e.preventDefault(); }, {passive: false});
+  document.addEventListener("pointerup", e => {
+    if(!VD || e.pointerId !== VD.id) return;
+    clearTimeout(VD.timer);
+    const d = VD; VD = null;
+    if(d.on){ vEat = true; setTimeout(() => { vEat = false; }, 0); vDragClean(); vDrop(d); }
+  });
+  document.addEventListener("pointercancel", e => { if(VD && e.pointerId === VD.id) vDragCancel(); });
+}
+window.RBK = {open: rbOpen, close: rbClose, on: rbOn, intercept: rbIntercept, after: rbAfter, isOpen: () => RB.open, state: RB,
+  vault: {state: VS, open: vOpen, close: vClose, isOpen: () => VS.open, get: vGet, vid, select: vSelect, emptyIdx: vEmptyIdx,   // 유물 보관고 (3단계 · 시험 rvault_check.py)
+    refresh: () => vRefreshVault(), rerender: () => { if(VS.open){ vIndex(); vRender(); vRefreshRel(); } }}};
 })();
 /* ROSTERBK_END */
 /* ============================================================
@@ -17604,7 +18468,7 @@ function spBuy(id){
   S.sp = spOf() - it.cost;
   spOwned()[id] = true;
   S.relicPool = S.relicPool || [];
-  S.relicPool.push(spRelic(it));
+  S.relicPool.push(relicFresh(spRelic(it)));   // 1017 · 3단계 — 얻은 차례 · 새로 얻음
   logE(`SP 상점 — <b style="color:var(--ex)">${esc(it.n)}</b>${eulr(it.n)} 손에 넣었다 (SP ${it.cost} 소모 · 남은 SP ${fmt(spOf())})`, "big");
   toast(`${it.n} 구매 — 유물 · 스킬 탭에서 장착한다.`);
   save(); render();
@@ -19669,7 +20533,7 @@ function relicAutoEquip(){
         if(sc > bs){ bs = sc; best = i; }
       });
       if(best < 0) break;
-      st.relics.push(S.relicPool.splice(best,1)[0]); n++;
+      const got = S.relicPool.splice(best,1)[0]; delete got.nw; st.relics.push(got); n++;
     }
     if(n) who.push({s:st, n});
   });
@@ -19744,7 +20608,7 @@ function viewRelic(){
           </select>
           <button class="btn sm" data-equip="${i}">장착</button>
           ${r.grade==="S" && !r.kind && synthOn() ? `<button class="btn sm" data-synth="${i}" style="border-color:var(--brass);color:var(--brass)">합성</button>` : ""}
-          ${!shopUnlocked()? "" : relicUnique(r) ? `<span class="hint" style="font-size:11px;color:var(--dim)">하나뿐인 유물은 처분하지 않는다</span>` : RELIC_SELL[r.grade] ? `<button class="btn sm ghost" data-sell="${i}">처분 (+${fmt(relicSellPrice(r))}G)</button>`
+          ${!shopUnlocked()? "" : relicUnique(r) ? `<span class="hint" style="font-size:11px;color:var(--dim)">유일 유물은 처분하지 않는다</span>` : RELIC_SELL[r.grade] ? `<button class="btn sm ghost" data-sell="${i}">처분 (+${fmt(relicSellPrice(r))}G)</button>`
             : `<span class="hint" style="font-size:11px;color:var(--dim)">SP 로 얻은 유물은 처분할 수 없다</span>`}
         </div>
         ${S.students.length? `<div class="od reqpw" data-eqpw="${i}" style="margin-top:5px">${relicEquipPreview(r, S.students[0])}</div>` : ""}
@@ -21059,8 +21923,8 @@ function bindView(){
   v.querySelectorAll("[data-unequip]").forEach(b=> b.onclick=()=>{
     const [sid,idx] = b.dataset.unequip.split("|");
     const s = S.students.find(x=>x.id===sid);
-    const r = s.relics.splice(+idx,1)[0];
-    if(r) addRelicToPool(r);
+    const r = (s.relics||[])[+idx];   // 1017 · 3단계 — 해제는 자리대로 (그 칸만 빈다 · 끝의 빈 칸은 줄인다 — 책의 유물 칸과 같다)
+    if(r){ s.relics[+idx] = null; while(s.relics.length && !s.relics[s.relics.length-1]) s.relics.pop(); addRelicToPool(r); }
     save(); render();
   });
   /* 훈련 카드 — 드래그하거나 눌러서 옮긴다 */
@@ -21390,7 +22254,7 @@ function bindView(){
     if(want && want.grade==="EX" && exCount(s) >= EX_PER_STUDENT){
       toast(`${dn(s)}${eunn(dn(s))} 이미 EX 유물을 차고 있다. 한 명당 하나까지다.`); return;
     }
-    s.relics.push(S.relicPool.splice(i,1)[0]);
+    relicPutFirst(s, S.relicPool.splice(i,1)[0]);   // 1017 · 3단계 — 칸 사이의 빈 칸부터 (해제가 자리대로)
     save(); render(); toast(`${dn(s)}에게 장착`);
   });
   v.querySelectorAll("[data-teach]").forEach(b=> b.onclick=()=>{
@@ -21470,7 +22334,7 @@ function bindView(){
     const i=+b.dataset.sell, r=S.relicPool[i];
     if(!r || !shopUnlocked()) return;
     if(!RELIC_SELL[r.grade]){ toast("SP 로 얻은 유물은 처분할 수 없다."); return; }
-    if(relicUnique(r)){ toast("하나뿐인 유물은 처분하지 않는다."); return; }
+    if(relicUnique(r)){ toast("유일 유물은 처분하지 않는다."); return; }
     const doSell = ()=>{
       const cur = S.relicPool.indexOf(r); if(cur < 0) return;   // 팝업이 떠 있는 동안 목록이 바뀌어도 그 유물만 판다
       const pr = relicSellPrice(r);   // 1017 — 판매가 (유물 효과)
