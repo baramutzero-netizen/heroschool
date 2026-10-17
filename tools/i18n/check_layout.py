@@ -14,7 +14,7 @@ check_i18n.py 와 같은 빌드(변환함 · 그림은 저장소 것)를 같은 
 영어 화면에 남은 한글(글 · title · aria-label 등)도 모은다 — 언어 이름 '한국어' · 'Language · 언어' 말고는 하나라도 있으면 실패 (5단계).
 단추 · 제목 · 표 머리처럼 짧은 칸이 한국어보다 줄이 늘어난 것은 넘침이 아니라 개수만 알린다 (--wrap 이면 목록).
 화면: 메뉴 화면 전부 · 마을 탭 · 학생 명부 책(유물 보관고 — rbook_vault · rbook_vault_sel) · 목표 · 새 시나리오(난이도) · 운영 안내 14장 · 스킬 강화 · 상담창 · 이야기 팝업(4단계 — cer_*) · 프롤로그 · 마을 손님
-    · 경과 보고 · 대회(시내 · 광역 · 신인전) · 전투.
+    · 경과 보고 · 대회(시내 · 광역 · 신인전) · 전투 (원정 전투의 지구력 게이지 — battle_exped).
 바깥 주소는 전부 막는다. --shots 를 주면 영어 화면을 크기별로 찍어 둔다 (--ko-shots 면 한국어도 · --full 이면 세로 화면은 페이지 전체).
 """
 import argparse, json, os, re, shutil, sys, tempfile, time
@@ -103,6 +103,15 @@ SCENES = r"""(() => {
       t.myTeams = t.entryTeams.map(n => teamMembers(teamByName(n)).map(x => x.id)); t.stage = 'match'; } render(); };
   sc['tour_lkwin'] = () => { sc['tour_match'](); lkwOpen({instant: true}); };
   sc['tour_lkwres'] = () => { sc['tour_match'](); lkwOpen({instant: true, pick: 0}); };
+  /* 1017 — 원정 전투의 원정 지구력 게이지 (탈진한 채 끝난 장면 — 결과로 건너뛰어 멈춘다 · 다음 'battle' 이 닫고 새로 연다) */
+  sc['battle_exped'] = () => {
+    RBC(); closeModal(); UI.tour = null; UI.pendingTour = null; UI.view = 'home'; render();
+    const cam = PREF.battleCam; PREF.battleCam = 'simple';
+    const E = expedInit(DUNGEONS[0], S.students.slice(0, 3), null); E.stam = 3; E.stamD = 3; E.avgWill = 200;
+    expedLoop(E, false, () => {});
+    const d = document.querySelector('#bDone'); if (d) d.click();
+    PREF.battleCam = cam;
+  };
   /* 전투 화면은 닫는 길이 따로라 맨 끝에 */
   sc['battle'] = () => {
     RBC(); closeModal(); UI.tour = null; UI.pendingTour = null; UI.view = 'home'; render();

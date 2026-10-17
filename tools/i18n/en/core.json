@@ -57,7 +57,7 @@
  "정신력": "Willpower",
  "의식 저하 경감 · 공격력 · 스킬 저항률 · 받는 크리 피해 감소": "Less Daze · ATK · Skill Resist · less crit damage taken",
  "지구력": "Endurance",
- "의식 유지선 확장 · 체력 · 방어력": "Stays conscious longer · HP · DEF",
+ "의식 유지선 확장 · 체력 · 방어력 · 원정 지구력": "Stays conscious longer · HP · DEF · Expedition Endurance",
  "천재성": "Genius",
  "스킬 출현 확률 · 크리 확률 · 크리 피해 · 필살 게이지": "Skill trigger chance · Crit Rate · Crit Damage · Ult Gauge",
  "잠재력": "Potential",
