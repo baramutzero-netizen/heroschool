@@ -153,7 +153,7 @@
  "_buyCookie()": "",
  "이번 계절의 쿠키는 모두 구입했다.": "You've bought all of this season's cookies.",
  "자금이 부족하다.": "Not enough funds.",
- "<b>쿠키</b> 구입 — 200 G · 보유 {0}개 · 이번 계절 {1}개 구입 가능": "Bought a <b>Cookie</b> — 200 G · {0} owned · {1} more this season",
+ "<b>쿠키</b> 구입 — {0} G · 보유 {1}개 · 이번 계절 {2}개 구입 가능": "Bought a <b>Cookie</b> — {0} G · {1} owned · {2} more this season",
  "이번 계절의 이국의 부채는 모두 구입했다.": "You've bought all of this season's Exotic Fans.",
  "<b>이국의 부채</b> 구입 — {0} G · 보유 {1}개 · 이번 계절 {2}개 구입 가능": "Bought an <b>Exotic Fan</b> — {0} G · {1} owned · {2} more this season",
  "_cslCookieStart()": "",

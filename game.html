@@ -629,6 +629,13 @@ html[data-ui-concept="journal"] .npcname{color:#8a6a45}
 .rlicon{width:32px;height:32px;flex:none;vertical-align:middle;margin:-5px 6px -4px 0;object-fit:contain}
 .rlicon.lg{width:56px;height:56px;margin:0}
 .rlmeta{color:var(--dim);font-size:11.5px;line-height:1.5;margin-top:4px}
+/* 유물 효과 줄 (2단계) — 공명(자주) · 깨어남 · 전투 밖 효과(◆) · 세트(주황) — 켜지면 진하게 · 꺼지면 흐리게 (학생 기준) */
+.rlinfo{margin-top:4px;display:flex;flex-direction:column;gap:1px;font-size:12px;line-height:1.5}
+.rlinfo>.rli{display:block;color:var(--muted)}.rli i{font-style:normal;color:var(--dim)}
+.rli.rres{color:color-mix(in srgb,#8a4fb5 55%,var(--dim))}.rli.rres.rlon{color:#7a3fa8}
+.rli.rset,.rli.rsetfx{color:color-mix(in srgb,#b8661c 50%,var(--dim))}.rli.rset.rlon,.rli.rsetfx.rlon{color:#a85a12}
+.rli .rpc{color:var(--dim)}.rli .rpc.rlon{color:inherit;font-weight:600}
+.rli.rawk{color:var(--dim)}.rli.rfx{color:var(--text)}.rli.rfx.rneg{color:var(--bad)}
 .exitem.owned{opacity:.72;border-color:var(--line-soft);background:var(--surface)}
 .exitem.owned .on{color:var(--muted) !important}
 
@@ -4916,7 +4923,8 @@ function makeRelic(grade){
             하나뿐인 것(전설 · 직업 유물)은 학원에 있으면(보관고 · 학생) 다시 나오지 않는다 · 그뉵이용 확정 · 행운의 부적 덤 (덤이 덤을 부르지는 않는다)
             직업 유물 — 그 직업 학생이 원정대에 있으면 그 땅에서 이긴 구간마다 4% 로 알아본다 (잠든 채 B)
      마을 손님: 그 직업 학생이 재학 중이면 그 손님 집의 직업 유물을 35% 로 · 아니면 1/3 로 그 손님의 물건 하나 (C 55 · B 35 · A 10% — 그 물건의 격 안으로)
-   · 전투 밖 효과 · 공명 · 세트 · 깨어남은 2단계 (표에는 이미 있다 — 아직 화면에 쓰지 않는다) */
+   · 2단계 (아래 '전투 밖 효과' 부터) — 전투 밖 효과(장착 원정대 · 장착 학생 · 학원 보유 · 출전 보유) · 공명(그 직업이 끼면 능력 ×1.5 + 스킬 하나) ·
+     세트(그 직업 유물 둘을 함께 끼면 스킬 하나) · 깨어남(그 직업 학생이 끼고 이긴 전투 20 · 60 번 — B → A → S). 고리는 game.html 곳곳 (tools/gen/README.md '유물 128종') */
 const RELIC_ICON = {"spinning-top":"assets/relic_icon/spinning-top.webp?v=9bc9542f","paper-boat":"assets/relic_icon/paper-boat.webp?v=3f40f241","wax-tablet":"assets/relic_icon/wax-tablet.webp?v=4a1ced16","red-shoe":"assets/relic_icon/red-shoe.webp?v=6d2f37cb","ribbon-knot":"assets/relic_icon/ribbon-knot.webp?v=0b157480","opal-button":"assets/relic_icon/opal-button.webp?v=aad694f4","bronze-buckle":"assets/relic_icon/bronze-buckle.webp?v=4ddbf746","sealed-letter":"assets/relic_icon/sealed-letter.webp?v=0e2f377a","torn-banner":"assets/relic_icon/torn-banner.webp?v=18368452","marble-hand":"assets/relic_icon/marble-hand.webp?v=e7345e1c","iron-lock":"assets/relic_icon/iron-lock.webp?v=9ddb8ae6","silver-mirror":"assets/relic_icon/silver-mirror.webp?v=ca7d7f37","golden-comb":"assets/relic_icon/golden-comb.webp?v=192a3024","copper-lantern":"assets/relic_icon/copper-lantern.webp?v=4c3438de","cracked-crown":"assets/relic_icon/cracked-crown.webp?v=aab43ce5","broken-chain":"assets/relic_icon/broken-chain.webp?v=f02c406f","door-knocker":"assets/relic_icon/door-knocker.webp?v=dcd93241","ceramic-owl":"assets/relic_icon/ceramic-owl.webp?v=023fc0d9","bottled-cloud":"assets/relic_icon/bottled-cloud.webp?v=a8a34d41","glass-butterfly":"assets/relic_icon/glass-butterfly.webp?v=8113ab85","clockwork-bird":"assets/relic_icon/clockwork-bird.webp?v=bb2a7aeb","silver-sundial":"assets/relic_icon/silver-sundial.webp?v=e3a77322","snow-globe":"assets/relic_icon/snow-globe.webp?v=7ab9f7bc","caged-star":"assets/relic_icon/caged-star.webp?v=8358df31","meteor-stone":"assets/relic_icon/meteor-stone.webp?v=eabd758c","moon-bottle":"assets/relic_icon/moon-bottle.webp?v=25ca8511","crystal-eye":"assets/relic_icon/crystal-eye.webp?v=ee99038f","salt-pouch":"assets/relic_icon/salt-pouch.webp?v=bfe81641","rusty-anchor":"assets/relic_icon/rusty-anchor.webp?v=db86d6e5","pearl-shell":"assets/relic_icon/pearl-shell.webp?v=ebbfd174","coral-cup":"assets/relic_icon/coral-cup.webp?v=548b7bf2","ship-wheel":"assets/relic_icon/ship-wheel.webp?v=6a40909a","fossil-spiral":"assets/relic_icon/fossil-spiral.webp?v=464df19f","travel-canteen":"assets/relic_icon/travel-canteen.webp?v=28e05181","folded-map":"assets/relic_icon/folded-map.webp?v=9a272599","black-pearl":"assets/relic_icon/black-pearl.webp?v=c1593ce7","ancient-coin":"assets/relic_icon/ancient-coin.webp?v=ce6f4319","amber-insect":"assets/relic_icon/amber-insect.webp?v=396e8a35","stone-pomegranate":"assets/relic_icon/stone-pomegranate.webp?v=0fddb174","sealed-urn":"assets/relic_icon/sealed-urn.webp?v=27738242","jeweled-beetle":"assets/relic_icon/jeweled-beetle.webp?v=b645889b","ceramic-heart":"assets/relic_icon/ceramic-heart.webp?v=ade37e6c","stone-egg":"assets/relic_icon/stone-egg.webp?v=a0df1722","bronze-scale":"assets/relic_icon/bronze-scale.webp?v=2c3ffb0c","stone-sun":"assets/relic_icon/stone-sun.webp?v=5c14fe87","obsidian-cube":"assets/relic_icon/obsidian-cube.webp?v=7f03d7ca","honey-jar":"assets/relic_icon/honey-jar.webp?v=5169ee8c","golden-acorn":"assets/relic_icon/golden-acorn.webp?v=77da99e6","woven-basket":"assets/relic_icon/woven-basket.webp?v=5af3afc9","glass-apple":"assets/relic_icon/glass-apple.webp?v=dabb3020","jade-frog":"assets/relic_icon/jade-frog.webp?v=62e580d1","wishbone":"assets/relic_icon/wishbone.webp?v=6e398ba0","copper-whistle":"assets/relic_icon/copper-whistle.webp?v=836b6938","crystal-mushroom":"assets/relic_icon/crystal-mushroom.webp?v=ed1067f5","porcelain-cup":"assets/relic_icon/porcelain-cup.webp?v=57d7a47e","silver-thimble":"assets/relic_icon/silver-thimble.webp?v=b53bd033","crimson-spindle":"assets/relic_icon/crimson-spindle.webp?v=10f86a1d","ivory-dice":"assets/relic_icon/ivory-dice.webp?v=18a113ff","ivory-domino":"assets/relic_icon/ivory-domino.webp?v=e2efc9de","folding-fan":"assets/relic_icon/folding-fan.webp?v=0f65bcf8","wooden-matryoshka":"assets/relic_icon/wooden-matryoshka.webp?v=20fe6870","blue-flame-candle":"assets/relic_icon/blue-flame-candle.webp?v=18b6f172","bellows":"assets/relic_icon/bellows.webp?v=e0803145","rainbow-marble":"assets/relic_icon/rainbow-marble.webp?v=4ece0da8","amber-spectacles":"assets/relic_icon/amber-spectacles.webp?v=bf6b0409","porcelain-bear":"assets/relic_icon/porcelain-bear.webp?v=7bf6cc57","fossil-leaf":"assets/relic_icon/fossil-leaf.webp?v=06c72ecc","ceramic-teapot":"assets/relic_icon/ceramic-teapot.webp?v=f0104b57","folded-lace":"assets/relic_icon/folded-lace.webp?v=5947accb","lacquer-box":"assets/relic_icon/lacquer-box.webp?v=cce81270","mosaic-tile":"assets/relic_icon/mosaic-tile.webp?v=ecedcab3","music-box":"assets/relic_icon/music-box.webp?v=1fbafb10","copper-funnel":"assets/relic_icon/copper-funnel.webp?v=0a049efb","golden-feather":"assets/relic_icon/golden-feather.webp?v=dfe20237","silver-spoon":"assets/relic_icon/silver-spoon.webp?v=3c5260b8","crystal-fish":"assets/relic_icon/crystal-fish.webp?v=9b899bd9","pearl-grapes":"assets/relic_icon/pearl-grapes.webp?v=132ffe21","ancient-flask":"assets/relic_icon/ancient-flask.webp?v=2b13c5b1","crystal-coral":"assets/relic_icon/crystal-coral.webp?v=30161523","stone-tortoise":"assets/relic_icon/stone-tortoise.webp?v=089285db","stone-lotus":"assets/relic_icon/stone-lotus.webp?v=0f3960ca","bronze-horseshoe":"assets/relic_icon/bronze-horseshoe.webp?v=15bc4992","golden-walnut":"assets/relic_icon/golden-walnut.webp?v=0e1836b2","folded-parasol":"assets/relic_icon/folded-parasol.webp?v=06b6e1c2","jeweled-snail":"assets/relic_icon/jeweled-snail.webp?v=6120c851","crystal-cherry":"assets/relic_icon/crystal-cherry.webp?v=2db1ef0b","bronze-handbellows":"assets/relic_icon/bronze-handbellows.webp?v=2abbba17","copper-kettle":"assets/relic_icon/copper-kettle.webp?v=545bac2b","silver-scissors":"assets/relic_icon/silver-scissors.webp?v=c81496a6","wooden-horse":"assets/relic_icon/wooden-horse.webp?v=4422414f","antique-doorhinge":"assets/relic_icon/antique-doorhinge.webp?v=efb54716","antique-abacus":"assets/relic_icon/antique-abacus.webp?v=923e6723","ceramic-pitcher":"assets/relic_icon/ceramic-pitcher.webp?v=cc6c5200","silver-rattle":"assets/relic_icon/silver-rattle.webp?v=ca0563ff","crystal-pinecone":"assets/relic_icon/crystal-pinecone.webp?v=f183f30a","glass-strawberry":"assets/relic_icon/glass-strawberry.webp?v=1a01784b","oath-signet":"assets/relic_icon/oath-signet.webp?v=deb928a4","dawn-reliquary":"assets/relic_icon/dawn-reliquary.webp?v=7117d666","iron-oath":"assets/relic_icon/iron-oath.webp?v=c7d3645b","veteran-knot":"assets/relic_icon/veteran-knot.webp?v=15767b1d","resonance-shard":"assets/relic_icon/resonance-shard.webp?v=37bc96a9","spell-scabbard":"assets/relic_icon/spell-scabbard.webp?v=1d628bc7","blood-covenant":"assets/relic_icon/blood-covenant.webp?v=40a2dcfe","sealed-scripture":"assets/relic_icon/sealed-scripture.webp?v=5d167fb7","shadow-key":"assets/relic_icon/shadow-key.webp?v=2bc01489","venom-vial":"assets/relic_icon/venom-vial.webp?v=4ea81bf9","moon-mask":"assets/relic_icon/moon-mask.webp?v=af777a64","silent-scroll":"assets/relic_icon/silent-scroll.webp?v=33d5cb35","hourglass":"assets/relic_icon/hourglass.webp?v=e55bbb3c","time-compass":"assets/relic_icon/time-compass.webp?v=338281f3","mercy-bell":"assets/relic_icon/mercy-bell.webp?v=f6707fff","prayer-incense":"assets/relic_icon/prayer-incense.webp?v=e64ca82a","echo-brooch":"assets/relic_icon/echo-brooch.webp?v=f3128e34","silver-pipe":"assets/relic_icon/silver-pipe.webp?v=d9c42fc2","arcane-prism":"assets/relic_icon/arcane-prism.webp?v=2857d7ff","elemental-orb":"assets/relic_icon/elemental-orb.webp?v=d2451a9c","binding-spool":"assets/relic_icon/binding-spool.webp?v=3651935e","rune-seal":"assets/relic_icon/rune-seal.webp?v=c97a8368","pulse-core":"assets/relic_icon/pulse-core.webp?v=e88159e9","battle-focus":"assets/relic_icon/battle-focus.webp?v=1bb89191","dragon-beads":"assets/relic_icon/dragon-beads.webp?v=a7d46e85","resolve-wraps":"assets/relic_icon/resolve-wraps.webp?v=af5c0a36","lucky-cylinder":"assets/relic_icon/lucky-cylinder.webp?v=81010c83","eagle-sight":"assets/relic_icon/eagle-sight.webp?v=eb03fa53","hawk-feather":"assets/relic_icon/hawk-feather.webp?v=d858351d","wind-bracer":"assets/relic_icon/wind-bracer.webp?v=ca8fd909","worldseed":"assets/relic_icon/worldseed.webp?v=87147e1d","antler-talisman":"assets/relic_icon/antler-talisman.webp?v=373e7003","legacy":"assets/relic_icon/legacy.webp?v=07eb7266"};
 const RELIC_DB = {
   v:1,
@@ -4979,22 +4987,22 @@ const RELIC_DB = {
     N_COND:{"scope":"wearer","v":[20,20,20,20],"fmt":"이 학생의 컨디션 소모 +{v}%","neg":1},
   },
   pairs:{
-    paladin:{"n":"팔라딘의 서약","d":"'성역 선포' 지속 +1턴"},
-    sword:{"n":"백전의 맹약","d":"'도발' 발동 확률 +5%p"},
-    spellsword:{"n":"마검의 짝","d":"'천검 난무' 피해 +15%"},
-    darkpriest:{"n":"금지된 성찬","d":"'어둠의 성찬' 흡수량 +20%"},
-    rogue:{"n":"그림자 계약","d":"'암살' 마무리 기준 25% → 30%"},
-    ninja:{"n":"월영의 비전","d":"'천류·풍마수리검' 피해 +15%"},
-    timemage:{"n":"시간의 주인","d":"'시간 정지' 아군 필살 충전 +20%"},
-    priest:{"n":"성가","d":"'부활의 기도' 회복량 +20%"},
-    bard:{"n":"합주","d":"'승전의 합주' 지속 +1턴"},
-    wizard:{"n":"원소의 지배","d":"'중력 반전' 피해 +15%"},
-    enchanter:{"n":"총원 각인","d":"'총원 각인' 지속 +1턴"},
-    forcemage:{"n":"봉인 해제","d":"'봉인 해제' 능력 상승 +50%"},
-    monk:{"n":"용심","d":"'기공파' 피해 +20%"},
-    gunner:{"n":"그랜드 피날레","d":"'그랜드 피날레' 피해 +15%"},
-    archer:{"n":"사냥꾼의 눈","d":"'유성 화살' 피해 +15%"},
-    druid:{"n":"숲의 진노","d":"'대자연의 진노' 피해 +15%"},
+    paladin:{"n":"팔라딘의 서약","d":"'성역 선포' 지속 +1턴","x":{"sk":"pa_u","add":{"dur":1}}},
+    sword:{"n":"백전의 맹약","d":"'도발' 발동 확률 +5%p","x":{"sk":"sw_1","add":{"procAdd":0.05}}},
+    spellsword:{"n":"마검의 짝","d":"'천검 난무' 피해 +15%","x":{"sk":"ss_u","mul":{"power":1.15}}},
+    darkpriest:{"n":"금지된 성찬","d":"'어둠의 성찬' 흡수량 +20%","x":{"sk":"dp_u","mul":{"drain":1.2}}},
+    rogue:{"n":"그림자 계약","d":"'암살' 마무리 기준 25% → 30%","x":{"sk":"ro_u","mul":{"execute":1.2}}},
+    ninja:{"n":"월영의 비전","d":"'천류·풍마수리검' 피해 +15%","x":{"sk":"nj_u","mul":{"power":1.15}}},
+    timemage:{"n":"시간의 주인","d":"'시간 정지' 아군 필살 충전 +20%","x":{"sk":"tm_u","mul":{"ultAlly":1.2}}},
+    priest:{"n":"성가","d":"'부활의 기도' 회복량 +20%","x":{"sk":"pr_u","mul":{"power":1.2}}},
+    bard:{"n":"합주","d":"'승전의 합주' 지속 +1턴","x":{"sk":"bd_u","add":{"dur":1}}},
+    wizard:{"n":"원소의 지배","d":"'중력 반전' 피해 +15%","x":{"sk":"wz_u","mul":{"power":1.15}}},
+    enchanter:{"n":"총원 각인","d":"'총원 각인' 지속 +1턴","x":{"sk":"en_u","add":{"dur":1}}},
+    forcemage:{"n":"봉인 해제","d":"'봉인 해제' 능력 상승 +50%","x":{"sk":"fm_u","mul":{"unseal":1.5}}},
+    monk:{"n":"용심","d":"'기공파' 피해 +20%","x":{"sk":"mo_1","mul":{"power":1.2}}},
+    gunner:{"n":"그랜드 피날레","d":"'그랜드 피날레' 피해 +15%","x":{"sk":"gn_u","mul":{"power":1.15}}},
+    archer:{"n":"사냥꾼의 눈","d":"'유성 화살' 피해 +15%","x":{"sk":"ar_u","mul":{"power":1.15}}},
+    druid:{"n":"숲의 진노","d":"'대자연의 진노' 피해 +15%","x":{"sk":"dr_u","mul":{"power":1.15}}},
   },
   kinds:[
     {"id":"spinning-top","n":"멈추지 않는 팽이","ko":/*no-i18n*/"멈추지 않는 팽이","home":"d1","t":0,"f":["spd","ultGain","eva","acc"],"neg":"def","negWhy":"멈추지 못하니 막을 틈도 없다","fx":"T_STAM","lore":"누가 돌려 놓았는지 아무도 모르는데, 연습장 구석에서 아직도 돌고 있다. 쥐고 뛰면 숨이 덜 찬다."},
@@ -5093,38 +5101,38 @@ const RELIC_DB = {
     {"id":"silver-rattle","n":"첫 울음의 딸랑이","ko":/*no-i18n*/"첫 울음의 딸랑이","home":"church","t":0,"f":["ultGain","skAcc","hp","skRes"],"neg":"eva","negWhy":"딸랑 소리에 들킨다","fx":"T_KARMA","fxMul":2,"lore":"세례 때 수녀님이 아기 손에 쥐여 주던 은 딸랑이. 흔들면 첫 울음처럼 맑게 운다."},
     {"id":"crystal-pinecone","n":"겨울의 솔방울","ko":/*no-i18n*/"겨울의 솔방울","home":"hunt","t":1,"f":["hp","skRes","def","critRes"],"neg":"atk","negWhy":"쥔 손이 시리다","fx":"T_STAM","lore":"사냥꾼이 한겨울 숲에서 주워 온 얼음 솔방울. 봄이 와도 녹지 않고 쥔 손을 시리게 한다."},
     {"id":"glass-strawberry","n":"설탕빛 딸기","ko":/*no-i18n*/"설탕빛 딸기","home":"farm","t":0,"f":["leech","hp","crit","spd"],"neg":"def","negWhy":"유리라 쉽게 깨진다","lore":"밭 할아버지가 손녀 주려고 아껴 두던 유리 딸기. 설탕을 입힌 것처럼 반짝인다."},
-    {"id":"oath-signet","n":"수호의 인장","ko":/*no-i18n*/"수호의 인장","job":"paladin","home":"d5","f":["def","hp","skAcc","critRes"],"res":"'수호의 맹세' 보호막 +25%","lore":"용사의 무덤을 지키던 기사단장의 반지. 방패 모양 사파이어 안에 맹세한 이름들이 겹쳐 새겨져 있다."},
-    {"id":"dawn-reliquary","n":"여명의 성물함","ko":/*no-i18n*/"여명의 성물함","job":"paladin","home":"d5","f":["skAcc","hp","def","ultGain"],"res":"'치유의 빛' 회복량 +25%","lore":"새벽빛을 담아 둔다는 성물함. 뚜껑을 열지 않아도 틈으로 빛이 샌다."},
-    {"id":"iron-oath","n":"철벽의 문장","ko":/*no-i18n*/"철벽의 문장","job":"sword","home":"d5","f":["atk","def","critRes","hp"],"res":"'철벽 자세' 효과 +30%","lore":"백 번 찍혀도 쓰러지지 않았다는 기사의 문장. 칼자국마다 리벳을 박아 다시 세웠다."},
-    {"id":"veteran-knot","n":"백전의 검매듭","ko":/*no-i18n*/"백전의 검매듭","job":"sword","home":"d5","f":["atk","critDmg","crit","spd"],"res":"'대지 가르기' 피해 +20%","lore":"싸움에서 돌아올 때마다 한 번씩 고쳐 묶은 검매듭. 매듭의 수가 곧 살아 돌아온 날의 수다."},
-    {"id":"resonance-shard","n":"공명의 검편","ko":/*no-i18n*/"공명의 검편","job":"spellsword","home":"d5","f":["atk","crit","critDmg","spd"],"res":"'삼연격' 피해 +20%","lore":"부러진 마검의 끝. 다른 칼날이 가까이 오면 같은 음으로 운다."},
-    {"id":"spell-scabbard","n":"마검의 봉인고리","ko":/*no-i18n*/"마검의 봉인고리","job":"spellsword","home":"d5","f":["skRes","ultGain","atk","skAcc"],"res":"'마검 각성' 행동 게이지 회복 30% → 45%","lore":"마검이 저절로 뽑히지 않게 채워 두던 고리. 풀어 주면 칼이 먼저 앞으로 나선다."},
-    {"id":"blood-covenant","n":"혈약의 성배","ko":/*no-i18n*/"혈약의 성배","job":"darkpriest","home":"d2","f":["leech","atk","ultGain","skAcc"],"neg":"hp","negWhy":"마신 만큼 채워 주지만 먼저 조금 가져간다","res":"'흡혈 의식' 회복량 +30%","lore":"성터 예배당에서 나온 은 성배. 마신 만큼 채워 주지만, 먼저 조금 가져간다."},
-    {"id":"sealed-scripture","n":"봉인된 경전","ko":/*no-i18n*/"봉인된 경전","job":"darkpriest","home":"d2","f":["skAcc","skRes","ultGain","hp"],"res":"'저주' 지속 +1턴","lore":"사슬로 묶인 금서. 펼치지 않았는데도 밤이면 한 쪽씩 넘어가 있다."},
-    {"id":"shadow-key","n":"그림자 열쇠","ko":/*no-i18n*/"그림자 열쇠","job":"rogue","home":"d2","f":["spd","eva","crit","acc"],"res":"'그림자 밟기' 회피 상승 +50%","lore":"성터의 어느 문에도 맞지 않는 열쇠. 그림자에 꽂으면 돌아간다."},
-    {"id":"venom-vial","n":"독사의 약병","ko":/*no-i18n*/"독사의 약병","job":"rogue","home":"d2","f":["critDmg","atk","skAcc","leech"],"res":"'독 단검' 지속 피해 +30%","lore":"뱀이 감긴 약병. 마개를 열 때마다 뱀이 한 바퀴씩 더 감긴다."},
-    {"id":"moon-mask","n":"월영의 가면","ko":/*no-i18n*/"월영의 가면","job":"ninja","home":"d2","f":["eva","spd","skRes","crit"],"res":"'수둔·수렁' 발동 확률 +4%p","lore":"달그림자 속에서만 얼굴을 가려 주는 여우 가면. 보름이면 표정이 바뀐다."},
-    {"id":"silent-scroll","n":"무음의 두루마리","ko":/*no-i18n*/"무음의 두루마리","job":"ninja","home":"d2","f":["skAcc","ultGain","spd","acc"],"res":"'수둔·수룡아' 박자 끊기 +30%","lore":"소리 없이 펼쳐지는 두루마리. 적힌 술법은 읽은 사람만 잊지 않는다."},
-    {"id":"hourglass","n":"역행의 모래시계","ko":/*no-i18n*/"역행의 모래시계","job":"timemage","home":"d3","f":["spd","ultGain","skRes","hp"],"res":"'가속' 발동 확률 +5%p","lore":"모래가 위로 떨어지는 모래시계. 종탑이 무너진 날부터 거꾸로 흐른다."},
-    {"id":"time-compass","n":"시간의 나침반","ko":/*no-i18n*/"시간의 나침반","job":"timemage","home":"d3","f":["spd","skAcc","acc","ultGain"],"res":"'지연' 효과 +30%","lore":"북쪽 대신 '아까'를 가리키는 나침반. 바늘을 따라가면 지나간 순간에 닿는다."},
-    {"id":"mercy-bell","n":"자비의 종","ko":/*no-i18n*/"자비의 종","job":"priest","home":"d3","f":["skAcc","hp","skRes","ultGain"],"res":"'대치유' 회복량 +25%","lore":"무너진 종탑의 가장 작은 종. 큰 종들이 떨어질 때 혼자 울리지 않고 남았다."},
-    {"id":"prayer-incense","n":"기도의 향로","ko":/*no-i18n*/"기도의 향로","job":"priest","home":"d3","f":["skRes","def","hp","skAcc"],"res":"'축복' 지속 +1턴","lore":"종탑 예배실에서 꺼지지 않던 향로. 연기는 늘 다친 사람 쪽으로 흐른다."},
-    {"id":"echo-brooch","n":"메아리의 브로치","ko":/*no-i18n*/"메아리의 브로치","job":"bard","home":"d3","f":["ultGain","spd","skAcc","hp"],"res":"'진군가' 효과 +25%","lore":"종소리를 한 번 더 들려주는 하프 브로치. 노래를 멈춰도 마지막 음이 남는다."},
-    {"id":"silver-pipe","n":"은빛 선율관","ko":/*no-i18n*/"은빛 선율관","job":"bard","home":"d3","f":["skAcc","acc","spd","ultGain"],"res":"'불협화음' 명중 저하 +30%","lore":"종탑의 바람이 불어 주던 피리. 관 하나는 아직 아무도 소리를 내 본 적이 없다."},
-    {"id":"arcane-prism","n":"비전의 결정","ko":/*no-i18n*/"비전의 결정","job":"wizard","home":"d4","f":["skAcc","atk","critDmg","ultGain"],"res":"'화염 폭발' 피해 +20%","lore":"균열에서 새어 나온 마력이 굳은 결정. 빛을 넣으면 마법이 되어 나온다."},
-    {"id":"elemental-orb","n":"원소의 보주","ko":/*no-i18n*/"원소의 보주","job":"wizard","home":"d4","f":["ultGain","atk","skAcc","crit"],"res":"'서리 결계' 속도 저하 25% → 32%","lore":"물 · 불 · 바람이 한 구슬 안에서 서로를 쫓는다. 셋이 만나는 순간 주문이 완성된다."},
-    {"id":"binding-spool","n":"마력의 실타래","ko":/*no-i18n*/"마력의 실타래","job":"enchanter","home":"d4","f":["def","skAcc","ultGain","spd"],"res":"'마력 봉인' 효과 +30%","lore":"마력으로 꼰 실. 감아 둔 만큼 상대의 힘을 묶어 둘 수 있다."},
-    {"id":"rune-seal","n":"각인의 봉인석","ko":/*no-i18n*/"각인의 봉인석","job":"enchanter","home":"d4","f":["skAcc","crit","critDmg","atk"],"res":"'무기 각인' 효과 +25%","lore":"균열 바닥에서 건진 육각 봉인석. 새겨 넣은 문자가 무기로 옮겨 간다."},
-    {"id":"pulse-core","n":"충격의 핵","ko":/*no-i18n*/"충격의 핵","job":"forcemage","home":"d4","f":["atk","critDmg","hp","def"],"res":"'파쇄격' 피해 +20%","lore":"균열의 맥박을 담은 핵. 주먹에 쥐면 손이 먼저 뛴다."},
-    {"id":"battle-focus","n":"전장의 촉매","ko":/*no-i18n*/"전장의 촉매","job":"forcemage","home":"d4","f":["ultGain","atk","spd","crit"],"res":"'마력 과충전' 필살 게이지 +30 → +40","lore":"마력을 한데 모아 주는 붉은 촉매. 쓸수록 손등의 봉인이 뜨거워진다."},
-    {"id":"dragon-beads","n":"용심의 염주","ko":/*no-i18n*/"용심의 염주","job":"monk","home":"d1","f":["leech","hp","atk","def"],"res":"'내공 순환' 피흡 +50%","lore":"선배 몽크가 연습장 기둥에 걸어 두고 간 염주. 알을 굴릴 때마다 숨이 깊어진다."},
-    {"id":"resolve-wraps","n":"불굴의 붕대","ko":/*no-i18n*/"불굴의 붕대","job":"monk","home":"d1","f":["def","hp","critRes","skRes"],"res":"'백열권' 자기 회복 +30%","lore":"연습장 구석 상자에 남아 있던 붕대. 감으면 아픈 줄 모르고 한 판 더 서게 된다."},
-    {"id":"lucky-cylinder","n":"행운의 탄실","ko":/*no-i18n*/"행운의 탄실","job":"gunner","home":"d1","f":["crit","critDmg","spd","acc"],"res":"'속사 왈츠' 피해 +20%","lore":"사격 연습장 과녁 밑에서 나온 탄실. 여섯 칸 중 한 칸에는 늘 행운이 들어 있다."},
-    {"id":"eagle-sight","n":"독수리의 조준경","ko":/*no-i18n*/"독수리의 조준경","job":"gunner","home":"d1","f":["acc","crit","critDmg","skAcc"],"res":"'무례한 노크' 피해 +25%","lore":"졸업한 거너가 놓고 간 조준경. 들여다보면 과녁이 먼저 다가온다."},
-    {"id":"hawk-feather","n":"매의 깃털","ko":/*no-i18n*/"매의 깃털","job":"archer","home":"hunt","f":["spd","acc","crit","critDmg"],"res":"'매의 눈' 지속 +1턴","lore":"사냥꾼이 아끼던 매가 남긴 깃털. 활줄 옆에 꽂으면 바람이 보인다."},
-    {"id":"wind-bracer","n":"바람의 팔찌","ko":/*no-i18n*/"바람의 팔찌","job":"archer","home":"hunt","f":["spd","atk","eva","acc"],"res":"'관통 화살' 피해 +20%","lore":"사냥꾼이 젊을 때 차던 가죽 팔찌. 시위를 놓는 순간 바람이 한 번 더 민다."},
-    {"id":"worldseed","n":"세계수의 씨앗","ko":/*no-i18n*/"세계수의 씨앗","job":"druid","home":"farm","f":["hp","leech","def","skAcc"],"res":"'재생의 씨앗' 회복 +30%","lore":"할아버지네 밭에서 백 년째 싹을 틔우지 않는 씨앗. 드루이드의 손에서만 따뜻해진다."},
-    {"id":"antler-talisman","n":"숲지기의 부적","ko":/*no-i18n*/"숲지기의 부적","job":"druid","home":"hunt","f":["def","hp","spd","skRes"],"res":"'야수화' 회복 +30%","lore":"숲지기 사슴의 뿔로 엮은 부적. 사냥꾼은 이걸 쏘지 않은 사슴에게서 받았다고 한다."},
+    {"id":"oath-signet","n":"수호의 인장","ko":/*no-i18n*/"수호의 인장","job":"paladin","home":"d5","f":["def","hp","skAcc","critRes"],"res":"'수호의 맹세' 보호막 +25%","rx":{"sk":"pa_1","mul":{"power":1.25}},"lore":"용사의 무덤을 지키던 기사단장의 반지. 방패 모양 사파이어 안에 맹세한 이름들이 겹쳐 새겨져 있다."},
+    {"id":"dawn-reliquary","n":"여명의 성물함","ko":/*no-i18n*/"여명의 성물함","job":"paladin","home":"d5","f":["skAcc","hp","def","ultGain"],"res":"'치유의 빛' 회복량 +25%","rx":{"sk":"pa_2","mul":{"power":1.25}},"lore":"새벽빛을 담아 둔다는 성물함. 뚜껑을 열지 않아도 틈으로 빛이 샌다."},
+    {"id":"iron-oath","n":"철벽의 문장","ko":/*no-i18n*/"철벽의 문장","job":"sword","home":"d5","f":["atk","def","critRes","hp"],"res":"'철벽 자세' 효과 +30%","rx":{"sk":"sw_2","mul":{"power":1.3,"pow2":1.3}},"lore":"백 번 찍혀도 쓰러지지 않았다는 기사의 문장. 칼자국마다 리벳을 박아 다시 세웠다."},
+    {"id":"veteran-knot","n":"백전의 검매듭","ko":/*no-i18n*/"백전의 검매듭","job":"sword","home":"d5","f":["atk","critDmg","crit","spd"],"res":"'대지 가르기' 피해 +20%","rx":{"sk":"sw_u","mul":{"power":1.2}},"lore":"싸움에서 돌아올 때마다 한 번씩 고쳐 묶은 검매듭. 매듭의 수가 곧 살아 돌아온 날의 수다."},
+    {"id":"resonance-shard","n":"공명의 검편","ko":/*no-i18n*/"공명의 검편","job":"spellsword","home":"d5","f":["atk","crit","critDmg","spd"],"res":"'삼연격' 피해 +20%","rx":{"sk":"ss_1","mul":{"power":1.2}},"lore":"부러진 마검의 끝. 다른 칼날이 가까이 오면 같은 음으로 운다."},
+    {"id":"spell-scabbard","n":"마검의 봉인고리","ko":/*no-i18n*/"마검의 봉인고리","job":"spellsword","home":"d5","f":["skRes","ultGain","atk","skAcc"],"res":"'마검 각성' 행동 게이지 회복 30% → 45%","rx":{"sk":"ss_2","mul":{"atbSelf":1.5}},"lore":"마검이 저절로 뽑히지 않게 채워 두던 고리. 풀어 주면 칼이 먼저 앞으로 나선다."},
+    {"id":"blood-covenant","n":"혈약의 성배","ko":/*no-i18n*/"혈약의 성배","job":"darkpriest","home":"d2","f":["leech","atk","ultGain","skAcc"],"neg":"hp","negWhy":"마신 만큼 채워 주지만 먼저 조금 가져간다","res":"'흡혈 의식' 회복량 +30%","rx":{"sk":"dp_1","mul":{"drain":1.3}},"lore":"성터 예배당에서 나온 은 성배. 마신 만큼 채워 주지만, 먼저 조금 가져간다."},
+    {"id":"sealed-scripture","n":"봉인된 경전","ko":/*no-i18n*/"봉인된 경전","job":"darkpriest","home":"d2","f":["skAcc","skRes","ultGain","hp"],"res":"'저주' 지속 +1턴","rx":{"sk":"dp_2","add":{"dur":1}},"lore":"사슬로 묶인 금서. 펼치지 않았는데도 밤이면 한 쪽씩 넘어가 있다."},
+    {"id":"shadow-key","n":"그림자 열쇠","ko":/*no-i18n*/"그림자 열쇠","job":"rogue","home":"d2","f":["spd","eva","crit","acc"],"res":"'그림자 밟기' 회피 상승 +50%","rx":{"sk":"ro_2","mul":{"eva":1.5}},"lore":"성터의 어느 문에도 맞지 않는 열쇠. 그림자에 꽂으면 돌아간다."},
+    {"id":"venom-vial","n":"독사의 약병","ko":/*no-i18n*/"독사의 약병","job":"rogue","home":"d2","f":["critDmg","atk","skAcc","leech"],"res":"'독 단검' 지속 피해 +30%","rx":{"sk":"ro_1","mul":{"dotMul":1.3}},"lore":"뱀이 감긴 약병. 마개를 열 때마다 뱀이 한 바퀴씩 더 감긴다."},
+    {"id":"moon-mask","n":"월영의 가면","ko":/*no-i18n*/"월영의 가면","job":"ninja","home":"d2","f":["eva","spd","skRes","crit"],"res":"'수둔·수렁' 발동 확률 +4%p","rx":{"sk":"nj_1","add":{"procAdd":0.04}},"lore":"달그림자 속에서만 얼굴을 가려 주는 여우 가면. 보름이면 표정이 바뀐다."},
+    {"id":"silent-scroll","n":"무음의 두루마리","ko":/*no-i18n*/"무음의 두루마리","job":"ninja","home":"d2","f":["skAcc","ultGain","spd","acc"],"res":"'수둔·수룡아' 박자 끊기 +30%","rx":{"sk":"nj_2","mul":{"atbCut":1.3}},"lore":"소리 없이 펼쳐지는 두루마리. 적힌 술법은 읽은 사람만 잊지 않는다."},
+    {"id":"hourglass","n":"역행의 모래시계","ko":/*no-i18n*/"역행의 모래시계","job":"timemage","home":"d3","f":["spd","ultGain","skRes","hp"],"res":"'가속' 발동 확률 +5%p","rx":{"sk":"tm_1","add":{"procAdd":0.05}},"lore":"모래가 위로 떨어지는 모래시계. 종탑이 무너진 날부터 거꾸로 흐른다."},
+    {"id":"time-compass","n":"시간의 나침반","ko":/*no-i18n*/"시간의 나침반","job":"timemage","home":"d3","f":["spd","skAcc","acc","ultGain"],"res":"'지연' 효과 +30%","rx":{"sk":"tm_2","mul":{"power":1.3}},"lore":"북쪽 대신 '아까'를 가리키는 나침반. 바늘을 따라가면 지나간 순간에 닿는다."},
+    {"id":"mercy-bell","n":"자비의 종","ko":/*no-i18n*/"자비의 종","job":"priest","home":"d3","f":["skAcc","hp","skRes","ultGain"],"res":"'대치유' 회복량 +25%","rx":{"sk":"pr_1","mul":{"power":1.25}},"lore":"무너진 종탑의 가장 작은 종. 큰 종들이 떨어질 때 혼자 울리지 않고 남았다."},
+    {"id":"prayer-incense","n":"기도의 향로","ko":/*no-i18n*/"기도의 향로","job":"priest","home":"d3","f":["skRes","def","hp","skAcc"],"res":"'축복' 지속 +1턴","rx":{"sk":"pr_2","add":{"dur":1}},"lore":"종탑 예배실에서 꺼지지 않던 향로. 연기는 늘 다친 사람 쪽으로 흐른다."},
+    {"id":"echo-brooch","n":"메아리의 브로치","ko":/*no-i18n*/"메아리의 브로치","job":"bard","home":"d3","f":["ultGain","spd","skAcc","hp"],"res":"'진군가' 효과 +25%","rx":{"sk":"bd_1","mul":{"power":1.25}},"lore":"종소리를 한 번 더 들려주는 하프 브로치. 노래를 멈춰도 마지막 음이 남는다."},
+    {"id":"silver-pipe","n":"은빛 선율관","ko":/*no-i18n*/"은빛 선율관","job":"bard","home":"d3","f":["skAcc","acc","spd","ultGain"],"res":"'불협화음' 명중 저하 +30%","rx":{"sk":"bd_2","mul":{"power":1.3}},"lore":"종탑의 바람이 불어 주던 피리. 관 하나는 아직 아무도 소리를 내 본 적이 없다."},
+    {"id":"arcane-prism","n":"비전의 결정","ko":/*no-i18n*/"비전의 결정","job":"wizard","home":"d4","f":["skAcc","atk","critDmg","ultGain"],"res":"'화염 폭발' 피해 +20%","rx":{"sk":"wz_1","mul":{"power":1.2}},"lore":"균열에서 새어 나온 마력이 굳은 결정. 빛을 넣으면 마법이 되어 나온다."},
+    {"id":"elemental-orb","n":"원소의 보주","ko":/*no-i18n*/"원소의 보주","job":"wizard","home":"d4","f":["ultGain","atk","skAcc","crit"],"res":"'서리 결계' 속도 저하 25% → 32%","rx":{"sk":"wz_2","mul":{"power":1.28}},"lore":"물 · 불 · 바람이 한 구슬 안에서 서로를 쫓는다. 셋이 만나는 순간 주문이 완성된다."},
+    {"id":"binding-spool","n":"마력의 실타래","ko":/*no-i18n*/"마력의 실타래","job":"enchanter","home":"d4","f":["def","skAcc","ultGain","spd"],"res":"'마력 봉인' 효과 +30%","rx":{"sk":"en_2","mul":{"power":1.3}},"lore":"마력으로 꼰 실. 감아 둔 만큼 상대의 힘을 묶어 둘 수 있다."},
+    {"id":"rune-seal","n":"각인의 봉인석","ko":/*no-i18n*/"각인의 봉인석","job":"enchanter","home":"d4","f":["skAcc","crit","critDmg","atk"],"res":"'무기 각인' 효과 +25%","rx":{"sk":"en_1","mul":{"power":1.25,"pow2":1.25}},"lore":"균열 바닥에서 건진 육각 봉인석. 새겨 넣은 문자가 무기로 옮겨 간다."},
+    {"id":"pulse-core","n":"충격의 핵","ko":/*no-i18n*/"충격의 핵","job":"forcemage","home":"d4","f":["atk","critDmg","hp","def"],"res":"'파쇄격' 피해 +20%","rx":{"sk":"fm_1","mul":{"power":1.2}},"lore":"균열의 맥박을 담은 핵. 주먹에 쥐면 손이 먼저 뛴다."},
+    {"id":"battle-focus","n":"전장의 촉매","ko":/*no-i18n*/"전장의 촉매","job":"forcemage","home":"d4","f":["ultGain","atk","spd","crit"],"res":"'마력 과충전' 필살 게이지 +30 → +40","rx":{"sk":"fm_2","add":{"ultGive":10}},"lore":"마력을 한데 모아 주는 붉은 촉매. 쓸수록 손등의 봉인이 뜨거워진다."},
+    {"id":"dragon-beads","n":"용심의 염주","ko":/*no-i18n*/"용심의 염주","job":"monk","home":"d1","f":["leech","hp","atk","def"],"res":"'내공 순환' 피흡 +50%","rx":{"sk":"mo_2","mul":{"leech":1.5}},"lore":"선배 몽크가 연습장 기둥에 걸어 두고 간 염주. 알을 굴릴 때마다 숨이 깊어진다."},
+    {"id":"resolve-wraps","n":"불굴의 붕대","ko":/*no-i18n*/"불굴의 붕대","job":"monk","home":"d1","f":["def","hp","critRes","skRes"],"res":"'백열권' 자기 회복 +30%","rx":{"sk":"mo_u","mul":{"heal":1.3}},"lore":"연습장 구석 상자에 남아 있던 붕대. 감으면 아픈 줄 모르고 한 판 더 서게 된다."},
+    {"id":"lucky-cylinder","n":"행운의 탄실","ko":/*no-i18n*/"행운의 탄실","job":"gunner","home":"d1","f":["crit","critDmg","spd","acc"],"res":"'속사 왈츠' 피해 +20%","rx":{"sk":"gn_1","mul":{"power":1.2}},"lore":"사격 연습장 과녁 밑에서 나온 탄실. 여섯 칸 중 한 칸에는 늘 행운이 들어 있다."},
+    {"id":"eagle-sight","n":"독수리의 조준경","ko":/*no-i18n*/"독수리의 조준경","job":"gunner","home":"d1","f":["acc","crit","critDmg","skAcc"],"res":"'무례한 노크' 피해 +25%","rx":{"sk":"gn_2","mul":{"power":1.25}},"lore":"졸업한 거너가 놓고 간 조준경. 들여다보면 과녁이 먼저 다가온다."},
+    {"id":"hawk-feather","n":"매의 깃털","ko":/*no-i18n*/"매의 깃털","job":"archer","home":"hunt","f":["spd","acc","crit","critDmg"],"res":"'매의 눈' 지속 +1턴","rx":{"sk":"ar_2","add":{"dur":1}},"lore":"사냥꾼이 아끼던 매가 남긴 깃털. 활줄 옆에 꽂으면 바람이 보인다."},
+    {"id":"wind-bracer","n":"바람의 팔찌","ko":/*no-i18n*/"바람의 팔찌","job":"archer","home":"hunt","f":["spd","atk","eva","acc"],"res":"'관통 화살' 피해 +20%","rx":{"sk":"ar_1","mul":{"power":1.2}},"lore":"사냥꾼이 젊을 때 차던 가죽 팔찌. 시위를 놓는 순간 바람이 한 번 더 민다."},
+    {"id":"worldseed","n":"세계수의 씨앗","ko":/*no-i18n*/"세계수의 씨앗","job":"druid","home":"farm","f":["hp","leech","def","skAcc"],"res":"'재생의 씨앗' 회복 +30%","rx":{"sk":"dr_1","mul":{"power":1.3}},"lore":"할아버지네 밭에서 백 년째 싹을 틔우지 않는 씨앗. 드루이드의 손에서만 따뜻해진다."},
+    {"id":"antler-talisman","n":"숲지기의 부적","ko":/*no-i18n*/"숲지기의 부적","job":"druid","home":"hunt","f":["def","hp","spd","skRes"],"res":"'야수화' 회복 +30%","rx":{"sk":"dr_2","mul":{"regen":1.3}},"lore":"숲지기 사슴의 뿔로 엮은 부적. 사냥꾼은 이걸 쏘지 않은 사슴에게서 받았다고 한다."},
   ]
 };
 const RELIC_GI = {C:0, B:1, A:2, S:3};
@@ -5228,7 +5236,9 @@ function relicMake(K, g, rec){
 }
 /* 원정에서 얻는 유물 — 이긴 구간마다 (그뉵이용은 확정) · 직업 유물은 그 직업 학생이 알아본다. res.relics · res.charmN · res.jobFinds 를 채운다 */
 function relicExpedDrops(dg, team, res){
-  const owned = relicOwnedKinds(), per = clamp(dgRelicP(dg), 0, 1), ow = dg.otherworld ? 1 : 0;
+  const owned = relicOwnedKinds(), ow = dg.otherworld ? 1 : 0;
+  const per = clamp(dgRelicP(dg) * (1 + relicFxParty(team, "E_FIND")/100), 0, 1);   // 숨은 길 (구간마다 유물 확률 +%) — 2단계
+  const extraP = relicFxParty(team, "E_EXTRA")/100;                                  // 하나 더 (유물을 얻을 때) — 부적과 따로 · 덤이 덤을 부르지 않는다
   const one = (sec, tag)=>{
     const got = relicPickRegion(dg, owned); if(!got) return;
     const who = pick(team);
@@ -5239,6 +5249,7 @@ function relicExpedDrops(dg, team, res){
   const drop = (sec, tag)=>{
     one(sec, tag);
     if(S.items && S.items.charm && RNG() < CHARM_EXTRA_P){ one(sec, "charm"); res.charmN = (res.charmN || 0) + 1; }
+    if(extraP > 0 && RNG() < extraP){ one(sec, "extra"); res.extraN = (res.extraN || 0) + 1; }
   };
   (res.secs || []).forEach(x=>{
     if(!x.win) return;
@@ -5344,6 +5355,134 @@ function relicMigrate(){
 }
 /* 서버로 보내는 유물 이름 — 128종은 한국어 원문 (koData 가 되돌리지 못하는 이름도) */
 function relicKoName(r){ const K = relicKindOf(r); return K ? K.ko : String((r && r.name) || ""); }
+/* ── 전투 밖 효과 (2단계) ──
+   범위 — party 장착 원정대(원정대 중 누가 끼고 있으면) · wearer 장착 학생(그 학생에게만 · 낀 것을 더한다) ·
+          academy 학원 · 보유 시(보관고에 있어도) · match 출전 · 보유 시. party · academy · match 는 같은 효과가 여럿이면 가장 높은 하나만.
+   효과가 없으면 난수를 쓰지 않는다 (예전과 같은 흐름) */
+function relicFxVal(r){ const K = relicKindOf(r); if(!K || !K.fx) return 0; const F = RELIC_DB.fx[K.fx]; return (F.v[RELIC_GI[r.grade]] || 0) * (K.fxMul || 1); }
+function relicFxWorn(st, key){ let t = 0; ((st && st.relics) || []).forEach(r=>{ const K = relicKindOf(r); if(K && K.fx === key) t += relicFxVal(r); }); return t; }
+function relicFxParty(team, key){ let m = 0; (team || []).forEach(st=> ((st && st.relics) || []).forEach(r=>{ const K = relicKindOf(r); if(K && K.fx === key) m = Math.max(m, relicFxVal(r)); })); return m; }
+function relicFxOwned(key){
+  if(!S) return 0;
+  let m = 0; const f = r=>{ const K = relicKindOf(r); if(K && K.fx === key) m = Math.max(m, relicFxVal(r)); };
+  (S.relicPool || []).forEach(f); (S.students || []).forEach(st=> (st.relics || []).forEach(f));
+  return m;
+}
+const RELIC_TRAIN_FX = {team:"T_TEAM", aggr:"T_AGGR", calm:"T_CALM", will:"T_WILL", stam:"T_STAM", genius:"T_GENIUS"};
+function relicTrainMul(st, k){ const key = RELIC_TRAIN_FX[k]; return key ? 1 + relicFxWorn(st, key)/100 : 1; }   // 훈련 효과 (의뢰는 훈련이 아니라 빼고 부른다)
+function relicFameMul(st){ return 1 + relicFxWorn(st, "T_FAME")/100; }            // 이 학생이 얻는 평판
+function relicSellPrice(r){ return Math.round((RELIC_SELL[r && r.grade] || 0) * (1 + relicFxOwned("G_SELL")/100)); }   // 유물 판매가
+function relicBuyMul(){ return 1 - relicFxOwned("G_BUY")/100; }                   // 상점에서 사는 값 (도구 · 물품 · 성물 — 시설 건설비는 빼고)
+function relicTrainCostMul(){ return 1 - relicFxOwned("G_TRAIN")/100; }           // 훈련 비용 (일과 카드)
+function relicPrizeMul(){ return 1 + relicFxOwned("G_PRIZE")/100; }               // 대회 · 친선전 자금
+function relicMatchFameMul(){ return 1 + relicFxOwned("G_FAME")/100; }            // 대회 · 친선전에서 얻는 학원 명성
+function relicScoutRate(c){ return clamp(((c && c.rate) || 0) + relicFxOwned("G_RECRUIT")/100, 0, .97); }   // 스카우트 성공률 +%p (먼 부름 — 굴릴 때 · 보여 줄 때)
+/* 효과 한 줄 — '원정 지구력 게이지 +9' (효과 이름은 쓰지 않는다 · 1017 사용자) · 범위 — '장착 원정대 (동일 효과는 가장 높은 하나만)' */
+function relicFxTxt(r){ const K = relicKindOf(r); if(!K || !K.fx) return ""; return RELIC_DB.fx[K.fx].fmt.replace("{v}", String(relicFxVal(r))); }
+function relicScopeTxt(K){ const F = RELIC_DB.fx[K.fx], sc = RELIC_DB.scopes[F.scope] || {n:""}; return sc.one ? `${sc.n} (${RELIC_DB.oneTxt})` : sc.n; }
+/* ── 공명 · 세트 ── 공명 = 직업 유물을 그 직업 학생이 끼면 능력 ×RESMUL + 스킬 효과 하나 · 세트 = 그 직업 유물 둘을 그 직업 학생이 함께 끼면 스킬 효과 하나 */
+function relicResOn(r, job){ const K = relicKindOf(r); return !!(K && K.job && job && K.job === job); }
+function relicSetOn(st, job){
+  if(!st || !job || st.job !== job) return false;
+  const ids = {};
+  (st.relics || []).forEach(r=>{ const K = relicKindOf(r); if(K && K.job === job) ids[K.id] = 1; });
+  return Object.keys(ids).length >= 2;
+}
+/* 실제로 쓰는 능력치 — 공명이면 ×1.5 (정수 능력은 반올림 · 나머지는 소수 셋째 자리). battleStats · 학생 화면이 같은 값을 쓴다 */
+function relicAffEff(r, st){
+  const list = (r && r.aff) || [];
+  if(!st || !relicResOn(r, st.job)) return list;
+  const m = RELIC_DB.resMul;
+  return list.map(a=>{ const st0 = RELIC_DB.stats[a.k]; const v = (st0 && st0.int) ? Math.round(a.v * m) : Math.round(a.v * m * 1000) / 1000; return {k:a.k, n:a.n, v}; });
+}
+/* 스킬 효과 — 학생이 낀 공명 유물 · 세트에서. mkUnit 이 그 학생 전투 유닛의 스킬 사본에 얹는다 (relicSkills) */
+function relicSkillSpecs(st){
+  const out = [];
+  if(!st || !st.job) return out;
+  (st.relics || []).forEach(r=>{ const K = relicKindOf(r); if(K && K.job === st.job && K.rx) out.push(K.rx); });
+  if(relicSetOn(st, st.job)){ const P = RELIC_DB.pairs[st.job]; if(P && P.x) out.push(P.x); }
+  return out;
+}
+const RELIC_SK_DEF = {ultAlly:30, dotMul:1, procAdd:0};
+function relicSkills(st, skills){
+  const specs = relicSkillSpecs(st);
+  if(!specs.length || !Array.isArray(skills)) return skills;
+  return skills.map(sk=>{
+    const my = specs.filter(x=> x.sk === sk.id);
+    if(!my.length) return sk;
+    const c = Object.assign({}, sk);
+    my.forEach(x=>{
+      Object.keys(x.mul || {}).forEach(f=>{ const b = c[f] != null ? c[f] : RELIC_SK_DEF[f]; if(b != null) c[f] = b * x.mul[f]; });
+      Object.keys(x.add || {}).forEach(f=>{ const b = c[f] != null ? c[f] : (RELIC_SK_DEF[f] || 0); c[f] = b + x.add[f]; });
+    });
+    c.relicFx = 1;
+    return c;
+  });
+}
+/* ── 깨어남 ── 그 직업 학생이 끼고 이긴 전투 (원정 구간 · 대회 · 친선전) — 20번 깨어남(A) · 60번 완전한 깨어남(S). 깨어나면 능력치를 그 등급으로 */
+function relicWinTally(ids){
+  const out = [];
+  (ids || []).forEach(id=>{
+    const st = (S.students || []).find(x=> x.id === id); if(!st) return;
+    (st.relics || []).forEach(r=>{
+      const K = relicKindOf(r); if(!K || !K.job || K.job !== st.job) return;
+      r.wins = (r.wins|0) + 1;
+      const nx = RELIC_DB.awake.find(a=> RELIC_GI[a.g] === RELIC_GI[r.grade] + 1);
+      if(nx && r.wins >= nx.need){
+        r.grade = nx.g; r.aff = relicAffOf(K, r.grade);
+        out.push({st, r, a:nx});
+        logE(relicAwakeLog(st, r, nx), "good");
+      }
+    });
+  });
+  return out;
+}
+function relicAwakeLog(st, r, a){
+  const nm = relicNameOf(r), c = GRADE_COLOR[r.grade];
+  return a.g === "S" ? `유물 — <b>${dnH(st)}</b>의 <b style="color:${c}">${esc(nm)}</b>${iga(nm)} 완전히 깨어났다 — 함께 이긴 전투 ${r.wins}번 (S)`
+                     : `유물 — <b>${dnH(st)}</b>의 <b style="color:${c}">${esc(nm)}</b>${iga(nm)} 깨어났다 — 함께 이긴 전투 ${r.wins}번 (A)`;
+}
+/* 깨어남 글 — '잠듦 — 함께 이긴 전투 7 / 20' · '완전한 깨어남' */
+function relicAwakeTxt(r){
+  const K = relicKindOf(r); if(!K || !K.job) return "";
+  const cur = RELIC_DB.awake.find(a=> a.g === r.grade) || RELIC_DB.awake[0];
+  const nx = RELIC_DB.awake.find(a=> RELIC_GI[a.g] === RELIC_GI[r.grade] + 1);
+  return nx ? `${cur.n} — 함께 이긴 전투 ${r.wins|0} / ${nx.need}` : `${cur.n} — 함께 이긴 전투 ${r.wins|0}`;
+}
+/* 유물 카드의 효과 줄 — 공명(능력 · 스킬) · 깨어남 · 전투 밖 효과 · 세트(두 조각 · 효과). st 를 주면 그 학생 기준으로 켜짐(rlon) / 꺼짐을 칠한다.
+   클래스는 rres · rawk · rfx · rset · rsetfx · rpc · rlon — 게임 전역 클래스(.on · .st 등)와 겹치지 않게 */
+function relicInfoHtml(r, st){
+  const K = relicKindOf(r); if(!K) return "";
+  const L = [];
+  if(K.job){
+    const on = !!(st && relicResOn(r, st.job)), jn = (JOBS[K.job] || {}).name || "";
+    L.push(`<div class="rli rres${on ? " rlon" : ""}">${`공명 — ${jn} 장착 시 능력 ×${RELIC_DB.resMul}`}</div>`);
+    L.push(`<div class="rli rres${on ? " rlon" : ""}">${`공명 — ${esc(K.res)}`}</div>`);
+    L.push(`<div class="rli rawk">${esc(relicAwakeTxt(r))}</div>`);
+  }
+  if(K.fx){
+    const F = RELIC_DB.fx[K.fx];
+    L.push(`<div class="rli rfx${F.neg ? " rneg" : ""}">◆ ${esc(relicFxTxt(r))} <i>— ${esc(relicScopeTxt(K))}</i></div>`);
+  }
+  if(K.job){
+    const P = RELIC_DB.pairs[K.job] || {}, set = RELIC_JOBR.filter(x=> x.job === K.job);
+    const worn = {}; ((st && st.relics) || []).forEach(x=>{ const k2 = relicKindOf(x); if(k2) worn[k2.id] = 1; });
+    const on = !!(st && relicSetOn(st, K.job));
+    const pcs = set.map(x=> `<span class="rpc${worn[x.id] ? " rlon" : ""}">${esc(x.n)}</span>`).join(" · ");
+    L.push(`<div class="rli rset${on ? " rlon" : ""}">${`세트 — '${esc(P.n || "")}' ${pcs}`}</div>`);
+    L.push(`<div class="rli rsetfx${on ? " rlon" : ""}">${esc(P.d || "")}</div>`);
+  }
+  return L.length ? `<div class="rlinfo">${L.join("")}</div>` : "";
+}
+/* 짧은 글 (책의 유물 칸 title 등) — 줄마다 */
+function relicInfoLines(r, st){
+  const K = relicKindOf(r); if(!K) return [];
+  const L = [];
+  if(K.job){ L.push(`공명 — ${(JOBS[K.job] || {}).name || ""} 장착 시 능력 ×${RELIC_DB.resMul}`); L.push(`공명 — ${K.res}`); L.push(relicAwakeTxt(r)); }
+  if(K.fx) L.push(`◆ ${relicFxTxt(r)} — ${relicScopeTxt(K)}`);
+  if(K.job){ const P = RELIC_DB.pairs[K.job] || {}; L.push(`세트 — '${P.n || ""}' · ${P.d || ""}`); }
+  return L;
+}
 /* RELICDB_END */
 /* ============================================================
    시설 · 아이템 · 트레이닝
@@ -6681,7 +6820,7 @@ function battleStats(st){
   s.acc += M.acc; s.eva += M.eva; s.skAcc += M.skAcc; s.skRes += M.skRes; s.crit += M.crit;
   s.critDmg += M.critDmg||0;
   s.critRes += M.critRes||0;
-  (st.relics||[]).forEach(r=>{ if(!r) return; r.aff.forEach(a=> s[a.k] = (s[a.k]||0)+a.v); });
+  (st.relics||[]).forEach(r=>{ if(!r) return; relicAffEff(r, st).forEach(a=> s[a.k] = (s[a.k]||0)+a.v); });   // 1017 — 공명(그 직업이 끼면 ×1.5)
   if(st.mul) for(const k in st.mul) s[k] = (s[k]||0)*st.mul[k];
   // 컨디션 보정 (±12%)
   const cf = .82 + (st.cond/100)*.28;
@@ -6734,7 +6873,7 @@ function mkUnit(st, side, idx, row){
   return {
     uid: side+idx, ref: st.id, name: dn(st), job: st.job, side, idx, pers:st.pers||"plain",
     row: row || ROW_OF(st.job), lv: st.level,
-    ment: Object.assign({}, mentEff(st)), injured: injWeeks(st), skMod: st.skMod||{}, skills: skillsOf(st), passiveJob: passiveJobOf(st),
+    ment: Object.assign({}, mentEff(st)), injured: injWeeks(st), skMod: st.skMod||{}, skills: relicSkills(st, skillsOf(st)), passiveJob: passiveJobOf(st),
     base: s, maxHp: Math.round(s.hp), hp: Math.round(s.hp),
     atb: ri(0,300), ult:0, shield:0, fx:[], alive:true, acted:0,
     dDealt:0, dHeal:0, dTaken:0,
@@ -6931,7 +7070,7 @@ function skModVal(m, sk){ return skVal(m && m.grade, m && m.up, sk); }   // 기�
 function skPow(o, sk){ return sk.power * (1 + skValOf(o, sk).pow); }
 function skDur(o, sk){ return (sk.dur||0) + skValOf(o, sk).dur; }
 function skProc(o, sk, genius){
-  return clamp(sk.proc * (1 + skValOf(o, sk).proc) * (1 + MR("proc", genius)), 0, .85);
+  return clamp(sk.proc * (1 + skValOf(o, sk).proc) * (1 + MR("proc", genius)) + (sk.procAdd||0), 0, .85);   // procAdd — 유물 공명 · 세트 (+%p)
 }
 function passiveK(o){ return 1 + skVal(skG(o, "passive"), skUp(o, "passive"), null).pow; }
 /* 예전 5단계(D·C·B·A·EX) 기록 → 6단계: EX(4) 를 EX(5) 로. 옛 기록에는 S 가 없다 */
@@ -7419,7 +7558,7 @@ function runBattle(teamA, teamB, opt){
         tg.forEach(t=>{
           if(!t.alive) return;
           dealDamage(u,t,p*.8,sk);
-          if(t.alive){ addFx(t,{name:sk.name,kind:"dot",turns:dur+1,val:eff(u,"atk")*p*.55,stat:null,
+          if(t.alive){ addFx(t,{name:sk.name,kind:"dot",turns:dur+1,val:eff(u,"atk")*p*.55*(sk.dotMul||1),stat:null,
             heal:!!sk.drainDot, src:u.uid}); hit.push(t); }
         });
         if(hit.length) push(`${hit.length>1? `적 ${hit.length}인` : `<b>${epiH(hit[0].name)}</b>`} 중독 (${dur}턴)`,"",u.uid);
@@ -7554,8 +7693,9 @@ function runBattle(teamA, teamB, opt){
         break; }
       case "ult_time": {
         tg.forEach(t=>{ t.atb = 0; });
-        aliveOf(allies).forEach(a=> a.ult = clamp(a.ult+30,0,100));
-        push(`적 전체 행동 정지 · 아군 필살 게이지 +30`,"heal",u.uid); break; }
+        const ua = Math.round(sk.ultAlly != null ? sk.ultAlly : 30);   // 1017 — 세트 '시간의 주인' 이면 +36
+        aliveOf(allies).forEach(a=> a.ult = clamp(a.ult+ua,0,100));
+        push(`적 전체 행동 정지 · 아군 필살 게이지 +${ua}`,"heal",u.uid); break; }
     }
   }
   return {winner, frames, acts:totalActs, A, B,
@@ -7686,7 +7826,10 @@ function addFame(n){
 /* ============================================================
    주간 진행
    ============================================================ */
-function setCond(st, v){ st.cond = Math.round(clamp(v, 0, 100)); return st.cond; }
+function setCond(st, v){
+  if(st && v < st.cond){ const m = relicFxWorn(st, "N_COND"); if(m) v = st.cond - (st.cond - v)*(1 + m/100); }   // 1017 — 대가 (검은 육면체 — 이 학생의 컨디션 소모 +20%)
+  st.cond = Math.round(clamp(v, 0, 100)); return st.cond;
+}
 const COND_HI = 70, COND_MID = 40;
 function condEff(c){
   if(c>=COND_HI)  return {mul:1.0, pct:100, tone:"ok"};
@@ -7723,7 +7866,7 @@ function trainSuccessP(st, resting){
 }
 function trainSuccess(st, resting){ return RNG() < trainSuccessP(st, resting); }
 /* 훈련 실패 시 부상 확률 — (80 - 컨디션)% */
-function injureChance(st){ return clamp(80 - st.cond, 0, 100); }
+function injureChance(st){ return clamp(80 - st.cond, 0, 100) * (1 - relicFxWorn(st, "T_INJ")/100); }   // 1017 — 다시 일어남
 function injSeverity(st){ return (70 - st.cond) + ri(1,100) + (isInjured(st)? INJ_REPEAT_SEV : 0); }
 function injWeeksOf(sev){
   if(sev <= 80)  return 1;
@@ -8057,8 +8200,12 @@ function dietDisc(){
 function evDisc(k){ const lv = jobEvLv(k); return (lv >= 1 ? .05 : 0) + (lv >= 2 ? .10 : 0); }
 function facDisc(){ return evDisc("salon"); }
 function itemDisc(){ return evDisc("inn"); }
-function itemPrice(k){ if(k === "cookie") return 200; if(k === "exoticFan") return EXOTIC_FAN_PRICE; const it = ITEMS[k]; return it ? Math.round(it.price * (1 - itemDisc())) : 0; }
-function dietPrice(d){ return Math.round((d||dietDef()).price * (1 - dietDisc()) * (townBuff("dietHalf") ? TOWN_DIET_MUL : 1)); }   // 밭주인 할아버지 · 마을 사냥꾼 — 이번 계절 식비 절반 (1004)
+function itemPrice(k){   // 1017 — 단골 (이국의 접선 — 구매 가격 −%)
+  if(k === "cookie") return Math.round(COOKIE_PRICE * relicBuyMul());
+  if(k === "exoticFan") return Math.round(EXOTIC_FAN_PRICE * relicBuyMul());
+  const it = ITEMS[k]; return it ? Math.round(it.price * (1 - itemDisc()) * relicBuyMul()) : 0;
+}
+function dietPrice(d){ return Math.round((d||dietDef()).price * (1 - dietDisc()) * (townBuff("dietHalf") ? TOWN_DIET_MUL : 1) * (1 - relicFxOwned("G_DIET")/100)); }   // 밭주인 할아버지 · 마을 사냥꾼 — 이번 계절 식비 절반 (1004)
 function dietCostWeek(){ return dietPrice() * (S.students||[]).length; }
 function dietMul(){ return 1 + dietDef().eff + (townBuff("trainEff") ? TOWN_TRAIN_EFF : 0); }   // 주점 주인 — 이번 계절 훈련 효율 +20% (1004)
 function dietCycle(){
@@ -8100,7 +8247,7 @@ function doJob(st, J){
   (S.jobN = S.jobN || {})[J.k] = jobN(J.k) + 1;      // 의뢰처별 학생 · 하루 누적 (기록용 — 1015 부터 등급은 의뢰한 주 S.jobW)
   S.jobDone = {at:jobWeekAt(), k:J.k};              // 1015 — 이번 주에 이 의뢰를 한 명이라도 마쳤다 → 주가 끝날 때 +1주 (jobWeekTally)
   setCond(st, st.cond - JOB_COND * defyCostMul(st, "job"));          // 1008 — 지침을 무시하고 한 의뢰는 소모 ×2
-  const g0 = S.gold; addGold(jobPay(J.k));
+  const g0 = S.gold; addGold(jobPay(J.k) * (1 + relicFxWorn(st, "T_JOBPAY")/100));   // 1017 — 덤 품삯
   return S.gold - g0;
 }
 /* 의뢰인 얼굴 — 전용 SD 초상화, 누락 시 실루엣 */
@@ -8134,7 +8281,7 @@ function trainStudent(st, tr, success, opt){
     const top = mentCapOf(st, k);         // 이 학생의 이 항목 한계
     const cur = st.ment[k];
     const room = cur >= top ? 0 : clamp(1 - (cur-10)/mentGrowCap(st, k), .09, 1);
-    let d = 2.4*gains[k]*potM*condM*leadM*fM*partM*dietM*room*rnd(.7,1.35)*(opt.mul||1);
+    let d = 2.4*gains[k]*potM*condM*leadM*fM*partM*dietM*room*rnd(.7,1.35)*(opt.mul||1)*(tr.id === "job" ? 1 : relicTrainMul(st, k));   // 1017 — 유물 훈련 효과 (의뢰는 빼고)
     if(cur >= MENT_SOFT) d *= MENT_OVER_G;   // 한계를 넘어선 구간은 더디다
     st.ment[k] = clamp(st.ment[k] + d, 1, top);
     if(d>.9 && (!notable || d>notable.d)) notable={k,d};
@@ -8147,6 +8294,7 @@ function trainStudent(st, tr, success, opt){
   }
   let c = tr.cond * (success?1:.5);
   if(tr.rest) c *= tonicMul();
+  if(c > 0 && !tr.rest && tr.id !== "job"){ const fr = relicFxOwned("G_FRESH"); if(fr && RNG() < fr/100) c = 0; }   // 1017 — 구름 한 조각 (훈련 컨디션이 줄지 않는다)
   setCond(st, st.cond - c);
   if(!opt.noRecover) setCond(st, st.cond + (S.facil.infirm|0)*(opt.recMul||1));
   return notable;
@@ -8164,7 +8312,9 @@ function restWeekGain(tr){
   return -tr.cond * tonicMul() + (S.facil.infirm|0)*DAY_MUL;
 }
 function doRestFocus(s, tr){
-  setCond(s, s.cond + Math.max(restFocusGain()*DAY_MUL, restWeekGain(tr)) * defyRecMul(s));   // 1008 — 지침을 무시하고 쉰 휴식은 회복 ×1/2
+  const rv = relicFxWorn(s, "T_REST"), n0 = s._rest|0;                     // 1017 — 단잠 (휴식 주간 회복 +v — 하루씩 나눠 정수로)
+  const rb = rv ? Math.round(rv*DAY_MUL*(n0+1)) - Math.round(rv*DAY_MUL*n0) : 0;
+  setCond(s, s.cond + Math.max(restFocusGain()*DAY_MUL, restWeekGain(tr)) * defyRecMul(s) + rb);   // 1008 — 지침을 무시하고 쉰 휴식은 회복 ×1/2
   s._rest = (s._rest||0)+1;
 }
 /* 카드 한 장을 하루치 훈련으로 환산 */
@@ -9137,7 +9287,7 @@ function expedRetireP(dg, sec, will){
   return 1 - keep;
 }
 function expedInit(dg, team, TM){
-  const avgStam = team.reduce((a,s)=>a+mentEff(s).stam,0)/team.length;
+  const avgStam = team.reduce((a,s)=>a+mentEff(s).stam,0)/team.length + relicFxParty(team, "E_STAM");   // 1017 — 꺼지지 않는 등불 (지구력 게이지는 4단계 · 지금은 지구력 한계에)
   const avgWill = team.reduce((a,s)=>a+mentEff(s).will,0)/team.length;
   const E = {dg:dg, team:team, TM:TM, avgWill:avgWill,
     maxSec: expedMaxSec(dg, avgStam), sec:1, hpLeft:{},
@@ -9161,9 +9311,10 @@ function expedApply(E, b, mon){
   b.A.forEach(u=>{ E.hpLeft[u.ref] = u.alive ? clamp(u.hp/u.maxHp + .18, .06, 1) : .25; });
   if(b.winner!=="A"){ res.stopped = `${E.sec}구간 ${monLabel(mon)}에게 전멸 — 철수`; return false; }
   res.reached = E.sec;
+  relicWinTally(E.team.map(s=> s.id));   // 1017 — 깨어남 (그 직업 학생이 끼고 이긴 전투)
   res.exp += E.dg.exp*(1+E.sec*EXPED_EXP_RAMP)*EXPED_EXP_MUL*dgExpK(E.dg) * (muscle? MUSCLE_RWD : 1);
   if(muscle) res.muscleN = (res.muscleN||0) + 1;
-  const retire = expedRetireP(E.dg, E.sec, E.avgWill);
+  const retire = expedRetireP(E.dg, E.sec, E.avgWill) * (1 - relicFxParty(E.team, "E_RETIRE")/100);   // 1017 — 돌아갈 곳
   if(E.sec < E.dg.secs && RNG()<retire){ res.stopped = `${E.sec}구간 의식에서 정신이 꺾여 리타이어`; return false; }
   E.sec++;
   if(E.sec > E.maxSec && E.sec <= E.dg.secs){ res.stopped = `지구력 한계 — ${E.sec-1}구간에서 철수`; return false; }
@@ -9174,6 +9325,7 @@ function expedFinish(E){
   /* 유물 (1017 · 유물의 법칙) — 이긴 구간마다 dgRelicP 로 그 땅의 물건 하나 · 그뉵이용은 확정 · 행운의 부적 덤 · 그 직업 학생이 직업 유물을 알아본다.
      예전 무작위 유물(makeRelic)은 더 나오지 않는다 (relicExpedDrops — RELICDB 블록). 완주(보스 처치) 시 유물 보장은 없앴다 (0926) */
   relicExpedDrops(dg, team, res);
+  { const xm = relicFxParty(team, "E_EXP"); if(xm) res.exp *= 1 + xm/100; }   // 1017 — 옛것의 가르침 (원정 경험치)
   const ups=[];
   if(res.reached>0){
     res.evalGain = [];
@@ -9188,12 +9340,13 @@ function expedFinish(E){
   {
     const tids = team.map(x=>x.id);
     team.forEach(s=>{ ups.push({s:s, n:gainExp(s, res.exp*broExpMul(s,tids), true)});
-      setCond(s, s.cond - EXPED_COND*dgK(dg)*Math.max(1, res.secs.length)); s.fame += Math.round(res.reached*2*EXPED_RWD_MUL*dgK(dg)); });
-    res.karma = (dg.karma||0) * res.secs.length * EXPED_RWD_MUL * dgK(dg);
+      setCond(s, s.cond - EXPED_COND*dgK(dg)*Math.max(1, res.secs.length)*(1 - relicFxParty(team, "E_COND")/100));   // 1017 — 가벼운 여정
+      s.fame += Math.round(res.reached*2*EXPED_RWD_MUL*dgK(dg)*relicFameMul(s)); });   // 1017 — 새 이름 (이 학생의 평판)
+    res.karma = (dg.karma||0) * res.secs.length * EXPED_RWD_MUL * dgK(dg) * (1 - relicFxParty(team, "E_KARMA")/100);   // 1017 — 부정 씻기
     if(res.karma && townBuff("noKarma")){ res.prayed = res.karma; res.karma = 0; }   // 수녀님의 기도 — 이번 계절 원정 업보 없음 (1004)
     if(res.karma) team.forEach(s=> addKarma(s, res.karma));
   }
-  res.gold = Math.round(dgGold(dg) * (res.reached + (MUSCLE_RWD-1)*(res.muscleN||0)));   // 그뉵이용 구간은 자금 ×10
+  res.gold = Math.round(dgGold(dg) * (res.reached + (MUSCLE_RWD-1)*(res.muscleN||0)) * (1 + relicFxParty(team, "E_GOLD")/100));   // 1017 — 노잣돈   // 그뉵이용 구간은 자금 ×10
   if(res.gold) addGold(res.gold);
   if(res.reached >= dg.secs){
     res.fameGain = Math.round((dg.fameClear||0) * EXPED_RWD_MUL); addFame(res.fameGain);
@@ -9741,8 +9894,8 @@ function affLines(items){
   for(let l=0; l<L; l++){ const k = (l < n - L) ? 2 : 1; out.push(items.slice(i, i+k)); i += k; }
   return out;
 }
-function relicAffHtml(r){
-  const items = relicAffSorted(r.aff).map(a=> `${esc(a.n)} <b${a.v < 0 ? ` style="color:var(--bad)"` : ""}>${relicValTxt(a)}</b>`);   // 1017 — 양날(음수) · 비율은 능력 종류로 (relicValTxt)
+function relicAffHtml(r, st){   // st — 그 학생 기준 (공명이면 ×1.5 값)
+  const items = relicAffSorted(st ? relicAffEff(r, st) : r.aff).map(a=> `${esc(a.n)} <b${a.v < 0 ? ` style="color:var(--bad)"` : ""}>${relicValTxt(a)}</b>`);   // 1017 — 양날(음수) · 비율은 능력 종류로 (relicValTxt)
   return `<div class="od raff">${affLines(items).map(l=> `<div>${l.join(" · ")}</div>`).join("")}</div>`;
 }
 function relicAffText(r){ return relicAffSorted(r.aff).map(a=>`${a.n} ${relicValTxt(a)}`).join(" · "); }
@@ -9984,7 +10137,7 @@ function relicSwapModal(poolIdx, sid){
    대회
    ============================================================ */
 const SCOUT_INFO_PER = 5;    // 마스터 정보력 이만큼마다 정찰 1단계
-function scoutLevel(){ return clamp(Math.floor(S.master.info/SCOUT_INFO_PER) + (S.items.scope?1:0), 0, 3); }
+function scoutLevel(){ return clamp(Math.floor(S.master.info/SCOUT_INFO_PER) + (S.items.scope?1:0) + relicFxOwned("G_SCOUT"), 0, 3); }   // 1017 — 잠들지 않는 눈 (출전 · 보유 시)
 function rivalAcademy(strength, teams, prof, name){
   name = name || (pick(ACAD)+" 학원");
   const T=[];
@@ -10042,7 +10195,7 @@ function tourMatchStudents(ids){ return ids.map(id=>S.students.find(s=>s.id===id
 
 const BANNER_MUL = 1.25;
 /* 학원기 — 대회에서 얻는 학원 명성을 올린다 */
-function bannerFame(v){ return (S.items && S.items.banner) ? v * BANNER_MUL : v; }
+function bannerFame(v){ return ((S.items && S.items.banner) ? v * BANNER_MUL : v) * relicMatchFameMul(); }   // 1017 — 기억되는 승리 (대회에서 얻는 학원 명성)
 function finishTournament(t){
   const wins = t.results.filter(r=>r.win).length;
   const total = t.results.length;
@@ -10060,6 +10213,7 @@ function finishTournament(t){
     msg = champ? `가을 대회 우승!` : `가을 대회 ${t.roundWins}라운드 진출`;
   }
   fame = bannerFame(fame);
+  gold = Math.round(gold * relicPrizeMul());   // 1017 — 판돈 (대회 자금)
   addFame(fame); addGold(gold);
   // 출전 학생 개인 명성
   const ups=[], rows=[];
@@ -10083,7 +10237,7 @@ function finishTournament(t){
     const got = addEval(s, d);
     if(got) evalNotes.push(`${dnH(s)} ${got>0?"+":""}${got.toFixed(0)}`);
     if(t.kind==="spring" ? t.champ : t.roundWins===t.maxRound){ s.wins = s.wins||[]; s.wins.push({y:S.year, n: t.kind==="spring" ? "봄 신인전" : "가을 대회"}); }
-    const fg = Math.round((t.kind==="spring"?wins*9:(t.roundWins||0)*22)+8);
+    const fg = Math.round(((t.kind==="spring"?wins*9:(t.roundWins||0)*22)+8) * relicFameMul(s));   // 1017 — 새 이름
     s.fame += fg;
     const lv0 = s.level;
     let xp = t.kind==="spring"? 320+wins*130 : 900+(t.roundWins||0)*480;
@@ -10356,6 +10510,7 @@ function ladderRecord(t, b, oppName, ids){
   const win = b.winner==="A";
   const aliveA = b.A.filter(u=>u.alive).length, aliveB = b.B.filter(u=>u.alive).length;
   t.results.push({vs:oppName, win, score:`${aliveA}-${aliveB}`, myIds:ids.slice(), label:ladderMatchLabel(t), foes:b.B.map(u=>u.name)});
+  if(win) relicWinTally(ids);   // 1017 — 깨어남
   if(t.cfg.kind==="cup"){
     const U = ladderUse(t.step);
     const tie = ladderTie(t);
@@ -10421,6 +10576,7 @@ function finishLadder(t){
   if(champ && t.step==="final") S.finalWins = (S.finalWins|0) + 1;   // 이계에서의 편지 조건
   if(t.step==="city" && !shopUnlocked()){ S.shopUnlock = S.year; queueCeremony({type:"shopopen", year:S.year}); }   // 시설 · 구매 해금 (0929)
   fame = Math.round(bannerFame(fame));
+  gold = Math.round(gold * relicPrizeMul());   // 1017 — 판돈 (대회 자금)
   if(fame) addFame(fame);
   if(gold) addGold(gold);
   // 출전 학생 — 진로 평가 · 경험 · 개인 명성
@@ -10434,7 +10590,7 @@ function finishLadder(t){
     if(t.w===0) d = -8;
     const got = addEval(s, d);
     if(got) notes.push(`${dnH(s)} ${got>0?"+":""}${got.toFixed(0)}`);
-    const fg = Math.round(myWins*10 + (t.advanced?12:0));
+    const fg = Math.round((myWins*10 + (t.advanced?12:0)) * relicFameMul(s));   // 1017 — 새 이름
     s.fame += fg;
     const lv0 = s.level;
     const mates = t.results.filter(r=>r.myIds.includes(id)).reduce((a,r)=>a.concat(r.myIds),[]);
@@ -10870,8 +11026,8 @@ function cslLead(){ return S.master.lead + cslFacBonus().lead; }
 function cslInfo(){ return S.master.info + cslFacBonus().info; }
 function cslNet(){  return S.master.net  + cslFacBonus().net;  }
 function cslLeadP(extra=0){ return clamp((cslLead()+extra)*CSL_LEAD, 0, .95); }
-function cslInfoP(){ return clamp(cslInfo()*CSL_INFO, 0, .95); }
-function cslNetP(){  return clamp(cslNet() *CSL_NET,  0, .95); }
+function cslInfoP(st){ return clamp((cslInfo() + relicFxWorn(st, "C_INFO"))*CSL_INFO, 0, .95); }     // st — 상담하는 학생 (1017 — 거짓 없는 거울)
+function cslNetP(st){  return clamp((cslNet() + relicFxWorn(st, "C_APPEAL")) *CSL_NET,  0, .95); }  // (1017 — 황금 빗 · 인연의 가위)
 const CSL_QUEUE_MAX = 5;
 const CSL_PER_STUDENT = 3;   // 학생 한 명이 한 해에 찾아오는 횟수
 function newCounselState(){ return {queue:[], done:[], usedC:[], usedS:[]}; }
@@ -10898,7 +11054,7 @@ function tryCounsel(){
   if(!pool.length) return;
   const st = pick(cand), c = pick(pool);
   C.queue.push({sid:st.id, cid:c.id, order: shuffled([0,1,2]),
-    reveal: RNG() < cslInfoP(), phase:S.phase, week:S.week+1});
+    reveal: RNG() < cslInfoP(st), phase:S.phase, week:S.week+1});
   const n = C.queue.length;
   logE(`상담 요청 — <b>${dnH(st)}</b>${iga(st.name)} 할 말이 있다고 찾아왔다. <b style="color:var(--brass)">상담</b> 탭에서 들어줄 수 있다.${n>1? ` (대기 ${n}건)`:""}`,"big");
 }
@@ -10926,7 +11082,7 @@ function answerCounsel(qi, oi, win){   // win — 상담창(1008): 화면을 다
       const m = pick(ks);
       let d = ri(2,4);
       // 호소력 — 상승폭 2배
-      if(RNG() < cslNetP()){ d *= 2; dbl = true; }
+      if(RNG() < cslNetP(st)){ d *= 2; dbl = true; }
       if(cookie) d *= 2; // independent of charisma; both bonuses = x4 before cap
       const before = st.ment[m.k];
       st.ment[m.k] = clamp(before + d, 1, mentCapOf(st, m.k));
@@ -11026,7 +11182,7 @@ function defyWeekEnd(R){
   let jk = null;
   if(c.to==="job" || c.from==="job"){ try{ jk = R.job || (weekJobPlan() || JOB_LIST[0]).k; }catch(e){ jk = JOB_LIST[0].k; } }
   let p = defyPend(st);
-  if(!p){ p = {sid:st.id, n:0, order:shuffled([0,1,2]), reveal: RNG() < cslInfoP()}; D.pend.push(p); }
+  if(!p){ p = {sid:st.id, n:0, order:shuffled([0,1,2]), reveal: RNG() < cslInfoP(st)}; D.pend.push(p); }
   Object.assign(p, {from:c.from, to:c.to, jk, year:S.year, phase:S.phase, week:(R.startWeek|0)+1, forced:!!c.forced, n:(p.n|0)+1});
   dlog(`<b style="color:var(--bad)">! 행동 지침 무시</b> — ${dnH(st)}${eunn(st.name)} 이번 주 개인 행동 지침(<b>${actName(c.from)}</b>) 대신 <b style="color:var(--bad)">${actName(c.to)}</b>${eulr(actName(c.to))} 했다.${c.forced? " 상담하지 않고 넘긴 탓에 또 지침을 무시했다." : ""}`, "bad");
   logE(`<b style="color:var(--bad)">! 행동 지침을 무시한 학생이 발생했습니다.</b> <b>${dnH(st)}</b> — ${actName(c.from)} 대신 <b>${actName(c.to)}</b>. <b style="color:var(--brass)">상담</b> 탭에서 이유를 들어 볼 수 있다. 상담하지 않고 다음 주를 시작하면 또 지침을 무시한다.`, "bad");
@@ -11172,7 +11328,7 @@ function answerDefy(pi, oi, win){   // win — 상담창(1008): 화면을 다시
     if(ks.length){
       const m = pick(ks);
       let d = ri(2,4);
-      if(RNG() < cslNetP()){ d *= 2; dbl = true; }              // 호소력 — 상승폭 2배
+      if(RNG() < cslNetP(st)){ d *= 2; dbl = true; }              // 호소력 — 상승폭 2배
       if(cookie) d *= 2; // independent of charisma; both bonuses = x4 before cap
       const before = st.ment[m.k];
       st.ment[m.k] = clamp(before + d, 1, mentCapOf(st, m.k));
@@ -11270,15 +11426,16 @@ function cookieBuyLeft(){ return Math.max(0, COOKIE_LIMIT - (cookieShopState().b
 function buyCookie(){
   if(!shopUnlocked()) return false;
   if(!cookieBuyLeft()){ toast("이번 계절의 쿠키는 모두 구입했다."); return false; }
-  if(S.gold < COOKIE_PRICE){ toast("자금이 부족하다."); return false; }
-  S.gold -= COOKIE_PRICE; S.cookies = cookieStock()+1; cookieShopState().bought++;
-  sfxPlay("coin"); logE(`<b>쿠키</b> 구입 — 200 G · 보유 ${cookieStock()}개 · 이번 계절 ${cookieBuyLeft()}개 구입 가능`,"good");
+  const pr = itemPrice("cookie");
+  if(S.gold < pr){ toast("자금이 부족하다."); return false; }
+  S.gold -= pr; S.cookies = cookieStock()+1; cookieShopState().bought++;
+  sfxPlay("coin"); logE(`<b>쿠키</b> 구입 — ${fmt(pr)} G · 보유 ${cookieStock()}개 · 이번 계절 ${cookieBuyLeft()}개 구입 가능`,"good");
   save(); render(); return true;
 }
 function cookieShopCard(){
   const left = cookieBuyLeft();
-  return `<button class="opt ${!left?'locked':S.gold<COOKIE_PRICE?'poor':''}" data-item="cookie" ${!left?'disabled':''}>
-    <div class="on">쿠키${shopLeftTag(left, COOKIE_LIMIT)}<span class="price">200 G</span></div>
+  return `<button class="opt ${!left?'locked':S.gold<itemPrice("cookie")?'poor':''}" data-item="cookie" ${!left?'disabled':''}>
+    <div class="on">쿠키${shopLeftTag(left, COOKIE_LIMIT)}<span class="price">${fmt(itemPrice("cookie"))} G</span></div>
     <div class="od">상담 중 사용 · 해당 상담 지도력 +2 · 성공 시 멘탈리티 상승량 +100%</div></button>`;
 }
 function cslCookieRecord(s){
@@ -11408,15 +11565,16 @@ function fanBuyLeft(){ return Math.max(0, EXOTIC_FAN_LIMIT - (fanShopState().bou
 function buyExoticFan(){
   if(!shopUnlocked()) return false;
   if(!fanBuyLeft()){ toast("이번 계절의 이국의 부채는 모두 구입했다."); return false; }
-  if(S.gold < EXOTIC_FAN_PRICE){ toast("자금이 부족하다."); return false; }
-  S.gold -= EXOTIC_FAN_PRICE; S.items = S.items || {}; S.items.exoticFan = exoticFanStock()+1; fanShopState().bought++;
-  sfxPlay("coin"); logE(`<b>이국의 부채</b> 구입 — ${fmt(EXOTIC_FAN_PRICE)} G · 보유 ${exoticFanStock()}개 · 이번 계절 ${fanBuyLeft()}개 구입 가능`,"good");
+  const pr = itemPrice("exoticFan");
+  if(S.gold < pr){ toast("자금이 부족하다."); return false; }
+  S.gold -= pr; S.items = S.items || {}; S.items.exoticFan = exoticFanStock()+1; fanShopState().bought++;
+  sfxPlay("coin"); logE(`<b>이국의 부채</b> 구입 — ${fmt(pr)} G · 보유 ${exoticFanStock()}개 · 이번 계절 ${fanBuyLeft()}개 구입 가능`,"good");
   save(); render(); return true;
 }
 function exoticFanShopCard(){
   const left = fanBuyLeft(), it = ITEMS.exoticFan;
-  return `<button class="opt ${!left?'locked':S.gold<EXOTIC_FAN_PRICE?'poor':''}" data-item="exoticFan" ${!left?'disabled':''}>
-    <div class="on">${it.n}${shopLeftTag(left, EXOTIC_FAN_LIMIT)}<span class="price">${fmt(EXOTIC_FAN_PRICE)} G</span></div>
+  return `<button class="opt ${!left?'locked':S.gold<itemPrice("exoticFan")?'poor':''}" data-item="exoticFan" ${!left?'disabled':''}>
+    <div class="on">${it.n}${shopLeftTag(left, EXOTIC_FAN_LIMIT)}<span class="price">${fmt(itemPrice("exoticFan"))} G</span></div>
     <div class="od">${it.d}</div></button>`;
 }
 /* 상품 카드 이름 옆 꼬리표 — 이번 계절에 더 살 수 있는 수 / 계절마다 (1016 사용자: '이번 계절 구입 가능 횟수는 아이템 이름 옆에 표시').
@@ -12125,7 +12283,7 @@ function vmOf(st){
     relicSlots: slots,
     relics: Array.from({length: slots}, (_, i) => {
       const r = (st.relics || [])[i];
-      return r ? {name: relicNameOf(r), grade: r.grade, score: relicScore(r), aff: relicAffSorted(r.aff).map(a => ({n: a.n, v: relicValTxt(a), neg: a.v < 0}))} : null;   // 1017 — 128종 유물: 종류 이름 · 양날(음수)
+      return r ? {name: relicNameOf(r), grade: r.grade, score: relicScore(r), aff: relicAffSorted(relicAffEff(r, st)).map(a => ({n: a.n, v: relicValTxt(a), neg: a.v < 0})), info: relicInfoLines(r, st)} : null;   // 1017 — 128종 유물: 종류 이름 · 양날(음수)
     }),
     passive: pas ? {n: pas.n, d: pas.d, grade: skGrade(st, "passive"), lv: skLevel(st, "passive"), icon: SKILL_ICON_PASSIVE[pj] || ""} : null,
     skills: skillsOf(st).map(sk => ({
@@ -12486,10 +12644,10 @@ function relicCard(st){
     const r = st.relics[i];
     if(!r){ ROW.push(`<button class="slot empty" data-relic-go="${h(st.id)}" title="Slot ${i + 1} — 비어 있다. 누르면 유물 보관고로 (이 학생에게 장착할 유물을 고른다)"><span class="pl">+</span><span>Slot ${i + 1}</span></button>`); continue; }
     const c = GC_PAGE[r.grade] || GC_PAGE.C;
-    ROW.push(`<div class="slot" style="border-left-color:${c}" title="${h(r.name)} — ${h(r.aff.map(a => a.n + " " + a.v).join(" · "))}"><div class="bd">
+    ROW.push(`<div class="slot" style="border-left-color:${c}" title="${h(r.name)} — ${h(r.aff.map(a => a.n + " " + a.v).join(" · "))}${(r.info || []).length ? h("\n" + r.info.join("\n")) : ""}"><div class="bd">
       <div class="rn"><span class="rnm" style="color:${c}">${h(r.name)}</span>${gradeTag(r.grade)}<span class="sc num">${r.score}점</span></div>
       <div class="af">${r.aff.map(a => `<span>${h(a.n)} <b style="color:${a.neg ? "var(--bad)" : "var(--ink)"};font-weight:400">${h(a.v)}</b></span>`).join("")}</div></div>
-      <button class="uq" data-unequip="${h(st.id)}|${i}" title="해제 — 유물 보관함으로 돌아간다">해제</button></div>`);
+      <button class="uq" data-unequip="${h(st.id)}|${i}" title="해제 — 유물 보관함으로 돌아간다">${"해제"}</button></div>`);   // 1017 — 단추 글은 따로 (영어 문맥 키 (IIFE)|해제 = Unequip · 전역 '해제'는 경과 보고의 Removed)
   }
   return `<div class="card rel"><span class="cap">유물<i>${have} / ${st.relicSlots}칸</i></span>${ROW.join("")}</div>`;
 }
@@ -13347,7 +13505,10 @@ function addTrust(st, v, raw){
   return st.trust;
 }
 function karmaOf(st){ return Math.max(0, Math.round((st && st.karma) || 0)); }
-function addKarma(st, v){ st.karma = Math.max(0, karmaOf(st) + v); return st.karma; }
+function addKarma(st, v){
+  if(v > 0){ const m = relicFxWorn(st, "T_KARMA"); if(m) v *= Math.max(0, 1 - m/100); }   // 1017 — 가벼운 죄 (이 학생에게 쌓이는 업보)
+  st.karma = Math.max(0, karmaOf(st) + v); return st.karma;
+}
 /* 업보로 갈리는 진로 — 조건이 맞으면 기존 진로를 덮어쓴다 */
 function darkCareerFor(st){
   const km = karmaOf(st), sc = Math.round(st.eval||0);
@@ -13529,14 +13690,14 @@ function tryScout(i){
   if((S.scoutTries||0) <= 0){ toast("남은 스카우트 시도가 없다."); return; }
   S.scoutTries--;
   c.tried = (c.tried||0)+1;
-  if(RNG() < c.rate){
+  if(RNG() < relicScoutRate(c)){   // 1017 — 먼 부름 (스카우트 성공률 +%p)
     c.state="got"; S.incoming.push(c.st);
     logE(`스카우트 성공 — <b>${dnH(c.st)}</b> (${c.st.grade}급 ${JOBS[c.st.job].name}) 입학 예정.${
       scoutFull()? ` <b style="color:var(--ok)">${enrollCap()}명을 모두 확보해 스카우트를 마친다</b> (남은 시도 ${S.scoutTries}회는 소멸)`
                  : ` 남은 시도 ${S.scoutTries}회`}`,"good");
   } else if(c.tried===1){
     c.state="retry"; c.rate = clamp(c.rate + .10, 0, .97);
-    logE(`스카우트 실패 — ${dnH(c.st)}${iga(c.st.name)} 망설이고 있다. 한 번 더 설득할 수 있다 (성공률 ${(c.rate*100).toFixed(0)}%). 남은 시도 ${S.scoutTries}회`,"bad");
+    logE(`스카우트 실패 — ${dnH(c.st)}${iga(c.st.name)} 망설이고 있다. 한 번 더 설득할 수 있다 (성공률 ${(relicScoutRate(c)*100).toFixed(0)}%). 남은 시도 ${S.scoutTries}회`,"bad");
   } else {
     c.state="lost";
     logE(`스카우트 실패 — ${dnH(c.st)}${eunn(c.st.name)} 다른 학원을 택했다. 남은 시도 ${S.scoutTries}회`,"bad");
@@ -14408,7 +14569,8 @@ function studentDetail(s, opt){
         const r = (s.relics||[])[i];
         if(!r) return `<div class="opt locked" style="cursor:default"><div class="on" style="color:var(--dim)">빈 칸</div>${G? "" : `<div class="od">유물 탭에서 장착</div>`}</div>`;
         return `<div class="opt" style="cursor:default">${relicNameHtml(r)}
-          ${relicAffHtml(r)}
+          ${relicAffHtml(r, s)}
+          ${relicInfoHtml(r, s)}
           ${G? "" : `<div style="margin-top:6px"><button class="btn sm" data-unequip="${s.id}|${i}">해제</button></div>`}</div>`;
       }).join("")}
     </div>
@@ -14468,9 +14630,10 @@ function attendN(t){
   if(tr && tr.special==="exped") return Math.min(3, (S.students||[]).length);   // 원정은 한 팀
   return (S.students||[]).filter(willAttend).length;
 }
-function cardCostAll(t){ return cardCost(t) * attendN(t); }
+function cardCostAll(t){ return Math.round(cardCost(t) * attendN(t) * relicTrainCostMul()); }   // 1017 — 지워진 약속 (훈련 비용 — 합계에서 깎는다)
 function dayCharge(cc){
   const R = UI.wrun;
+  cc = Math.round((cc||0) * relicTrainCostMul());
   if(!cc || !R) return;
   S.gold -= cc; R.cost = (R.cost||0) + cc;
 }
@@ -15905,7 +16068,7 @@ function leaguePackUnit(g){
           m:MENTAL.reduce((a,x)=>{ a[x.k]=Math.floor((g.ment&&g.ment[x.k])||10); return a; },{}),   // 소수점은 버린다
           sm:skModPack(g.skMod),
           r:(g.relics||[]).slice(0,RELIC_SLOT_MAX).map(x=>({grade:x.grade,name:String(relicKoName(x)).slice(0,20),   // 1017 — 128종 유물은 종류의 한국어 이름
-             aff:(x.aff||[]).map(a=>({k:a.k,n:a.n,v:a.v}))}))};
+             aff:relicAffEff(x, g).map(a=>({k:a.k,n:a.n,v:a.v}))}))};   // 1017 — 공명(×1.5)은 얹어서
 }
 function leagueMyPack(sids, form){
   const gs = (sids||[]).filter(Boolean).map(id => (S.graduates||[]).find(g=>g.sid===id)).filter(gradCanFight);
@@ -18060,12 +18223,13 @@ const CHURCH_HEAL   = 1000;   // 부상 치료 비용
 const CHURCH_LIMIT = {don:1, big:1, water:2, book:2};
 /* 성물 */
 const HOLY_WATER_PER = 100, HOLY_WATER_COND = 15;   // 신비한 성수 — 학생 한 명당 값(살 때) · 사 두었다가 진행 탭에서 쓰면 전원 컨디션 회복 (1016 — S.waters 병 수)
-function holyWaterCost(){ return Math.max(HOLY_WATER_PER, (S.students||[]).length * HOLY_WATER_PER); }
+function holyWaterCost(){ return Math.round(Math.max(HOLY_WATER_PER, (S.students||[]).length * HOLY_WATER_PER) * relicBuyMul()); }   // 1017 — 구매 가격 (유물)
 /* 예지의 서 — 사뒀다가 진행 탭에서 손패를 갈아엎는다.
    한 권 살 때마다 100 G 씩 오르고 1,000 G 에서 멈춘다. */
 const FORESIGHT_G = 200, FORESIGHT_STEP = 100, FORESIGHT_MAX = 1000;
 function foresightBought(){ return churchState().bookN|0; }
-function foresightPrice(){ return Math.min(FORESIGHT_G + foresightBought()*FORESIGHT_STEP, FORESIGHT_MAX); }
+function foresightPriceAt(n){ return Math.round(Math.min(FORESIGHT_G + n*FORESIGHT_STEP, FORESIGHT_MAX) * relicBuyMul()); }   // n 권째 값 (1017 — 구매 가격 · 유물)
+function foresightPrice(){ return foresightPriceAt(foresightBought()); }
 function churchBought(k){ return churchLeft(k) <= 0; }
 function churchMark(k){ churchTake(k); }
 function bookCount(){ return S.books|0; }
@@ -18103,7 +18267,7 @@ function buyForesight(){
   S.books = bookCount() + 1;
   const nx = foresightPrice();
   logE(`<b>예지의 서</b>를 한 권 들였다 (${fmt(price)} G). 진행 탭에서 일과를 통째로 바꿀 수 있다.${
-    nx>price? ` 다음 권부터는 <b>${fmt(nx)} G</b>를 부른다.` : ` 값은 <b>${fmt(FORESIGHT_MAX)} G</b>에서 더 오르지 않는다.`}`,"good");
+    nx>price? ` 다음 권부터는 <b>${fmt(nx)} G</b>를 부른다.` : ` 값은 <b>${fmt(foresightPriceAt(99))} G</b>에서 더 오르지 않는다.`}`,"good");
   save(); render(); toast(`예지의 서 ${bookCount()}권`);
 }
 /* 손패 교체 — 월~금 슬롯에 올려둔 카드는 건드리지 않는다 */
@@ -18193,7 +18357,7 @@ function viewChurch(){
         <div class="on">신비한 성수${shopLeftTag(churchLeft("water"), CHURCH_LIMIT.water)}<span class="price">${fmt(holyWaterCost())} G</span></div>
         <div class="od">사 두었다가 진행 탭에서 쓰면 전 학생의 컨디션이 <b style="color:var(--ok)">${HOLY_WATER_COND}</b> 회복된다.</div>
       </button>`}
-      ${churchLv() < 2? "" : (()=>{ const pr = foresightPrice(), done = churchBought("book"), nx = Math.min(pr+FORESIGHT_STEP, FORESIGHT_MAX);
+      ${churchLv() < 2? "" : (()=>{ const pr = foresightPrice(), done = churchBought("book"), nx = foresightPriceAt(foresightBought()+1);
         return `<button class="opt ${done?"locked":""} ${S.gold<pr?"poor":""}" id="btnBook" ${done?"disabled":""}>
         <div class="on">예지의 서${shopLeftTag(churchLeft("book"), CHURCH_LIMIT.book)}<span class="price">${fmt(pr)} G</span></div>
         <div class="od">진행 탭에서 펼치면 <b>일과를 통째로</b> 새로 뽑는다. 월~금에 올려둔 카드는 그대로 둔다.</div>
@@ -19561,7 +19725,7 @@ function viewRelic(){
       ${pool.length? sortSelect("rlsort", RELIC_SORT, rMode) : ""}</div>
     ${(()=>{ const P=RELIC_SELL;
       const rows = !shopUnlocked()? [] : ["C","B","A"].map(g=>{ const n=pool.filter(r=>r.grade===g && !relicUnique(r)).length;   // 유물 처분 — 도구 상점(구매 탭)이 열린 뒤 (0929)
-        return n? `<button class="btn sm ${g==="A"?"":""}" data-sellgrade="${g}" style="${g==="A"?"border-color:var(--bad)":""}">${g}급 ${n}개 일괄 처분 <span style="color:var(--brass)">+${fmt(n*P[g])} G</span></button>` : ""; }).filter(Boolean);
+        return n? `<button class="btn sm ${g==="A"?"":""}" data-sellgrade="${g}" style="${g==="A"?"border-color:var(--bad)":""}">${g}급 ${n}개 일괄 처분 <span style="color:var(--brass)">+${fmt(n*relicSellPrice({grade:g}))} G</span></button>` : ""; }).filter(Boolean);
       const bare = S.students.filter(st=> (st.relics||[]).filter(Boolean).length < relicSlots(st)).length;
       const rec = pool.length && bare ? `<button class="btn sm primary" id="btnRelicAuto" title="유물 칸이 비어 있는 학생에게 역할에 맞는 유물을 골라 빈 칸을 채운다 (이미 찬 유물은 그대로)">추천 장착 <span style="opacity:.8">(빈 칸 ${bare}명)</span></button>` : "";
       const worn = S.students.reduce((a,st)=> a + (st.relics||[]).filter(Boolean).length, 0);
@@ -19572,6 +19736,7 @@ function viewRelic(){
       <div class="opt" style="cursor:default">
         ${relicNameHtml(r)}
         ${relicAffHtml(r)}
+        ${relicInfoHtml(r)}
         ${relicMetaHtml(r)}
         <div style="margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
           <select data-eqsel="${i}" style="background:var(--bg);border:1px solid var(--line);border-radius:2px;padding:3px 5px;font-size:12px">
@@ -19579,7 +19744,7 @@ function viewRelic(){
           </select>
           <button class="btn sm" data-equip="${i}">장착</button>
           ${r.grade==="S" && !r.kind && synthOn() ? `<button class="btn sm" data-synth="${i}" style="border-color:var(--brass);color:var(--brass)">합성</button>` : ""}
-          ${!shopUnlocked()? "" : relicUnique(r) ? `<span class="hint" style="font-size:11px;color:var(--dim)">하나뿐인 유물은 처분하지 않는다</span>` : RELIC_SELL[r.grade] ? `<button class="btn sm ghost" data-sell="${i}">처분 (+${fmt(RELIC_SELL[r.grade])}G)</button>`
+          ${!shopUnlocked()? "" : relicUnique(r) ? `<span class="hint" style="font-size:11px;color:var(--dim)">하나뿐인 유물은 처분하지 않는다</span>` : RELIC_SELL[r.grade] ? `<button class="btn sm ghost" data-sell="${i}">처분 (+${fmt(relicSellPrice(r))}G)</button>`
             : `<span class="hint" style="font-size:11px;color:var(--dim)">SP 로 얻은 유물은 처분할 수 없다</span>`}
         </div>
         ${S.students.length? `<div class="od reqpw" data-eqpw="${i}" style="margin-top:5px">${relicEquipPreview(r, S.students[0])}</div>` : ""}
@@ -20699,7 +20864,7 @@ function viewScout(){
         const st = c.state;
         return `<div class="opt ${st!=="open"?"locked":""}" style="cursor:default">
           <div class="on">${dnH(s)} ${gradeTag(s.grade)} ${roleTag(s.job)}
-            <span class="price">${st==="got"?"영입 완료":st==="lost"?"떠남":"성공률 "+(c.rate*100).toFixed(0)+"%"}</span></div>
+            <span class="price">${st==="got"?"영입 완료":st==="lost"?"떠남":"성공률 "+(relicScoutRate(c)*100).toFixed(0)+"%"}</span></div>
           <div class="od">잠재력 ${Math.round(s.ment.pot)}${st==="retry"?' · <b style="color:var(--warn)">재설득 가능</b>':""}</div>
           <div class="od">${MENTAL.filter(m=>m.k!=="pot").map(m=>`${m.n} ${Math.round(s.ment[m.k])}`).join(" · ")}</div>
           ${(st==="open"||st==="retry")? `<div style="margin-top:6px"><button class="btn sm primary" data-scout="${i}" ${got>=enrollCap()||(S.scoutTries||0)<=0?"disabled":""}>${st==="retry"?"한 번 더 설득":"영입 시도"}</button></div>`:""}
@@ -21242,8 +21407,8 @@ function bindView(){
       const keep = [], sold = [];
       (S.relicPool||[]).forEach(r=> ((r.grade===g && !relicUnique(r))? sold : keep).push(r));   // 하나뿐인 유물(전설 · 직업)은 처분하지 않는다 (1017)
       if(!sold.length) return;
+      const gain = sold.length*relicSellPrice({grade:g});   // 1017 — 바른 저울 · 운명의 셈판 (판 것까지 셈에 넣고)
       S.relicPool = keep;
-      const gain = sold.length*P[g];
       addGold(gain);
       logE(`유물 ${g}급 ${sold.length}개 일괄 처분 — 자금 +${fmt(gain)}`,"good");
       save(); render(); toast(`${g}급 ${sold.length}개를 처분했다.`);
@@ -21251,7 +21416,7 @@ function bindView(){
     if(g !== "A"){ doSell(); return; }
     /* A급은 아까운 물건이라 한 번 더 묻는다 */
     showModal(`<h2 style="font-size:17px;margin-bottom:8px">A급 유물 일괄 처분</h2>
-      <p style="color:var(--muted);font-size:13px;margin-bottom:12px">보관고의 <b style="color:var(--text)">A급 유물 ${n}개</b>를 전부 처분하고 <b style="color:var(--brass)">${fmt(n*P.A)} G</b>를 받는다. 되돌릴 수 없다. 장착 중인 유물은 처분되지 않는다.</p>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:12px">보관고의 <b style="color:var(--text)">A급 유물 ${n}개</b>를 전부 처분하고 <b style="color:var(--brass)">${fmt(n*relicSellPrice({grade:"A"}))} G</b>를 받는다. 되돌릴 수 없다. 장착 중인 유물은 처분되지 않는다.</p>
       <div class="btnrow"><button class="btn primary" id="rsNo">취소</button><button class="btn" id="rsYes" style="border-color:var(--bad);color:var(--bad)">정말 처분한다</button></div>`, ()=>{
       $("#rsNo").onclick = closeModal;
       $("#rsYes").onclick = ()=>{ closeModal(); doSell(); };
@@ -21308,15 +21473,16 @@ function bindView(){
     if(relicUnique(r)){ toast("하나뿐인 유물은 처분하지 않는다."); return; }
     const doSell = ()=>{
       const cur = S.relicPool.indexOf(r); if(cur < 0) return;   // 팝업이 떠 있는 동안 목록이 바뀌어도 그 유물만 판다
-      addGold(RELIC_SELL[r.grade]);
+      const pr = relicSellPrice(r);   // 1017 — 판매가 (유물 효과)
+      addGold(pr);
       S.relicPool.splice(cur,1); save(); render();
-      toast(`${r.name} 처분 — +${fmt(RELIC_SELL[r.grade])} G`);
+      toast(`${relicNameOf(r)} 처분 — +${fmt(pr)} G`);
     };
     /* S · S+ 는 한 번 더 묻는다 */
     if(r.grade !== "S" && r.grade !== "S+"){ doSell(); return; }
     showModal(`<h2 style="font-size:17px;margin-bottom:8px">${r.grade}급 유물 처분</h2>
       <div class="opt" style="cursor:default;max-width:360px;margin:0 0 12px">${relicNameHtml(r)}${relicAffHtml(r)}</div>
-      <p style="color:var(--muted);font-size:13px;margin-bottom:12px">이 유물을 처분하고 <b style="color:var(--brass)">${fmt(RELIC_SELL[r.grade])} G</b>를 받는다. 되돌릴 수 없다.</p>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:12px">이 유물을 처분하고 <b style="color:var(--brass)">${fmt(relicSellPrice(r))} G</b>를 받는다. 되돌릴 수 없다.</p>
       <div class="btnrow"><button class="btn primary" id="rsNo">취소</button><button class="btn" id="rsYes" style="border-color:var(--bad);color:var(--bad)">처분한다</button></div>`, ()=>{
       $("#rsNo").onclick = closeModal;
       $("#rsYes").onclick = ()=>{ closeModal(); doSell(); };
@@ -25372,6 +25538,7 @@ function friendlyRecord(t, b, ids){
   const win = b.winner==="A";
   const aliveA = b.A.filter(u=>u.alive).length, aliveB = b.B.filter(u=>u.alive).length;
   t.results.push({label:`제${t.matchIdx+1}경기`, vs:t.foe.name, win, score:`${aliveA}-${aliveB}`, myIds:ids.slice(), foes:b.B.map(u=>u.name)});
+  if(win) relicWinTally(ids);   // 1017 — 깨어남
   if(win) t.w++; else t.l++;
   t.matchIdx++;
   if(t.matchIdx >= t.need){ t.stage="result"; renderTournament(); return; }
@@ -25380,14 +25547,14 @@ function friendlyRecord(t, b, ids){
 function finishFriendly(t){
   const F = friendlyState(t.ph||"spring");
   const tierM = 1 + t.foe.tier*.18;
-  const gold = Math.round((140 + t.w*180) * tierM);
+  const gold = Math.round((140 + t.w*180) * tierM * relicPrizeMul());   // 1017 — 판돈
   addGold(gold);
   // 명성 — 등급 차이에 따라 걸고 한다
   const diff = t.foe.tier - fameTitleUpIdx(t);
   let fame = 0;
   t.results.forEach(r=>{ fame += friendlyFame(diff, r.win); });
   const fameBefore = S.fame;
-  if(fame) addFame(fame);
+  if(fame) addFame(fame > 0 ? Math.round(fame * relicMatchFameMul()) : fame);   // 1017 — 기억되는 승리 (얻는 명성만)
   const fameReal = S.fame - fameBefore;
   const parts = new Set(); t.results.forEach(r=> r.myIds.forEach(id=>parts.add(id)));
   const rows=[], ups=[];
@@ -25395,7 +25562,7 @@ function finishFriendly(t){
     const s2 = S.students.find(x=>x.id===id); if(!s2) return;
     const myWins = t.results.filter(r=>r.win && r.myIds.includes(id)).length;
     const got = addEval(s2, myWins*2 + 1);
-    const fg = Math.round(myWins*4 + 2);
+    const fg = Math.round((myWins*4 + 2) * relicFameMul(s2));   // 1017 — 새 이름
     s2.fame += fg;
     const lv0 = s2.level;
     const mates = t.results.filter(r=>r.myIds.includes(id)).reduce((a,r)=>a.concat(r.myIds),[]);
@@ -25823,6 +25990,7 @@ function recordMatch(t, b, oppName, myIds){
   const win = b.winner==="A";
   const aliveA = b.A.filter(u=>u.alive).length, aliveB = b.B.filter(u=>u.alive).length;
   t.results.push({vs:oppName, win, score:`${aliveA}-${aliveB}`, myIds:myIds.slice(), foes:b.B.map(u=>u.name)});
+  if(win) relicWinTally(myIds);   // 1017 — 깨어남
   if(t.kind==="spring"){
     t.matchIdx++;
     if(t.matchIdx>=4){ finishTournament(t); render(); return; }

@@ -436,5 +436,16 @@
  "하나뿐인 유물은 처분하지 않는다.": "One-of-a-kind relics can't be sold.",
  "원정 — {0}": "Expedition — {0}",
  "유물 — {0}": "Relics — {0}",
- "마을 손님 — {0}": "Town visitor — {0}"
+ "마을 손님 — {0}": "Town visitor — {0}",
+ "유물 — <b>{0}</b>의 <b>{2}</b>{3} 완전히 깨어났다 — 함께 이긴 전투 {4}번 (S)": "Relic — <b>{0}</b>'s <b>{2}</b> has fully awakened — {4} battles won together (S)",
+ "유물 — <b>{0}</b>의 <b>{2}</b>{3} 깨어났다 — 함께 이긴 전투 {4}번 (A)": "Relic — <b>{0}</b>'s <b>{2}</b> has awakened — {4} battles won together (A)",
+ "{0} — 함께 이긴 전투 {1} / {2}": "{0} — battles won together {1} / {2}",
+ "{0} — 함께 이긴 전투 {1}": "{0} — battles won together {1}",
+ "공명 — {0} 장착 시 능력 ×{1}": "Resonance ({0}) — stats ×{1} when equipped",
+ "공명 — {0}": "Resonance — {0}",
+ "세트 — '{0}' {1}": "Set — ‘{0}’ {1}",
+ "세트 — '{0}' · {1}": "Set — ‘{0}’ · {1}",
+ "_relicCtx": "문맥 키 — 유물 칸의 '해제' 단추 (학생 상세 studentDetail · 학생 명부 책은 블록 IIFE · 전역 키 '해제'는 경과 보고의 '장착 · 해제 N개')",
+ "studentDetail|해제": "Unequip",
+ "(IIFE)|해제": "Unequip"
 }

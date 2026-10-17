@@ -81,7 +81,7 @@
  "{0} 지속 회복 — 차례마다 최대 체력 {1}% ({2}턴)": "{0} regen — {1}% of max HP each turn ({2} {2|turn|turns})",
  "<b>{0}</b> 필살 게이지 +{1}": "<b>{0}</b> Ult Gauge +{1}",
  "<b>{0}</b> 봉인 해제 — 모든 능력 +{1}% · 단일 기술이 전체로 · 행동 게이지 +{2}% ({3}턴)": "<b>{0}</b> Unseal — all stats +{1}% · single-target skills hit everyone · Action Gauge +{2}% ({3} {3|turn|turns})",
- "적 전체 행동 정지 · 아군 필살 게이지 +30": "All enemies frozen · allies' Ult Gauge +30",
+ "적 전체 행동 정지 · 아군 필살 게이지 +{0}": "All enemies frozen · allies' Ult Gauge +{0}",
  "필살기": "Ult",
  "_expedBattle()": "",
  "원정대": "Expedition Party",
