@@ -1609,6 +1609,145 @@ html body .cw-ov .cw-win button.cw-cookie-plate:is(:hover,:active,:focus,:focus-
 .lkw-win.compact .lkw-tt,.lkw-win.compact .lkw-unk{display:none}
 @media (prefers-reduced-motion:reduce){.lkw-spr,.lkw-joy i,.lkw-gloom.on,.lkw-think.on{animation:none}.lkw-gloom.on{clip-path:none}}
 /* LKWIN_CSS_END */
+/* SCOUTWIN_CSS_START — 겨울 스카우트 개편 (1019 · apply_scout.py) ─ 목록 · 확인 팝업은 건물 안 창 색(TOWNIN 과 같은 값 — 밝은 · 어두운 화면 · 도트 마감 · 팔레트와 상관없이 같다 ·
+   게임이 모든 button 에 붙이는 테두리 · 그림자는 html body #view / #modalRoot … 로 걷는다). 설득 대화는 상담창(.cw-* — CSLWIN_CSS) 그대로에 효과만 (.scw-cw) */
+.scw,.scw-pal{--scw-ink:#fff4e6;--scw-line:#e9cdbf;--scw-edge:#b98f84;--scw-win:#2a1418;--scw-panel:#42191f;--scw-card:#5b2a30;--scw-gold:#ffd36a;--scw-dim:#e2c2b6;
+  --scw-t0:#ff9282;--scw-t1:#ffbe86;--scw-t2:#fff4e6;--scw-t3:#a6e48e;--scw-t4:#ffd36a}
+.scw{position:relative;margin:0 0 14px;padding:16px 16px 14px;background:var(--scw-win);color:var(--scw-ink);text-align:left;
+  font:400 16px/1.55 "Mulmaru",sans-serif;-webkit-font-smoothing:none;font-synthesis:none;letter-spacing:0;
+  box-shadow:inset 0 0 0 2px var(--scw-line),inset 0 0 0 4px var(--scw-win),inset 0 0 0 6px #8a5a4a,0 0 0 2px #140a0c,0 8px 0 #0005,0 14px 28px #0006}
+.scw *,.scw-ov *{box-sizing:border-box}
+.scw-head{display:flex;align-items:flex-end;justify-content:space-between;gap:6px 16px;flex-wrap:wrap;padding:2px 6px 10px;border-bottom:1px dashed #b98f8499}
+.scw-head h2{margin:0;font:400 28px/1.15 "Mulmaru",sans-serif;color:var(--scw-ink);letter-spacing:0}
+.scw-meta{display:flex;align-items:center;gap:4px 16px;flex-wrap:wrap;font-size:14px;line-height:22px;color:var(--scw-dim)}
+.scw-meta b{font-weight:400;color:var(--scw-gold);font-family:"Mulmaru Mono","Mulmaru",monospace}
+.scw-mag,.scw-hand{display:inline-block;width:32px;height:32px;background:var(--scw-icons) no-repeat;background-size:var(--scw-sheet);image-rendering:pixelated}
+.scw-mag{margin:-6px 0 -6px -4px;vertical-align:middle;background-position:var(--scw-mag)}
+.scw:not(.ic) .scw-mag{display:none}
+.scw-note{margin:8px 6px 0;font-size:13px;line-height:20px;color:var(--scw-dim)}
+.scw-note.ok{color:var(--scw-t3)}.scw-note.bad{color:var(--scw-t0)}
+.scw-list{display:flex;flex-direction:column;gap:10px;margin-top:12px;padding:8px 6px 4px 34px}
+.scw-it{position:relative}
+.scw-it .scw-hand{position:absolute;left:-34px;top:50%;margin-top:-16px;visibility:hidden;pointer-events:none;background-position:var(--scw-hand)}
+.scw.ic .scw-it:not(.off):is(:hover,:focus-within) .scw-hand{visibility:visible;animation:scwPoint .7s steps(2) infinite}
+@keyframes scwPoint{0%,100%{transform:none}50%{transform:translateX(3px)}}
+/* 줄 — 카드 (건물 안 상품 카드와 같은 이중 테두리) */
+html body #view .scw button.scw-row.scw-row{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:14px;row-gap:8px;align-items:center;
+  width:100%;margin:0;padding:12px 16px 12px 12px!important;text-align:left;font:inherit;color:var(--scw-ink)!important;background:var(--scw-card)!important;border:0!important;border-radius:0!important;
+  cursor:pointer;box-shadow:inset 0 0 0 2px var(--scw-line),inset 0 0 0 4px var(--scw-card),inset 0 0 0 5px var(--scw-edge),2px 3px 0 #0007!important}
+html body #view .scw .scw-it:not(.off) button.scw-row.scw-row:is(:hover,:focus-visible){outline:none!important;filter:brightness(1.07);
+  box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 4px var(--scw-card),inset 0 0 0 5px var(--scw-line),2px 3px 0 #0007,0 0 0 2px #ffd36a66!important}
+html body #view .scw .scw-it.off button.scw-row.scw-row{cursor:default}
+html body #view .scw .scw-it.got button.scw-row.scw-row{background:#4e3326!important}
+.scw-it.lost .scw-row{filter:grayscale(.75) brightness(.72)}
+.scw-it.wait .scw-row{filter:saturate(.7) brightness(.86)}
+.scw-face{grid-row:1 / span 2;position:relative;display:block;width:84px;height:84px;background:linear-gradient(#80504a,#4a242a 70%,#3a1a20);
+  box-shadow:inset 0 0 0 2px var(--scw-line),inset 0 0 0 4px #3a1a20,inset 0 0 0 5px var(--scw-edge),0 0 0 2px #140a0c}
+.scw-face i{position:absolute;inset:5px;overflow:hidden}
+.scw-face img{display:block;width:100%;height:100%;max-width:none;object-fit:cover;transform:translateY(5%) scale(1.08)}
+.scw-it.got .scw-face::after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 0 2px #9bdc84aa}
+.scw-top{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}
+.scw-grade{flex:none;display:inline-grid;place-items:center;width:30px;height:30px;font:400 18px/1 "Mulmaru Mono","Mulmaru",monospace;color:var(--g,#e2c2b6);background:#2e1418;
+  box-shadow:inset 0 0 0 2px var(--g,#e2c2b6),0 0 0 1px #140a0c}
+.scw-grade.g-S{--g:#ffd36a}.scw-grade.g-A{--g:#d9a8ff}.scw-grade.g-B{--g:#8fc8ff}.scw-grade.g-C{--g:#e2c2b6}.scw-grade.g-D{--g:#b49890}
+.scw-job{flex:none;padding:3px 9px;font-size:13px;line-height:20px;color:var(--r,#e2c2b6);background:#2e141899;box-shadow:inset 0 0 0 1px var(--r,#e2c2b6)}
+.scw-job.tone-tank{--r:#7fb2e2}.scw-job.tone-dps{--r:#ec8a74}.scw-job.tone-heal{--r:#6cc497}.scw-job.tone-supp{--r:#b49cf0}
+.scw-name{min-width:132px;padding:2px 16px;font-size:18px;line-height:26px;color:var(--scw-ink);background:var(--scw-panel);
+  box-shadow:inset 0 0 0 2px var(--scw-line),inset 0 0 0 4px var(--scw-panel),inset 0 0 0 5px var(--scw-edge)}
+.scw-diff{display:flex;align-items:center;gap:8px;margin-left:auto;padding-right:2px;font-size:13px;color:var(--scw-dim);white-space:nowrap}
+.scw-stars{display:inline-flex;gap:2px}
+.scw-stars i{display:block;width:18px;height:18px;background:0 0/100% 100% no-repeat;image-rendering:pixelated}
+/* 멘탈리티 여섯 — 한 칸 = 이름 + 단계 (넓으면 세 칸씩 · 좁으면 두 칸씩 · 아주 좁으면 한 칸씩) */
+.scw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(max(150px,calc((100% - 6px) / 3)),1fr));gap:3px;min-width:0}
+.scw-m{display:grid;grid-template-columns:minmax(66px,auto) minmax(0,1fr);gap:3px;min-width:0}
+.scw-m .k,.scw-m .v{display:flex;align-items:center;justify-content:center;min-width:0;padding:3px 6px;line-height:22px;white-space:nowrap}
+.scw-m .k{font-size:14px;color:var(--scw-dim);background:var(--scw-panel)}
+.scw-m .ks{display:none}
+.scw-m .v{gap:7px;font-size:15px;color:var(--tc,var(--scw-ink));background:#6c3238;box-shadow:inset 0 1px 0 #ffffff12}
+.scw-m .v.unk{color:#9a7870;background:#2a1216;box-shadow:inset 0 0 0 1px #00000040}
+.scw-m .v.t0{--tc:var(--scw-t0)}.scw-m .v.t1{--tc:var(--scw-t1)}.scw-m .v.t2{--tc:var(--scw-t2)}.scw-m .v.t3{--tc:var(--scw-t3)}
+.scw-m .v.t4{--tc:var(--scw-t4);background:#7a3c32;text-shadow:0 0 6px #ffd36a66}
+.scw-m .pp{display:inline-flex;gap:2px;flex:none}
+.scw-m .pp i{display:block;width:5px;height:10px;background:#00000059;box-shadow:inset 0 0 0 1px #b98f8440}
+.scw-m .pp i.on{background:var(--tc);box-shadow:inset 0 -2px 0 #00000038}
+/* 상태 띠 — 고민 중 · 입학 예정 · 다른 학원으로 */
+.scw-rib{position:absolute;right:-6px;top:-9px;z-index:1;padding:1px 12px 1px 20px;font-size:13px;line-height:20px;color:#3a1608;background:var(--rb);
+  clip-path:polygon(0 50%,11px 0,100% 0,100% 100%,11px 100%);filter:drop-shadow(2px 2px 0 #0008)}
+.scw-rib.r-retry{--rb:#ffc35a}.scw-rib.r-got{--rb:#9bdc84}.scw-rib.r-lost{--rb:#a59490}
+@media (max-width:640px){
+  .scw{padding:12px 10px 10px}
+  .scw-head h2{font-size:22px}
+  .scw-list{padding:6px 2px 2px}
+  .scw-it .scw-hand{display:none}
+  html body #view .scw button.scw-row.scw-row{grid-template-columns:60px minmax(0,1fr);column-gap:10px;padding:10px!important}
+  .scw-face{grid-row:1;width:60px;height:60px}
+  .scw-face i{inset:4px}
+  .scw-name{min-width:0;padding:2px 10px;font-size:16px}
+  .scw-diff{margin-left:0;width:100%}
+  .scw-grid{grid-column:1 / -1;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .scw-m{grid-template-columns:minmax(50px,auto) minmax(0,1fr)}
+  .scw-m .kl{display:none}.scw-m .ks{display:inline}
+  .scw-rib{right:-4px}
+}
+/* 스카우트 확인 — 건물 안 창 · 선택지 상자 (손가락) */
+.scw-ov{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:16px;background:rgba(10,5,6,.55)}
+.scw-ask{width:min(460px,100%);padding:14px 16px;color:var(--scw-ink);text-align:left;font:400 16px/1.55 "Mulmaru",sans-serif;-webkit-font-smoothing:none;font-synthesis:none;letter-spacing:0;
+  background:var(--scw-win);outline:none;animation:scwIn .2s steps(3) 1;
+  box-shadow:inset 0 0 0 2px var(--scw-line),inset 0 0 0 4px var(--scw-win),inset 0 0 0 6px #8a5a4a,0 0 0 2px #140a0c,0 8px 0 #0005,0 14px 28px #0006}
+@keyframes scwIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.scw-ask h2{margin:0 0 12px;padding:2px 4px 8px;font:400 20px/1.3 "Mulmaru",sans-serif;color:#ffd8c8;border-bottom:1px dashed #b98f8499;letter-spacing:0}
+.scw-ask .who{display:flex;align-items:center;gap:14px;padding:0 4px}
+.scw-ask .scw-face{flex:none;width:72px;height:72px}
+.scw-ask .nm{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.scw-ask .nm b{font-weight:400;font-size:18px}
+.scw-ask .q{margin:8px 0 0;font-size:16px;line-height:1.5;color:var(--scw-ink)}
+.scw-ask .d{margin:12px 4px 0;font-size:13px;line-height:20px;color:var(--scw-dim)}
+.scw-ask .d b{font-weight:400;color:var(--scw-gold)}
+.scw-menu{display:flex;flex-direction:column;gap:2px;margin-top:12px;padding:8px 14px 8px 6px;background:#42191ff2;
+  box-shadow:inset 0 0 0 2px var(--scw-line),inset 0 0 0 4px var(--scw-panel),inset 0 0 0 5px var(--scw-edge),0 0 0 2px #140a0c,3px 4px 0 2px #0006}
+html body #modalRoot .scw-ov button.scw-ch.scw-ch{display:flex;align-items:center;gap:4px;width:100%;min-height:0;margin:0;padding:2px 6px 2px 0!important;font:inherit;font-size:16px;line-height:1.55;
+  color:var(--scw-ink)!important;background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;outline:none!important;cursor:pointer;text-align:left}
+.scw-ch span{flex:1;min-width:0}
+.scw-ch .scw-hand{flex:none;visibility:hidden;background-position:var(--scw-hand)}
+.scw-ov:not([style*="--scw-icons"]) .scw-ch .scw-hand{width:12px;background:none}
+html body #modalRoot .scw-ov button.scw-ch.scw-ch:is(.hot,:hover){color:#fff!important}
+.scw-ch:is(.hot,:hover,:focus-visible) .scw-hand{visibility:visible}
+/* 설득 대화 — 상담창 그대로 + 구름 덧말 · 흐린 구름 · 효과 */
+.scw-cw .cw-tab b{font-family:"Mulmaru Mono","Mulmaru",monospace}
+.scw-cw .cw-cloud .cw-txt small{display:block;margin-top:2px;font-size:12px;line-height:14px;color:var(--cw-dim)}
+.cw-ov.scw-cw .cw-win .cw-clouds button.cw-cloud.dis{cursor:default;filter:grayscale(1) opacity(.6) drop-shadow(2px 2px 0 rgba(0,0,0,.25))}
+.scw-cw .cw-cloud.dis:hover .cw-txt{color:var(--cw-ink)}
+.scw-fx{position:absolute;inset:0;z-index:6;pointer-events:none}
+/* 승낙 — 폴짝 · 머리 왼쪽 위 ~♪ 한 번 (떠올랐다 사라진다) */
+.scw-cw .cw-stu{translate:0 0;transition:opacity .7s ease,transform .7s ease,filter .25s,translate .4s steps(2)}
+.scw-cw .cw-stu.scw-ok{animation:scwHop .5s steps(4) 1}
+@keyframes scwHop{0%,100%{translate:0 0}30%{translate:0 -10px}65%{translate:0 -3px}}
+.scw-cw .cw-stu.scw-no{translate:0 3px}
+.scw-cw .cw-stu.scw-no :is(.cw-spr,.cw-face){filter:brightness(.82) saturate(.62);transition:filter .45s}
+.scw-joy{position:absolute;width:90px;height:48px;opacity:0}
+.scw-joy.on{opacity:1;animation:scwPop .36s steps(3) 1,scwJoyOut .6s steps(4) 2.2s forwards}
+@keyframes scwPop{0%{transform:scale(.4)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes scwJoyOut{to{opacity:0;transform:translateY(-14px)}}
+.scw-joy i{position:absolute;background:0 0/100% 100% no-repeat;image-rendering:pixelated}
+.scw-joy .jt{left:0;top:24px;animation:scwSway 1.2s steps(2) 2}
+.scw-joy .j1{left:33px;top:0;animation:scwBob .9s steps(2) 3}
+.scw-joy .j2{left:54px;top:6px;opacity:0;animation:scwFloat 1.9s steps(10) .35s 1 forwards}
+.scw-joy .j3{left:-12px;top:-8px;opacity:0;animation:scwFloat 1.9s steps(10) .8s 1 forwards}
+@keyframes scwBob{0%,100%{transform:none}50%{transform:translateY(-2px)}}
+@keyframes scwSway{0%,100%{transform:none}50%{transform:translateX(2px)}}
+@keyframes scwFloat{0%{opacity:0;transform:none}12%{opacity:1}72%{opacity:1}100%{opacity:0;transform:translate(8px,-26px)}}
+/* 거절 — 머리 둘레 | | | (위에서 내려오고 천천히 흐려졌다 짙어진다) */
+.scw-gloom{position:absolute;background:0 0/100% 100% no-repeat;image-rendering:pixelated;opacity:0;clip-path:inset(0 0 100% 0)}
+.scw-gloom.on{opacity:1;animation:scwDrop .5s steps(6) forwards,scwDim 2.4s steps(2) .6s infinite}
+@keyframes scwDrop{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes scwDim{0%,100%{opacity:1}50%{opacity:.7}}
+/* 고민 — 머리 옆 땀방울 (살짝 흘러내린다) */
+.scw-sweat{position:absolute;background:0 0/100% 100% no-repeat;image-rendering:pixelated;opacity:0}
+.scw-sweat.on{animation:scwSweat 1.8s steps(6) .1s infinite}
+@keyframes scwSweat{0%{opacity:0;transform:none}15%{opacity:1}70%{opacity:1;transform:translateY(8px)}100%{opacity:0;transform:translateY(10px)}}
+.cw-ov.scw-cw.instant,.scw-cw.instant *,.scw-cw.instant *::before,.scw-cw.instant *::after{transition:none!important}
+@media (prefers-reduced-motion:reduce){.scw-joy i,.scw-gloom.on,.scw-sweat.on,.scw-cw .cw-stu.scw-ok,.scw-hand,.scw-ask{animation:none!important}.scw-gloom.on{clip-path:none}.scw-sweat.on,.scw-joy.on{opacity:1}}
+/* SCOUTWIN_CSS_END */
 .teamtabs{display:flex;gap:6px;flex-wrap:wrap}
 .ttab{border:1px solid var(--line);border-radius:3px;background:var(--bg);padding:7px 14px;cursor:pointer;
   font-size:13px;font-weight:600;color:var(--muted);display:flex;flex-direction:column;align-items:flex-start;gap:2px;transition:.12s}
@@ -14822,27 +14961,6 @@ function genScouts(){
   }).sort((a,b)=> (GR[b.st.grade]-GR[a.st.grade]) || (b.st.ment.pot-a.st.ment.pot));
   S.incoming = [];
 }
-function tryScout(i){
-  const c = S.scouts[i];
-  if(!c || (c.state!=="open" && c.state!=="retry")) return;
-  if(scoutFull()){ toast(`이미 ${enrollCap()}명을 확보했다.`); return; }
-  if((S.scoutTries||0) <= 0){ toast("남은 스카우트 시도가 없다."); return; }
-  S.scoutTries--;
-  c.tried = (c.tried||0)+1;
-  if(RNG() < relicScoutRate(c)){   // 1017 — 먼 부름 (스카우트 성공률 +%p)
-    c.state="got"; S.incoming.push(c.st);
-    logE(`스카우트 성공 — <b>${dnH(c.st)}</b> (${c.st.grade}급 ${JOBS[c.st.job].name}) 입학 예정.${
-      scoutFull()? ` <b style="color:var(--ok)">${enrollCap()}명을 모두 확보해 스카우트를 마친다</b> (남은 시도 ${S.scoutTries}회는 소멸)`
-                 : ` 남은 시도 ${S.scoutTries}회`}`,"good");
-  } else if(c.tried===1){
-    c.state="retry"; c.rate = clamp(c.rate + .10, 0, .97);
-    logE(`스카우트 실패 — ${dnH(c.st)}${iga(c.st.name)} 망설이고 있다. 한 번 더 설득할 수 있다 (성공률 ${(relicScoutRate(c)*100).toFixed(0)}%). 남은 시도 ${S.scoutTries}회`,"bad");
-  } else {
-    c.state="lost";
-    logE(`스카우트 실패 — ${dnH(c.st)}${eunn(c.st.name)} 다른 학원을 택했다. 남은 시도 ${S.scoutTries}회`,"bad");
-  }
-  save(); render();
-}
 function enrollAll(){
   announceGraduation();
   S.students.forEach(s=> s.year++);
@@ -22027,32 +22145,593 @@ function viewRecord(){
 }
 
 /* ---------- 스카우트 ---------- */
+/* SCOUTWIN_START — 겨울 스카우트 개편 (1019 · apply_scout.py) ─ mockups/scout 목업 그대로.
+   사용자 1018: '스카우트 화면을 좀 개편 … 리스트를 (파워프로 스카우트 후보 목록) 방식으로 디자인하는데 마을 내부 건물 UI의 테마 … 캐릭터 프로필 사진, 이름, 등급,
+   6가지 멘탈리티 최종 도달 가능한 기준으로 … 5단계 (실제 스탯은 안보여줌) · 정보력에 따라서 일부 숨기고 · 스카우트 하겠습니까 팝업 → 상담실같은 UI · 마스터 어필 → 학생 ... →
+   승낙/고민/거절 (성격마다) · 승낙 음표 한번 · 고민 다시 한번 설득한다/보류한다 · 거절 ||| + 다른 학원을 찾아볼 듯'.
+   1019: '1+정보력/3+스카우터레벨/2 (항마다 내림)' · 목록 아래 설명 · '멘탈리티 n/6 파악' 은 빼고 → 적용(게임에 넣음).
+   · 목록(viewScout) — 건물 안 창 색(TOWNIN 과 같은 값 · 화면 테마 · 도트 마감 · 팔레트와 상관없이) · 손가락 커서(TIN_ART 아이콘 시트).
+     줄마다 초상화(FACE_IMG) · 등급 · 직업 · 이름 · 스카우트 난이도 ★(relicScoutRate — 75% 이상 ★1 … 30% 아래 ★5) · 멘탈리티 여섯의 한계(mentCapOf)를
+     mentalGrade 경계로 5단계(부진 ~54 · 미흡 55 · 보통 70 · 우수 85 · 탁월 100 — 수치는 안 보인다) · 정보력으로 못 본 칸은 ??? · 상태 띠(고민 중 · 입학 예정 · 다른 학원으로).
+     보이는 칸 수 = 1 + ⌊마스터 정보력 ÷ 3⌋ + ⌊스카우터 Lv ÷ 2⌋ (최대 6 · scwShown) · 어느 칸인지는 학생 id 로 섞은 차례(scwOrder — 세이브에 넣을 것 없음 · 게임 난수를 쓰지 않는다)
+   · 줄을 누르면 확인 팝업(scwAsk — 건물 안 선택지 상자 · 성공률 · 남은 시도) → 예 → 설득 대화(scwOpen — 상담창 .cw-* 뼈대 · cslwSprUrl 도트 · cslwCloudArt 구름)
+     흐름: 학생이 책상 뒤로 들어온다(성격마다 · 고민 뒤 다시 오면 '다시 학원을 찾아왔다') → 마스터 어필(첫 번째 — 정보력으로 아는 '우수' 이상 칸이 있으면 그것을 짚는다 ·
+     두 번째 — 그 성격이 망설인 까닭에 답한다) → 말풍선에 …… (성격마다 0.9 ~ 2.3초) → 대답(성격마다):
+     승낙 ~♪ 한 번(떠올랐다 사라진다) · 폴짝 / 고민 땀방울 + 구름 둘(다시 한번 설득한다 — 시도 1회 · 보류한다) / 거절 | | | · 어깨가 처지고 어두워진다
+     효과 도트는 락커룸과 같은 그림(♪ · ♫ · ~ · | | |)을 1.5배 + 땀방울
+   · 결과는 설득을 시작할 때 굴린다(scoutRoll — 예전 tryScout 의 셈 · 일지 그대로: 시도 1회 · 첫 실패는 고민(+10%p) · 두 번째 실패는 떠남). 연출 중에 창을 닫아도 결과는 남는다
+   · 소리 — 상담창 것 (csl_mst · csl_stu 글자마다 · csl_ok · csl_ng · csl_pick · csl_tap) · 키 — Space · Enter 넘기기 · 1 · 2 구름 · Esc 닫기 · 목록 ↑↓
+   · 시험 · 점검용: scwOpen(i, {instant:true}) — 기다림 · 글자 찍기 없이 (SCW.log — 마스터 · 학생의 말) */
+const SCW_TIER = [55, 70, 85, 100];                              // 멘탈리티 한계 5단계 경계 — mentalGrade 의 B · A · S · EX 와 같다
+const SCW_TIER_N = ["부진", "미흡", "보통", "우수", "탁월"];
+const SCW_THINK = {intro:2300, hot:900, stone:1700, dilig:1400, tsun:1900, lively:1000, boast:1300, plain:1400, genius:1800};   // …… 기다리는 시간 (ms)
+const SCW_CPOS = [{l:10, t:40, od:"6.8s", odl:"-1.2s"}, {l:4, t:150, od:"7.6s", odl:"-4.1s"}];   // 구름 자리 (상담창 CSLW_POS 와 같은 식)
+const SCW_SFX = ["csl_mst", "csl_stu", "csl_ok", "csl_ng", "csl_pick", "csl_tap"];
+const SCW_FXK = 1.5;                                             // 무대 효과 도트 배율 — 락커룸(학생 1.5배)은 2배, 상담 무대(학생 약 1.9배)는 3배
+const SCW = {run:0, el:null, i:-1, phase:"", typing:null, skipAt:0, compact:false, fitKey:"", head:{x:280, y:92}, log:[], instant:false, art:null, ask:null};
+
+/* ── 대사 (성격마다) ── */
+const SCW_APPEAL1 = {   // 첫 어필 — 정보력으로 아는 칸에 '우수' 이상이 없을 때 (등급마다)
+  S: "너 같은 재목은 몇 해에 한 번 나올까 말까 하지. 우리 학원에 와라. 네 재능을 끝까지 키워 주겠다.",
+  A: "네 소문은 진작 들었다. 우리 학원이라면 그 재능을 제대로 꽃피울 수 있다. 함께하자.",
+  B: "기본기가 탄탄하구나. 우리 학원에서 차근차근 쌓으면 대회에서도 통할 거다. 와 보지 않겠나?",
+  C: "화려하진 않아도 꾸준한 학생이 결국 이긴다. 우리 학원에서 시작해 보지 않겠나?",
+  D: "지금 실력은 상관없다. 해 보겠다는 마음이면 충분하다. 우리 학원에 와 보지 않겠나?"};
+const SCW_APPEAL2 = {   // 다시 한번 설득 — 그 성격이 망설인 까닭에 답한다
+  intro: "잘하지 못해도 괜찮다. 처음엔 다 그렇다. 네 속도에 맞춰 같이 가 주마.",
+  hot: "다른 학원이 부른다고? 그럼 늦기 전에 말하마. 우리 학원에서 누구보다 뜨겁게 싸우게 해 주겠다!",
+  stone: "조건이라면 숨김없이 말하지. 훈련, 대회 출전, 졸업 뒤의 길까지 — 우리가 가장 확실하다.",
+  dilig: "부모님께는 내가 직접 편지를 쓰마. 성실한 학생을 맡는 일, 책임지고 하겠다.",
+  tsun: "쉽게 정하라는 게 아니다. 직접 와서 보고 정해라. 그 뒤에도 이 마음은 그대로일 거다.",
+  lively: "친구들도 좋지만, 여기서도 새 친구가 잔뜩 생길 거다. 네가 분위기를 끌어 주면 좋겠구나.",
+  boast: "그래, 영웅에게는 영웅에 걸맞은 무대가 필요하지. 그 무대를 우리 학원이 마련하겠다.",
+  plain: "특별한 약속은 못 해도, 매일 조금씩 강해지는 하루는 약속하마.",
+  genius: "배울 게 없을 만큼 쉬운 곳은 아니다. 네가 처음으로 진지해질 상대를 만나게 해 주지."};
+const SCW_ACCEPT1 = {
+  intro: "……저, 저 같은 사람도 괜찮다면……. 열심히 할게요. 잘 부탁드려요…….",
+  hot: "좋습니다! 그 말을 기다리고 있었습니다! 오늘부터 이 학원의 학생입니다!",
+  stone: "조건을 따져 봤습니다. 이 학원이 가장 합리적입니다. 신세 지겠습니다.",
+  dilig: "불러 주셔서 감사합니다. 무엇이든 성실하게 해내겠습니다. 잘 부탁드립니다!",
+  tsun: "…딱히 기다린 건 아니에요. 그래도 그렇게까지 말한다면, 가 줄게요.",
+  lively: "와아, 진짜요?! 갈래요, 갈래요! 벌써부터 신난다!",
+  boast: "후훗, 역시 보는 눈이 있으시군요! 미래의 영웅이 이 학원을 택해 드리죠!",
+  plain: "네, 좋아요. 이 학원에서 열심히 해 볼게요.",
+  genius: "음, 재밌어 보이네요. 좋아요, 가 볼게요."};
+const SCW_ACCEPT2 = {   // 다시 설득해서 승낙
+  intro: "……그렇게까지 말씀해 주시니까……. 네, 해 볼게요. 저도 바뀌고 싶어요.",
+  hot: "……그 말, 가슴에 꽂혔습니다! 결정했습니다! 이 학원으로 가겠습니다!",
+  stone: "충분히 납득했습니다. 이 학원으로 정하겠습니다.",
+  dilig: "그렇게까지 신경 써 주시다니……. 네! 이 학원에서 열심히 하겠습니다!",
+  tsun: "…알았어요, 알았다고요. 가면 되잖아요. …고마워요.",
+  lively: "헤헤, 그렇게 말하면 안 갈 수가 없잖아요! 결정! 이 학원으로 갈래요!",
+  boast: "후후, 좋습니다. 그 정성에 응해 이 몸이 친히 가 드리죠!",
+  plain: "네, 마음이 정해졌어요. 잘 부탁드려요.",
+  genius: "……좋아요. 그런 상대라면 만나 보고 싶네요."};
+const SCW_CONSIDER = {
+  intro: "저, 저는…… 아직 잘 모르겠어요. 제가 거기서 잘할 수 있을지……",
+  hot: "끌립니다! 끌리긴 하는데…… 다른 학원도 저를 부르고 있어서! 하루만, 하루만 생각하겠습니다!",
+  stone: "제안은 고맙습니다. 다만 다른 학원의 조건도 들어 보고 정하고 싶습니다.",
+  dilig: "정말 감사한 말씀이에요. 그런데 부모님과 한 번 더 상의해 보고 싶어서요……",
+  tsun: "…흥, 그렇게 쉽게 정할 것 같아요? 조금 더 생각해 볼 거예요.",
+  lively: "으음~ 재밌을 것 같긴 한데, 친구들이랑 같이 가기로 한 데가 있어서…… 고민돼요!",
+  boast: "흐음, 이 몸을 모시기엔 조금 부족한 것 같은데요? 좀 더 설득해 보시죠!",
+  plain: "음…… 좋은 학원인 건 알겠는데, 조금만 더 생각해 볼게요.",
+  genius: "글쎄요……. 여기서 배울 게 있을지, 아직 잘 모르겠어요."};
+const SCW_HOLD = {      // 보류한다 — 그 자리의 짧은 대답
+  intro: "……네. 조, 조금만 더 생각해 볼게요.",
+  hot: "알겠습니다! 답은 꼭 직접 드리러 오겠습니다!",
+  stone: "알겠습니다. 정리되면 답을 드리죠.",
+  dilig: "네, 기다려 주셔서 감사합니다.",
+  tsun: "…다음에 또 올지도 모르죠.",
+  lively: "네에~ 다음에 또 놀러 올게요!",
+  boast: "후후, 다음엔 더 근사한 제안을 기대하죠!",
+  plain: "네, 생각해 보고 말씀드릴게요.",
+  genius: "네, 천천히 생각해 볼게요."};
+const SCW_REJECT = {
+  intro: "죄, 죄송해요……. 역시 저는 다른 곳이 더 맞을 것 같아요……",
+  hot: "죄송합니다! 다른 학원에서 먼저 손을 내밀어 줘서…… 그쪽으로 가겠습니다!",
+  stone: "검토 끝에 다른 학원으로 정했습니다. 시간을 내주셔서 감사합니다.",
+  dilig: "정말 죄송해요. 가족들과 상의한 끝에 집 가까운 학원으로 정했어요……",
+  tsun: "…미안하지만, 여기는 아니에요. …다른 데 갈게요.",
+  lively: "에이, 미안해요! 친구들이랑 같은 학원 가기로 했어요! 그래도 고마웠어요!",
+  boast: "죄송하지만 이 몸에겐 더 큰 무대가 어울리는 것 같군요. 그럼 이만!",
+  plain: "죄송해요. 다른 학원으로 가기로 했어요.",
+  genius: "음…… 역시 여긴 아닌 것 같아요. 미안해요."};
+/* 들어오는 모습 — 상담창 CSL_ENTER 와 같은 말을 이름째 한 문장으로 (영어 · 일본어가 이름을 문장 안에 둘 수 있게) */
+const SCW_ENTER = {
+  intro: (N, nm)=> `${N}${iga(nm)} 쭈뼛거리며 들어와 책상 앞에 섰다.`,
+  hot: (N, nm)=> `${N}${iga(nm)} 성큼성큼 들어와 책상 앞에 섰다.`,
+  stone: (N, nm)=> `${N}${iga(nm)} 조용히 들어와 책상 앞에 섰다.`,
+  dilig: (N, nm)=> `${N}${iga(nm)} 꾸벅 인사하고 책상 앞에 섰다.`,
+  tsun: (N, nm)=> `${N}${iga(nm)} 팔짱을 낀 채 책상 앞에 섰다.`,
+  lively: (N, nm)=> `${N}${iga(nm)} 문을 벌컥 열고 들어와 손을 흔들었다.`,
+  boast: (N, nm)=> `${N}${iga(nm)} 당당한 걸음으로 들어와 책상 앞에 섰다.`,
+  plain: (N, nm)=> `${N}${iga(nm)} 할 말이 있는 듯 책상 앞에 섰다.`,
+  genius: (N, nm)=> `${N}${iga(nm)} 느긋하게 들어와 책상 앞에 섰다.`};
+
+/* ── 셈 ── */
+function scwTier(v){ let t = 0; for(const x of SCW_TIER) if(v >= x) t++; return t; }
+function scwShown(){ return clamp(1 + Math.floor(((S.master && S.master.info) || 0) / 3) + Math.floor(scouterLv() / 2), 0, 6); }
+function scwOrder(st){                                           // 학생 id 로 섞은 차례 — 정보력이 오르면 보이던 칸은 그대로 두고 이 차례대로 더 보인다
+  const ks = MENTAL.filter(m=> !m.fixed).map(m=> m.k);
+  let h = 2166136261;
+  for(const ch of String((st && st.id) || "")){ h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); }
+  h = (h >>> 0) || 1;
+  for(let i = ks.length - 1; i > 0; i--){ h ^= h << 13; h ^= h >>> 17; h ^= h << 5; h >>>= 0; const j = h % (i + 1); [ks[i], ks[j]] = [ks[j], ks[i]]; }
+  return ks;
+}
+function scwStars(r){ return r >= .75 ? 1 : r >= .6 ? 2 : r >= .45 ? 3 : r >= .3 ? 4 : 5; }   // 스카우트 난이도 ★ (성공률이 낮을수록 많다)
+function scwOff(c){ return !c || c.state === "got" || c.state === "lost" || scoutFull() || (S.scoutTries || 0) <= 0; }
+/* 한 번 설득한다 — 예전 tryScout 의 셈 · 일지 그대로 (화면은 다시 그리지 않는다). 결과를 돌려준다 · 못 하면 null */
+function scoutRoll(i){
+  const c = S.scouts && S.scouts[i];
+  if(!c || (c.state!=="open" && c.state!=="retry")) return null;
+  if(scoutFull()){ toast(`이미 ${enrollCap()}명을 확보했다.`); return null; }
+  if((S.scoutTries||0) <= 0){ toast("남은 스카우트 시도가 없다."); return null; }
+  const second = (c.tried||0) >= 1;
+  S.scoutTries--;
+  c.tried = (c.tried||0)+1;
+  let ok = false;
+  if(RNG() < relicScoutRate(c)){   // 1017 — 먼 부름 (스카우트 성공률 +%p)
+    ok = true;
+    c.state="got"; S.incoming.push(c.st);
+    logE(`스카우트 성공 — <b>${dnH(c.st)}</b> (${c.st.grade}급 ${JOBS[c.st.job].name}) 입학 예정.${
+      scoutFull()? ` <b style="color:var(--ok)">${enrollCap()}명을 모두 확보해 스카우트를 마친다</b> (남은 시도 ${S.scoutTries}회는 소멸)`
+                 : ` 남은 시도 ${S.scoutTries}회`}`,"good");
+  } else if(c.tried===1){
+    c.state="retry"; c.rate = clamp(c.rate + .10, 0, .97);
+    logE(`스카우트 실패 — ${dnH(c.st)}${iga(c.st.name)} 망설이고 있다. 한 번 더 설득할 수 있다 (성공률 ${(relicScoutRate(c)*100).toFixed(0)}%). 남은 시도 ${S.scoutTries}회`,"bad");
+  } else {
+    c.state="lost";
+    logE(`스카우트 실패 — ${dnH(c.st)}${eunn(c.st.name)} 다른 학원을 택했다. 남은 시도 ${S.scoutTries}회`,"bad");
+  }
+  save();
+  return {ok, second, state:c.state};
+}
+function tryScout(i){ if(scoutRoll(i)) render(); }               // 예전 이름 — 창 없이 바로 (시험 · 다른 곳에서)
+
+/* ── 도트 그림 — 1배로 찍고(테두리 1칸) 2배 기준 크기 (락커룸 lkwPix 와 같은 식 · 크기를 따로 돌려준다) ── */
+function scwPix(rows, color, outline){
+  const h = rows.length, w = rows[0].length, cw = w + 2, ch = h + 2;
+  const cv = document.createElement("canvas"); cv.width = cw; cv.height = ch;
+  const g = cv.getContext("2d"), im = g.createImageData(cw, ch), d = im.data;
+  const at = (x, y)=> y >= 0 && y < h && x >= 0 && x < w && rows[y][x] !== ".";
+  for(let y = 0; y < ch; y++) for(let x = 0; x < cw; x++){
+    const sx = x - 1, sy = y - 1; let c = null;
+    if(at(sx, sy)) c = color(rows[sy][sx], sx, sy, w, h);
+    else if(outline){ for(let dy = -1; dy <= 1 && !c; dy++) for(let dx = -1; dx <= 1; dx++){ if((dx || dy) && at(sx + dx, sy + dy)){ c = outline; break; } } }
+    if(c){ const k = (y * cw + x) * 4; d[k] = c[0]; d[k+1] = c[1]; d[k+2] = c[2]; d[k+3] = c[3] == null ? 255 : c[3]; }
+  }
+  g.putImageData(im, 0, 0);
+  return {w: cw * 2, h: ch * 2, url: cv.toDataURL()};
+}
+function scwCss(a, k){ return `width:${Math.round(a.w * (k || 1))}px;height:${Math.round(a.h * (k || 1))}px;background-image:url(${a.url})`; }
+function scwArt(){
+  if(SCW.art) return SCW.art;
+  const pal = (main, hi)=> ch=> ch === "o" ? hi : main, top = [52,48,112], bot = [128,134,214];
+  const STAR = ["...#...","...#...","#######",".#####.","..###..",".##.##.","##...##"];
+  return (SCW.art = {
+    note: scwPix(["....#...","....##..","....#.#.","....#..#","....#..#","....#.#.","....#...","....#...","..o##...",".o###...","####....",".##....."], pal([255,138,176], [255,214,229]), [74,36,52]),
+    note2: scwPix(["...########","...########","...#......#","...#......#","...#......#","..o#.....o#",".o##....o##","####...####",".##.....##."], pal([255,210,92], [255,244,196]), [92,62,18]),
+    tilde: scwPix([".##.......","####....##","#..##..##.","....####.."], ()=> [255,170,200], [74,36,52]),
+    gloom: scwPix(["#...#...#","#...#...#","#...#...#","#...#...#","#...#...#","#...#...#","#...#...#","....#...#","....#...#","....#....","....#....","....#...."],
+      (c, x, y, w, h)=>{ const k = y / (h - 1); return top.map((v, j)=> Math.round(v + (bot[j] - v) * k)); }, [240,238,255,235]),
+    sweat: scwPix(["..#..","..#..",".###.",".###.","##o##","#####",".###."], pal([150,206,255], [236,248,255]), [36,70,108]),
+    starOn: scwPix(STAR, (c, x, y)=> y < 3 ? [255,226,128] : [255,196,72], [74,40,16]),
+    starOff: scwPix(STAR, ()=> [72,34,40], [185,143,132])
+  });
+}
+
+/* ── 목록 (스카우트 탭) ── */
+function scwRow(c, i, n, A){
+  const st = c.st, N = dnH(st), J = JOBS[st.job] || {}, shown = new Set(scwOrder(st).slice(0, n));
+  const cells = MENTAL.filter(m=> !m.fixed).map(m=>{
+    const k = `<span class="k"><span class="kl">${esc(m.n)}</span><span class="ks">${esc(mentShort(m.k))}</span></span>`;
+    if(!shown.has(m.k)) return `<span class="scw-m">${k}<span class="v unk">???</span></span>`;
+    const t = scwTier(mentCapOf(st, m.k));
+    return `<span class="scw-m">${k}<span class="v t${t}"><b class="pp" aria-hidden="true">${[0,1,2,3,4].map(j=> `<i${j <= t ? ' class="on"' : ""}></i>`).join("")}</b>${SCW_TIER_N[t]}</span></span>`;
+  }).join("");
+  const s = scwStars(relicScoutRate(c)), stars = [0,1,2,3,4].map(j=> `<i style="background-image:url(${(j < s ? A.starOn : A.starOff).url})"></i>`).join("");
+  const ribR = "고민 중 — 한 번 더 설득할 수 있다", ribG = "입학 예정", ribL = "다른 학원으로", diff = "스카우트 난이도";
+  const rib = c.state === "retry" ? `<span class="scw-rib r-retry">${ribR}</span>` : c.state === "got" ? `<span class="scw-rib r-got">${ribG}</span>`
+    : c.state === "lost" ? `<span class="scw-rib r-lost">${ribL}</span>` : "";
+  const off = scwOff(c), wait = off && (c.state === "open" || c.state === "retry");
+  const face = faceHas(st.job) ? `<img src="${FACE_IMG[st.job]}" alt="" loading="lazy" draggable="false">` : "";
+  return `<div class="scw-it ${esc(c.state)}${off ? " off" : ""}${wait ? " wait" : ""}" role="listitem">
+    <i class="scw-hand" aria-hidden="true"></i>
+    <button type="button" class="scw-row" data-scrow="${i}"${off ? ' aria-disabled="true"' : ""} aria-label="${N} · ${st.grade}급 ${esc(J.name || "")}">
+      <span class="scw-face"><i>${face}</i></span>
+      <span class="scw-top"><span class="scw-grade g-${esc(st.grade)}">${esc(st.grade)}</span><span class="scw-job tone-${esc(J.tone || "dps")}">${esc(J.name || "")}</span>
+        <span class="scw-name">${N}</span><span class="scw-diff">${diff} <span class="scw-stars" aria-label="★${s}">${stars}</span></span></span>
+      <span class="scw-grid">${cells}</span>${rib}
+    </button></div>`;
+}
 function viewScout(){
-  const got = (S.incoming||[]).length;
-  return `<section class="panel">
-    <div class="panel-h"><h2>겨울 스카우트</h2><span class="hint">확보 <b style="color:var(--${got>=enrollCap()?"ok":"brass"})">${got}</b>/${enrollCap()}${
-      got>=enrollCap() ? ` · <b style="color:var(--ok)">정원이 찼다 — 스카우트 종료</b>`
-             : ` · 남은 시도 <b style="color:var(--brass)">${S.scoutTries||0}</b>/${scoutTriesMax()}회 · 부족분은 일반 지원자로 채워진다`}</span></div>
-    ${got>=enrollCap() ? `<div class="opt" style="cursor:default;border-color:var(--ok);margin-bottom:10px">
-      <div class="on" style="color:var(--ok)">신입생 ${enrollCap()}명 확보 완료</div>
-      <div class="od">${(S.incoming||[]).map(x=>`${dnH(x)} (${x.grade}급 ${JOBS[x.job].name})`).join(" · ")}</div>
-      <div class="od" style="color:var(--dim)">정원이 찼으므로 남은 시도 ${S.scoutTries||0}회는 쓰이지 않고 사라진다. 겨울이 끝나면 이들이 입학한다.</div>
-    </div>` : ""}
-    <div class="grid2">
-      ${S.scouts.map((c,i)=>{
-        const s=c.st;
-        const st = c.state;
-        return `<div class="opt ${st!=="open"?"locked":""}" style="cursor:default">
-          <div class="on">${dnH(s)} ${gradeTag(s.grade)} ${roleTag(s.job)}
-            <span class="price">${st==="got"?"영입 완료":st==="lost"?"떠남":"성공률 "+(relicScoutRate(c)*100).toFixed(0)+"%"}</span></div>
-          <div class="od">잠재력 ${Math.round(s.ment.pot)}${st==="retry"?' · <b style="color:var(--warn)">재설득 가능</b>':""}</div>
-          <div class="od">${MENTAL.filter(m=>m.k!=="pot").map(m=>`${m.n} ${Math.round(s.ment[m.k])}`).join(" · ")}</div>
-          ${(st==="open"||st==="retry")? `<div style="margin-top:6px"><button class="btn sm primary" data-scout="${i}" ${got>=enrollCap()||(S.scoutTries||0)<=0?"disabled":""}>${st==="retry"?"한 번 더 설득":"영입 시도"}</button></div>`:""}
-        </div>`;
-      }).join("")}
-    </div>
+  const A = scwArt(), ic = (typeof TIN_ART !== "undefined" && TIN_ART && TIN_ART.icons) ? TIN_ART.icons : null;
+  const iv = ic ? (()=>{ const at = ic.at || {}, h = at.hand || [64, 64], m = at.scouter || [16, 64];
+    return `--scw-icons:url('${ic.src}');--scw-sheet:${ic.size[0] * 2}px ${ic.size[1] * 2}px;--scw-hand:-${h[0] * 2}px -${h[1] * 2}px;--scw-mag:-${m[0] * 2}px -${m[1] * 2}px`; })() : "";
+  const title = "겨울 스카우트";
+  if(!S.scouts) return `<section class="scw" aria-label="${title}"><header class="scw-head"><h2>${title}</h2></header><p class="scw-note">${"지금은 스카우트 기간이 아니다."}</p></section>`;
+  const got = (S.incoming||[]).length, cap = enrollCap(), tries = S.scoutTries || 0, info = (S.master && S.master.info) || 0, n = scwShown();
+  const mGot = `확보 <b>${got}</b>/${cap}`, mTry = `남은 시도 <b>${tries}</b>/${scoutTriesMax()}`, mInfo = `정보력 <b>${info}</b>`;
+  const note = scoutFull() ? `<p class="scw-note ok">${`신입생 ${cap}명을 모두 확보했다 — 스카우트를 마친다. 겨울이 끝나면 이들이 입학한다.`}</p>`
+    : tries <= 0 ? `<p class="scw-note bad">${"남은 스카우트 시도가 없다 — 부족분은 일반 지원자로 채워진다."}</p>` : "";
+  return `<section class="scw${ic ? " ic" : ""}" style="${iv}" aria-label="${title}">
+    <header class="scw-head"><h2>${title}</h2>
+      <div class="scw-meta"><span>${mGot}</span><span>${mTry}</span><span class="scw-info"><i class="scw-mag" aria-hidden="true"></i>${mInfo}</span></div></header>
+    ${note}
+    <div class="scw-list" role="list">${S.scouts.map((c, i)=> scwRow(c, i, n, A)).join("")}</div>
   </section>`;
 }
+function bindScout(v){
+  const L = v && v.querySelector(".scw-list"); if(!L) return;
+  L.querySelectorAll(".scw-row").forEach(b=>{
+    b.onclick = ()=>{ if(b.hasAttribute("aria-disabled")) return; scwAsk(+b.dataset.scrow); };
+    b.onkeydown = e=>{
+      if(e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+      e.preventDefault(); const all = [...L.querySelectorAll(".scw-row")], k = all.indexOf(b) + (e.key === "ArrowDown" ? 1 : -1);
+      if(all[k]) all[k].focus();
+    };
+  });
+}
+
+/* ── 스카우트 확인 (건물 안 선택지 상자) ── */
+function scwAskHtml(c){
+  const st = c.st, N = dnH(st), again = c.state === "retry", r = Math.round(relicScoutRate(c) * 100), t = S.scoutTries || 0, J = JOBS[st.job] || {};
+  const q = again ? `${N}에게 한 번 더 입학을 권하겠습니까?` : `${N}${eulr(st.name)} 스카우트하겠습니까?`;
+  const d1 = again ? `성공률 <b>${r}%</b> (고민 뒤 +10%p) · 남은 시도 <b>${t}</b> → <b>${t - 1}</b>회` : `성공률 <b>${r}%</b> · 남은 시도 <b>${t}</b> → <b>${t - 1}</b>회`;
+  const d2 = again ? "" : "망설이면 한 번 더 설득할 수 있다 (시도 1회 더).";
+  const head = "스카우트", yes = "예", no = "아니요";
+  const face = faceHas(st.job) ? `<img src="${FACE_IMG[st.job]}" alt="" draggable="false">` : "";
+  return `<div class="scw-ov"><div class="scw-ask scw-pal" role="dialog" aria-modal="true" aria-label="${head}" tabindex="-1">
+    <h2>${head}</h2>
+    <div class="who"><span class="scw-face"><i>${face}</i></span>
+      <div><div class="nm"><span class="scw-grade g-${esc(st.grade)}">${esc(st.grade)}</span><span class="scw-job tone-${esc(J.tone || "dps")}">${esc(J.name || "")}</span><b>${N}</b></div>
+        <p class="q">${q}</p></div></div>
+    <p class="d">${d1}${d2 ? `<br>${d2}` : ""}</p>
+    <div class="scw-menu" role="menu">
+      <button type="button" class="scw-ch hot" role="menuitem" data-ask="1"><i class="scw-hand" aria-hidden="true"></i><span>${yes}</span></button>
+      <button type="button" class="scw-ch" role="menuitem" data-ask="0"><i class="scw-hand" aria-hidden="true"></i><span>${no}</span></button>
+    </div></div></div>`;
+}
+function scwAsk(i){
+  const c = S.scouts && S.scouts[i], root = $("#modalRoot");
+  if(!c || scwOff(c) || !root || root.firstChild) return;
+  sfxPlay("menu");
+  root.innerHTML = scwAskHtml(c);
+  const ov = root.firstElementChild, sec = document.querySelector("#view .scw");
+  if(sec) ov.setAttribute("style", sec.getAttribute("style") || "");   // 손가락 아이콘 시트 (목록과 같은 값)
+  modalLockSync();
+  const btns = [...ov.querySelectorAll(".scw-ch")];
+  const hot = k=> btns.forEach((b, j)=> b.classList.toggle("hot", j === k));
+  const done = yes=>{
+    if(!SCW.ask) return;
+    document.removeEventListener("keydown", SCW.ask, true); SCW.ask = null;
+    closeModal();
+    if(yes){ sfxPlay("csl_tap"); scwOpen(i); }
+    else { const b = document.querySelector(`#view .scw-row[data-scrow="${i}"]`); if(b) try{ b.focus({preventScroll:true}); }catch(e){} }
+  };
+  btns.forEach((b, j)=>{ b.onmouseenter = b.onfocus = ()=> hot(j); b.onclick = ()=> done(b.dataset.ask === "1"); });
+  ov.addEventListener("click", e=>{ if(e.target === ov) done(false); });
+  SCW.ask = e=>{
+    if(!ov.isConnected){ document.removeEventListener("keydown", SCW.ask, true); SCW.ask = null; return; }
+    if(e.key === "Escape"){ e.preventDefault(); e.stopPropagation(); done(false); }
+    else if(e.key === "ArrowDown" || e.key === "ArrowUp"){ e.preventDefault(); e.stopPropagation(); const k = btns[0].classList.contains("hot") ? 1 : 0; hot(k); btns[k].focus(); }
+  };
+  document.addEventListener("keydown", SCW.ask, true);
+  try{ btns[0].focus({preventScroll:true}); }catch(e){}
+}
+
+/* ── 설득 대화 (상담창 뼈대) ── */
+function scwq(s){ return SCW.el ? SCW.el.querySelector(s) : null; }
+function scwLive(run){ return !!SCW.el && SCW.el.isConnected && run === SCW.run; }
+function scwWait(ms){ return SCW.instant ? Promise.resolve() : cwWait(ms); }
+function scwSkipped(){ return cwNow() - (SCW.skipAt||0) < 350; }   // 글자를 끝까지 넘긴 그 누르기로는 다음 단계로 가지 않는다
+function scwFocus(){ const w = scwq(".cw-win"); if(w) try{ w.focus({preventScroll:true}); }catch(e){} }
+/* 글자를 한 자씩 — 누르면 바로 끝까지 (상담창 cwType 과 같다 · 상태만 따로) */
+function scwType(el, html, cps, voice){
+  return new Promise(res=>{
+    if(SCW.typing) SCW.typing();
+    if(!el){ res(); return; }
+    const tmp = document.createElement("div"); tmp.innerHTML = html;
+    const full = tmp.innerHTML, plain = tmp.textContent;
+    if(SCW.instant || !plain.length){ el.innerHTML = full; res(); return; }
+    let n = 0, id = 0;
+    const done = ()=>{ clearInterval(id); if(SCW.typing === done) SCW.typing = null; el.innerHTML = full; res(); };
+    el.textContent = "";
+    id = setInterval(()=>{
+      n++; el.textContent = plain.slice(0, n);
+      if(voice && !CW_QUIET.test(plain.charAt(n - 1))) cwBlip(voice);
+      if(n >= plain.length) done();
+    }, Math.max(8, 1000/(cps||CSLW_CPS)));
+    SCW.typing = done;
+  });
+}
+function scwHtml(){
+  const head = "스카우트", close = "스카우트 닫기", tip = "닫기 (Esc)", next = "닫기 ▶";
+  return `<div class="cw-ov scw-cw"><div class="cw-fit"><div class="cw-in">
+  <div class="cw-win closed" role="dialog" aria-modal="true" aria-label="${head}" tabindex="-1">
+    <div class="cw-head">
+      <div class="cw-tab title"><span class="cw-k">${head}</span><span class="cw-tt"></span></div>
+      <div class="cw-hr"><div class="cw-tab left scw-tries"></div><button type="button" class="cw-x" aria-label="${close}" title="${tip}">×</button></div>
+    </div>
+    <div class="cw-mid">
+      <div class="cw-stage"><div class="cw-scene">
+        <div class="cw-bg" style="background-image:url(${CSL_ART.bg})"></div>
+        <div class="cw-stu"><div class="cw-spr"></div><img class="cw-face" alt="" draggable="false"><div class="cw-hit"></div></div>
+        <div class="cw-dots" aria-hidden="true">…</div>
+        <div class="cw-front" style="background-image:url(${CSL_ART.front})"></div>
+        <div class="scw-fx"></div>
+      </div></div>
+      <div class="cw-over"><div class="cw-say"><div class="cw-sn"></div><div class="cw-st"></div></div><div class="cw-clouds"></div></div>
+    </div>
+    <div class="cw-box"><div class="cw-who"></div><div class="cw-bt"></div><div class="cw-more" aria-hidden="true">▼</div><button type="button" class="cw-next">${next}</button></div>
+  </div></div></div></div>`;
+}
+function scwHead(c){
+  const st = c.st, J = JOBS[st.job] || {};
+  scwq(".cw-tt").innerHTML = `${dnH(st)} · ${st.grade}급 ${esc(J.name || "")}`;
+  scwq(".scw-tries").innerHTML = `남은 시도 <b>${S.scoutTries || 0}</b>`;
+}
+/* 학생 그림 자리 (상담창 cslwSetLook 과 같은 셈) — 무대 2배 · 128 칸을 발끝(280, 288)을 축으로 s 배 하고 (2x, 2y) 옮긴다 · 머리 꼭대기는 효과 자리 */
+function scwSetLook(L, st){
+  const sc = scwq(".cw-scene"); if(!sc) return;
+  const face = !L.spr && !!L.face, spr = scwq(".cw-spr"), hit = scwq(".cw-hit"), dots = scwq(".cw-dots");
+  const box = (el, l, t, w, h)=>{ el.style.left = l + "px"; el.style.top = t + "px"; el.style.width = Math.max(0, w) + "px"; el.style.height = Math.max(0, h) + "px"; };
+  sc.classList.toggle("face", face);
+  spr.style.backgroundImage = L.spr ? `url(${L.spr})` : "";
+  const img = scwq(".cw-face"); if(face) img.src = L.face; else img.removeAttribute("src");
+  if(face || !L.spr){ box(hit, 162, 58, 236, 174); dots.style.left = "300px"; dots.style.top = "50px"; SCW.head = {x:280, y:70}; return; }
+  const T = cslwTune(st && st.job), X = 2*T.x, Y = 2*T.y, k = T.s;
+  spr.style.scale = String(k); spr.style.translate = `${X}px ${Y}px`;
+  const L0 = 280 + k*(152 - 280) + X, R0 = 280 + k*(408 - 280) + X, T0 = 288 + k*(60 - 288) + Y;
+  box(hit, Math.round(L0), Math.round(T0), Math.round(R0 - L0), Math.round(232 - T0));
+  let cy = 13;
+  if(L.top){ let m = 128; for(let x = 64, b = Math.min(127, Math.ceil(64 + 60/(2*k))); x <= b; x++) m = Math.min(m, L.top[x]); if(m < 128) cy = m; }
+  const head = 288 + Y + 2*k*(cy - 114);
+  dots.style.left = Math.round(300 + X) + "px"; dots.style.top = Math.round(head - 32) + "px";
+  SCW.head = {x:Math.round(280 + X), y:Math.round(head)};
+}
+async function scwLook(st, run){
+  for(let t = 0; t < 30 && sprHas(st.job); t++){                // 도트 시트를 기다린다 (최대 3초)
+    const u = cslwSprUrl(st); if(u) return {spr:u.url, top:u.top};
+    await cwWait(100); if(!scwLive(run)) return {};
+  }
+  return faceHas(st.job) ? {face:FACE_IMG[st.job]} : {};
+}
+/* 화면에 맞추기 (상담창 cslwFit 과 같다) — 넉넉하면 창을 통째로 (최대 1배), 0.8배보다 줄여야 하면 좁은 화면 배치 */
+function scwFit(){
+  const ov = SCW.el; if(!ov) return;
+  const win = ov.querySelector(".cw-win"), fit = ov.querySelector(".cw-fit"), inn = ov.querySelector(".cw-in"),
+        stage = ov.querySelector(".cw-stage"), scene = ov.querySelector(".cw-scene");
+  const vw = document.documentElement.clientWidth || window.innerWidth, vh = window.innerHeight;
+  win.classList.remove("compact", "wide"); win.style.width = ""; stage.style.width = stage.style.height = ""; scene.style.transform = ""; inn.style.transform = "";
+  const W = 592, H = win.offsetHeight + 4;
+  const s = Math.min(1, (vw - 16) / W, (vh - 16) / H);
+  SCW.compact = s < .8;
+  let key = "d";
+  if(!SCW.compact){
+    if(s < 1) inn.style.transform = `scale(${s})`;
+    fit.style.width = Math.floor(W * s) + "px"; fit.style.height = Math.floor(H * s) + "px";
+  } else {
+    const ww = Math.max(260, Math.min(588, vw - 16)), inner = ww - 4 - 16 - 4;
+    const ss = Math.min(1, inner / 560, Math.max(.36, vh * .46 / 360));
+    win.classList.add("compact"); win.classList.toggle("wide", inner >= 480); win.style.width = ww + "px";
+    stage.style.width = Math.round(560 * ss + 4) + "px"; stage.style.height = Math.round(360 * ss + 4) + "px";
+    scene.style.transform = `scale(${ss})`;
+    fit.style.width = (ww + 4) + "px"; fit.style.height = "";
+    key = "c" + ww;
+  }
+  if(key !== SCW.fitKey){
+    const was = SCW.fitKey; SCW.fitKey = key;
+    if(was && SCW.phase === "choose") scwClouds(SCW.run, true);   // 배치가 바뀌면 구름을 다시
+  }
+}
+function scwOpen(i, opt){
+  opt = opt || {};
+  const c = S.scouts && S.scouts[i], root = $("#modalRoot");
+  if(!c || scwOff(c) || !root || root.firstChild || SCW.el) return;
+  if(typeof dragCfg === "function") dragCfg(root, null);
+  const run = ++SCW.run;
+  SCW.i = i; SCW.phase = "load"; SCW.typing = null; SCW.fitKey = ""; SCW.log = []; SCW.instant = !!opt.instant; SCW.skipAt = 0;
+  root.innerHTML = scwHtml();
+  SCW.el = root.firstElementChild;
+  if(SCW.instant) SCW.el.classList.add("instant");
+  modalLockSync();
+  try{ const a = document.activeElement; if(a && a !== document.body && a.blur) a.blur(); }catch(e){}
+  scwHead(c);
+  scwq(".cw-x").onclick = ()=> scwClose();
+  try{ if(AWEB !== false && sfxGain() > 0 && audCtx()) SCW_SFX.forEach(k=> SFX[k] && sfxLoad(SFX[k].f)); }catch(e){}   // 소리를 미리 받아 둔다 — 첫 글자부터 울리게
+  SCW.key = e=> scwKey(e);
+  SCW.rs = ()=> scwFit();
+  SCW.pd = e=>{                                                  // 글자가 찍히는 중에 글 · 무대를 누르면 바로 끝까지
+    if(!SCW.typing) return;
+    const t = e.target; if(!t || !t.closest || t.closest(".cw-x, .cw-next")) return;
+    if(t.closest(".cw-say,.cw-box,.cw-stage")){ SCW.typing(); SCW.skipAt = cwNow(); }
+  };
+  document.addEventListener("keydown", SCW.key, true);
+  window.addEventListener("resize", SCW.rs);
+  SCW.el.addEventListener("pointerdown", SCW.pd, true);
+  scwFit();
+  const show = ()=>{ if(!scwLive(run)) return; SCW.el.classList.add("on"); scwq(".cw-win").classList.remove("closed"); scwFocus(); };
+  if(SCW.instant) show(); else requestAnimationFrame(()=> requestAnimationFrame(show));
+  const font = (document.fonts && document.fonts.load) ? document.fonts.load('12px "Mulmaru"').catch(()=>{}) : Promise.resolve();
+  Promise.all([Promise.race([font, cwWait(1500)]), scwLook(c.st, run)]).then(([_, look])=>{
+    if(!scwLive(run)) return;
+    scwSetLook(look || {}, c.st); scwFit();
+    if(SCW.instant) scwEnter(run); else setTimeout(()=>{ if(scwLive(run)) scwEnter(run); }, 200);
+  });
+}
+/* 1 · 학생이 책상 뒤로 들어온다 → 바로 설득 */
+async function scwEnter(run){
+  const c = S.scouts[SCW.i], st = c.st, N = dnH(st), pk = (st.pers && SCW_ENTER[st.pers]) ? st.pers : "plain";
+  SCW.phase = "enter";
+  const stu = scwq(".cw-stu"); stu.classList.remove("out"); void stu.offsetWidth; stu.classList.add("in");
+  await scwWait(650); if(!scwLive(run)) return;
+  const line = c.tried >= 1 ? `${N}${iga(st.name)} 다시 학원을 찾아왔다. 아직 마음을 정하지 못한 얼굴이다.` : SCW_ENTER[pk](N, st.name);
+  await scwType(scwq(".cw-bt"), line, 40); if(!scwLive(run)) return;
+  await scwWait(550); if(!scwLive(run)) return;
+  scwAttempt(run);
+}
+/* 2 · 한 번 설득 — 시도 1회를 쓰고 결과는 지금 정한다 (scoutRoll) → 마스터 어필 → …… → 대답 · 효과 */
+function scwAppeal(c, second){
+  const st = c.st, pk = (st.pers && SCW_APPEAL2[st.pers]) ? st.pers : "plain";
+  if(second) return SCW_APPEAL2[pk];
+  const known = scwOrder(st).slice(0, scwShown()).map(k=> ({k, t:scwTier(mentCapOf(st, k))})).sort((a, b)=> b.t - a.t)[0];
+  if(known && known.t >= 3){
+    const m = (MENTAL.find(x=> x.k === known.k) || {}).n || "";
+    return known.t >= 4 ? `네 ${m}${eunn(m)} 우리 학원에서 크게 자랄 거다. 그 그릇을 끝까지 채워 주마. 우리 학원에 와라.`
+                        : `네 ${m}${eunn(m)} 우리 학원에서 크게 자랄 거다. 같이 키워 보지 않겠나?`;
+  }
+  return SCW_APPEAL1[st.grade] || SCW_APPEAL1.C;
+}
+async function scwAttempt(run){
+  const i = SCW.i, c = S.scouts[i], st = c.st, pk = (st.pers && SCW_THINK[st.pers]) ? st.pers : "plain";
+  const R = scoutRoll(i);
+  if(!R){ scwDone(run); return; }
+  scwHead(c);
+  SCW.phase = "appeal";
+  scwq(".cw-who").textContent = "마스터";
+  const ap = scwAppeal(c, R.second); SCW.log.push(["master", ap]);
+  await scwType(scwq(".cw-bt"), esc(ap), CSLW_CPS, "csl_mst"); if(!scwLive(run)) return;
+  await scwWait(450); if(!scwLive(run)) return;
+  SCW.phase = "think";
+  scwq(".cw-sn").innerHTML = `${dnH(st)} <i>${esc(personaOf(st).n)}</i>`;      // 이름 · 성격 (직업은 그림으로 보인다)
+  scwq(".cw-st").innerHTML = `<span class="cw-think"><i>…</i><i>…</i><i>…</i></span>`;
+  scwq(".cw-say").classList.add("on");
+  await scwWait(SCW_THINK[pk]); if(!scwLive(run)) return;
+  SCW.phase = "reply";
+  const line = R.ok ? (R.second ? SCW_ACCEPT2 : SCW_ACCEPT1)[pk] : (R.second ? SCW_REJECT : SCW_CONSIDER)[pk];
+  SCW.log.push(["student", line]);
+  await scwType(scwq(".cw-st"), esc(line), 30, "csl_stu"); if(!scwLive(run)) return;
+  if(R.ok){ scwFx("joy"); sfxPlay("csl_ok"); }
+  else if(R.second){ scwFx("gloom"); sfxPlay("csl_ng"); }
+  else { scwFx("sweat"); sfxPlay("csl_tap"); }
+  scwq(".cw-who").textContent = "";
+  await scwType(scwq(".cw-bt"), scwResult(c, R), 60); if(!scwLive(run)) return;
+  if(c.state === "retry") scwClouds(run); else scwDone(run);
+}
+function scwResult(c, R){
+  const st = c.st, N = dnH(st);
+  if(R.ok){
+    const got = (S.incoming||[]).length, cap = enrollCap();
+    return `<span class="cw-ok">${`${N}${iga(st.name)} 우리 학원에 입학하기로 했다!`}</span>\n<span class="cw-dim">${`겨울이 끝나면 신입생으로 들어온다 · 확보 ${got}/${cap}`}</span>` +
+      (scoutFull() ? `\n<span class="cw-ok">${`신입생 ${cap}명을 모두 확보해 스카우트를 마친다.`}</span>` : "");
+  }
+  if(R.second) return `<span class="cw-bad">${"이 학생은 아무래도 다른 학원을 찾아볼 듯하다."}</span>`;
+  const t = S.scoutTries || 0, r = Math.round(relicScoutRate(c) * 100);
+  return `<span class="cw-brass">${`${N}${eunn(st.name)} 아직 망설이고 있다.`}</span>\n<span class="cw-dim">${t > 0
+    ? `한 번 더 설득하면 성공률 ${r}% · 남은 시도 ${t}회` : "남은 시도가 없다 — 지금은 답을 기다릴 수밖에 없다."}</span>`;
+}
+function scwFx(kind){
+  const box = scwq(".scw-fx"), h = SCW.head, A = scwArt(), el = document.createElement("div"); if(!box) return;
+  if(kind === "joy"){
+    el.className = "scw-joy"; el.style.left = (h.x - 132) + "px"; el.style.top = (h.y - 30) + "px";      // 말풍선(오른쪽 위)을 비켜 머리 왼쪽 위
+    el.innerHTML = `<i class="jt" style="${scwCss(A.tilde, SCW_FXK)}"></i><i class="j1" style="${scwCss(A.note, SCW_FXK)}"></i><i class="j2" style="${scwCss(A.note2, SCW_FXK)}"></i><i class="j3" style="${scwCss(A.note, SCW_FXK)}"></i>`;
+    scwq(".cw-stu").classList.add("scw-ok");
+  } else if(kind === "gloom"){
+    el.className = "scw-gloom"; el.style.cssText = scwCss(A.gloom, SCW_FXK); el.style.left = (h.x - 74) + "px"; el.style.top = (h.y - 8) + "px";
+    scwq(".cw-stu").classList.add("scw-no");
+  } else {
+    el.className = "scw-sweat"; el.style.cssText = scwCss(A.sweat, SCW_FXK); el.style.left = (h.x + 40) + "px"; el.style.top = (h.y + 10) + "px";
+  }
+  box.appendChild(el);
+  if(SCW.instant) el.classList.add("on"); else requestAnimationFrame(()=> requestAnimationFrame(()=> el.classList.add("on")));
+}
+/* 3 · 고민 — 구름 둘: 다시 한번 설득한다 (시도 1회) · 보류한다 */
+function scwClouds(run, show){
+  const c = S.scouts[SCW.i], box = scwq(".cw-clouds"); if(!box) return;
+  SCW.phase = "choose";
+  const can = (S.scoutTries || 0) > 0, r = Math.round(relicScoutRate(c) * 100);
+  const opts = [{t:"다시 한번 설득한다", sub: can ? `시도 1회 · 성공률 ${r}%` : "남은 시도가 없다", dis:!can, act:"again"},
+                {t:"보류한다", sub:"답은 다음에 듣는다", act:"hold"}];
+  box.innerHTML = "";
+  opts.forEach((o, k)=>{
+    const p = SCW_CPOS[k], b = document.createElement("button");
+    b.type = "button"; b.className = "cw-cloud" + (o.dis ? " dis" : "") + (show || SCW.instant ? " on" : ""); b.dataset.act = o.act;
+    if(!SCW.compact){ b.style.left = p.l + "px"; b.style.top = p.t + "px"; }
+    b.innerHTML = `<span class="cw-orb" style="--od:${p.od};--odl:${p.odl}"><span class="cw-art"></span><span class="cw-txt"></span></span>`;
+    b.querySelector(".cw-txt").innerHTML = `${esc(o.t)}<small>${esc(o.sub)}</small>`;
+    box.appendChild(b);
+    const w = SCW.compact ? Math.max(120, Math.round(b.offsetWidth/2)*2) : 196;
+    const h = Math.max(70, Math.round(b.querySelector(".cw-txt").offsetHeight/2)*2);
+    b.querySelector(".cw-orb").style.height = h + "px";
+    b.querySelector(".cw-art").style.backgroundImage = `url(${cslwCloudArt(w, h, false)})`;
+    if(o.dis) b.setAttribute("aria-disabled", "true");
+    b.onclick = ()=> scwChoose(run, k, o);
+  });
+  if(!show && !SCW.instant) [...box.children].forEach((b, j)=> setTimeout(()=>{ if(scwLive(run)) b.classList.add("on"); }, 120 + j*220));
+  scwq(".cw-win").classList.add("beat");
+  if(SCW.compact && box.scrollIntoView) box.scrollIntoView({block:"nearest", behavior:"smooth"});
+}
+async function scwChoose(run, k, o){
+  if(!scwLive(run) || SCW.phase !== "choose" || scwSkipped() || o.dis) return;
+  SCW.phase = "chosen"; sfxPlay("csl_pick"); scwFocus();
+  scwq(".cw-win").classList.remove("beat");
+  [...scwq(".cw-clouds").children].forEach((b, j)=> b.classList.add("off", j === k ? "pick" : "gone"));
+  setTimeout(()=>{ if(scwLive(run)){ const cl = scwq(".cw-clouds"); if(cl) cl.innerHTML = ""; } }, SCW.instant ? 0 : 520);
+  scwq(".scw-fx").innerHTML = "";
+  if(o.act === "again"){
+    await scwWait(380); if(!scwLive(run)) return;
+    scwq(".cw-say").classList.remove("on");
+    await scwWait(250); if(!scwLive(run)) return;
+    scwAttempt(run);
+    return;
+  }
+  // 보류 — 그 자리의 짧은 대답 · 목록에서 한 번 더 설득할 수 있다 (상태는 고민 그대로)
+  const st = S.scouts[SCW.i].st, pk = (st.pers && SCW_HOLD[st.pers]) ? st.pers : "plain";
+  scwq(".cw-who").textContent = "마스터";
+  await scwType(scwq(".cw-bt"), "알겠다. 서두르지 않아도 된다. 마음이 정해지면 다시 이야기하자.", CSLW_CPS, "csl_mst"); if(!scwLive(run)) return;
+  await scwWait(300); if(!scwLive(run)) return;
+  await scwType(scwq(".cw-st"), esc(SCW_HOLD[pk]), 30, "csl_stu"); if(!scwLive(run)) return;
+  scwq(".cw-who").textContent = "";
+  await scwType(scwq(".cw-bt"), `<span class="cw-dim">${"답은 다음에 다시 듣기로 했다. 목록에서 한 번 더 설득할 수 있다."}</span>`, 60); if(!scwLive(run)) return;
+  scwDone(run);
+}
+function scwDone(run){
+  SCW.phase = "done";
+  const n = scwq(".cw-next"); if(!n) return;
+  n.textContent = "닫기 ▶"; n.classList.add("on"); n.onclick = ()=>{ if(!scwSkipped()) scwClose(); };
+  if(SCW.compact){ const b = scwq(".cw-box"); if(b && b.scrollIntoView) b.scrollIntoView({block:"nearest", behavior:"smooth"}); }
+}
+function scwClose(){
+  const el = SCW.el; if(!el) return;
+  SCW.run++;
+  if(SCW.typing){ const f = SCW.typing; SCW.typing = null; try{ f(); }catch(e){} }
+  document.removeEventListener("keydown", SCW.key, true);
+  window.removeEventListener("resize", SCW.rs);
+  el.removeEventListener("pointerdown", SCW.pd, true);
+  const i = SCW.i;
+  SCW.el = null; SCW.phase = ""; SCW.instant = false;
+  el.classList.remove("on");
+  const w = el.querySelector(".cw-win"); if(w){ w.classList.remove("beat"); w.classList.add("closed"); }
+  render();
+  setTimeout(()=>{
+    const r = $("#modalRoot"); if(r && r.firstElementChild === el) closeModal();
+    const b = document.querySelector(`#view .scw-row[data-scrow="${i}"]`); if(b && !b.hasAttribute("aria-disabled")) try{ b.focus({preventScroll:true}); }catch(e){}
+  }, el.classList.contains("instant") ? 0 : 420);
+}
+function scwKey(e){
+  if(!SCW.el) return;
+  if(!SCW.el.isConnected){ scwClose(); return; }
+  if(e.key === "Escape"){ e.preventDefault(); e.stopPropagation(); scwClose(); return; }
+  if(SCW.phase === "choose" && /^[12]$/.test(e.key)){              // 1 · 2 — 그 구름으로
+    const cl = scwq(".cw-clouds").children[+e.key - 1];
+    if(cl && cl.classList.contains("on") && !e.repeat){ e.preventDefault(); e.stopPropagation(); cl.click(); }
+    return;
+  }
+  if(e.key !== " " && e.key !== "Enter") return;
+  const t = e.target, btn = t && t.closest ? t.closest(".scw-cw button") : null;
+  if(btn && (btn.classList.contains("cw-x") || (btn.classList.contains("on") && !btn.classList.contains("off")))){   // 초점이 있는 단추는 그 단추가 눌린다
+    if(SCW.typing){ e.preventDefault(); SCW.typing(); }
+    return;
+  }
+  e.preventDefault(); e.stopPropagation();
+  if(e.repeat) return;
+  if(SCW.typing){ SCW.typing(); SCW.skipAt = cwNow(); return; }
+  if(SCW.phase === "done"){ const n = scwq(".cw-next"); if(n && n.classList.contains("on") && n.onclick) n.onclick(); }
+}
+/* SCOUTWIN_END */
 
 /* ============================================================
    이벤트 바인딩
@@ -22668,7 +23347,7 @@ function bindView(){
       $("#rsYes").onclick = ()=>{ closeModal(); doSell(); };
     });
   });
-  v.querySelectorAll("[data-scout]").forEach(b=> b.onclick=()=> tryScout(+b.dataset.scout));
+  if(UI.view === "scout") bindScout(v);   // 1019 — 겨울 스카우트 개편 (SCOUTWIN — 줄 → 확인 팝업 → 설득 대화)
   v.querySelectorAll("[data-csl]").forEach(b=> b.onclick=()=>{
     const [qi,oi] = b.dataset.csl.split("|").map(Number);
     answerCounsel(qi, oi);
