@@ -13,9 +13,13 @@
    공개 전부터 세이브가 있던 사람은 영어 브라우저여도 한국어로 기억되는지, 설정의 '자동'이 그 기억을 지우고 브라우저를 따르는지.
    일본어 공개(config.json "ja" · 1014) 뒤에는 ja-JP → 일본어 · 설정의 日本語 · 그동안 영어로 하던 일본어 브라우저는 영어로 기억되는지도.
    한국어 견주기(2)는 한국어 브라우저(ko-KR)로 띄우고, B 에만 있는 설정의 언어 칸은 빼고 견준다.
-바깥 주소(firebase · 글꼴 등)는 전부 막는다. 끝나면 임시 폴더를 지운다 (--shots 를 주면 스크린샷을 거기에 남긴다).
+   1018 — 언어를 바꿔 다시 불러오는 장면(4 · 공개 전의 ?lang 바꾸기)은 저장소를 로컬 http 서버(127.0.0.1 · 빈 포트)로 띄워 본다.
+   파일(file://)로 띄운 Playwright 임시 창에서는 크로미움이 다시 불러오기 전 페이지가 쓴 localStorage 를 새 페이지에 가끔 넘겨주지 않아
+   (12번 중 2~3번 — 같은 context 의 다른 탭에서도 안 보인다 · http 와 보통 프로필에서는 0번) '자동' · 언어 바꾸기가 가끔 실패했다.
+   게임 탓이 아니다 — 사이트(https) · itch 는 그런 일이 없다. 서버는 저장소를 읽기만 하고, 시험 페이지는 /__i18n__/ko_i18n.html (<base> 를 http 로).
+바깥 주소(firebase · 글꼴 등)는 전부 막는다 (로컬 서버만 연다). 끝나면 임시 폴더를 지운다 (--shots 를 주면 스크린샷을 거기에 남긴다).
 """
-import argparse, json, os, re, shutil, sys, tempfile, time
+import argparse, functools, http.server, json, os, re, shutil, sys, tempfile, threading, time
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, ROOT)
@@ -156,6 +160,44 @@ def build(i18n, stamp):
             '%s</head>\n<body>\n%s\n%s\n</body></html>') % (base, head, body, tail)
 
 
+def serve(html):
+    """1018 — 저장소를 http://127.0.0.1:빈포트/ 로 (읽기만) · 시험 페이지 B 는 /__i18n__/ko_i18n.html — <base> 를 http 로 바꿔서.
+    file:// 임시 창은 다시 불러올 때 localStorage 를 가끔 잃어서 언어 바꾸기 장면만 이걸로 띄운다. (server, url, port)"""
+    base_file = '<base href="file://' + ROOT.replace(os.sep, '/').rstrip('/') + '/">'
+    assert base_file in html, '시험 페이지에 <base> 가 없다'
+    box = {}
+
+    class H(http.server.SimpleHTTPRequestHandler):
+        def log_message(self, *a):
+            pass
+
+        def do_GET(self):
+            if self.path.split('?')[0] == '/__i18n__/ko_i18n.html':
+                b = box['html']
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/html; charset=utf-8')
+                self.send_header('Content-Length', str(len(b)))
+                self.send_header('Cache-Control', 'no-store')
+                self.end_headers()
+                self.wfile.write(b)
+                return
+            return super().do_GET()
+
+    class Srv(http.server.ThreadingHTTPServer):
+        daemon_threads = True
+
+        def handle_error(self, request, client_address):
+            if isinstance(sys.exc_info()[1], (BrokenPipeError, ConnectionResetError, ConnectionAbortedError)):
+                return                              # 창을 닫으면 받던 그림 · 소리가 끊긴다 — 조용히
+            super().handle_error(request, client_address)
+
+    srv = Srv(('127.0.0.1', 0), functools.partial(H, directory=ROOT))
+    port = srv.server_address[1]
+    box['html'] = html.replace(base_file, '<base href="http://127.0.0.1:%d/">' % port).encode('utf-8')
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    return srv, 'http://127.0.0.1:%d/__i18n__/ko_i18n.html' % port, port
+
+
 def real_errors(errs):
     return [e for e in errs if not re.search(r'Failed to load resource|ERR_FILE_NOT_FOUND|ERR_FAILED|net::', e)]
 
@@ -192,8 +234,10 @@ def main():
         stamp = 'i18n-check'
         pa, pb = os.path.join(tmp, 'ko_plain.html'), os.path.join(tmp, 'ko_i18n.html')
         open(pa, 'w', encoding='utf-8').write(build(False, stamp))
-        open(pb, 'w', encoding='utf-8').write(build(True, stamp))
+        html_b = build(True, stamp)
+        open(pb, 'w', encoding='utf-8').write(html_b)
         print('빌드 두 벌 %.1f초' % (time.time() - t0))
+        srv, pbh, port = serve(html_b)          # 1018 — 언어 바꾸기 장면은 http 로 (위 머리글)
 
         with sync_playwright() as p:
             br = p.chromium.launch()
@@ -201,7 +245,7 @@ def main():
             def open_page(path, query='', w=1440, h=900, dsf=1, ctx=None, locale='ko-KR', init=None):
                 c = ctx or br.new_context(viewport={'width': w, 'height': h}, device_scale_factor=dsf, locale=locale)   # 브라우저 언어 (공개 뒤에는 이걸로 고른다)
                 if ctx is None:
-                    c.route(re.compile(r'^https?://'), lambda r: r.abort())
+                    c.route(re.compile(r'^https?://(?!127\.0\.0\.1:%d/)' % port), lambda r: r.abort())   # 로컬 시험 서버만 연다
                     c.add_init_script(INIT_JS)
                     if init:
                         c.add_init_script(init)
@@ -209,7 +253,7 @@ def main():
                 errs = []
                 pg.on('pageerror', lambda e: errs.append('pageerror: ' + str(e)[:300]))
                 pg.on('console', lambda m: errs.append('console: ' + m.text[:300]) if m.type == 'error' else None)
-                pg.goto('file://' + path + query, wait_until='commit')
+                pg.goto((path if path.startswith('http') else 'file://' + path) + query, wait_until='commit')
                 pg.wait_for_function("() => typeof S !== 'undefined' && S && Array.isArray(S.students) && S.students.length > 0"
                                      " && !document.getElementById('bootLoader')", polling=250, timeout=60000)
                 pg.wait_for_timeout(300)
@@ -308,12 +352,12 @@ def main():
 
             if not PUBLIC:
                 # 한국어 B — ?lang 없이는 언어 칸이 없고, ?lang=ko 시험 접속에서는 보인다 → English 를 누르면 저장 후 ?lang=en 으로
-                c, pg, errs = open_page(pb)
+                c, pg, errs = open_page(pbh)
                 none = pg.evaluate("() => { closeModal(); UI.view = 'opt'; render(); return document.querySelectorAll('[data-lang]').length; }")
                 if none:
                     fails.append('한국어: ?lang 없이도 언어 칸이 보인다')
                 c.close()
-                c, pg, errs = open_page(pb, '?lang=ko')
+                c, pg, errs = open_page(pbh, '?lang=ko')
                 pg.evaluate("() => { __hsReset(9); closeModal(); newScenarioStart('전환 학원'); closeModal(); UI.view = 'opt'; render(); }")
                 with pg.expect_navigation(timeout=30000):
                     pg.click('[data-lang=en]')
@@ -331,12 +375,12 @@ def main():
                 def reloaded(pg):
                     pg.wait_for_function("() => typeof S !== 'undefined' && S && S.students && !document.getElementById('bootLoader')", polling=250, timeout=60000)
                     pg.wait_for_timeout(200)
-                c, pg, errs = open_page(pb, locale='en-US')
+                c, pg, errs = open_page(pbh, locale='en-US')
                 r1 = pg.evaluate(st)
                 if r1[:2] != ['en', 'en'] or r1[2] is not None or r1[3] != '1':
                     fails.append('공개: 영어 브라우저 · 새 방문인데 영어가 아니다 %s' % r1)
                 c.close()
-                c, pg, errs = open_page(pb, locale='ko-KR')
+                c, pg, errs = open_page(pbh, locale='ko-KR')
                 r2 = pg.evaluate(st)
                 if r2[:2] != ['ko', 'ko'] or r2[2] is not None:
                     fails.append('공개: 한국어 브라우저인데 한국어가 아니다 %s' % r2)
@@ -361,7 +405,7 @@ def main():
                 # 공개 전부터 하던 사람 — 세이브가 있고 hs_lang 이 없으면 영어 브라우저여도 한국어로 기억. 자동을 고르면 그때부터 브라우저(영어)
                 old_save = ('if(!sessionStorage.getItem("__old")){localStorage.setItem("heroacademy_v1", %s);sessionStorage.setItem("__old","1")}'
                             % json.dumps(json.dumps({"v": 1})))
-                c, pg, errs = open_page(pb, locale='en-US', init=old_save)
+                c, pg, errs = open_page(pbh, locale='en-US', init=old_save)
                 r3 = pg.evaluate(st)
                 if r3 != ['ko', 'ko', 'ko', '1']:
                     fails.append('공개: 예전 세이브 · 영어 브라우저 — 한국어로 기억하지 않았다 %s' % r3)
@@ -378,12 +422,12 @@ def main():
                 if JA_PUB:
                     # 1014 일본어 공개 — 일본어 브라우저 새 방문은 일본어 · 설정에서 日本語 를 고르면 기억 · 그동안 영어로 하던 일본어 브라우저는 영어 그대로
                     stj = "() => [I18N.lang, document.documentElement.lang, localStorage.getItem('hs_lang'), localStorage.getItem('hs_lang0j')]"
-                    c, pg, errs = open_page(pb, locale='ja-JP')
+                    c, pg, errs = open_page(pbh, locale='ja-JP')
                     j1 = pg.evaluate(stj)
                     if j1 != ['ja', 'ja', None, '1']:
                         fails.append('일본어 공개: 일본어 브라우저 · 새 방문인데 일본어가 아니다 %s' % j1)
                     c.close()
-                    c, pg, errs = open_page(pb, locale='ko-KR')
+                    c, pg, errs = open_page(pbh, locale='ko-KR')
                     pg.evaluate("() => { __hsReset(9); closeModal(); newScenarioStart('전환 학원'); closeModal(); UI.view = 'opt'; render(); }")
                     with pg.expect_navigation(timeout=30000):
                         pg.click('[data-lang=ja]')
@@ -398,7 +442,7 @@ def main():
                     c.close()
                     was_en = ('if(!sessionStorage.getItem("__old")){localStorage.setItem("heroacademy_v1", %s);localStorage.setItem("hs_lang0","1");sessionStorage.setItem("__old","1")}'
                               % json.dumps(json.dumps({"v": 1})))
-                    c, pg, errs = open_page(pb, locale='ja-JP', init=was_en)
+                    c, pg, errs = open_page(pbh, locale='ja-JP', init=was_en)
                     j3 = pg.evaluate(stj)
                     if j3 != ['en', 'en', 'en', '1']:
                         fails.append('일본어 공개: 영어로 하던 일본어 브라우저 — 영어로 기억하지 않았다 %s' % j3)
@@ -410,7 +454,7 @@ def main():
                     if j4 != ['ja', 'ja', None, '1']:
                         fails.append('일본어 공개: 자동을 고른 뒤 일본어 브라우저를 따르지 않는다 %s' % j4)
                     c.close()
-                    c, pg, errs = open_page(pb, locale='ja-JP', init=old_save)
+                    c, pg, errs = open_page(pbh, locale='ja-JP', init=old_save)
                     j5 = pg.evaluate(stj)
                     if j5[:3] != ['ko', 'ko', 'ko']:
                         fails.append('일본어 공개: 영어 공개 전부터 하던 일본어 브라우저 — 한국어로 기억하지 않았다 %s' % j5)
@@ -419,6 +463,10 @@ def main():
                           % (j1[0], j2[1], lpj2, j3[0], j4[0], j5[0]))
             br.close()
     finally:
+        try:
+            srv.shutdown()
+        except NameError:
+            pass
         shutil.rmtree(tmp, ignore_errors=True)
 
     if fails:

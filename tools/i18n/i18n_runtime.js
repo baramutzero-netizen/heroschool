@@ -94,7 +94,8 @@ var _LC = /*@@CTX@@*/{};
 (function(){
   var NAME_CTX = {NAME_POOL: 1, L5_NPC_ACAD: 1, MON: 1, EPI_CROWD: 1};     // 통째로 바꾸는 이름 (문맥 키) — 같은 글이면 전역 값보다 먼저
   /* 값 하나에 한국어가 여럿인 것 중 세이브 · 서버에 남는 것 — 되돌릴 한국어 (유물 옵션 · 스킬 · 이름 없는 학생) */
-  var KO_PREF = {en: {"DEF": "방어력", "Slash": "베기", "Unknown": "무명", "EXP": "경험치"},
+  /* 1018 — "Sanctuary" = 성역 선포(팔라딘 필살기 — 졸업생 재능 · 스킬로 세이브에 남는다) · 성역(전투 버프 이름 — 남지 않는다). check_save 왕복 */
+  var KO_PREF = {en: {"DEF": "방어력", "Slash": "베기", "Unknown": "무명", "EXP": "경험치", "Sanctuary": "성역 선포"},
                  ja: {"斬撃": "베기", "経験値": "경험치"}};
   var MS = {}, HAN = /[가-힣]/, LAT2 = /[A-Za-z][\s\S]*[A-Za-z]/, JPC = /[\u3040-\u30ff\u3400-\u9fff\uf900-\ufaff]/, PH = /\{\d/;
   function maps(L){
