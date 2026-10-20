@@ -459,5 +459,7 @@
  "{0} {1}라운드 — <b>{2}</b>에게 {3}:{4} 승리": "{0} Round {1} — beat <b>{2}</b> {3}:{4}",
  "{0} {1}라운드 — <b>{2}</b>에게 {3}:{4} 패배. 탈락.": "{0} Round {1} — lost to <b>{2}</b> {3}:{4}. Eliminated.",
  "_bootMain()": "",
- "대회 일정 개편 — <b>{0}</b>이(가) {1}주차로 옮겨졌다. 놓치지 않도록 지금 연다.": "Tournament schedule revised — <b>{0}</b> moved to Week {1}. Opening it now so you don't miss it."
+ "대회 일정 개편 — <b>{0}</b>이(가) {1}주차로 옮겨졌다. 놓치지 않도록 지금 연다.": "Tournament schedule revised — <b>{0}</b> moved to Week {1}. Opening it now so you don't miss it.",
+ "_tour3 — 대회 방식 (1019 ③ · 예선 리그 · 본선 결승 세트)": "",
+ "{0} {1} {2}세트 — <b>{3}</b> 상대 {4} {5} (세트 {6}:{7})": "{0} {1} Set {2} — vs <b>{3}</b> {4} {5} (Sets {6}:{7})"
 }

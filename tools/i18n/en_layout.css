@@ -43,3 +43,12 @@ html[lang=en] .lkw-plate .r1>span{max-width:100%}
 html[lang=en] .gradcard-epi{white-space:normal;text-overflow:clip}
 /* 입학식 카드의 역할 줄 (1013) — 'DPS · Assassination' 의 긴 낱말이 도트 폰트 24px 에서 카드(좁은 화면 900 의 두 칸) 밖으로 13px 나갔다 → 영어는 한 단계 작게 (도트 12px) */
 html[lang=en] .cerrole{font-size:15px}
+
+/* 대회 편성 창 (TFWIN · 1019) — 영어 글이 길어 넘치는 칸.
+   분석 줄의 각도 표(Matchup · Formation …)가 한국어 두 글자 칸(30px)보다 길다 → 76px · 진형 단추의 이름(Crane Wing · Crescent)이 마크 옆 칸에 안 들어가면
+   마크 아래 한 줄 (1020 — 여기서 정하던 것을 TFWIN 의 .stk 가 한다 · tfwFormFit 이 이름이 넘치면 붙인다) ·
+   (상대 진형 카드의 'Weak to [마크] 진형' 줄은 1020 7차에 뺐다) · 경기 카드의 팀 · 진형 줄은 두 줄까지 · 학생 칸의 레벨은 이름 줄로 (직업 이름 Swordsman · Enchanter 가 다 보이게) */
+html[lang=en] .tfw-hints li{grid-template-columns:76px minmax(0,1fr)}
+html[lang=en] .tfw-mc .tfw-tl{white-space:normal}
+/* 1020 — 예상이 전투력 상자 안 한 줄이 되며 'Forecast' 표가 붙었다 → 'Unfavored 14%' 옆 막대가 30px 까지 좁아진다. 영어는 표 없이 (Favored · Unfavored 가 곧 예상) */
+html[lang=en] .tfw-odds .lb{display:none}

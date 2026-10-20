@@ -67,7 +67,7 @@ with sync_playwright() as pw:
         while(UI.tour && guard++<40){
           const tt=UI.tour;
           if(tt.stage==='prep'){ tt.stage='entry'; continue; }
-          if(tt.stage==='scout'){ tt.stage='match'; tt.matchIdx=0; tt.roundScore=[0,0]; continue; }
+          if(tt.stage==='scout'){ tt.stage='match'; if(tt.kind!=='spring'){ tt.matchIdx=0; tt.roundScore=[0,0]; } continue; }   // 1019 — 봄 신인전은 경기마다 scout (대회 편성 창) · 경기 차례는 그대로
           const isSpring=tt.kind==='spring';
           const myIds = isSpring? tt.myTeams[0] : tt.myTeams[tt.matchIdx];
           const oppTeam = isSpring? tt.opps[tt.matchIdx].teams[0] : tt.opps[tt.round].teams[tt.assign[tt.matchIdx]];

@@ -4,3 +4,10 @@
 
 /* 스케줄 두루마리의 개인 행동 명단 — 이름 칸 60px (전각 다섯 자). 일본어 가타카나 이름은 일곱 자까지 있어 넘치면 … 로 */
 html[lang="ja"] body .skwrap .skfit .skstage .sk-r .nm{text-overflow:ellipsis;white-space:nowrap}
+
+/* 대회 편성 창 (TFWIN · 1019) — 분석 줄의 각도 표(タンク 세 글자)가 30px 칸보다 길다 → 44px · 경기 카드의 팀 · 진형 줄은 두 줄까지 ·
+   학생 칸의 레벨은 이름 줄로 (가타카나 직업 이름 パラディン · タイムマジシャン 이 보이게) */
+html[lang="ja"] .tfw-hints li{grid-template-columns:44px minmax(0,1fr)}
+html[lang="ja"] .tfw-mc .tfw-tl{white-space:normal}
+/* 1020 6차 — '自校チームA' 의 첫 글자(自)는 왼쪽에 2px 빈 칸이 있다 — 잉크 왼쪽 끝을 전투력 상자(넓은 화면 VS 줄) · 진형 단추(좁은 화면 판 머리) 왼쪽 끝에 (한국어 · 영어는 0) */
+html[lang="ja"] .tfw-vsrow .o,html[lang="ja"] .tfw-ours .tfw-sh b{margin-left:-2px}
