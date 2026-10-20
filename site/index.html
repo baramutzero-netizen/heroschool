@@ -918,6 +918,7 @@ html[data-font="pixel"] .prol .ptitle{font-synthesis:weight;font-weight:700}   /
 .op-drops{position:absolute;left:50%;top:42%;width:0;height:0;z-index:1}
 .op-drops>div{position:absolute;left:0;top:0;pointer-events:none}
 .op-drops svg{display:block;overflow:visible}
+.op-drops .op-px{display:block;max-width:none;image-rendering:pixelated;background-repeat:no-repeat;background-size:400% 100%}   /* 1021 핏방울 도트 (OPBLOOD) — 점 그대로 · 자국 시트 네 장 */
 .op-talk{position:absolute;left:50%;bottom:max(5vh,22px);transform:translateX(-50%);width:min(920px,calc(100vw - 28px));box-sizing:border-box;z-index:3;display:flex;gap:18px;align-items:flex-start;padding:18px 22px 22px;background:linear-gradient(180deg,rgba(22,17,27,.93),rgba(9,7,11,.96));border:1px solid rgba(206,176,122,.34);border-radius:12px;box-shadow:0 12px 44px #000c;cursor:pointer}
 .op-talk[hidden]{display:none}
 .op-face{flex:none;width:132px;height:132px;border-radius:10px;overflow:hidden;background:radial-gradient(circle at 50% 42%,#3b3446,#141119);border:1px solid rgba(206,176,122,.38)}
@@ -4050,10 +4051,10 @@ html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.
 html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn{
   color:var(--text)!important;background:var(--pt-card)!important;background-image:none!important;border:2px solid var(--pt-line)!important;border-radius:0!important;font-weight:400;
   box-shadow:inset 0 0 0 1px var(--pt-edge),2px 3px 0 #0007!important}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn.primary{
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn:is(.primary,[aria-pressed="true"]){
   color:#fff3cf!important;background:#8a5a1e!important;border-color:var(--pt-gold)!important;box-shadow:inset 0 0 0 1px #e0b452,2px 3px 0 #0007!important}
 html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn:not(:disabled):is(:hover,:focus-visible){border-color:#fff!important;filter:brightness(1.08)}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn.primary:not(:disabled):is(:hover,:focus-visible){border-color:#fff2c0!important}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn:is(.primary,[aria-pressed="true"]):not(:disabled):is(:hover,:focus-visible){border-color:#fff2c0!important}
 html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn:active:not(:disabled){translate:1px 2px;box-shadow:inset 0 0 0 1px var(--pt-edge)!important}
 html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn:disabled{opacity:1;filter:saturate(.2) brightness(.6)}
 html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn:is(.ghost,.icon){background:transparent!important;border-color:#b98f8488!important;box-shadow:none!important}
@@ -4186,6 +4187,78 @@ html body #modalRoot .cw-ov .cw-win .lkw-plate .bar i.bad{background:#e8735c}
 html body #modalRoot .cw-ov .cw-win .lkw-plate .bar b{background:#fff4e666}
 html body #modalRoot .cw-ov .cw-win.lkw-win .cw-bt b{color:#fff}
 /* POPTHEME_CSS_END */
+/* VIEWTHEME_CSS_START — 일지 · 설정 화면 · 건물 안 테마 (1021 · apply_viewtheme.py) ─ 사용자 1021 '그다음 일지와 설정에도 테마 적용해주고'.
+   일지 넷(학원 일지 · 상담 기록 · 졸업생 명부 · 도감 — 위 서브탭까지)과 설정 화면을 건물 안 창(TOWNIN) · 팝업 테마(POPTHEME)와 같은 색 · 테두리로. CSS 만 + 표시 하나
+   (render 가 #view 에 data-pt 를 단다 — VIEWTHEME JS 의 PT_VIEWS 에 든 화면일 때. 다른 화면에도 입히려면 PT_VIEWS 에 더한다).
+   판(.panel)은 창(#2a1418 · 세 겹 테두리 — 사이드 메뉴 · 스카우트 목록과 같다) · 판 안 상자(설정 줄 .optrow · 효과 미리보기 칸)는 대화창 색 · 카드(.opt · 졸업생 카드 …)는 상품 카드 ·
+   단추는 카드 색 / 주 단추 금색 · 서브탭은 카드 색(지금 탭은 금색 줄). 화면 테마 · 팔레트 · 도트 마감 · 글꼴 설정과 상관없이 같은 색 (글꼴은 설정을 따른다).
+   판 안의 예전 색은 변수(--bg · --surface · --text · --brass · --ok · --bad …)를 창 색으로 바꿔 끼워 따라오게 한다 (일지 줄의 색 줄 · 인라인 색도).
+   카드 테두리 색은 !important 없이 — 인라인 색(상담 기록의 맞은 말 초록 · 도감 카드의 색 줄)이 그대로 보인다 */
+html body #app #view[data-pt]{
+  --pt-ink:#fff4e6;--pt-line:#e9cdbf;--pt-edge:#b98f84;--pt-rim:#8a5a4a;--pt-win:#2a1418;--pt-panel:#42191f;--pt-card:#5b2a30;--pt-sel:#6b3036;--pt-gold:#ffd36a;--pt-dim:#e2c2b6;--pt-name:#ffd8c8;--pt-dark:#140a0c;
+  --bg:#2a1418;--surface:#42191f;--surface2:#5b2a30;--line:#b98f84;--line-soft:#b98f8466;
+  --text:#fff4e6;--muted:#ecd2c6;--dim:#d4b0a4;
+  --brass:#ffd36a;--brass-b:#ffe08a;--brass-soft:#ffd36a33;
+  --indigo:#b9a8ff;--indigo-soft:#b9a8ff22;
+  --ok:#a6e48e;--warn:#ffc078;--bad:#ff9a86;
+  --tank:#8cc4f0;--dps:#f2957d;--heal:#86d6a4;--supp:#c6a6f4;--ex:#f39ac4;
+  --shadow:none;--journal-paper:linear-gradient(#5b2a30,#5b2a30);--pixel-edge:#b98f84;--pixel-light:#e9cdbf}
+/* 판 — 창 (사이드 메뉴와 같은 세 겹: 검은 줄 · 크림 · 창 색 · 테) */
+html body #app #view[data-pt] .panel{color:var(--text);color-scheme:dark;scrollbar-color:#8a5a4a #2a1418;
+  background:var(--pt-win)!important;background-image:none!important;border:2px solid var(--pt-line)!important;border-radius:0!important;
+  box-shadow:inset 0 0 0 2px var(--pt-win),inset 0 0 0 4px var(--pt-rim),0 0 0 2px var(--pt-dark),0 8px 0 #0005,0 14px 28px #0006!important}
+html body #app #view[data-pt] .panel+.panel{margin-top:18px}
+html body #app #view[data-pt] :is(h1,h2,h3,h4){color:var(--pt-name)}
+html body #app #view[data-pt] .panel-h{border-bottom:1px dashed #b98f8499}
+html body #app #view[data-pt] .rule{height:0;background:none;border-top:1px dashed #b98f8499}
+html body #app #view[data-pt] :is(th,td){border-color:#b98f8455}
+html body #app #view[data-pt] a{color:var(--pt-gold)}
+html body #app #view[data-pt] :focus-visible{outline:2px dashed #ffe08a;outline-offset:2px}
+/* 서브탭 (학원 일지 · 상담 기록 · 졸업생 명부 · 도감) — 카드 색 · 지금 탭은 고른 칸처럼 금색 줄 */
+html body #app #view[data-pt] .subnav .ttab{color:var(--text)!important;background:var(--pt-card)!important;background-image:none!important;border:2px solid var(--pt-line)!important;border-radius:0!important;
+  box-shadow:inset 0 0 0 1px var(--pt-edge),0 0 0 1px var(--pt-dark),2px 3px 0 #0007!important}
+html body #app #view[data-pt] .subnav .ttab:not(.on):is(:hover,:focus-visible){border-color:#fff!important;filter:brightness(1.08)}
+html body #app #view[data-pt] .subnav .ttab.on{background:var(--pt-sel)!important;border-color:var(--pt-gold)!important;
+  box-shadow:inset 0 0 0 1px var(--pt-edge),0 0 0 2px var(--pt-dark),0 0 0 4px #7a4a1e,2px 3px 0 4px #0007!important}
+html body #app #view[data-pt] .subnav .ttab:active{translate:1px 2px}
+/* 판 안 상자 — 대화창 색 (설정 줄 · 효과 미리보기 칸 · 오류 상자) */
+html body #app #view[data-pt] :is(.optrow,.fxcell,.errbox,.logbox,.missionbox){color:var(--text);background:var(--pt-panel)!important;background-image:none!important;
+  border:2px solid var(--pt-line)!important;border-radius:0!important;box-shadow:inset 0 0 0 2px var(--pt-panel),inset 0 0 0 3px var(--pt-edge)!important}
+html body #app #view[data-pt] .fxdemo{background:none!important;border:0!important;box-shadow:none!important}
+html body #app #view[data-pt] .optlab>b{color:var(--pt-name)}
+html body #app #view[data-pt] .marklegend i{color:#2a1418}                 /* 도감 카드 표식 — 밝아진 바탕(변수) 위 글자는 어둡게 */
+/* 카드 — 상품 카드 (테두리 색은 인라인이 이긴다) */
+html body #app #view[data-pt] :is(.opt,.scard,.slot,.meter,.gradcard,.syn-card,.dslot,.rwd,.cercard,.lkcard){color:var(--text);background:var(--pt-card)!important;background-image:none!important;
+  border:2px solid var(--pt-line);border-radius:0!important;box-shadow:inset 0 0 0 2px var(--pt-card),inset 0 0 0 3px var(--pt-edge),2px 3px 0 #0007!important}
+html body #app #view[data-pt] :is(button.opt,label.opt,button.scard,button.gradcard):not(:disabled):not(.sel):not(.on):hover{border-color:#fff;filter:brightness(1.08)}
+html body #app #view[data-pt] :is(.opt.sel,.opt.on,.opt[aria-checked="true"],.opt[aria-pressed="true"],.scard.sel,.slot.on){background:var(--pt-sel)!important;border-color:var(--pt-gold)!important;
+  box-shadow:inset 0 0 0 2px var(--pt-sel),inset 0 0 0 3px var(--pt-edge),0 0 0 2px var(--pt-dark),0 0 0 4px #7a4a1e,2px 3px 0 4px #0007!important}
+html body #app #view[data-pt] :is(.opt:has(> .rlname),.opt.skgrade){background:color-mix(in srgb,var(--rg) 20%,#42191f)!important;border-color:color-mix(in srgb,var(--rg) 70%,#e9cdbf)!important;
+  box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--rg) 20%,#42191f),inset 0 0 0 3px #b98f84,2px 3px 0 #0007!important}
+html body #app #view[data-pt] div.opt:is([style*="border-color:var(--brass)"],[style*="border-color: var(--brass)"]){color:#ffe08a;background:#2b1b14!important;border-color:#e0b452;
+  box-shadow:inset 0 0 0 2px #2b1b14,inset 0 0 0 3px #8a6a2a,0 0 0 2px var(--pt-dark),3px 4px 0 2px #0006!important}
+/* 단추 — 카드 색 · 크림 줄 / 주 단추 금색 */
+html body #app #view[data-pt] .btn{color:var(--text)!important;background:var(--pt-card)!important;background-image:none!important;border:2px solid var(--pt-line)!important;border-radius:0!important;font-weight:400;
+  box-shadow:inset 0 0 0 1px var(--pt-edge),2px 3px 0 #0007!important}
+html body #app #view[data-pt] .btn:is(.primary,[aria-pressed="true"]){color:#fff3cf!important;background:#8a5a1e!important;border-color:var(--pt-gold)!important;box-shadow:inset 0 0 0 1px #e0b452,2px 3px 0 #0007!important}
+html body #app #view[data-pt] .btn:not(:disabled):is(:hover,:focus-visible){border-color:#fff!important;filter:brightness(1.08)}
+html body #app #view[data-pt] .btn:is(.primary,[aria-pressed="true"]):not(:disabled):is(:hover,:focus-visible){border-color:#fff2c0!important}
+html body #app #view[data-pt] .btn:active:not(:disabled){translate:1px 2px;box-shadow:inset 0 0 0 1px var(--pt-edge)!important}
+html body #app #view[data-pt] .btn:disabled{opacity:1;filter:saturate(.2) brightness(.6)}
+html body #app #view[data-pt] .btn:is(.ghost,.icon){background:transparent!important;border-color:#b98f8488!important;box-shadow:none!important}
+html body #app #view[data-pt] .btn[aria-pressed]{outline:none}
+html body #app #view[data-pt] .btn[style*="border-color:var(--bad)"]{color:#ffd2c8!important;background:#6b2a26!important;border-color:#ff9a86!important}
+/* 입력 칸 · 고르기 · 막대 */
+html body #app #view[data-pt] :is(input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea){
+  color:var(--text)!important;background:#1f0e11!important;background-image:none!important;border:2px solid var(--pt-edge)!important;border-radius:0!important;box-shadow:inset 1px 2px 0 #0009!important}
+html body #app #view[data-pt] :is(input,select,textarea):focus{border-color:var(--pt-line)!important;outline:none}
+html body #app #view[data-pt] :is(input[type=checkbox],input[type=radio],input[type=range]){accent-color:#e0b452}
+html body #app #view[data-pt] ::placeholder{color:#a8847c}
+html body #app #view[data-pt] :is(.bar,.lkb,.mentbar){border-radius:0;background:#1f0e11;box-shadow:inset 0 0 0 1px #b98f8455}
+/* 얼굴 액자 (건물 안 .tin-face) */
+html body #app #view[data-pt] :is(.facebox,.sprbox){padding:3px;border:2px solid var(--pt-line)!important;border-radius:0!important;background:linear-gradient(#80504a,#4a242a 70%,#3a1a20)!important;
+  box-shadow:inset 0 0 0 2px #3a1a20,inset 0 0 0 3px var(--pt-edge),0 0 0 2px var(--pt-dark)!important}
+/* VIEWTHEME_CSS_END */
 </style>
 
 <link rel="stylesheet" href="../assets/title-art/title-screen.css?v=7">
@@ -16235,6 +16308,11 @@ const VIEW_GROUPS = {
 const VIEW_GROUP_OF = {};
 Object.keys(VIEW_GROUPS).forEach(g=> VIEW_GROUPS[g].forEach(t=>{ VIEW_GROUP_OF[t.id] = g; }));
 function viewGroupOf(id){ return VIEW_GROUP_OF[id] || id; }
+/* VIEWTHEME_START — 건물 안 테마를 입힌 화면 (1021 · apply_viewtheme.py) ─ 사용자 1021 '그다음 일지와 설정에도 테마 적용해주고'.
+   render 가 그린 뒤 #view 에 data-pt 를 단다 (이 목록에 든 화면일 때만 — CSS 는 VIEWTHEME_CSS). 다른 화면에도 입히려면 여기에 더한다 */
+const PT_VIEWS = ["log", "csllog", "record", "codex", "opt"];      // 일지 넷(학원 일지 · 상담 기록 · 졸업생 명부 · 도감) · 설정
+function ptViewMark(v){ if(v) v.toggleAttribute("data-pt", PT_VIEWS.includes(UI.view)); }
+/* VIEWTHEME_END */
 function subTabsOpen(g){   // 리그 등록은 4년차 봄부터 · 졸업생 명부는 첫 졸업생이 나온 뒤에야
   return (VIEW_GROUPS[g]||[]).filter(t=> !(t.id==="lgentry" && (S.year|0) < 4) && !(t.id==="record" && !(S.graduates||[]).length));
 }
@@ -16429,6 +16507,7 @@ function render(){
   else v.innerHTML = viewHome();
   { const sub = (UI.view==="home" && mdeskOn()) ? "" : subTabsHtml(UI.view);   // 1006 — 책상에는 서브탭 대신 소품   // 1002 — 학생 · 리그 · 일지 묶음의 서브탭 (마을 서브탭과 같은 모양)
     if(sub){ v.insertAdjacentHTML("afterbegin", sub); v.querySelectorAll(".subnav [data-subview]").forEach(b=> b.onclick=()=>{ UI.view=b.dataset.subview; render(); }); } }
+  ptViewMark(v);                                    // 1021 — 건물 안 테마 화면 표시 (VIEWTHEME — 일지 · 설정)
   bindView();
   bindChronicle();
   renderPrepBar();
@@ -18547,8 +18626,8 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1021-0122";
-const BUILD_TS = 1792513340650;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
+const BUILD = "1021-0625";
+const BUILD_TS = 1792531509231;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -30797,7 +30876,7 @@ function openingPlay(){
   UI.openWiz = freshName("wizard");   // 마법사 — 개교 멤버 마법사의 이름 (1003)
   ["op_slash","op_drip","op_magic","op_rift","op_rewind","op_type","op_run","op_door","op_hand"].forEach(k=>{ if(SFX[k]) sfxLoad(SFX[k].f); });
   OPTX.prep();                        // 오프닝 글 글꼴 (1010 — 예전엔 APNG 아홉 장을 미리 받았다)
-  [...Object.values(OPENING.face), OPENING.pal, OPENING.wiz, OPENING.hands, OPENING.grave].forEach(u=>{ const im = new Image(); im.src = u; });   // 얼굴 · 그림이 바뀌는 순간 빈 칸이 보이지 않게
+  [...Object.values(OPENING.face), OPENING.pal, OPENING.wiz, OPENING.hands, OPENING.grave, ...(typeof OP_BLOOD_PX !== "undefined" ? Object.values(OP_BLOOD_PX) : [])].forEach(u=>{ const im = new Image(); im.src = u; });   // 얼굴 · 그림이 바뀌는 순간 빈 칸이 보이지 않게
   audOver("opDemon");                 // 마왕 곡 — 검은 화면 · 글부터 (1003)
   const tok = OP = {adv:null, timer:0, key:null, img:null};
   dragCfg($("#modalRoot"), null);
@@ -30964,6 +31043,8 @@ function opFlash(bg, peaks, decay, a){
   el.style.background = bg;
   peaks.forEach(p=> el.animate([{opacity:0}, {opacity:a, offset:.16}, {opacity:0}], {duration:decay + 55, delay:Math.max(0, p - 55), easing:"ease-out"}));
 }
+/* 오프닝 핏방울 도트 (1021 · apply_opblood.py) — 떨어지는 방울(fall 12 × 18) · 자국 셋(s0 · s1 · s2 — 튀는 네 장 시트 320 × 60) · 1× 도트 (patch/opblood_px · opblood_px.py) */
+const OP_BLOOD_PX = {"fall":"../assets/op_blood_px/fall.webp?v=9c05c99b","s0":"../assets/op_blood_px/s0.webp?v=b2d88103","s1":"../assets/op_blood_px/s1.webp?v=d596b0a5","s2":"../assets/op_blood_px/s2.webp?v=bfb3314f"};
 /* 핏방울 하나 — 떨어지는 방울 · 바닥에 퍼진 자국 (i 마다 모양이 조금씩 다르다) */
 function opDropSVG(i){
   const id = "opg" + i + "_" + Date.now().toString(36);
@@ -30989,6 +31070,11 @@ function opDropSVG(i){
   const splat = `<svg width="80" height="60" viewBox="-40 -30 80 60">${grad.replace(id, id + "s")}<path d="${d}Z" fill="url(#${id}s)"/>${bits}<ellipse cx="-4" cy="-3.4" rx="3.6" ry="1.5" fill="#fff" opacity=".12"/></svg>`;
   return {fall, splat};
 }
+/* OPBLOOD_START — 오프닝 핏방울 도트 (1021 · apply_opblood.py) ─ 사용자 '요 이펙트도 도트화 가능한가?' → 시안 → '바로 게임에 넣기'.
+   떨어지는 방울 · 바닥 자국을 도트 그림(OP_BLOOD_PX — opblood_px.py 가 opDropSVG 원화를 1단위 = 1점으로 그린 것)으로.
+   방울은 처음부터 그 크기(k 배)로 그려 옮기기만 한다 (늘이면 점이 흐려진다) · 자국은 네 장 시트(모였다 → 퍼짐 → 넘침 → 멈춤)를 OP_BLOOD_FR 때에 바꾼다
+   (예전 SVG 는 scale 로 늘이는 애니메이션). 자리 · 떨어지는 때 · 소리 · 배율 k 는 예전과 같다. 도트 그림이 없으면 예전 SVG 그대로 */
+const OP_BLOOD_FR = [[0, .75], [45, 1], [100, 1], [190, 1]];      // 자국 네 장 — [바꾸는 때 ms, 불투명도] (시트 장 수 = CSS .op-px 의 background-size 400%)
 function opDrops(){
   const box = $("#opDrops"); if(!box) return;
   const tok = OP;
@@ -30996,22 +31082,43 @@ function opDrops(){
   const P = [[-44, 3], [36, -8], [-4, 15]];                // 방울이 닿는 자리 (px · k 배)
   const fallH = Math.max(140, innerHeight * .3);
   const reduced = opReduced();
+  const PX = (typeof OP_BLOOD_PX !== "undefined" && OP_BLOOD_PX && OP_BLOOD_PX.fall) ? OP_BLOOD_PX : null;
   setTimeout(()=>{ if(OP === tok) sfxPlay("op_drip"); }, OP_FALL - OP_DRIP_AT[0]);   // 첫 방울이 닿는 순간에 첫 소리
   OP_DRIP_AT.forEach((at, i)=>{
     const land = OP_FALL + at - OP_DRIP_AT[0], x = P[i][0] * k, y = P[i][1] * k;
-    const g = opDropSVG(i);
+    const g = PX ? null : opDropSVG(i);
     setTimeout(()=>{
       if(OP !== tok || !box.isConnected) return;
-      const f = document.createElement("div"); f.innerHTML = g.fall; f.style.transformOrigin = "0 0";
-      box.appendChild(f);
-      const s = `scale(${k})`;
-      f.animate([{transform:`translate(${x - 6 * k}px, ${y - 18 * k - fallH}px) ${s}`, opacity:.9},
-                 {transform:`translate(${x - 6 * k}px, ${y - 18 * k}px) ${s}`, opacity:1}],
-                {duration:OP_FALL, easing:"cubic-bezier(.55,0,1,.55)", fill:"forwards"});
+      const f = document.createElement("div");
+      if(PX){
+        f.innerHTML = `<img class="op-px" src="${PX.fall}" alt="" draggable="false" style="width:${12 * k}px;height:${18 * k}px">`;
+        box.appendChild(f);
+        const fx = Math.round(x - 6 * k), fy = Math.round(y - 18 * k);
+        f.animate([{transform:`translate(${fx}px, ${fy - fallH}px)`, opacity:.9}, {transform:`translate(${fx}px, ${fy}px)`, opacity:1}],
+                  {duration:OP_FALL, easing:"cubic-bezier(.55,0,1,.55)", fill:"forwards"});
+      }else{
+        f.innerHTML = g.fall; f.style.transformOrigin = "0 0";
+        box.appendChild(f);
+        const s = `scale(${k})`;
+        f.animate([{transform:`translate(${x - 6 * k}px, ${y - 18 * k - fallH}px) ${s}`, opacity:.9},
+                   {transform:`translate(${x - 6 * k}px, ${y - 18 * k}px) ${s}`, opacity:1}],
+                  {duration:OP_FALL, easing:"cubic-bezier(.55,0,1,.55)", fill:"forwards"});
+      }
       setTimeout(()=>{
         f.remove();
         if(OP !== tok || !box.isConnected) return;
-        const sp = document.createElement("div"); sp.innerHTML = g.splat;
+        const sp = document.createElement("div");
+        if(PX){
+          sp.style.transform = `translate(${Math.round(x - 40 * k)}px, ${Math.round(y - 30 * k)}px)`;
+          sp.innerHTML = `<div class="op-px" style="width:${80 * k}px;height:${60 * k}px;background-image:url('${PX["s" + i] || PX.s0}')"></div>`;
+          box.appendChild(sp);
+          const el = sp.firstChild, last = OP_BLOOD_FR.length - 1;
+          const set = n=>{ el.style.backgroundPosition = `${n * 100 / last}% 0`; el.style.opacity = OP_BLOOD_FR[n][1]; };
+          if(reduced) set(last);
+          else OP_BLOOD_FR.forEach(([ms], n)=>{ if(!n) set(0); else setTimeout(()=>{ if(el.isConnected) set(n); }, ms); });
+          return;
+        }
+        sp.innerHTML = g.splat;
         sp.style.transform = `translate(${x - 40 * k}px, ${y - 30 * k}px)`;
         box.appendChild(sp);
         const svg = sp.firstChild; svg.style.width = (80 * k) + "px"; svg.style.height = (60 * k) + "px";
@@ -31021,6 +31128,7 @@ function opDrops(){
     }, land - OP_FALL);
   });
 }
+/* OPBLOOD_END */
 /* 오프닝을 닫는다 — 연한 푸른 빛이 화면을 덮은 뒤 프롤로그가 드러난다. fast = 건너뛰기 (1003: 흰빛 → 푸른 빛) */
 function openingFinish(fast){
   const tok = OP; if(!tok) return;
