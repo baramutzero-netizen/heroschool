@@ -808,6 +808,16 @@ html[data-ui-concept="journal"] .npcname{color:#8a6a45}
 .dr-tavern-guest-right{left:54.5%}
 .dr-stage[data-job="tavern"] .dr-tavern-guest{display:block}
 
+/* 1021 — 경과 보고 필드 도트 (apply_report.py · 목업 mockups/report-field — 사용자가 맞춰 보낸 값).
+   도트 배경(REPORT_PX — 보이는 곳만 자른 2배 그림이라 무대에 꼭 맞춘다) · 손님 소품도 도트 · 학생 도트는 직업 크기(--dr-job · 발밑 기준) ·
+   테두리 · 그림자는 대회 쿼터뷰와 같은 셈 (#dr-ol · #dr-ols 필터 · .dr-shadows 캔버스 — reportShadowTick). 예전 흐린 타원은 뺀다 */
+.dr-room.px,.dr-inn-guest.px,.dr-tavern-guest.px{image-rendering:pixelated}
+.dr-shadows{position:absolute;left:0;top:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.dr-defs{position:absolute;width:0;height:0;pointer-events:none}
+.dr-stage .dr-avatar .spr-anchor{filter:url(#dr-ol)}
+.dr-stage .dr-study-sprite,.dr-stage .dr-salon-owner{filter:url(#dr-ols)}
+.dr-stage .dr-avatar canvas.spr{scale:var(--dr-job,1)}
+.dr-stage .dr-shadow{display:none}
 /* REPORT_SCENE_STYLE_END */
 /* ---------- 주간 일지 ---------- */
 .daylog{border:1px solid var(--line-soft);border-radius:4px;background:var(--bg);padding:12px 14px;
@@ -4268,6 +4278,205 @@ html body #modalRoot .suc-scene .suc-heading h2,html body #modalRoot .suc-succes
 html body #modalRoot .suc-reroll img,html body #modalRoot .suc-swing{width:128px;height:128px;object-fit:contain;image-rendering:pixelated}html body #modalRoot .suc-swing{transform-origin:22% 85%}
 @media(max-width:760px){html body #modalRoot .suc-reroll img,html body #modalRoot .suc-swing{width:64px;height:64px}}
 /* SKILL_CHOICE_STYLE_END */
+/* POPTHEME_CSS_START — 팝업 · 건물 안 테마 (1021 · apply_poptheme.py) ─ 사용자 1021 '모든 이벤트 팝업 / 상담창 팝업 / 락커룸 팝업 / 경과 보고와 결산 팝업 등의 테마를
+   마을 건물 안 테마로 교체하자'. 게임 팝업(#modalRoot .modal — 의식 · 이벤트 · 마을 손님 · 목표 · 프롤로그 · 새 시나리오 · 경과 보고 · 의뢰 · 결산 · 대회 · 친선전 · 튜토리얼 · 확인 창 …)과
+   상담창 · 락커룸 · 스카우트 설득 창(.cw-ov .cw-win)을 건물 안 창(TOWNIN — .tin-win · .tin-box · 얼굴 액자 · 상품 카드 · 금색 단추)과 같은 색 · 테두리로. CSS 만 — 자리 · 크기 · 글꼴은 그대로.
+   빼는 것: 대회 편성(.tfw-modal — 이미 건물 안) · 원정 지도(.xm-modal) · 스킬 강화(.suc-modal) · 전투(.btm) — 제 화면이 따로 있다. 유물 획득(그림자 DOM)도 그대로.
+   화면 테마 · 팔레트(양피지 · 리소 · 민트) · 저널 · 도트 마감과 상관없이 같은 색 (게임이 .modal · button · .opt … 에 !important 로 붙이는 테두리 · 그림자는 html body #modalRoot … 로 덮는다).
+   팝업 안의 예전 색은 변수(--bg · --surface · --text · --brass …)를 창 색으로 바꿔 끼워 따라오게 하고, 밝은 바탕 · 어두운 글이 박힌 것만 하나씩 덮는다.
+   창 테두리는 바깥으로 — 테두리(2px 테 색 #8a5a4a)는 진짜 border, 그 바깥 창 색 · 크림 · 검은 줄은 box-shadow. 스크롤하는 글이 테두리 위로 지나가지 않고, 안쪽 폭은 도트 마감(2px)과 같다.
+   상자 · 카드 · 단추도 크림 줄 = border 2px (도트 마감 테두리와 같은 두께 — 배치가 그대로), 안쪽 줄은 inset 그림자.
+   종이로 남기는 것 (섬 — 예전 종이 색 변수로 되돌린다): 졸업 증서(.gcert) · 튜토리얼 안 스케줄 카드 그림(.tg-guide .card · .tg-schedbtn) · 상담 답변 구름(.cw-cloud — 구름 그림이 밝다) */
+
+/* ── 창 — 변수 · 테두리 ── */
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm){
+  --pt-ink:#fff4e6;--pt-line:#e9cdbf;--pt-edge:#b98f84;--pt-rim:#8a5a4a;--pt-win:#2a1418;--pt-panel:#42191f;--pt-card:#5b2a30;--pt-sel:#6b3036;--pt-gold:#ffd36a;--pt-dim:#e2c2b6;--pt-name:#ffd8c8;--pt-dark:#140a0c;
+  --bg:#2a1418;--surface:#42191f;--surface2:#5b2a30;--line:#b98f84;--line-soft:#b98f8466;
+  --text:#fff4e6;--muted:#ecd2c6;--dim:#d4b0a4;
+  --brass:#ffd36a;--brass-b:#ffe08a;--brass-soft:#ffd36a33;
+  --indigo:#b9a8ff;--indigo-soft:#b9a8ff22;
+  --ok:#a6e48e;--warn:#ffc078;--bad:#ff9a86;
+  --tank:#8cc4f0;--dps:#f2957d;--heal:#86d6a4;--supp:#c6a6f4;--ex:#f39ac4;
+  --shadow:none;--journal-paper:linear-gradient(#5b2a30,#5b2a30);--pixel-edge:#b98f84;--pixel-light:#e9cdbf;
+  color-scheme:dark;color:var(--text);scrollbar-color:#8a5a4a #2a1418;
+  background:#2a1418!important;background-image:none!important;border:2px solid #8a5a4a!important;border-radius:0!important;
+  box-shadow:0 0 0 2px #2a1418,0 0 0 4px #e9cdbf,0 0 0 6px #140a0c,0 8px 0 6px #0005,0 14px 28px 6px #0006!important}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(h1,h2,h3,h4):not(.gcert *){color:var(--pt-name)}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :focus-visible{outline:2px dashed #ffe08a;outline-offset:2px}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) a{color:var(--pt-gold)}
+/* 줄 — 크림 점선 (건물 안 상품 판 머리줄처럼) */
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .cerhead{border-bottom:1px dashed #b98f8499}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .rule{height:0;background:none;border-top:1px dashed #b98f8499}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .panel-h{border-bottom-color:#b98f8499}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(th,td){border-color:#b98f8455}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .cerwhy{border-left-color:#b98f84}
+
+/* ── 상자(대화창 · .tin-box) · 카드(상품 카드) ── */
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.panel,.logbox,.missionbox,.errbox,.fxdemo,.titlecard):not(.graddetail .panel){
+  color:var(--text);background:var(--pt-panel)!important;background-image:none!important;border:2px solid var(--pt-line)!important;border-radius:0!important;
+  box-shadow:inset 0 0 0 2px var(--pt-panel),inset 0 0 0 3px var(--pt-edge),0 0 0 2px var(--pt-dark),3px 4px 0 2px #0006!important}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.opt,.scard,.slot,.meter,.gradcard,.syn-card,.dslot,.rwd,.cercard,.lkcard){
+  color:var(--text);background:var(--pt-card)!important;background-image:none!important;border:2px solid var(--pt-line)!important;border-radius:0!important;
+  box-shadow:inset 0 0 0 2px var(--pt-card),inset 0 0 0 3px var(--pt-edge),2px 3px 0 #0007!important}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(button.opt,label.opt,button.scard):not(:disabled):not(.sel):not(.on):hover{
+  border-color:#fff!important;box-shadow:inset 0 0 0 2px var(--pt-card),inset 0 0 0 3px var(--pt-line),2px 3px 0 #0007!important;filter:brightness(1.08)}
+/* 고른 칸 — 금색 줄 + 바깥 한 칸 띄운 금빛 (대회 편성 창의 고른 경기 카드와 같다) */
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.opt.sel,.opt.on,.opt[aria-checked="true"],.opt[aria-pressed="true"],.scard.sel,.slot.on,.etm-card.sel-entry){
+  background:var(--pt-sel)!important;border-color:var(--pt-gold)!important;
+  box-shadow:inset 0 0 0 2px var(--pt-sel),inset 0 0 0 3px var(--pt-edge),0 0 0 2px var(--pt-dark),0 0 0 4px #7a4a1e,2px 3px 0 4px #0007!important}
+/* 유물 · 스킬 카드 — 등급 색으로 옅게 물든 바탕 (밝은 바탕 대신 창 색에 섞는다) */
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.opt:has(> .rlname),.opt.skgrade){
+  background:color-mix(in srgb,var(--rg) 20%,#42191f)!important;border-color:color-mix(in srgb,var(--rg) 70%,#e9cdbf)!important;
+  box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--rg) 20%,#42191f),inset 0 0 0 3px #b98f84,2px 3px 0 #0007!important}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.opt:has(> .rlname),.opt.skgrade).sel{
+  box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--rg) 20%,#42191f),inset 0 0 0 3px #b98f84,0 0 0 2px var(--pt-dark),0 0 0 4px var(--pt-gold),2px 3px 0 4px #0007!important}
+/* 결과 · 보상 줄 (예전 금색 · 빨간 테두리 카드) — 건물 안 효과 상자(.tin-fx)처럼 */
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) div.opt:is([style*="border-color:var(--brass)"],[style*="border-color: var(--brass)"]){
+  color:#ffe08a;background:#2b1b14!important;border-color:#e0b452!important;box-shadow:inset 0 0 0 2px #2b1b14,inset 0 0 0 3px #8a6a2a,0 0 0 2px var(--pt-dark),3px 4px 0 2px #0006!important}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) div.opt:is([style*="border-color:var(--bad)"],[style*="border-color: var(--bad)"]){
+  color:#ffb39a;background:#2b1614!important;border-color:#c0533e!important;box-shadow:inset 0 0 0 2px #2b1614,inset 0 0 0 3px #7a3a2c,0 0 0 2px var(--pt-dark),3px 4px 0 2px #0006!important}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) div.opt:is([style*="border-color:var(--brass)"],[style*="border-color:var(--bad)"]) b{color:inherit}
+
+/* ── 단추 — 카드 색 · 크림 줄 / 주 단추는 금색 (대회 편성 · 건물 안 그만둔다 단추) ── */
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn{
+  color:var(--text)!important;background:var(--pt-card)!important;background-image:none!important;border:2px solid var(--pt-line)!important;border-radius:0!important;font-weight:400;
+  box-shadow:inset 0 0 0 1px var(--pt-edge),2px 3px 0 #0007!important}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn.primary{
+  color:#fff3cf!important;background:#8a5a1e!important;border-color:var(--pt-gold)!important;box-shadow:inset 0 0 0 1px #e0b452,2px 3px 0 #0007!important}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn:not(:disabled):is(:hover,:focus-visible){border-color:#fff!important;filter:brightness(1.08)}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn.primary:not(:disabled):is(:hover,:focus-visible){border-color:#fff2c0!important}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn:active:not(:disabled){translate:1px 2px;box-shadow:inset 0 0 0 1px var(--pt-edge)!important}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn:disabled{opacity:1;filter:saturate(.2) brightness(.6)}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn:is(.ghost,.icon){background:transparent!important;border-color:#b98f8488!important;box-shadow:none!important}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn[aria-pressed="true"]{outline:none}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn[style*="border-color:var(--bad)"]{color:#ffd2c8!important;background:#6b2a26!important;border-color:#ff9a86!important}
+/* 입력 칸 · 고르기 */
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea){
+  color:var(--text)!important;background:#1f0e11!important;background-image:none!important;border:2px solid var(--pt-edge)!important;border-radius:0!important;box-shadow:inset 1px 2px 0 #0009!important}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(input,select,textarea):focus{border-color:var(--pt-line)!important;outline:none}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(input[type=checkbox],input[type=radio],input[type=range]){accent-color:#e0b452}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) ::placeholder{color:#a8847c}
+
+/* ── 얼굴 액자 (건물 안 .tin-face) · 그림 액자 ── */
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.facebox,.tev-face,.ji-face,.tg-host,.tg-cface,.sprbox):not(.gcert *){
+  padding:3px;border:2px solid var(--pt-line)!important;border-radius:0!important;background:linear-gradient(#80504a,#4a242a 70%,#3a1a20)!important;
+  box-shadow:inset 0 0 0 2px #3a1a20,inset 0 0 0 3px var(--pt-edge),0 0 0 2px var(--pt-dark)!important}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .cerbanner{background:#1a0d10;border-bottom:2px solid var(--pt-rim)}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .valentine-art{border-radius:0;background:#1a0d10;box-shadow:0 0 0 2px var(--pt-line),0 0 0 4px var(--pt-dark),3px 5px 0 4px #0006}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) div:has(> img.ji-sil):not(.ji-face){padding:3px;border:2px solid var(--pt-line);border-radius:0!important;background:linear-gradient(#80504a,#4a242a 70%,#3a1a20)!important;
+  box-shadow:inset 0 0 0 2px #3a1a20,inset 0 0 0 3px var(--pt-edge),0 0 0 2px var(--pt-dark)}
+/* 레벨 업 무대 · 막대 */
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .lvstage{border:2px solid var(--pt-line);border-radius:0;background:radial-gradient(ellipse at 50% 85%,#ffd36a2e,transparent 70%),var(--pt-panel);
+  box-shadow:inset 0 0 0 2px var(--pt-panel),inset 0 0 0 3px var(--pt-edge),0 0 0 2px var(--pt-dark),3px 4px 0 2px #0006}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.bar,.lkb,.mentbar){border-radius:0;background:#1f0e11;box-shadow:inset 0 0 0 1px #b98f8455}
+/* 졸업생 자세히 — 학생 자세히 판(.panel)은 틀 없이 (창이 곧 틀) */
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .graddetail .panel{background:none!important;background-image:none!important;border:0!important;box-shadow:none!important;padding:0}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .etm-pick{border-radius:0}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .etm-pick.on{color:#3a1a20}
+
+/* ── 마을 손님 · 이벤트 — 얼굴 + 말은 건물 안 대화창처럼 (얼굴 액자를 품은 카드는 대화창 색) ── */
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .opt:has(> .tev-face){background:var(--pt-panel)!important;
+  box-shadow:inset 0 0 0 2px var(--pt-panel),inset 0 0 0 3px var(--pt-edge),0 0 0 2px var(--pt-dark),3px 4px 0 2px #0006!important}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .opt:has(> .tev-face) .eyebrow{color:var(--pt-name);letter-spacing:0}
+
+/* ── 섬 — 종이로 남기는 것 (예전 양피지 색) ── */
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.gcert,.tg-guide .card,.tg-schedbtn){
+  --bg:#e2cfaa;--surface:#efdfbf;--surface2:#ddc69e;--line:#ad8c60;--line-soft:#c9ad80;--text:#35291f;--muted:#68543e;--dim:#75624c;
+  --brass:#795322;--brass-b:#966830;--brass-soft:#9b702323;--indigo:#625084;--ok:#306543;--warn:#955015;--bad:#a0302c;
+  --tank:#345e80;--dps:#9a3d2c;--heal:#306543;--supp:#67477f;--ex:#95335f;
+  --journal-paper:linear-gradient(90deg,#e6cfa7,#f2e2c0 50%,#e6cfa7);--pixel-edge:#654a30;color-scheme:light;color:var(--text)}
+
+/* ── 직업 의뢰 카드 · 결산 (경과 보고 위에 뜨는 작은 창) ── */
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .ji-card{color:var(--text);background:var(--pt-win)!important;background-image:none!important;
+  border:2px solid var(--pt-rim)!important;border-radius:0!important;
+  box-shadow:0 0 0 2px var(--pt-win),0 0 0 4px var(--pt-line),0 0 0 6px var(--pt-dark),0 8px 0 6px #0005,0 14px 28px 6px #0006!important}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .ji-bg{border-bottom:2px solid var(--pt-rim)}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .ji-face{border-width:2px!important}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .fin-row{border-bottom:1px dashed #b98f8466}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .fin-row.sum{border-top:1px dashed var(--pt-edge)}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .fin-row.end{border-bottom:0}
+
+/* ── 경과 보고 (.dr-modal) — 요일 카드 · 무대 액자 · 무대 위 이름표 · 결과 상자 · 장면 단추 ── */
+html body #modalRoot .modal.dr-modal:not(.btm) .dr-days button{color:var(--muted);background:var(--pt-card)!important;border:2px solid var(--pt-line)!important;border-radius:0!important;
+  box-shadow:inset 0 0 0 1px var(--pt-edge),2px 3px 0 #0007!important}
+html body #modalRoot .modal.dr-modal:not(.btm) .dr-days button.current{color:var(--text);background:var(--pt-sel)!important;border-color:var(--pt-gold)!important;
+  box-shadow:inset 0 0 0 1px var(--pt-edge),0 0 0 2px var(--pt-dark),0 0 0 4px #7a4a1e,2px 3px 0 4px #0007!important}
+html body #modalRoot .modal.dr-modal:not(.btm) .dr-days button:not(:disabled):not(.current):hover{border-color:#fff!important;filter:brightness(1.08)}
+html body #modalRoot .modal.dr-modal:not(.btm) .dr-days .current::after{left:2px;bottom:2px;max-width:calc(100% - 4px);background:var(--pt-gold)}
+html body #modalRoot .modal.dr-modal:not(.btm) .dr-stage{border-color:var(--pt-line);border-radius:0;background:#1a0d10;box-shadow:0 0 0 1px var(--pt-line),0 0 0 3px var(--pt-dark),3px 5px 0 3px #0006}
+html body #modalRoot .modal.dr-modal:not(.btm) .dr-top>div{color:var(--text);background:#42191ff0;border-radius:0;backdrop-filter:none;-webkit-backdrop-filter:none;
+  box-shadow:inset 0 0 0 2px var(--pt-line),inset 0 0 0 3px var(--pt-panel),inset 0 0 0 4px var(--pt-edge),0 0 0 2px var(--pt-dark),3px 4px 0 2px #0006}
+html body #modalRoot .modal.dr-modal:not(.btm) .dr-eyebrow{color:var(--pt-dim)}
+html body #modalRoot .modal.dr-modal:not(.btm) .dr-top h3{color:var(--pt-name)}
+html body #modalRoot .modal.dr-modal:not(.btm) .dr-chain{border-radius:0;color:#fff3cf;background:#8a5a1e;box-shadow:inset 0 0 0 1px var(--pt-gold),0 0 0 1px var(--pt-dark),2px 3px 0 #0007}
+html body #modalRoot .modal.dr-modal:not(.btm) .dr-bottom span{border-radius:0;color:var(--text);background:#42191fdd}
+html body #modalRoot .modal.dr-modal:not(.btm) .dr-name{color:var(--text);background:#42191fee;border-color:var(--pt-line);border-radius:0;box-shadow:0 0 0 1px var(--pt-dark),1px 2px 0 1px #0006}
+html body #modalRoot .modal.dr-modal:not(.btm) .dr-phases button{color:var(--muted);background:var(--pt-card)!important;border:2px solid var(--pt-line)!important;border-radius:0!important;
+  box-shadow:inset 0 0 0 1px var(--pt-edge),2px 3px 0 #0007!important}
+html body #modalRoot .modal.dr-modal:not(.btm) .dr-phases button.active{color:#fff3cf;background:#8a5a1e!important;border-color:var(--pt-gold)!important;box-shadow:inset 0 0 0 1px #e0b452,2px 3px 0 #0007!important}
+html body #modalRoot .modal.dr-modal:not(.btm) .dr-result{color:var(--text);background:var(--pt-panel);border:2px solid var(--pt-line);border-radius:0;
+  box-shadow:inset 0 0 0 2px var(--pt-panel),inset 0 0 0 3px var(--pt-edge),0 0 0 2px var(--pt-dark),3px 4px 0 2px #0006}
+html body #modalRoot .modal.dr-modal:not(.btm) :is(.dr-result,.dr-details) .dr-chip{border-radius:0;color:var(--muted);background:var(--pt-card);box-shadow:inset 0 0 0 1px #b98f8499}
+html body #modalRoot .modal.dr-modal:not(.btm) :is(.dr-result,.dr-details) .dr-chip.gain{color:#b4ec9c;background:#1e3826;box-shadow:inset 0 0 0 1px #6fae6a99}
+html body #modalRoot .modal.dr-modal:not(.btm) :is(.dr-result,.dr-details) :is(.dr-chip.heal,.dr-chip.exp){color:#a8daf2;background:#1a3340;box-shadow:inset 0 0 0 1px #5d9cbc99}
+html body #modalRoot .modal.dr-modal:not(.btm) :is(.dr-result,.dr-details) .dr-chip.loss{color:#ffa898;background:#4a1c1c;box-shadow:inset 0 0 0 1px #c0605099}
+html body #modalRoot .modal.dr-modal:not(.btm) :is(.dr-result,.dr-details) .dr-chip.fail{color:#ece4f6;background:#3a3346;box-shadow:inset 0 0 0 1px #8a80a099}
+html body #modalRoot .modal.dr-modal:not(.btm) .dr-details{border-top:1px dashed #b98f8499}
+html body #modalRoot .modal.dr-modal:not(.btm) .dr-student-row{border-bottom:1px dashed #b98f8466;border-radius:0}
+html body #modalRoot .modal.dr-modal:not(.btm) .dr-student-row.selected{background:var(--pt-card);outline:1px solid var(--pt-gold)}
+
+/* ── 튜토리얼 글 안내 (.tg-guide) — 금색 · 상자 모서리 ── */
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .tg-guide{--tg-paper:var(--pt-win);--tg-gold:var(--pt-gold)}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.tg-head,.tg-row){border-bottom-color:#b98f8499;border-bottom-style:dashed}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .tg-foot{border-top-color:#b98f8499;border-top-style:dashed}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.tg-visual,.tg-first){background:var(--pt-panel);border:2px solid var(--pt-line);border-radius:0;
+  box-shadow:inset 0 0 0 2px var(--pt-panel),inset 0 0 0 3px var(--pt-edge),0 0 0 2px var(--pt-dark),3px 4px 0 2px #0006}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .tg-tip{background:var(--pt-panel);border-left-color:#e0b452;border-radius:0}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.tg-step>span,.tg-symbol){color:#fff3cf;background:#8a5a1e;border-radius:0;box-shadow:inset 0 0 0 1px var(--pt-gold)}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .tg-route li>span{color:#ffe08a;background:#2b1b14;border:2px solid #e0b452;border-radius:0;line-height:28px}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.tg-client,.tg-grade>span){background:var(--pt-card);border:2px solid var(--pt-line);border-radius:0;box-shadow:inset 0 0 0 1px var(--pt-edge)}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.tg-client.done,.tg-grade>span.on){border-color:var(--pt-gold)}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.tg-week span,.tg-choice-pair span){border-radius:0}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .tg-destination{border-color:var(--pt-edge);border-radius:0}
+html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm):has(.tg-guide)>.tutbar{background:var(--pt-win);border-top:1px dashed #b98f8499;box-shadow:none}
+
+/* ── 상담창 · 락커룸 · 스카우트 설득 (.cw-ov .cw-win — CSLWIN · LKWIN 블록 위에 색만) ── */
+html body #modalRoot .cw-ov .cw-win{--cw-ink:#fff4e6;--cw-paper:#2a1418;--cw-edge:#8a5a4a;--cw-dark:#140a0c;--cw-btn:#b98f84;--cw-brass:#ffd36a;--cw-ok:#a6e48e;--cw-bad:#ff9a86;--cw-lead:#9cc8ff;--cw-dim:#d4b0a4;
+  background:#2a1418;background-image:none;border-color:#8a5a4a;
+  box-shadow:0 0 0 2px #2a1418,0 0 0 4px #e9cdbf,0 0 0 6px #140a0c,0 8px 0 6px #0005,0 14px 28px 6px #0006}
+html body #modalRoot .cw-ov .cw-win .cw-tab{background:#42191f;border-color:#e9cdbf;box-shadow:inset 0 0 0 1px #b98f84}
+html body #modalRoot .cw-ov .cw-win .cw-hr button.cw-x.cw-x{color:#fff4e6;background:#42191f;border-color:#e9cdbf!important;box-shadow:inset 0 0 0 1px #b98f84!important}
+html body #modalRoot .cw-ov .cw-win .cw-hr button.cw-x.cw-x:is(:hover,:focus-visible){color:#ff9a86;background:#5b2a30}
+html body #modalRoot .cw-ov .cw-win .cw-stage{border-color:#e9cdbf;background:#1a0d10}
+html body #modalRoot .cw-ov .cw-win .cw-box{background:#42191f;border-color:#e9cdbf;box-shadow:inset 0 0 0 2px #42191f,inset 0 0 0 3px #b98f84,0 0 0 2px #140a0c,3px 4px 0 2px #0006}
+html body #modalRoot .cw-ov .cw-win .cw-who{color:#ffd8c8}
+html body #modalRoot .cw-ov .cw-win .cw-box button.cw-next.cw-next{color:#fff4e6;background:#5b2a30;border-color:#e9cdbf!important;box-shadow:inset 0 0 0 1px #b98f84,2px 3px 0 #0007!important}
+html body #modalRoot .cw-ov .cw-win .cw-box button.cw-next.cw-next:is(:hover,:focus-visible){background:#5b2a30;border-color:#fff!important;filter:brightness(1.08)}
+html body #modalRoot .cw-ov .cw-win .cw-box button.cw-next.cw-next:active{translate:1px 2px;box-shadow:inset 0 0 0 1px #b98f84!important}
+/* 학생 말 — 대화창 색 말풍선 (꼬리는 크림 줄 + 창 색) */
+html body #modalRoot .cw-ov .cw-win .cw-say{background:#42191f;border-color:#e9cdbf;box-shadow:inset 0 0 0 1px #b98f84,0 0 0 2px #140a0c,3px 4px 0 2px #0006}
+html body #modalRoot .cw-ov .cw-win .cw-say::before{border-top-color:#e9cdbf}
+html body #modalRoot .cw-ov .cw-win .cw-say::after{border-top-color:#42191f}
+html body #modalRoot .cw-ov .cw-win.compact .cw-say::before{border-top-color:transparent;border-bottom-color:#e9cdbf}
+html body #modalRoot .cw-ov .cw-win.compact .cw-say::after{border-top-color:transparent;border-bottom-color:#42191f}
+html body #modalRoot .cw-ov .cw-win .cw-sn{color:#ffd8c8}
+html body #modalRoot .cw-ov .cw-win .cw-sn i{color:#fff4e6;background:#7a4a3a}
+html body #modalRoot .cw-ov .cw-win :is(.cw-dots,.lkw-think){color:#fff4e6;background:#42191f;border-color:#e9cdbf}
+html body #modalRoot .cw-ov .cw-win :is(.cw-dots,.lkw-think)::after{border-top-color:#e9cdbf}
+html body #modalRoot .cw-ov .cw-win .lkw-think i{background:#e9cdbf}
+/* 답변 구름 — 그림이 밝아서 글은 예전 색 (섬) */
+html body #modalRoot .cw-ov .cw-win .cw-cloud{--cw-ink:#35291f;--cw-dim:#8b7a63;--cw-brass:#8a6a15;--cw-ok:#2f7f58;--cw-bad:#b33f32;--cw-lead:#3c6e9e;color:#35291f}
+/* 락커룸 이름표 — 대화창 색 작은 판 */
+html body #modalRoot .cw-ov .cw-win .lkw-plate{color:#fff4e6;background:#42191fee;border-color:#e9cdbf;box-shadow:inset 0 0 0 1px #b98f84,0 0 0 1px #140a0c,2px 3px 0 1px #0007}
+html body #modalRoot .cw-ov .cw-win .lkw-plate.hi{background:#5b2a30;border-color:#ffd36a}
+html body #modalRoot .cw-ov .cw-win .lkw-plate .pn{color:#fff4e6}
+html body #modalRoot .cw-ov .cw-win .lkw-plate .bar{background:#1f0e11;box-shadow:inset 0 0 0 1px #b98f8466}
+html body #modalRoot .cw-ov .cw-win .lkw-plate .bar i{background:#e0b452}
+html body #modalRoot .cw-ov .cw-win .lkw-plate .bar i.ok{background:#6fc48a}
+html body #modalRoot .cw-ov .cw-win .lkw-plate .bar i.bad{background:#e8735c}
+html body #modalRoot .cw-ov .cw-win .lkw-plate .bar b{background:#fff4e666}
+html body #modalRoot .cw-ov .cw-win.lkw-win .cw-bt b{color:#fff}
+/* POPTHEME_CSS_END */
 </style>
 
 <link rel="stylesheet" href="assets/title-art/title-screen.css?v=7">
@@ -4621,6 +4830,7 @@ function sprTick(){
   }
   fxTick(now);
   tournamentCharacterTick(now);
+  reportShadowTick(now);   // 1021 — 경과 보고 무대 그림자 (apply_report)
   tqCamSync();   // 1007 — 대회 쿼터뷰 지도도 카메라를 따라 줌
 }
 // 개별 프레임의 상대 시간을 보존하면서 전투 속도(ms)는 기존과 동일하게 맞춘다.
@@ -9745,6 +9955,11 @@ const REPORT_JOB_FACES = {"farm": "assets/report_job_faces/farm.webp?v=34b828fd"
 const REPORT_JOB_MAPS = {"farm": "assets/report_job_maps/farm.webp?v=3623e795", "church": "assets/report_job_maps/church.webp?v=01f5fe41", "inn": "assets/report_job_maps/inn.webp?v=e3aaa81a", "hunt": "assets/report_job_maps/hunt.webp?v=b79a0df3", "salon": "assets/report_job_maps/salon-guest.webp?v=w90", "tavern": "assets/report_job_maps/tavern.webp?v=03f9caf8"};
 const REPORT_STUDY = {"archer": "assets/report_study/archer.webp?v=2ef6dda5", "bard": "assets/report_study/bard.webp?v=6236ad80", "darkpriest": "assets/report_study/darkpriest.webp?v=3140fa10", "druid": "assets/report_study/druid.webp?v=f18ea784", "empty": "assets/report_study/empty.webp?v=16312be1", "enchanter": "assets/report_study/enchanter.webp?v=827a38e3", "forcemage": "assets/report_study/forcemage.webp?v=3b0a7e2f", "gunner": "assets/report_study/gunner.webp?v=24f0f4cb", "monk": "assets/report_study/monk.webp?v=fa322742", "ninja": "assets/report_study/ninja.webp?v=d0529077", "paladin": "assets/report_study/paladin.webp?v=8571be40", "priest": "assets/report_study/priest.webp?v=e87133cc", "rogue": "assets/report_study/rogue.webp?v=93977c5c", "spellsword": "assets/report_study/spellsword.webp?v=8b431b76", "sword": "assets/report_study/sword.webp?v=6d5a51cf", "timemage": "assets/report_study/timemage.webp?v=c310d9ec", "wizard": "assets/report_study/wizard.webp?v=308d9a86"};
 const REPORT_ROOMS = {"arena": "assets/report_rooms/arena.webp?v=e00dd8d8", "beach": "assets/report_rooms/beach.webp?v=6a9e06fa", "chapel": "assets/report_rooms/chapel.webp?v=39341b0e", "gym": "assets/report_rooms/gym.webp?v=0fd3f8c9", "hall": "assets/report_rooms/hall.webp?v=7140b5cc", "infirm": "assets/report_rooms/infirm.webp?v=123cdaa0", "library": "assets/report_rooms/library.webp?v=c590d30d"};
+const REPORT_PX = {"gym": "assets/report_px/gym.webp?v=ca98ee1c", "hall": "assets/report_px/hall.webp?v=a7d7d265", "library": "assets/report_px/library.webp?v=eb9beef7", "arena": "assets/report_px/arena.webp?v=45d795dc", "chapel": "assets/report_px/chapel.webp?v=891fbc46", "infirm": "assets/report_px/infirm.webp?v=2b581c68", "beach": "assets/report_px/beach.webp?v=e0798aa1", "farm": "assets/report_px/farm.webp?v=7bcbd37b", "church": "assets/report_px/church.webp?v=d0a97d10", "inn": "assets/report_px/inn.webp?v=997c187f", "hunt": "assets/report_px/hunt.webp?v=22598eb9", "salon": "assets/report_px/salon.webp?v=73149778", "tavern": "assets/report_px/tavern.webp?v=cfabb603", "inn_guest": "assets/report_px/inn_guest.webp?v=a27c4de7", "tavern_guests": "assets/report_px/tavern_guests.webp?v=b88f39a8"};
+/* 1021 — 경과 보고 필드 도트 값 (사용자가 목업 mockups/report-field 에서 맞춰 보냄 · apply_report.py · tools/gen/patch/report_tune.json) — job 직업마다 경과 보고 도트에 곱하는 값 · scene 장면마다 테두리(outline · 필드 px) · 그림자 방향(direction · 도 · 180 = 왼쪽) · 길이(length · 필드 px) · 진하기(opacity) */
+const REPORT_TUNE = {"job":{"archer":0.7,"bard":0.65,"darkpriest":0.75,"druid":0.7,"enchanter":0.7,"forcemage":0.75,"gunner":0.75,"monk":0.75,"ninja":0.75,"paladin":0.8,"priest":0.8,"rogue":0.7,"spellsword":0.8,"sword":0.65,"timemage":0.7,"wizard":0.75},"scene":{"gym":{"outline":1,"direction":100,"length":27,"opacity":0.23},"hall":{"outline":1,"direction":15,"length":112,"opacity":0.07},"library":{"outline":1,"direction":100,"length":27,"opacity":0.14},"arena":{"outline":1,"direction":100,"length":27,"opacity":0.23},"chapel":{"outline":1,"direction":100,"length":27,"opacity":0.23},"infirm":{"outline":1,"direction":55,"length":16,"opacity":0.17},"beach":{"outline":1,"direction":100,"length":27,"opacity":0.23},"farm":{"outline":1,"direction":100,"length":27,"opacity":0.23},"church":{"outline":1,"direction":50,"length":37,"opacity":0.19},"inn":{"outline":1,"direction":100,"length":27,"opacity":0.23},"hunt":{"outline":1,"direction":140,"length":54,"opacity":0.47},"salon":{"outline":1,"direction":20,"length":53,"opacity":0.14},"tavern":{"outline":1,"direction":100,"length":27,"opacity":0.28}}};
+/* 수련관 책상 · 미용실 원장님 시트의 장마다 불투명(40 넘는 곳) 상자 [왼 · 위 · 폭 · 높이] — 그림자 틀 (apply_report.py 가 잰다) */
+const REPORT_SPR_BOX = {"archer":[[45,36,187,207],[48,44,184,199],[48,39,184,203],[47,35,185,208]],"bard":[[46,10,185,234],[48,12,184,232],[47,12,184,232],[47,14,185,230]],"darkpriest":[[35,13,196,213],[42,21,190,204],[38,12,193,214],[38,12,194,213]],"druid":[[47,11,184,218],[48,21,184,208],[47,12,184,217],[47,11,185,218]],"enchanter":[[25,45,213,209],[29,46,210,207],[26,47,214,206],[30,46,206,207]],"forcemage":[[36,46,199,195],[36,45,199,196],[36,46,199,196],[36,32,199,209]],"gunner":[[35,23,200,216],[36,23,199,216],[35,23,199,216],[36,23,199,216]],"monk":[[30,17,205,214],[30,15,205,216],[30,17,205,214],[29,15,206,216]],"ninja":[[30,31,208,220],[51,32,189,219],[37,34,201,217],[43,31,194,220]],"paladin":[[56,28,181,206],[71,26,168,208],[69,28,170,204],[69,26,168,207]],"priest":[[25,8,214,212],[31,10,209,210],[24,8,216,212],[32,8,206,212]],"rogue":[[31,27,202,220],[33,28,201,219],[32,29,202,218],[33,31,201,216]],"spellsword":[[38,18,195,229],[44,22,190,225],[41,23,192,225],[43,22,191,225]],"sword":[[55,8,180,218],[57,7,178,219],[56,8,179,218],[57,8,178,218]],"timemage":[[27,26,206,221],[28,25,206,222],[29,28,204,220],[29,27,205,220]],"wizard":[[44,7,189,237],[51,8,183,236],[46,8,188,236],[40,7,194,237]],"empty":[[34,56,188,165]],"owner":[[66,25,149,214],[64,25,135,214],[66,25,149,214],[64,25,136,214]]};
 const REPORT_STATUP = "assets/report_statup.mp3?v=f37807b5";
 const REPORT_RECOVERY = "assets/report_recovery.mp3?v=b9ccada2";
 
@@ -9811,7 +10026,8 @@ const REPORT_JOB_LAYOUTS = {
   tavern:{crop:0, scale:1400, capacity:6, face:"LRRLRL", slots:[[29.8,33.1],[89.6,45.5],[50.6,62.7],[57.3,42.9],[17.4,82.2],[83,77]]}
 };
 const REPORT_JOB_LAYOUT = REPORT_JOB_LAYOUTS.farm;   // 목록에 없는 의뢰가 생기면 이 배치를 쓴다
-const reportRoom = s => s.job && REPORT_JOB_MAPS[s.job] || REPORT_ROOMS[s.facility];
+const reportPx = s => REPORT_PX[s.job || s.facility] || null;   // 1021 — 도트 배경 (보이는 곳만 자른 그림 · 없으면 예전 그림)
+const reportRoom = s => reportPx(s) || s.job && REPORT_JOB_MAPS[s.job] || REPORT_ROOMS[s.facility];
 /* 그림 상자 (무대 %) — 방 그림(정사각형)은 무대 폭의 104.17% 가 기준, 3:1 그림(수련관 · 해수욕장 · 의뢰)은 무대에 꼭 맞는 크기가 기준 */
 function reportRoomBox(s, L){
   const cover = !!s.job || s.facility==="hall" || s.facility==="beach";
@@ -9865,9 +10081,9 @@ function reportSceneShell(records, dlg, plan){
       const pl=!first && plan ? plan[d] : null;   // 아직 오지 않은 요일 (원정 대기 중 · 1003)
       return `<button type="button" data-dr-day="${d}" style="--day-color:${first?.color||pl?.c||cardColor(first?.trainingId).c}" ${!first?"disabled":""}><span>${n}요일 <i></i></span><strong>${esc(first?.training||pl?.n||"기록 없음")}</strong>${first?.bonus?`<em>+${Math.round(first.bonus*100)}%</em>`:""}</button>`;
     }).join("")}</nav>
-    <div class="dr-stage" id="drStage"><img class="dr-room" id="drRoom" alt="" draggable="false">
+    <div class="dr-stage" id="drStage"><img class="dr-room" id="drRoom" alt="" draggable="false"><canvas class="dr-shadows" aria-hidden="true"></canvas><svg class="dr-defs" width="0" height="0" aria-hidden="true"><defs><filter id="dr-ol" x="-60%" y="-60%" width="220%" height="220%"><feMorphology in="SourceAlpha" operator="dilate" radius="1.333" result="e"/><feComposite in="e" in2="SourceAlpha" operator="out" result="edge"/><feFlood flood-color="#111111" result="ink"/><feComposite in="ink" in2="edge" operator="in" result="ol"/><feMerge><feMergeNode in="ol"/><feMergeNode in="SourceGraphic"/></feMerge></filter><filter id="dr-ols" x="-15%" y="-15%" width="130%" height="130%"><feMorphology in="SourceAlpha" operator="dilate" radius="1.25" result="e"/><feComposite in="e" in2="SourceAlpha" operator="out" result="edge"/><feFlood flood-color="#111111" result="ink"/><feComposite in="ink" in2="edge" operator="in" result="ol"/><feMerge><feMergeNode in="ol"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
       <div class="dr-top"><div><span class="dr-eyebrow">오늘의 학원</span><h3 id="drFacility"></h3><span id="drActivity"></span></div><span class="dr-chain" id="drChain"></span></div>
-      <img class="dr-inn-guest dr-inn-guest-left" src="assets/guest-props/inn-seated-guest.webp?v=w90" alt="테이블에 앉은 여관 손님" draggable="false"><img class="dr-inn-guest dr-inn-guest-right" src="assets/guest-props/inn-seated-guest.webp?v=w90" alt="테이블에 앉은 여관 손님" draggable="false"><img class="dr-tavern-guest dr-tavern-guest-left" src="assets/guest-props/tavern-seated-guests.webp?v=w90" alt="맥주 테이블의 주점 손님 두 명" draggable="false"><img class="dr-tavern-guest dr-tavern-guest-right" src="assets/guest-props/tavern-seated-guests.webp?v=w90" alt="맥주 테이블의 주점 손님 두 명" draggable="false"><div class="dr-salon-owner" role="img" aria-label="가위를 움직이는 미용실 원장님"></div><div id="drStudents"></div><div class="dr-bottom"><span id="drSceneCount"></span><span>학생을 누르면 성장 내역을 볼 수 있어요</span></div>
+      <img class="dr-inn-guest dr-inn-guest-left px" src="${REPORT_PX.inn_guest}" alt="테이블에 앉은 여관 손님" draggable="false"><img class="dr-inn-guest dr-inn-guest-right px" src="${REPORT_PX.inn_guest}" alt="테이블에 앉은 여관 손님" draggable="false"><img class="dr-tavern-guest dr-tavern-guest-left px" src="${REPORT_PX.tavern_guests}" alt="맥주 테이블의 주점 손님 두 명" draggable="false"><img class="dr-tavern-guest dr-tavern-guest-right px" src="${REPORT_PX.tavern_guests}" alt="맥주 테이블의 주점 손님 두 명" draggable="false"><div class="dr-salon-owner" role="img" aria-label="가위를 움직이는 미용실 원장님"></div><div id="drStudents"></div><div class="dr-bottom"><span id="drSceneCount"></span><span>학생을 누르면 성장 내역을 볼 수 있어요</span></div>
     </div>
     <nav class="dr-phases" id="drPhases" aria-label="훈련 장면 선택"></nav>
     <div class="dr-result" aria-live="polite"><div><b id="drResultTitle"></b><span id="drResultHint"></span></div><div id="drResultChips"></div></div>
@@ -9944,17 +10160,19 @@ function reportSceneBind(records, opt){
     duration=Math.max(2400,leadMs+queue.length*stepMs+cardMs);
     const source=reportRoom(s);
     if($("#drRoom").getAttribute("src")!==source)$("#drRoom").src=source;
+    $("#drRoom").classList.toggle("px", !!reportPx(s));
     const facilityName=s.job?jobDef(s.job).n:s.facility==="beach"?"해수욕장":FACILITIES[s.facility]?.n||"학원";
     $("#drRoom").alt=s.facility==="beach"?"여름 해수욕장 모래사장":`${facilityName} 실내`;
     $("#drStage").dataset.phase=s.phase;
     $("#drStage").dataset.facility=s.facility;
     $("#drStage").dataset.job=s.job || "";
-    { const B=reportRoomBox(s, layout), r=$("#drRoom").style;
+    { const B0=reportRoomBox(s, layout), B=reportPx(s)?{W:100,H:100,left:0,top:0}:B0, r=$("#drRoom").style;   // 1021 — 도트 배경은 보이는 곳만 자른 그림이라 무대에 꼭 맞춘다 (원장님 자리는 예전 그림 상자 B0 기준 그대로)
       r.width=B.W+"%"; r.height=B.H+"%"; r.left=B.left+"%"; r.top=B.top+"%";
       const ow=$("#drStage .dr-salon-owner"), O=layout.owner;      // 미용실 원장님 — 그림을 따라 자리 · 크기가 정해진다
-      if(ow){ if(s.job==="salon" && O){ ow.style.left=(B.left+O.x*B.W)+"%"; ow.style.top=(B.top+O.y*B.H)+"%"; ow.style.width=(O.w*B.W)+"%"; ow.style.transform=O.f==="L"?"scaleX(-1)":""; }
+      if(ow){ if(s.job==="salon" && O){ ow.style.left=(B0.left+O.x*B0.W)+"%"; ow.style.top=(B0.top+O.y*B0.H)+"%"; ow.style.width=(O.w*B0.W)+"%"; ow.style.transform=O.f==="L"?"scaleX(-1)":""; }
               else { ow.style.left=ow.style.top=ow.style.width=ow.style.transform=""; } } }
     $("#drStage").style.setProperty("--sprite-unit",`${layout.scale || 1050}px`);
+    reportFxSet(s, layout);   // 1021 — 장면마다 테두리 · 그림자 (REPORT_TUNE.scene)
     $("#drFacility").textContent=facilityName;
     $("#drActivity").textContent=`${DAY_N[s.day]}요일 · ${phaseName(s)}${s.phase==="pm"?"":" · "+s.training}`;
     $("#drChain").textContent=s.bonus?`+${Math.round(s.bonus*100)}% 체인`:"";
@@ -9972,7 +10190,7 @@ function reportSceneBind(records, opt){
       const workMotion=reportWorkMotion(s,x,i);
       const motion=workMotion || (resting?"down":x.state==="rest"?"idle":x.state==="failed"?"hit":["gym","hall","arena"].includes(x.trainingFacility || s.facility)?"attack":"idle");
       const cond=x.condition?.from ?? 100;
-      return `<button class="dr-student ${studying?"studying":""} ${resting?"resting":""} ${pos[i][1]<48?"low-bubble":""}" data-dr-student="${i}" style="left:${pos[i][0]}%;top:${pos[i][1]}%;z-index:${Math.round(pos[i][1])}" aria-label="${esc(x.name)} 성장 내역"><span class="dr-shadow"></span><span class="dr-avatar">${studying?`<span class="dr-study-sprite${faceL(idx[i])?" flip":""}" data-study-job="${x.job}" style="background-image:url(${REPORT_STUDY[x.job]})"></span>`:sprHTML(x.job,motion,1,{p:x.palette,flip:faceL(idx[i])!=null?faceL(idx[i]):(s.job==="inn" || s.job==="tavern")?[false,true,false,true,false,true][i]:resting?i!==2:i%2===1,t0:resting?0:performance.now()})}</span><span class="dr-name">${esc(x.name)}</span><span class="dr-condition ${reportConditionColor(cond)}" role="meter" aria-label="컨디션" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${cond}"><span class="dr-condition-fill" style="width:${clamp(cond,0,100)}%"></span><span class="dr-condition-number">${cond}</span></span><span class="dr-bubbles" hidden></span></button>`;
+      return `<button class="dr-student ${studying?"studying":""} ${resting?"resting":""} ${pos[i][1]<48?"low-bubble":""}" data-dr-student="${i}" style="left:${pos[i][0]}%;top:${pos[i][1]}%;z-index:${Math.round(pos[i][1])};--dr-job:${reportJobScale(x.job)}" aria-label="${esc(x.name)} 성장 내역"><span class="dr-avatar">${studying?`<span class="dr-study-sprite${faceL(idx[i])?" flip":""}" data-study-job="${x.job}" style="background-image:url(${REPORT_STUDY[x.job]})"></span>`:sprHTML(x.job,motion,1,{p:x.palette,flip:faceL(idx[i])!=null?faceL(idx[i]):(s.job==="inn" || s.job==="tavern")?[false,true,false,true,false,true][i]:resting?i!==2:i%2===1,t0:resting?0:performance.now()})}</span><span class="dr-name">${esc(x.name)}</span><span class="dr-condition ${reportConditionColor(cond)}" role="meter" aria-label="컨디션" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${cond}"><span class="dr-condition-fill" style="width:${clamp(cond,0,100)}%"></span><span class="dr-condition-number">${cond}</span></span><span class="dr-bubbles" hidden></span></button>`;
     }).join("");
     if(!s.job && s.facility==="hall"){
       $("#drStudents").insertAdjacentHTML("beforeend",pos.slice(visible.length).map((p,e)=>`<div class="dr-student studying empty-seat" aria-hidden="true" style="left:${p[0]}%;top:${p[1]}%;z-index:${Math.round(p[1])}"><span class="dr-avatar"><span class="dr-study-sprite empty${faceL(idx[visible.length+e])?" flip":""}" style="background-image:url(${REPORT_STUDY.empty})"></span></span></div>`).join(""));
@@ -10061,6 +10279,99 @@ function reportSceneBind(records, opt){
   draw();
 }
 
+/* REPORT_FIELD_START — 1021 경과 보고 필드 도트 (apply_report.py · 목업 mockups/report-field) — 직업 크기 · 장면마다 테두리 · 그림자.
+   대회 쿼터뷰(tournamentCharacterSetup · Tick)와 같은 셈이고, 값(REPORT_TUNE.scene)은 필드 px 라 경과 보고 무대 배율(무대 폭 ÷ --sprite-unit ÷ 0.75)을 곱한다 —
+   필드에서 0.75 직업의 도트 한 점 = 0.75 px 이라서. 테두리: #dr-ol(학생 도트 · 도트 캔버스 안 = 무대 배율 안이라 값 ÷ 0.75) · #dr-ols(책상 · 원장님 — 무대 px).
+   그림자: 무대 캔버스 하나(.dr-shadows — 그림 바로 위 · 학생 · 손님 소품 아래)에 발밑 타원 + 바닥에 눕는 그림자. 학생 도트는 캔버스 픽셀로 틀을 재고,
+   책상 · 원장님 시트는 미리 잰 상자(REPORT_SPR_BOX)로 (file:// 에서는 그림 파일 픽셀을 읽지 못한다 — 틀은 source-in 으로 칠해 읽지 않는다). */
+const reportJobScale = job => +(REPORT_TUNE.job[job] || 1);
+const REPORT_FX0 = {outline:1.6, direction:180, length:73, opacity:.31};   // 전투 필드 값 (장면 값이 없을 때)
+function reportFxSet(s, layout){
+  const st = document.getElementById("drStage"); if(!st) return;
+  st._rfx = Object.assign({}, REPORT_FX0, REPORT_TUNE.scene[s.job || s.facility] || {}, {unit: layout.scale || 1050});
+  st._rsig = null; reportOutlineR(st);
+}
+function reportOutlineR(st){
+  const fx = st._rfx; if(!fx) return;
+  const a = st.querySelector("#dr-ol feMorphology"), b = st.querySelector("#dr-ols feMorphology");
+  const r1 = String(fx.outline / .75), r2 = String(fx.outline / .75 * (st.clientWidth / fx.unit));
+  if(a && a.getAttribute("radius") !== r1) a.setAttribute("radius", r1);
+  if(b && b.getAttribute("radius") !== r2) b.setAttribute("radius", r2);
+}
+const REPORT_MASK = new Map(), REPORT_SHEET = {};
+let reportShadowAt = 0;
+function reportSheet(u){ let im = REPORT_SHEET[u]; if(!im){ im = REPORT_SHEET[u] = new Image(); im.src = u; } return im.complete && im.naturalWidth ? im : null; }
+/* 그림자 틀 — 불투명을 #30251c 로 칠한 캔버스 · 상자 (필드 tournamentCharacterTick 과 같다) */
+function reportMask(key, src, sx0, sw, sh, flip, box){
+  let m = REPORT_MASK.get(key);
+  if(m !== undefined) return m;
+  const c = document.createElement("canvas"); c.width = sw; c.height = sh;
+  const x = c.getContext("2d", box ? undefined : {willReadFrequently:true});
+  if(flip){ x.translate(sw, 0); x.scale(-1, 1); }
+  x.drawImage(src, sx0, 0, sw, sh, 0, 0, sw, sh); x.setTransform(1, 0, 0, 1, 0, 0);
+  let l, t, w, h;
+  if(box){ [l, t, w, h] = box; if(flip) l = sw - l - w; }
+  else {
+    const p = x.getImageData(0, 0, sw, sh).data; let L = sw, T = sh, R = 0, B = 0;
+    for(let y = 0; y < sh; y++) for(let xx = 0; xx < sw; xx++) if(p[(y*sw + xx)*4 + 3] > 40){ if(xx < L) L = xx; if(xx > R) R = xx; if(y < T) T = y; if(y > B) B = y; }
+    if(R <= L){ REPORT_MASK.set(key, null); return null; }
+    l = L; t = T; w = R - L + 1; h = B - T + 1;
+  }
+  x.globalCompositeOperation = "source-in"; x.fillStyle = "#30251c"; x.fillRect(0, 0, sw, sh);
+  m = {mask:c, left:l, top:t, width:w, height:h, bottom:t + h - 1};
+  REPORT_MASK.set(key, m); if(REPORT_MASK.size > 200) REPORT_MASK.delete(REPORT_MASK.keys().next().value);
+  return m;
+}
+function reportShadowTick(now){
+  const st = document.getElementById("drStage"); if(!st || !st._rfx) return;
+  if(now - reportShadowAt < 32) return; reportShadowAt = now;
+  const cv = st.querySelector(".dr-shadows"); if(!cv) return;
+  const fx = st._rfx, sr = st.getBoundingClientRect(), scale = sr.width / st.offsetWidth; if(!scale) return;
+  const W = st.clientWidth, H = st.clientHeight, dpr = window.devicePixelRatio || 1;
+  if(cv.width !== Math.round(W*dpr) || cv.height !== Math.round(H*dpr)){ cv.width = Math.round(W*dpr); cv.height = Math.round(H*dpr); st._rsig = null; }
+  const K = (W / fx.unit) / .75, angle = fx.direction*Math.PI/180, length = fx.length*K, dx = Math.cos(angle)*length, dy = Math.sin(angle)*length;
+  const L = []; let sig = [W, H, sr.left.toFixed(1), sr.top.toFixed(1), scale.toFixed(4), fx.direction, fx.length, fx.opacity, fx.outline].join(",");
+  st.querySelectorAll("#drStudents canvas.spr, #drStudents .dr-study-sprite, .dr-salon-owner").forEach(el => {
+    let m, sw;
+    if(el.tagName === "CANVAS"){
+      if(el.__f == null) return;
+      const flip = el.classList.contains("flip"); sw = el.width;
+      m = reportMask(el.__key + "|" + el.__f + "|" + flip, el, 0, el.width, el.height, flip, null);
+    } else if(el.classList.contains("dr-study-sprite")){
+      const job = el.dataset.studyJob || "empty", n = job === "empty" ? 1 : 4, u = REPORT_STUDY[job], im = u && reportSheet(u), bx = REPORT_SPR_BOX[job];
+      if(!im || !bx) return;
+      const f = Math.min(n - 1, +el.dataset.frame || 0), flip = el.classList.contains("flip"); sw = im.naturalWidth / n;
+      m = reportMask(u + "#" + f + "|" + flip, im, f*sw, sw, im.naturalHeight, flip, bx[f]);
+    } else {
+      if(st.dataset.job !== "salon") return;
+      const u = (getComputedStyle(el).backgroundImage.match(/url\(["']?([^"')]+)/) || [])[1], im = u && reportSheet(u), bx = REPORT_SPR_BOX.owner;
+      if(!im || !bx) return;
+      const flip = /scaleX\(-1\)/.test(el.style.transform); sw = im.naturalWidth / 4;
+      m = reportMask(u + "#0|" + flip, im, 0, sw, im.naturalHeight, flip, bx[0]);
+    }
+    if(!m) return;
+    const r = el.getBoundingClientRect(); if(!r.width) return;
+    const sx = r.width / scale / sw, sy = r.height / scale / (m.mask.height);
+    L.push({r, m, sx, sy}); sig += "|" + (el.__key || "") + (el.__f != null ? el.__f : el.dataset.frame || "") + "," + r.left.toFixed(1) + "," + r.top.toFixed(1) + "," + r.width.toFixed(1) + "," + r.height.toFixed(1);
+  });
+  if(st._rsig === sig) return;
+  st._rsig = sig; st._rn = L.length; reportOutlineR(st);   // _rn — 그린 그림자 수 (시험이 본다 · file:// 에서는 책상 그림 때문에 캔버스를 읽지 못한다)
+  const x = cv.getContext("2d");
+  x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, W, H);
+  for(const {r, m, sx, sy} of L){
+    const footX = (r.left - sr.left)/scale + (m.left + m.width/2)*sx, footY = (r.top - sr.top)/scale + (m.bottom + 1)*sy;
+    x.save(); x.globalAlpha = fx.opacity; x.fillStyle = "#30251c";
+    x.beginPath(); x.ellipse(footX, footY, m.width*sx*.28, 4*K, 0, 0, Math.PI*2); x.fill();
+    if(length > 0){
+      const ax = -Math.sin(angle)*sx*.8, ay = Math.cos(angle)*sx*.4;
+      x.imageSmoothingEnabled = false;
+      x.setTransform(dpr*ax, dpr*ay, dpr*-dx/m.height, dpr*-dy/m.height, dpr*(footX + dx - ax*m.width/2), dpr*(footY + dy - ay*m.width/2));
+      x.drawImage(m.mask, m.left, m.top, m.width, m.height, 0, 0, m.width, m.height);
+    }
+    x.restore();
+  }
+}
+/* REPORT_FIELD_END */
 /* REPORT_SCENE_RUNTIME_END */
 /* 이번 주 자금 상황 (0926) — 경과 보고를 끝까지 봤거나 '결산'을 누르면 뜬다 (0927).
    줄마다 차례로 드러나며 멘탈리티 상승 효과음을 쓴다. 다 드러나야 확인(대회로)을 누를 수 있고, 누르면 경과 보고가 닫힌다. */
@@ -31882,11 +32193,11 @@ function preloadList(){
     if(typeof v === "string"){ if(/assets\/[^"'()\s]+\.(webp|png|jpe?g|gif)(\?|$)/i.test(v) && !PRELOAD.seen.has(v)){ PRELOAD.seen.add(v); out.push(v); } return; }
     if(typeof v === "object") Object.values(v).forEach(add);
   };
-  const G = {PROL_IMG:typeof PROL_IMG!=="undefined"?PROL_IMG:null,FACE_IMG:typeof FACE_IMG!=="undefined"?FACE_IMG:null,NPC_IMG:typeof NPC_IMG!=="undefined"?NPC_IMG:null,TUT_ICON:typeof TUT_ICON!=="undefined"?TUT_ICON:null,TUT_IMG:typeof TUT_IMG!=="undefined"?TUT_IMG:null,FIELD_PASTEL:typeof FIELD_PASTEL!=="undefined"?FIELD_PASTEL:null,FIELD_IMG:typeof FIELD_IMG!=="undefined"?FIELD_IMG:null,MON_IMG:typeof MON_IMG!=="undefined"?MON_IMG:null,REPORT_ROOMS:typeof REPORT_ROOMS!=="undefined"?REPORT_ROOMS:null,REPORT_STUDY:typeof REPORT_STUDY!=="undefined"?REPORT_STUDY:null,REPORT_JOB_MAPS:typeof REPORT_JOB_MAPS!=="undefined"?REPORT_JOB_MAPS:null,REPORT_JOB_FACES:typeof REPORT_JOB_FACES!=="undefined"?REPORT_JOB_FACES:null,POPUP_IMG:typeof POPUP_IMG!=="undefined"?POPUP_IMG:null,VICT_IMG:typeof VICT_IMG!=="undefined"?VICT_IMG:null,STORY_ART:typeof STORY_ART!=="undefined"?STORY_ART:null,VALENTINE_ART:typeof VALENTINE_ART!=="undefined"?VALENTINE_ART:null,SPARKLER_ART:typeof SPARKLER_ART!=="undefined"?SPARKLER_ART:null,FB_ICON:typeof FB_ICON!=="undefined"?FB_ICON:null};
+  const G = {PROL_IMG:typeof PROL_IMG!=="undefined"?PROL_IMG:null,FACE_IMG:typeof FACE_IMG!=="undefined"?FACE_IMG:null,NPC_IMG:typeof NPC_IMG!=="undefined"?NPC_IMG:null,TUT_ICON:typeof TUT_ICON!=="undefined"?TUT_ICON:null,TUT_IMG:typeof TUT_IMG!=="undefined"?TUT_IMG:null,FIELD_PASTEL:typeof FIELD_PASTEL!=="undefined"?FIELD_PASTEL:null,FIELD_IMG:typeof FIELD_IMG!=="undefined"?FIELD_IMG:null,MON_IMG:typeof MON_IMG!=="undefined"?MON_IMG:null,REPORT_PX:typeof REPORT_PX!=="undefined"?REPORT_PX:null,REPORT_ROOMS:typeof REPORT_ROOMS!=="undefined"?REPORT_ROOMS:null,REPORT_STUDY:typeof REPORT_STUDY!=="undefined"?REPORT_STUDY:null,REPORT_JOB_MAPS:typeof REPORT_JOB_MAPS!=="undefined"?REPORT_JOB_MAPS:null,REPORT_JOB_FACES:typeof REPORT_JOB_FACES!=="undefined"?REPORT_JOB_FACES:null,POPUP_IMG:typeof POPUP_IMG!=="undefined"?POPUP_IMG:null,VICT_IMG:typeof VICT_IMG!=="undefined"?VICT_IMG:null,STORY_ART:typeof STORY_ART!=="undefined"?STORY_ART:null,VALENTINE_ART:typeof VALENTINE_ART!=="undefined"?VALENTINE_ART:null,SPARKLER_ART:typeof SPARKLER_ART!=="undefined"?SPARKLER_ART:null,FB_ICON:typeof FB_ICON!=="undefined"?FB_ICON:null};
   const g = n=> G[n];
   const pastel = PREF.fieldPastel !== false;
   ["PROL_IMG","FACE_IMG","NPC_IMG","TUT_ICON","TUT_IMG", pastel? "FIELD_PASTEL" : "FIELD_IMG", "MON_IMG",
-   "REPORT_ROOMS","REPORT_STUDY","REPORT_JOB_MAPS","REPORT_JOB_FACES","POPUP_IMG","VICT_IMG","STORY_ART",
+   "REPORT_PX","REPORT_STUDY","REPORT_JOB_FACES","POPUP_IMG","VICT_IMG","STORY_ART",
    "VALENTINE_ART","SPARKLER_ART","FB_ICON"].forEach(n=> n && add(g(n)));
   /* 스타일시트에 박힌 그림 (의뢰 장면 소품 등) */
   for(const sh of document.styleSheets){
