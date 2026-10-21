@@ -121,7 +121,7 @@ SIM_JS = r"""async (years) => {
     }
     closeModal();
     const sel = S.students[0] && S.students[0].id;
-    ['home','master','roster','team','plan','facil','relic','skill','counsel','csllog','log','record','codex','opt'].forEach(v=>{
+    ['home','master','roster','team','plan','facil','relic','skill','counsel','csllog','log','record','codex','relicdex','opt'].forEach(v=>{
       try{ UI.view = v; UI.sel = sel; render(); out.views.push({v, html: document.getElementById('app').innerHTML}); }
       catch(e){ out.err.push('view ' + v + ': ' + e.message); }
     });

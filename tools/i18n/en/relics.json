@@ -572,5 +572,10 @@
  "원정 지구력 {0} · {1}행동마다 −{2}": "Expedition Endurance {0} · −{2} every {1} actions",
  "원정 지구력 {0} · 줄지 않는다": "Expedition Endurance {0} · doesn't drain",
  "{0}구간에서 지구력이 바닥나 탈진 — 철수": "Ran out of endurance at Stage {0} — exhausted, retreated",
- "<b>원정 지구력</b> — 원정을 떠날 때 원정대의 평균 <b>지구력</b>이 게이지가 된다. 전투에서 양쪽 합쳐 {0}번 행동할 때마다 원정지가 깊을수록 많이 줄고(연습장 0 · 성터 1 · 종탑 2 · 균열 3 · 무덤 4 · 이계 +1), 구간 사이에도 남은 양이 이어진다. 바닥나면 <b>탈진</b> — 그 전투는 공격력 · 속도 −{1}% 로 끝까지 싸우고, 이기면 거기서 철수한다.": "<b>Expedition Endurance</b> — when an expedition sets out, the party's average <b>Endurance</b> becomes a gauge. Every {0} actions in battle (both sides combined) it drains more the deeper the destination (Practice Grounds 0 · Castle Ruins 1 · Bell Tower 2 · Rift 3 · Tomb 4 · Otherworld +1), and whatever is left carries over between stages. When it runs out the party is <b>Exhausted</b> — it fights the rest of that battle at ATK · SPD −{1}%, and if it wins, it retreats from there."
+ "<b>원정 지구력</b> — 원정을 떠날 때 원정대의 평균 <b>지구력</b>이 게이지가 된다. 전투에서 양쪽 합쳐 {0}번 행동할 때마다 원정지가 깊을수록 많이 줄고(연습장 0 · 성터 1 · 종탑 2 · 균열 3 · 무덤 4 · 이계 +1), 구간 사이에도 남은 양이 이어진다. 바닥나면 <b>탈진</b> — 그 전투는 공격력 · 속도 −{1}% 로 끝까지 싸우고, 이기면 거기서 철수한다.": "<b>Expedition Endurance</b> — when an expedition sets out, the party's average <b>Endurance</b> becomes a gauge. Every {0} actions in battle (both sides combined) it drains more the deeper the destination (Practice Grounds 0 · Castle Ruins 1 · Bell Tower 2 · Rift 3 · Tomb 4 · Otherworld +1), and whatever is left carries over between stages. When it runs out the party is <b>Exhausted</b> — it fights the rest of that battle at ATK · SPD −{1}%, and if it wins, it retreats from there.",
+ "_relicDex": "유물 도감 (1021 — RELICDEX 블록 · 일지 › 유물 도감 · 상세 팝업 relicDexPop) — 유물 도감 Relic Codex / 遺物図鑑 · 획득 위치 Source / 入手先 · 획득 조건 Requirement / 入手条件 · 첫 획득 First obtained / 初入手",
+ "획득 위치: {0}": "Source: {0}",
+ "획득 조건: {0}{1} 함께 이긴 전투 {2}번": "Requirement: {0} — {2} battles won together",
+ "모든 원정지": "All destinations",
+ "첫 획득: {0}": "First obtained: {0}"
 }

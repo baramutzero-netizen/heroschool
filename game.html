@@ -4025,7 +4025,7 @@ html body .skwrap .skfit .skstage .sk-hold{position:absolute;inset:0;z-index:40;
    사이드 규칙이라 무대 접두어를 붙이지 않는다 (html 로 시작하는 선택자는 apply_sched 의 prefix_css 가 그대로 둔다) */
 @media (min-width:1100px){html.sk-side1 body #app>.topbar .side-lab,html.sk-side2 body #app>.topbar .side-sched{display:none}}
 /* SCHED_SCROLL_CSS_END */
-/* MDESK_CSS_START — 마스터 노트 책상 (1006) · 마을 지도(.town · .townmap · .townpop)와 같은 틀 위에 얹는다 — 1011 부터 그 틀이 스케줄과 같은 1544:1008 */
+/* MDESK_CSS_START — 마스터 노트 책상 (1006 · 1021 새 원화 · 친선전 편지) · 마을 지도(.town · .townmap · .townpop)와 같은 틀 위에 얹는다 — 1011 부터 그 틀이 스케줄과 같은 1544:1008 */
 .mdesk .mdesk-in{overflow:hidden}
 .mdesk .mdesk-desk{position:absolute;left:0;top:0;width:100%;height:100%}   /* 넓힌 책상 746×478 — 두루마리로 다가갈 때 통째로 */
 .mdesk .mdesk-art{position:absolute}   /* 예전 책상 607×466 자리 (소품 · 누르는 자리) — 자리 · 크기는 viewHomeDesk 가 MDESK_GEO.ext 로 */
@@ -4034,21 +4034,21 @@ html body .skwrap .skfit .skstage .sk-hold{position:absolute;inset:0;z-index:40;
 .mdesk .md-items{transition:opacity .26s ease-in}
 /* 누를 수 있는 소품 — 마우스를 올리면(키보드로 고르면) 테두리 빛 + 이름표 */
 .mdesk .mdh{opacity:0;transition:opacity .12s}
-.mdesk[data-hot="1"] .mdh[data-g="1"],.mdesk[data-hot="2"] .mdh[data-g="2"],.mdesk[data-hot="3"] .mdh[data-g="3"],
-.mdesk[data-hot="4"] .mdh[data-g="4"],.mdesk[data-hot="5"] .mdh[data-g="5"]{opacity:1}
+.mdesk[data-hot="1"] .mdh[data-g="1"],.mdesk[data-hot="2"] .mdh[data-g="2"],.mdesk[data-hot="3"] .mdh[data-g="3"],.mdesk[data-hot="4"] .mdh[data-g="4"],
+.mdesk[data-hot="5"] .mdh[data-g="5"],.mdesk[data-hot="6"] .mdh[data-g="6"],.mdesk[data-hot="7"] .mdh[data-g="7"]{opacity:1}
 html body #view .mdesk .mdk{position:absolute;display:block;margin:0!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;
   border-radius:0!important;outline:0!important;min-width:0!important;min-height:0!important;pointer-events:none;color:inherit;transform:none!important}
 .mdesk .mdtag{position:absolute;left:50%;bottom:100%;transform:translate(-50%,-4px);white-space:nowrap;font-size:12px;line-height:1.35;padding:1px 7px;
   background:#2a1a11e6;color:#fff0ce;border-radius:3px;pointer-events:none;opacity:0;transition:opacity .12s;z-index:4}
 .mdesk .mdk.below .mdtag{top:100%;bottom:auto;transform:translate(-50%,4px)}
-.mdesk[data-hot="1"] .mdk[data-g="1"] .mdtag,.mdesk[data-hot="2"] .mdk[data-g="2"] .mdtag,.mdesk[data-hot="3"] .mdk[data-g="3"] .mdtag,
-.mdesk[data-hot="4"] .mdk[data-g="4"] .mdtag,.mdesk[data-hot="5"] .mdk[data-g="5"] .mdtag{opacity:1}
-/* 남은 마스터 육성 포인트 — 책 더미 오른쪽 위에 -15도 (사이드 메뉴의 숫자 표식과 같은 결) */
-.mdesk .mdbadge{position:absolute;z-index:3;transform:translate(-50%,-50%) rotate(-15deg);min-width:24px;height:24px;padding:0 5px;box-sizing:border-box;
+.mdesk[data-hot="1"] .mdk[data-g="1"] .mdtag,.mdesk[data-hot="2"] .mdk[data-g="2"] .mdtag,.mdesk[data-hot="3"] .mdk[data-g="3"] .mdtag,.mdesk[data-hot="4"] .mdk[data-g="4"] .mdtag,
+.mdesk[data-hot="5"] .mdk[data-g="5"] .mdtag,.mdesk[data-hot="6"] .mdk[data-g="6"] .mdtag,.mdesk[data-hot="7"] .mdk[data-g="7"] .mdtag{opacity:1}
+/* 표식 — 남은 마스터 육성 포인트(회중시계) · 1021 남은 친선전 신청 편지(편지) 오른쪽 위 (사이드 메뉴의 숫자 표식과 같은 결 · 1021 둘째 — 기울이지 않고 똑바로) */
+.mdesk .mdbadge{position:absolute;z-index:3;transform:translate(-50%,-50%);min-width:24px;height:24px;padding:0 5px;box-sizing:border-box;
   font-size:14px;line-height:20px;font-weight:700;text-align:center;color:#fff;background:#b0412c;border:2px solid #4a1d14;border-radius:0;
   box-shadow:2px 2px 0 #2a120c80;pointer-events:none;transition:opacity .15s}
 /* 두루마리 → 스케줄 */
-.mdesk.mdesk-go .md-items,.mdesk.mdesk-go .mdh,.mdesk.mdesk-go .mdbadge,.mdesk.mdesk-go .mdtag{opacity:0!important}
+.mdesk.mdesk-go .md-items,.mdesk.mdesk-go .mdh,.mdesk.mdesk-go .mdbadge,.mdesk.mdesk-go .mdtag{opacity:0!important}   /* 편지(.md-letter)는 책상 그림이라 그대로 다가간다 */
 .mdesk.mdesk-go .mdesk-art{pointer-events:none}
 .mdesk-ghost{position:absolute;z-index:30;opacity:0;pointer-events:none}                 /* 사이드 메뉴(z 40) 아래 */
 .mdesk-ghost img{position:absolute;left:0;top:0;width:100%;height:100%;max-width:none;display:block;margin:0;image-rendering:pixelated}
@@ -4479,7 +4479,7 @@ html body #modalRoot .cw-ov .cw-win .lkw-plate .bar b{background:#fff4e666}
 html body #modalRoot .cw-ov .cw-win.lkw-win .cw-bt b{color:#fff}
 /* POPTHEME_CSS_END */
 /* VIEWTHEME_CSS_START — 일지 · 설정 화면 · 건물 안 테마 (1021 · apply_viewtheme.py) ─ 사용자 1021 '그다음 일지와 설정에도 테마 적용해주고'.
-   일지 넷(학원 일지 · 상담 기록 · 졸업생 명부 · 도감 — 위 서브탭까지)과 설정 화면을 건물 안 창(TOWNIN) · 팝업 테마(POPTHEME)와 같은 색 · 테두리로. CSS 만 + 표시 하나
+   일지(학원 일지 · 상담 기록 · 졸업생 명부 · 도감 · 유물 도감(1021 RELICDEX) — 위 서브탭까지)와 설정 화면을 건물 안 창(TOWNIN) · 팝업 테마(POPTHEME)와 같은 색 · 테두리로. CSS 만 + 표시 하나
    (render 가 #view 에 data-pt 를 단다 — VIEWTHEME JS 의 PT_VIEWS 에 든 화면일 때. 다른 화면에도 입히려면 PT_VIEWS 에 더한다).
    판(.panel)은 창(#2a1418 · 세 겹 테두리 — 사이드 메뉴 · 스카우트 목록과 같다) · 판 안 상자(설정 줄 .optrow · 효과 미리보기 칸)는 대화창 색 · 카드(.opt · 졸업생 카드 …)는 상품 카드 ·
    단추는 카드 색 / 주 단추 금색 · 서브탭은 카드 색(지금 탭은 금색 줄). 화면 테마 · 팔레트 · 도트 마감 · 글꼴 설정과 상관없이 같은 색 (글꼴은 설정을 따른다).
@@ -4550,6 +4550,91 @@ html body #app #view[data-pt] :is(.bar,.lkb,.mentbar){border-radius:0;background
 html body #app #view[data-pt] :is(.facebox,.sprbox){padding:3px;border:2px solid var(--pt-line)!important;border-radius:0!important;background:linear-gradient(#80504a,#4a242a 70%,#3a1a20)!important;
   box-shadow:inset 0 0 0 2px #3a1a20,inset 0 0 0 3px var(--pt-edge),0 0 0 2px var(--pt-dark)!important}
 /* VIEWTHEME_CSS_END */
+/* RELICDEX_CSS_START — 유물 도감 (1021 · apply_relicdex.py) ─ 일지 › 유물 도감 화면(.rdx — 등급 탭 · 칸)과 상세 팝업(.rdx-pop).
+   색 · 테두리는 건물 안 테마를 그대로 쓴다 (화면 — VIEWTHEME 의 판 · 카드(.opt) · 단추(.btn — 고른 탭은 aria-pressed 금색) · 팝업 — POPTHEME).
+   여기서는 자리 · 크기 · 못 얻은 칸(회색)만. 글자 크기는 정하지 않는다 (도트 글꼴 설정이 12 · 24 로 맞춘다) */
+#view .rdx-tabs{display:flex;gap:8px;margin:0 0 14px}
+#view .rdx-tab{flex:0 1 112px;min-width:0;display:inline-flex;align-items:baseline;justify-content:center;gap:10px;white-space:nowrap}
+#view .rdx-tab b{font-weight:400}
+#view .rdx-tab .num{color:var(--muted)}
+#view .rdx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(196px,100%),1fr));gap:8px}
+#view .rdx-it{display:flex;align-items:center;gap:10px;min-width:0;padding:5px 10px 5px 5px;cursor:pointer;color:var(--text)}
+#view .rdx-ic{width:48px;height:48px;flex:none;display:grid;place-items:center;background:#1f0e11;box-shadow:inset 0 0 0 1px #b98f8455}
+#view .rdx-ic img{width:44px;height:44px;object-fit:contain;display:block}
+#view .rdx-tx{display:flex;flex-direction:column;min-width:0;line-height:1.4}
+#view .rdx-no{color:var(--brass)}
+#view .rdx-nm{overflow-wrap:anywhere}                 /* 긴 이름(영어 · 일본어)은 줄을 바꾼다 — 그 줄의 칸이 같이 높아진다 */
+/* 못 얻은 칸 — 회색 (아이콘 흑백 · 글 · 카드 바탕을 가라앉힌다) */
+html body #app #view[data-pt] .rdx-it.off{background:#331a1e!important;border-color:#8a6a62;box-shadow:inset 0 0 0 2px #331a1e,inset 0 0 0 3px #6a4a44,2px 3px 0 #0007!important}
+#view .rdx-it.off .rdx-ic img{filter:grayscale(1) brightness(.5) contrast(.9);opacity:.8}
+#view .rdx-it.off :is(.rdx-no,.rdx-nm){color:#a08078}
+/* 상세 팝업 */
+#modalRoot .modal:has(> .rdx-pop){width:min(460px,100%)}
+.rdx-pop .rdx-ph{display:flex;align-items:center;gap:14px;margin:0 0 12px}
+.rdx-pop .rdx-pic{width:104px;height:104px;flex:none;display:grid;place-items:center;border:2px solid #e9cdbf;background:linear-gradient(#80504a,#4a242a 70%,#3a1a20);
+  box-shadow:inset 0 0 0 2px #3a1a20,inset 0 0 0 3px #b98f84,0 0 0 2px #140a0c}
+.rdx-pop .rdx-pic img{width:96px;height:96px;display:block}
+.rdx-pop.off .rdx-pic img{filter:grayscale(1) brightness(.5) contrast(.9);opacity:.85}
+.rdx-pop .rdx-pt{min-width:0}
+.rdx-pop .rdx-pno{display:flex;align-items:center;gap:8px;color:var(--brass)}
+.rdx-pop h2{margin:4px 0 2px;line-height:1.3}
+.rdx-pop .rdx-ptier{color:var(--dim)}
+.rdx-pop .raff{margin:0}
+.rdx-pop .rlinfo{margin-top:8px}
+.rdx-pop .rli.rres{color:#dcbaf4}
+.rdx-pop :is(.rli.rset,.rli.rsetfx){color:#f2c08a}
+.rdx-pop .rli .rpc{color:inherit}
+.rdx-pop .rdx-lore{margin:10px 0 0;color:var(--muted);line-height:1.6}
+.rdx-pop .rdx-where{margin:12px 0 0;padding-top:10px;border-top:1px dashed #b98f8499}
+.rdx-pop.off .rdx-where{margin-top:0;padding-top:0;border-top:0}
+.rdx-pop .rdx-first{margin-top:2px;color:var(--dim)}
+.rdx-pop .btnrow{margin-top:14px;justify-content:flex-end}
+/* RELICDEX_CSS_END */
+/* FLETTER_CSS_START — 친선전 신청 편지 창 · 표식 (1021 · apply_fletter.py) — 목업 mockups/master-letter 의 '친선전 신청 창' 그대로.
+   창 테두리 · 색 · 단추는 팝업 테마(POPTHEME — #modalRoot .modal)가 맡고, 여기는 폭 · 글꼴(도트 Mulmaru 12 · 24) · 종이 · 도장 · 줄 · 표식만 */
+html body #modalRoot .modal.fl-modal{width:min(580px,100%);padding:16px 20px}
+.fl-win{font:400 12px/1.7 "Mulmaru",sans-serif;-webkit-font-smoothing:none;font-synthesis:none;letter-spacing:0;word-spacing:0;text-align:left}
+.fl-win .btn{font:400 12px/1 "Mulmaru",sans-serif;padding:9px 16px;letter-spacing:0}
+.fl-win .fl-h{display:flex;align-items:center;gap:14px;margin:0 0 12px;padding-bottom:10px;border-bottom:1px dashed #b98f8499}
+.fl-win .fl-env{width:94px;height:auto;flex:none;image-rendering:pixelated}                                 /* 책상 편지 겹 그림 (1배) */
+.fl-win .fl-h h2{margin:0;font:400 24px/1.3 "Mulmaru",sans-serif;letter-spacing:0}
+.fl-win .fl-n{margin-left:auto;white-space:nowrap;color:#e2c2b6;font-family:"Mulmaru Mono","Mulmaru",monospace}
+/* 종이 — 밝은 양피지 (섬) · 회신 · 거절하면 도장이 찍히고 위로 사라진다 */
+.fl-win .fl-paper{position:relative;overflow:hidden;padding:14px 18px 12px;color:#3b2a1f;background:#f4e4c6;border:2px solid #c9a77c;
+  box-shadow:inset 0 0 0 2px #f4e4c6,inset 0 0 0 3px #e2c79a,2px 3px 0 #0007;transition:opacity .2s,transform .2s}
+.fl-win .fl-paper.go{opacity:0;transform:translateY(-8px)}
+.fl-win .fl-from{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.fl-win .fl-nm{font-size:24px;line-height:1.3;color:#3b2a1f}
+.fl-win .fl-tt{font-size:12px;line-height:18px;padding:0 6px;border:1px solid #8a5a1e;color:#7a4a1e}
+.fl-win .fl-body{margin:8px 0 6px;color:#3b2a1f}
+.fl-win .fl-wk{color:#9a2f1f}
+.fl-win .fl-sign{text-align:right;color:#6b5240}
+.fl-win .fl-stamp{position:absolute;right:22px;bottom:16px;padding:6px 10px;font-size:24px;line-height:1;color:#b0412c;border:3px solid #b0412c;
+  transform:rotate(-12deg) scale(1.6);opacity:0;transition:opacity .18s,transform .18s;pointer-events:none}
+.fl-win .fl-stamp.no{color:#6b5240;border-color:#6b5240}
+.fl-win .fl-stamp.on{opacity:.9;transform:rotate(-12deg) scale(1)}
+/* 요청 주 · 방식 · 상대 · 명성 */
+.fl-win .fl-i{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 14px;margin:12px 2px 14px}
+.fl-win .fl-i dt{color:#e2c2b6}
+.fl-win .fl-i dd{margin:0}
+.fl-win .fl-g{color:#ffd36a}
+.fl-win .fl-ok{color:#a6e48e}
+.fl-win .fl-bad{color:#ff9a86}
+.fl-win :is(.fl-dl,.fl-warn){display:inline-block;margin-left:8px;padding:0 6px;font-size:12px;line-height:18px;color:#fff;background:#b0412c;box-shadow:0 0 0 1px #140a0c;white-space:nowrap}
+.fl-win .fl-warn{cursor:help}
+.fl-win .fl-b{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.fl-win .fl-b .ghost{margin-left:auto}
+@media (max-width:480px){.fl-win .fl-env{width:64px}.fl-win .fl-h{gap:10px}html body #modalRoot .modal.fl-modal{padding:14px 14px}}
+@media (prefers-reduced-motion:reduce){.fl-win :is(.fl-paper,.fl-stamp){transition:none}}
+/* 메뉴 마스터 단추 — 편지 표식(편지 모양 + 수 · 오른쪽 위) · 남은 마스터 육성 포인트 표식은 편지가 있는 동안 왼쪽 위로 (.l) */
+.badge.bl{display:inline-flex;align-items:center;gap:3px;vertical-align:middle}
+.badge.bl svg{display:block;flex:none;width:9px;height:7px;shape-rendering:crispEdges}
+html body #app>.topbar nav#nav button .badge.l,html body #app>.topbar.topbar nav#nav button .badge.l{left:3px;right:auto}
+html body #app>.topbar nav#navm .navm-grid button .badge.l{left:2px;right:auto}
+/* 좁은 화면 마스터 노트 맨 위 — 친선전 신청 편지 단추 */
+#view .fl-nbtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:0 0 12px}
+#view .fl-nbtn svg{display:block;flex:none;width:18px;height:14px;shape-rendering:crispEdges}
+/* FLETTER_CSS_END */
 </style>
 
 <link rel="stylesheet" href="assets/title-art/title-screen.css?v=7">
@@ -9899,6 +9984,7 @@ function weekRunEnd(){
   tryValentine();
   trySparkler();
   tryFriendly();
+  friendlyExpire();   // 1021 — 요청 주가 지난 안 읽은 친선전 신청 편지는 사라진다
   tryCounsel();
   defyWeekEnd(R);   // 1008 — 지침 무시 상담 이벤트 · 일지 · 첫 안내
   tryEvolve();
@@ -11260,6 +11346,7 @@ function xmTravel(mem, done){
 function addRelicToPool(r){
   S.relicPool = S.relicPool||[];
   S.relicPool.push(r);
+  relicDexNote(r);                                  // 1021 — 유물 도감 (RELICDEX — 처음 얻은 종류 · 등급을 적는다)
 }
 /* 유물 능력치 표시 순서 — 능력치 목록(BATTLE) 순서로 통일한다
    체력 → 공격력 → 방어력 → 속도 → 크리 확률 → 크리 피해 → 피해 명중 → 피해 회피
@@ -16016,6 +16103,7 @@ function enrollAll(){
    ============================================================ */
 const SAVE_KEY = "heroacademy_v1";
 function save(){
+  try{ relicDexScan(); }catch(e){}                   // 1021 — 유물 도감 (RELICDEX — 손에 든 유물 · 깨어나 오른 등급)
   try{ localStorage.setItem(SAVE_KEY, JSON.stringify(S)); }catch(e){}
   try{ playerPing(false); }catch(e){}                   // 익명 진행 기록 — 90초에 한 번까지
 }
@@ -16027,6 +16115,7 @@ function load(){
     if(!d || !d.students) return false;
     S = curData(d); S.relicPool = S.relicPool||[];   // 1010 — 이름 · 이명 · 유물 같은 데이터 글을 지금 언어로 (영어로 쌓은 세이브를 한국어판에서 열어도)
     try{ friendlyFormsFix(); }catch(e){}            // 1020 — 친선전 제안 상대의 진형을 되붙인다 (세이브에 안 남던 것 — foeFormRestore)
+    try{ friendlyLetterFix(); }catch(e){}           // 1021 — 예전 친선전 요청(세 자리 배치)을 신청 편지로
     return true;
   }catch(e){ return false; }
 }
@@ -16108,14 +16197,14 @@ const VIEW_GROUPS = {
   roster: [{id:"roster", n:"학생 명부"}, {id:"team", n:"팀 편성"}],
   relic:  [{id:"relic", n:"유물 보관고"}, {id:"skill", n:"스킬 보관고"}],
   league: [{id:"league", n:"리그"}, {id:"lgentry", n:"등록"}, {id:"spshop", n:"SP 상점"}, {id:"rank", n:"순위"}],
-  log:    [{id:"log", n:"학원 일지"}, {id:"csllog", n:"상담 기록"}, {id:"record", n:"졸업생 명부"}, {id:"codex", n:"도감"}]   // 1008 — 상담 기록 (상담은 창으로)
+  log:    [{id:"log", n:"학원 일지"}, {id:"csllog", n:"상담 기록"}, {id:"record", n:"졸업생 명부"}, {id:"codex", n:"도감"}, {id:"relicdex", n:"유물 도감"}]   // 1008 — 상담 기록 (상담은 창으로) · 1021 — 유물 도감 (RELICDEX)
 };
 const VIEW_GROUP_OF = {};
 Object.keys(VIEW_GROUPS).forEach(g=> VIEW_GROUPS[g].forEach(t=>{ VIEW_GROUP_OF[t.id] = g; }));
 function viewGroupOf(id){ return VIEW_GROUP_OF[id] || id; }
 /* VIEWTHEME_START — 건물 안 테마를 입힌 화면 (1021 · apply_viewtheme.py) ─ 사용자 1021 '그다음 일지와 설정에도 테마 적용해주고'.
    render 가 그린 뒤 #view 에 data-pt 를 단다 (이 목록에 든 화면일 때만 — CSS 는 VIEWTHEME_CSS). 다른 화면에도 입히려면 여기에 더한다 */
-const PT_VIEWS = ["log", "csllog", "record", "codex", "opt"];      // 일지 넷(학원 일지 · 상담 기록 · 졸업생 명부 · 도감) · 설정
+const PT_VIEWS = ["log", "csllog", "record", "codex", "relicdex", "opt"];      // 일지 다섯(학원 일지 · 상담 기록 · 졸업생 명부 · 도감 · 유물 도감 — 1021 RELICDEX) · 설정
 function ptViewMark(v){ if(v) v.toggleAttribute("data-pt", PT_VIEWS.includes(UI.view)); }
 /* VIEWTHEME_END */
 function subTabsOpen(g){   // 리그 등록은 4년차 봄부터 · 졸업생 명부는 첫 졸업생이 나온 뒤에야
@@ -16227,6 +16316,7 @@ function render(){
   { // 1002 — 마스터 노트: 아직 배분하지 않은 마스터 육성 포인트 (서브탭 숫자와 같다)
     const hv = tabs.find(v=>v.id==="home");
     if(hv) hv.badge = SUB_BADGE.master() || null;
+    if(hv) hv.let = fletN() || null;   // 1021 — 친선전 신청 편지 (FLETTER — 편지 표식은 오른쪽 위 · 남은 포인트 표식은 왼쪽 위로)
   }
   if(S.phase==="winter" && S.scouts) tabs.splice(2,0,{id:"scout", n:"스카우트", badge: scoutOpen()? (S.scoutTries||0) : null});   // 학생 바로 옆
   { const cv = tabs.find(v=>v.id==="counsel"); if(cv) cv.badge = (counselState().queue.length + defyState().pend.length) || null; }
@@ -16243,7 +16333,7 @@ function render(){
   { /* 메뉴 장면 단추 (1002) — 그림 · 긴 이름(.nl) · 짧은 이름(.ns)을 다 넣고, 가로 화면 사이드에서만 그림 + 짧은 이름을 보인다.
        내용이 같으면 다시 그리지 않는다 (render 마다 그림이 다시 붙어 깜빡이지 않게) */
     const navH = tabs.map(v=>`<button data-view="${v.id}" class="${v.hot?"hot":""}${v.lock?" lk":""}" aria-current="${curG===v.id}"${v.lock?` aria-disabled="true" data-lock="${v.lock}"`:""} title="${v.lock || v.n}">${menuArt(v.id)}${v.lock? LOCK_ICO : ""}<span class="nl">${v.n}</span>${
-      MENU_SHORT[v.id]?`<span class="ns">${MENU_SHORT[v.id]}</span>`:""}${v.side?`<span class="wk">${v.side}</span>`:""}${v.badge?`<span class="badge">${v.badge}</span>`:""}</button>`).join("");
+      MENU_SHORT[v.id]?`<span class="ns">${MENU_SHORT[v.id]}</span>`:""}${v.side?`<span class="wk">${v.side}</span>`:""}${v.let? fletBadge(v.let) : ""}${v.badge?`<span class="badge${v.let?" l":""}">${v.badge}</span>`:""}</button>`).join("");
     /* 1002 — 가로 화면 사이드에만: 지침(예전 등록 그림 · 누르면 지침 창) · 피드백(설정 옆). 예전 지침 칸(#mMis)은 사이드에서 숨긴다 */
     if(!S.mission) S.mission = newMission();
     const mc = missionCur(), misT = mc ? `${S.mission.idx+1}/${MISSIONS.length}` : "완수";
@@ -16271,8 +16361,8 @@ function render(){
     const tb = (v)=> v.id==="plan"
       ? `<button data-view="plan" class="${v.hot?"hot":""} navm-sched" aria-current="${UI.view==="plan"}" title="${v.n}">${menuArt("plan","big")}${menuArt("plan48","small")}<span class="sl">스케줄</span>${   /* 1011 — 주차는 뺐다 (위쪽 일정 칸에 있다) */
           v.badge?`<span class="badge">${v.badge}</span>`:""}</button>`
-      : `<button data-view="${v.id}" class="${v.hot?"hot":""}${v.lock?" lk":""}" aria-current="${curG===v.id}"${v.lock?` aria-disabled="true" data-lock="${v.lock}"`:""} title="${v.lock || v.n}">${menuArt(v.id)}${v.lock? LOCK_ICO : ""}<span class="ml">${MENU_SHORT[v.id]||SHORT[v.id]||v.n}</span>${
-          v.badge?`<span class="badge">${v.badge}</span>`:""}</button>`;
+      : `<button data-view="${v.id}" class="${v.hot?"hot":""}${v.lock?" lk":""}" aria-current="${curG===v.id}"${v.lock?` aria-disabled="true" data-lock="${v.lock}"`:""} title="${v.lock || v.n}">${menuArt(v.id)}${v.lock? LOCK_ICO : ""}<span class="ml">${MENU_SHORT[v.id]||SHORT[v.id]||v.n}</span>${v.let? fletBadge(v.let) : ""}${
+          v.badge?`<span class="badge${v.let?" l":""}">${v.badge}</span>`:""}</button>`;
     const moreN = curRest? (MENU_SHORT[curRest.id]||curRest.n) : "더보기";
     const navmH = `<div class="navm-grid">${mainT.map(tb).join("")}
         <button class="morebtn ${UI.navMore?"open":""}" id="navMore" aria-current="${!!curRest}" aria-expanded="${!!UI.navMore}" title="${curRest? esc(curRest.n) : "더보기"}">${menuArt(curRest? curRest.id : "more")}<span class="ml">${esc(moreN)}<i>${UI.navMore?"▴":"▾"}</i></span>${
@@ -16300,6 +16390,7 @@ function render(){
   else if(UI.view==="team") v.innerHTML = viewTeam();
   else if(UI.view==="counsel") v.innerHTML = viewCounsel();
   else if(UI.view==="codex") v.innerHTML = viewCodex();
+  else if(UI.view==="relicdex") v.innerHTML = viewRelicDex();   // 1021 — 일지 › 유물 도감 (RELICDEX)
   else if(UI.view==="record") v.innerHTML = viewRecord();
   else if(UI.view==="league") v.innerHTML = viewLeague();
   else if(UI.view==="lgentry") v.innerHTML = viewLgEntry();
@@ -16409,22 +16500,32 @@ function renderLog(){
 const SHOW_YEARFLOW = false;   // 학원 탭 · 연간 흐름 안내 박스
 const SHOW_BULKRUN  = false;   // 스케줄 탭 · 남은 주 일괄 진행 버튼
 const SHOW_FOCUSHELP= false;   // 개인 집중 훈련 · 일괄 지정 안내 문단
-/* MDESK_START — 마스터 노트 책상 (1006 · 1020 도트 책상)
-   1020 — 원화 한 장을 세계 지도와 같은 방식으로 도트화한 책상(1× 746×478 · 63색 — tools/gen/patch/desk_px · 만드는 곳 mockups/master-desk)을
+/* MDESK_START — 마스터 노트 책상 (1006 · 1020 도트 책상 · 1021 새 원화 · 친선전 편지)
+   1020 — 원화 한 장을 세계 지도와 같은 방식으로 도트화한 책상(1× 746×478 · 63색 — tools/gen/patch/desk_px)을
    스케줄 두루마리와 같은 액자(1544:1008 · 액자 그림 SCHED_ART.over2 — 가장자리 그늘 포함)에 띄운다 (1011 — 마을 · 마스터 노트 · 스케줄 셋이 같은 크기 · 같은 액자).
    책상 · 소품이 한 장이라 바탕(MDESK_ART.ext)이 책상 전체이고, .mdesk-art(소품 · 누르는 자리 좌표 MDESK_GEO.size)도 책상 전체(MDESK_GEO.ext — 자리 0, 0)를 덮는다.
    소품 겹(props) · 촛불 빛(light)은 없다 (원화에 그려져 있다 — 있으면 그린다: 예전 책상은 apply_desk --old · 배치판으로 구운 607×466 을 넓힌 바탕 왼쪽 위에).
    두루마리 위 내용(MDESK_ART.items)은 글자 없는 '내용 느낌'(글씨처럼 보이는 낮은 잉크 물결 · 다섯 칸 표 · 색 붓 자국 · 서명 · 도장).
    가로 화면(townMode)에서만 — 세로 · 좁은 화면은 예전 마스터 노트(학원 정보 · 마스터 육성 서브탭) 그대로.
-   누를 수 있는 소품: 말린 두루마리(튜토리얼) · 책 더미(마스터 육성 팝업) · 회중시계(학원 정보 팝업) · 펼친 책(학생) · 펼친 두루마리(스케줄).
+   1021 — 사용자 '마스터 화면 2종 원화' (mockups/master-letter): 새 원화 · 누르는 소품 일곱 — 말린 두루마리(튜토리얼) · 책 더미(일지) · 회중시계 + 안경(마스터 육성 팝업) ·
+   지구본(학원 정보 팝업) · 펼친 책(학생 명부) · 펼친 두루마리(스케줄) · 편지(친선전 신청 창 — 편지가 남아 있을 때만 그림 · 누르는 자리 · 편지 수 표식).
+   소품이 하는 일은 MDESK_GEO.groups[].act (예전 책상의 묶음에는 act 가 없어 MDESK_ACT_OLD 로).
    누르는 자리는 소품 모양 + 1점(MDESK_GEO.hit — 줄마다 [시작, 길이, 묶음] · 모양은 그림에서 그랩컷으로 찾았다 — hot_masks.py).
-   남은 마스터 육성 포인트가 있으면 책 더미 오른쪽 위에 -15도로 기운 표식.
+   남은 마스터 육성 포인트 · 편지 수 표식은 회중시계 · 편지 오른쪽 위에 똑바로 (1021 둘째 — 예전 -15도 기울기를 뺐다 · MDESK_GEO.badge).
    두루마리를 누르면(mdeskGo) — 두루마리 위 내용이 사라지고, 책상이 두루마리로 다가간 뒤(액자는 그대로 — 1011 부터 같은 크기)
    스케줄 그림이 겹쳐 나타나고, 스케줄 내용이 두루마리 위로 떠오른다 */
-const MDESK_ART = {"ext":"assets/mdesk_art/ext.webp?v=114f7d73","items":"assets/mdesk_art/items.webp?v=adbff9d8","hl_map":"assets/mdesk_art/hl_map.webp?v=cb05d85c","hl_books":"assets/mdesk_art/hl_books.webp?v=0c997f2c","hl_info":"assets/mdesk_art/hl_info.webp?v=f94b6736","hl_book":"assets/mdesk_art/hl_book.webp?v=81f33fd3","hl_scroll":"assets/mdesk_art/hl_scroll.webp?v=bdf1b5f4"};
-const MDESK_GEO = {"size":[746,478],"groups":[{"k":"map","n":"튜토리얼","bb":[358,26,461,89],"hl":[356,24,107,67]},{"k":"books","n":"마스터 육성","bb":[80,332,219,446],"hl":[78,330,143,118]},{"k":"info","n":"학원 정보","bb":[472,377,543,433],"hl":[470,375,75,60]},{"k":"book","n":"학생","bb":[258,344,388,438],"hl":[256,342,134,98]},{"k":"scroll","n":"스케줄","bb":[40,89,415,300],"hl":[38,87,379,215]}],"scroll":{"x":40,"y":89,"w":375,"h":211},"books":{"x":182,"y":332,"bb":[80,332,219,446],"bx":185,"by":336},"hit":";;;;;;;;;;;;;;;;;;;;;;;;;447,4,1;445,8,1;443,11,1;441,14,1;439,17,1;437,20,1;435,22,1;433,25,1;430,29,1;428,31,1;426,34,1;424,36,1;422,39,1;420,41,1;417,44,1;415,46,1;414,48,1;413,49,1;413,49,1;414,48,1;415,47,1;402,6,1,415,46,1;399,10,1,416,45,1;397,13,1,416,45,1;395,16,1,416,44,1;392,19,1,417,42,1;390,22,1,416,41,1;387,26,1,414,40,1;385,67,1;383,67,1;380,67,1;378,66,1;376,66,1;373,67,1;371,67,1;368,67,1;366,67,1;363,68,1;361,67,1;359,67,1;358,67,1;357,68,1;357,69,1;357,69,1;357,57,1,416,11,1;357,55,1,416,11,1;357,53,1,417,11,1;357,50,1,417,11,1;357,48,1,417,5,1,423,4,1;358,45,1,418,3,1,425,1,1;358,43,1,419,1,1;358,41,1;359,38,1;359,35,1;360,32,1;360,30,1;361,27,1;361,25,1;362,22,1;363,19,1;363,17,1;364,14,1;365,11,1;366,8,1,401,4,5;57,4,5,367,5,1,400,6,5;55,7,5,399,8,5;54,9,5,398,10,5;53,11,5,398,10,5;53,11,5,398,10,5;53,12,5,398,10,5;53,11,5,398,10,5;53,11,5,399,8,5;54,9,5,400,9,5;54,10,5,400,10,5;53,12,5,399,12,5;52,14,5,398,14,5;52,15,5,153,2,5,214,1,5,228,2,5,248,1,5,251,1,5,258,1,5,270,2,5,278,11,5,300,23,5,327,85,5;52,38,5,93,94,5,189,223,5;52,360,5;52,360,5;52,360,5;52,360,5;52,360,5;51,361,5;51,361,5;51,361,5;51,361,5;51,361,5;51,361,5;51,361,5;51,361,5;51,361,5;51,361,5;51,361,5;51,361,5;51,361,5;51,361,5;51,361,5;50,362,5;50,362,5;50,362,5;50,362,5;50,362,5;50,362,5;50,362,5;50,362,5;50,362,5;50,362,5;50,362,5;50,362,5;50,362,5;50,362,5;50,362,5;50,362,5;50,362,5;50,362,5;50,362,5;50,362,5;49,363,5;49,363,5;49,364,5;49,364,5;49,364,5;49,364,5;49,364,5;49,364,5;49,364,5;49,364,5;49,364,5;49,364,5;49,364,5;49,364,5;49,364,5;49,364,5;49,364,5;49,364,5;49,364,5;49,364,5;49,364,5;48,365,5;48,365,5;48,365,5;48,365,5;48,365,5;48,365,5;48,365,5;48,365,5;48,365,5;48,365,5;48,365,5;48,365,5;47,366,5;47,366,5;47,366,5;47,366,5;47,366,5;47,366,5;47,367,5;47,367,5;47,367,5;47,367,5;47,367,5;47,367,5;47,367,5;47,367,5;47,367,5;47,367,5;47,367,5;47,367,5;46,368,5;46,368,5;46,368,5;46,368,5;46,368,5;46,368,5;46,368,5;46,368,5;46,368,5;46,368,5;46,368,5;46,368,5;46,368,5;46,368,5;46,368,5;46,368,5;46,368,5;46,368,5;46,368,5;45,369,5;45,369,5;45,369,5;45,369,5;45,369,5;45,369,5;45,369,5;45,369,5;45,369,5;45,369,5;45,369,5;45,369,5;45,369,5;45,370,5;45,370,5;44,371,5;44,371,5;44,371,5;44,371,5;44,371,5;44,371,5;44,371,5;44,371,5;44,371,5;44,371,5;44,371,5;44,371,5;44,371,5;44,371,5;44,371,5;44,371,5;44,371,5;44,371,5;44,371,5;44,371,5;44,371,5;44,371,5;43,372,5;43,372,5;43,372,5;43,372,5;43,372,5;43,372,5;43,372,5;43,372,5;43,372,5;43,372,5;43,372,5;42,374,5;42,374,5;42,374,5;42,374,5;42,374,5;42,374,5;42,374,5;42,374,5;42,374,5;42,374,5;42,374,5;42,374,5;42,374,5;42,374,5;42,374,5;41,375,5;41,375,5;41,375,5;41,375,5;41,375,5;41,375,5;41,375,5;41,375,5;42,373,5;43,2,5,52,355,5,412,2,5;54,349,5,404,2,5;43,3,5,55,347,5;42,5,5,56,345,5;41,7,5,57,343,5,406,5,5;40,9,5,58,341,5,405,7,5;40,9,5,404,9,5;39,11,5,404,9,5;39,11,5,403,11,5;39,11,5,403,11,5;39,11,5,403,11,5;40,9,5,403,11,5;40,9,5,404,9,5;41,7,5,405,7,5;43,3,5,406,5,5;408,1,5;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;177,3,2,181,2,2;174,10,2;171,14,2;168,17,2;165,20,2;161,24,2;159,26,2;155,30,2;151,34,2;148,37,2;144,41,2;141,45,2;137,49,2,359,10,4;133,54,2,353,18,4;130,57,2,348,24,4;127,61,2,343,30,4;124,64,2,339,36,4;121,68,2,335,41,4;118,71,2,192,3,2,332,45,4;115,81,2,329,48,4;111,86,2,327,50,4;108,90,2,325,52,4;105,93,2,323,54,4;102,97,2,321,57,4;98,101,2,319,59,4;94,106,2,291,19,4,318,60,4;90,110,2,284,32,4,317,61,4;89,112,2,276,102,4;88,113,2,269,110,4;87,115,2,268,111,4;87,115,2,267,112,4;87,116,2,266,113,4;87,117,2,265,115,4;87,117,2,260,120,4;87,118,2,259,121,4;87,118,2,258,122,4;87,119,2,257,123,4;87,119,2,257,124,4;88,119,2,257,124,4;88,120,2,257,124,4;88,120,2,257,124,4;88,121,2,257,124,4;88,121,2,257,125,4;86,124,2,257,125,4;83,127,2,257,125,4;82,129,2,257,125,4,488,1,3,494,9,3;81,130,2,257,125,4,481,1,3,484,6,3,492,13,3;80,132,2,257,126,4,477,29,3,508,1,3;79,133,2,257,126,4,476,39,3;79,134,2,258,125,4,473,43,3;79,134,2,258,125,4,472,45,3;79,135,2,258,125,4,471,45,3;79,136,2,258,126,4,471,44,3;79,136,2,258,126,4,471,40,3;79,137,2,258,126,4,471,40,3;79,137,2,258,126,4,472,40,3;79,138,2,259,125,4,473,39,3;80,137,2,259,126,4,477,35,3;80,138,2,259,126,4,478,34,3;81,137,2,259,126,4,483,29,3;81,138,2,259,126,4,483,29,3;82,137,2,259,126,4,483,29,3;82,138,2,260,126,4,483,28,3;83,137,2,260,126,4,484,27,3;84,135,2,260,126,4,484,27,3;85,133,2,260,126,4,484,26,3;86,131,2,260,126,4,485,25,3,512,11,3;86,132,2,260,127,4,485,24,3,510,15,3,534,1,3;87,131,2,260,127,4,486,41,3,533,3,3;87,131,2,260,127,4,487,41,3,532,5,3;88,130,2,260,127,4,488,42,3,532,5,3;88,130,2,261,126,4,490,48,3;89,129,2,261,127,4,491,50,3;89,129,2,261,127,4,494,6,3,502,40,3;90,127,2,261,127,4,501,42,3;91,125,2,261,127,4,500,44,3;91,123,2,261,127,4,499,45,3;92,120,2,262,127,4,499,45,3;92,117,2,262,127,4,499,45,3;93,113,2,262,127,4,498,38,3,538,5,3;93,110,2,262,127,4,498,39,3,539,3,3;94,107,2,262,127,4,498,39,3;94,104,2,262,127,4,498,39,3;95,101,2,262,126,4,498,39,3;95,98,2,262,125,4,498,39,3;96,94,2,263,123,4,498,39,3;96,92,2,263,117,4,498,39,3;97,88,2,263,110,4,498,39,3;97,86,2,263,103,4,498,39,3;98,82,2,263,97,4,498,39,3;98,79,2,263,91,4,498,38,3;98,77,2,263,85,4,499,37,3;99,73,2,263,80,4,499,36,3;99,70,2,264,74,4,500,35,3;100,67,2,264,74,4,501,33,3;101,63,2,264,74,4,501,33,3;102,59,2,264,51,4,328,10,4,502,31,3;102,56,2,264,44,4,328,11,4,503,29,3;103,53,2,264,37,4,328,11,4,504,26,3;103,50,2,265,27,4,328,11,4,505,24,3;104,46,2,266,20,4,329,10,4,507,21,3;104,44,2,266,14,4,329,11,4,510,15,3;105,40,2,266,12,4,329,11,4,513,9,3;106,36,2,267,10,4,329,11,4;106,34,2,268,7,4,330,9,4;107,30,2,330,8,4;107,27,2,331,6,4;108,24,2,332,1,4,334,2,4;108,21,2;109,18,2;109,15,2;110,12,2;110,10,2;111,9,2;112,7,2;113,5,2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;","zoom":{"m":[50.0,402.5,196.0],"s":[25.5,587.5,243.0]},"ext":{"w":746,"h":478,"x":0,"y":0}};
-const MDESK_TAG = {map:"튜토리얼", books:"마스터 육성", info:"학원 정보", book:"학생 명부", scroll:"스케줄"};
+const MDESK_ART = {"ext":"assets/mdesk_art/ext.webp?v=f1546c6a","items":"assets/mdesk_art/items.webp?v=27ec41b7","letter":"assets/mdesk_art/letter.webp?v=19b05550","hl_map":"assets/mdesk_art/hl_map.webp?v=bb59c1cb","hl_books":"assets/mdesk_art/hl_books.webp?v=f7fac122","hl_master":"assets/mdesk_art/hl_master.webp?v=4a0baee1","hl_globe":"assets/mdesk_art/hl_globe.webp?v=9c23f67c","hl_book":"assets/mdesk_art/hl_book.webp?v=c2d00a03","hl_scroll":"assets/mdesk_art/hl_scroll.webp?v=b5010202","hl_letter":"assets/mdesk_art/hl_letter.webp?v=5f52d9f9"};
+const MDESK_GEO = {"size":[746,478],"groups":[{"k":"map","act":"tut","bb":[358,25,461,89],"hl":[356,23,107,68]},{"k":"books","act":"log","bb":[80,331,218,445],"hl":[78,329,142,118]},{"k":"master","act":"master","bb":[406,377,543,436],"hl":[404,375,141,63]},{"k":"globe","act":"info","bb":[508,11,563,71],"hl":[506,9,59,64]},{"k":"book","act":"roster","bb":[257,343,388,438],"hl":[255,341,135,99]},{"k":"scroll","act":"plan","bb":[40,89,415,300],"hl":[38,87,379,215]},{"k":"letter","act":"letter","bb":[211,29,294,80],"hl":[209,27,87,55]}],"scroll":{"x":40,"y":89,"w":375,"h":211},"letter":{"x":209,"y":27,"w":94,"h":59},"badge":{"master":[521,385],"letter":[295,43]},"hit":";;;;;;;;;;534,12,4;533,17,4;532,20,4;529,24,4;526,28,4;524,31,4;521,35,4;520,38,4;519,40,4;518,42,4;517,44,4;516,45,4;515,46,4;514,48,4;448,2,1,513,49,4;447,5,1,513,50,4;445,8,1,512,51,4;443,11,1,512,52,4;224,1,7,441,14,1,512,52,4;223,7,7,439,17,1,511,53,4;222,16,7,437,20,1,511,53,4;221,23,7,434,23,1,510,54,4;221,29,7,432,26,1,509,55,4;220,38,7,430,28,1,508,56,4;220,45,7,428,31,1,507,57,4;220,52,7,426,34,1,507,57,4;219,59,7,424,36,1,507,57,4;219,66,7,422,38,1,508,56,4;219,74,7,419,42,1,509,55,4;219,75,7,417,44,1,510,54,4;219,76,7,415,46,1,511,53,4;218,77,7,414,47,1,511,53,4;218,77,7,413,48,1,512,51,4;218,77,7,412,50,1,512,51,4;217,78,7,413,49,1,513,50,4;217,77,7,414,48,1,514,48,4;217,77,7,401,7,1,415,46,1,515,46,4;216,78,7,399,10,1,416,45,1,515,46,4;216,78,7,397,13,1,416,45,1,516,44,4;216,78,7,395,16,1,416,44,1,517,42,4;216,78,7,392,19,1,416,43,1,518,40,4;215,78,7,389,23,1,415,42,1,520,37,4;215,78,7,387,26,1,414,40,1,522,34,4;215,78,7,384,67,1,522,34,4;214,79,7,382,67,1,521,36,4;214,78,7,380,67,1,521,37,4;214,78,7,378,67,1,521,37,4;213,79,7,376,66,1,521,37,4;213,79,7,373,67,1,521,37,4;213,79,7,370,68,1,521,37,4;212,79,7,368,68,1,521,37,4;212,79,7,365,68,1,521,36,4;212,79,7,363,68,1,522,35,4;212,78,7,361,67,1,523,33,4;211,79,7,360,66,1,523,33,4;211,79,7,359,66,1,524,31,4;211,79,7,358,67,1,525,29,4;210,80,7,357,69,1,526,27,4;211,79,7,357,69,1,528,24,4;212,77,7,357,57,1,416,11,1,530,20,4;217,72,7,357,55,1,417,10,1,531,17,4;228,61,7,358,52,1,417,10,1,536,9,4;230,59,7,358,49,1,417,9,1;235,54,7,358,47,1,418,4,1,423,2,1;242,46,7,358,45,1,419,2,1;252,36,7,359,42,1;257,31,7,359,40,1;263,25,7,359,38,1;269,18,7,359,35,1;277,9,7,360,32,1;282,3,7,361,29,1;362,25,1;363,3,1,368,18,1;367,17,1;366,16,1;365,16,1;365,13,1;366,10,1;367,7,1,401,4,6;57,4,6,370,2,1,400,6,6;55,7,6,399,8,6;54,9,6,398,10,6;53,11,6,398,10,6;53,11,6,398,10,6;53,12,6,398,10,6;53,11,6,398,10,6;53,11,6,399,8,6;54,9,6,400,9,6;54,10,6,400,10,6;53,12,6,182,2,6,399,12,6;52,14,6,181,4,6,398,14,6;52,14,6,163,3,6,173,1,6,176,10,6,190,10,6,209,11,6,223,7,6,232,2,6,236,5,6,247,13,6,265,9,6,278,38,6,320,77,6,398,14,6;52,30,6,83,104,6,189,223,6;52,360,6;52,360,6;52,360,6;52,360,6;52,360,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;50,362,6;50,362,6;50,362,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,366,6;48,366,6;48,366,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;45,369,6;45,369,6;45,369,6;45,369,6;45,369,6;45,369,6;45,369,6;45,369,6;45,369,6;45,370,6;45,370,6;45,370,6;45,370,6;45,370,6;45,370,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;43,372,6;43,372,6;43,372,6;43,372,6;43,372,6;43,372,6;43,372,6;43,372,6;43,372,6;43,372,6;43,372,6;42,373,6;42,373,6;42,373,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;41,375,6;41,375,6;41,375,6;41,375,6;41,375,6;41,375,6;41,375,6;41,375,6;42,373,6;43,1,6,53,355,6,412,2,6;54,349,6,404,3,6;43,3,6,55,347,6,405,1,6;42,5,6,56,345,6;41,7,6,57,343,6,406,5,6;40,9,6,58,341,6,405,7,6;40,9,6,180,5,6,404,9,6;39,11,6,180,5,6,404,9,6;39,11,6,180,5,6,403,11,6;39,11,6,180,5,6,403,11,6;39,11,6,180,5,6,403,11,6;40,9,6,180,5,6,403,11,6;40,9,6,181,3,6,404,9,6;41,7,6,182,1,6,405,7,6;43,3,6,406,5,6;408,1,6;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;178,2,2,181,2,2;177,7,2;175,10,2;172,13,2;168,17,2;165,20,2;160,1,2,162,23,2;157,28,2;156,29,2;153,32,2;150,35,2;143,43,2;142,44,2,362,6,5;138,48,2,358,11,5;135,52,2,352,19,5;132,56,2,346,26,5;130,58,2,342,31,5;126,63,2,337,37,5;123,66,2,334,41,5;119,71,2,331,45,5;117,74,2,192,3,2,329,48,5;113,83,2,326,51,5;108,1,2,110,87,2,324,53,5;107,91,2,323,54,5;104,95,2,321,56,5;98,1,2,101,98,2,320,58,5;94,106,2,290,21,5,318,60,5;90,1,2,93,108,2,282,96,5;89,112,2,274,104,5;88,114,2,268,110,5;87,115,2,267,112,5;86,117,2,266,113,5;86,117,2,263,116,5;85,119,2,259,120,5;85,120,2,258,122,5;85,120,2,257,123,5;85,121,2,256,124,5;85,121,2,256,124,5;85,121,2,256,125,5;85,122,2,256,125,5;85,123,2,256,125,5;85,123,2,256,125,5;86,123,2,256,125,5;86,123,2,256,126,5;85,125,2,257,125,5;84,126,2,257,125,5;83,128,2,257,125,5,488,1,3,494,8,3;81,130,2,257,125,5,481,1,3,483,7,3,492,12,3;80,131,2,257,126,5,477,2,3,480,26,3;79,133,2,257,126,5,476,39,3;79,134,2,258,125,5,473,43,3,517,2,3;79,134,2,258,125,5,472,48,3;79,135,2,258,126,5,472,49,3;79,135,2,258,126,5,472,38,3,512,9,3;79,136,2,258,126,5,472,39,3,518,2,3;79,137,2,258,126,5,473,38,3;79,137,2,258,126,5,473,38,3;79,138,2,258,127,5,474,37,3;80,137,2,259,126,5,477,34,3;80,138,2,259,126,5,478,33,3;81,138,2,259,126,5,482,29,3;81,138,2,259,126,5,483,28,3;82,136,2,259,127,5,483,28,3;83,135,2,260,126,5,416,8,3,483,28,3;84,133,2,260,126,5,414,12,3,484,26,3;84,132,2,260,126,5,412,16,3,484,26,3;85,130,2,260,126,5,411,18,3,484,25,3;85,132,2,260,127,5,406,2,3,410,20,3,485,24,3,512,11,3;85,133,2,260,127,5,405,26,3,486,22,3,509,16,3;86,133,2,260,127,5,405,27,3,487,40,3;86,133,2,260,127,5,406,26,3,488,40,3,533,1,3;87,131,2,260,127,5,407,25,3,489,40,3,532,5,3;87,131,2,261,127,5,407,26,3,490,48,3;88,130,2,261,127,5,406,27,3,492,49,3;88,130,2,261,127,5,406,27,3,495,5,3,501,41,3;89,128,2,261,127,5,406,28,3,500,43,3;90,126,2,261,127,5,406,28,3,500,43,3;91,123,2,261,127,5,406,28,3,447,11,3,499,45,3;92,120,2,261,128,5,406,33,3,445,15,3,499,45,3;92,117,2,261,128,5,406,34,3,444,17,3,498,46,3;93,114,2,262,127,5,406,36,3,443,19,3,498,39,3,538,5,3;93,111,2,262,127,5,406,57,3,498,39,3,539,3,3;94,107,2,262,127,5,406,58,3,498,39,3;94,104,2,262,127,5,406,59,3,499,38,3;95,101,2,262,126,5,406,60,3,498,39,3;95,98,2,262,125,5,407,58,3,498,38,3;95,96,2,263,121,5,408,58,3,498,38,3;96,92,2,263,116,5,409,57,3,498,38,3;96,89,2,263,109,5,410,56,3,498,38,3;97,85,2,263,103,5,411,55,3,498,38,3;97,83,2,263,97,5,412,16,3,429,37,3,498,37,3;97,81,2,263,90,5,413,12,3,438,28,3,498,37,3;98,76,2,263,84,5,415,8,3,438,28,3,498,36,3;99,73,2,263,79,5,438,28,3,498,36,3;99,70,2,263,75,5,438,28,3,499,35,3;100,66,2,264,73,5,438,28,3,499,35,3;100,64,2,264,74,5,438,28,3,500,34,3;101,60,2,264,50,5,318,20,5,438,27,3,502,31,3;102,56,2,264,42,5,322,16,5,439,26,3,503,29,3;103,52,2,264,36,5,323,15,5,439,25,3,504,26,3;104,49,2,264,27,5,328,11,5,439,25,3,505,24,3;105,45,2,264,20,5,329,10,5,440,23,3,507,20,3;106,42,2,264,13,5,329,10,5,441,20,3,510,15,3;107,38,2,265,11,5,329,10,5,442,19,3,514,8,3;107,36,2,266,9,5,330,9,5,444,16,3;107,33,2,267,6,5,330,9,5,445,13,3;107,30,2,330,8,5,448,8,3;107,28,2,331,6,5;108,24,2,332,1,5,334,2,5;109,21,2;109,18,2;110,14,2;110,12,2;111,7,2,119,1,2;112,4,2;113,2,2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;","zoom":{"m":[50.5,402.5,195.5],"s":[25.5,587.5,243.0]},"ext":{"w":746,"h":478,"x":0,"y":0}};
+const MDESK_TAG = {tut:"튜토리얼", log:"일지", master:"마스터 육성", info:"학원 정보", roster:"학생 명부", plan:"스케줄", letter:"친선전 신청"};   // 하는 일(act)마다 이름표
+const MDESK_ACT_OLD = {map:"tut", books:"master", info:"info", book:"roster", scroll:"plan"};   // 예전 책상(desk_art.py · act 없음) — 책 더미가 마스터 육성 · 회중시계가 학원 정보
 let MDESK_ROWS = null, MDESK_GOING = false;
+function mdeskActOf(g){ return (g && (g.act || MDESK_ACT_OLD[g.k])) || ""; }
+function mdeskLetters(){ return typeof friendlyPending === "function" ? friendlyPending().length : 0; }   // 1021 — 남은 친선전 신청 편지 (편지 그림 · 누르는 자리 · 표식)
+function mdeskTagText(act, pts, n){                                    // 이름표 — 숫자가 붙는 것은 글 하나로 (번역)
+  if(act === "master" && pts) return `마스터 육성 · ${pts}pt`;
+  if(act === "letter") return `친선전 신청 · ${n}통`;
+  return MDESK_TAG[act] || "";
+}
 function mdeskOn(){ return typeof townMode === "function" && townMode(); }
 /* 책상 1배 좌표 → 묶음 번호(1부터 · 0 = 누를 수 없는 곳) */
 function mdeskHit(x, y){
@@ -16449,36 +16550,45 @@ function viewHomeDesk(){
   const G = MDESK_GEO, A = MDESK_ART, L = G.light;                  // 1020 도트 책상 — 소품 겹 · 촛불 빛이 없다 (L · A.props · A.light 없음)
   const pop = UI.mdeskPop === "info" || UI.mdeskPop === "master" ? UI.mdeskPop : null;
   const pts = (S.master && S.master.pts|0) || 0;
+  const nL = mdeskLetters(), LT = G.letter;                          // 1021 — 친선전 신청 편지 (남아 있을 때만 편지 그림 · 편지 소품)
+  const on = g=> mdeskActOf(g) !== "letter" || nL > 0;
   const img = (src, cls, st)=> `<img class="mdl${cls ? " " + cls : ""}" src="${src}" alt="" draggable="false"${st ? ` style="${st}"` : ""}>`;
-  const hl = G.groups.map((g, i)=> `<img class="mdl mdh" data-g="${i + 1}" src="${A["hl_" + g.k]}" style="${mdeskBox(...g.hl)}" alt="" draggable="false">`).join("");
+  const hl = G.groups.map((g, i)=> on(g) ? `<img class="mdl mdh" data-g="${i + 1}" src="${A["hl_" + g.k]}" style="${mdeskBox(...g.hl)}" alt="" draggable="false">` : "").join("");
   const btn = G.groups.map((g, i)=>{
-    const [x0, y0, x1, y1] = g.bb, below = g.k === "map";
-    const tag = MDESK_TAG[g.k] + (g.k === "books" && pts ? ` · ${pts}pt` : "");
-    return `<button type="button" class="mdk${below ? " below" : ""}" data-g="${i + 1}" data-mdesk="${g.k}" style="${mdeskBox(x0, y0, x1 - x0, y1 - y0)}" aria-label="${esc(tag)}">`
+    if(!on(g)) return "";
+    const [x0, y0, x1, y1] = g.bb, act = mdeskActOf(g), below = g.k === "map" || g.k === "globe" || act === "letter";   // 책상 위쪽 소품은 이름표를 아래에
+    const tag = mdeskTagText(act, pts, nL);
+    return `<button type="button" class="mdk${below ? " below" : ""}" data-g="${i + 1}" data-mdesk="${act}" style="${mdeskBox(x0, y0, x1 - x0, y1 - y0)}" aria-label="${esc(tag)}">`
       + `<span class="mdtag" aria-hidden="true">${esc(tag)}</span></button>`;
   }).join("");
-  const B = G.books, E = G.ext, pc = (v, d)=> (v / d * 100).toFixed(3) + "%";
-  const badge = pts > 0 ? `<span class="mdbadge" style="left:${(B.bx / G.size[0] * 100).toFixed(3)}%;top:${(B.by / G.size[1] * 100).toFixed(3)}%" title="남은 마스터 육성 포인트">${pts}</span>` : "";
+  const E = G.ext, pc = (v, d)=> (v / d * 100).toFixed(3) + "%";
+  const bp = (G.badge && G.badge.master) || (G.books && [G.books.bx, G.books.by]);   // 예전 책상은 책 더미 표식 자리
+  const at = (p)=> `left:${(p[0] / G.size[0] * 100).toFixed(3)}%;top:${(p[1] / G.size[1] * 100).toFixed(3)}%`;
+  const badge = (pts > 0 && bp ? `<span class="mdbadge" style="${at(bp)}" title="남은 마스터 육성 포인트">${pts}</span>` : "")
+    + (nL > 0 && G.badge && G.badge.letter ? `<span class="mdbadge mdb-let" style="${at(G.badge.letter)}" title="남은 친선전 신청 편지">${nL}</span>` : "");
+  const letter = nL > 0 && A.letter && LT ? img(A.letter, "md-letter", mdeskBox(LT.x, LT.y, LT.w, LT.h)) : "";
   /* 책상 상자(.mdesk-desk · 746×478 — 두루마리로 다가갈 때 통째로 커진다) = 바탕(ext) + 소품 · 누르는 자리(.mdesk-art — 도트 책상은 책상 전체 · 예전 책상은 607×466) */
   return `<section class="town mdesk${pop ? " popopen" : ""}" aria-label="마스터 노트">`
     + `<div class="townmap mdesk-map"${pop ? " inert" : ""}><div class="townmap-in mdesk-in"><div class="mdesk-desk">` + img(A.ext, "md-ext")
     + `<div class="mdesk-art" style="left:${pc(E.x, E.w)};top:${pc(E.y, E.h)};width:${pc(G.size[0], E.w)};height:${pc(G.size[1], E.h)}">`
     + img(A.items, "md-items") + (A.props ? img(A.props) : "") + (A.light && L ? img(A.light, "md-light", mdeskBox(L.x, L.y, L.w, L.h)) : "")
-    + hl + badge + btn
+    + letter + hl + badge + btn
     + `</div></div></div><img class="town-frame mdesk-frame" src="${mdeskFrame()}" alt="" draggable="false"></div>`
     + (pop ? mdeskPop(pop) : "") + `</section>`;
 }
-const MDESK_FLIP = ["books", "map", "scroll", "book"];                  // 1015 — 책장 넘기는 소리를 내는 소품 (마스터 육성 · 튜토리얼 · 스케줄 · 학생 명부)
+const MDESK_FLIP = ["tut", "log", "plan", "roster", "letter"];        // 1015 — 책장 넘기는 소리를 내는 소품 (튜토리얼 · 일지 · 스케줄 · 학생 명부 · 1021 편지)
 function bookFlipSfx(){ sfxPlay("book_flip" + (1 + Math.floor(Math.random()*3)), .94 + Math.random()*.12); }   // 연출 — 게임 난수와 상관없다
 function bookFlipLoad(){ if(AWEB !== false && sfxGain() > 0) ["book_flip1", "book_flip2", "book_flip3"].forEach(k=> sfxLoad(SFX[k].f)); }
-function mdeskAct(k){
+function mdeskAct(act){
   if(MDESK_GOING) return;
-  if(MDESK_FLIP.includes(k)) bookFlipSfx();
-  if(k === "map"){ showTutorial(0, {}); return; }
-  if(k === "books"){ UI.mdeskPop = "master"; render(); return; }
-  if(k === "info"){ UI.mdeskPop = "info"; render(); return; }
-  if(k === "book"){ UI.view = "roster"; render(); return; }
-  if(k === "scroll") mdeskGo();
+  if(MDESK_FLIP.includes(act)) bookFlipSfx();
+  if(act === "tut"){ showTutorial(0, {}); return; }
+  if(act === "log"){ UI.view = "log"; render(); return; }             // 1021 — 책 더미 = 일지
+  if(act === "master"){ UI.mdeskPop = "master"; render(); return; }  // 1021 — 회중시계 + 안경 = 마스터 육성
+  if(act === "info"){ UI.mdeskPop = "info"; render(); return; }      // 1021 — 지구본 = 학원 정보
+  if(act === "roster"){ UI.view = "roster"; render(); return; }
+  if(act === "letter"){ if(typeof fletOpen === "function") fletOpen(); return; }   // 1021 — 친선전 신청 창 (FLETTER)
+  if(act === "plan") mdeskGo();
 }
 function bindMasterDesk(v){
   const sec = v.querySelector(".mdesk");
@@ -16492,15 +16602,17 @@ function bindMasterDesk(v){
     if(s) sec.dataset.hot = s; else delete sec.dataset.hot;
     art.style.cursor = g ? "pointer" : "";
   };
+  const nL = mdeskLetters();
   const at = (e)=>{
     const r = art.getBoundingClientRect();
     if(!r.width || !r.height) return 0;
-    return mdeskHit(Math.floor((e.clientX - r.left) / r.width * MDESK_GEO.size[0]), Math.floor((e.clientY - r.top) / r.height * MDESK_GEO.size[1]));
+    const g = mdeskHit(Math.floor((e.clientX - r.left) / r.width * MDESK_GEO.size[0]), Math.floor((e.clientY - r.top) / r.height * MDESK_GEO.size[1]));
+    return g && !nL && mdeskActOf(MDESK_GEO.groups[g - 1]) === "letter" ? 0 : g;   // 1021 — 편지가 없으면 편지 자리는 그냥 책상
   };
   art.addEventListener("pointermove", e=>{ if(!MDESK_GOING) hot(at(e)); });
   art.addEventListener("pointerleave", ()=> hot(0));
   art.addEventListener("pointerdown", bookFlipLoad);                   // 1015 — 처음 누를 때도 늦지 않게 소리를 미리 받는다
-  art.addEventListener("click", e=>{ const g = at(e); if(g) mdeskAct(MDESK_GEO.groups[g - 1].k); });
+  art.addEventListener("click", e=>{ const g = at(e); if(g) mdeskAct(mdeskActOf(MDESK_GEO.groups[g - 1])); });
   sec.querySelectorAll(".mdk").forEach(b=>{
     b.onclick = (e)=>{ e.stopPropagation(); mdeskAct(b.dataset.mdesk); };
     b.onfocus = ()=> hot(+b.dataset.g);
@@ -16569,6 +16681,112 @@ function mdeskGo(){
   requestAnimationFrame(step);
 }
 /* MDESK_END */
+/* FLETTER_START — 친선전 신청 편지 창 · 표식 (1021 · apply_fletter.py) ─ 사용자 1021 '친선전 신청이 들어오는 주에 편지가 나타나고, 편지와 우측 메뉴 마스터 아이콘 우측 상단에
+   횟수 마크가 추가되고 누르면 친선전 신청 화면이 뜨는 구조로 바꾸자. 친선전 신청 화면은 한 화면당 한 학원을 처리하도록 바꾸고 … 답장 회신을 할 경우 해당 주에 친선전 진행,
+   거절할 경우 다음 편지 확인 … 편지를 확인 안 할 경우 일단 주를 넘겨도 남겨주고, 각 학원이 요청한 주가 지나면 해당 신청 기회가 사라지는 방식' (목업 mockups/master-letter).
+   규칙(편지 · 요청 주 · 방식 · 기한 · 대전 · 명성)은 game.html 의 친선전 코드 (friendlyPending · genFriendlyOffers · friendlyExpire · friendlySlotAt · finishFriendly).
+   이 블록은 창과 표식만:
+   · fletOpen() — 친선전 신청 창. 마스터 노트 책상의 편지(mdesk_block — 소품 letter) · 좁은 화면 마스터 노트 맨 위 '친선전 신청 편지 n통' 단추(fletNarrowBtn)가 연다.
+     한 창에 한 학원 · 요청 주가 이른 편지부터 · 머리에 '편지 1 / 3'. 종이(학원 이름 · 등급 · 한 줄 사연 · 요청 주 · 서명) · 요청 주(요청 주가 이번 주면 '이번 주까지') ·
+     방식(단판 · 1팀 / 3판 2선승제 · n팀 — 3인 팀이 모자라면 '팀 부족') · 상대(팀마다 평균 Lv · 정수) · 명성(승리 + · 패배 −).
+     회신 → 도장 '회신' → 다음 편지 · 거절 → 도장 '거절' → 다음 편지 · 나중에(Esc) → 창만 닫는다 (편지는 남는다). 다 처리하면 창이 닫힌다.
+     처음 여는 창에는 운영 안내 7(친선전)을 겹쳐 띄운다 (예전에는 친선전 요청 창이 처음 뜰 때).
+   · fletN() · fletBadge(n) — 메뉴 마스터 단추의 편지 표식 (편지 모양 + 수 · 오른쪽 위). 남은 마스터 육성 포인트 표식은 편지가 있는 동안 왼쪽 위로 (render 의 고리 — .badge.l)
+   · fletNarrowBtn() — 좁은 화면(책상이 없는 예전 마스터 노트) 맨 위 단추 (viewHome 의 고리)
+   창 색은 팝업 테마(POPTHEME — 건물 안 색) · 글꼴은 대회 편성 창처럼 도트 글꼴(Mulmaru 12 · 24) · 종이는 밝은 양피지 */
+const FL_ENV = `<svg viewBox="0 0 9 7" aria-hidden="true"><path fill="#140a0c" d="M0 0h9v7H0z"/><path fill="#fff0ce" d="M1 1h7v5H1z"/><path fill="#c9a77c" d="M1 1h1v1h1v1h1v1h1V3h1V2h1V1h1v1H7v1H6v1H5v1H4V4H3V3H2V2H1z"/><path fill="#b0412c" d="M4 3h1v2H4z"/></svg>`;
+const FL = {open:0, done:0, cur:null, busy:false, key:null};
+function fletN(){ return typeof friendlyPending === "function" ? friendlyPending().length : 0; }
+function fletBadge(n){ return `<span class="badge bl" title="친선전 신청 편지">${FL_ENV}${n}</span>`; }
+function fletNarrowBtn(){
+  const n = fletN();
+  return n ? `<button type="button" class="btn primary fl-nbtn" data-flopen>${FL_ENV}<span>${esc(`친선전 신청 편지 ${n}통`)}</span></button>` : "";
+}
+/* 편지 사연 — 계절마다 글 하나 (요청 주 자리만 비운다) */
+function fletBody(ph, wk){
+  const w = `<span class="fl-wk">${esc(wk)}</span>`;
+  return ph === "winter" ? `봄 신인전을 앞두고 귀 학원과 연습 경기를 청합니다. ${w}에 뵐 수 있기를 바랍니다.`
+    : `가을 대회를 앞두고 귀 학원과 연습 경기를 청합니다. ${w}에 뵐 수 있기를 바랍니다.`;
+}
+function fletReduce(){ return typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches; }
+function fletOpen(){
+  const P = typeof friendlyPending === "function" ? friendlyPending() : [];
+  if(!P.length){ render(); return; }
+  FL.open = P.length; FL.done = 0;
+  if(typeof bookFlipSfx === "function") bookFlipSfx();
+  fletShow();
+  if(!tutSeen("7")) tutOverPage("7");                                  // 첫 편지 — 운영 안내 7 (친선전)을 그 위에
+}
+function fletShow(){
+  const o = friendlyPending()[0];
+  if(!o){ fletClose(); return; }
+  FL.cur = o; FL.busy = false;
+  const ph = S.phase, d = o.tier - fameTitleIdx(S.fame), wk = friendlyWeekName(ph, o.req), n = o.teams.length;
+  const lvs = o.teams.map(tm=> Math.round(tm.reduce((a, s)=> a + s.level, 0) / Math.max(1, tm.length)));
+  const ready = tourReadyTeams(), env = (typeof MDESK_ART !== "undefined" && MDESK_ART.letter) ? `<img class="fl-env" src="${MDESK_ART.letter}" alt="" draggable="false">` : "";
+  const warn = ready < n ? `<span class="fl-warn" title="${esc(`3인으로 채운 팀이 ${n}개 필요하다 (지금 ${ready}개)`)}">팀 부족</span>` : "";
+  showModal(`<div class="fl-win" role="dialog" aria-modal="true" aria-labelledby="flT">
+      <div class="fl-h">${env}<h2 id="flT">친선전 신청</h2><span class="fl-n">${esc(`편지 ${FL.done + 1} / ${FL.open}`)}</span></div>
+      <div class="fl-paper" id="flPaper">
+        <div class="fl-from"><span class="fl-nm">${esc(o.name)}</span><span class="fl-tt">${esc(FRIENDLY_TIER[o.tier].n)}</span></div>
+        <p class="fl-body">${fletBody(ph, wk)}</p>
+        <div class="fl-sign">${esc(`${o.name}장`)}</div>
+        <span class="fl-stamp" id="flStamp" aria-hidden="true"></span>
+      </div>
+      <dl class="fl-i">
+        <dt>요청 주</dt><dd><span class="fl-g">${esc(wk)}</span>${o.req === S.week ? `<span class="fl-dl">이번 주까지</span>` : ""}</dd>
+        <dt>방식</dt><dd>${esc(friendlyFmtName(n))}${warn}</dd>
+        <dt>상대</dt><dd>${esc(`평균 Lv.${lvs.join(" · ")}`)}</dd>
+        <dt>명성</dt><dd><span class="fl-ok">${esc(`승리 +${fmt(friendlyFame(d, true))}`)}</span> · <span class="fl-bad">${esc(`패배 ${fmt(friendlyFame(d, false))}`)}</span></dd>
+      </dl>
+      <div class="fl-b"><button type="button" class="btn primary" id="flYes">회신</button><button type="button" class="btn" id="flNo">거절</button><button type="button" class="btn ghost" id="flLater">나중에</button></div>
+    </div>`, ()=>{
+    const m = $("#modalRoot .modal"); if(m) m.classList.add("fl-modal");
+    $("#flYes").onclick = ()=> fletAnswer(true);
+    $("#flNo").onclick = ()=> fletAnswer(false);
+    $("#flLater").onclick = fletLater;
+    if(!FL.key){                                                         // Esc — 나중에 (운영 안내가 위에 떠 있으면 그것부터 닫는다)
+      FL.key = ev=>{
+        if(ev.key !== "Escape") return;
+        if(!document.getElementById("flPaper")){ document.removeEventListener("keydown", FL.key, true); FL.key = null; return; }
+        ev.preventDefault(); ev.stopPropagation();
+        const tb = document.querySelector("#modalRoot .tutover [data-tutok]");
+        if(tb){ tb.click(); return; }
+        if(!FL.busy) fletLater();
+      };
+      document.addEventListener("keydown", FL.key, true);
+    }
+    $("#flYes").focus({preventScroll:true});
+  });
+}
+function fletAnswer(yes){
+  const o = FL.cur, paper = document.getElementById("flPaper");
+  if(!o || FL.busy || o.st !== "new" || !paper) return;
+  FL.busy = true;
+  o.st = yes ? "yes" : "no";
+  const wk = friendlyWeekName(S.phase, o.req);
+  logE(yes ? `친선전 회신 — <b>${esc(o.name)}</b> · ${wk} 일과를 마치면 친선전` : `<b>${esc(o.name)}</b>의 친선전 신청을 거절했다.`, yes ? "good" : "");
+  save();
+  FL.done++;
+  ["#flYes", "#flNo", "#flLater"].forEach(s=>{ const b = $(s); if(b) b.disabled = true; });
+  const st = document.getElementById("flStamp");
+  if(st){ st.textContent = yes ? "회신" : "거절"; st.className = "fl-stamp" + (yes ? "" : " no"); requestAnimationFrame(()=> st.classList.add("on")); }
+  if(typeof sfxPlay === "function") sfxPlay("sk_place", yes ? 1 : .9);
+  render();                                                            // 뒤 책상 · 메뉴 표식
+  const slow = fletReduce() ? 0 : 1;
+  setTimeout(()=>{
+    if(document.getElementById("flPaper") !== paper) return;          // 그새 창이 바뀌었다
+    paper.classList.add("go");
+    setTimeout(()=>{ if(document.getElementById("flPaper") === paper) fletShow(); }, 200 * slow);
+  }, 650 * slow + 150);
+}
+function fletLater(){ fletClose(); }
+function fletClose(){
+  if(FL.key){ document.removeEventListener("keydown", FL.key, true); FL.key = null; }
+  FL.cur = null; FL.busy = false;
+  closeModal(); render();
+}
+/* FLETTER_END */
 function viewHome(o){   // o.desk — 마스터 노트 책상의 학원 정보 팝업 (튜토리얼 단추는 말린 지도가 맡는다 · 1006)
   const next = PHASES[S.phase];
   const remain = next.weeks - S.week;
@@ -16580,7 +16798,8 @@ function viewHome(o){   // o.desk — 마스터 노트 책상의 학원 정보 �
   const nextEvent = S.phase==="spring"? `여름 방학 (${phaseWeeks("summer")}주 합숙)` : S.phase==="summer"? "가을 시내 대회 (3주차)" : S.phase==="fall"? fallNext : "봄 신인전 → 신입생 입학 · 진급";
   const byYear = [1,2,3].map(y=>S.students.filter(s=>s.year===y).length);
   const top = S.students.slice().sort((a,b)=>power(b)-power(a)).slice(0,3);
-  return `
+  const flBtn = !(o && o.desk) ? fletNarrowBtn() : "";   // 1021 — 친선전 신청 편지 단추 (FLETTER · 좁은 화면 — 책상이 없다)
+  return `${flBtn}
   <section class="panel">
     <div class="panel-h"><h2>${esc(S.acadName)}</h2></div>
     <div class="homegrid">
@@ -22194,60 +22413,6 @@ const BRO_SCENE = [
   "원정에서 돌아오는 길, 둘은 나란히 걸으며 아무 말도 하지 않았다. 그걸로 충분했다.",
   "후배가 처음으로 선배를 이름으로 불렀고, 선배는 웃기만 했다."
 ];
-function friendlyCeremony(c){
-  const ph = (c && c.phase) || "spring";
-  const CF = FRIENDLY_PHASES[ph] || FRIENDLY_PHASES.spring;
-  const F = friendlyState(ph);
-  const offers = F.offers||[];
-  const me = fameTitleIdx(S.fame);
-  const U = friendlyFameUnit();
-  const sel = UI.fsel;
-  const placed = (oi)=> F.slots.indexOf(oi);
-  const lvText = (tm)=>{
-    const lv = tm.reduce((a,s)=>a+s.level,0)/tm.length;
-    return `평균 Lv.${lv.toFixed(1)}`;
-  };
-  return `<div class="cerhead"><div class="eyebrow">${yrName(S.year)} ${PHASES[ph].n} 상반기 종료 · ${CF.n}</div>
-      <h2 style="font-size:26px;margin-top:2px">친선전 요청</h2>
-      <p style="color:var(--muted);font-size:13px;margin-top:6px">${esc(CF.d)} 받아들일 곳을 골라 하반기 일정에 넣는다.
-        <b style="color:var(--text)">비워두거나 전부 거절해도 된다.</b> 친선전은 ${CF.teams}팀이 ${CF.teams===1?"한 경기":`${CF.teams}경기를 모두`} 치른다.</p></div>
-
-
-    <div class="eyebrow" style="margin:12px 0 6px">요청한 학원 — 우리 유명도(${fameTitle(S.fame).n}) 기준 ±1등급</div>
-    <div class="grid2 foflist">
-      ${offers.map((o,oi)=>{
-        const at = placed(oi);
-        /* 세로로 긴 간략 카드 — 이름 / 등급 / 평균 Lv / 명성 / 상태 (세 장이 한 줄) */
-        return `<button class="opt drg fof ${sel===oi?"sel-entry":""}" data-fof="${oi}"
-            style="text-align:left;border-color:${sel===oi?"var(--brass)":at>=0?"var(--ok)":"var(--line-soft)"}">
-          <div class="fof-n">${esc(o.name)}</div>
-          <div class="fof-t"><span class="tag" style="color:var(--brass);border-color:var(--brass)">${FRIENDLY_TIER[o.tier].n}</span></div>
-          <div class="od fof-lv">${o.teams.map((tm,k)=>`${o.teams.length>1? `${"ABC"[k]}팀 ` : ""}${lvText(tm)}`).join("<br>")}</div>
-          <div class="od fof-f"><span style="color:var(--ok)">승 +${fmt(friendlyFame(o.tier-me,true))}</span><br><span style="color:var(--bad)">패 ${fmt(friendlyFame(o.tier-me,false))}</span></div>
-          <div class="od fof-s" style="color:${at>=0?"var(--ok)":sel===oi?"var(--brass)":"var(--dim)"}">${at>=0? friendlySlotLabel(ph, at) : (sel===oi? "자리를 고른다" : "대기")}</div>
-        </button>`;
-      }).join("")}
-    </div>
-
-    <div class="eyebrow" style="margin:14px 0 6px">${PHASES[ph].n} 친선전 일정</div>
-    <div class="fslots">
-      ${friendlySlots(ph).map((w,i)=>{
-        const oi = F.slots[i];
-        const o = oi!=null? offers[oi] : null;
-        return `<button class="fslot drg ${o?"on":""}" data-fslot="${i}">
-          <div class="fs-k">${friendlySlotName(ph, w)}</div>
-          <div class="fs-v">${o? esc(o.name) : "비어 있음"}</div>
-          <div class="fs-d">${o? FRIENDLY_TIER[o.tier].n : (sel!=null? "여기에 배치" : "학원을 먼저 고른다")}</div>
-        </button>`;
-      }).join("")}
-    </div>
-    <p style="font-size:11.5px;color:var(--dim);margin:8px 0 0">학원 카드를 자리로 <b style="color:var(--text)">끌어다 놓으면</b> 배치된다 · 자리끼리 끌면 순서가 바뀌고, 자리를 위 목록으로 끌어내면 취소된다 · 눌러서 고르는 방식도 그대로 쓸 수 있다.</p>
-    <div class="btnrow" style="margin-top:14px">
-      <button class="btn primary" id="cerOk">회신</button>
-      <button class="btn ghost" id="fDecline">전부 거절</button>
-      <span class="hint" style="font-size:12px;color:var(--dim)">${F.slots.filter(x=>x!=null).length}/3 배치</span>
-    </div>`;
-}
 function bondCeremony(c){
   const isRv = c.type==="rival";
   /* 이 자리에서는 이명을 붙이지 않는다 — 둘의 관계가 주인공이지 칭호가 아니다 */
@@ -22594,7 +22759,7 @@ function tryBonds(){
 }
 
 /* ============================================================
-   친선전 — 봄 상반기 종료 시 제안, 하반기 2·4·6주차 후 진행
+   친선전 — 봄 상반기 종료 시 제안, 하반기 2·4·6주차 후 진행 (1021 — 세 학원의 신청 편지 · 학원마다 그중 한 주 · 아래 '친선전 신청 편지')
    ============================================================ */
 /* 계절마다 따로 정해둔 일정이 있으면 그것을, 없으면 하반기 기준으로 잡는다 */
 function friendlyCfg(ph){ return FRIENDLY_PHASES[ph||S.phase] || FRIENDLY_PHASES.spring; }
@@ -22609,12 +22774,6 @@ function friendlyOfferWeek(ph){
   const C = friendlyCfg(ph);
   return (typeof C.offer === "number") ? C.offer : halfWeeks(ph) - 1;
 }
-function friendlySlotName(ph, w){
-  return Array.isArray(friendlyCfg(ph).slots)
-    ? `${w + 1}주차 후`
-    : `하반기 ${w - halfWeeks(ph) + 1}주차 후`;
-}
-function friendlySlotLabel(ph, i){ const s = friendlySlots(ph); return friendlySlotName(ph, s[i]!=null? s[i] : halfWeeks(ph)+i); }
 /* 유명도 등급별 상대 전력 — 대회 프로필을 빌려 쓴다 */
 /* 친선전 상대 — 사다리와 같은 명세를 쓴다 (g~g2 등급 · lv~lv2 레벨) */
 const FRIENDLY_TIER = [
@@ -22626,16 +22785,16 @@ const FRIENDLY_TIER = [
   {n:"이계",   d:"차원 포탈 너머에서 온 학원",    g:"S",     g2:"S", lv:21, lv2:21}
 ];
 const FRIENDLY_PHASES = {
-  spring:{teams:1, n:"가을 대회 대비", d:"가을을 대비해 세 학원이 연습 경기를 청해왔다."},
-  /* 겨울 — 1주차를 마치면(=2주차 시작) 요청이 오고, 3·4·5주차를 마칠 때마다 한 경기씩 */
-  winter:{teams:1, n:"봄 신인전 대비", d:"신인전을 앞두고 세 학원이 연습 경기를 청해왔다.",
-          offer:0, slots:[2,3,4]}
+  spring:{},                                    // 봄 — 6주차를 마치면 편지가 오고, 8 · 10 · 12주차 중 학원마다 한 주 (friendlySlots — 하반기 기준)
+  /* 겨울 — 1주차를 마치면(=2주차 시작) 편지가 오고, 3·4·5주차 중 학원마다 한 주.
+     1021 — 예전 요청 창의 이름 · 설명(n · d)과 팀 수(teams — 늘 1)는 뺐다: 팀 수는 편지마다(학원 등급 · 계절 — friendlyTeamsMax) */
+  winter:{offer:0, slots:[2,3,4]}
 };
 function friendlyState(ph){
   ph = ph || (FRIENDLY_PHASES[S.phase] ? S.phase : "spring");
   if(!S.friendly || S.friendly.year !== S.year) S.friendly = {year:S.year};
   const F = S.friendly;
-  if(!F[ph]) F[ph] = {offers:null, slots:[null,null,null], done:[], answered:false};
+  if(!F[ph]) F[ph] = {offers:null, slots:[null,null,null], done:[], answered:false, v:2};   // 1021 — v:2 친선전 신청 편지 (offers[i].req · st — 예전 slots 배치는 friendlyLetterFix)
   const st = F[ph];
   st.slots = st.slots || [null,null,null];
   st.done = st.done || [];
@@ -22708,43 +22867,90 @@ function friendlyTeam(ti){
     return st;
   }));
 }
+/* ── 친선전 신청 편지 (1021 · 사용자 1021 — 목업 mockups/master-letter · 창 · 표식은 FLETTER 블록 · 책상 편지는 MDESK 블록) ──
+   요청이 오는 때는 그대로(friendlyOfferWeek — 봄 6주 · 겨울 1주를 마칠 때) — 세 학원이 편지 한 통씩. 학원마다 친선전이 열리던 세 주(friendlySlots — 봄 8 · 10 · 12주 /
+   겨울 3 · 4 · 5주) 중 한 주를 서로 다르게 청한다. 방식은 등급 · 계절대로 — 무명 · 유명 단판(1팀) · 강호 1 ~ 2팀 · 명문 · 초명문 · 이계 1 ~ 3팀
+   (최대 안에서 고르게 · 겨울은 최대 −1 — 사용자 1021 둘째). 2팀 = 3판 2선승제(광역 대회처럼 1:1 이면 이긴 팀끼리 결정전) · 3팀 = 3판 2선승제(세 팀이 차례로 · 먼저 2승).
+   편지 = offers[i] 에 req(요청 주 — 그 주 일과를 마치면 친선전) · st(new 안 읽음 · yes 회신 · no 거절 · gone 요청 주가 지나 사라짐 · done 치렀다 / 기권).
+   안 읽은 편지는 주를 넘겨도 남고 요청 주를 마칠 때 사라진다(friendlyExpire). 회신한 편지는 그 주를 마칠 때 친선전(friendlySlotAt → startFriendly).
+   명성은 대전 결과로 한 번(finishFriendly — 사용자 1021 셋째) · 자금 · 경험 · 평판은 이긴 경기 수대로 (예전 그대로).
+   예전 세이브(세 자리 배치 slots · 친선전 요청 창)는 불러올 때 편지로(friendlyLetterFix) */
+function friendlyTeamsMax(ti, ph){ return Math.max(1, (ti >= 3 ? 3 : ti === 2 ? 2 : 1) - (ph === "winter" ? 1 : 0)); }
+function friendlyFmtName(n){ return n > 1 ? `3판 2선승제 · ${n}팀` : "단판 · 1팀"; }
+function friendlyRuleText(n){
+  return n > 2 ? "3판 2선승제 — 세 팀이 차례로 나서 먼저 2승을 가져가면 이긴다."
+    : n === 2 ? "3판 2선승제 (2팀) — 1:1이면 이긴 팀끼리 결정전을 한다." : "단판 승부 — 한 팀이 한 경기를 치른다.";
+}
+function friendlyWeekName(ph, w){ return `${PHASES[ph].n} ${w + 1}주`; }
+function friendlyWk(t){ return t.wk != null ? t.wk : (friendlySlots(t.ph || "spring")[t.slot|0] || 0); }   // 친선전(UI.tour)의 요청 주
+/* 이번 계절의 안 읽은 편지 — 요청 주가 이른 것부터 (책상 편지 · 메뉴 표식 · 신청 창) */
+function friendlyPending(){
+  if(!S || !FRIENDLY_PHASES[S.phase] || !S.friendly || S.friendly.year !== S.year) return [];
+  const F = S.friendly[S.phase];
+  if(!F || !F.v || !Array.isArray(F.offers)) return [];
+  return F.offers.filter(o=> o && o.st === "new").sort((a, b)=> a.req - b.req);
+}
 function genFriendlyOffers(){
-  const me = fameTitleIdx(S.fame);
-  const nt = (FRIENDLY_PHASES[S.phase]||FRIENDLY_PHASES.spring).teams;
-  const nm = acadNames(3);
+  const me = fameTitleIdx(S.fame), ph = FRIENDLY_PHASES[S.phase] ? S.phase : "spring";
+  const nm = acadNames(3), wk = shuffle(friendlySlots(ph).slice());       // 학원마다 요청 주 — 서로 다르게
   return [0,1,2].map((_,k)=>{
     const ti = portalOn() ? PORTAL_TIER : clamp(me + ri(-1,1), 0, 4);
-    const name = nm[k];
-    const teams = Array.from({length:nt},()=> friendlyTeam(ti));
-    return {name, tier:ti, teams, forms: teams.map(foeFormPack)};   // 1020 — 진형은 세이브에 남게 따로 (팀 배열에 붙인 값은 사라진다 — friendlyFormsFix)
+    const teams = Array.from({length:ri(1, friendlyTeamsMax(ti, ph))},()=> friendlyTeam(ti));   // 방식 — 1팀 단판 · 2 · 3팀 3판 2선승제
+    return {name:nm[k], tier:ti, teams, forms: teams.map(foeFormPack), req:wk[k % wk.length], st:"new"};   // 1020 — 진형은 세이브에 남게 따로 (팀 배열에 붙인 값은 사라진다 — friendlyFormsFix)
   });
 }
 function tryFriendly(){
   if(!FRIENDLY_PHASES[S.phase] || S.week !== friendlyOfferWeek(S.phase)) return;
   const F = friendlyState(S.phase);
   if(F.offers) return;
-  F.offers = genFriendlyOffers();
-  queueCeremony({type:"friendly", year:S.year, phase:S.phase});
+  F.offers = genFriendlyOffers(); F.v = 2;                                // 1021 — 창 대신 편지 (책상 · 메뉴 표식 — 학원장이 열어 볼 때까지 기다린다)
+  logE(`친선전 신청 편지 ${F.offers.length}통이 왔다.`, "good");
 }
-/* 친선전 자리 배치 — 이미 배치된 학원이면 두 자리를 맞바꾼다 */
-function friendlyPlace(F, i, oi){
-  const prev = F.slots.indexOf(oi);
-  if(prev === i) return;
-  if(prev >= 0) F.slots[prev] = F.slots[i];
-  F.slots[i] = oi;
+/* 주를 마칠 때 — 요청 주가 이번 주인 안 읽은 편지는 사라진다 (회신한 편지는 friendlySlotAt 이 친선전으로) */
+function friendlyExpire(){
+  if(!FRIENDLY_PHASES[S.phase]) return;
+  friendlyPending().filter(o=> o.req <= S.week).forEach(o=>{
+    o.st = "gone";
+    logE(`<b>${esc(o.name)}</b>의 친선전 신청 — 요청한 ${friendlyWeekName(S.phase, o.req)}가 지나 편지가 사라졌다.`, "");
+  });
 }
-function friendlySwap(F, a, b){ const t = F.slots[a]; F.slots[a] = F.slots[b]; F.slots[b] = t; }
+/* 예전 세이브 (1021 전 — 세 학원을 세 자리에 배치하던 친선전 요청 창) → 편지. 배치한 학원은 그 자리 주로 회신(이미 치렀으면 done) · 배치하지 않은 학원은 거절 ·
+   아직 답하지 않았으면(요청 창이 떠 있던 채 저장) 안 읽은 편지로 — 자리 주가 지났거나 지금 계절이 아니면 사라진 것으로 */
+function friendlyLetterFix(){
+  const F = S && S.friendly; if(!F) return;
+  Object.keys(F).forEach(ph=>{
+    const st = F[ph];
+    if(!st || typeof st !== "object" || !FRIENDLY_PHASES[ph] || st.v) return;
+    st.v = 2;
+    if(!Array.isArray(st.offers)) return;
+    const ws = friendlySlots(ph), slots = st.slots || [], done = st.done || [];
+    const here = F.year === S.year && ph === S.phase, free = ws.filter((w, i)=> slots[i] == null);
+    st.offers.forEach((o, oi)=>{
+      if(!o) return;
+      const i = slots.indexOf(oi);
+      if(i >= 0){ o.req = ws[i]; o.st = done.some(d=> d.slot === i) ? "done" : st.answered ? "yes" : "new"; }
+      else { o.req = free.length ? free.shift() : ws[ws.length - 1]; o.st = st.answered ? "no" : "new"; }
+      if(o.st === "new" && (!here || o.req < S.week)) o.st = "gone";
+    });
+  });
+}
+/* 그 주를 마칠 때 치를 친선전 — 회신한 편지 (예전 상태(v 없음)는 자리 배치 그대로 — 불러올 때 편지로 바꾸므로 보통은 없다) */
 function friendlySlotAt(w){
   if(!FRIENDLY_PHASES[S.phase]) return null;
-  const F = friendlyState(S.phase);
-  const i = friendlySlots(S.phase).indexOf(w);
+  const F = friendlyState(S.phase), ws = friendlySlots(S.phase);
+  if(!Array.isArray(F.offers)) return null;
+  if(F.v){
+    const oi = F.offers.findIndex(o=> o && o.st === "yes" && o.req === w);
+    if(oi < 0) return null;
+    return {i:ws.indexOf(w), w, oi, foe:F.offers[oi], phase:S.phase};
+  }
+  const i = ws.indexOf(w);
   if(i<0) return null;
   const oi = F.slots[i];
-  if(oi==null || !F.offers || !F.offers[oi]) return null;
+  if(oi==null || !F.offers[oi]) return null;
   if(F.done.some(d=>d.slot===i)) return null;
-  return {i, oi, foe:F.offers[oi], phase:S.phase};
+  return {i, w, oi, foe:F.offers[oi], phase:S.phase};
 }
-
 /* ---------- 팀 ---------- */
 function slotCardHtml(t, k, sel){
   const id = t.slots[k], st = id && S.students.find(x=>x.id===id);
@@ -23169,6 +23375,194 @@ function viewCodex(){
   </section>`;
 }
 
+/* RELICDEX_START — 유물 도감 (1021 · apply_relicdex.py) ─ 사용자 1021: '유물 도감을 만들껀데, 배치 위치는 일지 쪽. 획득/미획득한 도감이 확인 가능한 형식의 도감.
+   아이콘과 넘버링, 이름 형식으로 리스팅. 모든 등급 별개로 리스팅. 아직 획득하지 않은 유물은 그레이 처리. 클릭 시 상세 정보 팝업.
+   획득하지 않은 경우 획득 가능 위치/조건만 표시 — 위치는 「획득 위치: 위치」 · 조건은 직업 유물 진화(깨어남)에만 「획득 조건: 조건」'
+   → 사용자가 고른 것: 기록은 이 학원(세이브)만 · 번호는 전체 연번 · 등급은 탭.
+   · 칸 = 유물 종류 × 등급 (128종 → 285칸: C 37 · B 109 · A 88 · S 51). 번호는 C → B → A → S 차례로 001 ~ 285 · 등급 안에서는
+     격(생활품 → 진귀품 → 보물 → 전설 → 공명 유물) → 공명 유물은 직업 차례 → 곳(원정지 차례 → 어디서나 → 마을 손님 → 대회) → 표 차례 (relicDexList — 표가 바뀌면 번호도 따라 바뀐다)
+   · 기록 — S.relicDex {"종류:등급": {y, ph, wk}} (처음 얻은 때 · 모르면 {}). 보관함에 들어올 때(addRelicToPool — 원정 · 손님 · 대회 우승) ·
+     저장할 때마다 손에 든 유물(보관함 · 학생 — 깨어남으로 오른 등급도 · relicDexScan) · 도감이 없는 세이브는 불러올 때 지금 가진 유물(보관함 · 학생 · 졸업생 기록)로
+     채운다 (relicDexFill — 때는 찾은 기록 rec 에서 · 깨어난 등급은 모름). 공명 유물은 지나온 등급도 같이 (잠든 B → 깨어남 A → S). 난수는 쓰지 않는다
+   · 곳 — 게임 표에서 센다 (relicDexWhereMap — relicPickRegion · relicGuestGift · relicTourPrize · relicSecDrops 와 같은 셈 · 가진 유일 유물은 빼지 않는다):
+     원정지(그 등급이 이계 판에서만 나오면 '이계·') · 어디서나 물건이 원정지 다섯 모두에서 나오면 '모든 원정지' · 마을 손님 · 대회 우승(이계 대회는 '이계·').
+     공명 유물 A · S 는 조건 — '○○와 함께 이긴 전투 20번 / 60번' (RELIC_DB.awake · 보관고의 깨어남 글과 같은 말)
+   · 화면 — 일지 › 유물 도감 (viewRelicDex · VIEW_GROUPS.log): 등급 탭(획득 / 전체 · UI.rdxG) · 칸(아이콘 · No.001 · 이름) · 못 얻은 칸은 회색.
+     칸을 누르면 상세 팝업 (relicDexPop): 얻은 것 — 격 · 능력 · 효과 · 공명 · 세트 · 사연 · 획득 위치(조건) · 첫 획득 / 못 얻은 것 — 획득 위치(조건)만.
+     색 · 테두리는 건물 안 테마 (화면 — VIEWTHEME 의 PT_VIEWS · 팝업 — POPTHEME) · 자리 · 크기 · 회색은 RELICDEX_CSS */
+const RDX_G = ["C", "B", "A", "S"];
+let RDX_LIST = null, RDX_WHERE = null;                 // 칸 목록 · 곳 (처음 쓸 때 한 번 센다 — 표는 실행 중에 바뀌지 않는다)
+function relicDexList(){
+  if(RDX_LIST) return RDX_LIST;
+  const ix = {}, TEV = Object.keys(TOWN_EV);
+  RELIC_DB.kinds.forEach((K, i)=> ix[K.id] = i);
+  const place = h=>{
+    const d = DUNGEONS.findIndex(x=> x.id === h); if(d >= 0) return d;
+    if(h === "any") return 10;
+    const t = TEV.indexOf(h); if(t >= 0) return 20 + t;
+    const l = LADDER_ORDER.indexOf(h); return l >= 0 ? 40 + l : 60;
+  };
+  const tier = K=> K.job ? 9 : (K.t | 0), job = K=> K.job ? JOB_KEYS.indexOf(K.job) : -1;
+  const L = [];
+  RDX_G.forEach(g=> RELIC_DB.kinds.filter(K=> relicTierOf(K).g.includes(g))
+    .sort((a, b)=> tier(a) - tier(b) || job(a) - job(b) || place(a.home) - place(b.home) || ix[a.id] - ix[b.id])
+    .forEach(K=> L.push({K, g, no:L.length + 1})));
+  return RDX_LIST = L;
+}
+function relicDexNo(e){ return "No." + String(e.no).padStart(3, "0"); }
+function relicDexRec(K, g){ const D = S && S.relicDex; return (D && typeof D === "object" && D[K.id + ":" + g]) || null; }
+/* ── 기록 ── */
+function relicDex(){ if(!S.relicDex || typeof S.relicDex !== "object" || Array.isArray(S.relicDex)) S.relicDex = {}; return S.relicDex; }
+function relicDexNote(r, back){                        // back — 불러올 때 채우기 (때는 찾은 기록에서 · 모르면 비운다). 새로 적은 칸 수
+  const K = relicKindOf(r); if(!K || !S) return 0;
+  const T = relicTierOf(K).g, i = T.indexOf(r.grade); if(i < 0) return 0;
+  const D = relicDex(), c = r.rec;
+  let n = 0;
+  for(let j = K.job ? 0 : i; j <= i; j++){            // 공명 유물은 지나온 등급도 (잠든 B → 깨어남 A → S)
+    const k = K.id + ":" + T[j]; if(D[k]) continue;
+    D[k] = !back ? {y:S.year | 0, ph:S.phase, wk:S.week | 0}
+         : ((j === 0 || !K.job) && c && c.y) ? {y:c.y | 0, ph:c.ph, wk:c.wk | 0} : {};
+    n++;
+  }
+  return n;
+}
+function relicDexScan(){                               // 손에 든 유물 (보관함 · 학생) — save() 가 부른다 (깨어나 오른 등급 · 그 밖에 들어온 유물)
+  if(!S) return 0;
+  let n = 0;
+  (S.relicPool || []).forEach(r=>{ n += relicDexNote(r); });
+  (S.students || []).forEach(st=> (st.relics || []).forEach(r=>{ n += relicDexNote(r); }));
+  return n;
+}
+function relicDexFill(){                               // 도감이 없는 세이브 (1021 전) — 지금 가진 유물로 처음 채운다 (불러올 때 · relicMigrate 뒤)
+  if(!S || (S.relicDex && typeof S.relicDex === "object" && !Array.isArray(S.relicDex))) return 0;
+  S.relicDex = {};
+  let n = 0;
+  const f = r=>{ n += relicDexNote(r, true); };
+  (S.relicPool || []).forEach(f);
+  (S.students || []).forEach(st=> (st.relics || []).forEach(f));
+  (S.graduates || []).forEach(g=> ((g && g.relics) || []).forEach(f));
+  return n;
+}
+/* ── 곳 ── "종류:등급" → 곳 표시 [원정지 id · "ow:"+id(이계 판) · "guest:"+손님 · "tour" · "owtour"(이계 대회)] */
+function relicDexWhereMap(){
+  if(RDX_WHERE) return RDX_WHERE;
+  const M = {}, put = (K, g, t)=>{ const k = K.id + ":" + g, a = M[k] || (M[k] = []); if(!a.includes(t)) a.push(t); };
+  DUNGEONS.forEach(dg=> [0, 1].forEach(ow=>{             // 원정 — relicPickRegion: 등급을 굴리고 그 땅 / 어디서나 (몫 · 한쪽이 비면 다른 쪽) · 둘 다 없으면 그 땅의 물건을 격 안으로
+    const w = ow ? relicShiftG(dg.relic) : (dg.relic || {}), RG = RELIC_DB.regions[dg.id] || {};
+    const a = RG.any != null ? RG.any : RELIC_DB.anyShare, t = (ow ? "ow:" : "") + dg.id;
+    Object.keys(w).forEach(g=>{
+      if(!(w[g] > 0)) return;
+      const H = relicCands(dg.id, g, null, ow), A = relicCands("any", g, null, ow);
+      if(!H.length && !A.length){ RELIC_GEN.filter(K=> K.home === dg.id && (ow || !relicLegendK(K))).forEach(K=> put(K, relicClampG(K, g), t)); return; }
+      if(A.length && (a > 0 || !H.length)) A.forEach(K=> put(K, g, t));
+      if(H.length && (a < 1 || !A.length)) H.forEach(K=> put(K, g, t));
+    });
+  }));
+  RELIC_GEN.forEach(K=>{
+    if(TOWN_EV[K.home]) Object.keys(RELIC_DB.giftG).forEach(g=> put(K, relicClampG(K, g), "guest:" + K.home));   // 손님의 물건 — relicGuestGift (C 55 · B 35 · A 10% → 격 안으로)
+    else if(LADDER[K.home]){ const T = relicTierOf(K).g; put(K, T[0], "tour"); if(T.length > 1) put(K, T[1], "owtour"); }   // 대회 우승 — 격의 아래 등급 · 이계 대회는 한 칸 위
+  });
+  RELIC_JOBR.forEach(K=> put(K, relicTierOf(K).g[0], DUNGEONS.some(d=> d.id === K.home) ? K.home : "guest:" + K.home));   // 공명 유물 — 잠든 채(B) · 그 땅(보통 · 이계 판) 또는 그 손님
+  return RDX_WHERE = M;
+}
+/* 획득 위치 · 조건 한 줄 — '획득 위치: 무너진 종탑' · '획득 위치: 이계·용사의 무덤' · '획득 조건: 성기사와 함께 이긴 전투 20번' (사용자: 위치는 위치만 · 조건은 직업 유물 진화에만) */
+function relicDexWhere(K, g){
+  const T = relicTierOf(K).g;
+  if(K.job && g !== T[0]){
+    const a = RELIC_DB.awake.find(x=> x.g === g), jn = (JOBS[K.job] || {}).name || "";
+    return a ? `획득 조건: ${jn}${gwa(jn)} 함께 이긴 전투 ${a.need}번` : "";
+  }
+  const tags = relicDexWhereMap()[K.id + ":" + g] || [], L = [];
+  const dgs = DUNGEONS.filter(d=> tags.includes(d.id) || tags.includes("ow:" + d.id));
+  if(K.home === "any" && dgs.length > 1 && dgs.length === DUNGEONS.length) L.push("모든 원정지");
+  else dgs.forEach(d=> L.push(tags.includes(d.id) ? d.n : `이계·${d.n}`));
+  tags.forEach(t=>{
+    if(t.startsWith("guest:")) L.push((TOWN_EV[t.slice(6)] || {}).n || "");
+    else if(t === "tour") L.push(relicHomeName(K));
+    else if(t === "owtour") L.push(`이계·${relicHomeName(K)}`);
+  });
+  const s = L.filter(Boolean).join(" · ");
+  return s ? `획득 위치: ${s}` : "";
+}
+/* ── 화면 — 일지 › 유물 도감 ── */
+function viewRelicDex(){
+  const L = relicDexList(), g = RDX_G.includes(UI.rdxG) ? UI.rdxG : RDX_G[0];
+  const has = e=> !!relicDexRec(e.K, e.g);
+  const tabs = RDX_G.map(x=>{
+    const A = L.filter(e=> e.g === x);
+    return `<button type="button" class="btn rdx-tab" data-rdxg="${x}" aria-pressed="${x === g}"><b style="color:${GRADE_COLOR[x]}">${x}</b><span class="num">${A.filter(has).length} / ${A.length}</span></button>`;
+  }).join("");
+  return `<section class="panel rdx">
+    <div class="panel-h"><h2>유물 도감</h2><span class="hint num">${L.filter(has).length} / ${L.length}</span></div>
+    <div class="rdx-tabs">${tabs}</div>
+    <div class="rdx-grid">${L.filter(e=> e.g === g).map(e=>{
+      const on = has(e);
+      return `<button type="button" class="opt rdx-it${on ? "" : " off"}" data-rdx="${e.no - 1}" title="${esc(e.K.n)}"><span class="rdx-ic"><img src="${esc(RELIC_ICON[e.K.id] || RELIC_ICON.legacy)}" alt="" loading="lazy" decoding="async" draggable="false"></span><span class="rdx-tx"><span class="rdx-no num">${relicDexNo(e)}</span><span class="rdx-nm">${esc(e.K.n)}</span></span></button>`;
+    }).join("")}</div>
+  </section>`;
+}
+function relicDexBind(v){
+  v.querySelectorAll("[data-rdxg]").forEach(b=> b.onclick = ()=>{
+    UI.rdxG = b.dataset.rdxg; render();
+    const t = document.querySelector(`#view [data-rdxg="${UI.rdxG}"]`); if(t) t.focus({preventScroll:true});
+  });
+  v.querySelectorAll("[data-rdx]").forEach(b=> b.onclick = ()=> relicDexPop(+b.dataset.rdx));
+}
+/* 효과 줄 — 공명(능력 · 스킬) · 전투 밖 효과 · 세트 (relicInfoHtml 과 같은 말 · 깨어남 진행 줄은 빼고 · 켜짐 표시 없이) */
+function relicDexInfo(r, K){
+  const L = [];
+  if(K.job){
+    const jn = (JOBS[K.job] || {}).name || "";
+    L.push(`<div class="rli rres">${`공명 — ${jn} 장착 시 능력 ×${RELIC_DB.resMul}`}</div>`);
+    L.push(`<div class="rli rres">${`공명 — ${esc(K.res)}`}</div>`);
+  }
+  if(K.fx){
+    const F = RELIC_DB.fx[K.fx];
+    L.push(`<div class="rli rfx${F.neg ? " rneg" : ""}">◆ ${esc(relicFxTxt(r))} <i>— ${esc(relicScopeTxt(K))}</i></div>`);
+  }
+  if(K.job){
+    const P = RELIC_DB.pairs[K.job] || {}, set = RELIC_JOBR.filter(x=> x.job === K.job);
+    L.push(`<div class="rli rset">${`세트 — '${esc(P.n || "")}' ${set.map(x=> `<span class="rpc">${esc(x.n)}</span>`).join(" · ")}`}</div>`);
+    L.push(`<div class="rli rsetfx">${esc(P.d || "")}</div>`);
+  }
+  return L.length ? `<div class="rlinfo">${L.join("")}</div>` : "";
+}
+/* 상세 팝업 — 얻은 것은 자세히 · 못 얻은 것은 획득 위치(조건)만 */
+function relicDexPop(i){
+  const e = relicDexList()[i]; if(!e) return;
+  const K = e.K, g = e.g, c = relicDexRec(K, g), got = !!c;
+  const r = {kind:K.id, grade:g, name:K.n, aff:relicAffOf(K, g)};          // 보여 주기만 하는 유물 (보관함 · 학생에게 넣지 않는다)
+  const where = relicDexWhere(K, g);
+  const when = c && c.y ? `${yrName(c.y)} ${(PHASES[c.ph] || {}).n || ""} ${(c.wk|0) + 1}주` : "";
+  showModal(`<div class="rdx-pop${got ? "" : " off"}">
+      <div class="rdx-ph">
+        <span class="rdx-pic"><img src="${esc(RELIC_ICON[K.id] || RELIC_ICON.legacy)}" alt="" draggable="false"></span>
+        <div class="rdx-pt">
+          <div class="rdx-pno"><span class="num">${relicDexNo(e)}</span>${gradeTag(g)}</div>
+          <h2 style="color:${got ? GRADE_COLOR[g] : "#a08078"}">${esc(K.n)}</h2>
+          ${got ? `<div class="rdx-ptier">${esc(relicKindTxt(r, false))}</div>` : ""}
+        </div>
+      </div>
+      ${got ? relicAffHtml(r) + relicDexInfo(r, K) + (K.lore ? `<p class="rdx-lore">${esc(K.lore)}</p>` : "") : ""}
+      ${where ? `<div class="rdx-where">${esc(where)}</div>` : ""}
+      ${got && when ? `<div class="rdx-first">${esc(`첫 획득: ${when}`)}</div>` : ""}
+      <div class="btnrow"><button type="button" class="btn primary" data-close>닫기</button></div>
+    </div>`, ()=>{
+    const ov = $("#modalRoot .overlay"), ok = $("#modalRoot .rdx-pop [data-close]");
+    const close = ()=>{
+      document.removeEventListener("keydown", key, true);
+      closeModal();
+      const b = document.querySelector(`#view [data-rdx="${i}"]`); if(b) b.focus({preventScroll:true});   // 키보드 — 누른 칸으로 돌아간다
+    };
+    const key = ev=>{
+      if(!ov || !ov.isConnected){ document.removeEventListener("keydown", key, true); return; }
+      if(ev.key === "Escape"){ ev.preventDefault(); ev.stopPropagation(); close(); }
+    };
+    document.addEventListener("keydown", key, true);
+    if(ok){ ok.onclick = close; ok.focus({preventScroll:true}); }
+  });
+}
+/* RELICDEX_END */
 /* ---------- 기록 ---------- */
 function viewRecord(){
   const g = S.graduates.slice().reverse();
@@ -23803,6 +24197,7 @@ function bindView(){
   });
   const v = $("#view");
   if(UI.view==="home" && typeof bindMasterDesk === "function") bindMasterDesk(v);   // 마스터 노트 책상 (1006)
+  v.querySelectorAll("[data-flopen]").forEach(b=> b.onclick = ()=> fletOpen());   // 1021 — 좁은 화면 마스터 노트의 친선전 신청 편지 단추 (FLETTER)
   v.querySelectorAll("[data-sid]").forEach(b=> b.onclick=()=>{ UI.sel = (UI.sel===b.dataset.sid?null:b.dataset.sid); UI.view="roster"; render();
     /* 상세 보기가 명부 아래에 붙는다 — 그 자리까지 내려 준다 (상단 바에 가리지 않게) (0929) */
     const el = UI.sel && $("#stuDetail");
@@ -24394,6 +24789,7 @@ function bindView(){
     });
   });
   if(UI.view === "scout") bindScout(v);   // 1019 — 겨울 스카우트 개편 (SCOUTWIN — 줄 → 확인 팝업 → 설득 대화)
+  if(UI.view === "relicdex") relicDexBind(v);   // 1021 — 유물 도감 (RELICDEX — 등급 탭 · 칸 → 상세 팝업)
   v.querySelectorAll("[data-csl]").forEach(b=> b.onclick=()=>{
     const [qi,oi] = b.dataset.csl.split("|").map(Number);
     answerCounsel(qi, oi);
@@ -24492,7 +24888,7 @@ function tutGuideData(k){
     4:{title:"가을 대회를 향해 한 걸음씩",tag:"대회 · 장기 목표",job:"sword",lead:"학생들을 키우고 팀을 갖춰 학원제 본선 우승에 도전하세요.",visual:"tournament",steps:[["팀 편성부터 준비", "출전 학생과 진형을 확인하고, 컨디션과 유물을 챙겨 주세요."],["대회 성적으로 다음 무대에", "시내 대회부터 차근차근 도전합니다. 다음 대회 초대 조건은 게임의 안내에서 확인하세요."]],tip:"실적뿐 아니라 자금도 관리해야 합니다. 유지비와 빚을 함께 챙기세요."},
     5:{title:"라이벌과 함께 훈련해요",tag:"학생 · 라이벌",job:"timemage",lead:"서로 의식하는 두 학생은 함께 훈련하며 더 빠르게 성장합니다.",visual:"rival",steps:[["두 학생 모두 ‘훈련’으로", "개인 행동에서 라이벌 두 명을 모두 훈련으로 지정하세요. 두 사람이 함께 보완할 약한 분야를 고릅니다."],["같은 분야에서 성장 보너스", `둘이 같은 분야를 개인 훈련하면 해당 멘탈리티 성장이 ${bonus}% 증가합니다.`]],tip:"한쪽이 휴식이나 의뢰를 하면 함께 훈련하는 조건이 달라집니다. 두 학생의 행동을 함께 확인하세요."},
     6:{title:"원정에서 얻고, 장착해요",tag:"원정 · 유물",job:"spellsword",lead:"원정 파견 카드를 쓰면 원정지와 팀을 골라 자동 전투를 진행합니다.",visual:"expedition",steps:[["원정지와 팀 선택", "난이도와 팀 상태를 보고 출발하세요. 결과로 건너뛰기를 눌러 전투 결과를 바로 볼 수도 있어요."],["얻은 유물은 장착까지", "원정 보상으로 얻은 유물은 유물 · 스킬 화면에서 확인하고 학생에게 장착하세요."]],tip:"원정에서는 자금·유물·진로 평가와 함께 업보도 얻습니다. 반복 파견 전에 학생의 상태를 확인하세요."},
-    7:{title:"친선전, 상대와 날짜를 골라요",tag:"봄 · 친선전",job:"darkpriest",lead:"요청한 학원 중 대결할 상대를 고르고 봄 하반기 일정에 배치합니다.",visual:"friendly",steps:[["상대와 명성 변화 확인", "상대 전력과 승패에 따른 명성 변화를 살펴보고 요청을 수락하세요."],["빈 일정에 배치하고 회신", "학원을 고른 뒤 날짜에 놓습니다. 끌어서 배치하거나 눌러서 고를 수 있어요."]],tip:"모든 요청을 받을 필요는 없습니다. 일정을 비워 두거나 요청을 거절해도 괜찮아요."},
+    7:{title:"친선전 신청 편지가 왔어요",tag:"봄 · 겨울 · 친선전",job:"darkpriest",lead:"학원마다 한 통씩, 친선전을 청하는 편지가 마스터 노트에 놓입니다.",visual:"friendly",steps:[["요청 주와 방식 확인", "편지마다 학원이 청한 주와 방식(단판 · 3판 2선승제), 이기고 질 때의 명성 변화가 적혀 있어요."],["회신하거나 거절", "회신하면 그 주 일과를 마친 뒤 친선전을 치릅니다. 편지는 나중에 읽어도 되지만, 요청한 주가 지나면 사라져요."]],tip:"마스터 노트의 편지나 메뉴의 편지 표식을 누르면 다시 열려요."},
     8:{title:"전투 전, 학생들에게 한마디",tag:"전투 준비 · 라커룸",job:"darkpriest",lead:"우리 팀과 상대의 전력, 학생들의 성격을 보고 말을 고릅니다.",visual:"speech",steps:[["한마디만 선택", "상황에 맞는 말을 고르면 학생의 기분과 신뢰에 도움이 됩니다."],["모두에게 같은 반응은 아니에요", "동기부여는 특히 성격을 살펴보세요. 맞지 않는 말은 기분을 떨어뜨릴 수도 있습니다."]],tip:"예시 수치가 항상 보장되는 보상은 아닙니다. 현재 학생들의 반응을 확인하세요."},
     9:{title:"졸업 뒤에도, 함께하는 리그",tag:"졸업생 리그 · 리그 등록",job:"paladin",lead:"졸업생이 생기면 더 넓은 무대에서 다른 학원과 모의 대전을 펼칠 수 있어요.",visual:"league",steps:[["졸업생으로 팀 구성", "리그의 등록 탭에서 출전할 졸업생과 진형을 확인하고 등록합니다."],["리그와 SP 상점 이용", "리그를 진행하며 SP를 얻고 리그의 SP 상점 탭에서 사용하세요. 폰에서는 더보기 메뉴의 리그에서 찾을 수 있어요."]],tip:"리그는 온라인 기능입니다. 등록·시즌 정산 조건과 결과는 해당 화면에서 확인하세요."},
     10:{title:"부지를 넓히고 시설을 들여요",tag:"마을 → 학원 증축",job:"enchanter",lead:"명성에 따른 인가와 학원 증축은 별개의 단계입니다.",visual:"expand",steps:[["첫 증축은 시내 대회 참가 뒤", "현재 규칙에서는 첫 시내 대회를 치른 뒤 마을과 첫 증축이 열립니다."],["이후에는 인가와 자금 확인", "증축 단계마다 필요한 학원 등급과 비용이 다릅니다. 조건을 채우고 증축하면 추가 시설·물품이 열려요."]],tip:"인가를 받았다고 모든 시설이 바로 열리지는 않습니다. 각 시설에 표시된 증축 조건을 확인하세요."},
@@ -24516,7 +24912,7 @@ function tutGuideVisual(kind){
     case "tournament":return route([["시내 대회","첫 출전과 실적"],["광역 대회","여러 팀의 준비"],["학원제 예선 · 본선","더 큰 무대에 도전"]]);
     case "rival":return `<div class="tg-pair">${faceHTML("sword","라이벌 학생 예시") }<span>↔</span>${faceHTML("paladin","라이벌 학생 예시")}</div><div class="tg-choice-pair"><span>학생 A · 훈련</span><span>학생 B · 훈련</span></div><div class="tg-big-number">+${Math.round((RIVAL_FOCUS_MUL-1)*100)}%<small>같은 분야의 개인 훈련 성장</small></div>`;
     case "expedition":return route([["원정 파견 카드","요일에 배치"],["원정지 · 팀 선택","난이도와 컨디션 확인"],["자동 전투 · 보상","결과와 획득 유물 확인"],["유물 · 스킬","학생에게 장착"]]);
-    case "friendly":return route([["요청 학원 선택","전력과 명성 변화 확인"],["봄 하반기 일정 배치","빈 날짜에 놓기"],["회신","참가할 일정 확정"]]);
+    case "friendly":return route([["편지 확인","마스터 노트 · 메뉴의 편지 표식"],["요청 주 · 방식 · 명성","학원마다 한 통"],["회신 · 거절","회신한 주 일과를 마치면 친선전"]]);
     case "speech":return Object.values(SPEECH_TYPE).map(x=>row(x.n,x.d,"“")).join("");
     case "league":return route([["졸업생","졸업한 학생 확인"],["리그 등록","출전 팀과 진형 선택"],["졸업생 리그","다른 학원과 대전"],["SP 상점","모은 SP 사용"]]);
     case "expand":return route([["시내 대회 참가","마을 개방"],["학원 증축","필요 인가 · 비용 확인"],["시설 · 물품 해금","열린 시설을 구매·강화"]]);
@@ -24580,24 +24976,6 @@ function tutOverPage(k, after){
   const b = box.querySelector("[data-tutok]");
   if(b) b.onclick = ()=>{ box.remove(); after && after(); };
 }
-/* 친선전 전부 거절 — 한 번 더 묻는다 (1007). 친선전 팝업은 그대로 두고 그 위에 겹쳐 띄운다 — 취소하면 고르던 그대로 */
-function friendlyDeclineAsk(onYes){
-  const root = $("#modalRoot");
-  if(!root || !root.firstChild){ onYes(); return; }
-  if(root.querySelector(".fdecl")) return;                       // 이미 묻는 중
-  const box = document.createElement("div");
-  box.className = "overlay tutover fdecl";
-  box.innerHTML = `<div class="modal" style="width:min(560px,100%)">
-      <h2 style="font-size:18px;margin-bottom:14px;word-break:keep-all">이번 계절에 친선전을 진행하지 않겠습니까?</h2>
-      <div class="btnrow"><button class="btn primary" data-fdno>취소</button>
-        <button class="btn" data-fdyes style="border-color:var(--bad);color:var(--bad)">전부 거절</button></div>
-    </div>`;
-  root.appendChild(box);
-  const no = box.querySelector("[data-fdno]");
-  no.onclick = ()=> box.remove();
-  box.querySelector("[data-fdyes]").onclick = ()=>{ box.remove(); onYes(); };
-  no.focus();                                                    // 키보드 — Enter 를 한 번 더 눌러도 거절되지 않게
-}
 function showCeremony(){
   const c = (UI.ceremonies||[]).shift();
   if(!c){ audOver(null); render(); return; }
@@ -24607,7 +24985,6 @@ function showCeremony(){
   let html;
   try{ html = c.type==="grad" ? gradCeremony(c)
     : (c.type==="rival"||c.type==="bro") ? bondCeremony(c)
-    : c.type==="friendly" ? friendlyCeremony(c)
     : c.type==="epithet" ? epithetCeremony(c)
     : c.type==="unlock" ? unlockCeremony(c)
     : c.type==="insight" ? insightCeremony(c)
@@ -24629,49 +25006,6 @@ function showCeremony(){
   } finally { NAME_PLAIN = false; }
   showModal(html, ()=>{
     if(c.type==="grad") gradRollStart();
-    if(c.type==="friendly"){
-      const F = friendlyState(c.phase||"spring");
-      const redraw = ()=>{ UI.ceremonies.unshift(c); closeModal(); showCeremony(); };
-      $("#modalRoot").querySelectorAll("[data-fof]").forEach(b=> b.onclick=()=>{
-        const oi = +b.dataset.fof;
-        const at = F.slots.indexOf(oi);
-        if(at>=0){ F.slots[at]=null; UI.fsel=null; }
-        else UI.fsel = (UI.fsel===oi? null : oi);
-        redraw();
-      });
-      $("#modalRoot").querySelectorAll("[data-fslot]").forEach(b=> b.onclick=()=>{
-        const i = +b.dataset.fslot;
-        if(F.slots[i]!=null){ F.slots[i]=null; redraw(); return; }
-        if(UI.fsel==null) return;
-        const prev = F.slots.indexOf(UI.fsel);
-        if(prev>=0) F.slots[prev]=null;
-        F.slots[i]=UI.fsel; UI.fsel=null; redraw();
-      });
-      dragCfg($("#modalRoot"), {
-        from: "[data-fof],[data-fslot]",
-        to:   "[data-fslot],.foflist",
-        payload: el=>{
-          if(el.dataset.fof!=null && el.dataset.fof!=="") return {kind:"offer", oi:+el.dataset.fof};
-          const i = +el.dataset.fslot;
-          if(F.slots[i]==null) return null;      // 빈 자리는 집을 게 없다
-          return {kind:"slot", i};
-        },
-        accept: (pl, t)=> t.classList.contains("foflist") ? pl.kind==="slot" : true,
-        drop: (pl, t)=>{
-          if(!t) return;
-          if(t.classList.contains("foflist")){ if(pl.kind==="slot") F.slots[pl.i]=null; }
-          else {
-            const i = +t.dataset.fslot;
-            if(pl.kind==="offer") friendlyPlace(F, i, pl.oi);
-            else if(pl.i !== i)   friendlySwap(F, pl.i, i);
-          }
-          UI.fsel = null; save(); redraw();
-        }
-      });
-      $("#fDecline").onclick = ()=> friendlyDeclineAsk(()=>{ F.slots=[null,null,null]; UI.fsel=null; F.answered=true;   // 1007 — 한 번 더 묻는다
-        logE(`친선전 — 세 학원의 요청을 모두 거절했다.`,"");
-        save(); closeModal(); showCeremony(); });
-    }
     const cok = $("#cerOk");
     if(!cok) modalEscape();                 // 확인 버튼이 없는 팝업 — 빠져나갈 길은 남긴다
     if(cok) cok.onclick = ()=>{
@@ -24686,18 +25020,9 @@ function showCeremony(){
       if(c.type==="shopopen"){ UI.view = "facil"; UI.facTab = "fac"; }
       if(c.type==="lvup"){ const nv = $("#lvNever");
         if(nv && nv.checked){ PREF.lvPopup = false; prefSave(); UI.ceremonies = (UI.ceremonies||[]).filter(x=> x.type!=="lvup"); toast("레벨업 팝업을 껐다 — 설정에서 다시 켤 수 있다."); } }
-      if(c.type==="friendly"){
-        const F = friendlyState(c.phase||"spring"); F.answered=true; UI.fsel=null;
-        const n = F.slots.filter(x=>x!=null).length;
-        logE(n? `친선전 회신 — ${F.slots.map((oi,i)=> oi==null? null : `${friendlySlotLabel(c.phase||"spring", i)} ${esc(F.offers[oi].name)}`).filter(Boolean).join(" · ")}`
-              : `친선전 — 요청을 받아들이지 않았다.`, n?"good":"");
-        save();
-      }
       closeModal(); showCeremony();
     };
   }, true);
-  /* 첫 친선전 요청 — 안내 한 장을 그 위에 겹쳐 띄운다 */
-  if(c.type==="friendly" && !tutSeen("7")) tutOverPage("7");
 }
 /* ── 졸업식 — 졸업 증서가 아래에서 위로 흘러 올라가는 스텝롤 ── */
 function careerDescOf(id){ const c = CAREERS.find(x=>x.id===id) || DARK_CAREERS.find(x=>x.id===id); return c ? c.d : ""; }
@@ -29048,9 +29373,9 @@ function tfwHeadHtml(c, T, FV){
       : U === 1 ? `<b>단판 승부</b>` : U === 2 ? `<b>3판 2선승제</b> (2팀)` : last ? `<b>3판 2선승제</b> · 먼저 2승을 가져가면 우승` : `<b>3판 2선승제</b> · 먼저 2승을 가져가면 ${CUP_ROUND_NAME[t.round + 1] || ""}`;
   } else if(c.kind === "friendly"){
     const ph = t.ph || "spring";
-    eb = `${PHASES[ph].n} ${friendlySlotLabel(ph, t.slot)} · 친선전 · 대진 편성`;
+    eb = `${friendlyWeekName(ph, friendlyWk(t))} · 친선전 · 대진 편성`;          // 1021 — 친선전 신청 편지의 요청 주 (봄 8주)
     title = t.title;
-    rule = t.need > 1 ? `<b>${t.need}경기</b>를 모두 치른다` : `<b>단판 승부</b>`;
+    rule = t.need === 2 ? `<b>3판 2선승제</b> (2팀)` : t.need > 2 ? `<b>3판 2선승제</b> · 먼저 2승을 가져가면 승리` : `<b>단판 승부</b>`;   // 1021 — 편지의 방식 (2팀은 1:1 이면 이긴 팀끼리 결정전)
   } else {
     eb = `봄 신인전 · 제${t.matchIdx + 1}경기 / 4 · 대진 편성`;
     title = `${t.title} — ${foe.name}`;
@@ -29814,42 +30139,50 @@ function entryTeamCards(picked, maxN){
     </button>`;
   }).join("")}</div>`;
 }
-/* 친선전 — 3팀이 세 경기를 모두 치른다 */
+/* 친선전 — 편지의 방식대로 (1021): 1팀 단판 · 2팀 3판 2선승제(1:1 이면 이긴 팀끼리 결정전 — 광역 대회처럼) · 3팀 3판 2선승제(세 팀이 차례로 · 먼저 2승) */
 function startFriendly(sl){
-  const need = (FRIENDLY_PHASES[sl.phase]||FRIENDLY_PHASES.spring).teams;
+  const need = clamp(((sl.foe && sl.foe.teams) || []).length || 1, 1, 3);
+  const wk = sl.w != null ? sl.w : friendlySlots(sl.phase)[sl.i];
   const names = teamsOf().filter(x=>teamFull(x)).map(x=>x.n).slice(0, need);
   UI.tour = {
     kind:"friendly", title:`${yrName(S.year)} 친선전 — ${sl.foe.name}`, stage:"prep", _prepOpen:true,
-    slot: sl.i, foe: sl.foe, ph: sl.phase, need, myTier: fameTitleIdx(S.fame), entryTeams: names,
-    myTeams:[], results:[], matchIdx:0, w:0, l:0
+    slot: sl.i, wk, oi: sl.oi, foe: sl.foe, ph: sl.phase, need, myTier: fameTitleIdx(S.fame), entryTeams: names,
+    myTeams:[], results:[], matchIdx:0, w:0, l:0, wonSlot:null, lostSlot:null
   };
   UI.pendingTour = true;
 }
+function friendlyDecider(t){ return t.need === 2 && t.matchIdx >= 2; }                               // 2팀 · 1:1 뒤 결정전
+function friendlyTeamIdx(t){ return friendlyDecider(t) && t.wonSlot != null ? t.wonSlot : t.matchIdx; }   // 결정전은 이긴 우리 팀
+function friendlyFoeTeam(t){ const k = friendlyDecider(t) && t.lostSlot != null ? t.lostSlot : t.matchIdx; return t.foe.teams[k] || t.foe.teams[0]; }   // 결정전은 이긴 상대 팀
+function friendlyMatchLabel(t){ return friendlyDecider(t) ? "결정전" : `제${t.matchIdx+1}경기`; }
+function friendlyOver(t){ return t.need <= 1 ? t.matchIdx >= 1 : (t.w >= 2 || t.l >= 2 || t.matchIdx >= 3); }
+function friendlyResultMsg(t){ const won = t.w > t.l; return t.need > 1 ? (won ? `${t.w}:${t.l} 승리` : `${t.w}:${t.l} 패배`) : (won ? "승리" : "패배"); }
 function friendlyRun(t, quick){
   if(UI.tour!==t || t._busy) return;
   t._busy = true;
-  const i = t.matchIdx;
-  const TM = teamByName(t.entryTeams[i] || t.entryTeams[0] || "A");
-  const ids = t.myTeams[i];
+  const i = t.matchIdx, ti = friendlyTeamIdx(t);
+  const TM = teamByName(t.entryTeams[ti] || t.entryTeams[0] || "A");
+  const ids = t.myTeams[ti];
   const my = tourMatchStudents(ids);
-  const FT = t.foe.teams[i];
+  const FT = friendlyFoeTeam(t);
   const L = lockerApply(t, `f${i}`, my, FT, foeTierOf(t.foe));
   const b = runBattle(my, FT, Object.assign({titleA:S.acadName, titleB:t.foe.name, moodA:L.mood}, teamBattleOpt(TM), foeBattleOpt(FT), tfwBattleOpt(t, my, FT, TM.n)));   // 1019 — 집중 · 엄호
   const after = ()=> friendlyRecord(t, b, ids);
   if(quick) after();
   else openBattle(b, {titleA:S.acadName, titleB:t.foe.name, field:"dummy", bgm:"friendly", jingle:true, victory:true, defeat:true,   /* 친선전 — 연습장 필드 · 연습장 세팅 (0930) */
-    head:`${t.title} — 제${i+1}경기`, doneLabel:"결과 확정"}, after);
+    head:`${t.title} — ${friendlyMatchLabel(t)}`, doneLabel:"결과 확정"}, after);
 }
 function friendlyRecord(t, b, ids){
   if(UI.tour!==t) return;
   t._busy = false;
-  const win = b.winner==="A";
+  const win = b.winner==="A", dec = friendlyDecider(t);
   const aliveA = b.A.filter(u=>u.alive).length, aliveB = b.B.filter(u=>u.alive).length;
-  t.results.push({label:`제${t.matchIdx+1}경기`, vs:t.foe.name, win, score:`${aliveA}-${aliveB}`, myIds:ids.slice(), foes:b.B.map(u=>u.name)});
+  t.results.push({label:friendlyMatchLabel(t), vs:t.foe.name, win, score:`${aliveA}-${aliveB}`, myIds:ids.slice(), foes:b.B.map(u=>u.name)});
   if(win) relicWinTally(ids);   // 1017 — 깨어남
-  if(win) t.w++; else t.l++;
+  if(win){ t.w++; if(!dec && t.wonSlot==null) t.wonSlot = t.matchIdx; }
+  else   { t.l++; if(!dec && t.lostSlot==null) t.lostSlot = t.matchIdx; }
   t.matchIdx++;
-  if(t.matchIdx >= t.need){ t.stage="result"; renderTournament(); return; }
+  if(friendlyOver(t)){ t.stage="result"; renderTournament(); return; }
   renderTournament();
 }
 function finishFriendly(t){
@@ -29857,10 +30190,9 @@ function finishFriendly(t){
   const tierM = 1 + t.foe.tier*.18;
   const gold = Math.round((140 + t.w*180) * tierM * relicPrizeMul());   // 1017 — 판돈
   addGold(gold);
-  // 명성 — 등급 차이에 따라 걸고 한다
+  // 명성 — 등급 차이에 따라 걸고 한다 · 1021 — 대전(단판 · 3판 2선승제)에서 이긴 쪽이 한 번 (예전: 경기마다 더했다 · 사용자 1021 셋째)
   const diff = t.foe.tier - fameTitleUpIdx(t);
-  let fame = 0;
-  t.results.forEach(r=>{ fame += friendlyFame(diff, r.win); });
+  const fame = friendlyFame(diff, t.w > t.l);
   const fameBefore = S.fame;
   if(fame) addFame(fame > 0 ? Math.round(fame * relicMatchFameMul()) : fame);   // 1017 — 기억되는 승리 (얻는 명성만)
   const fameReal = S.fame - fameBefore;
@@ -29883,9 +30215,10 @@ function finishFriendly(t){
   levelReport(ups);
   rows.sort((a,b2)=> b2.wins-a.wins || b2.ev-a.ev);
   tryEpithetTour("friendly", t, parts, `친선전 — ${t.foe.name}`);
-  const msg = t.w===t.need? (t.need>1?"전승!":"승리") : t.w===0? (t.need>1?"전패":"패배") : `${t.w}승 ${t.l}패`;
+  const msg = friendlyResultMsg(t);
   logE(`친선전 — <b>${esc(t.foe.name)}</b>(${FRIENDLY_TIER[t.foe.tier].n}) 상대 ${msg} · 자금 +${fmt(gold)} · <b style="color:var(--${fameReal>=0?"ok":"bad"})">학원 명성 ${fameReal>=0?"+":""}${fmt(fameReal)}</b>`, fameReal>=0?"good":"bad");
-  F.done.push({slot:t.slot, name:t.foe.name, tier:t.foe.tier, w:t.w, l:t.l, fame:fameReal});
+  F.done.push({slot:t.slot, oi:t.oi, name:t.foe.name, tier:t.foe.tier, w:t.w, l:t.l, fame:fameReal});
+  { const o = (F.offers && t.oi != null) ? F.offers[t.oi] : null; if(o) o.st = "done"; }   // 1021 — 편지는 치른 것으로
   const REC = {title:t.title, msg:`친선전 ${msg}`, w:t.w, l:t.l, fame:fameReal, gold, 
     matches:t.results.map(r=>({label:r.label, vs:r.vs, win:r.win, score:r.score})),
     standings:null, rows, next:null};
@@ -29914,10 +30247,10 @@ function renderFriendly(){
     t.entryTeams = entryAuto(t, (t.entryTeams||[]).filter(n=> teamFull(teamByName(n))), t.need);
     const ok = t.entryTeams.length===t.need;
     const diff = t.foe.tier - t.myTier;
-    showModal(`<div class="cerhead"><div class="eyebrow">${PHASES[t.ph||"spring"].n} ${friendlySlotLabel(t.ph||"spring", t.slot)}</div>
+    showModal(`<div class="cerhead"><div class="eyebrow">${esc(friendlyWeekName(t.ph||"spring", friendlyWk(t)))}</div>
         <h2 style="font-size:24px;margin-top:2px">${esc(t.title)}</h2>
-        <p style="color:var(--muted);font-size:13px;margin-top:6px">${esc(FRIENDLY_TIER[t.foe.tier].d)} · ${t.need===1? "한 팀이 한 경기를 치른다." : `${t.need}팀이 순서대로 ${t.need}경기를 모두 치른다.`}
-          경기당 <b style="color:var(--ok)">승 +${fmt(friendlyFame(diff,true))}</b> · <b style="color:var(--bad)">패 ${fmt(friendlyFame(diff,false))}</b></p></div>
+        <p style="color:var(--muted);font-size:13px;margin-top:6px">${esc(FRIENDLY_TIER[t.foe.tier].d)} · ${esc(friendlyRuleText(t.need))}
+          명성 <b style="color:var(--ok)">승리 +${fmt(friendlyFame(diff,true))}</b> · <b style="color:var(--bad)">패배 ${fmt(friendlyFame(diff,false))}</b></p></div>
       ${entryTeamCards(t.entryTeams, t.need)}
       <div class="rule"></div>
       <div class="eyebrow" style="margin-bottom:6px">상대 — ${esc(t.foe.name)} (정찰 ${lvl}단계)</div>
@@ -29942,15 +30275,15 @@ function renderFriendly(){
     return;
   }
   if(t.stage==="match"){
-    const i = t.matchIdx, TM = teamByName(t.entryTeams[i]||"A");
-    const fMy = tourMatchStudents(t.myTeams[i]||[]);
-    const fL  = lockerState(t, `f${i}`, fMy, t.foe.teams[i], foeTierOf(t.foe));
+    const i = t.matchIdx, ti = friendlyTeamIdx(t), TM = teamByName(t.entryTeams[ti]||"A"), FT = friendlyFoeTeam(t);   // 1021 — 2팀 결정전은 이긴 팀끼리
+    const fMy = tourMatchStudents(t.myTeams[ti]||[]);
+    const fL  = lockerState(t, `f${i}`, fMy, FT, foeTierOf(t.foe));
     showModal(`<h2 style="font-size:18px">${esc(t.title)}</h2>
-      <p style="color:var(--muted);font-size:13px;margin:6px 0 12px">제 ${i+1}경기 / ${t.need} · 현재 ${t.w}승 ${t.l}패</p>
+      <p style="color:var(--muted);font-size:13px;margin:6px 0 12px">${friendlyMatchLabel(t)} · ${friendlyFmtName(t.need)} · 현재 ${t.w}승 ${t.l}패</p>
       <div class="grid2 mt-cards">
         <div class="opt" style="cursor:default"><div class="on">${esc(teamLabel(TM))} <span class="tag">${formOf(TM.form).n}</span></div>
-          <div class="od">${t.myTeams[i].map(id=>{const x=S.students.find(y=>y.id===id); return x? `${dnH(x)}(${JOBS[x.job].name} Lv.${x.level} · 컨디션 ${Math.round(x.cond)})`:"";}).join(" · ")}</div></div>
-        <div class="opt" style="cursor:default"><div class="on">${esc(t.foe.name)} <span class="tag">${foeFormName(t.foe.teams[i])}</span></div>${oppInfo(t.foe.teams[i], Math.max(1,scoutLevel()))}</div>
+          <div class="od">${(t.myTeams[ti]||[]).map(id=>{const x=S.students.find(y=>y.id===id); return x? `${dnH(x)}(${JOBS[x.job].name} Lv.${x.level} · 컨디션 ${Math.round(x.cond)})`:"";}).join(" · ")}</div></div>
+        <div class="opt" style="cursor:default"><div class="on">${esc(t.foe.name)} <span class="tag">${foeFormName(FT)}</span></div>${oppInfo(FT, Math.max(1,scoutLevel()))}</div>
       </div>
       ${lockerHtml(fL, fMy)}
       <div class="btnrow" style="margin-top:14px">
@@ -29960,7 +30293,7 @@ function renderFriendly(){
       </div>
       ${t.results.length? `<div class="rule"></div><div class="eyebrow" style="margin-bottom:5px">경과</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">${t.results.map(matchPill).join("")}</div>`:""}`, ()=>{
-      bindLocker(t, fL, fMy, renderFriendly, {title:"친선전", label:`제${i+1}경기`, foe:t.foe.name, field:"dummy", start:()=> friendlyRun(t,false)});   // 1013 — 락커룸 창
+      bindLocker(t, fL, fMy, renderFriendly, {title:"친선전", label:friendlyMatchLabel(t), foe:t.foe.name, field:"dummy", start:()=> friendlyRun(t,false)});   // 1013 — 락커룸 창
       $("#fPlay").onclick = ()=> lkwGate();   // 1013 — 한마디 전이면 락커룸 창부터
       $("#fQuick").onclick = ()=> friendlyRun(t,true);
       $("#fAll").onclick = ()=>{ let g=0; while(UI.tour===t && t.stage==="match" && g++<5) friendlyRun(t,true); };
@@ -29969,9 +30302,8 @@ function renderFriendly(){
   }
   if(t.stage==="result"){
     showModal(`<div class="cerhead"><div class="eyebrow">${esc(t.foe.name)} · ${FRIENDLY_TIER[t.foe.tier].n}</div>
-        <h2 style="font-size:24px;margin-top:2px">${t.w===t.need?(t.need>1?"전승!":"승리"):t.w===0?(t.need>1?"전패":"패배"):`${t.w}승 ${t.l}패`}</h2>
-        <p style="color:var(--muted);font-size:13px;margin-top:6px">${(()=>{ const d=t.foe.tier-t.myTier;
-          let f=0; t.results.forEach(r=> f+=friendlyFame(d,r.win));
+        <h2 style="font-size:24px;margin-top:2px">${esc(friendlyResultMsg(t))}</h2>
+        <p style="color:var(--muted);font-size:13px;margin-top:6px">${(()=>{ const f = friendlyFame(t.foe.tier-t.myTier, t.w > t.l);   // 1021 — 대전 결과로 한 번
           return `연습이라도 명성이 걸린 경기였다. 학원 명성 <b style="color:var(--${f>=0?"ok":"bad"})">${f>=0?"+":""}${fmt(f)}</b>`; })()}</p></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">${t.results.map(matchPill).join("")}</div>
       <div class="btnrow" style="margin-top:14px"><button class="btn primary" id="fDone">확인</button></div>`, ()=>{
@@ -29989,7 +30321,8 @@ function tourForfeit(t){
   }
   if(t.kind==="friendly"){
     const F = friendlyState(t.ph||"spring");
-    F.done.push({slot:t.slot, name:t.foe.name, tier:t.foe.tier, w:0, l:0, fame:0, forfeit:true});
+    F.done.push({slot:t.slot, oi:t.oi, name:t.foe.name, tier:t.foe.tier, w:0, l:0, fame:0, forfeit:true});
+    { const o = (F.offers && t.oi != null) ? F.offers[t.oi] : null; if(o) o.st = "done"; }   // 1021 — 편지는 치른 것으로 (기권)
   }
   UI.tour = null; UI.pendingTour = false; UI.view = "plan";   // 1005 — 기권해도 스케줄 화면으로 (예전: 마스터 노트)
   closeModal();
@@ -30005,9 +30338,9 @@ function renderPrepStage(t){
   const isLadder = t.kind==="ladder", isFr = t.kind==="friendly";
   const need = tourNeedTeams(t), ready = tourReadyTeams(), can = ready >= need;
   const eyebrow = isLadder ? `가을 ${t.cfg.week}주차 — 대회 준비`
-    : isFr ? `${PHASES[t.ph||"spring"].n} ${friendlySlotLabel(t.ph||"spring", t.slot)} — 친선전` : "겨울이 끝났다 — 대회 준비";
+    : isFr ? `${friendlyWeekName(t.ph||"spring", friendlyWk(t))} — 친선전` : "겨울이 끝났다 — 대회 준비";
   const sub = isLadder ? t.cfg.d
-    : isFr ? `${t.foe.name}(${FRIENDLY_TIER[t.foe.tier].n})과의 연습 경기. ${t.need===1?"한 팀이 한 경기":`${t.need}팀이 ${t.need}경기`}를 치른다. 경기당 승 +${fmt(friendlyFame(t.foe.tier-t.myTier,true))} · 패 ${fmt(friendlyFame(t.foe.tier-t.myTier,false))} 명성이 걸린다.`
+    : isFr ? `${t.foe.name}(${FRIENDLY_TIER[t.foe.tier].n})과의 연습 경기 · ${friendlyFmtName(t.need)}. 명성 승리 +${fmt(friendlyFame(t.foe.tier-t.myTier,true))} · 패배 ${fmt(friendlyFame(t.foe.tier-t.myTier,false))}`
     : "졸업생이 빠진 1·2학년 중 3명을 뽑아 리그 4경기를 치른다. 대회가 끝나면 신입생이 입학하고 학년이 오른다.";
   showModal(`<div class="cerhead"><div class="eyebrow">${esc(eyebrow)}</div>
       <h2 style="font-size:24px;margin-top:2px">${esc(t.title)}</h2>
@@ -32038,6 +32371,7 @@ function bootMain(){
   if(!S.jobUnlock) (S.students||[]).forEach(x=>{ if(x.focus==="job") x.focus = "train"; });   // 빚 (0926) — 옛 세이브 5만 · 새 게임은 난이도마다 (1011 · DIFFS.debt)
   S.relicPool = S.relicPool||[];
   relicMigrate();   // 1017 — 128종 유물의 능력치를 지금 표로 다시 센다 (유물의 법칙)
+  relicDexFill();   // 1021 — 유물 도감 (RELICDEX — 도감이 없는 세이브는 지금 가진 유물로 채운다)
   S.church = S.church||{};
   S.epiUsed = S.epiUsed||[]; S.epiLog = S.epiLog||[];
   S.tutSeen = S.tutSeen||{};

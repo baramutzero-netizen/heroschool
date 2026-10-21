@@ -31,7 +31,7 @@ SCENES = r"""(() => {
   const tinGo = step => { if (typeof TIN === 'undefined' || !document.querySelector('#view .tin')) return; tinStop(); TIN.typed = true; TIN.rwdOn = !!TIN.rwd; TIN.step = step; render(); };
   const fac = k => () => { RBC(); closeModal(); UI.view = 'facil'; UI.facTab = k; render(); tinGo('shop'); };
   const sc = {};
-  ['home','master','roster','team','plan','relic','skill','counsel','league','lgentry','spshop','rank','log','csllog','record','codex','opt']
+  ['home','master','roster','team','plan','relic','skill','counsel','league','lgentry','spshop','rank','log','csllog','record','codex','relicdex','opt']
     .forEach(v => sc[v] = V(v));
   sc['roster_nosel'] = () => { RBC(); closeModal(); UI.view = 'roster'; UI.sel = null; render(); };
   if (window.RBK && RBK.on()) {
@@ -70,7 +70,12 @@ SCENES = r"""(() => {
   sc['cer_jobgrade'] = cer({type: 'jobgrade', k: 'tavern', grade: 2, max: false, year: S.year, phase: 'spring', week: 8, count: 20});
   sc['cer_jobev'] = cer({type: 'jobev', k: 'salon', lv: 1, year: S.year, phase: 'spring', week: 8});
   sc['cer_insight'] = cer({type: 'insight', year: S.year, ins: CAMP_INSIGHT[4], pts: 3});
-  sc['cer_friendly'] = () => { RBC(); closeModal(); const F = friendlyState('spring'); F.offers = genFriendlyOffers(); UI.ceremonies = [{type: 'friendly', year: S.year, phase: 'spring'}]; showCeremony(); };
+  /* 1021 — 친선전 신청 편지 창 (FLETTER — 예전 친선전 요청 창 cer_friendly 대신) · 3팀 편지 · 요청 주가 이번 주('이번 주까지') · 3인 팀이 모자라면 '팀 부족'.
+     창은 봄 편지로 그리고 바로 원래 계절 · 주 · 편지로 되돌린다 (창은 그린 그대로 남는다 · 운영 안내 7 은 tut7 장면) */
+  if (typeof fletOpen === 'function') sc['friendly_letter'] = () => { RBC(); closeModal(); const k0 = {ph: S.phase, wk: S.week, fr: S.friendly}, ts = (S.tutSeen = S.tutSeen || {})['7'];
+    S.phase = 'spring'; S.week = 7; S.friendly = {year: S.year}; const F = friendlyState('spring'); F.offers = genFriendlyOffers(); F.v = 2;
+    F.offers.forEach((o, i) => { o.req = [7, 9, 11][i]; o.st = 'new'; if (!i) { o.teams = [0, 1, 2].map(() => friendlyTeam(o.tier)); o.forms = o.teams.map(foeFormPack); } });
+    S.tutSeen['7'] = true; fletOpen(); S.phase = k0.ph; S.week = k0.wk; S.friendly = k0.fr; S.tutSeen['7'] = ts; };
   sc['cer_evolve1'] = cer(Object.assign({type: 'evolve', page: 1, year: S.year, phase: 'spring', week: 3, kind: 'ment', d: 2}, who(s0)));
   sc['cer_evolve2'] = cer(Object.assign({type: 'evolve', page: 2, year: S.year, phase: 'spring', week: 3, kind: 'ment', d: 2}, who(s0)));
   sc['cer_evolve3'] = cer(Object.assign({type: 'evolve', page: 2, year: S.year, phase: 'spring', week: 3, kind: 'cond', d: 10}, who(s0)));
@@ -91,6 +96,15 @@ SCENES = r"""(() => {
   /* 이명 팝업은 학생의 이명을 바꾸므로 학생 화면들 뒤에 */
   sc['cer_epithet'] = () => { RBC(); closeModal(); UI.ceremonies = []; grantEpithet('exped', s0, {event: DUNGEONS[0].n, place: DUNGEONS[0].n, foe: typeof _T === 'function' ? _T('망령 기사', 'MON') : '망령 기사'}); showCeremony(); };
   sc['cer_epithet_tour'] = () => { RBC(); closeModal(); UI.ceremonies = []; grantEpithet('tour', s1, {event: LADDER.city.n, foeAcad: acadNames(1)[0], foe: s0.name}); showCeremony(); };
+  /* 1021 — 유물 도감 상세 팝업 (RELICDEX) — 얻은 칸(없으면 첫 칸을 적어 둔다) · 못 얻은 공명 유물 S(획득 조건) · 못 얻은 원정 유물(획득 위치) */
+  if (typeof relicDexPop === 'function') {
+    const dex = f => () => { RBC(); closeModal(); UI.view = 'relicdex'; render(); const L = relicDexList(); let i = L.findIndex(f);
+      if (i < 0 && f === dexGot) { relicDexNote({kind: L[0].K.id, grade: L[0].g}); i = 0; } if (i >= 0) relicDexPop(i); };
+    const dexGot = e => !!relicDexRec(e.K, e.g);
+    sc['relicdex_pop'] = dex(dexGot);
+    sc['relicdex_cond'] = dex(e => e.K.job && e.g === 'S' && !relicDexRec(e.K, e.g));
+    sc['relicdex_where'] = dex(e => e.K.home === 'any' && e.g === 'C' && !relicDexRec(e.K, e.g));
+  }
   /* 아래는 게임을 진행시킨다 — 맨 뒤에 둔다 */
   sc['report'] = () => { RBC(); closeModal(); if (S.master) S.master.pts = 0; UI.view = 'plan'; render(); autoFillSlots(); runWithReport(); };
   sc['tour_prep'] = () => { RBC(); closeModal(); UI.ceremonies = []; UI.view = 'home'; render(); startLadder('city'); render(); };
