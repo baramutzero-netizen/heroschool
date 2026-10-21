@@ -16,10 +16,12 @@ i=src.index('<div id="app">')
 head=src[:i]; body=src[i:]
 from build_boot import boot_split
 head, body, tail = boot_split(head, body)   # 첫 접속 로딩 화면 · 글꼴은 맨 뒤로
+# 1021 — 브라우저 다크 모드여도 게임 그대로: color-scheme only light (크롬 계열의 페이지 자동 다크를 끈다) · darkreader-lock (Dark Reader 확장)
 out=f'''<!doctype html>
 <html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<style>:root{{color-scheme:light dark}}body{{margin:0}}img{{max-width:100%}}[hidden]{{display:none!important}}</style>
+<meta name="color-scheme" content="only light"><meta name="darkreader-lock">
+<style>:root{{color-scheme:only light}}body{{margin:0}}img{{max-width:100%}}[hidden]{{display:none!important}}</style>
 {head}</head>
 <body>
 {body}

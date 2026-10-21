@@ -29,6 +29,7 @@ favicon=("data:image/svg+xml,"
  "%3Cpath d='M20 2 L35 7 V20 C35 29 28 35 20 38 C12 35 5 29 5 20 V7 Z' fill='%2313141b' stroke='%23c8a24a' stroke-width='2.4'/%3E"
  "%3Cpath d='M20 10 V30 M14 15 L20 12 L26 15 M13 21 H27' fill='none' stroke='%23c8a24a' stroke-width='2.2'/%3E%3C/svg%3E")
 desc="용사 학원의 마스터가 되어 학생을 3년간 육성하는 웹 운영 시뮬레이션. 주간 스케줄, 원정, 3인 1팀 ATB 전투와 봄·가을 대회."
+# 1021 — 브라우저 다크 모드여도 게임 그대로: color-scheme only light (크롬 계열의 페이지 자동 다크를 끈다) · darkreader-lock (Dark Reader 확장)
 out=f'''<!doctype html>
 <html lang="ko"><head>
 <meta charset="utf-8">
@@ -41,7 +42,8 @@ out=f'''<!doctype html>
 <meta property="og:description" content="{desc}">
 <meta property="og:image" content="og.png">
 <meta name="twitter:card" content="summary_large_image">
-<style>:root{{color-scheme:light dark}}body{{margin:0}}img{{max-width:100%}}[hidden]{{display:none!important}}</style>
+<meta name="color-scheme" content="only light"><meta name="darkreader-lock">
+<style>:root{{color-scheme:only light}}body{{margin:0}}img{{max-width:100%}}[hidden]{{display:none!important}}</style>
 {head}</head>
 <body>
 {body}

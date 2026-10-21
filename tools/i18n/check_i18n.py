@@ -156,7 +156,8 @@ def build(i18n, stamp):
     base = 'file://' + ROOT.replace(os.sep, '/').rstrip('/') + '/'
     return ('<!doctype html>\n<html lang="ko"><head>\n<base href="%s">\n<meta charset="utf-8">'
             '<meta name="viewport" content="width=device-width,initial-scale=1">\n'
-            '<style>:root{color-scheme:light dark}body{margin:0}img{max-width:100%%}[hidden]{display:none!important}</style>\n'
+            '<meta name="color-scheme" content="only light"><meta name="darkreader-lock">\n'          # 1021 — wrap.py 머리말과 같게
+            '<style>:root{color-scheme:only light}body{margin:0}img{max-width:100%%}[hidden]{display:none!important}</style>\n'
             '%s</head>\n<body>\n%s\n%s\n</body></html>') % (base, head, body, tail)
 
 

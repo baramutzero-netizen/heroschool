@@ -1,7 +1,8 @@
 <!doctype html>
 <html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<style>:root{color-scheme:light dark}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<meta name="color-scheme" content="only light"><meta name="darkreader-lock">
+<style>:root{color-scheme:only light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <script>/* I18N 언어 (tools/i18n) */(function(){var P=true,J=true,K="heroacademy_v1",q=null,s=null,L="ko";try{q=new URLSearchParams(location.search).get("lang")}catch(e){}var n=(navigator.languages&&navigator.languages[0])||navigator.language||"ko";if(P){try{s=localStorage.getItem("hs_lang");var o=localStorage.getItem("hs_lang0");if(!o){if(!s&&K&&localStorage.getItem(K)){s="ko";localStorage.setItem("hs_lang",s)}localStorage.setItem("hs_lang0","1")}if(J&&!localStorage.getItem("hs_lang0j")){if(!s&&o&&K&&localStorage.getItem(K)&&/^ja\b/i.test(n)){s="en";localStorage.setItem("hs_lang",s)}localStorage.setItem("hs_lang0j","1")}}catch(e){}}L=(q==="en"||q==="ko"||q==="ja")?q:(s==="en"||s==="ko"||(J&&s==="ja"))?s:P?(/^ko\b/i.test(n)?"ko":(J&&/^ja\b/i.test(n))?"ja":"en"):"ko";if(L==="ja"){try{var d=document,h=d.head||d.documentElement,a;if(/^https?:$/.test(location.protocol)){a=d.createElement("link");a.rel="preload";a.as="font";a.type="font/woff2";a.crossOrigin="anonymous";a.href="assets/fonts/ja/ja-pixel.woff2?v=2c1469db";h.appendChild(a);}a=d.createElement("link");a.rel="stylesheet";a.href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=Shippori+Mincho:wght@400;700&display=swap";h.appendChild(a);}catch(e){}}window.HS_LANG=L;window.HS_LANG_PUBLIC=P;window.HS_LANG_JA=J;document.documentElement.lang=L;})();</script><title>용사 학원 키우기 — 학원이 망했다</title>
 <script>/* UISCALE start (1011 - display size, 1013 - screen modes). Notes (Korean): the comment above scalePanel() in this file.
    ASCII only in this script: if it held Hangul (even in comments), tools/i18n would put its runtime here, in <head>, before the page HTML exists.
@@ -181,18 +182,7 @@
   --ex:#B02E6B;
   --rainbow:linear-gradient(90deg,#e24b3f,#e08b2c,#d6c62c,#46a65f,#3c8fd0,#6a5fd0,#b455c0);
 }
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --bg:#121319; --surface:#1B1D26; --surface2:#232633; --line:#333747; --line-soft:#282C39;
-    --text:#E8E7F0; --muted:#9C9EB4; --dim:#797C92;
-    --brass:#C8A24A; --brass-b:#E0BB64; --brass-soft:rgba(200,162,74,.14);
-    --indigo:#8A86EC; --indigo-soft:rgba(138,134,236,.14);
-    --ex:#F0629E;
-    --ok:#5CB287; --warn:#DE9038; --bad:#D9604F;
-    --tank:#6FA5D8; --dps:#E07A63; --heal:#5CB287; --supp:#A88BE6;
-    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
-  }
-}
+/* 1021 — 브라우저 · OS 가 다크 모드여도 늘 이 색 (예전 prefers-color-scheme 다크 색은 걷었다 · 브라우저의 페이지 자동 다크는 머리말 color-scheme only light 가 끈다) */
 :root[data-theme="dark"]{
   --bg:#121319; --surface:#1B1D26; --surface2:#232633; --line:#333747; --line-soft:#282C39;
   --text:#E8E7F0; --muted:#9C9EB4; --dim:#797C92;
@@ -344,9 +334,7 @@ nav button.hot .wk{margin-left:6px;font-size:10.5px;font-weight:600;color:var(--
 .btn:disabled{opacity:.4;cursor:not-allowed}
 .btn:disabled:hover{border-color:var(--line)}
 .btn.primary{background:var(--brass);border-color:var(--brass);color:#fff;font-weight:600}
-:root[data-theme="dark"] .btn.primary,
-:root:not([data-theme="light"]) .btn.primary{color:#16171E}
-@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .btn.primary{color:#fff}}
+:root[data-theme="dark"] .btn.primary{color:#16171E}
 .btn.primary:hover{background:var(--brass-b);border-color:var(--brass-b)}
 .btn.sm{padding:3px 9px;font-size:12px}
 .btn.bigrun{padding:9px 20px;font-size:14.5px;letter-spacing:.01em;box-shadow:0 2px 0 color-mix(in srgb,var(--brass) 55%,#000)}
@@ -3035,7 +3023,7 @@ html[data-ui-concept="journal"] .ttab:hover{background:#f5e6c8;border-color:#795
 html[data-ui-concept="journal"] .ttab.on{background:#654333;color:#fff0cf;border-color:#d3ae70}
 html[data-ui-concept="journal"] .ttab.on .tt-sub{color:#f2d8a6}
 :root[data-ui-concept="journal"]{
-  color-scheme:light;
+  color-scheme:only light;
   --bg:#e2cfaa;--surface:#efdfbf;--surface2:#ddc69e;--line:#ad8c60;--line-soft:#c9ad80;
   --text:#35291f;--muted:#68543e;--dim:#75624c;
   --brass:#795322;--brass-b:#966830;--brass-soft:#9b702323;
@@ -4085,7 +4073,7 @@ html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.
   --bg:#e2cfaa;--surface:#efdfbf;--surface2:#ddc69e;--line:#ad8c60;--line-soft:#c9ad80;--text:#35291f;--muted:#68543e;--dim:#75624c;
   --brass:#795322;--brass-b:#966830;--brass-soft:#9b702323;--indigo:#625084;--ok:#306543;--warn:#955015;--bad:#a0302c;
   --tank:#345e80;--dps:#9a3d2c;--heal:#306543;--supp:#67477f;--ex:#95335f;
-  --journal-paper:linear-gradient(90deg,#e6cfa7,#f2e2c0 50%,#e6cfa7);--pixel-edge:#654a30;color-scheme:light;color:var(--text)}
+  --journal-paper:linear-gradient(90deg,#e6cfa7,#f2e2c0 50%,#e6cfa7);--pixel-edge:#654a30;color-scheme:only light;color:var(--text)}
 
 /* ── 직업 의뢰 카드 · 결산 (경과 보고 위에 뜨는 작은 창) ── */
 html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .ji-card{color:var(--text);background:var(--pt-win)!important;background-image:none!important;
@@ -18836,7 +18824,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1021-1003";
+const BUILD = "1021-1403";
 const BUILD_TS = 0;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
