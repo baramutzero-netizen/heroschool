@@ -463,5 +463,15 @@
  "친선전 회신 — <b>{0}</b> · {1} 일과를 마치면 친선전": "Friendly Match reply — <b>{0}</b> · match after the {1} schedule",
  "<b>{0}</b>의 친선전 신청을 거절했다.": "Declined <b>{0}</b>'s friendly match request.",
  "친선전 신청 편지 {0}통이 왔다.": "{0} friendly match {0|letter|letters} arrived.",
- "<b>{0}</b>의 친선전 신청 — 요청한 {1}가 지나 편지가 사라졌다.": "<b>{0}</b>'s friendly match request — {1} has passed, so the letter is gone."
+ "<b>{0}</b>의 친선전 신청 — 요청한 {1}가 지나 편지가 사라졌다.": "<b>{0}</b>'s friendly match request — {1} has passed, so the letter is gone.",
+ "_expedDone": "",
+ "끝까지 나아가 <b>완주했다!</b>": "went all the way and <b>cleared it!</b>",
+ "<b>{0}%</b> 지점에서 <b>돌아왔다.</b>": "reached <b>{0}%</b> before <b>turning back.</b>",
+ "{0}요일은 {1}{2} <b>{3}</b>로 원정을 떠나 {4}{5}": "On {0}, {1} set out for <b>{3}</b> and {4}{5}",
+ "보물 상자 — {0}": "Treasure chests — {0}",
+ "_beltFinish": "",
+ "완주": "Cleared",
+ "{0}% 지점에서 철수": "Retreated at {0}%",
+ "그뉵이용 {0}회 격파!": "Defeated Musclime {0} {0|time|times}!",
+ "원정 — <b>{0}</b> {1}.{2} 경험 {3}{4}{5}{6} · 유물 {7}개{8}{9}{10}{11}": "Expedition — <b>{0}</b>: {1}.{2} EXP {3}{4}{5}{6} · {7} {7|relic|relics}{8}{9}{10}{11}"
 }

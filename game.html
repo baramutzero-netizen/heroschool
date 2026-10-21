@@ -2394,6 +2394,14 @@ html[data-ui-concept="journal"] .prepbar .pb-t{color:#4a3a2a}
 .sprwrap.mon.hit{animation:monShake .26s ease-out 1}
 @keyframes monShake{ 0%{transform:translateX(6px)} 35%{transform:translateX(-5px)} 70%{transform:translateX(3px)} 100%{transform:none} }
 .sprwrap.mon.down .monspr{filter:grayscale(1) brightness(.62);opacity:.45;transform:rotate(5deg)}
+/* 공격 자세 (1021) — 대기 그림은 자리만 지키고 공격 그림을 겹친다 (자리 · 크기는 monAtkFit 이 대기 그림 상자에서 잰다) */
+.sprwrap.mon > .monatk{position:absolute;left:0;top:0;width:0;height:0;visibility:hidden;pointer-events:none;z-index:1}
+.sprwrap.mon.matk > .monspr{visibility:hidden}
+.sprwrap.mon.matk > .monatk{visibility:visible}
+.monatk-img{display:block;width:100%;height:100%;image-rendering:pixelated;filter:drop-shadow(0 3px 5px rgba(25,26,36,.28))}
+.monatk-fl{position:absolute;inset:0;pointer-events:none;opacity:0;background:#ffffff;filter:drop-shadow(0 0 10px rgba(255,255,255,.9));
+  -webkit-mask-image:var(--m);mask-image:var(--m);-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+.sprwrap.mon.matk .monatk-fl{animation:monFlash .46s ease-out 1}
 /* 유물 떨어뜨리기 (1018 · 사용자: '마지막 몬스터가 죽으면서 유물을 드랍 — 시체가 사라질 때 유물이 뿅') — openBattle opt.drops.
    --rd-out · --rd-d 는 끝 장면을 처음 그린 때부터 지난 시간만큼 앞당긴 지연 (다시 그려도 이어서). 시체는 하얗게 번뜩이며 작아져 사라진다 */
 .bf-stage .bf-unit.rdrop.dead{opacity:1}
@@ -4230,6 +4238,144 @@ html body #modalRoot .xm-stage button.xm-arr.xm-arr:is(:hover,:focus-visible){ba
 .xm-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}
 @media (prefers-reduced-motion:reduce){.xm-pin img,.xm-gotxt span,.xm-plate .xm-hw.hop{animation:none}}
 /* EXMAP_CSS_END */
+/* BELT_CSS_START — 벨트 원정 (1021 · apply_belt.py) ─ 원정을 가로 띠(벨트 스크롤) 창으로. mockups/expedition-belt 목업 그대로.
+   창(#beltRoot .belt-win)은 #modalRoot 밖 — 전투 화면(openBattle · #modalRoot .overlay z 80)이 그 위에 뜨고, 전투가 끝나면 띠로 돌아온다 (전투 동안 띠는 .belt-hold 로 숨긴다).
+   색은 팝업 · 건물 안 테마(poptheme — 짙은 자주 창 · 크림 줄 · 금색) · 글꼴은 게임 도트 글꼴(Mulmaru — 일본어 · 갈무리도 이 이름으로 바뀐다).
+   띠 = 384 × 128 점 캔버스를 --bk 배(넓은 화면 2 · 좁으면 1.5 · 폰은 폭에 맞춰)로 — 띠 위 글(말풍선 · GET! · 숫자 · 배너)은 같은 배율의 DOM (.belt-fx) */
+#beltRoot{position:fixed;inset:0;z-index:79;display:flex;align-items:center;justify-content:center;padding:12px;background:rgba(10,11,15,.72);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);overscroll-behavior:contain}
+#beltRoot.belt-hold{visibility:hidden}
+.belt-win{--pt-ink:#fff4e6;--pt-line:#e9cdbf;--pt-edge:#b98f84;--pt-rim:#8a5a4a;--pt-win:#2a1418;--pt-panel:#42191f;--pt-card:#5b2a30;--pt-gold:#ffd36a;--pt-dim:#e2c2b6;--pt-dark:#140a0c;
+  --bk:2;position:relative;box-sizing:border-box;width:max-content;max-width:100%;max-height:100%;overflow:auto;padding:12px 14px 14px;color:var(--pt-ink);background:var(--pt-win);
+  border:2px solid var(--pt-rim);box-shadow:0 0 0 2px var(--pt-win),0 0 0 4px var(--pt-line),0 0 0 6px var(--pt-dark),0 8px 0 6px #0005,0 14px 28px 6px #0006;
+  font:400 12px/1.75 "Mulmaru",sans-serif;-webkit-font-smoothing:none;font-synthesis:none;text-align:left;animation:beltIn .25s ease-out both;
+  scrollbar-color:#8a5a4a #2a1418;user-select:none;-webkit-user-select:none}
+.belt-win *,.belt-win *::before,.belt-win *::after{box-sizing:border-box}
+@keyframes beltIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+.belt-head{display:flex;align-items:baseline;gap:10px;margin:0 0 8px;padding-bottom:6px;border-bottom:1px dashed #b98f8499}
+.belt-head h2{margin:0;font:400 16px/1.3 "Mulmaru",sans-serif;color:#ffd8c8;letter-spacing:0}
+.belt-eb{color:var(--pt-dim);white-space:nowrap}
+/* 단추 — 게임의 도트 마감이 모든 button 에 붙이는 테두리 · 그림자(!important)를 이 창 모양으로 덮는다 */
+html body #beltRoot .belt-win button.belt-btn.belt-btn{font:inherit;line-height:1.4;color:var(--pt-ink);background:var(--pt-card);border:2px solid var(--pt-line)!important;border-radius:0!important;
+  padding:2px 10px;margin:0;min-height:0;cursor:pointer;box-shadow:inset 0 0 0 1px var(--pt-edge),2px 3px 0 #0007!important;outline:none;-webkit-tap-highlight-color:transparent}
+html body #beltRoot .belt-win button.belt-btn.belt-btn:is(:hover,:focus-visible){filter:brightness(1.1);border-color:#fff2c0!important}
+html body #beltRoot .belt-win button.belt-fast.belt-fast{margin-left:auto}
+html body #beltRoot .belt-win button.belt-fast.belt-fast[aria-pressed="true"]{color:#fff3cf;background:#8a5a1e;border-color:var(--pt-gold)!important;outline:none}
+html body #beltRoot .belt-win button.belt-close.belt-close{color:#fff3cf;background:#8a5a1e;border-color:var(--pt-gold)!important;padding:10px 22px;line-height:1;
+  box-shadow:inset 0 0 0 1px #e0b452,2px 3px 0 #0007!important}
+.belt-close[hidden]{display:none}
+/* 위 줄 — 진행 % · 진행 띠(표식 · 맨 앞 학생 얼굴) · 얻은 것 */
+.belt-top{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;margin-bottom:8px}
+.belt-pct{min-width:84px;padding:2px 10px;text-align:right;background:#1a0d10;border:2px solid var(--pt-line);box-shadow:inset 0 0 0 2px #1a0d10,inset 0 0 0 3px var(--pt-edge)}
+.belt-pct b{font-size:24px;line-height:1.25;color:var(--pt-gold);text-shadow:2px 2px 0 #3b2412;font-weight:400}
+.belt-pct i{font-style:normal;font-size:16px;color:var(--pt-dim);margin-left:2px}
+.belt-track{position:relative;height:34px;margin:0 14px 0 8px;min-width:120px}
+.belt-track .bl-rail{position:absolute;left:0;right:0;top:24px;height:6px;background:#1a0d10;box-shadow:0 0 0 1px var(--pt-edge)}
+.belt-track .bl-fill{position:absolute;left:0;top:24px;height:6px;width:0;background:linear-gradient(#ffe08a,#c8962e)}
+.belt-track .bl-mk{position:absolute;bottom:8px;transform:translateX(-50%);opacity:.95}
+.belt-track .bl-mk.bl-done{filter:saturate(.35) brightness(.85)}
+.belt-track .bl-me{position:absolute;bottom:12px;transform:translateX(-50%);width:26px;height:22px;image-rendering:pixelated;filter:drop-shadow(0 1px 0 #000);z-index:2}
+.belt-loot{display:flex;align-items:center;gap:8px;padding:2px 8px;min-height:30px;background:#1a0d10;border:2px solid var(--pt-line);box-shadow:inset 0 0 0 2px #1a0d10,inset 0 0 0 3px var(--pt-edge)}
+.belt-loot .bl-lt{display:inline-flex;align-items:center;gap:3px;white-space:nowrap}
+.belt-loot .bl-lt b{color:var(--pt-gold);font-weight:400}
+.belt-loot .bl-pop{animation:beltPop .4s ease-out}
+@keyframes beltPop{0%{transform:scale(1.5)}100%{transform:none}}
+/* 그림 조각 — 띠 그림(atlas) · 건물 안 아이콘 시트(물건) — 배율 --s 로 */
+.belt-sp{display:inline-block;flex:none;width:calc(var(--w) * var(--s,1) * 1px);height:calc(var(--h) * var(--s,1) * 1px);background:var(--belt-atlas) no-repeat;
+  background-size:calc(var(--aw) * var(--s,1) * 1px) calc(var(--ah) * var(--s,1) * 1px);background-position:calc(var(--x) * var(--s,1) * -1px) calc(var(--y) * var(--s,1) * -1px);
+  image-rendering:pixelated;vertical-align:middle}
+.belt-ic{display:inline-block;flex:none;width:calc(16px * var(--s,1));height:calc(16px * var(--s,1));background:var(--belt-icons) no-repeat;
+  background-size:calc(var(--iw) * var(--s,1) * 1px) calc(var(--ih) * var(--s,1) * 1px);background-position:calc(var(--x) * var(--s,1) * -1px) calc(var(--y) * var(--s,1) * -1px);
+  image-rendering:pixelated;vertical-align:middle}
+/* 띠 */
+.belt-strip{position:relative;width:calc(384px * var(--bk));height:calc(128px * var(--bk));margin:0 auto;background:#000;
+  box-shadow:0 0 0 2px var(--pt-dark),0 0 0 4px var(--pt-line),0 0 0 6px var(--pt-dark)}
+.belt-strip canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
+.belt-fx{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+/* 아래 줄 — 원정 지구력 · 학생(얼굴 · 이름 · 체력) · 닫기 */
+.belt-bot{display:flex;align-items:center;gap:14px;margin-top:12px;min-height:52px}
+.belt-stam{position:relative;display:grid;grid-template-columns:auto 150px auto;align-items:center;gap:6px 8px;padding:6px 10px;background:var(--pt-panel);border:2px solid var(--pt-line);
+  box-shadow:inset 0 0 0 2px var(--pt-panel),inset 0 0 0 3px var(--pt-edge)}
+.belt-stam .bl-lab{color:#cdeec0}
+.belt-stam .bl-bar{position:relative;height:10px;background:#1a0d10;box-shadow:0 0 0 1px var(--pt-edge)}
+.belt-stam .bl-bar i{position:absolute;left:0;top:0;bottom:0;width:100%;background:linear-gradient(90deg,#4f9e78,#8fd16a)}
+.belt-stam b{min-width:58px;text-align:right;font-weight:400;font-variant-numeric:tabular-nums}
+.belt-stam.bl-low .bl-bar i{background:linear-gradient(90deg,#c0533e,#ffb46a)}
+.belt-stam.bl-low b,.belt-stam.bl-low .bl-lab{color:#ff9a86}
+.belt-stam.bl-zero{animation:beltZero .5s steps(2) 3}
+@keyframes beltZero{50%{border-color:#ff9a86}}
+.belt-stam .bl-dv{position:absolute;right:4px;top:-14px;text-shadow:0 1px 0 #000;transition:transform .6s,opacity .6s;pointer-events:none}
+.belt-party{display:flex;gap:10px;flex:1;min-width:0}
+.belt-pm{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;column-gap:6px;align-items:center;min-width:0;flex:1;padding:4px 6px;background:var(--pt-panel);
+  border:2px solid var(--pt-line);box-shadow:inset 0 0 0 2px var(--pt-panel),inset 0 0 0 3px var(--pt-edge)}
+.belt-pm canvas{grid-row:1/3;width:39px;height:33px;image-rendering:pixelated;background:#1a0d10;box-shadow:0 0 0 1px var(--pt-edge)}
+.belt-pm .bl-nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3}
+.belt-pm .bl-hp{position:relative;height:7px;background:#1a0d10;box-shadow:0 0 0 1px var(--pt-edge)}
+.belt-pm .bl-hp i{position:absolute;left:0;top:0;bottom:0;background:#7bd06a;transition:width .35s}
+.belt-pm .bl-hp i.bl-mid{background:#e8c25a}.belt-pm .bl-hp i.bl-low{background:#e4664e}
+.belt-pm.bl-ko canvas{filter:grayscale(1) brightness(.6)}
+.belt-pm.bl-ko .bl-nm{color:#b8a8a0}
+.belt-pm .bl-kot{display:none;color:#ff9a86}
+.belt-pm.bl-ko .bl-kot{display:inline;margin-left:4px}
+.belt-pm.bl-hit{animation:beltHit .3s steps(2) 2}
+@keyframes beltHit{50%{border-color:#ff9a86}}
+.belt-pm.bl-heal{animation:beltHeal .5s ease-out}
+@keyframes beltHeal{0%{box-shadow:inset 0 0 0 2px var(--pt-panel),inset 0 0 0 3px var(--pt-edge),0 0 0 3px #9fe08a}}
+/* 띠 위 글 (점 좌표 × --bk) — 말풍선 · GET! · 숫자 · ! · 꼬리표 · 배너 · 빛살 */
+.belt-fx .bl-fx{position:absolute;left:0;top:0;white-space:nowrap;will-change:transform,opacity}
+.belt-fx .bl-bub{max-width:max(150px,calc(115px * var(--bk)));white-space:normal;padding:4px 8px 5px;font:400 12px/1.45 "Mulmaru",sans-serif;color:#2a1a12;background:#fff8e8;
+  box-shadow:0 0 0 2px #2a1a12,3px 3px 0 2px #0005;overflow-wrap:anywhere;word-break:keep-all}
+html[lang="ja"] .belt-fx .bl-bub{word-break:normal}   /* 일본어는 띄어쓰기가 없다 — 글자 사이에서 줄을 바꾼다 */
+.belt-fx .bl-bub::after{content:"";position:absolute;left:calc(50% + var(--tail,0px));bottom:-8px;margin-left:-5px;border:5px solid transparent;border-top:6px solid #fff8e8;
+  filter:drop-shadow(0 2px 0 #2a1a12)}
+.belt-fx .bl-get{font:400 max(14px,calc(12px * var(--bk)))/1 "Mulmaru",sans-serif;color:#ffe08a;letter-spacing:.02em;text-align:center;
+  text-shadow:2px 0 #5a2a08,-2px 0 #5a2a08,0 2px #5a2a08,0 -2px #5a2a08,2px 2px #5a2a08,-2px 2px #5a2a08,2px -2px #5a2a08,-2px -2px #5a2a08,0 5px #0006}
+.belt-fx .bl-get :is(img,.belt-sp,.belt-ic){display:block;margin:0 auto 4px;image-rendering:pixelated;filter:drop-shadow(0 0 3px #fff6c8)}
+.belt-fx .bl-num{font:400 max(12px,calc(8px * var(--bk)))/1 "Mulmaru",sans-serif;color:#fff;text-shadow:2px 0 #000,-2px 0 #000,0 2px #000,0 -2px #000,0 3px #0008}
+.belt-fx .bl-num.bl-bad{color:#ff8a74}.belt-fx .bl-num.bl-good{color:#a6e48e}.belt-fx .bl-num.bl-gold{color:#ffd36a}.belt-fx .bl-num.bl-st{color:#d4ead0}
+.belt-fx .bl-bang{font:400 max(12px,calc(8px * var(--bk)))/1 "Mulmaru",sans-serif;color:#d0302a;padding:1px 6px 2px;background:#fff8e8;box-shadow:0 0 0 2px #2a1a12}
+.belt-fx .bl-tag{font:400 12px/1.3 "Mulmaru",sans-serif;padding:2px 8px;color:#fff;background:#b0412c;box-shadow:0 0 0 2px #140a0c}
+.belt-fx .bl-banner{font:400 max(20px,calc(24px * var(--bk)))/1 "Mulmaru",sans-serif;color:#fff1a8;letter-spacing:.06em;
+  text-shadow:3px 0 #5a2a08,-3px 0 #5a2a08,0 3px #5a2a08,0 -3px #5a2a08,3px 3px #5a2a08,-3px 3px #5a2a08,3px -3px #5a2a08,-3px -3px #5a2a08,0 7px #0007}
+.belt-fx .bl-banner.bl-bad{color:#ffd2c8;text-shadow:3px 0 #4a1010,-3px 0 #4a1010,0 3px #4a1010,0 -3px #4a1010,3px 3px #4a1010,-3px 3px #4a1010,3px -3px #4a1010,-3px -3px #4a1010,0 7px #0007}
+.belt-fx .bl-rays{width:calc(110px * var(--bk));height:calc(110px * var(--bk));border-radius:50%;
+  background:repeating-conic-gradient(rgba(255,230,140,.55) 0deg 8deg,rgba(255,230,140,.1) 12deg,rgba(255,230,140,0) 16deg 30deg);
+  -webkit-mask:radial-gradient(circle,#000 0 20%,transparent 70%);mask:radial-gradient(circle,#000 0 20%,transparent 70%);animation:beltRays 9s linear infinite}
+@keyframes beltRays{to{rotate:360deg}}
+/* 좁은 화면 — 위 줄은 진행(% · 띠) 한 줄 + 얻은 것 한 줄 · 아래 줄은 지구력 한 줄 + 학생 한 줄 (닫기는 그 아래) */
+@media (max-width:860px){
+  .belt-win{padding:10px 10px 12px}
+  .belt-top{grid-template-columns:auto minmax(0,1fr)}
+  .belt-loot{grid-column:1/-1;justify-content:center;flex-wrap:wrap}
+  .belt-bot{flex-wrap:wrap;gap:8px}
+  .belt-stam{flex:1 1 100%;grid-template-columns:auto minmax(0,1fr) auto}
+  .belt-party{flex:1 1 100%;gap:6px}
+  .belt-pm{padding:3px 4px;column-gap:4px}
+  .belt-pm canvas{width:26px;height:22px}
+  html body #beltRoot .belt-win button.belt-close.belt-close{margin:0 auto}
+}
+@media (max-width:480px){
+  #beltRoot{padding:6px}
+  .belt-pct{min-width:64px;padding:2px 6px}
+  .belt-pct b{font-size:20px}
+  .belt-track{margin:0 10px 0 6px}
+  .belt-party{flex-wrap:wrap}
+  .belt-pm{flex:1 1 calc(50% - 6px)}
+}
+/* 전리품 (원정이 끝나면 — 유물 획득 창 그대로 + 물건 · 자금 칸) — .rdp-* 는 유물 획득 창 CSS (RELICDB) */
+.rdp-ov .rdp-sub{color:#e4d6ff;font-size:12px;margin-top:4px}
+.rdp-ov .rdp-sub .bl-bad{color:#ff9a86}
+.rdp-ov .rdp-it.bl-item .rdp-ring{background:radial-gradient(circle,rgba(170,240,200,.3) 0 30%,rgba(90,210,150,.85) 40%,rgba(60,190,120,.45) 50%,rgba(60,190,120,0) 64%)}
+.rdp-ov .rdp-it.bl-goldt .rdp-ring{background:radial-gradient(circle,rgba(255,240,170,.32) 0 30%,rgba(255,206,80,.9) 40%,rgba(255,170,40,.48) 50%,rgba(255,170,40,0) 64%)}
+.rdp-ov .rdp-tile .belt-ic,.rdp-ov .rdp-tile .belt-sp{display:block}
+.rdp-ov .rdp-n{position:absolute;right:-6px;bottom:-8px;min-width:24px;padding:1px 6px;font:400 12px/1.3 Mulmaru,sans-serif;color:#fff;background:#3a2a1a;box-shadow:0 0 0 2px #140a0c}
+.rdp-ov .rdp-cap{position:absolute;left:50%;top:calc(100% + 10px);transform:translateX(-50%);white-space:nowrap;font-size:12px;color:#fff3cf;text-shadow:0 1px 0 #000,0 0 4px #000}
+.rdp-ov .belt-ltip{position:fixed;z-index:5;min-width:160px;max-width:260px;padding:8px 10px;text-align:left;color:#fff4e6;background:#2a1418f2;border:2px solid #8a5a4a;
+  box-shadow:0 0 0 2px #2a1418,0 0 0 3px #e9cdbf;pointer-events:none;font:400 12px/1.5 "Mulmaru",sans-serif}
+.rdp-ov .belt-ltip[hidden]{display:none}
+.rdp-ov .belt-ltip .bl-k{color:#e2c2b6}
+@media (max-width:640px){.rdp-ov .rdp-tile .belt-ic{--s:3!important}.rdp-ov .rdp-tile .belt-sp{--s:1.5!important}}
+/* BELT_CSS_END */
 /* SKILL_CHOICE_STYLE_START */
 /* Skill-upgrade popup: scoped to avoid changing other game windows. */
 #modalRoot .suc-modal{padding:0;width:min(1024px,100%)!important;max-height:calc(100dvh - 24px);border:0;border-radius:0;overflow:auto;background:#735f48}
@@ -4671,23 +4817,24 @@ html body #app>.topbar nav#navm .navm-grid button .badge.l{left:2px;right:auto}
 <script src="assets/spr_img.webp.js?v=0af6ce1e"></script>
 <script src="assets/fx_img.webp.js?v=ce56c340"></script>
 <script src="assets/spr_x_img/demonking.webp.js?v=e26b436e"></script>
-<script src="assets/spr_x_img/paladin.png.js?v=411f4abb"></script>
-<script src="assets/spr_x_img/priest.png.js?v=2628c482"></script>
-<script src="assets/spr_x_img/spellsword.png.js?v=9c063bd0"></script>
-<script src="assets/spr_x_img/gunner.png.js?v=f1c08727"></script>
-<script src="assets/spr_x_img/ninja.png.js?v=28a53242"></script>
-<script src="assets/spr_x_img/forcemage.png.js?v=8ab14786"></script>
-<script src="assets/spr_x_img/monk.png.js?v=03cf9890"></script>
-<script src="assets/spr_x_img/archer.png.js?v=7cb1bf1a"></script>
-<script src="assets/spr_x_img/wizard.png.js?v=26178bd5"></script>
-<script src="assets/spr_x_img/darkpriest.png.js?v=e8980a4e"></script>
-<script src="assets/spr_x_img/bard.png.js?v=28aa9975"></script>
-<script src="assets/spr_x_img/enchanter.png.js?v=81bd79d5"></script>
-<script src="assets/spr_x_img/rogue.png.js?v=d0d7260d"></script>
-<script src="assets/spr_x_img/druid.png.js?v=f9499a42"></script>
-<script src="assets/spr_x_img/timemage.png.js?v=44f13541"></script>
-<script src="assets/spr_x_img/sword.png.js?v=238a83e1"></script>
-<script src="assets/expedition/sd.png.js?v=8b5b5642"></script>
+<script src="assets/spr_x_img/paladin.png.js?v=0b22b188"></script>
+<script src="assets/spr_x_img/priest.png.js?v=34246d99"></script>
+<script src="assets/spr_x_img/spellsword.png.js?v=6f8c17c3"></script>
+<script src="assets/spr_x_img/gunner.png.js?v=8efa277b"></script>
+<script src="assets/spr_x_img/ninja.png.js?v=e84c8344"></script>
+<script src="assets/spr_x_img/forcemage.png.js?v=7447282c"></script>
+<script src="assets/spr_x_img/monk.png.js?v=1293d674"></script>
+<script src="assets/spr_x_img/archer.png.js?v=bb32fd53"></script>
+<script src="assets/spr_x_img/wizard.png.js?v=ec11c8a4"></script>
+<script src="assets/spr_x_img/darkpriest.png.js?v=643c1d79"></script>
+<script src="assets/spr_x_img/bard.png.js?v=3c08341e"></script>
+<script src="assets/spr_x_img/enchanter.png.js?v=d6c5cda7"></script>
+<script src="assets/spr_x_img/rogue.png.js?v=6597ad5e"></script>
+<script src="assets/spr_x_img/druid.png.js?v=6c99d284"></script>
+<script src="assets/spr_x_img/timemage.png.js?v=45f9e55c"></script>
+<script src="assets/spr_x_img/sword.png.js?v=a237b4b3"></script>
+<script src="assets/expedition/sd.png.js?v=cbaad503"></script>
+<script src="assets/belt/sd.webp.js?v=096765e8"></script>
 <script src="assets/counsel-cookie/rogue.png.js?v=74466f1b"></script>
 <script src="assets/counsel-cookie/wizard.png.js?v=626b6975"></script>
 <script src="assets/counsel-cookie/enchanter.png.js?v=d75e3a24"></script>
@@ -4723,7 +4870,7 @@ const PROL_IMG={"1":"assets/prol_img/1.webp?v=f8ddf596","2":"assets/prol_img/2.w
 const VICT_IMG={"paladin":"assets/vict_img/paladin.webp?v=59b9ae54","rogue":"assets/vict_img/rogue.webp?v=9d21f67b","forcemage":"assets/vict_img/forcemage.webp?v=974e6141","ninja":"assets/vict_img/ninja.webp?v=697d2112","spellsword":"assets/vict_img/spellsword.webp?v=c61cea2c","druid":"assets/vict_img/druid.webp?v=bf940093","sword":"assets/vict_img/sword.webp?v=8410e9aa","gunner":"assets/vict_img/gunner.webp?v=e9318d49","darkpriest":"assets/vict_img/darkpriest.webp?v=e72d0c97","priest":"assets/vict_img/priest.webp?v=e145e946","monk":"assets/vict_img/monk.webp?v=07b36c81","wizard":"assets/vict_img/wizard.webp?v=3a13afae","archer":"assets/vict_img/archer.webp?v=e2f0f613","bard":"assets/vict_img/bard.webp?v=450f51ce","enchanter":"assets/vict_img/enchanter.webp?v=2d160b78","timemage":"assets/vict_img/timemage.webp?v=f6dc5b3f"};
 const POPUP_IMG={"spring":"assets/popup_img/spring.webp?v=bba45307","summer":"assets/popup_img/summer.webp?v=ea1ab5c6","fall":"assets/popup_img/fall.webp?v=d41739fb","winter":"assets/popup_img/winter.webp?v=b7486f9c","winter3":"assets/popup_img/winter3.webp?v=58d3a2d3"};
 const FACE_IMG={"paladin":"assets/student-portraits-v2/paladin-512.png?v=fd679c8f","sword":"assets/student-portraits-v2/sword-512.png?v=f5fd942b","monk":"assets/student-portraits-v2/monk-512.png?v=2a819a9f","druid":"assets/student-portraits-v2/druid-512.png?v=609f0371","archer":"assets/student-portraits-v2/archer-512.png?v=b1afe9ea","rogue":"assets/student-portraits-v2/rogue-512.png?v=bc69eeb7","wizard":"assets/student-portraits-v2/wizard-512.png?v=08c7849c","forcemage":"assets/student-portraits-v2/forcemage-512.png?v=3a2b25ba","spellsword":"assets/student-portraits-v2/spellsword-512.png?v=3a474c3f","gunner":"assets/student-portraits-v2/gunner-512.png?v=46486a21","ninja":"assets/student-portraits-v2/ninja-512.png?v=6a3cced9","priest":"assets/student-portraits-v2/priest-512.png?v=298ef897","darkpriest":"assets/student-portraits-v2/darkpriest-512.png?v=a1bcd703","timemage":"assets/student-portraits-v2/timemage-512.png?v=2084ad8a","enchanter":"assets/student-portraits-v2/enchanter-512.png?v=3d68276a","bard":"assets/student-portraits-v2/bard-512.png?v=835281ed"};
-const MON_IMG={"mon_brine":{"w":256,"h":128,"k":2,"src":"assets/mon_img/mon_brine-warm-pixel.webp?v=66e54cd7"},"mon_dummy":{"w":128,"h":128,"k":2,"src":"assets/mon_img/mon_dummy-warm-pixel.webp?v=50905717"},"mon_gargoyle":{"w":256,"h":128,"k":2,"src":"assets/mon_img/mon_gargoyle-warm-pixel.webp?v=1a045a1a"},"mon_guardian":{"w":256,"h":128,"k":2,"src":"assets/mon_img/mon_guardian-warm-pixel.webp?v=753447ee"},"mon_wraith":{"w":128,"h":128,"k":2,"src":"assets/mon_img/mon_wraith-warm-pixel.webp?v=6c4cc5bf"},"mon_wood":{"w":256,"h":256,"k":1,"src":"assets/mon_img/mon_wood.webp?v=ea514329"},"mon_target":{"w":256,"h":256,"k":1,"src":"assets/mon_img/mon_target.webp?v=02f5b67e"},"mon_sentry":{"w":256,"h":256,"k":1,"src":"assets/mon_img/mon_sentry.webp?v=2269b79a"},"mon_foghound":{"w":256,"h":256,"k":1,"src":"assets/mon_img/mon_foghound.webp?v=e20cf3ca"},"mon_lantern":{"w":256,"h":256,"k":1,"src":"assets/mon_img/mon_lantern.webp?v=af127c8b"},"mon_bellcrab":{"w":256,"h":256,"k":1,"src":"assets/mon_img/mon_bellcrab.webp?v=96eac433"},"mon_clockcrow":{"w":256,"h":256,"k":1,"src":"assets/mon_img/mon_clockcrow.webp?v=f9c1c173"},"mon_choir":{"w":256,"h":256,"k":1,"src":"assets/mon_img/mon_choir.webp?v=279c542b"},"mon_saltcrab":{"w":256,"h":256,"k":1,"src":"assets/mon_img/mon_saltcrab.webp?v=2e921ce1"},"mon_jelly":{"w":256,"h":256,"k":1,"src":"assets/mon_img/mon_jelly.webp?v=e8074057"},"mon_diver":{"w":256,"h":256,"k":1,"src":"assets/mon_img/mon_diver.webp?v=7127c098"},"mon_oath":{"w":256,"h":256,"k":1,"src":"assets/mon_img/mon_oath.webp?v=c6037040"},"mon_scribe":{"w":256,"h":256,"k":1,"src":"assets/mon_img/mon_scribe.webp?v=73b551b7"},"mon_blade":{"w":256,"h":256,"k":1,"src":"assets/mon_img/mon_blade.webp?v=eda21403"},"mon_muscle":{"w":256,"h":256,"k":1,"src":"assets/mon_img/mon_muscle.webp?v=2731f9d9"}};
+const MON_IMG={"mon_brine":{"w":192,"h":102,"k":2.6667,"w0":512,"src":"assets/mon_img/mon_brine-pixel.webp?v=b84bf21f","a":{"w":192,"h":89,"s":1.2,"x":-51,"y":-5,"src":"assets/mon_img/mon_brine-attack.webp?v=985535c1"}},"mon_dummy":{"w":192,"h":157,"k":1.3333,"w0":256,"src":"assets/mon_img/mon_dummy-pixel.webp?v=a9ad9933","a":{"w":192,"h":129,"s":1.18,"x":-45,"y":5,"src":"assets/mon_img/mon_dummy-attack.webp?v=5c3bee9b"}},"mon_gargoyle":{"w":192,"h":112,"k":2.6667,"w0":512,"src":"assets/mon_img/mon_gargoyle-pixel.webp?v=1d3412b3","a":{"w":192,"h":99,"s":1.0,"x":-8,"y":13,"src":"assets/mon_img/mon_gargoyle-attack.webp?v=1a41fb10"}},"mon_guardian":{"w":192,"h":102,"k":2.6667,"w0":512,"src":"assets/mon_img/mon_guardian-pixel.webp?v=e2ca37eb","a":{"w":192,"h":92,"s":1.08,"x":-3,"y":3,"src":"assets/mon_img/mon_guardian-attack.webp?v=f97773c7"}},"mon_wraith":{"w":192,"h":160,"k":1.3333,"w0":256,"src":"assets/mon_img/mon_wraith-pixel.webp?v=412f3f71","a":{"w":192,"h":145,"s":1.15,"x":-31,"y":-5,"src":"assets/mon_img/mon_wraith-attack.webp?v=9d63b644"}},"mon_wood":{"w":192,"h":146,"k":1.3333,"w0":256,"src":"assets/mon_img/mon_wood-pixel.webp?v=5fa44f5d","a":{"w":192,"h":135,"s":1.02,"x":-22,"y":8,"src":"assets/mon_img/mon_wood-attack.webp?v=f88c7815"}},"mon_target":{"w":192,"h":162,"k":1.3333,"w0":256,"src":"assets/mon_img/mon_target-pixel.webp?v=e8bf7bcc","a":{"w":192,"h":170,"s":0.9,"x":7,"y":-7,"src":"assets/mon_img/mon_target-attack.webp?v=bb1eff27"}},"mon_sentry":{"w":192,"h":179,"k":1.3333,"w0":256,"src":"assets/mon_img/mon_sentry-pixel.webp?v=3b0f1b0f","a":{"w":192,"h":124,"s":1.29,"x":-56,"y":21,"src":"assets/mon_img/mon_sentry-attack.webp?v=cde58e28"}},"mon_foghound":{"w":192,"h":102,"k":1.3333,"w0":256,"src":"assets/mon_img/mon_foghound-pixel.webp?v=40666b94","a":{"w":192,"h":98,"s":0.95,"x":3,"y":9,"src":"assets/mon_img/mon_foghound-attack.webp?v=32d8220f"}},"mon_lantern":{"w":192,"h":173,"k":1.3333,"w0":256,"src":"assets/mon_img/mon_lantern-pixel.webp?v=d7eb083a","a":{"w":192,"h":165,"s":1.05,"x":-19,"y":-3,"src":"assets/mon_img/mon_lantern-attack.webp?v=7bf598c0"}},"mon_bellcrab":{"w":192,"h":125,"k":1.3333,"w0":256,"src":"assets/mon_img/mon_bellcrab-pixel.webp?v=7496473a","a":{"w":192,"h":127,"s":1.0,"x":1,"y":-2,"src":"assets/mon_img/mon_bellcrab-attack.webp?v=63bdc475"}},"mon_clockcrow":{"w":192,"h":129,"k":1.3333,"w0":256,"src":"assets/mon_img/mon_clockcrow-pixel.webp?v=84842b02","a":{"w":192,"h":141,"s":1.1,"x":-12,"y":-26,"src":"assets/mon_img/mon_clockcrow-attack.webp?v=6373f3a1"}},"mon_choir":{"w":192,"h":183,"k":1.3333,"w0":256,"src":"assets/mon_img/mon_choir-pixel.webp?v=4f254061","a":{"w":192,"h":168,"s":1.08,"x":9,"y":2,"src":"assets/mon_img/mon_choir-attack.webp?v=a58b8199"}},"mon_saltcrab":{"w":192,"h":126,"k":1.3333,"w0":256,"src":"assets/mon_img/mon_saltcrab-pixel.webp?v=e142fab3","a":{"w":192,"h":125,"s":1.07,"x":-22,"y":-8,"src":"assets/mon_img/mon_saltcrab-attack.webp?v=64e4ef79"}},"mon_jelly":{"w":192,"h":182,"k":1.3333,"w0":256,"src":"assets/mon_img/mon_jelly-pixel.webp?v=58dc0f82","a":{"w":192,"h":155,"s":1.08,"x":-34,"y":5,"src":"assets/mon_img/mon_jelly-attack.webp?v=ea61079f"}},"mon_diver":{"w":192,"h":152,"k":1.3333,"w0":256,"src":"assets/mon_img/mon_diver-pixel.webp?v=fa0b38e1","a":{"w":192,"h":107,"s":1.3,"x":-50,"y":13,"src":"assets/mon_img/mon_diver-attack.webp?v=949296b2"}},"mon_oath":{"w":192,"h":171,"k":1.3333,"w0":256,"src":"assets/mon_img/mon_oath-pixel.webp?v=97e42310","a":{"w":192,"h":150,"s":1.18,"x":-10,"y":-6,"src":"assets/mon_img/mon_oath-attack.webp?v=0539418c"}},"mon_scribe":{"w":192,"h":170,"k":1.3333,"w0":256,"src":"assets/mon_img/mon_scribe-pixel.webp?v=d21d589a","a":{"w":192,"h":162,"s":1.04,"x":-26,"y":2,"src":"assets/mon_img/mon_scribe-attack.webp?v=dafd81cc"}},"mon_blade":{"w":192,"h":177,"k":1.3333,"w0":256,"src":"assets/mon_img/mon_blade-pixel.webp?v=3a1371df","a":{"w":192,"h":193,"s":0.88,"x":-9,"y":5,"src":"assets/mon_img/mon_blade-attack.webp?v=e5007006"}},"mon_muscle":{"w":192,"h":130,"k":1.3333,"w0":256,"src":"assets/mon_img/mon_muscle-pixel.webp?v=07de3fd7","a":{"w":192,"h":99,"s":1.08,"x":-31,"y":23,"src":"assets/mon_img/mon_muscle-attack.webp?v=6299b9f9"}}};
 /* ── 마왕 다크네스 — 전용 시트 한 장 (256px 칸 6×5, 기준점은 다른 직업과 같다).
    아틀라스와 따로 읽고, 머리색 치환은 하지 않는다. ── */
 const SPR_X_IMG = {demonking:HS_A["spr_x_img/demonking.webp"]};
@@ -4824,6 +4971,40 @@ function monHTML(job, mot){
   if(mot==="flash" || mot==="redflash")
     return `<span class="monspr ${mot}" style="width:${w}px;height:${h}px;--m:url('${m.src}')"></span>`;
   return `<img class="monspr ${mot||""}" src="${m.src}" width="${w}" height="${h}" alt="">`;
+}
+/* ── 공격 자세 (1021 · 사용자 'newmonsterimage 폴더에 attack-v1 폴더를 추가해뒀거든. 각 몬스터 공격 시 해당 모션 사용해줘') ──
+   MON_IMG 의 a = {w, h, s, x, y, src} — 왼쪽을 보는 공격 그림 한 장 (apply_newsprites · tools/gen/patch/mon_attack.json).
+   공격하는 장면(sprMot 'attack' · 스타일리시 연출의 공격 장)에서만 대기 그림 자리에 겹쳐 그린다: 대기 그림은 자리만 지키고(숨김),
+   공격 그림은 대기 그림 1점 = 공격 그림 1/s 점 · 왼쪽 위가 대기 그림의 (x, y) — 몸통 크기 · 발 자리가 대기 그림과 같다 (무기 · 팔이 앞으로 뻗는다).
+   CSS 가 화면마다 대기 그림 크기를 정하므로(무대 · 잡몹 · 좁은 화면 …) 자리는 그린 뒤 대기 그림 상자에서 잰다 (monAtkFit — object-fit:contain 여백까지).
+   하얀 번뜩임도 공격 그림 모양으로. 그림이 없는 마물은 예전처럼 대기 그림 + 번뜩임 */
+function monAtkHas(job){ const m = MON_SPR[job]; return !!(m && m.a && m.a.src); }
+function monAtkHTML(job){
+  if(!monAtkHas(job)) return "";
+  const a = MON_SPR[job].a;
+  return `<span class="monatk" aria-hidden="true"><img class="monatk-img" src="${a.src}" alt=""><span class="monatk-fl" style="--m:url('${a.src}')"></span></span>`;
+}
+function monAtkFit(root){
+  if(!root) return;
+  root.querySelectorAll(".sprwrap.mon").forEach(w=>{
+    const box = w.querySelector(":scope > .monatk"), im = w.querySelector(":scope > img.monspr");
+    if(!box || !im) return;
+    const u = w.closest("[data-mon]"), m = u && MON_SPR[u.dataset.mon];
+    if(!m || !m.a) return;
+    const W = im.offsetWidth, H = im.offsetHeight;
+    if(!W || !H) return;
+    const k = Math.min(W / m.w, H / m.h), a = m.a;                 // 대기 그림 1점 → 화면 (object-fit:contain 이면 여백만큼 가운데로)
+    const x0 = im.offsetLeft + (W - m.w * k) / 2, y0 = im.offsetTop + (H - m.h * k) / 2;
+    const css = `left:${(x0 + a.x * k).toFixed(1)}px;top:${(y0 + a.y * k).toFixed(1)}px;width:${(a.w * a.s * k).toFixed(1)}px;height:${(a.h * a.s * k).toFixed(1)}px`;
+    if(box.__css !== css){ box.style.cssText = css; box.__css = css; }
+  });
+}
+/* 스타일리시 연출 — 마물은 캔버스 장 대신 공격 그림을 켜고 끈다 */
+function monAtkPose(el, on){
+  const w = el && el.querySelector(".sprwrap.mon");
+  if(!w || !w.querySelector(":scope > .monatk")) return;
+  if(w.classList.contains("matk") !== !!on) w.classList.toggle("matk", !!on);
+  if(on) monAtkFit(el);
 }
 
 /* ── 도트 스프라이트 런타임 ─────────────────────────────────
@@ -6101,7 +6282,7 @@ const RELIC_DB = {
   oneTxt:"동일 효과는 가장 높은 하나만",
   fx:{
     E_STAM:{"scope":"party","v":[6,9,12,15],"fmt":"원정 지구력 게이지 +{v}"},
-    E_RETIRE:{"scope":"party","v":[10,15,20,25],"fmt":"의식 리타이어 확률 -{v}%"},
+    E_WALK:{"scope":"party","v":[15,20,25,30],"fmt":"원정 이동 시 지구력 소모 -{v}%"},
     E_FIND:{"scope":"party","v":[8,12,16,20],"fmt":"구간마다 유물이 나올 확률 +{v}%"},
     E_GOLD:{"scope":"party","v":[10,15,20,25],"fmt":"원정 자금 +{v}%"},
     E_KARMA:{"scope":"party","v":[15,20,25,30],"fmt":"원정 업보 -{v}%"},
@@ -6121,6 +6302,7 @@ const RELIC_DB = {
     T_JOBPAY:{"scope":"wearer","v":[5,8,10,12],"fmt":"이 학생의 의뢰 보수 +{v}%"},
     C_INFO:{"scope":"wearer","v":[1,1,2,2],"fmt":"이 학생과의 상담 정보력 +{v}"},
     C_APPEAL:{"scope":"wearer","v":[1,1,2,2],"fmt":"이 학생과의 상담 호소력 +{v}"},
+    G_CSL:{"scope":"academy","v":[10,15,20,25],"fmt":"상담 성공 확률 +{v}%p"},
     G_SELL:{"scope":"academy","v":[5,8,10,12],"fmt":"유물을 팔 때 +{v}%"},
     G_DIET:{"scope":"academy","v":[5,8,10,12],"fmt":"식단 비용 -{v}%"},
     G_SCOUT:{"scope":"match","v":[1,1,1,1],"fmt":"대회 정찰 정보 +{v}단계"},
@@ -6158,7 +6340,7 @@ const RELIC_DB = {
     {"id":"ribbon-knot","n":"풀리지 않는 매듭","ko":/*no-i18n*/"풀리지 않는 매듭","home":"any","t":0,"f":["hp","def","skRes","ultGain"],"neg":"spd","negWhy":"묶인 몸은 굼뜨다","fx":"T_TEAM","lore":"친구끼리 나눠 매는 매듭. 한 번 묶으면 칼로 끊기 전에는 풀리지 않는다고들 믿는다."},
     {"id":"opal-button","n":"행운의 단추","ko":/*no-i18n*/"행운의 단추","home":"any","t":0,"f":["crit","eva","critDmg","spd"],"neg":"acc","negWhy":"운을 믿으면 덜 겨눈다","lore":"제복에서 떨어진 단추 하나. 이걸 주운 날엔 이상하게 일이 잘 풀린다."},
     {"id":"bronze-buckle","n":"오래된 버클","ko":/*no-i18n*/"오래된 버클","home":"any","t":0,"f":["def","hp","critRes","atk"],"neg":"spd","negWhy":"꽉 조인 허리는 굼뜨다","lore":"어느 졸업생의 허리띠에서 떨어진 버클. 소용돌이 무늬가 닳아 반들반들하다."},
-    {"id":"sealed-letter","n":"도착하지 않은 편지","ko":/*no-i18n*/"도착하지 않은 편지","home":"d2","t":0,"f":["skAcc","ultGain","hp","skRes"],"neg":"atk","negWhy":"돌아갈 곳이 떠오르면 칼끝이 무뎌진다","fx":"E_RETIRE","lore":"봉인이 한 번도 뜯기지 않은 편지. 받는 사람의 이름은 안개가 지웠다. 품고 있으면 돌아갈 곳이 떠오른다."},
+    {"id":"sealed-letter","n":"도착하지 않은 편지","ko":/*no-i18n*/"도착하지 않은 편지","home":"d2","t":0,"f":["skAcc","ultGain","hp","skRes"],"neg":"atk","negWhy":"돌아갈 곳이 떠오르면 칼끝이 무뎌진다","fx":"G_CSL","lore":"봉인이 한 번도 뜯기지 않은 편지. 받는 사람의 이름은 안개가 지웠다. 품고 있으면 돌아갈 곳이 떠오른다."},
     {"id":"torn-banner","n":"이름 잃은 깃발","ko":/*no-i18n*/"이름 잃은 깃발","home":"d2","t":0,"f":["atk","critDmg","ultGain","hp"],"neg":"eva","negWhy":"깃발을 든 사람은 눈에 띈다","fx":"T_FAME","lore":"무너진 성의 깃발 조각. 문장은 닳아 없어졌지만, 든 사람이 새 이름을 얻을 때까지 펄럭인다."},
     {"id":"marble-hand","n":"잃어버린 손","ko":/*no-i18n*/"잃어버린 손","home":"d2","t":0,"f":["def","hp","skAcc","critRes"],"neg":"spd","negWhy":"돌 손은 무겁다","lore":"성터 정원의 석상이 내밀던 손. 손바닥의 초록 돌만은 끝내 놓지 않았다."},
     {"id":"iron-lock","n":"주인 없는 자물쇠","ko":/*no-i18n*/"주인 없는 자물쇠","home":"d2","t":0,"f":["def","skRes","critRes","hp"],"neg":"ultGain","negWhy":"잠긴 것은 좀처럼 풀리지 않는다","lore":"열쇠를 잃은 성의 자물쇠. 잠긴 채로 무엇을 지키는지 이제 아무도 모른다."},
@@ -6179,7 +6361,7 @@ const RELIC_DB = {
     {"id":"moon-bottle","n":"병 속의 달","ko":/*no-i18n*/"병 속의 달","home":"d3","t":2,"f":["eva","skRes","ultGain","spd"],"lore":"누군가 종탑 꼭대기에서 달을 병에 담았다. 그날부터 탑 위의 달은 반쪽이다."},
     {"id":"crystal-eye","n":"잠들지 않는 눈","ko":/*no-i18n*/"잠들지 않는 눈","home":"region","t":2,"f":["acc","skAcc","crit","eva"],"fx":"G_SCOUT","lore":"광역 대회 우승기 끝에 박혀 있던 수정 눈. 감기지 않는 눈은 상대가 숨긴 것까지 본다."},
     {"id":"salt-pouch","n":"여행자의 소금","ko":/*no-i18n*/"여행자의 소금","home":"d4","t":0,"f":["hp","skRes","def","leech"],"neg":"spd","negWhy":"짠 것을 품으면 목이 말라 걸음이 무겁다","fx":"E_KARMA","lore":"소금 바다의 소금 한 줌. 문턱에 뿌리면 나쁜 것이 따라 들어오지 못한다."},
-    {"id":"rusty-anchor","n":"떠돌이의 닻","ko":/*no-i18n*/"떠돌이의 닻","home":"d4","t":0,"f":["def","skRes","hp","critRes"],"neg":"spd","negWhy":"닻은 붙잡아 두는 물건이다","fx":"E_RETIRE","lore":"어느 배의 것인지 모를 작은 닻. 쥐고 있으면 마음이 떠내려가지 않는다."},
+    {"id":"rusty-anchor","n":"떠돌이의 닻","ko":/*no-i18n*/"떠돌이의 닻","home":"d4","t":0,"f":["def","skRes","hp","critRes"],"neg":"spd","negWhy":"닻은 붙잡아 두는 물건이다","fx":"E_GOLD","lore":"어느 배의 것인지 모를 작은 닻. 쥐고 있으면 마음이 떠내려가지 않는다."},
     {"id":"pearl-shell","n":"달빛 조개","ko":/*no-i18n*/"달빛 조개","home":"d4","t":0,"f":["eva","skRes","hp","ultGain"],"neg":"atk","negWhy":"차가운 손은 세게 쥐지 못한다","lore":"달이 뜨면 조개가 스스로 입을 연다. 안의 진주는 만지면 차갑다."},
     {"id":"coral-cup","n":"산호 잔","ko":/*no-i18n*/"산호 잔","home":"d4","t":1,"f":["leech","hp","skRes","eva"],"lore":"바다가 깎아 만든 잔. 물을 따르면 짠맛이 사라진다."},
     {"id":"ship-wheel","n":"항로의 조각","ko":/*no-i18n*/"항로의 조각","home":"d4","t":1,"f":["spd","acc","eva","def"],"lore":"균열에 삼켜진 배의 키. 손을 얹으면 가야 할 쪽으로 저절로 돈다."},
@@ -6232,7 +6414,7 @@ const RELIC_DB = {
     {"id":"crystal-coral","n":"바다의 기억","ko":/*no-i18n*/"바다의 기억","home":"d4","t":2,"f":["eva","skRes","critRes","hp"],"lore":"균열 바닥의 조약돌 위에 자란 장밋빛 산호. 귀에 대면 바다가 처음 갈라지던 날의 소리가 난다."},
     {"id":"stone-tortoise","n":"천년의 등딱지","ko":/*no-i18n*/"천년의 등딱지","home":"d5","t":1,"f":["def","hp","critRes","skRes"],"neg":"spd","negWhy":"돌거북은 느리다","lore":"용사의 관 곁에서 천 년을 버틴 돌거북. 등딱지의 모자이크가 아직 반들거린다."},
     {"id":"stone-lotus","n":"돌에 핀 연꽃","ko":/*no-i18n*/"돌에 핀 연꽃","home":"d5","t":1,"f":["hp","critRes","skRes","skAcc"],"fx":"T_CALM","lore":"무덤 제단에 새겨진 연꽃이 떨어져 나온 것. 돌인데도 꽃잎 안쪽이 따뜻하다."},
-    {"id":"bronze-horseshoe","n":"돌아오는 말굽","ko":/*no-i18n*/"돌아오는 말굽","home":"d5","t":1,"f":["eva","crit","spd","hp"],"fx":"E_RETIRE","lore":"용사의 말이 신던 말굽. 어디에 두고 와도 다음 날 아침이면 마구간 앞에 놓여 있었다고 한다."},
+    {"id":"bronze-horseshoe","n":"돌아오는 말굽","ko":/*no-i18n*/"돌아오는 말굽","home":"d5","t":1,"f":["eva","crit","spd","hp"],"fx":"E_WALK","lore":"용사의 말이 신던 말굽. 어디에 두고 와도 다음 날 아침이면 마구간 앞에 놓여 있었다고 한다."},
     {"id":"golden-walnut","n":"봉인된 호두","ko":/*no-i18n*/"봉인된 호두","home":"d5","t":2,"f":["skRes","def","crit","critDmg"],"lore":"부장품 사이에서 나온 황금 호두. 갈라진 틈으로 보랏빛 결정이 보이지만, 아무도 열지 못했다."},
     {"id":"folded-parasol","n":"비를 기다리는 양산","ko":/*no-i18n*/"비를 기다리는 양산","home":"any","t":0,"f":["skRes","eva","def","critRes"],"neg":"atk","negWhy":"양산을 든 손은 칼을 쥐지 못한다","lore":"접힌 채로 비를 기다리는 양산. 펴 본 사람은 없는데, 원정지 어디서든 누군가의 짐에서 나온다."},
     {"id":"jeweled-snail","n":"느린 여행자","ko":/*no-i18n*/"느린 여행자","home":"any","t":1,"f":["def","hp","critRes","skRes"],"neg":"spd","negWhy":"느리다 — 그래도 먼저 와 있다","lore":"에메랄드 껍데기를 진 금 달팽이. 느리지만 어디에든 먼저 와 있다 — 누구 주머니에서든."},
@@ -9051,7 +9233,7 @@ function newGame(name){
     students:[], graduates:[], log:[],
     facil:{expand:0,gym:0,hall:0,chapel:0,infirm:0,library:0,arena:0,counsel:0}, facilV:FACIL_VER, skgV:SKG_VER, shopUnlock:0,
     items:{}, church:{}, epiUsed:[], epiLog:[], focusPrev:null, focusHist:[], books:0, waters:0, scouts:null, incoming:[], history:[], opts:{report:true, fxA:FX_A_DEFAULT}, mission:newMission(), relicPool:[], skillPool:[],
-    lastTour:null
+    lastTour:null, cleared:{}   // 1021 셋째 — 클리어 기록 (clrHas — 처음 치르는 전투는 스킵 못 한다)
   };
   /* 개교 멤버 — 팔라딘(탱커) · 마법사(딜러) · 암흑 사제(힐러)로 고정 (1003, 예전: 팔라딘 + 무작위 딜러 · 힐러). 등급은 그대로 무작위 */
   const jobs = shuffle(["paladin", "wizard", "darkpriest"]);
@@ -10617,7 +10799,7 @@ function showReport(r){
     </div>
     ${RUN.expeds.length? `<div class="eyebrow" style="margin-bottom:6px">원정</div>
       <div class="grid2" style="margin-bottom:12px">${RUN.expeds.map(e=>`<div class="opt" style="cursor:default">
-        <div class="on">${esc(e.dg.n)}<span class="price">${e.reached}/${e.dg.secs}구간</span></div>
+        <div class="on">${esc(e.dg.n)}<span class="price">${expedProg(e)}</span></div>
         <div class="od">${esc(e.team.join(" · "))}</div>
         <div class="od">경험 ${fmt(e.exp)}${e.fameGain? ` · 완주 명성 +${e.fameGain}`:""} · 유물 ${e.relics.length}개${e.stopped? ` · ${esc(e.stopped)}`:""}</div>
       </div>`).join("")}</div>`:""}
@@ -10714,6 +10896,7 @@ function expedStamStart(team){
 }
 /* 한 줄 — '원정 지구력 45 · 6행동마다 −2' (원정 지도 핀 이름표 · 좁은 화면 파견 창) */
 function expedStamTxt(dg, team){
+  if(typeof beltStamTxt === "function") return beltStamTxt(dg, expedStamStart(team), team);   // 1021 — 벨트 원정 (걸을 때 · 마주칠 때 준다 · 돌아오는 말굽이면 걸을 때 덜)
   const d = expedDrain(dg), v = expedStamStart(team);
   return d ? `원정 지구력 ${v} · ${STAM_PER}행동마다 −${d}` : `원정 지구력 ${v} · 줄지 않는다`;
 }
@@ -10758,13 +10941,14 @@ function expedApply(E, b, mon){
   res.exp += E.dg.exp*(1+E.sec*EXPED_EXP_RAMP)*EXPED_EXP_MUL*dgExpK(E.dg) * (muscle? MUSCLE_RWD : 1);
   if(muscle) res.muscleN = (res.muscleN||0) + 1;
   if(b.stam && b.stam.ex && E.sec < E.dg.secs){ res.stopped = `${E.sec}구간에서 지구력이 바닥나 탈진 — 철수`; return false; }   // 1017 — 탈진한 채 이겼으면 거기서 철수
-  const retire = expedRetireP(E.dg, E.sec, E.avgWill) * (1 - relicFxParty(E.team, "E_RETIRE")/100);   // 1017 — 돌아갈 곳
+  const retire = expedRetireP(E.dg, E.sec, E.avgWill);   // 예전 구간 전투(E.classic — 시험용)만 · 1021 — 돌아갈 곳(E_RETIRE)은 없앴다 (벨트 원정에는 의식 리타이어가 없다)
   if(E.sec < E.dg.secs && RNG()<retire){ res.stopped = `${E.sec}구간 의식에서 정신이 꺾여 리타이어`; return false; }
   E.sec++;
   return E.sec <= E.dg.secs;
 }
 function expedFinish(E){
   const dg = E.dg, team = E.team, res = E.res, hpLeft = E.hpLeft;
+  clrXRes(dg, res);   // 1021 셋째 — 이긴 구간은 다음부터 스킵
   /* 유물 (1017 · 유물의 법칙) — 이긴 구간마다 dgRelicP 로 그 땅의 물건 하나 · 그뉵이용은 확정 · 행운의 부적 덤 · 그 직업 학생이 직업 유물을 알아본다.
      예전 무작위 유물(makeRelic)은 더 나오지 않는다. 완주(보스 처치) 시 유물 보장은 없앴다 (0926).
      1018 — 구간마다 이긴 그 자리에서 굴려 res.relics 에 들어 있다 (expedBattle → relicSecDrops — RELICDB 블록) · 여기서는 보관함에 넣기만 */
@@ -10804,6 +10988,7 @@ function expedFinish(E){
   return res;
 }
 function expedLoop(E, quick, done){
+  if(!E.classic && typeof beltLoop === "function") return beltLoop(E, quick, done);   // 1021 — 벨트 원정 (BELT 블록 · apply_belt) · E.classic 이면 아래 예전 구간 전투 (시험용)
   const bm = expedBattle(E);
   const after = ()=>{
     const cont = expedApply(E, bm.b, bm.mon);
@@ -10817,7 +11002,7 @@ function expedLoop(E, quick, done){
   };
   if(quick) after();
   else openBattle(bm.b, {titleA:"원정대", titleB:monLabel(bm.mon), field:String(E.dg.mon||"").replace(/^mon_/,""),
-    bgm:"friendly", jingle: E.sec>=E.dg.secs || !!bm.mon.muscle, victory: E.sec>=E.dg.secs,   /* VICTORY 는 마지막 구간을 깼을 때만 (1003) */
+    noSkip:!clrHas(clrXKey(E.dg, E.sec)), bgm:"friendly", jingle: E.sec>=E.dg.secs || !!bm.mon.muscle, victory: E.sec>=E.dg.secs,   /* VICTORY 는 마지막 구간을 깼을 때만 (1003) */
     intro: E.sec===1, defeat: true,                                       /* BATTLE START 는 첫 구간에만 · DEFEAT 는 어느 구간이든 전멸하면 (1003) */
     head:`${E.dg.n} — ${E.sec}/${E.dg.secs}구간${bm.mon.muscle? " · 그뉵이용 출현!":""}`,
     doneLabel: (E.sec>=E.dg.secs || bm.b.winner!=="A" || (bm.b.stam && bm.b.stam.ex))? "결과 확정":"다음 구간",   // 1017 — 졌거나 탈진한 채 이겨 여기서 끝나면 결과 확정
@@ -10857,18 +11042,20 @@ function expedTeams(){ return expedFullTeams().filter(t=> !teamResting(t).length
 function expedDone(R, bonus, res, TM){
   const day = R.day, D = DAY_N[day];
   dayCharge(cardCost(R.days[day]) * res.ids.length);     // 원정 파견 — 떠난 인원만큼 (0929)
-  const ok = res.reached >= res.dg.secs;
-  dlog(`${D}요일은 ${res.team.map(n=>esc(n)).join(", ")}${iga(res.team[res.team.length-1]||"")} <b>${esc(res.dg.n)}</b>로 원정을 떠나 <b>${res.reached}/${res.dg.secs}구간</b>까지 나아가 ${ok? `<b style="color:var(--ok)">완주했다!</b>` : `<b style="color:var(--bad)">돌아왔다.</b>`}${chainTag(bonus)}`, "head");
+  const ok = res.clear != null ? !!res.clear : res.reached >= res.dg.secs;   // 1021 — 벨트 원정은 황금 상자까지 가야 완주 (이긴 전투 수는 reached)
+  if(res.pct != null) dlog(`${D}요일은 ${res.team.map(n=>esc(n)).join(", ")}${iga(res.team[res.team.length-1]||"")} <b>${esc(res.dg.n)}</b>로 원정을 떠나 ${ok? `끝까지 나아가 <b style="color:var(--ok)">완주했다!</b>` : `<b>${res.pct}%</b> 지점에서 <b style="color:var(--bad)">돌아왔다.</b>`}${chainTag(bonus)}`, "head");   // 1021 — 벨트 원정
+  else dlog(`${D}요일은 ${res.team.map(n=>esc(n)).join(", ")}${iga(res.team[res.team.length-1]||"")} <b>${esc(res.dg.n)}</b>로 원정을 떠나 <b>${res.reached}/${res.dg.secs}구간</b>까지 나아가 ${ok? `<b style="color:var(--ok)">완주했다!</b>` : `<b style="color:var(--bad)">돌아왔다.</b>`}${chainTag(bonus)}`, "head");
   if(res.muscleN) dlog(`<b style="color:var(--brass)">그뉵이용 출현!</b> 드래곤 슬라임을 ${res.muscleN}회 쓰러뜨려 그 구간 경험·자금이 ${MUSCLE_RWD}배, 유물 하나가 확정으로 떨어졌다.`, "sub");
   if(res.stopped) dlog(`<span style="color:var(--dim)">${esc(res.stopped)}</span>`, "sub");
   if(res.stam && (res.stam[1] !== res.stam[0] || res.exh)) dlog(`원정 지구력 ${res.stam[0]} → ${res.stam[1]}${res.exh? ` · <b style="color:var(--bad)">탈진</b>` : ""}`, "sub");   // 1017 — 원정 지구력 게이지
   dlog(`경험 <b>${fmt(Math.round(res.exp))}</b>${res.gold? ` · 자금 <b style="color:var(--brass)">+${fmt(res.gold)}</b>`:""}${res.fameGain? ` · 명성 <b style="color:var(--ok)">+${fmt(res.fameGain)}</b>`:""} · 유물 <b>${res.relics.length}</b>개${res.charmN? ` <span style="color:var(--brass)">(부적 +${res.charmN})</span>`:""}${res.relicSafe? ` <span style="color:var(--brass)">(완주 보장)</span>`:""}${res.karma? ` · <span style="color:var(--bad)">업보 +${res.karma.toFixed(1)}</span>`:""}${res.prayed? ` · <span style="color:var(--ok)">기도 덕에 업보 없음</span>`:""}`, "sub");
+  if(res.items && beltItemsTxt(res.items)) dlog(`보물 상자 — ${beltItemsTxt(res.items)}`, "sub");   // 1021 — 벨트 원정의 물건
   if(res.relics.length) dlog(`유물 — ${res.relics.map(relicFoundTxt).join(" · ")}`, "sub");   // 1017 — 얻은 유물 이름 (유물의 법칙)
   (res.jobFinds||[]).forEach(r=> dlog(relicJobFindLog(r), "sub"));
   RUN.expeds.push(res);
   UI.lastExped = res;
   reportRecord(day, TR.exped, bonus, "exped", {}, S.students.filter(s=>res.ids.includes(s.id)), {}, Math.max(0, DAYLOG.length-3),
-    {facility:"arena", reward:`${res.dg.n} · ${res.reached}/${res.dg.secs}구간 · 유물 ${res.relics.length}개${res.gold? ` · 자금 +${fmt(res.gold)}`:""}`});
+    {facility:"arena", reward:`${res.dg.n} · ${expedProg(res)} · 유물 ${res.relics.length}개${res.gold? ` · 자금 +${fmt(res.gold)}`:""}`});
   const skip = new Set(res.ids);
   res.ids.forEach(id=>{ const s=S.students.find(x=>x.id===id); if(!s) return; s._exp=(s._exp||0)+1;
     s.expedN = s.expedN||{}; s.expedN[res.dg.id] = (s.expedN[res.dg.id]||0)+1; });   // 졸업 증서용 — 원정지별 횟수
@@ -10957,7 +11144,8 @@ function renderExpedPick(R, bonus){
       if(quick) go(); else xmTravel(teamMembers(TM), go);             // 1016 — 원정 시작은 이동 중(2초)을 거쳐 전투로 (EXMAP 블록)
     };
     $("#xGo").onclick = ()=> run(false);
-    $("#xQuick").onclick = ()=> run(true);
+    $("#xQuick").onclick = ()=> run(clrXAll(dg));   // 1021 셋째 — 세 구간을 모두 깬 원정지만 결과만
+    if(!clrXAll(dg)) clrHide("#xQuick");
     $("#xSkip").onclick = ()=>{
       closeModal();
       dayRun(TR.free, bonus, R.day, {head:`${D}요일은 원정을 미루고 <b>자율 훈련</b>으로 하루를 보냈다.`});
@@ -10977,12 +11165,13 @@ function renderExpedPick(R, bonus){
    · 핀을 누르면 — 창이 회색으로 가라앉고 그 위에 테두리 없이 고른 팀의 SD 도트가 걷는다 (앞열부터 · 뒷발 뒤에 도트 먼지 · 발소리 '뽈뽈뽈') ·
      '이동 중...' 글자가 한 자씩 좌우로 흔들린다 → 2초 뒤 원정 첫 구간 전투 (expedInit → expedLoop — 예전 '원정 시작'과 같다)
    · '빠르게 결과만'은 켜고 끄는 단추 (UI.expPick.quick · 켜 두면 핀을 누를 때 이동 · 전투 없이 바로 결과) · '이 칸은 자율 훈련으로'는 예전 그대로
+     1021 셋째 — 결과만은 세 구간을 모두 깬 원정지만 (clrXAll · 처음 가는 구간이 있으면 켜 두어도 출발) · 그런 원정지가 하나도 없으면 단추를 숨긴다 (xmQuickAny)
    · SD 도트 — HS_A["expedition/sd.png"] (tools/gen/patch/exmap_art.py 가 학생 도트에서 자동으로 굽는다 · 16직업 × 걷기 넷 + 서기 · 원본 색 그대로)를
      학생마다 sprLut · sprSwap 로 머리색만 바꿔 칠한다 (전투 도트와 같은 머리색 — sprPalOf)
    · 소리 — xm_hover(핀) · xm_lock(닫힌 핀) · xm_tick(나무판 ◀ ▶) · xm_step1 ~ 3(발소리 — 학생 차례마다 음 높이 · 빠르기 ±4%) — SFX 표 · tools/gen/sfx/exmap_sfx.py
    · 그림 · 좌표 — XM_ART(apply_exmap 이 tools/gen/patch/exmap_art.json 으로 쓰는 줄) · XM_PIN(핀 끝 · 1× 지도 점) · XM_ACAD(학원 단계마다 나무판 끝 — 학원 지붕)
    · 시험 · 점검용: xmOpen(R, bonus) 는 renderExpedPick 이 부른다 (넓은 화면 · 원정지 다섯 모두 핀 자리가 있을 때) */
-const XM_ART = {"lock":"assets/expedition/lock.webp?v=a80158a6","map":{"1":"assets/expedition/map-lv1.webp?v=2f8d264f","2":"assets/expedition/map-lv2.webp?v=0908efd7","3":"assets/expedition/map-lv3.webp?v=7c61be9b"},"pin":{"d1":"assets/expedition/pin-d1.webp?v=4dd6eb8e","d2":"assets/expedition/pin-d2.webp?v=ae47d9f0","d3":"assets/expedition/pin-d3.webp?v=0c6c7bfe","d4":"assets/expedition/pin-d4.webp?v=46477936","d5":"assets/expedition/pin-d5.webp?v=988589fe"},"sd":{"anchor":[32,54],"cell":[64,56],"face":[26,22],"frames":["walk0","walk1","walk2","walk3","stand"],"jobs":{"archer":{"head":[21,19,26,22],"row":0},"bard":{"head":[23,19,26,22],"row":1},"darkpriest":{"head":[22,21,26,22],"row":2},"druid":{"head":[25,19,26,22],"row":3},"enchanter":{"head":[23,20,26,22],"row":4},"forcemage":{"head":[24,21,26,22],"row":5},"gunner":{"head":[26,19,26,22],"row":6},"monk":{"head":[25,20,26,22],"row":7},"ninja":{"head":[25,21,26,22],"row":8},"paladin":{"head":[21,20,26,22],"row":9},"priest":{"head":[22,20,26,22],"row":10},"rogue":{"head":[25,21,26,22],"row":11},"spellsword":{"head":[25,21,26,22],"row":12},"sword":{"head":[23,20,26,22],"row":13},"timemage":{"head":[24,20,26,22],"row":14},"wizard":{"head":[25,20,26,22],"row":15}}}};   // apply_exmap 이 tools/gen/patch/exmap_art.json 으로 채운다 (지도 · 핀 · 자물쇠 ?v= · SD 칸 · 직업마다 줄 · 얼굴 창)
+const XM_ART = {"lock":"assets/expedition/lock.webp?v=a80158a6","map":{"1":"assets/expedition/map-lv1.webp?v=2f8d264f","2":"assets/expedition/map-lv2.webp?v=0908efd7","3":"assets/expedition/map-lv3.webp?v=7c61be9b"},"pin":{"d1":"assets/expedition/pin-d1.webp?v=4dd6eb8e","d2":"assets/expedition/pin-d2.webp?v=ae47d9f0","d3":"assets/expedition/pin-d3.webp?v=0c6c7bfe","d4":"assets/expedition/pin-d4.webp?v=46477936","d5":"assets/expedition/pin-d5.webp?v=988589fe"},"sd":{"anchor":[32,54],"cell":[64,56],"face":[26,22],"frames":["walk0","walk1","walk2","walk3","stand"],"jobs":{"archer":{"head":[21,20,26,22],"row":0},"bard":{"head":[23,19,26,22],"row":1},"darkpriest":{"head":[22,21,26,22],"row":2},"druid":{"head":[25,19,26,22],"row":3},"enchanter":{"head":[23,20,26,22],"row":4},"forcemage":{"head":[24,21,26,22],"row":5},"gunner":{"head":[26,19,26,22],"row":6},"monk":{"head":[25,21,26,22],"row":7},"ninja":{"head":[25,21,26,22],"row":8},"paladin":{"head":[21,20,26,22],"row":9},"priest":{"head":[22,20,26,22],"row":10},"rogue":{"head":[25,20,26,22],"row":11},"spellsword":{"head":[25,21,26,22],"row":12},"sword":{"head":[23,20,26,22],"row":13},"timemage":{"head":[24,21,26,22],"row":14},"wizard":{"head":[25,19,26,22],"row":15}}}};   // apply_exmap 이 tools/gen/patch/exmap_art.json 으로 채운다 (지도 · 핀 · 자물쇠 ?v= · SD 칸 · 직업마다 줄 · 얼굴 창)
 const XM_SD_SRC = (typeof HS_A !== "undefined" && HS_A["expedition/sd.png"]) || "";
 const XM_PIN = {d1:[222, 292], d2:[92, 150], d3:[240, 96], d4:[588, 352], d5:[356, 46]};   // 핀 끝 — 지도 그림에 이미 있는 그 곳 (연습장 · 안개 성터 · 종탑 · 소금 벼랑 · 산의 검)
 const XM_ACAD = {1:[200, 219], 2:[205, 215], 3:[185, 173]};                               // 학원 지붕 꼭대기 — 나무판 끝이 가리킨다
@@ -11109,7 +11298,7 @@ function xmTipHtml(d0){
   const avg = xmAvg(teamMembers(TM)), cls = avg >= d.lv ? "ok" : avg >= d.lv - 2 ? "near" : "hard";
   s += teamResting(TM).length ? `<span class="tt hard">휴식 중인 학생이 있어 파견할 수 없다</span>`
     : `<span class="tt ${cls}">${esc(teamLabel(TM))} 평균 Lv.${xmF1(avg)}</span><span class="tl st">${expedStamTxt(d, teamMembers(TM))}</span>`;   // 1017 — 원정 지구력 게이지 (출발 때 양 · 6행동마다 줄어드는 양)
-  if(XM.arm === d0.id && !teamResting(TM).length) s += `<span class="tt go">${XM.quick? "한 번 더 누르면 결과만 바로 본다" : "한 번 더 누르면 출발"}</span>`;
+  if(XM.arm === d0.id && !teamResting(TM).length) s += `<span class="tt go">${XM.quick && clrXAll(d)? "한 번 더 누르면 결과만 바로 본다" : "한 번 더 누르면 출발"}</span>`;   // 1021 셋째 — 결과만은 세 구간을 모두 깬 곳만
   return s;
 }
 function xmTip(b){
@@ -11131,9 +11320,11 @@ function xmTip(b){
   XM.tipFor = d0.id;
 }
 function xmTipOff(){ const tip = $("#xmTip"); if(tip) tip.classList.remove("on"); XM.tipFor = null; }
+/* 결과만 볼 수 있는 원정지가 있나 — 열린 곳 중 세 구간을 모두 깬 곳 (1021 셋째 · 이계의 지도면 이계 판으로 센다) */
+function xmQuickAny(){ return DUNGEONS.some(d0=> S.fame >= d0.needFame && clrXAll(dgView(d0))); }
 function xmHint(){
   const h = $("#xmHint"), q = $("#xmQuick");
-  if(h) h.textContent = XM.quick ? "원정지를 누르면 결과만 바로 본다" : "원정지를 누르면 팀이 출발한다";
+  if(h) h.textContent = XM.quick ? "완주한 원정지를 누르면 결과만 바로 본다" : "원정지를 누르면 팀이 출발한다";   // 1021 셋째 — 처음 가는 구간이 있는 곳은 켜 두어도 출발
   if(q) q.setAttribute("aria-pressed", XM.quick ? "true" : "false");
 }
 
@@ -11142,7 +11333,7 @@ function xmOpen(R, bonus){
   const day = R.day, D = DAY_N[day], lv = townStage(), A = XM_ACAD[lv] || XM_ACAD[1];
   UI.expPick = UI.expPick || {};
   XM.phase = "map"; XM.hot = null; XM.hotArr = null; XM.arm = null; XM.tipFor = null;
-  XM.quick = !!UI.expPick.quick;
+  XM.quick = !!UI.expPick.quick && xmQuickAny();   // 1021 셋째 — 결과만 볼 곳이 없으면 꺼 둔다 (단추도 숨긴다)
   const frame = (typeof TOWN_FRAME !== "undefined" && TOWN_FRAME) || "";
   const pins = DUNGEONS.map((d0, i)=>{
     const d = dgView(d0), at = XM_PIN[d0.id], open = S.fame >= d0.needFame;
@@ -11171,6 +11362,7 @@ function xmOpen(R, bonus){
     if(m) m.classList.add("xm-modal");
     const layer = win.querySelector(".xm-pins"), plate = win.querySelector(".xm-plate"), map = win.querySelector(".xm-map");
     xmPlate(false); xmHint();
+    if(!xmQuickAny()){ const q = $("#xmQuick"); if(q) q.hidden = true; }   // 1021 셋째 — 세 구간을 모두 깬 원정지가 없으면 '빠르게 결과만'을 숨긴다
     win.addEventListener("pointerdown", e=>{ XM.ptr = e.pointerType || ""; }, true);
     win.addEventListener("keydown", ()=>{ XM.ptr = ""; }, true);
     /* 핀 — 마우스는 올리면 이름표 · 누르면 출발 / 손가락은 한 번 누르면 이름표 · 한 번 더 누르면 출발 */
@@ -11241,7 +11433,7 @@ function xmPinClick(b){
 }
 /* 출발 — 빠르게 결과만이면 바로, 아니면 이동 중(2초) → 원정 첫 구간 */
 function xmGo(d0){
-  const R = XM.R, bonus = XM.bonus, TM = xmTeam(), dg = dgView(d0), quick = XM.quick;
+  const R = XM.R, bonus = XM.bonus, TM = xmTeam(), dg = dgView(d0), quick = XM.quick && clrXAll(dg);   // 1021 셋째 — 처음 가는 구간이 있으면 출발
   if(!R || !TM) return;
   UI.expPick.tm = TM.n; UI.expPick.dg = d0.id;
   XM.arm = null; xmTipOff();
@@ -11330,6 +11522,1220 @@ function xmTravel(mem, done){
   XM.timer = setTimeout(()=>{ if(run !== XM.run) return; cancelAnimationFrame(XM.raf); done(); }, XM_TRAVEL_MS);
 }
 /* EXMAP_END */
+/* BELT_START — 벨트 원정 (1021 · apply_belt.py) ─ 원정을 가로 띠(벨트 스크롤)로. mockups/expedition-belt 목업 그대로 (사용자 1021 '일단 원정 적용시켜주고').
+   흐름: 원정 지도 핀(좁은 화면은 '원정 시작') → 이동 중(2초 · xmTravel) → expedLoop → beltLoop.
+   · beltCompute — 원정 한 판을 처음에 다 정한다 (게임 셈 그대로 — 목업 src/belt_sim.js): 진행 0 → 100%
+     - 10 · 20 … 90% 마다 걷기 — 원정 지구력 −BELT_RULE.walk (0 이 되면 그 자리에서 철수)
+     - 전투 셋 — 둘은 15 ~ 75% 무작위(서로 15 이상 · 모닥불 55 ~ 65 피함) · 셋째는 90% (보스 방 = 예전 3구간). 마물 · 레벨은 예전 구간 1 · 2 · 3 그대로(genMonster).
+       만나는 순간 지구력 −enc (그때 0 이면 탈진 — 공격력 · 속도 −15% 로 싸우고, 이기면 그 자리에서 철수 · 마지막 전투면 끝까지).
+       전투 안에서는 지구력이 줄지 않는다 (예전 '6행동마다'는 없앴다 — 게이지는 남은 양 그대로 보인다). 체력은 전투가 끝난 그대로(예전 +18% 회복 없음) ·
+       쓰러진 학생은 다음 전투에 나가지 못한다(모닥불에서 일어남) · 전멸하면 철수. 이기면 예전처럼 구간 자금 · 경험 · 유물(relicSecDrops · 그뉵이용 확정 · 직업 유물) · 깨어남
+     - 보물 상자 1 ~ 3 — 자금(구간 자금 × 1.5 ~ 3) 55% 또는 물건(쿠키 · 신비한 성수 · 예지의 서 · 이국의 부채). 연습장(자금 없음)은 상자 하나 · 쿠키 · 성수만
+     - 함정 0 ~ 2 — 가시(맨 앞 학생 체력 −20%p · 쓰러뜨리지 않음) 또는 늪(지구력 −trapS — 0 이 되면 철수)
+     - 60% 모닥불 — 명상: 체력 +30%p · 쓰러진 학생은 20% 로 일어남 · 지구력 + 시작값의 25%
+     - 100% 황금 상자 — 그 원정지에서 나는 유물 하나 확정(relicPickRegion · 행운의 부적 · 하나 더도 같이) → 완주
+     의식 리타이어(정신력)는 없앴다 (사용자 1021 '없앰다'). 자금은 노잣돈(E_GOLD)까지 곱한 값으로 정해 두어 띠에 뜨는 숫자가 결과와 같다
+   · '빠르게 결과만'(quick · 빠른 진행 주의 runExpedition)은 띠 없이 같은 셈만 (전투는 runBattle sim) → beltFinish → 결과
+   · 띠 창(#beltRoot — #modalRoot 밖 · z 79): 머리(원정 · 팀 · 원정지 · 빠르게) · 진행 % · 진행 띠(모닥불 · 보스 · 황금 상자 표식 + 지나간 일 표식 · 맨 앞 학생 얼굴) ·
+     얻은 것(자금 · 물건 · 유물) · 띠(384 × 128 점 캔버스 — 먼 경치 · 땅 · 앞 장식이 다른 빠르기로 흐른다) · 원정 지구력 · 학생(얼굴 · 이름 · 체력) · 닫기.
+     도착하면 왼쪽에서 걸어 들어와 한 사람씩 성격 대사(BELT_LINES.arrive) → 걷기 · 일마다 연출 (상자 · 함정 · 모닥불 · 마주침) →
+     마주치면 '!' · 마물이 떨어져 내려앉고 → 게임 전투 화면(openBattle — 원정 전투 그대로 · 끝 단추 '계속' · 그동안 띠는 숨긴다) → 띠로 돌아와 마물이 사라지고 자금 · 유물 GET! →
+     황금 상자 → 승리 모션 · CLEAR! · 완주 대사 (철수면 철수 대사 · 뒤돌아 걷기 · 전멸은 넋) → '닫기' → 결과 반영(beltFinish) → 전리품 창(유물 획득 창 + 물건 · 자금 칸) → 원정 결과(expedDone)
+   · 소리 — belt_*(tools/gen/sfx/belt_sfx.py — 목업 소리를 같은 파형으로) · 걸음은 원정 지도와 같은 xm_step1 ~ 3 (맨 앞 학생만). 걷는 동안 배경 음악은 계절 곡 그대로 · 전투는 friendly
+   · 그림 — BELT_ART(apply_belt 가 tools/gen/patch/belt_art.json 으로 쓰는 줄 — assets/belt: 띠 배경 · 소품 + 마물 atlas · 마물 발자리) ·
+     학생 SD 는 HS_A["belt/sd.webp"] (새 학생 시트에서 원정 지도 SD 와 같은 방법 · 23장 · 머리색은 직업 기본색 — 사용자 1021 머리색 보류)
+   · 처음 치르는 전투 (1021 셋째 — 사용자 '원정도 각 구간을 클리어 하면 다음에 스킵 가능하도록') — 이긴 적 없는 구간의 전투는 '결과로 건너뛰기'를 숨긴다 (openBattle noSkip ·
+     clrXKey — 이계는 따로) · 이긴 구간은 beltFinish 가 적는다 (clrXRes). '빠르게 결과만'은 세 구간을 모두 깬 원정지만 (원정 지도 · 좁은 화면 파견 창)
+   · 시험 · 점검용: expedLoop 앞의 E.classic 이면 예전 구간 전투 그대로 (tools/gen/sim 의 예전 시험) · beltSkip() 은 끝까지 빠르게 */
+const BELT_ART = {"ah":234,"atlas":"assets/belt/atlas.webp?v=bec95d6d","aw":512,"bg":{"d1":{"far":"assets/belt/far-d1.webp?v=7015709f","fg":"assets/belt/fg-d1.webp?v=3801203c","ground":"assets/belt/ground-d1.webp?v=d969aef8"},"d2":{"far":"assets/belt/far-d2.webp?v=352fd32b","fg":"assets/belt/fg-d2.webp?v=d980fe86","ground":"assets/belt/ground-d2.webp?v=1eb66ddf"},"d3":{"far":"assets/belt/far-d3.webp?v=2814c41b","fg":"assets/belt/fg-d3.webp?v=71aeaa0c","ground":"assets/belt/ground-d3.webp?v=e4aa01cf"},"d4":{"far":"assets/belt/far-d4.webp?v=37fe8b13","fg":"assets/belt/fg-d4.webp?v=06d5afd5","ground":"assets/belt/ground-d4.webp?v=3624b102"},"d5":{"far":"assets/belt/far-d5.webp?v=b029e537","fg":"assets/belt/fg-d5.webp?v=7bf7768b","ground":"assets/belt/ground-d5.webp?v=01abe79d"}},"farH":86,"feet":108,"gy0":82,"mon":{"mon_bellcrab":[166,143,64,50,0,32.0,35.0],"mon_blade":[0,143,35,54,0,18.5,16.5],"mon_brine":[293,0,126,67,1,63.0,65.0],"mon_choir":[189,76,59,54,0,30.5,30.5],"mon_clockcrow":[361,143,64,47,0,35.5,30.5],"mon_diver":[36,143,64,53,0,38.0,28.0],"mon_dummy":[83,0,82,69,1,42.5,38.5],"mon_foghound":[426,143,64,42,0,32.0,33.0],"mon_gargoyle":[166,0,126,68,1,65.5,62.5],"mon_guardian":[0,76,126,66,1,63.0,66.0],"mon_jelly":[464,76,46,54,0,23.5,25.5],"mon_lantern":[413,76,50,54,0,26.0,27.0],"mon_muscle":[231,143,64,48,0,33.0,34.0],"mon_oath":[127,76,61,54,0,30.5,33.5],"mon_saltcrab":[296,143,64,48,0,32.0,35.0],"mon_scribe":[305,76,53,54,0,28.5,24.5],"mon_sentry":[249,76,55,54,0,33.0,23.0],"mon_target":[359,76,53,54,0,27.5,12.5],"mon_wood":[101,143,64,53,0,41.5,25.5],"mon_wraith":[0,0,82,75,1,47.0,36.0]},"props":{"chest":[201,198,22,18],"chest-open":[147,198,22,24],"coin":[491,198,8,8],"coinpile":[224,198,16,16],"fire0":[31,198,28,26],"fire1":[60,198,28,26],"fire2":[89,198,28,26],"fire3":[118,198,28,26],"gem":[461,198,9,8],"gold":[170,198,30,23],"gold-open":[0,198,30,31],"mire0":[328,198,36,12],"mire1":[365,198,36,12],"mire2":[402,198,36,12],"mk-boss":[471,198,9,8],"mk-chest":[500,198,9,7],"mk-fire":[439,198,9,9],"mk-gold":[449,198,11,8],"mk-mire":[10,230,9,3],"mk-spike":[0,230,9,4],"mk-swords":[481,198,9,8],"spike0":[241,198,28,13],"spike1":[270,198,28,13],"spike2":[299,198,28,13]},"sd":{"anchor":[32,62],"cell":[64,64],"face":[26,22],"frames":["walk0","walk1","walk2","walk3","stand","idle0","idle1","idle2","idle3","hit0","hit1","win0","win1","win2","win3","med0","med1","med2","med3","down0","down1","down2","down3"],"jobs":{"archer":{"head":[21,28,26,22],"row":0},"bard":{"head":[23,27,26,22],"row":1},"darkpriest":{"head":[22,29,26,22],"row":2},"druid":{"head":[25,27,26,22],"row":3},"enchanter":{"head":[23,28,26,22],"row":4},"forcemage":{"head":[24,29,26,22],"row":5},"gunner":{"head":[26,27,26,22],"row":6},"monk":{"head":[25,29,26,22],"row":7},"ninja":{"head":[25,29,26,22],"row":8},"paladin":{"head":[21,28,26,22],"row":9},"priest":{"head":[22,28,26,22],"row":10},"rogue":{"head":[25,28,26,22],"row":11},"spellsword":{"head":[25,29,26,22],"row":12},"sword":{"head":[23,28,26,22],"row":13},"timemage":{"head":[24,29,26,22],"row":14},"wizard":{"head":[25,27,26,22],"row":15}}},"strip":[384,128]};   // apply_belt 가 tools/gen/patch/belt_art.json 으로 채운다 (띠 배경 · atlas ?v= · 소품 [x,y,w,h] · 마물 [x,y,w,h,보스,발가운데,발반폭] · SD 칸 · 직업마다 줄 · 얼굴 창)
+const BELT_SD_SRC = (typeof HS_A !== "undefined" && HS_A["belt/sd.webp"]) || "";
+/* 규칙 숫자 (목업 첫 값 — mockups/expedition-belt README '규칙 숫자' · 게임 셈 통계) */
+const BELT_RULE = {
+  walk:{d1:1, d2:2, d3:2, d4:3, d5:4},          // 걷기 — 10% 마다 (10 · 20 … 90 — 아홉 번)
+  enc:{d1:1, d2:2, d3:3, d4:4, d5:4},           // 마물을 만나는 순간 (전투 셋)
+  trapS:{d1:2, d2:4, d3:5, d4:6, d5:7},         // 늪 함정 (지구력)
+  ow:{walk:1, enc:1, trapS:2},                  // 이계 판 (이계의 지도) 더하기
+  trapHp:.2,                                    // 가시 함정 — 맨 앞 학생 체력 −20%p (쓰러뜨리지는 않는다)
+  camp:{at:60, hp:.3, revive:.2, stam:.25},     // 모닥불 — 체력 +30%p · 쓰러진 학생은 20% 로 일어남 · 지구력 + 시작값의 25%
+  battles:{lo:15, last:90, gap:15, avoid:[55, 65]},
+  chest:{n:[[1, 45], [2, 40], [3, 15]], gold:55, goldMul:[1.5, 3], items:{cookie:45, water:25, book:20, exoticFan:10}},
+  chestD1:{n:[[1, 100]], items:{cookie:80, water:20}},   // 연습장(자금 없음) — 상자 하나 · 쿠키 · 성수만
+  trap:{n:[[0, 40], [1, 45], [2, 15]], hp:50},           // 함정 0 ~ 2 · 가시 50% · 늪 50%
+  lo:6, hi:96, gap:5                                     // 상자 · 함정 자리 — 6 ~ 96% · 다른 일과 5 이상
+};
+/* 대사 (성격마다) — 도착하면 한 사람씩 · 모닥불(맨 앞 학생) · 완주(둘) · 철수(맨 앞 학생) */
+const BELT_LINES = {
+  arrive:{intro:"…조용히, 끝까지 가 보자.", hot:"가자! 전부 쓰러뜨려 주지!", stone:"길은 하나. 앞으로 간다.", dilig:"다들 무리하지 말고, 끝까지 같이 가자!",
+    tsun:"…딱히 기대하는 건 아니지만. 가요.", lively:"자자, 힘내자~! 보물도 찾자!", boast:"이 몸이 있는 한 완주는 정해졌다!", plain:"좋아, 힘내자!", genius:"금방 끝내고 돌아가자."},
+  clear:{intro:"…해, 해냈어.", hot:"봤냐! 우리가 해냈다!", stone:"예상대로다.", dilig:"다들 수고했어!", tsun:"…뭐, 이 정도는 당연하죠.", lively:"와아~ 완주다!",
+    boast:"말했잖아, 정해져 있었다고!", plain:"해냈다!", genius:"생각보다 재밌었네."},
+  retreat:{intro:"…더는 못 가겠어.", hot:"크윽… 다음엔 꼭!", stone:"여기까지다. 돌아간다.", dilig:"무리하면 안 돼. 돌아가자.", tsun:"…오늘은 봐준 거예요.",
+    lively:"으앙, 아쉽다~", boast:"저, 전략적 후퇴다!", plain:"돌아가자…", genius:"계산이 틀렸네."},
+  camp:{intro:"…잠깐, 쉬었다 가자.", hot:"불 좀 쬐고 가자!", stone:"숨을 고른다.", dilig:"여기서 잠깐 쉬어 가자.", tsun:"…쉬고 싶은 건 아니지만요.",
+    lively:"모닥불이다~ 쉬어 가자!", boast:"영웅에게도 휴식은 필요하지.", plain:"잠깐 쉬어 가자.", genius:"효율적으로 쉬자."}
+};
+const BELT_LEN = 20, BELT_FRONT = 178, BELT_GAP = 36, BELT_WALK_MS = 400;   // 1% = 20점 · 맨 앞 학생 자리 · 학생 사이 · 10% 걷는 시간(ms)
+const BELT_SH_A = .5, BELT_BUB_GAP = 8, BELT_BUB_EDGE = 6, BELT_BUB_FADE = 140;
+const BELT_DUST = ["#b5a78f", "#f7f0e2", "#e2d7c2"], BELT_BAYER = [[0, 2], [3, 1]];
+const BELT_CANCEL = {beltCancel:1};
+const BELT = {gen:0, on:false, hold:false, closing:false, E:null, R:null, done:null, root:null, cv:null, cx:null, fxEl:null, K:2,
+  clk:{t:0, last:0, speed:1}, waits:[], raf:0, key:null, resize:null,
+  P:0, cam:0, slow:1, mem:[], objs:[], parts:[], fx:[], shake:0, flash:0, flashCol:"#fff", fire:null, lastT:null, stepN:0,
+  hud:{st:0, st0:1, gold:0, items:{}, relics:0}, img:{}, jobs:new Map(), ghost:new Map(), tint:new Map()};
+try{ const j = JSON.parse(localStorage.getItem(PREF_KEY) || "null"); if(j && typeof j.beltFast === "boolean") PREF.beltFast = j.beltFast; }catch(e){}   // '빠르게' — 이 브라우저에 남는다
+
+/* ── 물건 (보물 상자) ── */
+function beltItemName(k){ return k === "water" ? "신비한 성수" : k === "book" ? "예지의 서" : (ITEMS[k] ? ITEMS[k].n : k); }
+function beltItemDesc(k){
+  if(k === "water") return `진행 탭에서 쓰면 전 학생의 컨디션이 ${HOLY_WATER_COND} 회복된다`;
+  if(k === "book") return "일과를 통째로 새로 뽑는다 — 월~금에 올려둔 카드는 그대로 둔다";
+  return ITEMS[k] ? ITEMS[k].d : "";
+}
+function beltItemAdd(k, n){
+  if(!(n > 0)) return;
+  if(k === "cookie") S.cookies = cookieStock() + n;
+  else if(k === "water") S.waters = waterCount() + n;
+  else if(k === "book") S.books = bookCount() + n;
+  else { S.items = S.items || {}; S.items[k] = Math.max(0, Math.floor(Number(S.items[k]) || 0)) + n; }
+}
+function beltItemsTxt(items){ return Object.keys(items || {}).filter(k=> items[k] > 0).map(k=> `${beltItemName(k)} ×${items[k]}`).join(" · "); }
+
+/* ── 셈 — 원정 한 판 (목업 belt_sim.js 그대로 · 게임 함수로) ── */
+function beltWpick(pairs){
+  let x = RNG() * pairs.reduce((a, p)=> a + p[1], 0);
+  for(const p of pairs){ x -= p[1]; if(x < 0) return p[0]; }
+  return pairs[pairs.length - 1][0];
+}
+/* 자리 — 전투 셋 · 보물 상자 · 함정 */
+function beltPlan(noGold){
+  const R = BELT_RULE, bt = R.battles, av = bt.avoid, ok = p=> !(p >= av[0] && p <= av[1]);
+  let b1, b2, g = 0;
+  do { b1 = ri(bt.lo, bt.last - 2 * bt.gap); } while(!ok(b1) && g++ < 200);
+  g = 0;
+  do { b2 = ri(b1 + bt.gap, bt.last - bt.gap); } while(!ok(b2) && g++ < 200);
+  const taken = [b1, b2, bt.last, R.camp.at, 100];
+  const place = ()=>{
+    for(let k = 0; k < 400; k++){ const p = ri(R.lo, R.hi); if(taken.every(q=> Math.abs(q - p) >= R.gap)){ taken.push(p); return p; } }
+    return null;
+  };
+  const C = noGold ? R.chestD1 : R.chest, chests = [], traps = [];
+  const nc = beltWpick(C.n), nt = beltWpick(R.trap.n);
+  for(let i = 0; i < nc; i++){ const p = place(); if(p != null) chests.push(p); }
+  for(let i = 0; i < nt; i++){ const p = place(); if(p != null) traps.push(p); }
+  return {battles:[b1, b2, bt.last], chests, traps};
+}
+/* 황금 상자 — 그 원정지에서 나는 유물 하나 확정 (행운의 부적 · 하나 더도 유물을 얻을 때처럼) */
+function beltGoldRelics(dg, team, res, owned){
+  const ow = dg.otherworld ? 1 : 0, got = [], extraP = relicFxParty(team, "E_EXTRA") / 100;
+  const one = tag=>{
+    const pk = relicPickRegion(dg, owned); if(!pk || !team.length) return;
+    const who = pick(team);
+    const r = relicMake(pk.K, pk.g, relicRec("exp", {dg:dg.id, sec:dg.secs, ow, who:who.name, sid:who.id, job:who.job, tag}));
+    if(relicUniqueK(pk.K)) owned[pk.K.id] = 1;
+    res.relics.push(r); got.push(r);
+  };
+  one("gold");
+  if(!got.length) return got;
+  if(S.items && S.items.charm && RNG() < CHARM_EXTRA_P){ one("charm"); res.charmN = (res.charmN || 0) + 1; }
+  if(extraP > 0 && RNG() < extraP){ one("extra"); res.extraN = (res.extraN || 0) + 1; }
+  return got;
+}
+function beltCompute(E, sim){
+  const dg = E.dg, R = BELT_RULE, ow = !!dg.otherworld, mem = E.team, res = E.res;
+  const C = {walk:(R.walk[dg.id] || 0) + (ow ? R.ow.walk : 0), enc:(R.enc[dg.id] || 0) + (ow ? R.ow.enc : 0), trapS:(R.trapS[dg.id] || 0) + (ow ? R.ow.trapS : 0)};
+  const stam0 = res.stam[0];
+  let stam = stam0;
+  const hp = {}, alive = {};
+  mem.forEach(s=>{ hp[s.id] = 1; alive[s.id] = true; });
+  const noGold = !(dgGold(dg) > 0);
+  const gm = 1 + relicFxParty(mem, "E_GOLD") / 100;            // 노잣돈 (이름 없는 주화 · 떠돌이의 닻) — 띠에 뜨는 자금이 결과와 같게 미리 곱한다
+  const wk = beltWalkMul(mem);                                  // 1021 — 돌아오는 말굽: 걸을 때 소모 −% (소수는 모아 정수로 — 한 번에 1 · 2 처럼 번갈아)
+  let wn = 0;
+  const plan = beltPlan(noGold);
+  const ev = [], loot = {gold:0, bgold:0, cgold:0, items:{}};
+  const snapHp = ()=>{ const o = {}; mem.forEach(s=> o[s.id] = Math.round(hp[s.id] * 1000) / 1000); return o; };
+  const snapAlive = ()=>{ const o = {}; mem.forEach(s=> o[s.id] = !!alive[s.id]); return o; };
+  const front = ()=> mem.find(s=> alive[s.id]);
+  /* 일 차례 — 같은 자리면 걷기(10% 눈금)가 먼저 · 모닥불만 걷기보다 먼저 */
+  const L = [];
+  for(let p = 10; p <= 90; p += 10) L.push({at:p, t:"tick", o:0});
+  plan.battles.forEach((p, i)=> L.push({at:p, t:"battle", sec:i + 1, o:2}));
+  L.push({at:R.camp.at, t:"camp", o:-1});
+  plan.chests.forEach(p=> L.push({at:p, t:"chest", o:1}));
+  plan.traps.forEach(p=> L.push({at:p, t:"trap", o:1}));
+  L.push({at:100, t:"goal", o:3});
+  L.sort((a, b)=> a.at - b.at || a.o - b.o);
+  let end = null;
+  const retreat = (at, why, txt)=>{ end = {t:"retreat", at, why}; ev.push(end); res.stopped = txt; };
+  for(const e of L){
+    if(end) break;
+    if(e.t === "tick"){
+      if(C.walk <= 0) continue;
+      wn++;
+      const cost = Math.round(wn * C.walk * wk) - Math.round((wn - 1) * C.walk * wk);
+      stam = Math.max(0, stam - cost);
+      ev.push({t:"tick", at:e.at, cost, st:stam});
+      if(stam <= 0) retreat(e.at, "stam", `${e.at}% 지점에서 지구력이 바닥나 철수`);
+    }else if(e.t === "chest"){
+      if(!noGold && RNG() * 100 < R.chest.gold){
+        const v = Math.round(dgGold(dg) * rnd(R.chest.goldMul[0], R.chest.goldMul[1]) * gm);
+        loot.cgold += v;
+        ev.push({t:"chest", at:e.at, kind:"gold", v});
+      }else{
+        const it = beltWpick(Object.entries((noGold ? R.chestD1 : R.chest).items));
+        loot.items[it] = (loot.items[it] || 0) + 1;
+        ev.push({t:"chest", at:e.at, kind:"item", item:it});
+      }
+    }else if(e.t === "trap"){
+      if(RNG() * 100 < R.trap.hp){
+        const f = front(), b0 = hp[f.id];
+        hp[f.id] = Math.max(.05, hp[f.id] - R.trapHp);
+        ev.push({t:"trap", at:e.at, kind:"hp", who:f.id, v:Math.round((b0 - hp[f.id]) * 100), hp:snapHp()});
+      }else{
+        stam = Math.max(0, stam - C.trapS);
+        ev.push({t:"trap", at:e.at, kind:"stam", v:C.trapS, st:stam});
+        if(stam <= 0) retreat(e.at, "stam", `${e.at}% 지점에서 지구력이 바닥나 철수`);
+      }
+    }else if(e.t === "camp"){
+      const h0 = snapHp(), s0 = stam, rev = [];
+      mem.forEach(s=>{
+        if(alive[s.id]) hp[s.id] = Math.min(1, hp[s.id] + R.camp.hp);
+        else { alive[s.id] = true; hp[s.id] = R.camp.revive; rev.push(s.id); }
+      });
+      stam = Math.min(stam0, stam + Math.round(stam0 * R.camp.stam));
+      ev.push({t:"camp", at:e.at, hp0:h0, hp:snapHp(), st0:s0, st:stam, rev});
+    }else if(e.t === "battle"){
+      stam = Math.max(0, stam - C.enc);
+      const ex = stam <= 0, sec = e.sec;
+      const mon = genMonster(dg, sec);
+      const act = mem.filter(s=> alive[s.id]);
+      const hpA = {}; act.forEach(s=> hpA[s.id] = hp[s.id]);
+      const b = runBattle(act, mon, Object.assign({titleA:"원정대", titleB:monLabel(mon), hpA, rowsB:mon.rows || null, slotsB:mon.slots || null, sim:!!sim,
+        stam:{v:stam, max:stam0, drain:0, per:STAM_PER, n:0}}, E.TM ? teamBattleOpt(E.TM) : {}));   // 지구력 — 전투 안에서는 줄지 않는다 · 0 이면 탈진으로
+      b.A.forEach(u=>{ hp[u.ref] = u.alive ? Math.max(.01, u.hp / u.maxHp) : 0; alive[u.ref] = !!u.alive; });
+      const win = b.winner === "A", muscle = !!mon.muscle;
+      res.secs.push({sec, win, foe:monLabel(mon), muscle});
+      let drops = [], gold = 0;
+      if(win){
+        res.reached = sec;
+        relicWinTally(act.map(s=> s.id));                             // 깨어남 — 그 직업 학생이 끼고 이긴 전투
+        res.exp += dg.exp * (1 + sec * EXPED_EXP_RAMP) * EXPED_EXP_MUL * dgExpK(dg) * (muscle ? MUSCLE_RWD : 1);
+        if(muscle) res.muscleN = (res.muscleN || 0) + 1;
+        gold = Math.round(dgGold(dg) * (muscle ? MUSCLE_RWD : 1) * gm);
+        loot.bgold += gold;
+        drops = relicSecDrops(dg, act, res, sec, muscle, E.owned);
+        if(ex && !res.exh) res.exh = sec;
+      }
+      ev.push({t:"battle", at:e.at, sec, cost:C.enc, st:stam, ex, b, foes:mon, mon:mon.map(m=> m.job), muscle, win, hp:snapHp(), alive:snapAlive(), drops, gold});
+      if(!win) retreat(e.at, "wipe", `${sec}번째 전투에서 ${monLabel(mon)}에게 전멸 — 철수`);
+      else if(ex && sec < 3) retreat(e.at, "exh", `${sec}번째 전투를 탈진한 채 이겨 더 가지 못하고 철수`);
+    }else if(e.t === "goal"){
+      const got = beltGoldRelics(dg, mem.filter(s=> alive[s.id]), res, E.owned);
+      ev.push({t:"goal", at:100, relics:got});
+      end = {t:"clear", at:100};
+      ev.push(end);
+    }
+  }
+  loot.gold = loot.bgold + loot.cgold;
+  res.stam[1] = stam;
+  res.clear = !!(end && end.t === "clear");
+  res.pct = res.clear ? 100 : (end ? end.at : 100);
+  res.items = loot.items;
+  res.beltGold = loot.gold;
+  E.hpLeft = snapHp();
+  return {stam0, plan, ev, loot, end:end ? end.t : "clear", why:(end && end.why) || "", alive:snapAlive(), st:stam, applied:false};
+}
+/* 결과 반영 — expedFinish 와 같은 셈 (이긴 전투 수 = reached · 완주 = 황금 상자까지) + 자금은 띠에서 얻은 그대로 · 물건 */
+function beltFinish(E, R){
+  const dg = E.dg, team = E.team, res = E.res;
+  if(R.applied) return res;
+  R.applied = true;
+  clrXRes(dg, res);   // 1021 셋째 — 이긴 구간은 다음부터 스킵 (전투 화면 '결과로 건너뛰기' · 세 구간 모두면 '빠르게 결과만')
+  { const xm = relicFxParty(team, "E_EXP"); if(xm) res.exp *= 1 + xm / 100; }   // 옛것의 가르침 (원정 경험치)
+  const ups = [];
+  if(res.reached > 0){
+    res.evalGain = [];
+    team.forEach(s=>{
+      const cap = dg.evalCap || 0, cur = s.eval || 0;
+      if(cur >= cap) return;
+      const g = ((cap - cur) * .13 * (res.reached / dg.secs) + res.reached * .25 * dgK(dg)) * EXPED_RWD_MUL;
+      const d = addEval(s, g, cap);
+      if(d > 0) res.evalGain.push(`${dnH(s)} +${d.toFixed(1)}`);
+    });
+  }
+  {
+    const tids = team.map(x=> x.id);
+    team.forEach(s=>{ ups.push({s, n:gainExp(s, res.exp * broExpMul(s, tids), true)});
+      setCond(s, s.cond - EXPED_COND * dgK(dg) * Math.max(1, res.secs.length) * (1 - relicFxParty(team, "E_COND") / 100));
+      s.fame += Math.round(res.reached * 2 * EXPED_RWD_MUL * dgK(dg) * relicFameMul(s)); });
+    res.karma = (dg.karma || 0) * res.secs.length * EXPED_RWD_MUL * dgK(dg) * (1 - relicFxParty(team, "E_KARMA") / 100);
+    if(res.karma && townBuff("noKarma")){ res.prayed = res.karma; res.karma = 0; }
+    if(res.karma) team.forEach(s=> addKarma(s, res.karma));
+  }
+  res.gold = R.loot.gold;
+  if(res.gold) addGold(res.gold);
+  BELT_ITEMS_ORDER.forEach(k=> beltItemAdd(k, R.loot.items[k] || 0));
+  if(res.clear){
+    res.fameGain = Math.round((dg.fameClear || 0) * EXPED_RWD_MUL); addFame(res.fameGain);
+    const lastFoe = (res.secs[res.secs.length - 1] || {}).foe || dg.mon || "미지의 존재";
+    const hpLeft = E.hpLeft || {};
+    res.epi = tryEpithet("exped", team, {event:`${dg.n} 완주`, place:dg.n, foe:lastFoe, score:s=> .6 + (hpLeft[s.id] || 0) * 1.8});
+  }
+  res.relics.forEach(r=> addRelicToPool(r));
+  (res.jobFinds || []).forEach(r=> logE(`원정 — ${relicJobFindLog(r)}`, "good"));
+  levelReport(ups);
+  const it = beltItemsTxt(res.items);
+  logE(`원정 — <b>${dg.n}</b> ${res.clear ? "완주" : `${res.pct}% 지점에서 철수`}.${res.muscleN ? ` <b style="color:var(--brass)">그뉵이용 ${res.muscleN}회 격파!</b>` : ""} 경험 ${fmt(res.exp)}${res.gold ? ` · 자금 +${fmt(res.gold)}` : ""}${it ? ` · ${it}` : ""}${res.fameGain ? ` · <b>완주</b> 학원 명성 +${res.fameGain}` : ""} · 유물 ${res.relics.length}개${res.karma ? ` · <b style="color:var(--bad)">업보 +${res.karma.toFixed(1)}</b>` : ""}${res.prayed ? ` · <span style="color:var(--ok)">수녀님의 기도로 업보가 쌓이지 않았다</span>` : ""}${(res.evalGain && res.evalGain.length) ? ` · 진로 평가 ${res.evalGain.join(", ")}` : ""}${res.stopped ? ` (${res.stopped})` : ""}`, res.clear ? "good" : "bad");
+  return res;
+}
+const BELT_ITEMS_ORDER = ["cookie", "water", "book", "exoticFan"];
+/* expedLoop 맨 앞에서 (apply_belt) — 빠르게 결과만이면 셈만, 아니면 띠 창 */
+function beltLoop(E, quick, done){
+  let R = null;
+  try{ R = beltCompute(E, !!quick); }
+  catch(e){                                                    // 셈이 깨지면 예전 구간 전투로 (원정이 멈추지 않게)
+    errPush("belt", e.message, e.stack);
+    const E2 = expedInit(E.dg, E.team, E.TM); E2.classic = true;
+    return expedLoop(E2, quick, done);
+  }
+  if(quick){
+    let res = E.res;
+    try{ res = beltFinish(E, R); }catch(e){ errPush("belt", e.message, e.stack); }
+    done(res);
+    return;
+  }
+  beltOpen(E, R, done);
+}
+/* 진행 줄 — 경과 보고 원정 칸 · 경과 보고 한 줄 ('완주' · 'n%' · 예전 결과는 구간) */
+function expedProg(res){ return res.pct != null ? (res.clear ? "완주" : `${res.pct}%`) : `${res.reached}/${res.dg.secs}구간`; }
+/* 원정 지구력 한 줄 — 원정 지도 핀 이름표 · 좁은 화면 파견 창 (expedStamTxt 가 부른다 · 10% 걸을 때 · 마물과 마주칠 때 줄어드는 양) */
+function beltStamTxt(dg, v, team){
+  const R = BELT_RULE, ow = !!(dg && dg.otherworld), id = dg && dg.id;
+  const w = Math.round(((R.walk[id] || 0) + (ow ? R.ow.walk : 0)) * beltWalkMul(team) * 10) / 10, n = (R.enc[id] || 0) + (ow ? R.ow.enc : 0);   // 돌아오는 말굽이면 줄인 양 (소수 한 자리)
+  return `원정 지구력 ${v} · 걸을 때 −${w} · 마주칠 때 −${n}`;
+}
+/* 걸을 때 소모 배율 — 돌아오는 말굽 (E_WALK · 장착 원정대 — 가장 높은 하나만) */
+function beltWalkMul(team){ return team && team.length ? 1 - relicFxParty(team, "E_WALK") / 100 : 1; }
+
+/* ── 그림 ── */
+function beltImg(src){
+  if(!src) return null;
+  let im = BELT.img[src];
+  if(!im){ im = BELT.img[src] = new Image(); im.decoding = "async"; im.src = src; }
+  return im;
+}
+function beltOk(im){ return !!(im && im.complete && im.naturalWidth); }
+function beltBgOf(layer, dg){ const b = BELT_ART && BELT_ART.bg && BELT_ART.bg[dg]; return b ? beltImg(b[layer]) : null; }
+function beltAtlas(){ return beltImg(BELT_ART && BELT_ART.atlas); }
+function beltFI(n){ return BELT_ART ? BELT_ART.sd.frames.indexOf(n) : 0; }
+function beltSheet(){
+  const im = beltImg(BELT_SD_SRC);
+  if(im && !im.__bf){ im.__bf = 1; im.addEventListener("load", ()=> beltFaces(), {once:true}); }
+  return im;
+}
+/* 직업 한 줄 (23장) — 머리색은 시트 그대로 (직업 기본색 · 사용자 1021 머리색 보류) */
+function beltJob(job){
+  let cv = BELT.jobs.get(job);
+  if(cv) return cv;
+  const J = BELT_ART && BELT_ART.sd.jobs[job], im = beltSheet();
+  if(!J || !beltOk(im)) return null;
+  const w = BELT_ART.sd.cell[0], h = BELT_ART.sd.cell[1], n = BELT_ART.sd.frames.length;
+  cv = document.createElement("canvas"); cv.width = w * n; cv.height = h;
+  const cx = cv.getContext("2d"); cx.imageSmoothingEnabled = false;
+  cx.drawImage(im, 0, J.row * h, w * n, h, 0, 0, w * n, h);
+  BELT.jobs.set(job, cv);
+  return cv;
+}
+/* 넋 — 쓰러진 학생 (서기 장을 푸르스름한 회색으로) */
+function beltGhost(job){
+  let g = BELT.ghost.get(job);
+  if(g) return g;
+  const src = beltJob(job);
+  if(!src) return null;
+  const w = BELT_ART.sd.cell[0], h = BELT_ART.sd.cell[1];
+  g = document.createElement("canvas"); g.width = w; g.height = h;
+  const x = g.getContext("2d", {willReadFrequently:true});
+  x.drawImage(src, beltFI("stand") * w, 0, w, h, 0, 0, w, h);
+  try{
+    const d = x.getImageData(0, 0, w, h), a = d.data;
+    for(let i = 0; i < a.length; i += 4){ const v = a[i] * .3 + a[i + 1] * .59 + a[i + 2] * .11; a[i] = v * .8 + 50; a[i + 1] = v * .85 + 56; a[i + 2] = v * .95 + 74; }
+    x.putImageData(d, 0, 0);
+  }catch(e){ x.globalAlpha = .5; }
+  BELT.ghost.set(job, g);
+  return g;
+}
+/* 번쩍임 — 그림 한 장의 실루엣 (흰색 · 빨강) */
+function beltTint(key, src, sx, sy, w, h, col){
+  const k = key + "|" + col;
+  let c = BELT.tint.get(k);
+  if(c) return c;
+  c = document.createElement("canvas"); c.width = w; c.height = h;
+  const x = c.getContext("2d");
+  x.drawImage(src, sx, sy, w, h, 0, 0, w, h);
+  x.globalCompositeOperation = "source-atop"; x.fillStyle = col; x.fillRect(0, 0, w, h);
+  BELT.tint.set(k, c);
+  if(BELT.tint.size > 160) BELT.tint.delete(BELT.tint.keys().next().value);
+  return c;
+}
+/* 그림 조각 (DOM) — 띠 atlas 의 소품 · 건물 안 아이콘 시트의 물건 */
+function beltSpr(key, s, cls, style){
+  const p = BELT_ART && BELT_ART.props[key];
+  if(!p) return "";
+  return `<i class="belt-sp${cls ? " " + cls : ""}" style="--x:${p[0]};--y:${p[1]};--w:${p[2]};--h:${p[3]};--s:${s || 1}${style ? ";" + style : ""}" aria-hidden="true"></i>`;
+}
+function beltIc(item, s){
+  const T = (typeof TIN_ART !== "undefined" && TIN_ART && TIN_ART.icons) || null, at = T && T.at && T.at[item];
+  if(!at) return "";
+  return `<i class="belt-ic" style="--x:${at[0]};--y:${at[1]};--s:${s || 1}" aria-hidden="true"></i>`;
+}
+function beltVars(el){
+  if(!el || !BELT_ART) return;
+  el.style.setProperty("--belt-atlas", `url("${BELT_ART.atlas}")`);
+  el.style.setProperty("--aw", BELT_ART.aw); el.style.setProperty("--ah", BELT_ART.ah);
+  const T = (typeof TIN_ART !== "undefined" && TIN_ART && TIN_ART.icons) || null;
+  if(T){ el.style.setProperty("--belt-icons", `url("${T.src}")`); el.style.setProperty("--iw", T.size[0]); el.style.setProperty("--ih", T.size[1]); }
+}
+
+/* ── 시계 — 빠르게 · 전투 중 멈춤을 따른다 (띠의 모든 장면이 이 시계로 움직인다) ── */
+function beltWait(ms){ const g = BELT.gen; return new Promise((res, rej)=> BELT.waits.push({at:BELT.clk.t + ms, res, rej, g})); }
+function beltFrame(){ return beltWait(0); }
+async function beltTween(ms, fn){ const t0 = BELT.clk.t; for(;;){ const p = ms <= 0 ? 1 : Math.min(1, (BELT.clk.t - t0) / ms); fn(p); if(p >= 1) return; await beltFrame(); } }
+function beltEase(p){ return 1 - (1 - p) * (1 - p); }
+function beltTick(ts){
+  if(!BELT.on) return;
+  const C = BELT.clk, dt = C.last ? Math.min(80, Math.max(0, ts - C.last)) : 16;
+  C.last = ts;
+  if(!BELT.hold) C.t += dt * C.speed;
+  const w = BELT.waits; BELT.waits = [];
+  for(const x of w){
+    if(x.g !== BELT.gen){ x.rej(BELT_CANCEL); continue; }
+    if(C.t >= x.at) x.res(); else BELT.waits.push(x);
+  }
+  if(!BELT.hold){ try{ beltDraw(); }catch(e){ errPush("belt", e.message, e.stack); } }
+  BELT.raf = requestAnimationFrame(beltTick);
+}
+function beltSfx(k, rate){ if(BELT.clk.speed > 3) return; try{ sfxPlay(k, rate); }catch(e){} }
+
+/* ── 띠 그리기 ── */
+function beltSW(){ return BELT_ART ? BELT_ART.strip[0] : 384; }
+function beltSH(){ return BELT_ART ? BELT_ART.strip[1] : 128; }
+function beltFeet(){ return BELT_ART ? BELT_ART.feet : 108; }
+function beltMemX(m){ return BELT_FRONT - BELT.cam - m.sx + m.dx; }
+function beltCamOf(){ return BELT.P - (BELT_FRONT - BELT.cam); }
+function beltMemY(m){ return beltFeet() - (m.slot % 2 ? 4 : 0); }
+function beltTile(im, off, y){
+  if(!beltOk(im)) return;
+  const w = im.naturalWidth, SW = beltSW();
+  let x = ((Math.round(off) % w) + w) % w - w;
+  for(; x < SW; x += w) BELT.cx.drawImage(im, x, y);
+}
+/* 줄 — 서 있는 학생이 앞(오른쪽)부터 · 쓰러진 학생(넋)은 맨 뒤로 천천히 비킨다 */
+function beltSlots(dt){
+  const up = BELT.mem.filter(m=> m.pose !== "ghost").sort((a, b)=> a.i - b.i), gh = BELT.mem.filter(m=> m.pose === "ghost").sort((a, b)=> a.i - b.i);
+  up.concat(gh).forEach((m, k)=>{ if(m.pose !== "down") m.slot = k; });
+  for(const m of BELT.mem){ const tx = m.slot * BELT_GAP, v = .05 * dt; m.sx += Math.max(-v, Math.min(v, tx - m.sx)); }
+}
+function beltFrameOf(m){
+  const T = BELT.clk.t, t = T - (m.t0 || 0);
+  switch(m.pose){
+    case "walk": return beltFI("walk0") + Math.floor((T + m.i * 41) / 88) % 4;
+    case "idle": return beltFI("idle0") + Math.floor((T + m.i * 70) / 180) % 4;
+    case "hit": return beltFI("hit0") + (t < 140 ? 0 : 1);
+    case "win": return beltFI("win0") + Math.floor(t / 180) % 4;
+    case "med": return beltFI("med0") + Math.floor(t / 400) % 4;
+    case "down": return beltFI("down0") + Math.min(3, Math.floor(t / 180));
+    default: return beltFI("stand");
+  }
+}
+function beltDisc(cx, x, y, r, col, a){
+  const R = Math.ceil(r);
+  cx.fillStyle = col;
+  for(let j = -R; j <= R; j++) for(let i = -R; i <= R; i++){
+    if(i * i + j * j > r * r + .3) continue;
+    const X = Math.round(x) + i, Y = Math.round(y) + j;
+    if(a < 1 && (BELT_BAYER[Y & 1][X & 1] + .5) / 4 > a) continue;
+    cx.fillRect(X, Y, 1, 1);
+  }
+}
+/* 먼지 한 뭉치 — 도트 장면 넷 (원정 지도 이동 중과 같다) */
+function beltPuff(cx, d, k){
+  const q = d.t / d.life, x = d.x - 9 * d.t * k, y = d.y - 7 * d.t, s = d.s;
+  if(q < .25){ beltDisc(cx, x, y + .6, 2.6, BELT_DUST[0], 1); beltDisc(cx, x - .3, y - .3, 2, BELT_DUST[1], 1); }
+  else if(q < .5){
+    [[0, 0, 3.4], [-3.8, -.9 * s, 2.5], [3.1, -2, 2.1]].forEach(([ox, oy, r])=> beltDisc(cx, x + ox, y + oy + .8, r, BELT_DUST[0], 1));
+    [[0, 0, 2.7], [-3.8, -.9 * s, 1.8], [3.1, -2, 1.5]].forEach(([ox, oy, r])=> beltDisc(cx, x + ox - .4, y + oy - .4, r, BELT_DUST[1], 1));
+  }else if(q < .75){
+    cx.fillStyle = BELT_DUST[2];
+    [[-6, -1], [-5, -4], [-1, -5], [3, -5], [5, -2], [6, 0], [-2, 1], [2, 1]].forEach(([ox, oy], m)=>{ if((m + (s > 0)) % 3) cx.fillRect(Math.round(x + ox * 1.1), Math.round(y + oy), 2, m % 2 ? 2 : 1); });
+  }else{
+    cx.fillStyle = BELT_DUST[2];
+    [[-5, -4], [1, -6], [5, -3]].forEach(([ox, oy])=> cx.fillRect(Math.round(x + ox * 1.2), Math.round(y + oy - 2 * q), 1, 1));
+  }
+}
+/* 타원 그림자 (사용자 1021 '몬스터 출현할때하고 캐릭터들 아래에 타원형 그림자 하나씩') — 1배 점으로 칠한 납작한 타원 */
+function beltEll(x, y, rx, ry, a){
+  rx = Math.round(rx); ry = Math.max(1, Math.round(ry));
+  if(rx < 2 || a <= .01) return;
+  const cx = BELT.cx;
+  cx.globalAlpha = a; cx.fillStyle = "#140a08";
+  for(let j = -ry; j <= ry; j++){
+    const hw = Math.round(rx * Math.sqrt(Math.max(0, 1 - (j / (ry + .5)) ** 2)));
+    if(hw > 0) cx.fillRect(Math.round(x) - hw, Math.round(y) + j, hw * 2 + 1, 1);
+  }
+  cx.globalAlpha = 1;
+}
+/* 그림자 — 땅에 붙은 것부터 한 번에 (마물 · 상자 · 학생이 서로의 그림자를 덮지 않게) */
+function beltShadows(camX){
+  const SW = beltSW(), FEET = beltFeet();
+  for(const o of BELT.objs){
+    const x = Math.round(o.wx - camX);
+    if(x < -140 || x > SW + 140) continue;
+    if(o.k === "chest") beltEll(x, FEET + 1, 13, 3, BELT_SH_A);
+    else if(o.k === "gold") beltEll(x, FEET + 1, 17, 3, BELT_SH_A);
+    else if(o.k === "mon"){
+      const M = BELT_ART.mon[o.key];
+      if(!M || o.alpha <= 0) continue;
+      const gy = FEET + (o.dy || 0), sx = x - M[2] / 2 + M[5];
+      const q = o.state === "drop" ? Math.max(0, Math.min(1, (o.y + 50) / (gy + 50))) : 1, k = .3 + .7 * q;   // 떨어지는 동안 — 작고 옅게 나타나 내려앉을수록 커진다
+      beltEll(sx, gy + 1, M[6] * k, Math.min(7, Math.max(3, M[6] / 4)) * k, BELT_SH_A * (.35 + .65 * q) * (o.alpha == null ? 1 : o.alpha));
+    }
+  }
+  for(const m of BELT.mem){
+    const x = beltMemX(m), yb = beltMemY(m);
+    if(m.pose === "ghost"){ beltEll(x, yb + 1, 8, 2, BELT_SH_A * .4); continue; }
+    const k = 1 - Math.min(.5, (m.hop || 0) / 24);              // 뛰어오르면 그림자가 작아진다
+    beltEll(x, yb + 1, (m.pose === "down" ? 16 : m.pose === "med" ? 13 : 12) * k, 3 * k, BELT_SH_A * k);
+  }
+}
+function beltDraw(){
+  const cx = BELT.cx, E = BELT.E;
+  if(!cx || !E) return;
+  const SW = beltSW(), SH = beltSH(), FEET = beltFeet(), dgId = BELT.dg, K = BELT.K;
+  const camX = beltCamOf() + (BELT.shake ? Math.round((Math.random() - .5) * BELT.shake) : 0);
+  const dt = BELT.lastT == null ? 0 : BELT.clk.t - BELT.lastT; BELT.lastT = BELT.clk.t;
+  beltSlots(dt);
+  cx.clearRect(0, 0, SW, SH);
+  beltTile(beltBgOf("far", dgId), -camX * .25, 0);
+  beltTile(beltBgOf("ground", dgId), -camX, BELT_ART ? BELT_ART.gy0 : 82);
+  beltShadows(camX);
+  for(const o of BELT.objs) if(!o.over) beltObj(o, camX);
+  const cw = BELT_ART ? BELT_ART.sd.cell[0] : 64, chh = BELT_ART ? BELT_ART.sd.cell[1] : 64, ax = BELT_ART ? BELT_ART.sd.anchor[0] : 32, ay = BELT_ART ? BELT_ART.sd.anchor[1] : 62;
+  const order = BELT.mem.slice().sort((a, b)=> beltMemY(a) - beltMemY(b));   // 뒤 줄부터
+  for(const m of order){
+    const x = Math.round(beltMemX(m)), yb = beltMemY(m);
+    if(m.pose === "ghost"){
+      const g = beltGhost(m.job);
+      if(g){ cx.globalAlpha = .62; cx.drawImage(g, x - ax, yb - ay - 6 - Math.round(2 * Math.sin(BELT.clk.t / 300 + m.i))); cx.globalAlpha = 1; }
+      continue;
+    }
+    const f = beltFrameOf(m), y = Math.round(yb - (m.hop || 0)), im = beltJob(m.job);
+    if(!im) continue;
+    if(m.pose === "walk"){
+      if(m.lastF !== f && f === beltFI("walk0")) BELT.parts.push({k:"dust", wx:camX + x - 10, y:yb - 1, born:BELT.clk.t, life:500, s:Math.random() < .5 ? -1 : 1});
+      if(m.lastF !== undefined && m.lastF !== f && (f === beltFI("walk0") || f === beltFI("walk2")) && m.slot === 0)
+        beltSfx("xm_step" + ((BELT.stepN = (BELT.stepN || 0) + 1) % 3 + 1), .96 + Math.random() * .08);   // 걸음 '뽈' — 맨 앞 학생만
+      m.lastF = f;
+    }else m.lastF = undefined;
+    cx.save();
+    if(m.flip){ cx.translate(x * 2, 0); cx.scale(-1, 1); }
+    cx.drawImage(im, f * cw, 0, cw, chh, x - ax, y - ay, cw, chh);
+    if(m.flash && BELT.clk.t < m.flash){
+      cx.globalAlpha = .7 * ((m.flash - BELT.clk.t) / 260);
+      cx.drawImage(beltTint("j:" + m.job + ":" + f, im, f * cw, 0, cw, chh, m.flashCol || "#ff4030"), x - ax, y - ay);
+      cx.globalAlpha = 1;
+    }
+    cx.restore();
+  }
+  for(const o of BELT.objs) if(o.over) beltObj(o, camX);
+  BELT.parts = BELT.parts.filter(p=> BELT.clk.t - p.born < p.life);
+  for(const p of BELT.parts) if(BELT.clk.t >= p.born) beltPart(p, camX);
+  beltTile(beltBgOf("fg", dgId), -camX * 1.3, SH - 24);
+  if(BELT.flash > BELT.clk.t){ cx.globalAlpha = Math.min(1, (BELT.flash - BELT.clk.t) / 180); cx.fillStyle = BELT.flashCol; cx.fillRect(0, 0, SW, SH); cx.globalAlpha = 1; }
+  /* 띠 위 글 (DOM) */
+  BELT.fx = BELT.fx.filter(f=>{
+    const a = BELT.clk.t - f.t0;
+    if(a > f.life){ f.el.remove(); return false; }
+    if(a < 0){ f.el.style.opacity = "0"; return true; }
+    const q = a / f.life;
+    let x = (f.world ? f.x - camX : f.x) * K;
+    if(f.bub){
+      f.cx = f.cx == null ? f.tx : f.cx + (f.tx - f.cx) * Math.min(1, dt / 90);
+      x = f.cx;
+      const lim = f.bw / 2 - 12;
+      f.el.style.setProperty("--tail", Math.round(Math.max(-lim, Math.min(lim, f.sx - f.cx))) + "px");
+    }
+    const rise = f.rise ? f.rise * beltEase(Math.min(1, a / (f.riseMs || 600))) : 0;
+    const y = (f.y - rise) * K;
+    f.el.style.transform = `translate(${x}px,${y}px) translate(-50%,${f.mid ? "-50%" : "-100%"})`;
+    f.el.style.opacity = f.fade && q > f.fade ? String(Math.max(0, 1 - (q - f.fade) / (1 - f.fade))) : "1";
+    if(f.type){ const n = Math.min(f.text.length, Math.floor(a / 34)); if(n !== f.shown){ f.shown = n; f.span.textContent = f.text.slice(0, n); } }
+    return true;
+  });
+}
+function beltObj(o, camX){
+  const x = Math.round(o.wx - camX), cx = BELT.cx, FEET = beltFeet();
+  if(x < -140 || x > beltSW() + 140) return;
+  const A = beltAtlas();
+  if(!beltOk(A) || !BELT_ART) return;
+  const put = (key, oy)=>{ const p = BELT_ART.props[key]; if(p) cx.drawImage(A, p[0], p[1], p[2], p[3], Math.round(x - p[2] / 2), Math.round(FEET - p[3] + (oy || 0)), p[2], p[3]); };
+  if(o.k === "chest") put(o.open ? "chest-open" : "chest", 1);
+  else if(o.k === "gold"){ put(o.open ? "gold-open" : "gold", 1); if(!o.open && Math.floor(BELT.clk.t / 260) % 3 === 0) beltSparkle(x + 9, FEET - 22, "#fff6c8"); }
+  else if(o.k === "spike") put("spike" + (o.f || 0), 2);
+  else if(o.k === "mire") put("mire" + (Math.floor(BELT.clk.t / 260) % 3), 3);
+  else if(o.k === "fire"){
+    put("fire" + (Math.floor(BELT.clk.t / 110) % 4), 1);
+    if(Math.random() < .08) BELT.parts.push({k:"ember", wx:o.wx + (Math.random() - .5) * 8, y:FEET - 14, born:BELT.clk.t, life:900, vx:(Math.random() - .5) * .01});
+    if(o.lit && Math.random() < .05) beltSfx("belt_crackle");
+  }else if(o.k === "mon"){
+    const M = BELT_ART.mon[o.key];
+    if(!M || o.alpha <= 0) return;
+    const w = M[2], h = M[3], y = Math.round(o.y - h + 2 + (o.state === "idle" ? Math.round(Math.sin(BELT.clk.t / 260 + o.j) * 1) : 0));
+    cx.globalAlpha = o.alpha == null ? 1 : o.alpha;
+    cx.drawImage(A, M[0], M[1], w, h, Math.round(x - w / 2), y, w, h);
+    if(o.flash > BELT.clk.t){ cx.globalAlpha *= .8; cx.drawImage(beltTint("m:" + o.key, A, M[0], M[1], w, h, o.flashCol || "#fff"), Math.round(x - w / 2), y); }
+    cx.globalAlpha = 1;
+  }
+}
+function beltSparkle(x, y, col, big){
+  const cx = BELT.cx;
+  cx.fillStyle = col;
+  cx.fillRect(x, y - 2, 1, 5); cx.fillRect(x - 2, y, 5, 1);
+  if(big){ cx.fillRect(x, y - 4, 1, 9); cx.fillRect(x - 4, y, 9, 1); cx.fillStyle = "#fff"; cx.fillRect(x, y, 1, 1); }
+}
+function beltPart(p, camX){
+  const cx = BELT.cx, a = BELT.clk.t - p.born, q = a / p.life;
+  if(p.k === "dust"){ beltPuff(cx, {x:p.wx - camX, y:p.y, t:a / 1000, life:p.life / 1000, s:p.s}, 0); return; }
+  const x = Math.round((p.world === false ? p.wx : p.wx - camX) + (p.vx || 0) * a);
+  if(p.k === "ember"){ cx.fillStyle = q < .5 ? "#ffd34d" : "#ff8a2a"; cx.fillRect(x, Math.round(p.y - a * .02), 1, 1); }
+  else if(p.k === "spark"){ const y = Math.round(p.y - (p.vy || .02) * a); if(Math.floor(a / 90) % 2 === 0 || q < .5) beltSparkle(x, y, p.col || "#fff6c8", q < .4); }
+  else if(p.k === "poof"){ const r = 2 + q * 9; cx.globalAlpha = 1 - q; beltDisc(cx, x, p.y - q * 6, r, "#f4f0ea", 1); beltDisc(cx, x - r * .6, p.y + 1 - q * 4, r * .6, "#d8d2ca", 1); cx.globalAlpha = 1; }
+  else if(p.k === "aura"){ cx.globalAlpha = 1 - q; cx.fillStyle = p.col || "#a6e48e"; cx.fillRect(x, Math.round(p.y - a * .025), 1, 2); cx.globalAlpha = 1; }
+  else if(p.k === "sweat"){ cx.fillStyle = "#9fd4ff"; const y = Math.round(p.y + a * .012); cx.fillRect(x, y, 1, 2); cx.fillRect(x + 1, y + 1, 1, 1); }
+  else if(p.k === "bubble"){ cx.fillStyle = "#c9a6e0"; cx.fillRect(x, Math.round(p.y - a * .01), 2, 2); }
+}
+
+/* ── 띠 위 글 (DOM) — 말풍선 · GET! · 숫자 · ! · 꼬리표 · 배너 ── */
+function beltFx(o){
+  const el = document.createElement("div");
+  el.className = "bl-fx " + (o.cls || "");
+  if(o.type){ const sp = document.createElement("span"); el.appendChild(sp); o.span = sp; o.shown = -1; }
+  else el.innerHTML = o.html;
+  BELT.fxEl.appendChild(el);
+  const f = Object.assign({el, t0:BELT.clk.t, life:1200, fade:.7, mid:!!o.mid}, o);
+  BELT.fx.push(f);
+  return f;
+}
+function beltSay(m, text, ms){
+  const f = beltFx({cls:"bl-bub", type:true, text, x:beltMemX(m), y:beltMemY(m) - 50, life:ms || 1800, fade:.88});
+  beltBubFit(f);
+  return f;
+}
+/* 말풍선 자리 (사용자 1021 '진입하고 클리어할때 대사창이 서로 겹치지 않도록') — 새 말풍선이 뜨면 떠 있는 말풍선과 함께 좌우로 비켜 앉힌다
+   (꼬리가 말하는 학생 위에 남는 만큼만 · 띠 안 · 배너 같은 단단한 글은 피해서). 그래도 겹치면 가장 오래된 말풍선부터 걷고 새 말풍선은 그 뒤에 뜬다 */
+function beltBubFit(f){
+  const el = f.el, K = BELT.K;
+  f.span.textContent = f.text;                                // 다 쓴 크기를 재고 그 크기로 고정 — 글이 찍히는 동안 상자가 자라지 않게
+  el.style.visibility = "hidden";
+  f.bw = el.offsetWidth; f.bh = el.offsetHeight;
+  el.style.width = f.bw + "px"; el.style.height = f.bh + "px";
+  f.span.textContent = ""; el.style.visibility = "";
+  f.bub = true; f.sx = f.x * K; f.tx = f.sx; f.lim = Math.max(0, f.bw / 2 - 16);
+  beltBubPlace(f);
+}
+function beltFxGone(f){ if(f.gone) return; f.gone = true; const a = Math.max(0, BELT.clk.t - f.t0); f.life = a + BELT_BUB_FADE; f.fade = a / f.life; }
+function beltBubLive(){ return BELT.fx.filter(f=> f.bub && !f.gone && BELT.clk.t - f.t0 < f.life); }
+function beltBubClear(){ beltBubLive().forEach(beltFxGone); }
+function beltSolid(o){
+  const K = BELT.K, w = o.el.offsetWidth, h = o.el.offsetHeight, cx = o.x * K, y = o.y * K;
+  return o.mid ? {l:cx - w / 2, r:cx + w / 2, t:y - h / 2, b:y + h / 2} : {l:cx - w / 2, r:cx + w / 2, t:y - h, b:y};
+}
+function beltBubPack(set){
+  const K = BELT.K, lo = BELT_BUB_EDGE, hi = beltSW() * K - BELT_BUB_EDGE, G = BELT_BUB_GAP;
+  const solids = BELT.fx.filter(o=> o.solid && !o.gone && BELT.clk.t - o.t0 < o.life).map(beltSolid);
+  for(const f of set){ f.lo = Math.max(f.sx - f.lim, lo + f.bw / 2); f.hi = Math.min(f.sx + f.lim, hi - f.bw / 2); f.tx = Math.max(f.lo, Math.min(f.hi, f.tx)); }
+  const s = set.slice().sort((a, b)=> a.sx - b.sx);
+  for(let it = 0; it < 80; it++){
+    let moved = false;
+    for(let i = 0; i + 1 < s.length; i++){
+      const a = s[i], b = s[i + 1], ov = (a.tx + a.bw / 2 + G) - (b.tx - b.bw / 2);
+      if(ov <= .01) continue;
+      const ra = a.tx - a.lo, rb = b.hi - b.tx;
+      let db = Math.min(rb, ov / 2), da = Math.min(ra, ov - db); db = Math.min(rb, ov - da);
+      if(da + db > .01){ a.tx -= da; b.tx += db; moved = true; }
+    }
+    for(const f of s){
+      const t = f.y * K - f.bh, bt = f.y * K;
+      for(const r of solids){
+        if(bt <= r.t || t >= r.b || f.tx + f.bw / 2 + G <= r.l || f.tx - f.bw / 2 - G >= r.r) continue;
+        const L = r.l - G - f.bw / 2, Rr = r.r + G + f.bw / 2, cand = [L, Rr].filter(v=> v >= f.lo - .01 && v <= f.hi + .01);
+        if(cand.length){ f.tx = cand.sort((p, q)=> Math.abs(p - f.tx) - Math.abs(q - f.tx))[0]; moved = true; }
+      }
+    }
+    if(!moved) break;
+  }
+  for(let i = 0; i + 1 < s.length; i++) if((s[i].tx + s[i].bw / 2 + G) - (s[i + 1].tx - s[i + 1].bw / 2) > .5) return false;
+  return true;
+}
+function beltBubPlace(nf){
+  let set = beltBubLive().filter(f=> f !== nf);
+  const keep = new Map(set.map(f=> [f, f.tx]));
+  set.push(nf);
+  while(!beltBubPack(set)){
+    const old = set.filter(f=> f !== nf).sort((a, b)=> a.t0 - b.t0)[0];
+    if(!old) break;
+    old.tx = keep.get(old);                                     // 걷히는 말풍선은 제자리에서 사라진다
+    beltFxGone(old);
+    set = set.filter(f=> f !== old);
+    nf.t0 = Math.max(nf.t0, BELT.clk.t + BELT_BUB_FADE);
+  }
+}
+function beltFloat(x, y, html, cls, ms, world){ return beltFx({cls, html, x, y, life:ms || 1100, rise:14, riseMs:500, fade:.65, world}); }
+
+/* ── 창 위 · 아래 (진행 · 지구력 · 학생 · 얻은 것) ── */
+function beltQ(sel){ return BELT.root ? BELT.root.querySelector(sel) : null; }
+function beltHudPct(p){
+  p = Math.max(0, Math.min(100, p));
+  const n = beltQ(".belt-pct b"), fl = beltQ(".belt-track .bl-fill"), me = beltQ(".belt-track .bl-me");
+  if(n) n.textContent = Math.floor(p);
+  if(fl) fl.style.width = p + "%";
+  if(me) me.style.left = p + "%";
+}
+function beltHudStam(v){
+  const H = BELT.hud;
+  H.st = v;
+  const q = Math.max(0, v) / H.st0, box = beltQ(".belt-stam");
+  if(!box) return;
+  box.querySelector(".bl-bar i").style.width = q * 100 + "%";
+  box.querySelector("b").textContent = `${Math.max(0, v)} / ${H.st0}`;
+  box.classList.toggle("bl-low", q <= .25);
+  if(v <= 0){ box.classList.remove("bl-zero"); void box.offsetWidth; box.classList.add("bl-zero"); }
+  box.setAttribute("aria-valuenow", Math.max(0, v));
+}
+function beltStamPop(v){
+  const box = beltQ(".belt-stam");
+  if(box){
+    const el = document.createElement("span");
+    el.className = "bl-dv"; el.textContent = v > 0 ? `+${v}` : `${v}`; el.style.color = v > 0 ? "#a6e48e" : "#ff9a86";
+    box.appendChild(el);
+    requestAnimationFrame(()=>{ el.style.transform = "translateY(-10px)"; el.style.opacity = "0"; });
+    setTimeout(()=> el.remove(), 900);
+  }
+  if(v < 0) beltSfx("belt_stam");
+}
+function beltHpCls(h){ return h > .5 ? "" : h > .25 ? "bl-mid" : "bl-low"; }
+function beltHudHp(sid, hp, alive, kind){
+  const el = beltQ(`.belt-pm[data-sid="${sid}"]`);
+  if(!el) return;
+  const bar = el.querySelector(".bl-hp i");
+  bar.style.width = (alive ? Math.max(2, hp * 100) : 0) + "%";
+  bar.className = beltHpCls(hp);
+  el.classList.toggle("bl-ko", !alive);
+  if(kind){ el.classList.remove("bl-hit", "bl-heal"); void el.offsetWidth; el.classList.add("bl-" + kind); }
+}
+function beltHudLoot(pop){
+  const L = beltQ(".belt-loot"), H = BELT.hud;
+  if(!L) return;
+  const items = BELT_ITEMS_ORDER.filter(k=> (H.items[k] || 0) > 0);
+  L.innerHTML = `<span class="bl-lt" data-k="gold" title="자금">${beltSpr("coin", 1)}<b>${fmt(H.gold)}</b></span>`
+    + items.map(k=> `<span class="bl-lt" data-k="${k}" title="${esc(beltItemName(k))}">${beltIc(k, 1)}<b>${H.items[k]}</b></span>`).join("")
+    + `<span class="bl-lt" data-k="relic" title="유물">${beltSpr("gem", 1)}<b>${H.relics}</b></span>`;
+  if(pop){ const e = L.querySelector(`[data-k="${pop}"]`); if(e) e.classList.add("bl-pop"); }
+}
+function beltMark(at, kind, done){
+  const box = beltQ(".belt-marks");
+  if(box) box.insertAdjacentHTML("beforeend", beltSpr(kind, 2, "bl-mk" + (done ? " bl-done" : ""), `left:${at}%`));
+}
+function beltFace(s, cv){
+  if(!cv || !s || !BELT_ART) return;
+  const J = BELT_ART.sd.jobs[s.job], src = beltJob(s.job), x = cv.getContext("2d");
+  x.clearRect(0, 0, cv.width, cv.height);
+  if(!J || !src) return;
+  x.imageSmoothingEnabled = false;
+  x.drawImage(src, beltFI("stand") * BELT_ART.sd.cell[0] + J.head[0], J.head[1], J.head[2], J.head[3], 0, 0, cv.width, cv.height);
+}
+function beltFaces(){
+  if(!BELT.root || !BELT.E) return;
+  BELT.root.querySelectorAll(".belt-pm").forEach(el=> beltFace(BELT.E.team.find(s=> s.id === el.dataset.sid), el.querySelector("canvas")));
+  beltFace(BELT.mem.length ? BELT.mem[0].s : null, beltQ(".belt-track .bl-me"));
+}
+
+/* ── 한 판 (띠) ── */
+function beltPose(p, all){ for(const m of BELT.mem){ if(!m.alive && !all) continue; if(m.pose !== p){ m.pose = p; m.t0 = BELT.clk.t; } } }
+async function beltWalkTo(at){
+  const target = at * BELT_LEN;
+  if(BELT.P >= target - .01) return;
+  beltPose("walk");
+  let last = BELT.clk.t;
+  while(BELT.P < target){
+    await beltFrame();
+    const dt = BELT.clk.t - last; last = BELT.clk.t;
+    BELT.P = Math.min(target, BELT.P + dt * (BELT_LEN / BELT_WALK_MS) * BELT.slow);
+    beltHudPct(BELT.P / BELT_LEN);
+  }
+}
+function beltStop(){ beltPose("idle"); }
+async function beltHop(m, h, ms){ await beltTween(ms || 320, p=>{ m.hop = Math.round(h * 4 * p * (1 - p)); }); m.hop = 0; }
+function beltLine(kind, m){ const T = BELT_LINES[kind] || {}; return T[(m && m.s && m.s.pers) || "plain"] || T.plain || ""; }
+async function beltPlay(){
+  const R = BELT.R;
+  /* 도착 — 왼쪽에서 걸어 들어와 서고, 한 사람씩 '힘내자' */
+  BELT.mem.forEach(m=>{ m.dx = -240; m.pose = "walk"; m.t0 = BELT.clk.t; });
+  await beltTween(1300, p=> BELT.mem.forEach(m=> m.dx = -240 * (1 - beltEase(p))));
+  beltStop();
+  for(const m of BELT.mem){ beltSay(m, beltLine("arrive", m), 2300); await beltWait(900); }
+  await beltWait(1500);
+  for(const e of R.ev){
+    if(e.t === "clear") continue;
+    if(e.t !== "retreat" || e.why === "stam") await beltWalkTo(e.at);
+    await beltDo(e);
+  }
+  beltEnd();
+}
+async function beltDo(e){
+  const FEET = beltFeet();
+  if(e.t === "tick"){
+    beltHudStam(e.st); if(e.cost) beltStamPop(-e.cost);         // 돌아오는 말굽으로 0 인 걸음도 있다
+    if(e.st / BELT.hud.st0 <= .25) BELT.mem.forEach(m=>{ if(m.alive) BELT.parts.push({k:"sweat", wx:beltCamOf() + beltMemX(m) + 7, y:beltMemY(m) - 40, born:BELT.clk.t, life:600}); });
+    return;
+  }
+  if(e.t === "chest"){
+    beltStop();
+    const o = BELT.objs.find(x=> x.k === "chest" && x.at === e.at), m = BELT.mem.find(x=> x.alive);
+    if(m) await beltHop(m, 7, 300);
+    if(o) o.open = true;
+    beltSfx("belt_chest");
+    const wx = o ? o.wx : BELT.P + 30;
+    for(let i = 0; i < 6; i++) BELT.parts.push({k:"spark", wx:wx + (Math.random() - .5) * 18, y:FEET - 14 - Math.random() * 6, born:BELT.clk.t + i * 40, life:700, vy:.02 + Math.random() * .02, col:i % 2 ? "#fff6c8" : "#ffd34d"});
+    if(e.kind === "gold"){
+      beltFx({cls:"bl-get", html:`${beltSpr("coinpile", 2)}GET!`, x:wx, y:FEET - 20, world:true, life:1400, rise:18, riseMs:400, fade:.75});
+      beltFloat(wx + 26, FEET - 22, `+${fmt(e.v)} G`, "bl-num bl-gold", 1300, true);
+      BELT.hud.gold += e.v; beltHudLoot("gold"); beltSfx("belt_coin");
+    }else{
+      beltFx({cls:"bl-get", html:`${beltIc(e.item, 2)}GET!`, x:wx, y:FEET - 20, world:true, life:1400, rise:18, riseMs:400, fade:.75});
+      beltFloat(wx + 30, FEET - 24, esc(beltItemName(e.item)), "bl-num bl-good", 1300, true);
+      BELT.hud.items[e.item] = (BELT.hud.items[e.item] || 0) + 1; beltHudLoot(e.item); beltSfx("belt_item");
+    }
+    beltMark(e.at, "mk-chest", true);
+    await beltWait(1250);
+    return;
+  }
+  if(e.t === "trap"){
+    if(e.kind === "hp"){
+      beltStop();
+      const o = BELT.objs.find(x=> x.k === "spike" && x.at === e.at), m = BELT.mem.find(x=> x.sid === e.who);
+      if(!m) return;
+      m.pose = "walk"; m.t0 = BELT.clk.t;
+      await beltTween(260, p=>{ m.dx = 16 * p; });               // 맨 앞 학생이 한 발 더 — 가시판 위로
+      if(o){ o.over = true; o.f = 1; }
+      beltSfx("belt_spike"); await beltWait(60); if(o) o.f = 2;
+      m.pose = "hit"; m.t0 = BELT.clk.t; m.flash = BELT.clk.t + 260; m.flashCol = "#ff4030";
+      BELT.shake = 2;
+      beltFloat(beltMemX(m), beltMemY(m) - 46, `−${e.v}%`, "bl-num bl-bad", 1100);
+      beltHudHp(m.sid, e.hp[m.sid], true, "hit");
+      beltMark(e.at, "mk-spike", true);
+      await beltTween(320, p=>{ m.dx = 16 - 18 * beltEase(p); });
+      BELT.shake = 0;
+      await beltWait(380);
+      if(o){ o.f = 0; o.over = false; }
+      m.pose = "idle"; m.t0 = BELT.clk.t;
+      await beltTween(200, p=>{ m.dx = -2 * (1 - p); });
+      await beltWait(250);
+    }else{
+      beltSfx("belt_mire");
+      BELT.slow = .4;
+      beltHudStam(e.st); beltStamPop(-e.v);
+      BELT.mem.forEach(m=>{ if(m.alive) BELT.parts.push({k:"sweat", wx:beltCamOf() + beltMemX(m) + 7, y:beltMemY(m) - 40, born:BELT.clk.t, life:700}); });
+      for(let i = 0; i < 6; i++) BELT.parts.push({k:"bubble", wx:e.at * BELT_LEN + 10 + (Math.random() - .5) * 24, y:FEET + 1, born:BELT.clk.t + i * 120, life:600});
+      const lead = BELT.mem.find(x=> x.alive) || BELT.mem[0];
+      beltFloat(beltMemX(lead), beltMemY(lead) - 50, `지구력 −${e.v}`, "bl-num bl-st", 1300);
+      beltMark(e.at, "mk-mire", true);
+      if(e.st > 0) await beltWalkTo(e.at + 2);
+      BELT.slow = 1;
+    }
+    return;
+  }
+  if(e.t === "camp"){
+    beltStop();
+    const lead = BELT.mem.find(m=> m.alive) || BELT.mem[0];
+    if(BELT.fire) BELT.fire.lit = true;
+    beltSay(lead, beltLine("camp", lead), 1600);
+    await beltWait(1300);
+    beltBubClear(); await beltWait(BELT_BUB_FADE);
+    for(const m of BELT.mem){ if(m.alive){ m.pose = "med"; m.t0 = BELT.clk.t; } }
+    const dots = BELT.mem.filter(m=> m.alive).map(m=> beltFx({cls:"bl-bub", html:"…", x:beltMemX(m), y:beltMemY(m) - 44, life:2200, fade:.9}));
+    const h0 = Object.assign({}, e.hp0), s0 = e.st0;
+    beltSfx("belt_heal");
+    await beltTween(1800, p=>{
+      for(const m of BELT.mem){
+        if(e.rev.includes(m.sid)) continue;
+        if(Math.random() < .25) BELT.parts.push({k:"aura", wx:beltCamOf() + beltMemX(m) + (Math.random() - .5) * 18, y:beltMemY(m) - 6 - Math.random() * 20, born:BELT.clk.t, life:700, col:Math.random() < .5 ? "#a6e48e" : "#d4ead0"});
+        if(m.alive) beltHudHp(m.sid, h0[m.sid] + (e.hp[m.sid] - h0[m.sid]) * p, true);
+      }
+      beltHudStam(Math.round(s0 + (e.st - s0) * p));
+    });
+    for(const sid of e.rev){
+      const m = BELT.mem.find(x=> x.sid === sid);
+      if(!m) continue;
+      m.alive = true; m.pose = "med"; m.t0 = BELT.clk.t; m.flash = BELT.clk.t + 260; m.flashCol = "#ffffff";
+      beltHudHp(sid, e.hp[sid], true, "heal");
+      beltFloat(beltMemX(m), beltMemY(m) - 46, "일어났다", "bl-num bl-good", 1200);
+    }
+    BELT.mem.forEach(m=> beltHudHp(m.sid, e.hp[m.sid], m.alive, "heal"));
+    beltFloat(beltMemX(BELT.mem[0]) + 10, beltMemY(BELT.mem[0]) - 56, `지구력 +${e.st - s0}`, "bl-num bl-good", 1300);
+    beltMark(e.at, "mk-fire", true);
+    await beltWait(1100);
+    dots.forEach(f=> f.life = 0);
+    beltStop();
+    if(BELT.fire) BELT.fire.lit = false;
+    await beltWait(300);
+    return;
+  }
+  if(e.t === "battle"){ await beltBattle(e); return; }
+  if(e.t === "goal"){ await beltGoal(e); return; }
+  if(e.t === "retreat"){ await beltRetreat(e); return; }
+}
+async function beltBattle(e){
+  beltStop();
+  const E = BELT.E, dg = E.dg, SW = beltSW(), FEET = beltFeet();
+  /* 마주침 — 모두 '!' · 마물이 오른쪽 위에서 떨어진다 */
+  beltSfx("belt_bang");
+  BELT.mem.forEach(m=>{ if(m.alive) beltFx({cls:"bl-bang", html:"!", x:beltMemX(m), y:beltMemY(m) - 48, life:900, fade:.8}); });
+  await beltTween(320, p=>{ BELT.cam = 44 * beltEase(p); });     // 화면을 조금 오른쪽으로 — 마물 자리
+  const n = e.mon.length, ws = e.mon.map(k=> (BELT_ART && BELT_ART.mon[k] ? BELT_ART.mon[k][2] : 48));
+  const L0 = BELT_FRONT - BELT.cam + 46, R0 = SW - 4, xs = [];
+  if(n === 1) xs.push((L0 + R0) / 2 + 20);
+  else{
+    const a0 = L0 + ws[0] / 2, a1 = R0 - ws[n - 1] / 2, need = ws.slice(0, -1).reduce((t, w, j)=> t + w / 2 + ws[j + 1] / 2 - 10, 0);
+    const k = need > 0 ? Math.min(1, (a1 - a0) / need) : 1;
+    let x = a1 - need * k;
+    for(let j = 0; j < n; j++){ xs.push(x); if(j < n - 1) x += (ws[j] / 2 + ws[j + 1] / 2 - 10) * k; }
+  }
+  const camX0 = beltCamOf();
+  const mons = e.mon.map((key, j)=> ({k:"mon", key, j, wx:camX0 + xs[j], y:-40, dy:(n > 2 && j === 1) ? -4 : 0, state:"drop", alpha:1}));
+  mons.sort((p, q)=> p.dy - q.dy);
+  mons.forEach(o=> BELT.objs.push(o));
+  await beltTween(520, p=>{ mons.forEach(o=>{ const q = Math.min(1, Math.max(0, p * 1.25 - o.j * .12)); o.y = -50 + (FEET + o.dy + 50) * (q * q); if(q >= 1 && o.state === "drop"){ o.state = "idle"; o.y = FEET + o.dy; } }); });
+  mons.forEach(o=>{ o.state = "idle"; o.y = FEET + o.dy; BELT.parts.push({k:"dust", wx:o.wx - 8, y:FEET, born:BELT.clk.t, life:500, s:1}, {k:"dust", wx:o.wx + 10, y:FEET, born:BELT.clk.t, life:500, s:-1}); });
+  BELT.shake = 3; beltSfx("belt_land"); await beltWait(160); BELT.shake = 0;
+  beltHudStam(e.st); beltStamPop(-e.cost);
+  if(e.ex){
+    const lead = BELT.mem.find(x=> x.alive) || BELT.mem[0];
+    beltFx({cls:"bl-tag", html:esc(`탈진 — 공격력 · 속도 −${Math.round(STAM_EX * 100)}%`), x:beltMemX(lead) - 20, y:beltMemY(lead) - 58, life:1600, fade:.85});
+    await beltWait(900);
+  }
+  await beltWait(420);
+  /* 전투 — 게임의 원정 전투 화면 그대로 (끝 단추 '계속' · 그동안 띠는 숨긴다) */
+  BELT.flash = BELT.clk.t + 220; BELT.flashCol = "#ffffff"; beltSfx("belt_battle");
+  await beltWait(200);
+  await beltOpenBattle(e);
+  /* 돌아와서 — 체력 그대로 (회복 없음) · 쓰러진 학생은 쓰러짐 → 넋 */
+  for(const m of BELT.mem){
+    const was = m.alive;
+    m.alive = !!e.alive[m.sid];
+    beltHudHp(m.sid, e.hp[m.sid], m.alive, was && !m.alive ? "hit" : null);
+    if(was && !m.alive){ m.pose = "down"; m.t0 = BELT.clk.t; }
+  }
+  if(e.win){
+    for(const o of mons){ o.flash = BELT.clk.t + 160; o.flashCol = "#ffffff"; }
+    await beltWait(180);
+    for(const o of mons){
+      beltSfx("belt_poof");
+      for(let i = 0; i < 3; i++) BELT.parts.push({k:"poof", wx:o.wx + (i - 1) * 8, y:FEET - 12 - i * 4, born:BELT.clk.t, life:420});
+      await beltTween(160, p=> o.alpha = 1 - p);
+    }
+    BELT.objs = BELT.objs.filter(o=> !mons.includes(o));
+    beltTween(450, p=>{ BELT.cam = 44 * (1 - beltEase(p)); }).catch(()=>{});
+    if(e.gold){ beltFloat(BELT_FRONT - BELT.cam + 34, FEET - 50, `+${fmt(e.gold)} G`, "bl-num bl-gold", 1200); BELT.hud.gold += e.gold; beltHudLoot("gold"); beltSfx("belt_coin"); }
+    for(const [q, r] of e.drops.entries()){
+      await beltWait(350);
+      beltFx({cls:"bl-get", html:`<img src="${esc(relicIconOf(r))}" width="40" height="40" alt="">GET!`, x:BELT_FRONT - BELT.cam + 96 + q * 56, y:FEET - 22, life:1600, rise:20, riseMs:450, fade:.75});
+      BELT.hud.relics++; beltHudLoot("relic"); beltSfx("belt_item");
+    }
+    beltMark(e.at, "mk-swords", true);
+    const fell = BELT.mem.filter(m=> !m.alive && m.pose === "down");
+    await beltWait(fell.length ? 900 : 500);
+    fell.forEach(m=>{ m.pose = "ghost"; m.t0 = BELT.clk.t; });
+  }else{
+    beltMark(e.at, "mk-swords", true);
+    await beltWait(900);
+  }
+}
+/* 게임 전투 화면 — 원정 전투 그대로 (BATTLE START 는 첫 전투에만 · 보스 전투는 승리 팡파르 · VICTORY) */
+function beltOpenBattle(e){
+  const E = BELT.E, dg = E.dg, g = BELT.gen;
+  return new Promise(resolve=>{
+    BELT.hold = true;
+    if(BELT.root) BELT.root.classList.add("belt-hold");
+    const back = ()=>{
+      if(g !== BELT.gen) return;
+      BELT.hold = false; BELT.clk.last = 0;
+      if(BELT.root) BELT.root.classList.remove("belt-hold");
+      modalLockSync();
+      resolve();
+    };
+    try{
+      openBattle(e.b, {titleA:"원정대", titleB:monLabel(e.foes), field:String(dg.mon || "").replace(/^mon_/, ""),
+        bgm:beltBgm(dg, e.sec >= 3 ? "boss" : "battle"), bgmAfter:BELT.music || null,   // 1021 둘째 — 전투곡 · 셋째는 보스곡 → 닫으면 지역곡을 멈춘 자리부터
+        jingle:e.sec >= 3 || !!e.muscle, victory:e.sec >= 3, intro:e.sec === 1, defeat:true, noSkip:!clrHas(clrXKey(dg, e.sec)),   // 1021 셋째 — 이긴 적 없는 구간은 끝까지
+        head:`${dg.n} — 전투 ${e.sec}/3${e.muscle ? " · 그뉵이용 출현!" : ""}`, doneLabel:"계속", drops:e.drops}, back);
+    }catch(err){ errPush("belt", err.message, err.stack); closeModal(); back(); }
+  });
+}
+async function beltGoal(e){
+  beltStop();
+  const o = BELT.objs.find(x=> x.k === "gold"), m = BELT.mem.find(x=> x.alive), FEET = beltFeet();
+  if(m) await beltHop(m, 8, 320);
+  if(o) o.open = true;
+  beltSfx("belt_gold");
+  const wx = o ? o.wx : BELT.P;
+  beltFx({cls:"bl-rays", html:"", x:wx, y:FEET - 16, world:true, life:4200, fade:.85, mid:true});
+  for(let i = 0; i < 12; i++) BELT.parts.push({k:"spark", wx:wx + (Math.random() - .5) * 30, y:FEET - 18 - Math.random() * 10, born:BELT.clk.t + i * 60, life:900, vy:.03 + Math.random() * .02, col:i % 3 ? "#fff6c8" : "#ffd34d"});
+  BELT.flash = BELT.clk.t + 200; BELT.flashCol = "#fff6c8";
+  (e.relics || []).forEach((r, q)=>{
+    beltFx({cls:"bl-get", html:`<img src="${esc(relicIconOf(r))}" width="48" height="48" alt="">GET!`, x:wx + (q - ((e.relics.length - 1) / 2)) * 56, y:FEET - 30, world:true, life:1900, rise:26, riseMs:600, fade:.74});
+    BELT.hud.relics++;
+  });
+  if((e.relics || []).length) beltHudLoot("relic");
+  beltMark(100, "mk-gold", true);
+  beltHudPct(100);
+  await beltWait(1900);                                         // 유물 GET! 이 걷힌 뒤에 CLEAR (겹치지 않게)
+  /* 승리 모션 + 클리어 */
+  beltSfx("belt_clear");
+  beltPose("win");
+  BELT.mem.forEach(x=>{ if(x.alive) beltHop(x, 6, 360).catch(()=>{}); });
+  beltFx({cls:"bl-banner", html:"CLEAR!", x:beltSW() / 2, y:24, life:1e9, fade:.99, solid:true, mid:true});
+  await beltWait(700);
+  for(const x of BELT.mem.filter(x=> x.alive).slice(0, 2)){ beltSay(x, beltLine("clear", x), 2600); await beltWait(900); }
+}
+async function beltRetreat(e){
+  beltStop();
+  const why = {stam:"지구력이 바닥났다", wipe:"전멸", exh:"탈진한 채 이겼다 — 더 갈 수 없다"}[e.why] || "";
+  if(e.why === "wipe"){
+    BELT.mem.forEach(m=>{ if(m.pose !== "down"){ m.pose = "down"; m.t0 = BELT.clk.t; } m.alive = false; });
+    beltSfx("belt_retreat");
+    beltFx({cls:"bl-banner bl-bad", html:esc("전멸…"), x:beltSW() / 2, y:24, life:1e9, fade:.99, solid:true, mid:true});
+    await beltWait(1400);
+    BELT.mem.forEach(m=>{ m.pose = "ghost"; });
+    await beltTween(1600, p=> BELT.mem.forEach(m=> m.dx = -200 * p));
+  }else{
+    const lead0 = BELT.mem.find(m=> m.alive) || BELT.mem[0];
+    const tg = beltFx({cls:"bl-tag", html:esc(why), x:beltMemX(lead0) - 20, y:beltMemY(lead0) - 58, life:2400, fade:.85});
+    BELT.mem.forEach(m=>{ if(m.alive) for(let i = 0; i < 2; i++) BELT.parts.push({k:"sweat", wx:beltCamOf() + beltMemX(m) + 6 + i * 3, y:beltMemY(m) - 40, born:BELT.clk.t + i * 200, life:700}); });
+    await beltWait(1300);
+    const alive = BELT.mem.filter(m=> m.alive);
+    if(alive[0]){ beltFxGone(tg); await beltWait(BELT_BUB_FADE); beltSay(alive[0], beltLine("retreat", alive[0]), 1800); await beltWait(1600); }
+    beltSfx("belt_retreat");
+    BELT.mem.forEach(m=>{ m.flip = true; if(m.alive){ m.pose = "walk"; m.t0 = BELT.clk.t; } });
+    beltFx({cls:"bl-banner bl-bad", html:esc("철수"), x:beltSW() / 2, y:24, life:1e9, fade:.99, solid:true, mid:true});
+    await beltTween(1800, p=> BELT.mem.forEach(m=> m.dx = -280 * p));
+    BELT.mem.forEach(m=>{ if(m.pose === "walk") m.pose = "stand"; });
+  }
+}
+/* 끝 — 닫기 단추 (끝까지 빠르게였으면 되돌린다) */
+function beltEnd(){
+  if(BELT.skip){ BELT.skip = false; BELT.clk.speed = PREF.beltFast ? 2 : 1; }
+  const c = beltQ(".belt-close");
+  if(!c) return;
+  c.hidden = false;
+  try{ c.focus({preventScroll:true}); }catch(e){}
+}
+/* 시험 · 점검용 — 끝까지 아주 빠르게 (전투 화면은 그대로 뜬다) */
+function beltSkip(){ if(BELT.on){ BELT.skip = true; BELT.clk.speed = 40; } }
+
+/* ── 창 ── */
+function beltScale(){
+  const vw = Math.min(innerWidth || 800, document.documentElement.clientWidth || innerWidth || 800), vh = innerHeight || 600;
+  const root = BELT.root, win = root && root.querySelector(".belt-win"), px = v=> parseFloat(v) || 0;
+  let pad = 24 + 28 + 4;                                         // 바깥 여백 · 창 안쪽 여백 · 테두리 (좁은 화면은 CSS 가 줄인다 — 그린 뒤에 잰다)
+  if(root && win){ const a = getComputedStyle(root), c = getComputedStyle(win); pad = px(a.paddingLeft) + px(a.paddingRight) + px(c.paddingLeft) + px(c.paddingRight) + px(c.borderLeftWidth) + px(c.borderRightWidth); }
+  const avail = vw - pad - 12;                                    // 띠 테 (바깥 그림자 6 × 2)
+  let k = avail >= 768 ? 2 : avail >= 576 ? 1.5 : Math.max(.5, Math.min(1, avail / 384));
+  while(k > 1 && 128 * k + 236 > vh) k -= .5;                     // 낮은 창 — 위 · 아래 줄이 들어가게
+  return k;
+}
+function beltRescale(){
+  if(!BELT.root) return;
+  BELT.K = beltScale();
+  const w = BELT.root.querySelector(".belt-win");
+  if(w) w.style.setProperty("--bk", BELT.K);
+}
+function beltOpen(E, R, done){
+  beltAbort();
+  const dg = E.dg, g = ++BELT.gen;
+  BELT.E = E; BELT.R = R; BELT.done = done; BELT.dg = dg.id; BELT.closing = false; BELT.skip = false;
+  BELT.clk = {t:0, last:0, speed:PREF.beltFast ? 2 : 1}; BELT.waits = [];
+  BELT.P = 0; BELT.cam = 0; BELT.slow = 1; BELT.objs = []; BELT.parts = []; BELT.fx = []; BELT.shake = 0; BELT.flash = 0; BELT.lastT = null; BELT.stepN = 0;
+  BELT.mem = E.team.map((s, i)=> ({s, sid:s.id, job:s.job, i, slot:i, sx:i * BELT_GAP, dx:0, hop:0, pose:"idle", t0:0, alive:true, flip:false}));
+  for(const e of R.ev){                                          // 미리 놓는 것 — 상자 · 함정 (마물은 만날 때 떨어진다)
+    if(e.t === "chest") BELT.objs.push({k:"chest", at:e.at, wx:e.at * BELT_LEN + 30, open:false});
+    if(e.t === "trap") BELT.objs.push(e.kind === "hp" ? {k:"spike", at:e.at, wx:e.at * BELT_LEN + 16, f:0} : {k:"mire", at:e.at, wx:e.at * BELT_LEN + 16});
+  }
+  BELT.fire = {k:"fire", wx:BELT_RULE.camp.at * BELT_LEN + 36, lit:false};
+  BELT.objs.push(BELT.fire, {k:"gold", wx:100 * BELT_LEN + 38, open:false});
+  BELT.hud = {st:R.stam0, st0:R.stam0, gold:0, items:{}, relics:0};
+  const TM = E.TM, eb = TM ? `원정 · ${teamLabel(TM)}` : "원정";
+  const root = document.createElement("div");
+  root.id = "beltRoot";
+  root.innerHTML = `<div class="belt-win" role="dialog" aria-modal="true" aria-labelledby="beltTitle" tabindex="-1">
+      <div class="belt-head"><span class="belt-eb">${esc(eb)}</span><h2 id="beltTitle">${esc(dg.n)}</h2>
+        <button type="button" class="belt-btn belt-fast" aria-pressed="${!!PREF.beltFast}">빠르게</button></div>
+      <div class="belt-top">
+        <div class="belt-pct" aria-hidden="true"><b>0</b><i>%</i></div>
+        <div class="belt-track" role="progressbar" aria-label="진행" aria-valuemin="0" aria-valuemax="100"><div class="bl-rail"></div><div class="bl-fill"></div><div class="belt-marks"></div><canvas class="bl-me" width="26" height="22"></canvas></div>
+        <div class="belt-loot" aria-live="polite"></div>
+      </div>
+      <div class="belt-strip"><canvas width="${beltSW()}" height="${beltSH()}"></canvas><div class="belt-fx" aria-hidden="true"></div></div>
+      <div class="belt-bot">
+        <div class="belt-stam" role="meter" aria-label="원정 지구력" aria-valuemin="0" aria-valuemax="${R.stam0}"><span class="bl-lab">지구력</span><div class="bl-bar"><i></i></div><b></b></div>
+        <div class="belt-party">${E.team.map(s=> `<div class="belt-pm" data-sid="${esc(s.id)}"><canvas width="26" height="22"></canvas><span class="bl-nm">${esc(s.name)}<span class="bl-kot">기절</span></span><div class="bl-hp"><i style="width:100%"></i></div></div>`).join("")}</div>
+        <button type="button" class="belt-btn belt-close" hidden>닫기</button>
+      </div>
+    </div>`;
+  document.body.appendChild(root);
+  BELT.root = root;
+  beltVars(root);
+  BELT.cv = root.querySelector(".belt-strip canvas");
+  BELT.cx = BELT.cv.getContext("2d");
+  BELT.cx.imageSmoothingEnabled = false;
+  BELT.fxEl = root.querySelector(".belt-fx");
+  beltRescale();
+  [[BELT_RULE.camp.at, "mk-fire"], [BELT_RULE.battles.last, "mk-boss"], [100, "mk-gold"]].forEach(([a, k])=> beltMark(a, k, false));
+  beltHudPct(0); beltHudStam(R.stam0); beltHudLoot();
+  beltFaces();
+  modalLockSync();
+  root.querySelector(".belt-fast").onclick = ev=>{
+    PREF.beltFast = !PREF.beltFast; prefSave();
+    ev.currentTarget.setAttribute("aria-pressed", String(PREF.beltFast));
+    if(!BELT.skip) BELT.clk.speed = PREF.beltFast ? 2 : 1;
+  };
+  root.querySelector(".belt-close").onclick = ()=> beltClose();
+  BELT.key = ev=>{                                               // Esc — 끝났으면 닫기 (걷는 중에는 아무것도 하지 않는다 · Enter 는 초점이 간 단추가 받는다)
+    if(!BELT.on || BELT.hold || ev.key !== "Escape" || document.querySelector("#modalRoot .overlay")) return;
+    ev.preventDefault(); ev.stopPropagation();
+    const c = beltQ(".belt-close");
+    if(c && !c.hidden) beltClose();
+  };
+  document.addEventListener("keydown", BELT.key, true);
+  BELT.resize = ()=> beltRescale();
+  addEventListener("resize", BELT.resize);
+  try{ if(AWEB !== false && sfxGain() > 0 && audCtx()) Object.keys(SFX).forEach(k=>{ if(/^(belt_|xm_step)/.test(k)) sfxLoad(SFX[k].f); }); }catch(e){}
+  try{                                                           // 1021 둘째 — 걷는 동안 원정지 곡(처음부터) · 그 원정지 전투곡 · 보스곡은 미리 받아 둔다
+    BELT.music = beltBgm(E.dg);
+    if(BELT.music){ audForget(BELT.music); audPrep(beltBgm(E.dg, "battle")); audPrep(beltBgm(E.dg, "boss")); }
+    audOver(BELT.music);
+  }catch(e){}
+  try{ BELT.root.querySelector(".belt-win").focus({preventScroll:true}); }catch(e){}
+  BELT.on = true; BELT.hold = false;
+  BELT.raf = requestAnimationFrame(beltTick);
+  (async ()=>{
+    try{ await beltWait(300); await beltPlay(); }
+    catch(err){ if(err !== BELT_CANCEL){ errPush("belt", err.message, err.stack); if(g === BELT.gen) beltEnd(); } }
+  })();
+}
+/* 띠를 걷는다 (창 · 시계 · 키) — 결과는 그대로 */
+function beltAbort(){
+  BELT.gen++;
+  BELT.on = false; BELT.hold = false;
+  cancelAnimationFrame(BELT.raf);
+  const w = BELT.waits; BELT.waits = [];
+  w.forEach(x=> x.rej(BELT_CANCEL));
+  if(BELT.key){ document.removeEventListener("keydown", BELT.key, true); BELT.key = null; }
+  if(BELT.resize){ removeEventListener("resize", BELT.resize); BELT.resize = null; }
+  (BELT.fx || []).forEach(f=> f.el && f.el.remove());
+  BELT.fx = [];
+  const r = document.getElementById("beltRoot");
+  if(r) r.remove();
+  BELT.root = null; BELT.cv = null; BELT.cx = null; BELT.fxEl = null;
+  if(BELT.music){ BELT.music = null; try{ audOver(null); }catch(e){} }   // 원정지 곡 → 계절 곡
+  modalLockSync();
+}
+/* 원정 곡 — kind 없음 지역곡 · "battle" 전투곡 · "boss" 보스곡 (BGM 의 ex_<원정지 id>) · 표에 없으면 지역곡은 계절 곡 그대로(null) · 전투는 친선전 곡 */
+function beltBgm(dg, kind){
+  const k = "ex_" + ((dg && dg.id) || "") + (kind ? "_" + kind : "");
+  return (typeof BGM !== "undefined" && BGM[k]) ? k : (kind ? "friendly" : null);
+}
+/* 닫기 — 결과 반영 → 전리품 창(얻은 것이 있으면) → 원정 결과 */
+function beltClose(){
+  if(BELT.closing || !BELT.E) return;
+  BELT.closing = true;
+  const E = BELT.E, R = BELT.R, done = BELT.done;
+  beltAbort();
+  BELT.E = null; BELT.R = null; BELT.done = null;
+  let res = E.res;
+  try{ res = beltFinish(E, R); }catch(e){ errPush("belt", e.message, e.stack); }
+  const go = ()=>{ try{ done(res); }catch(e){ errPush("belt", e.message, e.stack); } };
+  if(res.relics.length || R.loot.gold || BELT_ITEMS_ORDER.some(k=> R.loot.items[k])) beltLoot(E, R, res, go);
+  else go();
+}
+
+/* ── 전리품 — 유물 획득 창(relicDropPopup) 그대로 + 물건 · 자금 칸 ── */
+function beltLoot(E, R, res, onOk){
+  const dg = E.dg, L = R.loot, tiles = [];
+  res.relics.forEach(r=> tiles.push({k:"relic", r}));
+  BELT_ITEMS_ORDER.forEach(k=>{ if(L.items[k]) tiles.push({k:"item", item:k, n:L.items[k]}); });
+  if(L.gold) tiles.push({k:"gold", v:L.gold});
+  const why = {stam:"지구력", wipe:"전멸", exh:"탈진"}[R.why] || "";
+  const sub = res.clear ? "완주" : `<span class="bl-bad">${esc(`철수 — ${why}`)}</span>`;
+  let body = null;
+  try{
+    body = `<div class="rdp-stage" role="dialog" aria-modal="true" aria-labelledby="rdpTitle">
+      <div class="rdp-head"><div class="rdp-eb">${esc(dg.n)}</div><h2 id="rdpTitle">전리품</h2><div class="rdp-sub">${sub}</div></div>
+      <div class="rdp-row"><div class="rdp-fx" aria-hidden="true"><i class="rdp-rays"></i>${RDP_STARS.map(([x, y, z, c, d])=> `<i class="rdp-star" style="left:${x}px;top:${y}px;--sz:${z}px;--sc:${c};--sd:${d}s"></i>`).join("")}</div>${tiles.map((t, q)=>{
+        if(t.k === "relic") return `<div class="rdp-it" tabindex="0" role="img" data-i="${q}" style="--rq:${q * 110}ms" aria-label="${esc(relicNameOf(t.r))} (${esc(t.r.grade)})"><i class="rdp-ring"></i><span class="rdp-tile"><img src="${esc(relicIconOf(t.r))}" alt="" draggable="false"></span></div>`;
+        if(t.k === "item") return `<div class="rdp-it bl-item" tabindex="0" role="img" data-i="${q}" style="--rq:${q * 110}ms" aria-label="${esc(`${beltItemName(t.item)} ×${t.n}`)}"><i class="rdp-ring"></i><span class="rdp-tile">${beltIc(t.item, 4)}</span><span class="rdp-n">×${t.n}</span></div>`;
+        return `<div class="rdp-it bl-goldt" tabindex="0" role="img" data-i="${q}" style="--rq:${q * 110}ms" aria-label="${esc(`자금 +${fmt(t.v)} G`)}"><i class="rdp-ring"></i><span class="rdp-tile">${beltSpr("coinpile", 3)}</span><span class="rdp-cap">+${fmt(t.v)} G</span></div>`;
+      }).join("")}</div>
+      <div class="belt-ltip" hidden></div>
+      <button type="button" class="btn primary rdp-close" id="rdpOk">닫기</button>
+    </div>`;
+  }catch(e){ errPush("belt", e.message, e.stack); }
+  if(body === null){ onOk(); return; }
+  sfxPlay(res.relics.length ? "relic_get" : "belt_gold");
+  reportPlayerStop(); battleBannerClear(); dragCfg($("#modalRoot"), null);
+  RDP_TIP = null;
+  $("#modalRoot").innerHTML = `<div class="overlay rdp-ov">${body}</div>`;
+  modalLockSync();
+  const ov = $("#modalRoot .rdp-ov"), ok = $("#rdpOk");
+  if(!ov || !ok){ onOk(); return; }
+  beltVars(ov);
+  const tip = ov.querySelector(".belt-ltip");
+  const tipOn = (el, t)=>{
+    if(t.k === "relic"){ tip.hidden = true; relicDropTip(el, t.r); return; }
+    relicDropTip(null);
+    tip.innerHTML = t.k === "item" ? `<b>${esc(beltItemName(t.item))}</b> ×${t.n}<div class="bl-k">${esc(beltItemDesc(t.item))}</div>`
+      : `<b>${esc(`자금 +${fmt(t.v)} G`)}</b><div class="bl-k">${esc(`전투 +${fmt(L.bgold)} · 보물 상자 +${fmt(L.cgold)}`)}</div>`;
+    tip.hidden = false;
+    const rc = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight, W = innerWidth, H = innerHeight;
+    let x = rc.right + 12, y = rc.top - 6;
+    if(x + w > W - 8) x = rc.left - 12 - w;
+    if(x < 8){ x = Math.max(8, Math.min(W - w - 8, rc.left + rc.width / 2 - w / 2)); y = rc.bottom + 12; if(y + h > H - 8) y = rc.top - 12 - h; }
+    tip.style.left = Math.round(x) + "px"; tip.style.top = Math.round(Math.max(8, Math.min(H - h - 8, y))) + "px";
+  };
+  const tipOff = ()=>{ tip.hidden = true; relicDropTip(null); };
+  let fin = false;
+  const key = e=>{
+    if(!ov.isConnected){ document.removeEventListener("keydown", key, true); return; }
+    if(e.key === "Escape"){ e.preventDefault(); e.stopPropagation(); close(); }
+  };
+  const close = ()=>{
+    if(fin) return;
+    fin = true; document.removeEventListener("keydown", key, true); RDP_TIP = null;
+    closeModal(); onOk();
+  };
+  document.addEventListener("keydown", key, true);
+  ok.onclick = close;
+  ov.addEventListener("pointerdown", e=>{ if(!e.target.closest(".rdp-it")) tipOff(); });
+  ov.querySelectorAll(".rdp-it").forEach(el=>{
+    const t = tiles[+el.dataset.i];
+    el.addEventListener("pointerenter", e=>{ if(e.pointerType === "mouse") tipOn(el, t); });
+    el.addEventListener("pointerleave", e=>{ if(e.pointerType === "mouse" && document.activeElement !== el) tipOff(); });
+    el.addEventListener("focus", ()=> tipOn(el, t));
+    el.addEventListener("blur", ()=>{ if(!el.matches(":hover")) tipOff(); });
+    el.addEventListener("click", ()=> tipOn(el, t));
+  });
+  ok.focus({preventScroll:true});
+}
+/* BELT_END */
 function addRelicToPool(r){
   S.relicPool = S.relicPool||[];
   S.relicPool.push(r);
@@ -11951,7 +13357,7 @@ function ladderRun(t, quick){
   const after = ()=> ladderRecord(t, b, foe.name, ids);
   if(quick) after();
   else openBattle(b, {titleA:S.acadName, titleB:foe.name, field:t.step, bgm:ladderBgm(t), jingle:true, victory:true, defeat:true,
-    cheer: t.step==="final",
+    cheer: t.step==="final", noSkip:!clrHas(clrLadKey(t)),
     head:`${t.title} — ${ladderMatchLabel(t)}`, doneLabel:"결과 확정"}, after);
 }
 /* 대회 단계별 전투곡 — 컵의 마지막 라운드는 결승 전용 곡 */
@@ -11988,6 +13394,7 @@ function ladderRecord(t, b, oppName, ids){
       if(t.rw>=2) took = true; else if(t.rl>=2) took = false;
     }
     if(took === null){ renderTournament(); return; }
+    if(took && !ladderSets(t)) clrPut(clrLadKey(t));   // 1021 셋째 — 이긴 라운드는 다음부터 스킵 (본선 결승 세트는 우승할 때 — ladderSetEnd)
     if(t.cfg.kind==="league") return lgRoundEnd(t, took, oppName);   // 1019 ③ — 예선 리그
     if(ladderSets(t)) return ladderSetEnd(t, took, oppName);          // 1019 ③ — 본선 결승 세트
     const sc = tie ? `${t.rw}:${t.rl} (결정전)` : `${t.rw}:${t.rl}`;
@@ -12068,7 +13475,7 @@ function ladderSetEnd(t, took, oppName){
   (t.sets = t.sets || []).push({w:t.rw, l:t.rl, win:took, g:t.results.slice(-(t.rw + t.rl)).map(r=> r.win)});
   if(took) t.sw = (t.sw|0) + 1; else t.sl = (t.sl|0) + 1;
   logE(`${t.title} ${ladderRoundLabel(t)} ${n}세트 — <b>${esc(oppName)}</b> 상대 ${sc} ${took?"승리":"패배"} (세트 ${t.sw|0}:${t.sl|0})`, took?"good":"bad");
-  if((t.sw|0) >= 2){ t.w++; t.round++; t.stage="result"; t.advanced=true; renderTournament(); return; }
+  if((t.sw|0) >= 2){ clrPut(clrLadKey(t)); t.w++; t.round++; t.stage="result"; t.advanced=true; renderTournament(); return; }
   if((t.sl|0) >= 2){ t.l++; t.stage="result"; t.advanced=false; renderTournament(); return; }
   const chg = took ? ladderFoeShift(t) : false;   // 이긴 상대는 그대로
   t.set = n; (t.setChg = t.setChg || [])[n] = chg;
@@ -12489,67 +13896,91 @@ const COUNSEL = [
        a:{plain:"어느 날 갑자기 보인다…… 그럼 계속 해 볼게요."}}]}
 ];
 /* 1008 — 맞지 않는 말을 들었을 때의 반응 (성격마다). lead 지도력으로 설득 · trust 신뢰 운명 단계 · miss 납득하지 못함(missR 서술)
-   fit 은 선택지에 그 성격의 대답(o[].a)이 없을 때만 쓴다 */
+   fit 은 선택지에 그 성격의 대답(o[].a)이 없을 때만 쓴다 · slip 은 맞는 말인데 빗나갔을 때 (1021 — 맞는 말도 70% · slipR 서술) */
 const CSL_REACT = {
   intro: {fit:"……네. 그렇게 해 볼게요…… 고맙습니다.",
           lead:"……제 생각이랑은 좀 다르지만…… 마스터 말씀이니까…… 해 볼게요.",
           trust:"……마스터가 하시는 말이라면…… 믿을게요.",
           miss:"……네…… 그런데…… 잘 모르겠어요……",
-          missR:"고개를 숙인 채 작게 인사하고 나간다."},
+          missR:"고개를 숙인 채 작게 인사하고 나간다.",
+          slip:"……맞는 말인 건…… 알아요…… 그런데…… 아직은……",
+          slipR:"고개를 끄덕였지만, 아직 마음이 따라오지 않는 모양이다."},
   hot:   {fit:"알겠습니다! 바로 해 보겠습니다!",
           lead:"……솔직히 제 체질은 아니지만! 마스터 말씀이니 해 보겠습니다!",
           trust:"마스터가 그렇다면 그런 겁니다! 믿고 가겠습니다!",
           miss:"그건…… 아닌 것 같습니다! 저는 납득이 안 됩니다!",
-          missR:"입술을 꾹 다물고 나간다. 문이 조금 세게 닫혔다."},
+          missR:"입술을 꾹 다물고 나간다. 문이 조금 세게 닫혔다.",
+          slip:"맞는 말씀입니다! ……그런데 아직 몸이 따라 주질 않습니다!",
+          slipR:"주먹을 쥐었다 폈다 하며 나간다. 아직 마음이 정리되지 않은 모양이다."},
   stone: {fit:"이해했습니다. 그렇게 하겠습니다.",
           lead:"제 판단과는 다릅니다. 다만 마스터의 근거를 믿고 따르겠습니다.",
           trust:"마스터의 말씀이라면 따로 따져 볼 필요가 없습니다. 따르겠습니다.",
           miss:"죄송하지만 동의하기 어렵습니다. 조금 더 생각해 보겠습니다.",
-          missR:"고개를 끄덕이지만, 눈빛은 여전히 다른 답을 찾고 있다."},
+          missR:"고개를 끄덕이지만, 눈빛은 여전히 다른 답을 찾고 있다.",
+          slip:"옳은 말씀입니다. 다만 아직 받아들일 준비가 되지 않았습니다.",
+          slipR:"고개를 끄덕이지만, 시선은 아직 바닥에 머물러 있다."},
   dilig: {fit:"네! 말씀대로 해 볼게요. 고맙습니다.",
           lead:"제가 생각한 것과는 다르지만, 마스터 말씀대로 해 볼게요.",
           trust:"마스터 말씀이면 믿어요. 그대로 해 볼게요.",
           miss:"……네. 말씀은 알겠는데, 아직 마음이 잘 안 따라와요.",
-          missR:"애써 웃어 보이지만, 표정이 다 풀리지는 않았다."},
+          missR:"애써 웃어 보이지만, 표정이 다 풀리지는 않았다.",
+          slip:"맞는 말씀이에요. ……그런데 오늘은 왠지 잘 안 들어와요.",
+          slipR:"꾸벅 인사하고 나간다. 오늘은 때가 아니었던 모양이다."},
   tsun:  {fit:"…알았어요. 해 볼게요. 딱히 마스터 말이라서 그러는 건 아니에요.",
           lead:"…마음에 드는 방법은 아니에요. ……그래도 이번만 해 줄게요.",
           trust:"…마스터 말이니까요. 다른 사람 말이었으면 안 들었을 거예요.",
           miss:"…흥. 그런 말 들으려고 온 거 아니거든요.",
-          missR:"고개를 홱 돌리고 나간다."},
+          missR:"고개를 홱 돌리고 나간다.",
+          slip:"…알아요, 맞는 말인 거. 그래도 지금은 듣고 싶지 않아요.",
+          slipR:"입을 삐죽 내밀고 나가지만, 말 자체는 마음에 남은 눈치다."},
   lively:{fit:"헤헤, 알겠어요! 바로 해 볼게요!",
           lead:"음, 저랑은 좀 안 맞는 것 같지만…… 마스터가 그렇다면 해 볼게요!",
           trust:"마스터 말이라면 뭐든 좋아요! 헤헤, 해 볼게요!",
           miss:"음…… 그건 좀 아닌 것 같은데요……",
-          missR:"웃어 보이지만 평소보다 목소리가 작다."},
+          missR:"웃어 보이지만 평소보다 목소리가 작다.",
+          slip:"맞아요, 맞는 말이에요! ……근데 오늘은 기운이 좀 안 나네요.",
+          slipR:"웃어 보이지만 금방 시선을 피한다. 오늘은 때가 아니었던 모양이다."},
   boast: {fit:"역시 마스터! 영웅답게 해내 보이겠습니다!",
           lead:"흠, 영웅의 방식은 아니지만…… 마스터의 안목을 믿어 보죠!",
           trust:"영웅의 스승이 하신 말씀이니 틀릴 리가 없죠!",
           miss:"……영웅에게 그런 말은 어울리지 않습니다만.",
-          missR:"어깨를 펴고 나가지만, 문 앞에서 잠깐 멈칫한다."},
+          missR:"어깨를 펴고 나가지만, 문 앞에서 잠깐 멈칫한다.",
+          slip:"물론 옳은 말씀이죠. ……다만 영웅에게도 생각할 시간은 필요한 법입니다.",
+          slipR:"어깨를 펴고 나가지만, 걸음이 평소보다 느리다."},
   plain: {fit:"네, 알겠어요. 그렇게 해 볼게요.",
           lead:"잘 모르겠지만…… 마스터 말씀이니까 해 볼게요.",
           trust:"마스터 말씀이면 믿어요. 그렇게 할게요.",
           miss:"……네. 그런데 잘 모르겠어요.",
-          missR:"표정이 풀리지 않았다. 다른 말이 필요했던 모양이다."},
+          missR:"표정이 풀리지 않았다. 다른 말이 필요했던 모양이다.",
+          slip:"……맞는 말인 것 같아요. 그런데 아직은 잘 모르겠어요.",
+          slipR:"말은 맞았지만, 아직 마음에 닿지 않은 모양이다."},
   genius:{fit:"그게 맞겠네요. 그렇게 할게요.",
           lead:"제 계산이랑은 다른데요. ……마스터 쪽이 맞는지, 한번 해 보죠.",
           trust:"마스터 말이면 계산할 필요도 없죠. 그렇게 할게요.",
           miss:"그건 답이 아닌 것 같아요. 제가 따로 생각해 볼게요.",
-          missR:"고개를 갸웃하더니, 혼자 생각에 잠긴 채 나간다."}
+          missR:"고개를 갸웃하더니, 혼자 생각에 잠긴 채 나간다.",
+          slip:"논리적으로는 맞아요. ……근데 지금은 머리에 안 들어오네요.",
+          slipR:"고개를 끄덕이더니, 멍하니 창밖을 보다 나간다."}
 };
 /* 고민을 털어놓는 말 — 그 학생의 성격으로 */
 function cslQ(c, st){
   const p = (st && st.pers) || "plain", q = c && c.q;
   return masterQ(typeof q === "string" ? q : ((q && (q[p] || q.plain)) || ""), st);
 }
-/* 답변에 대한 반응 — kind: fit 맞는 말 · lead 지도력으로 설득 · trust 신뢰 운명 · miss 납득 못함 → {say 학생의 대답, r 서술} */
+/* 답변에 대한 반응 — kind: fit 맞는 말 · lead 지도력으로 설득 · trust 신뢰 운명 · miss 납득 못함 → {say 학생의 대답, r 서술}
+   1021 — miss 인데 맞는 말이었으면(70% 에서 빗나감) slip */
 function cslAnswer(c, oi, st, kind){
   const p = (st && st.pers) || "plain", o = (c && c.o[oi]) || {}, R = CSL_REACT[p] || CSL_REACT.plain;
+  if(kind === "miss" && (o.f || []).includes(p)) kind = "slip";
   const say = kind === "fit" ? ((o.a && o.a[p]) || R.fit) : (R[kind] || R.miss);
-  return {say: masterQ(say, st), r: kind === "miss" ? R.missR : (o.r || "")};
+  return {say: masterQ(say, st), r: kind === "miss" ? R.missR : kind === "slip" ? R.slipR : (o.r || "")};
 }
 /* ── 상담 대사 끝 (apply_cslpers) ── */
 const CSL_LEAD = .04, CSL_INFO = .06, CSL_NET = .04;
+/* 1021 — 맞는 말(성격에 맞는 답)도 늘 통하지는 않는다 (사용자 '정답을 골랐을 경우에도 기본 성공 확률은 70%로 하고 30%의 실패 확률을 넣자').
+   빗나가면 운명 단계만 살린다 (지도력은 맞지 않는 말일 때). 도착하지 않은 편지(G_CSL · 학원 · 보유 시)가 +%p — 고민 상담 · 지침 무시 상담 둘 다 */
+const CSL_FIT_P = .70;
+function cslFitP(){ return clamp(CSL_FIT_P + relicFxOwned("G_CSL")/100, 0, .97); }
 function cslLead(){ return S.master.lead + cslFacBonus().lead; }
 function cslInfo(){ return S.master.info + cslFacBonus().info; }
 function cslNet(){  return S.master.net  + cslFacBonus().net;  }
@@ -12595,10 +14026,11 @@ function answerCounsel(qi, oi, win){   // win — 상담창(1008): 화면을 다
   const c = counselOf(q.cid);
   if(!st || !c){ C.queue.splice(qi,1); save(); if(!win) render(); return null; }
   const o = c.o[oi];
-  const fit = (o.f||[]).includes(st.pers||"plain");
+  const right = (o.f||[]).includes(st.pers||"plain");          // 성격에 맞는 말
+  const fit = right && RNG() < cslFitP();                        // 1021 — 맞는 말도 기본 70% 로 통한다 (빗나가면 cslAnswer 의 slip 반응)
   // 지도력 — 성격에 맞지 않아도 설득해낸다
   const cookie = !!q.cookieFed;
-  const byLead = !fit && (RNG() < cslLeadP(cookie ? 2 : 0));
+  const byLead = !right && (RNG() < cslLeadP(cookie ? 2 : 0));
   const byTrust = !fit && !byLead && trustFull(st);   // 운명 단계는 무슨 말이든 닿는다
   const ok = fit || byLead || byTrust;
   const ans = cslAnswer(c, oi, st, fit ? "fit" : byLead ? "lead" : byTrust ? "trust" : "miss");   // 1008 — 성격마다 대답 · 반응
@@ -12843,9 +14275,10 @@ function answerDefy(pi, oi, win){   // win — 상담창(1008): 화면을 다시
   const st = S.students.find(x=> x.id===p.sid);
   if(!st){ D.pend.splice(pi,1); save(); if(!win) render(); return null; }
   const key = p.from + ">" + p.to;
-  const fit = (DEFY_FIT[oi]||[]).includes(st.pers||"plain");
+  const right = (DEFY_FIT[oi]||[]).includes(st.pers||"plain");
+  const fit = right && RNG() < cslFitP();                                  // 1021 — 맞는 말도 기본 70% 로 통한다
   const cookie = !!p.cookieFed;
-  const byLead = !fit && (RNG() < cslLeadP(cookie ? 2 : 0));                // 지도력 — 성격에 맞지 않아도 설득해낸다
+  const byLead = !right && (RNG() < cslLeadP(cookie ? 2 : 0));              // 지도력 — 성격에 맞지 않아도 설득해낸다
   const byTrust = !fit && !byLead && trustFull(st);
   const ok = fit || byLead || byTrust;
   const tb0 = trustBand(trustOf(st)).step, tr0 = trustRaw(st);
@@ -13432,6 +14865,7 @@ async function cslwChoose(k){
   try{ res = cslwApply(s, o.i); }
   catch(err){ if(typeof errPush === "function") errPush("counsel", err.message, err.stack); }
   if(!res){ toast("이 상담은 더 이어 갈 수 없다."); cslwClose(); return; }
+  if(!res.ok && o.hit) res.slip = true;                          // 1021 — 맞는 말인데 빗나갔다 (맞는 말도 70%)
   s.res = res;
   sfxPlay("csl_pick");
   cwq(".cw-win").classList.remove("beat");
@@ -13479,7 +14913,7 @@ function cslwFx(s, r){
     if(r.trustUp) t += ` 신뢰가 깊어졌다.`;
     L.push(r.fit ? `<span class="cw-ok">${t}</span>` : t);
   } else {
-    L.push(`<span class="cw-bad">아직 납득하지 못한 표정이다.${r.trustDown ? " 신뢰가 조금 떨어졌다." : ""}</span>`);
+    L.push(`<span class="cw-bad">${r.slip ? "맞는 말이었지만, 아직 마음에 닿지 않았다." : "아직 납득하지 못한 표정이다."}${r.trustDown ? " 신뢰가 조금 떨어졌다." : ""}</span>`);
   }
   if(r.band) L.push(`<span class="cw-brass">${s.name}${gwa(s.st.name)}의 관계가 ${esc(r.band)} 단계가 되었다.</span>`);
   if(defy) L.push(r.ok ? "앞으로 한동안은 지침을 잘 따를 것 같다." : "일단은 지침을 따를 것 같다.");
@@ -13647,6 +15081,7 @@ function cslwFit(){
 /* 상담 확률 (상담 기록 — 1011 상담실(창 · 상담 화면)에서는 숨김) */
 function cslProbHtml(){
   return `<div class="cslprob">
+        <span>맞는 말 — 통할 확률 <b>${Math.round(cslFitP()*100)}%</b></span>
         <span>지도력 ${cslLead()} — 맞지 않아도 설득 <b>${Math.round(cslLeadP()*100)}%</b></span>
         <span>정보력 ${cslInfo()} — 통할 말 파악 <b>${Math.round(cslInfoP()*100)}%</b></span>
         <span>호소력 ${cslNet()} — 상승폭 2배 <b>${Math.round(cslNetP()*100)}%</b></span>
@@ -16103,6 +17538,7 @@ function load(){
     S = curData(d); S.relicPool = S.relicPool||[];   // 1010 — 이름 · 이명 · 유물 같은 데이터 글을 지금 언어로 (영어로 쌓은 세이브를 한국어판에서 열어도)
     try{ friendlyFormsFix(); }catch(e){}            // 1020 — 친선전 제안 상대의 진형을 되붙인다 (세이브에 안 남던 것 — foeFormRestore)
     try{ friendlyLetterFix(); }catch(e){}           // 1021 — 예전 친선전 요청(세 자리 배치)을 신청 편지로
+    try{ if(!S.cleared) clrLegacy(); }catch(e){}     // 1021 셋째 — 예전 세이브는 남은 기록으로 클리어를 어림해 풀어 둔다
     return true;
   }catch(e){ return false; }
 }
@@ -16835,9 +18271,10 @@ function viewHome(o){   // o.desk — 마스터 노트 책상의 학원 정보 �
       체력 30% 미만에서는 그 속도가 두 배가 된다. <b style="color:var(--text)">지구력</b>이 높을수록 유지선이 내려가고(지구력 99면 40%, 30이면 70%, 1이면 85%),
       <b style="color:var(--text)">정신력</b>이 높을수록 그 아래에서 받는 불이익이 줄어든다.</div>
     <div class="rule"></div>
-    <div style="font-size:12.5px;color:var(--muted)"><b style="color:var(--text)">원정 지구력</b> — 원정을 떠날 때 원정대의 평균 <b style="color:var(--text)">지구력</b>이 게이지가 된다.
-      전투에서 양쪽 합쳐 ${STAM_PER}번 행동할 때마다 원정지가 깊을수록 많이 줄고(연습장 0 · 성터 1 · 종탑 2 · 균열 3 · 무덤 4 · 이계 +1), 구간 사이에도 남은 양이 이어진다.
-      바닥나면 <b style="color:var(--bad)">탈진</b> — 그 전투는 공격력 · 속도 −${Math.round(STAM_EX*100)}% 로 끝까지 싸우고, 이기면 거기서 철수한다.</div>
+    <div style="font-size:12.5px;color:var(--muted)"><b style="color:var(--text)">원정</b> — 원정지를 0% 에서 100% 까지 걸어간다. 원정대 평균 <b style="color:var(--text)">지구력</b>이 원정 지구력이 되어
+      10% 걸을 때마다 · 마물과 마주칠 때 · 늪에서 줄고(깊은 원정지일수록 많이), 바닥나면 그 자리에서 철수한다.
+      전투는 세 번(마지막은 90% 의 보스) · 체력은 이어지고 쓰러진 학생은 60% 의 모닥불에서 일어난다. 마주칠 때 바닥나면 <b style="color:var(--bad)">탈진</b> — 공격력 · 속도 −${Math.round(STAM_EX*100)}% 로 싸우고, 이기면 철수한다.
+      보물 상자에서 자금 · 물건을, 100% 의 황금 상자에서 유물 하나를 얻는다.</div>
   </section>` : ""}
   ${S.lastTour? `<section class="panel"><div class="panel-h"><h2>${esc(S.lastTour.title)}</h2><span class="hint">${esc(S.lastTour.msg)}</span></div>
     <div class="scroll-x"><table class="tb"><thead><tr><th>상대</th><th>결과</th><th>우리 생존</th><th>상대 생존</th></tr></thead><tbody>
@@ -24834,7 +26271,7 @@ function closeModal(){ reportPlayerStop(); battleBannerClear(); dragCfg($("#moda
 /* 팝업이 떠 있으면 뒷 화면이 스크롤되지 않게 잠근다 */
 let MODAL_LOCK_Y = 0;
 function modalLockSync(){
-  const r = $("#modalRoot"), on = !!(r && r.firstChild), h = document.documentElement;
+  const r = $("#modalRoot"), on = !!(r && r.firstChild) || !!document.getElementById("beltRoot"), h = document.documentElement;   // 1021 — 벨트 원정 창(#beltRoot)도
   if(on === h.classList.contains("modal-open")) return;
   if(on){
     MODAL_LOCK_Y = window.scrollY || document.documentElement.scrollTop || 0;
@@ -24874,7 +26311,7 @@ function tutGuideData(k){
     3:{title:"여섯 능력이 용사를 만들어요",tag:"학생 · 멘탈리티",job:"paladin",lead:"훈련으로 키운 멘탈리티는 전투와 성장에 영향을 줍니다.",visual:"mental",steps:[["학생에게 부족한 능력 확인", "학생 화면에서 멘탈리티를 보고 훈련을 계획하세요. 개인 행동을 훈련으로 두면 약점을 보완합니다."]],tip:"잠재력은 입학 등급으로 정해지는 성장 폭과 한계입니다. 여섯 훈련 능력과 구분해 주세요."},
     4:{title:"가을 대회를 향해 한 걸음씩",tag:"대회 · 장기 목표",job:"sword",lead:"학생들을 키우고 팀을 갖춰 학원제 본선 우승에 도전하세요.",visual:"tournament",steps:[["팀 편성부터 준비", "출전 학생과 진형을 확인하고, 컨디션과 유물을 챙겨 주세요."],["대회 성적으로 다음 무대에", "시내 대회부터 차근차근 도전합니다. 다음 대회 초대 조건은 게임의 안내에서 확인하세요."]],tip:"실적뿐 아니라 자금도 관리해야 합니다. 유지비와 빚을 함께 챙기세요."},
     5:{title:"라이벌과 함께 훈련해요",tag:"학생 · 라이벌",job:"timemage",lead:"서로 의식하는 두 학생은 함께 훈련하며 더 빠르게 성장합니다.",visual:"rival",steps:[["두 학생 모두 ‘훈련’으로", "개인 행동에서 라이벌 두 명을 모두 훈련으로 지정하세요. 두 사람이 함께 보완할 약한 분야를 고릅니다."],["같은 분야에서 성장 보너스", `둘이 같은 분야를 개인 훈련하면 해당 멘탈리티 성장이 ${bonus}% 증가합니다.`]],tip:"한쪽이 휴식이나 의뢰를 하면 함께 훈련하는 조건이 달라집니다. 두 학생의 행동을 함께 확인하세요."},
-    6:{title:"원정에서 얻고, 장착해요",tag:"원정 · 유물",job:"spellsword",lead:"원정 파견 카드를 쓰면 원정지와 팀을 골라 자동 전투를 진행합니다.",visual:"expedition",steps:[["원정지와 팀 선택", "난이도와 팀 상태를 보고 출발하세요. 결과로 건너뛰기를 눌러 전투 결과를 바로 볼 수도 있어요."],["얻은 유물은 장착까지", "원정 보상으로 얻은 유물은 유물 · 스킬 화면에서 확인하고 학생에게 장착하세요."]],tip:"원정에서는 자금·유물·진로 평가와 함께 업보도 얻습니다. 반복 파견 전에 학생의 상태를 확인하세요."},
+    6:{title:"원정에서 얻고, 장착해요",tag:"원정 · 유물",job:"spellsword",lead:"원정 파견 카드를 쓰면 원정지와 팀을 골라 자동 전투를 진행합니다.",visual:"expedition",steps:[["원정지와 팀 선택", "난이도와 팀 상태를 보고 출발하세요. 한 번 이긴 전투는 결과로 건너뛰기를 눌러 결과를 바로 볼 수도 있어요."],["얻은 유물은 장착까지", "원정 보상으로 얻은 유물은 유물 · 스킬 화면에서 확인하고 학생에게 장착하세요."]],tip:"원정에서는 자금·유물·진로 평가와 함께 업보도 얻습니다. 반복 파견 전에 학생의 상태를 확인하세요."},
     7:{title:"친선전 신청 편지가 왔어요",tag:"봄 · 겨울 · 친선전",job:"darkpriest",lead:"학원마다 한 통씩, 친선전을 청하는 편지가 마스터 노트에 놓입니다.",visual:"friendly",steps:[["요청 주와 방식 확인", "편지마다 학원이 청한 주와 방식(단판 · 3판 2선승제), 이기고 질 때의 명성 변화가 적혀 있어요."],["회신하거나 거절", "회신하면 그 주 일과를 마친 뒤 친선전을 치릅니다. 편지는 나중에 읽어도 되지만, 요청한 주가 지나면 사라져요."]],tip:"마스터 노트의 편지나 메뉴의 편지 표식을 누르면 다시 열려요."},
     8:{title:"전투 전, 학생들에게 한마디",tag:"전투 준비 · 라커룸",job:"darkpriest",lead:"우리 팀과 상대의 전력, 학생들의 성격을 보고 말을 고릅니다.",visual:"speech",steps:[["한마디만 선택", "상황에 맞는 말을 고르면 학생의 기분과 신뢰에 도움이 됩니다."],["모두에게 같은 반응은 아니에요", "동기부여는 특히 성격을 살펴보세요. 맞지 않는 말은 기분을 떨어뜨릴 수도 있습니다."]],tip:"예시 수치가 항상 보장되는 보상은 아닙니다. 현재 학생들의 반응을 확인하세요."},
     9:{title:"졸업 뒤에도, 함께하는 리그",tag:"졸업생 리그 · 리그 등록",job:"paladin",lead:"졸업생이 생기면 더 넓은 무대에서 다른 학원과 모의 대전을 펼칠 수 있어요.",visual:"league",steps:[["졸업생으로 팀 구성", "리그의 등록 탭에서 출전할 졸업생과 진형을 확인하고 등록합니다."],["리그와 SP 상점 이용", "리그를 진행하며 SP를 얻고 리그의 SP 상점 탭에서 사용하세요. 폰에서는 더보기 메뉴의 리그에서 찾을 수 있어요."]],tip:"리그는 온라인 기능입니다. 등록·시즌 정산 조건과 결과는 해당 화면에서 확인하세요."},
@@ -27452,6 +28889,65 @@ function battleEntranceStart(btId, speed, kind){
     css: uid=>{ const p = alive && P[uid]; return p && p.ox != null ? `;--bent-ox:${px(p.ox)};--bent-oy:${px(p.oy)}` : ""; }};
 }
 let BT_PATCH = true;   // 1018 아홉째 — 전투판을 장마다 바뀐 곳만 고친다 (false 면 예전처럼 통째로 — 시험 · 비교용)
+/* ── 처음 치르는 전투는 스킵 못 한다 (1021 셋째 · 사용자 '친선전/대회/원정 전투같은 경우 한번이라도 클리어 안한 전투는 스킵 못하게 막아줘 ·
+   친선전은 친선전 한번 진행하면 스킵 가능하게 · 대회는 각 구간마다 클리어를 하면 다음에 스킵 가능하게 · 원정도 각 구간을 클리어 하면 다음에 스킵 가능하도록') ──
+   클리어 기록 S.cleared {열쇠: 1}:
+     친선전 'f' — 한 번 치르면 (끝까지 — 기권은 빼고 · finishFriendly)
+     가을 대회 'c:<단계>:<라운드>' — 그 라운드를 이기면 (시내 · 광역 · 본선 16강 0 ~ 결승 3 · 예선 리그 1 ~ 3라운드 0 ~ 2 · 본선 결승은 우승할 때 — 사용자 '라운드마다')
+     봄 신인전 's:<경기>' — 그 경기(0 ~ 3)를 이기면
+     원정 'x:<원정지>:<구간>' — 그 구간 전투(1 ~ 3)를 이기면 (벨트 · 예전 구간 전투 모두 res.secs)
+     이계(차원 포탈 너머 학원 — 상대 tier 가 PORTAL_TIER · 이계의 지도 원정 — dg.otherworld)는 끝에 ':ow' — 따로 센다 (사용자 '따로 셈')
+   클리어하지 않은 전투는 스킵 단추를 숨긴다 (사용자 '아예 숨김') — 전투 화면 '결과로 건너뛰기'(openBattle opt.noSkip · 끝나면 '확인' 등은 그대로) ·
+   경기 화면 '빠르게 결과만' · 친선전 '남은 경기 한 번에' · 원정 '빠르게 결과만'(세 구간을 모두 깬 원정지만 — 지도는 그런 곳이 하나도 없으면 단추를 숨긴다).
+   예전 세이브(S.cleared 없음)는 불러올 때 남은 기록으로 어림해 풀어 둔다 (clrLegacy — 사용자 '진행한 만큼 풀어 두기').
+   스킵만 막는다 — 게임 셈의 결과만 보기(friendlyRun · ladderRun · 봄 신인전 run · expedLoop 의 quick)는 그대로 (시험 · 주 일괄 진행이 쓴다) · 단추만 숨긴다.
+   시험 · 점검용: window.__clrAll = true 면 모두 클리어한 것으로 (예전 시험들이 결과로 건너뛴다 — hs.open_game 이 init script 로 · tools/gen/sim/skip_check.py 는 빼고) */
+function clrBook(){ if(!S.cleared || typeof S.cleared !== "object" || Array.isArray(S.cleared)) S.cleared = {}; return S.cleared; }
+function clrHas(k){ return !!((typeof window !== "undefined" && window.__clrAll) || (S && S.cleared && typeof S.cleared === "object" && S.cleared[k])); }
+function clrPut(k){ if(S && k) clrBook()[k] = 1; }
+function clrOw(on){ return on ? ":ow" : ""; }
+function clrFrKey(t){ return "f" + clrOw(!!(t && t.foe && t.foe.tier >= PORTAL_TIER)); }
+function clrLadKey(t){ const f = t && t.foes && t.foes[t.round]; return `c:${t.step}:${t.round|0}` + clrOw(!!(f && f.tier >= PORTAL_TIER)); }
+function clrSprKey(t){ const o = t && t.opps && t.opps[t.matchIdx]; return `s:${t.matchIdx|0}` + clrOw(!!(o && o.tier >= PORTAL_TIER)); }
+function clrXKey(dg, sec){ return `x:${dg && dg.id}:${sec|0}` + clrOw(!!(dg && dg.otherworld)); }
+function clrXAll(dg){ if(!dg) return false; for(let s = 1; s <= (dg.secs || 3); s++) if(!clrHas(clrXKey(dg, s))) return false; return true; }   // 원정 '빠르게 결과만' — 세 구간 모두
+function clrXRes(dg, res){ ((res && res.secs) || []).forEach(x=>{ if(x && x.win) clrPut(clrXKey(dg, x.sec)); }); }
+function clrHide(...qs){ qs.forEach(q=>{ const b = $(q); if(b) b.remove(); }); }   // 경기 화면 — 단추를 묶은 뒤에 뺀다 (단추 묶는 줄은 그대로)
+/* 예전 세이브 — 남은 기록으로 어림한다 (언어와 상관없는 값만 · 일지 글은 언어마다 달라 보지 않는다):
+   원정 — 학생 · 졸업생이 다녀온 원정지(expedN)는 세 구간 모두 (구간 기록이 없어 통째로 — 이계는 빼고) · 원정에서 찾은 유물(rec — 원정지 · 구간 · 이계)은 그 구간까지
+   가을 대회 — 지난 가을 기록(S.fallRun.done — 이긴 라운드 수 · 진출) · 우승 상품 유물(rec.tour · 이계) · 목표(시내 m2 · 광역 m3 · 본선 m4) · 본선 우승 횟수 —
+     그 단계를 통과했으면 앞 단계들도 모두 (그해 앞 단계를 넘어야 다음 단계에 나간다)
+   봄 신인전 — 해마다 네 경기를 모두 치른다 (1년차 겨울 끝부터) → 2년차부터면 네 경기 모두 (이계는 빼고)
+   친선전 — 올해 치른 기록(기권 빼고 · 이계 학원이면 이계도) · 친선전에서 얻은 이명(epiLog kind) */
+function clrLegacy(){
+  const B = clrBook(), put = k=>{ B[k] = 1; };
+  const studs = (S.students || []).concat(S.graduates || []);
+  const seen = new Set();
+  studs.forEach(s=>{ const n = s && s.expedN; if(n && typeof n === "object") Object.keys(n).forEach(id=>{ if((n[id]|0) > 0) seen.add(id); }); });
+  DUNGEONS.forEach(d=>{ if(seen.has(d.id)) for(let k = 1; k <= (d.secs || 3); k++) put(`x:${d.id}:${k}`); });
+  const step = (st, ow)=>{ const i = LADDER_ORDER.indexOf(st); if(i < 0) return;
+    LADDER_ORDER.slice(0, i + 1).forEach(k=>{ const c = LADDER[k], n = c.kind === "league" ? c.matches : c.rounds; for(let r = 0; r < n; r++) put(`c:${k}:${r}` + clrOw(ow)); }); };
+  const rel = (S.relicPool || []).slice();
+  (S.students || []).forEach(s=> (s.relics || []).forEach(r=>{ if(r) rel.push(r); }));
+  rel.forEach(r=>{ const c = r && r.rec; if(!c || typeof c !== "object") return;
+    if((c.how === "exp" || c.how === "job") && c.dg && (c.sec|0) > 0) for(let k = 1; k <= Math.min(3, c.sec|0); k++) put(`x:${c.dg}:${k}` + clrOw(!!c.ow));
+    if(c.how === "tour" && LADDER[c.tour]) step(c.tour, !!c.ow); });
+  ((S.fallRun && S.fallRun.done) || []).forEach(d=>{ const c = d && LADDER[d.step]; if(!c) return;
+    const i = LADDER_ORDER.indexOf(d.step);
+    if(i > 0) step(LADDER_ORDER[i - 1], false);                    // 이 단계에 나왔다 — 앞 단계는 통과했다
+    if(d.forfeit) return;
+    const n = c.kind === "league" ? c.matches : c.rounds, m = (d.advanced && c.kind === "cup") ? n : Math.min(n, d.w|0);
+    for(let r = 0; r < m; r++) put(`c:${d.step}:${r}`); });
+  const md = new Set(((S.mission && S.mission.done) || []).map(x=> x && x.id));
+  if(md.has("m2")) step("city", false);
+  if(md.has("m3")) step("region", false);
+  if(md.has("m4") || (S.finalWins|0) > 0) step("final", false);
+  if((S.year|0) >= 2) for(let m = 0; m < 4; m++) put(`s:${m}`);
+  const F = S.friendly;
+  if(F && typeof F === "object") Object.keys(F).forEach(ph=>{ const st = F[ph]; if(!st || typeof st !== "object") return;
+    (st.done || []).forEach(d=>{ if(d && !d.forfeit){ put("f"); if((d.tier|0) >= PORTAL_TIER) put("f:ow"); } }); });
+  if((S.epiLog || []).some(e=> e && e.kind === "friendly")) put("f");
+}
 function openBattle(res, opt, onDone){
   stylishSkillFxPreload();
   SPR_BTSCROLL = 0;
@@ -27459,6 +28955,7 @@ function openBattle(res, opt, onDone){
   const btId = ++BT_SEQ;
   if(!opt.lab){ if(opt.intro !== false) bannerBlob("start"); if(opt.victory) bannerBlob("victory"); if(opt.defeat) bannerBlob("defeat"); }   // 전투 배너 미리 받기 (1003)
   let i = 0, timer=null, speed = bspeedNow(), ended = false, battlePanel = null;
+  const noSkip = !!opt.noSkip;   // 1021 셋째 — 처음 치르는 전투 (끝나기 전 '결과로 건너뛰기'를 숨긴다 · 끝나면 확인 단추는 그대로)
   if(opt.bgm) audOver(opt.bgm);
   sfxPreload();
   if(opt.cheer) setTimeout(()=> sfxPlay("cheer"), 260);
@@ -27595,8 +29092,9 @@ function openBattle(res, opt, onDone){
       let spr = "";
       if(monHas(n.job)){
         const [mo] = sprMot(f,k);
-        const over = (mo==="attack"||mo==="win") ? "flash" : (mo==="hit" ? "redflash" : "");
-        spr = `<div class="sprwrap mon ${mo}">${monHTML(n.job, mo)}${over? monHTML(n.job, over) : ""}</div>`;
+        const atk = mo==="attack" && monAtkHas(n.job);                 // 1021 — 공격 자세 그림 (대기 그림 자리에 겹친다 · monAtkFit)
+        const over = atk ? "" : (mo==="attack"||mo==="win") ? "flash" : (mo==="hit" ? "redflash" : "");
+        spr = `<div class="sprwrap mon ${mo}${atk ? " matk" : ""}">${monHTML(n.job, mo)}${over? monHTML(n.job, over) : ""}${monAtkHTML(n.job)}</div>`;
       } else if(sprHas(n.job)){
         const [mo,t0] = sprMot(f,k);
         const fn = sprN(n.job, SPR_M[mo]) || 1;
@@ -27629,7 +29127,7 @@ function openBattle(res, opt, onDone){
       const heroOn = u.alive && u.fx.some(x=> x.hero);                                     // 1015 — 영웅의 기상 상태
       const rd = !!(DROP && dropAt && k === DROP.k);                                      // 1018 — 유물을 떨어뜨리는 마지막 상대 (시체가 사라지고 유물이 뿅)
       return `<div class="unit bf-unit team-${side} ${boss?'bf-boss':''} ${big?'bf-big':''} ${mobU?'bf-mob':''} ${u.alive?'':'dead'} ${act?'act':''} ${heroOn?'hr-buff':''}${rd?' rdrop':''}${ent ? ent.cls(uids[k]) : ''}"
-        style="left:${x}%;top:${y}%;z-index:${rd ? 140 : Math.round(y)};--us:${bfJobScale(n.job)}${rd ? `;--rd-out:${Math.round(RD_OUT - (performance.now() - dropAt))}ms` : ""}${ent ? ent.css(uids[k]) : ""}" data-slot="${soloBoss?'boss':`${side}-${row}-${col}`}" data-uid="${uids[k]}" tabindex="0"
+        style="left:${x}%;top:${y}%;z-index:${rd ? 140 : Math.round(y)};--us:${bfJobScale(n.job)}${rd ? `;--rd-out:${Math.round(RD_OUT - (performance.now() - dropAt))}ms` : ""}${ent ? ent.css(uids[k]) : ""}" data-slot="${soloBoss?'boss':`${side}-${row}-${col}`}" data-uid="${uids[k]}"${isMon ? ` data-mon="${esc(n.job)}"` : ""} tabindex="0"
         aria-label="${esc(n.name)} 체력 ${hideHp? "???" : `${Math.round(u.hp)} / ${u.maxHp}`}, 행동 ${Math.round(u.atb*100)}%, 필살기 ${Math.round(u.ult)}%"
         title="${esc(n.name)} · ${JOBS[n.job].name} · ${row==='front'?'전열':'후열'} / 체력 ${hideHp? "???" : `${fmt(u.hp)} / ${fmt(u.maxHp)}`}${u.sh>0?' · 보호막 '+fmt(u.sh):''} / 행동 ${Math.round(u.atb*100)}% · ${esc(n.ult||ultName(n.job))} ${Math.round(u.ult)}%">
         ${popHtml}${fxc}${spr}${ultFX}${heroOn ? HR_SPARK : ""}${rd ? dropHtml() : ""}
@@ -27761,6 +29259,7 @@ function openBattle(res, opt, onDone){
     const last = i >= res.frames.length-1, dc = last ? "btn primary" : "btn", dt = last ? (opt.doneLabel || "확인") : "결과로 건너뛰기";
     if(bd.className !== dc) bd.className = dc;
     if(bd.textContent !== dt) bd.textContent = dt;
+    if(bd.hidden !== (noSkip && !last)) bd.hidden = noSkip && !last;   // 1021 셋째
     return true;
   };
   const drawerHtml = (f, logs)=> battlePanel==='stats'?`${statBox(f, "B", opt.titleB||"상대", true)}${statBox(f, "A", opt.titleA||"우리 팀", false)}`: `<div class="blog" id="blog">${logs.map(x=>`<div class="ln ${x.cls}">${x.line}</div>`).join("")}</div>`;
@@ -27789,6 +29288,7 @@ function openBattle(res, opt, onDone){
       if(ent && ent.attach) ent.attach();
       dropPlace();
       popCritFit($("#modalRoot"));
+      monAtkFit($("#modalRoot"));                                         // 1021 — 마물 공격 자세 자리
       $("#modalRoot").querySelectorAll('[data-effect-label]').forEach(el=>el.onclick=ev=>{ev.stopPropagation();toast(el.dataset.effectLabel);});
       if(battlePanel === "log"){ const bl = $("#blog"); if(bl) bl.scrollTop = bl.scrollHeight; }
       if(window.__btDrawHook) window.__btDrawHook(i, true);              // 시험용 (tools/gen/sim/btpatch_check.py)
@@ -27819,12 +29319,14 @@ function openBattle(res, opt, onDone){
       </div>
     </div></div>`;
     modalLockSync();
+    { const bd0 = $("#bDone"); if(bd0 && noSkip && i < res.frames.length-1) bd0.hidden = true; }   // 1021 셋째 — 처음 치르는 전투는 끝나기 전 '결과로 건너뛰기'를 숨긴다
     alignDemonField();
     tournamentLayoutApply(fk);
     { const bm = document.querySelector(`#modalRoot .modal[data-bt="${btId}"]`); if(bm) bm.__btKey = btKey(); }   // 1018 아홉째 — 다음 장부터 바뀐 곳만 (drawPatch)
     if(ent && ent.attach) ent.attach();                                   // 1018 — 다시 그린 유닛에 등장 연출을 같은 시각부터 이어 붙인다 (같은 작업 안이라 그새 그려지지 않는다)
     dropPlace();                                                          // 1018 — 유물 자리 (시체 그림을 처음 그릴 때 한 번 잰다)
     popCritFit($("#modalRoot"));                                          // 치명타 숫자 — 맨 윗줄은 덜 올린다 (1006)
+    monAtkFit($("#modalRoot"));                                           // 1021 — 마물 공격 자세 자리
     const bs = $("#btscroll"); if(bs) bs.scrollTop = SPR_BTSCROLL||0;
     $("#modalRoot").querySelectorAll('[data-effect-label]').forEach(el=>el.onclick=ev=>{ev.stopPropagation();toast(el.dataset.effectLabel);});
     if(bs) bs.onscroll = ()=>{ SPR_BTSCROLL = bs.scrollTop; };
@@ -27832,9 +29334,9 @@ function openBattle(res, opt, onDone){
     $("#modalRoot").querySelectorAll('[data-bpanel]').forEach(btn=>btn.onclick=()=>{battlePanel=battlePanel===btn.dataset.bpanel?null:btn.dataset.bpanel;draw();});
     $("#bPlay").onclick = ()=> timer? pause() : play();
     $("#bDone").onclick = ()=>{
-      if(i < res.frames.length-1){ pause(); i = res.frames.length-1; bgmEnd(); skipAt = performance.now(); draw(); return; }
+      if(i < res.frames.length-1){ if(noSkip) return; pause(); i = res.frames.length-1; bgmEnd(); skipAt = performance.now(); draw(); return; }   // 1021 셋째 — 숨긴 단추를 눌러도 (시험의 click) 건너뛰지 않는다
       if(performance.now() - skipAt < 450) return;                      // 두 번 눌러 결과를 못 보고 닫히지 않게
-      pause(); audOver(null); closeModal(); onDone && onDone(res);
+      pause(); audOver(opt.bgmAfter || null); closeModal(); onDone && onDone(res);   // bgmAfter — 닫은 뒤 이어질 곡 (원정 지역곡 · 1021) · 없으면 밑바닥 곡(계절)
     };
     $("#modalRoot").querySelectorAll("[data-sp]").forEach(b=> b.onclick=()=>{ bspeedSet(+b.dataset.sp); speed=bspeedNow(); if(timer){pause();play();} draw(); });
     if(window.__btDrawHook) window.__btDrawHook(i, false);              // 시험용 (tools/gen/sim/btpatch_check.py)
@@ -27850,7 +29352,7 @@ function openBattle(res, opt, onDone){
   const camSf = ()=> 280 / Math.max(35, speed);                       // 배속 — 기본(280ms) 이 1
   const camW = (tok, ms)=> new Promise(r=> setTimeout(r, ms / camSf())).then(()=> camRun === tok);
   const uEl = uid=> document.querySelector(`#modalRoot .bf-unit[data-uid="${uid}"]`);
-  const setMot = (el, mot, f)=>{ const c = el && el.querySelector("canvas.spr"); if(!c) return; c.dataset.m = SPR_M[mot]; c.dataset.f = f; delete c.dataset.still; delete c.dataset.once; };
+  const setMot = (el, mot, f)=>{ const c = el && el.querySelector("canvas.spr"); if(!c){ monAtkPose(el, mot === "attack"); return; } c.dataset.m = SPR_M[mot]; c.dataset.f = f; delete c.dataset.still; delete c.dataset.once; };   // 1021 — 마물은 공격 자세 그림
   const camPop = (el, list)=>{
     if(!el || !list.length) return;
     const dur = 1500;
@@ -28422,6 +29924,7 @@ const SPEECH_MOTIVE = [
   {t:"숨겨둔 게 있다면 오늘 다 꺼내라. 아껴둘 경기가 아니다.",      fit:["boast","hot"]},
   {t:"네 이름을 기억하게 만들어라. 오늘이 그날이다.",               fit:["boast","lively"]}
 ];
+const SPEECH_FIT_P = .70;   // 1021 — 맞는 말(전력 · 성격에 맞는 한마디)도 통할 확률 (사용자 '상담/락커룸에서 정답을 골랐을 경우에도 기본 성공 확률은 70%')
 function makeSpeechOffers(){
   const o = [{type:"expect", t:pick(SPEECH_EXPECT)}, {type:"relief", t:pick(SPEECH_RELIEF)}];
   shuffle(SPEECH_MOTIVE.slice()).slice(0,2).forEach(m=> o.push({type:"motive", t:m.t, fit:m.fit}));
@@ -28451,13 +29954,14 @@ function lockerSpeak(t, L, idx, my){
   const netP = moodNetP();
   const names = {ok:[], no:[]};
   (my||[]).forEach(st=>{
-    let ok;
-    if(o.type==="expect")      ok = L.myP >= L.foeP;
-    else if(o.type==="relief") ok = L.myP <  L.foeP;
-    else                       ok = (o.fit||[]).indexOf(st.pers||"plain") >= 0;
+    let right;
+    if(o.type==="expect")      right = L.myP >= L.foeP;
+    else if(o.type==="relief") right = L.myP <  L.foeP;
+    else                       right = (o.fit||[]).indexOf(st.pers||"plain") >= 0;
+    let ok = right && RNG() < SPEECH_FIT_P;                      // 1021 — 맞는 말도 기본 70% 로 통한다 (사용자)
     let conv = false, byTrust = false;
     if(!ok && trustFull(st)){ ok = true; byTrust = true; }        // 운명 단계는 언제나 통한다
-    else if(!ok && RNG() < netP){ ok = true; conv = true; }
+    else if(!ok && !right && RNG() < netP){ ok = true; conv = true; }   // 호소력 — 맞지 않는 말일 때
     if(ok) addTrust(st, o.type==="motive" ? 2 : 1);   // 동기부여는 신뢰가 두 배로 쌓인다
     L.res[st.id] = ok; L.conv[st.id] = conv; L.byTrust = L.byTrust||{}; L.byTrust[st.id] = byTrust;
     L.mood[st.id] = Math.round(clamp(L.mood[st.id] + (ok? MOOD_SPEECH : -MOOD_SPEECH), 0, 100));
@@ -30157,7 +31661,7 @@ function friendlyRun(t, quick){
   const after = ()=> friendlyRecord(t, b, ids);
   if(quick) after();
   else openBattle(b, {titleA:S.acadName, titleB:t.foe.name, field:"dummy", bgm:"friendly", jingle:true, victory:true, defeat:true,   /* 친선전 — 연습장 필드 · 연습장 세팅 (0930) */
-    head:`${t.title} — ${friendlyMatchLabel(t)}`, doneLabel:"결과 확정"}, after);
+    head:`${t.title} — ${friendlyMatchLabel(t)}`, doneLabel:"결과 확정", noSkip:!clrHas(clrFrKey(t))}, after);
 }
 function friendlyRecord(t, b, ids){
   if(UI.tour!==t) return;
@@ -30173,6 +31677,7 @@ function friendlyRecord(t, b, ids){
   renderTournament();
 }
 function finishFriendly(t){
+  clrPut(clrFrKey(t));   // 1021 셋째 — 친선전을 한 번 치렀다 (다음부터 스킵 · 기권은 tourForfeit 라 여기 오지 않는다)
   const F = friendlyState(t.ph||"spring");
   const tierM = 1 + t.foe.tier*.18;
   const gold = Math.round((140 + t.w*180) * tierM * relicPrizeMul());   // 1017 — 판돈
@@ -30284,6 +31789,7 @@ function renderFriendly(){
       $("#fPlay").onclick = ()=> lkwGate();   // 1013 — 한마디 전이면 락커룸 창부터
       $("#fQuick").onclick = ()=> friendlyRun(t,true);
       $("#fAll").onclick = ()=>{ let g=0; while(UI.tour===t && t.stage==="match" && g++<5) friendlyRun(t,true); };
+      if(!clrHas(clrFrKey(t))) clrHide("#fQuick", "#fAll");   // 1021 셋째 — 친선전을 한 번 치르기 전에는 숨긴다
     }, true);
     return;
   }
@@ -30495,6 +32001,7 @@ function renderLadder(){
       bindLocker(t, lL, lMy, renderLadder, {title:cfg.n, label:ladderMatchLabel(t), foe:foe.name, field:t.step, start:()=> ladderRun(t,false)});   // 1013 — 락커룸 창
       $("#tPlay").onclick = ()=> lkwGate();   // 1013 — 한마디 전이면 락커룸 창부터
       $("#tQuick").onclick = ()=> ladderRun(t,true);
+      if(!clrHas(clrLadKey(t))) clrHide("#tQuick");   // 1021 셋째 — 이긴 적 없는 라운드는 숨긴다
     }, true);
     return;
   }
@@ -30614,7 +32121,7 @@ function renderTournament(){
       const run = (quick)=>{
         if(UI.tour!==t || t._busy) return;
         t._busy = true;
-        $("#tPlay").disabled = true; $("#tQuick").disabled = true;
+        $("#tPlay").disabled = true; { const q = $("#tQuick"); if(q) q.disabled = true; }   // 1021 셋째 — 숨긴 단추
         const my = tourMatchStudents(myIds);
         const TM = teamByName((t.entryTeams||[])[isSpring? 0 : t.matchIdx] || "A");
         const L2 = lockerApply(t, `m${t.round||0}-${t.matchIdx}`, my, oppTeam, foeTierOf(isSpring? t.opps[t.matchIdx] : t.opps[t.round]));
@@ -30622,10 +32129,11 @@ function renderTournament(){
         const after = ()=> recordMatch(t, b, oppName, myIds);
         if(quick){ after(); }
         else openBattle(b, {titleA:S.acadName, titleB:oppName, field:isSpring? "citytournament" : null, bgm:"tour", jingle:true, victory:true, defeat:true,   // 1007 — 봄 신인전은 시내 대회 필드 (가로 화면은 시내 대회 쿼터뷰)
-          head:`${t.title} — ${head}`, doneLabel:"결과 확정"}, after);
+          head:`${t.title} — ${head}`, doneLabel:"결과 확정", noSkip:isSpring && !clrHas(clrSprKey(t))}, after);
       };
       $("#tPlay").onclick=()=> lkwGate();   // 1013 — 한마디 전이면 락커룸 창부터
       $("#tQuick").onclick=()=>run(true);
+      if(isSpring && !clrHas(clrSprKey(t))) clrHide("#tQuick");   // 1021 셋째 — 이긴 적 없는 경기는 숨긴다
     }, true);
     return;
   }
@@ -30638,6 +32146,7 @@ function recordMatch(t, b, oppName, myIds){
   t.results.push({vs:oppName, win, score:`${aliveA}-${aliveB}`, myIds:myIds.slice(), foes:b.B.map(u=>u.name)});
   if(win) relicWinTally(myIds);   // 1017 — 깨어남
   if(t.kind==="spring"){
+    if(win) clrPut(clrSprKey(t));   // 1021 셋째 — 이긴 경기는 다음부터 스킵
     t.matchIdx++;
     if(t.matchIdx>=4){ finishTournament(t); render(); return; }
     t.stage = "scout";   // 1019 — 다음 상대는 대회 편성 창부터 (TFWIN)
@@ -30693,13 +32202,30 @@ const BGM = {
   summer:   {f:"summer.ogg", v:.9},
   fall:     {f:"fall.ogg",   v:.9},
   winter:   {f:"winter.ogg", v:.9},
-  /* 전투 (원곡 그대로 · 1021) */
-  friendly: {f:"friendlyandexpedition.ogg"},
+  /* 전투 (원곡 그대로 · 1021) — 친선전은 새 곡 (1021 둘째 · 사용자 '친선전 곡 교체' — 예전 friendlyandexpedition.ogg 는 이제 안 쓴다: 원정은 원정지마다 곡이 있다) */
+  friendly: {f:"friendly.ogg"},
   tour:     {f:"basetournament.ogg"},
   tourFinal:{f:"basetournamentfinalbattle.ogg"},
   fest:     {f:"finaltournament.ogg"},
   festFinal:{f:"finaltournamentfinalbattle.ogg"},
-  league:   {f:"tournamentleague.ogg"},
+  league:   {f:"tournamentleague.ogg"},   // 1021 둘째 — 새 곡으로 갈아 끼움 (사용자 'tournamentleague 곡 교체' · tourFinal 도 'basetournamentfinalbattle 곡 교체')
+  /* 원정 (1021 둘째 — 사용자 '각 원정의 지역곡/전투곡/보스곡 추가해주고') — 벨트 원정: 띠를 걷는 동안 지역곡 · 전투 1 · 2 는 전투곡 · 셋째(90% 보스 방)는 보스곡 (beltBgm — 원정지 id 로).
+     keep — 지역곡은 전투가 끝나면 멈춘 자리부터 잇는다 (원정 창을 열 때 처음부터 — audForget) · lazy — 첫 접속 로딩 화면에서 받지 않는다 (15곡 27MB — 원정 창을 열 때 그 원정지 셋만) */
+  ex_d1:        {f:"exped_training.ogg", v:.9, keep:true, lazy:true},
+  ex_d1_battle: {f:"exped_training_battle.ogg", lazy:true},
+  ex_d1_boss:   {f:"exped_training_boss.ogg", lazy:true},
+  ex_d2:        {f:"exped_ruins.ogg", v:.9, keep:true, lazy:true},
+  ex_d2_battle: {f:"exped_ruins_battle.ogg", lazy:true},
+  ex_d2_boss:   {f:"exped_ruins_boss.ogg", lazy:true},
+  ex_d3:        {f:"exped_belfry.ogg", v:.9, keep:true, lazy:true},
+  ex_d3_battle: {f:"exped_belfry_battle.ogg", lazy:true},
+  ex_d3_boss:   {f:"exped_belfry_boss.ogg", lazy:true},
+  ex_d4:        {f:"exped_rift.ogg", v:.9, keep:true, lazy:true},
+  ex_d4_battle: {f:"exped_rift_battle.ogg", lazy:true},
+  ex_d4_boss:   {f:"exped_rift_boss.ogg", lazy:true},
+  ex_d5:        {f:"exped_tomb.ogg", v:.9, keep:true, lazy:true},
+  ex_d5_battle: {f:"exped_tomb_battle.ogg", lazy:true},
+  ex_d5_boss:   {f:"exped_tomb_boss.ogg", lazy:true},
   /* 한 번만 흐르고 멎는 곡 */
   win:      {f:"victory1.ogg", once:true},
   winBig:   {f:"victory2.ogg", once:true},
@@ -30800,7 +32326,7 @@ function audStart(key){
   const n = {key:key, a:a, t:t, vol:vol, dead:false, fading:false, gap:0};
   clearTimeout(a.stopT);
   a.n = n;
-  try{ el.pause(); el.currentTime = 0; }catch(e){}
+  try{ el.pause(); el.currentTime = (t.keep && a.at) || 0; }catch(e){}   // keep — 멈춘 자리부터 (원정 지역곡 · 1021)
   if(a.g && ACTX){ try{ const p = a.g.gain; p.cancelScheduledValues(ACTX.currentTime); p.setValueAtTime(0, ACTX.currentTime); }catch(e){} }
   else { clearInterval(a.iv); a.lv = 0; try{ el.volume = 0; }catch(e){} }
   a.lv = 0;
@@ -30837,6 +32363,7 @@ function audStop(fade){
   n.dead = true;
   clearTimeout(n.gap); n.gap = 0;
   const a = n.a, el = a.el, f = fade || .6;
+  if(n.t.keep){ try{ const d = el.duration, c = el.currentTime; a.at = (d && isFinite(d) && c > d - BGM_END.out - 1) ? 0 : c; }catch(e){ a.at = 0; } }   // keep — 다음에 이 자리부터 (끝 무렵이면 처음부터)
   el.removeEventListener("timeupdate", n.onTime);
   el.removeEventListener("ended", n.onEnd);
   audRamp(a, 0, f);
@@ -30847,8 +32374,10 @@ function audStop(fade){
     if(n.t.free){ try{ el.removeAttribute("src"); el.load(); }catch(e){} delete AEL[a.f]; }   // 한 번 쓰고 마는 긴 곡 — 놓아준다 (다시 틀면 새로 받는다)
   }, (f + .1) * 1000);
 }
-/* 곡을 미리 받아 둔다 — 그 장면이 오면 바로 나오게 (오프닝) */
+/* 곡을 미리 받아 둔다 — 그 장면이 오면 바로 나오게 (오프닝 · 원정 전투곡) */
 function audPrep(key){ const t = BGM[key]; if(AUD.on && t){ try{ audEl(t.f); }catch(e){} } }
+/* keep 곡을 처음부터 다시 (원정 창을 열 때 — 지역곡) */
+function audForget(key){ const t = BGM[key], a = t && AEL[t.f]; if(a) a.at = 0; }
 /* 음량·on/off 를 바꾼 뒤 */
 function audRefresh(){
   if(AMAST){ try{ AMAST.gain.value = audGain(); }catch(e){} }
@@ -30963,6 +32492,26 @@ const SFX = {
   xm_step2:{f:"xm_step2.ogg", v:.263},
   xm_step3:{f:"xm_step3.ogg", v:.253}
 };
+/* 벨트 원정 (1021 · apply_belt) — 목업의 짧은 소리를 같은 파형으로 합성 (tools/gen/sfx/belt_sfx.py · v 는 설정 효과음 70 에서 목업과 같은 크기).
+   보물 상자 · 자금 · 물건 · 가시 · 늪 · 마주침 '!' · 마물 착지 · 전투로 · 마물이 사라짐 · 명상 · 모닥불 · 황금 상자 · CLEAR · 철수 · 지구력이 줆.
+   표 밖에서 더한다 — 표 끝(xm_step3)은 apply_exmap 이 다시 돌 때 찾는 자리라 그대로 둔다 */
+Object.assign(SFX, {
+  belt_chest:{f:"belt_chest.ogg", v:.163},
+  belt_coin:{f:"belt_coin.ogg", v:.142},
+  belt_item:{f:"belt_item.ogg", v:.237},
+  belt_spike:{f:"belt_spike.ogg", v:.523},
+  belt_mire:{f:"belt_mire.ogg", v:.23},
+  belt_bang:{f:"belt_bang.ogg", v:.163},
+  belt_land:{f:"belt_land.ogg", v:.43},
+  belt_battle:{f:"belt_battle.ogg", v:.22},
+  belt_poof:{f:"belt_poof.ogg", v:.261},
+  belt_heal:{f:"belt_heal.ogg", v:.18},
+  belt_crackle:{f:"belt_crackle.ogg", v:.151},
+  belt_gold:{f:"belt_gold.ogg", v:.163},
+  belt_clear:{f:"belt_clear.ogg", v:.183},
+  belt_retreat:{f:"belt_retreat.ogg", v:.199},
+  belt_stam:{f:"belt_stam.ogg", v:.151}
+});
 const SFX_GAP = 55;      // 같은 소리가 이보다 짧은 간격으로 겹치지 않게 막는다 (ms)
 const SFX_VOICE = 8;     // 한꺼번에 울릴 수 있는 소리 개수
 let ASG=null, ASBUF={}, ASBAD={}, ASLOAD={}, ASLAST={}, ASN=0, ASEL={};
@@ -32230,7 +33779,7 @@ function bootAssetList(){
   const re = /(?:\.\.\/)?assets\/[^"'()\s`\\<>${}\[\]]+?\.(?:webp|png|jpe?g|gif|mp3|ogg)(?![\w.\-])(?:\?[^"'()\s`\\<>]*)?/gi;
   let m; while((m = re.exec(html))){ const u = m[0]; if(seen.has(u)) continue; seen.add(u); (/\.(mp3|ogg)(\?|$)/i.test(u) ? aud : img).push(u); }
   const addA = f=>{ if(!f) return; const u = BGM_DIR + f; if(!seen.has(u)){ seen.add(u); aud.push(u); } };
-  try{ Object.values(BGM).forEach(t=> addA(t.f)); }catch(e){}
+  try{ Object.values(BGM).forEach(t=>{ if(!t.lazy) addA(t.f); }); }catch(e){}   // lazy — 원정 곡은 원정 창을 열 때 (1021)
   try{ Object.values(SFX).forEach(t=> addA(t.f)); }catch(e){}
   img.forEach(u=> PRELOAD.seen.add(u));                          // 뒤에서 조금씩 받는 쪽(preloadStart)은 다시 받지 않는다
   return img.map(u=>({u, a:false})).concat(aud.map(u=>({u, a:true})));

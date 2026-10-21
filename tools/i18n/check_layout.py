@@ -121,7 +121,7 @@ SCENES = r"""(() => {
   sc['battle_exped'] = () => {
     RBC(); closeModal(); UI.tour = null; UI.pendingTour = null; UI.view = 'home'; render();
     const cam = PREF.battleCam; PREF.battleCam = 'simple';
-    const E = expedInit(DUNGEONS[0], S.students.slice(0, 3), null); E.stam = 3; E.stamD = 3; E.avgWill = 200;
+    const E = expedInit(DUNGEONS[0], S.students.slice(0, 3), null); E.stam = 3; E.stamD = 3; E.avgWill = 200; E.classic = true;   // 1021 — 예전 구간 전투 (벨트 원정은 아래 belt)
     expedLoop(E, false, () => {});
     const d = document.querySelector('#bDone'); if (d) d.click();
     PREF.battleCam = cam;
@@ -133,6 +133,28 @@ SCENES = r"""(() => {
     while (L.length < 3) { const K = RELIC_GEN[L.length]; L.push(relicMake(K, relicTierOf(K).g[0], null)); }
     relicDropPopup(L, DUNGEONS[0].n, () => {});
   };
+  /* 1021 — 벨트 원정 창 (걷는 띠 · 말풍선 넷 · 얻은 것 칸) · 끝 (닫기 · 배너) · 전리품 (유물 + 물건 · 자금 칸). 띠는 #beltRoot (#modalRoot 밖) */
+  if (typeof beltLoop === 'function') {
+    const beltGo = () => {
+      RBC(); closeModal(); UI.tour = null; UI.pendingTour = null; UI.view = 'home'; render();
+      const T = expedFullTeams()[0] || null, mem = T ? teamMembers(T) : S.students.slice(0, 3);
+      const E = withSeed('layout-belt', () => expedInit(dgView(DUNGEONS[1]), mem, T));
+      withSeed('layout-belt:run', () => expedLoop(E, false, () => {}));
+      const H = BELT.hud; H.gold = 12345; H.items = {cookie: 2, water: 1, book: 1, exoticFan: 1}; H.relics = 3; beltHudLoot();
+      BELT.mem.forEach((m, i) => beltSay(m, beltLine(['arrive', 'camp', 'clear', 'retreat'][i % 4], m), 1e9));
+      return E;
+    };
+    sc['belt'] = () => { beltGo(); };
+    sc['belt_end'] = () => { beltGo(); const c = document.querySelector('#beltRoot .belt-close'); if (c) c.hidden = false;
+      beltFx({cls: 'bl-banner', html: 'CLEAR!', x: beltSW() / 2, y: 24, life: 1e9, fade: .99, solid: true, mid: true}); };
+    sc['belt_loot'] = () => {
+      const E = beltGo(), R = BELT.R; beltAbort();
+      R.loot.items = {cookie: 2, water: 1, book: 1, exoticFan: 1}; R.loot.gold = 12345; R.loot.bgold = 12000; R.loot.cgold = 345;
+      const L = (S.relicPool || []).filter(r => r && r.kind).slice(0, 2);
+      while (L.length < 2) { const K = RELIC_GEN[L.length]; L.push(relicMake(K, relicTierOf(K).g[0], null)); }
+      E.res.relics = L; beltLoot(E, R, E.res, () => {});
+    };
+  }
   /* 전투 화면은 닫는 길이 따로라 맨 끝에 */
   sc['battle'] = () => {
     RBC(); closeModal(); UI.tour = null; UI.pendingTour = null; UI.view = 'home'; render();
@@ -144,7 +166,7 @@ SCENES = r"""(() => {
 
 MEASURE = r"""() => {
   const W = innerWidth, out = [];
-  const roots = [document.getElementById('app'), document.getElementById('modalRoot'), document.getElementById('nav'),
+  const roots = [document.getElementById('app'), document.getElementById('modalRoot'), document.getElementById('nav'), document.getElementById('beltRoot'),
                  window.RBK && RBK.isOpen() && RBK.state.root].filter(Boolean);
   const lines = {};
   const vis = (el, cs) => cs.display !== 'none' && cs.visibility !== 'hidden' && el.getClientRects().length;
@@ -190,7 +212,7 @@ MEASURE = r"""() => {
 
 HAN_JS = r"""() => {
   const roots = [document.getElementById('app'), document.getElementById('modalRoot'), document.getElementById('nav'), document.getElementById('toastRoot'),
-                 window.RBK && RBK.isOpen() && RBK.state.root].filter(Boolean);
+                 document.getElementById('beltRoot'), window.RBK && RBK.isOpen() && RBK.state.root].filter(Boolean);
   const out = [], seen = new Set(), OK = /^(한국어|Language · 언어)$/;
   const vis = el => { const cs = getComputedStyle(el); return cs.display !== 'none' && cs.visibility !== 'hidden' && el.getClientRects().length; };
   for (const root of roots) {
@@ -236,7 +258,7 @@ def run(br, path, query, size, scenes_only, shots, years, tag):
         if scenes_only and n not in scenes_only and n.split('_')[0] not in scenes_only:
             continue
         try:
-            pg.evaluate("n => { UI.ceremonies = []; UI.sel = S.students[0] && S.students[0].id; __SC[n](); }", n)
+            pg.evaluate("n => { UI.ceremonies = []; UI.sel = S.students[0] && S.students[0].id; if (typeof beltAbort === 'function') beltAbort(); __SC[n](); }", n)
         except Exception as e:
             res[n] = {'error': str(e)[:200]}
             continue
