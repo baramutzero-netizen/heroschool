@@ -749,6 +749,7 @@ html[data-ui-concept="journal"] .npcname{color:#8a6a45}
 @media(prefers-reduced-motion:reduce){.dr-student.resting .spr-anchor{animation:none!important}}
 .dr-bubbles{animation:none;z-index:5}
 .dr-bubbles[hidden]{display:none!important}
+.dr-result[hidden],.dr-details[hidden],.rep-exped[hidden]{display:none!important}   /* 1021 넷째 — 경과 보고에서 숨긴 칸 */
 .dr-student.low-bubble .dr-bubbles{top:118%}
 .dr-stat-card{display:flex;align-items:center;gap:.5cqw;white-space:nowrap;border:1px solid #8396b8;border-radius:.6cqw;padding:.45cqw .7cqw;background:linear-gradient(110deg,#172b43f5,#294868f5);color:#fff;box-shadow:0 3px 9px #14263755;font-size:clamp(7px,1.35cqw,15px);line-height:1.2}
 .dr-stat-label{font-weight:700;margin-right:.25cqw}.dr-stat-from{color:#c4d3e4}.dr-stat-arrow{color:#6acbff;font-weight:900}.dr-stat-to{color:#ddf57b;font-size:1.14em}.dr-stat-card.down{background:linear-gradient(110deg,#462a36f5,#683c48f5);border-color:#cf8794}.dr-stat-card.down .dr-stat-to{color:#ffb29d}.dr-stat-card.down .dr-stat-arrow{color:#ffa399}
@@ -1509,7 +1510,7 @@ html body .cw-ov .cw-win button.cw-cookie-plate:is(:hover,:active,:focus,:focus-
 .cw-ov.lkw-ov{z-index:81}                                  /* 경기 화면(.overlay 80) 위 · 튜토리얼(.tutover 82) 아래 */
 /* 1020 — 창이 떠 있는 동안 뒤의 경기 화면(락커룸 칸 · 경기 시작 단추)은 숨긴다 (사용자 '락커룸 팝업 뒤에 해당 락커룸 창이 뜨는데 숨김처리').
    경기 화면의 덮개(어두운 바탕 · 흐림)는 그대로 두고 창만 숨긴다 — 락커룸 창의 덮개는 겹쳐 더 어두워지지 않게 투명 (창이 닫히면 경기 화면이 다시 보인다) */
-#modalRoot:has(> .cw-ov.lkw-ov) > .overlay > .modal{visibility:hidden}
+#modalRoot:has(> .cw-ov.lkw-ov) > .overlay:not(.tutover) > .modal{visibility:hidden}   /* 1021 넷째 — 튜토리얼(.tutover — 처음 연 락커룸의 운영 안내 8)은 빼고: 예전엔 그 창도 숨어 어두운 덮개만 남아 멈춘 것처럼 보였다 (다시 켜면 이미 본 것으로 적혀 괜찮았다) */
 #modalRoot > .overlay ~ .cw-ov.lkw-ov{background:transparent}
 .cw-win.lkw-win{width:796px}
 .lkw-win .cw-stage{width:772px;height:436px;background:#2a211b}
@@ -5407,7 +5408,8 @@ const SFX_TYPE = {
 };
 /* 독·흡혈처럼 피해를 주는 기술은 쓰는 사람의 공격 소리를 그대로 낸다 */
 /* 기술 하나에만 따로 붙는 소리 — 종류 · 직업 소리보다 먼저 본다 */
-const SFX_SKILL = {dr_2:"druidBeast", ar_u:"arrowrain", sw_u:"earthsplit", mo_1:"monkChi", mo_b:"monkPunch", mo_u:"monkPunch"};
+const SFX_SKILL = {dr_2:"druidBeast", ar_u:"arrowrain", sw_u:"earthsplit", mo_1:"monkChi", mo_b:"monkPunch", mo_u:"monkPunch",
+  md_u:"monkPunch", mw_u:"bossWraith", mg_u:"bossGargoyle", mb_u:"bossBrine", mk_u:"bossGuardian"};   // 1021 넷째 — 원정 보스 필살기 (과부하 연타는 몽크 백열권 소리 · sfxFrame 열 번)
 function sfxOf(u, sk){
   if(sk && SFX_SKILL[sk.id]) return SFX_SKILL[sk.id];
   const t = SFX_TYPE[sk.type];
@@ -5839,6 +5841,8 @@ function genMuscle(dg, sec){
 const DG_MENT = {d1:20, d2:30, d3:50, d4:70, d5:80};
 /* 원정 마물 전체 — 피해 +50% · 체력 절반 (0930 — 전투 턴 수 약 40% 단축. 공격력이 곧 피해에 비례한다) */
 const MON_ATK_MUL = 1.5, MON_HP_MUL = .5;
+/* 원정 보스 (1021 넷째 — 사용자 '원정 보스는 전투 시작 시 필살기 게이지 50부터') — 보스 방(마지막 구간)의 원정지 주인은 이 필살 게이지로 싸움을 시작한다 (mkUnit ult0) */
+const EXPED_BOSS_ULT0 = 50;
 function genMonsterOne(dg, key, lv, kMul){
   const J = JOBS[key];
   const M = DG_MENT[dg.id] != null ? DG_MENT[dg.id] : 60;
@@ -5856,11 +5860,12 @@ function genMonsterOne(dg, key, lv, kMul){
 function genMonster(dg, sec){
   const lv = dgSecLv(dg, sec);                                        // 1008 — 깊이만큼 가파르게 (마지막 구간은 예전 보스 레벨)
   const pool = (typeof DUNGEON_MONSTERS!=="undefined" && DUNGEON_MONSTERS[dg.id]) || [];
-  if(!pool.length) return [genMonsterOne(dg, dg.mon, lv, 1)];          // 풀이 없으면 예전처럼 한 마리
   const bossRoom = sec >= dg.secs;
+  const boss = ()=>{ const m = genMonsterOne(dg, dg.mon, lv, 1); if(bossRoom) m.ult0 = EXPED_BOSS_ULT0; return m; };   // 1021 넷째 — 보스 방의 원정지 주인은 필살 게이지 50 에서
+  if(!pool.length) return [boss()];          // 풀이 없으면 예전처럼 한 마리
   if(!bossRoom && RNG() < MUSCLE_P) return genMuscle(dg, sec);
   const mob = ()=> genMonsterOne(dg, pick(pool), lv, MOB_K[dg.id]!=null ? MOB_K[dg.id] : 1);
-  const arr = bossRoom ? [mob(), mob(), genMonsterOne(dg, dg.mon, lv, 1)] : [mob(), mob(), mob()];
+  const arr = bossRoom ? [mob(), mob(), boss()] : [mob(), mob(), mob()];
   arr.slots = {}; arr.rows = {};
   arr.forEach((m,i)=>{ arr.slots[m.id] = MOB_SLOTS[i]; arr.rows[m.id] = slotRow(MOB_SLOTS[i]); });
   return arr;
@@ -8342,7 +8347,7 @@ function mkUnit(st, side, idx, row){
     row: row || ROW_OF(st.job), lv: st.level,
     ment: Object.assign({}, mentEff(st)), injured: injWeeks(st), skMod: st.skMod||{}, skills: relicSkills(st, skillsOf(st)), passiveJob: passiveJobOf(st),
     base: s, maxHp: Math.round(s.hp), hp: Math.round(s.hp),
-    atb: ri(0,300), ult:0, shield:0, fx:[], alive:true, acted:0,
+    atb: ri(0,300), ult: clamp(+st.ult0 || 0, 0, 100), shield:0, fx:[], alive:true, acted:0,   // ult0 — 시작 필살 게이지 (1021 넷째 · 원정 보스 EXPED_BOSS_ULT0 · genMonster)
     dDealt:0, dHeal:0, dTaken:0,
     fixed: !!JOBS[st.job].fixed, consLine: JOBS[st.job].consLine, consMit: JOBS[st.job].consMit
   };
@@ -10196,8 +10201,10 @@ function weekReport(R, part){
     startDay: R.playFrom|0, jobShown: !!R.jobShown, onJob: ()=>{ R.jobShown = true; }, part: part || null});
 }
 function runWeek(){ weekRunGo(true); }
-/* 1011 — 체험판 (itch.io 영어판 — tools/itch/build_itch.py 가 DEMO_END 를 채운다 · 보통 빌드는 null 이라 아무것도 안 한다).
-   정해진 주차가 시작되면(지금은 2년차 봄 2주차) 끝 화면을 띄우고 주를 더 넘기지 못한다. 주간 보고 · 행사 · 대회 · 팝업이 다 끝난 뒤에 띄운다(0.7초마다 본다).
+/* 1011 — 체험판 (itch.io — tools/itch/build_itch.py 가 DEMO_END 를 채운다 · 보통 빌드는 null 이라 아무것도 안 한다).
+   정해진 주차가 되면 끝 화면을 띄우고 주를 더 넘기지 못한다. 주간 보고 · 행사 · 대회 · 팝업이 다 끝난 뒤에 띄운다(0.7초마다 본다).
+   1021 — 2년차 겨울 6주차를 마칠 때까지 ({year:2, phase:"winter", week:6} — 주차는 0 부터라 6 은 마지막 주를 마친 뒤 · 사용자 '2년차 겨울 6주').
+   계절도 넘기지 않는다(endPhase — 겨울 끝의 봄 신인전 · 새 학년으로 가지 않는다). 끝 화면 글(demoEndShow)은 DEMO_END 와 짝 — 바꾸면 같이 (build_itch.py 가 본다).
    '학원 둘러보기'로 닫으면 화면은 볼 수 있고, 주를 넘기려 하면 다시 뜬다. '새 학원으로 다시 하기'는 학원 정보의 새 학원 시작과 같다(오프닝부터) */
 const DEMO_END = null;
 function demoOver(){
@@ -10209,7 +10216,7 @@ function demoOver(){
 function demoEndShow(){
   UI.demoShown = true;
   showModal(`<div class="demo-end"><h2 style="font-size:20px;margin:0 0 10px">체험판은 여기까지</h2>`
-    + `<p style="margin:0 0 10px;line-height:1.6">2년차 봄 2주차 — 체험판이 여기서 끝난다. 함께해 주어서 고맙다!</p>`
+    + `<p style="margin:0 0 10px;line-height:1.6">2년차 겨울 6주차를 마쳤다 — 체험판이 여기서 끝난다. 함께해 주어서 고맙다!</p>`
     + `<p style="margin:0 0 14px;line-height:1.6;color:var(--muted)">정식판에서는 3년 동안 학생을 길러 졸업시키고, 졸업생 리그와 마왕 대항전까지 이어진다.</p>`
     + `<div class="btnrow"><button class="btn primary" id="demoNew">새 학원으로 다시 하기</button><button class="btn" data-close>학원 둘러보기</button></div></div>`,
     ()=>{ const b = $("#demoNew"); if(b) b.onclick = ()=>{ closeModal(); openingPlay(); }; });
@@ -10400,6 +10407,8 @@ function reportScenesForPlayback(records){
   return out;
 }
 
+/* 1021 넷째 — 사용자 '경과 보고에서 … 해당 창 숨김 처리, 성장 내역과 학생 변화, 원정 결과도 숨김처리': 장면 합계 창(.dr-result) · 이 장면의 성장 내역(#drDetail) ·
+   원정 칸(.rep-exped) · 학생 변화(.rep-students) 에 hidden (셈 · 글은 그대로 — 다시 보이려면 hidden 만 걷는다). 장면의 학생을 눌러도 성장 내역을 열지 않는다 */
 function reportSceneShell(records, dlg, plan){
   const scenes=reportScenesForPlayback(records);
   if(!scenes.length)return dlg.length ? `<div class="daylog">${dlg.map(x=>`<div class="on dlline ${x.k}">${x.t}</div>`).join("")}</div>` : "";
@@ -10414,9 +10423,9 @@ function reportSceneShell(records, dlg, plan){
       <img class="dr-inn-guest dr-inn-guest-left px" src="${REPORT_PX.inn_guest}" alt="테이블에 앉은 여관 손님" draggable="false"><img class="dr-inn-guest dr-inn-guest-right px" src="${REPORT_PX.inn_guest}" alt="테이블에 앉은 여관 손님" draggable="false"><img class="dr-tavern-guest dr-tavern-guest-left px" src="${REPORT_PX.tavern_guests}" alt="맥주 테이블의 주점 손님 두 명" draggable="false"><img class="dr-tavern-guest dr-tavern-guest-right px" src="${REPORT_PX.tavern_guests}" alt="맥주 테이블의 주점 손님 두 명" draggable="false"><div class="dr-salon-owner" role="img" aria-label="가위를 움직이는 미용실 원장님"></div><div id="drStudents"></div><div class="dr-bottom"><span id="drSceneCount"></span><span>학생을 누르면 성장 내역을 볼 수 있어요</span></div>
     </div>
     <nav class="dr-phases" id="drPhases" aria-label="훈련 장면 선택"></nav>
-    <div class="dr-result" aria-live="polite"><div><b id="drResultTitle"></b><span id="drResultHint"></span></div><div id="drResultChips"></div></div>
+    <div class="dr-result" aria-live="polite" hidden><div><b id="drResultTitle"></b><span id="drResultHint"></span></div><div id="drResultChips"></div></div>
     <div class="dr-controls"><div><button class="btn sm" id="drPlay">일시정지</button><button class="btn sm" id="drPrev" aria-label="이전 장면">‹</button><button class="btn sm" id="drNext" aria-label="다음 장면">›</button>${[1,2,3].map(n=>`<button class="btn sm" data-dr-speed="${n}">×${n}</button>`).join("")}<button class="btn sm" id="dlSkip" hidden style="display:none">한 번에 보기</button></div><span id="drProgress"></span></div>
-    <details class="dr-details" id="drDetail"><summary>이 장면의 전체 학생 · 성장 내역</summary><div id="drDetailBody"></div></details>
+    <details class="dr-details" id="drDetail" hidden><summary>이 장면의 전체 학생 · 성장 내역</summary><div id="drDetailBody"></div></details>
     <div id="drFullLog" hidden><h3>주간 전체 기록</h3><div class="daylog">${dlg.map(x=>`<div class="on ${x.k==="gap"?"dlgap":"dlline "+x.k}">${x.t}</div>`).join("")}</div></div>
   </section>`;
 }
@@ -10478,7 +10487,7 @@ function reportSceneBind(records, opt){
     const s=scenes[at];
     $("#drDetailBody").innerHTML=s.students.map(x=>`<div class="dr-student-row ${id===x.id?"selected":""}" data-dr-id="${esc(String(x.id))}"><b>${esc(x.name)}</b>${roleTag(x.job)}<small>${stateName(x)}</small><div>${x.changes.map(chip).join("")||"별도 성장 기록 없음"}</div></div>`).join("");
     if(s.reward)$("#drDetailBody").insertAdjacentHTML("afterbegin",`<p>${esc(s.reward)}</p>`);
-    if(id){paused=true;sync();$("#drDetail").open=true;const row=Array.from(root.querySelectorAll(".dr-student-row")).find(el=>el.dataset.drId===String(id));row?.scrollIntoView({block:"nearest",behavior:reduced?"instant":"smooth"});}
+    if(id && !$("#drDetail").hidden){paused=true;sync();$("#drDetail").open=true;const row=Array.from(root.querySelectorAll(".dr-student-row")).find(el=>el.dataset.drId===String(id));row?.scrollIntoView({block:"nearest",behavior:reduced?"instant":"smooth"});}
   }
   function draw(){
     const s=scenes[at], day=scenes.filter(x=>x.day===s.day), offset=(s.day*3)%Math.max(1,s.students.length);
@@ -10797,13 +10806,13 @@ function showReport(r){
       ${r.relics? `<span class="pill ok">유물 +${r.relics}</span>`:""}
       ${UI.pendingTour? `<span class="pill bad">대회 대기 중</span>`:""}
     </div>
-    ${RUN.expeds.length? `<div class="eyebrow" style="margin-bottom:6px">원정</div>
+    ${RUN.expeds.length? `<div class="rep-exped" hidden><div class="eyebrow" style="margin-bottom:6px">원정</div>
       <div class="grid2" style="margin-bottom:12px">${RUN.expeds.map(e=>`<div class="opt" style="cursor:default">
         <div class="on">${esc(e.dg.n)}<span class="price">${expedProg(e)}</span></div>
         <div class="od">${esc(e.team.join(" · "))}</div>
         <div class="od">경험 ${fmt(e.exp)}${e.fameGain? ` · 완주 명성 +${e.fameGain}`:""} · 유물 ${e.relics.length}개${e.stopped? ` · ${esc(e.stopped)}`:""}</div>
-      </div>`).join("")}</div>`:""}
-    <details class="dr-details rep-students"><summary>학생 변화 (전투력 증가 순) · ${rows.length}명</summary>
+      </div>`).join("")}</div></div>`:""}
+    <details class="dr-details rep-students" hidden><summary>학생 변화 (전투력 증가 순) · ${rows.length}명</summary>
     <div class="grid2" style="margin-top:10px">
       ${rows.map(x=>`<div class="opt" style="cursor:default">
         <div class="on">${esc(x.c.name)} ${roleTag(x.c.job)} <span class="tag yr">${x.c.year}학년</span>
@@ -11528,7 +11537,8 @@ function xmTravel(mem, done){
      - 10 · 20 … 90% 마다 걷기 — 원정 지구력 −BELT_RULE.walk (0 이 되면 그 자리에서 철수)
      - 전투 셋 — 둘은 15 ~ 75% 무작위(서로 15 이상 · 모닥불 55 ~ 65 피함) · 셋째는 90% (보스 방 = 예전 3구간). 마물 · 레벨은 예전 구간 1 · 2 · 3 그대로(genMonster).
        만나는 순간 지구력 −enc (그때 0 이면 탈진 — 공격력 · 속도 −15% 로 싸우고, 이기면 그 자리에서 철수 · 마지막 전투면 끝까지).
-       전투 안에서는 지구력이 줄지 않는다 (예전 '6행동마다'는 없앴다 — 게이지는 남은 양 그대로 보인다). 체력은 전투가 끝난 그대로(예전 +18% 회복 없음) ·
+       전투 중에도 양쪽 합쳐 STAM_PER(6)번 행동할 때마다 −fight(1 · 이계 +1 — 1021 넷째 사용자 '6 행동마다 -1, 이계는 -2' · 걷기 소모는 그대로) — 행동 수는 원정 내내 이어 센다.
+       전투 중에 바닥나도 탈진 (그 판 끝까지 공격력 · 속도 −15% · 이기면 철수 · 마지막 전투면 끝까지). 체력은 전투가 끝난 그대로(예전 +18% 회복 없음) ·
        쓰러진 학생은 다음 전투에 나가지 못한다(모닥불에서 일어남) · 전멸하면 철수. 이기면 예전처럼 구간 자금 · 경험 · 유물(relicSecDrops · 그뉵이용 확정 · 직업 유물) · 깨어남
      - 보물 상자 1 ~ 3 — 자금(구간 자금 × 1.5 ~ 3) 55% 또는 물건(쿠키 · 신비한 성수 · 예지의 서 · 이국의 부채). 연습장(자금 없음)은 상자 하나 · 쿠키 · 성수만
      - 함정 0 ~ 2 — 가시(맨 앞 학생 체력 −20%p · 쓰러뜨리지 않음) 또는 늪(지구력 −trapS — 0 이 되면 철수)
@@ -11554,7 +11564,8 @@ const BELT_RULE = {
   walk:{d1:1, d2:2, d3:2, d4:3, d5:4},          // 걷기 — 10% 마다 (10 · 20 … 90 — 아홉 번)
   enc:{d1:1, d2:2, d3:3, d4:4, d5:4},           // 마물을 만나는 순간 (전투 셋)
   trapS:{d1:2, d2:4, d3:5, d4:6, d5:7},         // 늪 함정 (지구력)
-  ow:{walk:1, enc:1, trapS:2},                  // 이계 판 (이계의 지도) 더하기
+  fight:{d1:1, d2:1, d3:1, d4:1, d5:1},         // 전투 중 — 양쪽 합쳐 STAM_PER(6)번 행동할 때마다 (1021 넷째)
+  ow:{walk:1, enc:1, trapS:2, fight:1},         // 이계 판 (이계의 지도) 더하기
   trapHp:.2,                                    // 가시 함정 — 맨 앞 학생 체력 −20%p (쓰러뜨리지는 않는다)
   camp:{at:60, hp:.3, revive:.2, stam:.25},     // 모닥불 — 체력 +30%p · 쓰러진 학생은 20% 로 일어남 · 지구력 + 시작값의 25%
   battles:{lo:15, last:90, gap:15, avoid:[55, 65]},
@@ -11642,7 +11653,8 @@ function beltGoldRelics(dg, team, res, owned){
 }
 function beltCompute(E, sim){
   const dg = E.dg, R = BELT_RULE, ow = !!dg.otherworld, mem = E.team, res = E.res;
-  const C = {walk:(R.walk[dg.id] || 0) + (ow ? R.ow.walk : 0), enc:(R.enc[dg.id] || 0) + (ow ? R.ow.enc : 0), trapS:(R.trapS[dg.id] || 0) + (ow ? R.ow.trapS : 0)};
+  const C = {walk:(R.walk[dg.id] || 0) + (ow ? R.ow.walk : 0), enc:(R.enc[dg.id] || 0) + (ow ? R.ow.enc : 0), trapS:(R.trapS[dg.id] || 0) + (ow ? R.ow.trapS : 0),
+    fight:(R.fight[dg.id] || 0) + (ow ? R.ow.fight : 0)};
   const stam0 = res.stam[0];
   let stam = stam0;
   const hp = {}, alive = {};
@@ -11650,7 +11662,7 @@ function beltCompute(E, sim){
   const noGold = !(dgGold(dg) > 0);
   const gm = 1 + relicFxParty(mem, "E_GOLD") / 100;            // 노잣돈 (이름 없는 주화 · 떠돌이의 닻) — 띠에 뜨는 자금이 결과와 같게 미리 곱한다
   const wk = beltWalkMul(mem);                                  // 1021 — 돌아오는 말굽: 걸을 때 소모 −% (소수는 모아 정수로 — 한 번에 1 · 2 처럼 번갈아)
-  let wn = 0;
+  let wn = 0, sn = 0;                                           // sn — 전투 행동 수 (원정 내내 이어 센다 · runBattle opt.stam.n)
   const plan = beltPlan(noGold);
   const ev = [], loot = {gold:0, bgold:0, cgold:0, items:{}};
   const snapHp = ()=>{ const o = {}; mem.forEach(s=> o[s.id] = Math.round(hp[s.id] * 1000) / 1000); return o; };
@@ -11706,12 +11718,14 @@ function beltCompute(E, sim){
       ev.push({t:"camp", at:e.at, hp0:h0, hp:snapHp(), st0:s0, st:stam, rev});
     }else if(e.t === "battle"){
       stam = Math.max(0, stam - C.enc);
-      const ex = stam <= 0, sec = e.sec;
+      const ex = stam <= 0, sec = e.sec, st0 = stam;
       const mon = genMonster(dg, sec);
       const act = mem.filter(s=> alive[s.id]);
       const hpA = {}; act.forEach(s=> hpA[s.id] = hp[s.id]);
       const b = runBattle(act, mon, Object.assign({titleA:"원정대", titleB:monLabel(mon), hpA, rowsB:mon.rows || null, slotsB:mon.slots || null, sim:!!sim,
-        stam:{v:stam, max:stam0, drain:0, per:STAM_PER, n:0}}, E.TM ? teamBattleOpt(E.TM) : {}));   // 지구력 — 전투 안에서는 줄지 않는다 · 0 이면 탈진으로
+        stam:{v:stam, max:stam0, drain:C.fight, per:STAM_PER, n:sn}}, E.TM ? teamBattleOpt(E.TM) : {}));   // 지구력 — 전투 중에도 6행동마다 −fight (1021 넷째) · 0 이면 탈진으로
+      if(b.stam){ stam = b.stam.v; sn = b.stam.n; }
+      const exB = ex || !!(b.stam && b.stam.ex);                   // 마주칠 때 · 싸우는 중에 바닥나 탈진
       b.A.forEach(u=>{ hp[u.ref] = u.alive ? Math.max(.01, u.hp / u.maxHp) : 0; alive[u.ref] = !!u.alive; });
       const win = b.winner === "A", muscle = !!mon.muscle;
       res.secs.push({sec, win, foe:monLabel(mon), muscle});
@@ -11724,11 +11738,11 @@ function beltCompute(E, sim){
         gold = Math.round(dgGold(dg) * (muscle ? MUSCLE_RWD : 1) * gm);
         loot.bgold += gold;
         drops = relicSecDrops(dg, act, res, sec, muscle, E.owned);
-        if(ex && !res.exh) res.exh = sec;
+        if(exB && !res.exh) res.exh = sec;
       }
-      ev.push({t:"battle", at:e.at, sec, cost:C.enc, st:stam, ex, b, foes:mon, mon:mon.map(m=> m.job), muscle, win, hp:snapHp(), alive:snapAlive(), drops, gold});
+      ev.push({t:"battle", at:e.at, sec, cost:C.enc, st:st0, ex, st1:stam, fight:st0 - stam, exB, b, foes:mon, mon:mon.map(m=> m.job), muscle, win, hp:snapHp(), alive:snapAlive(), drops, gold});   // st · ex — 마주친 순간 / st1 · fight · exB — 전투가 끝난 뒤
       if(!win) retreat(e.at, "wipe", `${sec}번째 전투에서 ${monLabel(mon)}에게 전멸 — 철수`);
-      else if(ex && sec < 3) retreat(e.at, "exh", `${sec}번째 전투를 탈진한 채 이겨 더 가지 못하고 철수`);
+      else if(exB && sec < 3) retreat(e.at, "exh", `${sec}번째 전투를 탈진한 채 이겨 더 가지 못하고 철수`);
     }else if(e.t === "goal"){
       const got = beltGoldRelics(dg, mem.filter(s=> alive[s.id]), res, E.owned);
       ev.push({t:"goal", at:100, relics:got});
@@ -11808,11 +11822,10 @@ function beltLoop(E, quick, done){
 }
 /* 진행 줄 — 경과 보고 원정 칸 · 경과 보고 한 줄 ('완주' · 'n%' · 예전 결과는 구간) */
 function expedProg(res){ return res.pct != null ? (res.clear ? "완주" : `${res.pct}%`) : `${res.reached}/${res.dg.secs}구간`; }
-/* 원정 지구력 한 줄 — 원정 지도 핀 이름표 · 좁은 화면 파견 창 (expedStamTxt 가 부른다 · 10% 걸을 때 · 마물과 마주칠 때 줄어드는 양) */
+/* 원정 지구력 한 줄 — 원정 지도 핀 이름표 · 좁은 화면 파견 창 (expedStamTxt 가 부른다). 1021 넷째 — 사용자 '원정 정보 화면에서 걸을 때 소모량하고 마주칠 때 소모량 숨김처리':
+   출발 게이지만 (예전 '· 걸을 때 −w · 마주칠 때 −n') */
 function beltStamTxt(dg, v, team){
-  const R = BELT_RULE, ow = !!(dg && dg.otherworld), id = dg && dg.id;
-  const w = Math.round(((R.walk[id] || 0) + (ow ? R.ow.walk : 0)) * beltWalkMul(team) * 10) / 10, n = (R.enc[id] || 0) + (ow ? R.ow.enc : 0);   // 돌아오는 말굽이면 줄인 양 (소수 한 자리)
-  return `원정 지구력 ${v} · 걸을 때 −${w} · 마주칠 때 −${n}`;
+  return `원정 지구력 ${v}`;
 }
 /* 걸을 때 소모 배율 — 돌아오는 말굽 (E_WALK · 장착 원정대 — 가장 높은 하나만) */
 function beltWalkMul(team){ return team && team.length ? 1 - relicFxParty(team, "E_WALK") / 100 : 1; }
@@ -12428,6 +12441,7 @@ async function beltBattle(e){
   BELT.flash = BELT.clk.t + 220; BELT.flashCol = "#ffffff"; beltSfx("belt_battle");
   await beltWait(200);
   await beltOpenBattle(e);
+  if(e.fight > 0){ beltHudStam(e.st1); beltStamPop(-e.fight); }   // 1021 넷째 — 전투 중에 줄어든 지구력
   /* 돌아와서 — 체력 그대로 (회복 없음) · 쓰러진 학생은 쓰러짐 → 넋 */
   for(const m of BELT.mem){
     const was = m.alive;
@@ -16860,6 +16874,7 @@ window.RBK = {open: rbOpen, close: rbClose, on: rbOn, intercept: rbIntercept, af
    시즌 전환
    ============================================================ */
 function endPhase(){
+  if(demoOver()) return;   // 1021 — 체험판(DEMO_END)이 끝났으면 계절을 넘기지 않는다 (2년차 겨울 6주차를 마친 뒤 봄 신인전 · 새 학년 없이 끝 화면)
   if(S.phase==="fall"){
     if(S.fallRun && S.fallRun.alive && S.fallRun.step==="final"){ startLadder("final"); return; }
     advancePhase(); return;
@@ -18272,8 +18287,8 @@ function viewHome(o){   // o.desk — 마스터 노트 책상의 학원 정보 �
       <b style="color:var(--text)">정신력</b>이 높을수록 그 아래에서 받는 불이익이 줄어든다.</div>
     <div class="rule"></div>
     <div style="font-size:12.5px;color:var(--muted)"><b style="color:var(--text)">원정</b> — 원정지를 0% 에서 100% 까지 걸어간다. 원정대 평균 <b style="color:var(--text)">지구력</b>이 원정 지구력이 되어
-      10% 걸을 때마다 · 마물과 마주칠 때 · 늪에서 줄고(깊은 원정지일수록 많이), 바닥나면 그 자리에서 철수한다.
-      전투는 세 번(마지막은 90% 의 보스) · 체력은 이어지고 쓰러진 학생은 60% 의 모닥불에서 일어난다. 마주칠 때 바닥나면 <b style="color:var(--bad)">탈진</b> — 공격력 · 속도 −${Math.round(STAM_EX*100)}% 로 싸우고, 이기면 철수한다.
+      10% 걸을 때마다 · 마물과 마주칠 때 · 늪에서 줄고(깊은 원정지일수록 많이) 전투 중에도 조금씩 줄며, 바닥나면 그 자리에서 철수한다.
+      전투는 세 번(마지막은 90% 의 보스) · 체력은 이어지고 쓰러진 학생은 60% 의 모닥불에서 일어난다. 마주치거나 싸우는 중에 바닥나면 <b style="color:var(--bad)">탈진</b> — 공격력 · 속도 −${Math.round(STAM_EX*100)}% 로 싸우고, 이기면 철수한다.
       보물 상자에서 자금 · 물건을, 100% 의 황금 상자에서 유물 하나를 얻는다.</div>
   </section>` : ""}
   ${S.lastTour? `<section class="panel"><div class="panel-h"><h2>${esc(S.lastTour.title)}</h2><span class="hint">${esc(S.lastTour.msg)}</span></div>
@@ -27892,6 +27907,51 @@ const STYLISH_SKILL_FX = {
   skillCasters: {sw_1:["tauntCall"]},
   groups: {dr_u:["natureRoots"],sw_u:["earthWave"], dp_u:["bloodRitual"], bd_u:["ensemble"], nj_1:["waterSwamp"], ar_1:["greenPierce"], wz_2:["blizzardBack","blizzardFront"], wz_u:["gravityBeam","gravityFoot","gravityCircle"]}
 };
+/* 원정 보스 필살기 (1021 넷째 — 사용자 'newmonsterimage/ultimate-fx-v1 에 각 보스 필살기 효과를 넣어놨으니 그것도 webp로 적용') — 원정지 주인 다섯의 필살기 그림
+   (원본 1536 × 1024 PNG → assets/skill-fx/boss/*.webp · tools/gen/patch/bossult_art.py). 스타일리시 줌인에서만 (학생 스킬 그림과 같다 · 심플 모드는 예전 효과).
+   한 장짜리 그림을 목업(ultimate-fx-v1/preview.html)처럼 움직인다 — burst: 작게 나타나 커지며 사라짐 · barrage: 주먹 잔상이 0.11초마다 앞뒤로(백열권 소리와 같은 박자) · slash: 오른쪽 위에서 내리긋고 왼쪽 아래로.
+   과부하 연타 · 영웅 살해는 대상 하나(targets), 나머지 셋은 대상 무리 전체(groups). 소용돌이만 유닛 아래(바닥)에 깐다.
+   w — 대상 도트 칸 높이 h 의 몇 배 · span — 무리 폭의 몇 배(min — 그래도 h 의 몇 배) · ax · ay — 그림의 어느 점(폭 · 높이 비율)을 대상(무리) 가운데 · at(body 몸 가운데 / foot 발)에 맞추나 */
+const BOSS_ULT_FX = {
+  bossDummyUlt:    {job:"mon_dummy",    w:3.6, ax:.28, ay:.5,  at:"body", anim:"barrage", front:true},   // 주먹 사이에 대상 (주먹은 오른쪽 → 왼쪽)
+  bossGuardianUlt: {job:"mon_guardian", w:3.4, ax:.2,  ay:.75, at:"body", anim:"slash",   front:true},   // 오른쪽 위에서 내리그어 대상 왼쪽 아래에서 터진다
+  bossWraithUlt:   {job:"mon_wraith",   span:1.9, min:3.4, ax:.5, ay:.94, at:"foot", anim:"burst", front:true},
+  bossGargoyleUlt: {job:"mon_gargoyle", span:1.9, min:3.4, ax:.5, ay:.94, at:"foot", anim:"burst", front:true},
+  bossBrineUlt:    {job:"mon_brine",    span:2.0, min:3.6, ax:.5, ay:.6,  at:"foot", anim:"burst", front:false}   // 소용돌이 — 발밑 (유닛 아래)
+};
+Object.assign(STYLISH_SKILL_FX.assets, {
+  bossDummyUlt: "assets/skill-fx/boss/dummy-ultimate.webp?v=8ccfa65d",
+  bossWraithUlt: "assets/skill-fx/boss/wraith-ultimate.webp?v=dcf72fbc",
+  bossGargoyleUlt: "assets/skill-fx/boss/gargoyle-ultimate.webp?v=f7491de3",
+  bossBrineUlt: "assets/skill-fx/boss/brine-ultimate.webp?v=1f2bda37",
+  bossGuardianUlt: "assets/skill-fx/boss/guardian-ultimate.webp?v=e2368a19"
+});
+Object.assign(STYLISH_SKILL_FX.targets, {md_u:["bossDummyUlt"], mk_u:["bossGuardianUlt"], mw_u:[], mg_u:[], mb_u:[]});
+Object.assign(STYLISH_SKILL_FX.groups, {mw_u:["bossWraithUlt"], mg_u:["bossGargoyleUlt"], mb_u:["bossBrineUlt"]});
+/* 그 순간의 투명도 · 변형 — t: 효과가 보이는 동안(0 ~ 1) · beat: 한 박자(0 ~ 1 비율) · 진영 B(오른쪽 보스)가 그림 그대로, A 는 좌우 반전 */
+function bossUltFxAt(B, t, beat, side){
+  t = clamp(t, 0, 1);
+  let o = 1, tf = "";
+  if(B.anim === "barrage"){
+    let dx = 0;
+    if(t < .06){ o = t/.06; dx = .1*(1 - t/.06); }
+    else if(t < .8){ const ph = Math.floor((t - .06)/Math.max(.01, beat)) % 2; o = ph ? .75 : 1; dx = ph ? .01 : -.02; }
+    else { const k = (t - .8)/.2; o = 1 - k; dx = -.02 - .04*k; }
+    tf = `translateX(${(dx*100).toFixed(2)}%)`;
+  } else if(B.anim === "slash"){
+    let dx = 0, dy = 0, s = 1;
+    if(t < .1){ const k = t/.1; o = k; dx = .07*(1 - k); dy = -.07*(1 - k); s = .8 + .2*k; }
+    else if(t >= .55){ const k = (t - .55)/.45; o = 1 - k; dx = -.04*k; dy = .04*k; }
+    tf = `translate(${(dx*100).toFixed(2)}%, ${(dy*100).toFixed(2)}%) scale(${s.toFixed(3)})`;
+  } else {
+    let s;
+    if(t < .1){ const k = t/.1; o = k; s = .45 + .49*k; }
+    else if(t < .6){ s = .94 + .06*(t - .1)/.5; }
+    else { const k = (t - .6)/.4; o = 1 - k; s = 1 + .12*k; }
+    tf = `scale(${s.toFixed(3)})`;
+  }
+  return {o: clamp(o, 0, 1), tf: (side === "A" ? "scaleX(-1) " : "") + tf};
+}
 function stylishSkillFxPlan(job, skillId){
   return {caster: [...(STYLISH_SKILL_FX.casters[job] || []), ...(STYLISH_SKILL_FX.skillCasters[skillId] || [])], target: STYLISH_SKILL_FX.targets[skillId] || [], group: STYLISH_SKILL_FX.groups[skillId] || []};
 }
@@ -27906,8 +27966,11 @@ function stylishFormation(actor, allies, enemies, side, skillId){
   else {lane([actor,...allies],28,78);}
   return positions;
 }
-function stylishSkillFxPreload(){
-  Object.values(STYLISH_SKILL_FX.assets).forEach(src=>{const img=new Image(); img.src=src;});
+function stylishSkillFxPreload(res){
+  const jobs = new Set(((res && res.names) || []).map(n=> n.job));
+  Object.entries(STYLISH_SKILL_FX.assets).forEach(([k, src])=>{
+    if(BOSS_ULT_FX[k] && !jobs.has(BOSS_ULT_FX[k].job)) return;   // 1021 넷째 — 원정 보스 필살기 그림은 그 보스가 나오는 전투에서만 미리 받는다
+    const img=new Image(); img.src=src; });
 }
 function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, groupTargets=[], timing={}){
   const plan=stylishSkillFxPlan(job, skillId), entries=[];
@@ -27945,6 +28008,7 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
     if(kind==="waterDragon") img.style.maskImage="linear-gradient(to right,transparent 0%,black 16%,black 100%)";
     if((kind==="waterDragon"||kind==="fumaWave") && side==="B") img.style.transform="scaleX(-1)";
     if(kind==="waterFlower" && side==="B") img.style.transform="scaleX(-1)";
+    if(BOSS_ULT_FX[kind]){ img.style.opacity="0"; img.style.transformOrigin="50% 70%"; img.style.willChange="transform, opacity"; }   // 1021 넷째 — 원정 보스 필살기 (update 가 움직인다)
     if(kind==="bardMelody" && side==="B") img.style.transform="scaleX(-1)";
     if((kind==="trail" || kind==="darkEssence" || kind==="holyEssence" || kind==="redDrain" || kind==="gunMuzzle" || kind==="gunPierce" || kind==="poisonDagger" || kind==="assassination") && side==="B") img.style.transform="scaleX(-1)";
     if(kind==="gunPierce" && mono) img.style.filter="brightness(.08)";
@@ -27966,7 +28030,7 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
   if(group.length) plan.group.forEach(kind=>{
     add(group[0],kind);const entry=entries[entries.length-1];entry.group=group;
     entry.img.dataset.targets=group.map(el=>el.dataset.uid).join(",");
-    if(!["ensemble","greenPierce","meteorRain","blizzardFront","gravityBeam","gravityFoot","earthWave","natureRoots"].includes(kind)) ground.append(entry.img);
+    if(!["ensemble","greenPierce","meteorRain","blizzardFront","gravityBeam","gravityFoot","earthWave","natureRoots"].includes(kind) && !(BOSS_ULT_FX[kind] && BOSS_ULT_FX[kind].front)) ground.append(entry.img);
   });
   if(!entries.length) return ()=>{};
   // Field background is z=-1; the transformed camera is an auto/0 stacking context.
@@ -28161,6 +28225,16 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
       if(kind==="beam") {
         width=h*.8; height=Math.max(1,((r.top-sr.top)*sy+h*.3-top)/.9);
         x=cx-width/2;y=top;
+      }
+      const BU = BOSS_ULT_FX[kind];
+      if(BU){   // 1021 넷째 — 원정 보스 필살기: 대상(하나) · 대상 무리(그룹)의 발 · 가운데에 그림의 (ax, ay) 를 맞추고 목업처럼 움직인다
+        const bs = (group || [el]).map(u=>(u.querySelector(".spr-anchor")||u.querySelector(".sprwrap")||u).getBoundingClientRect());
+        const gl = Math.min(...bs.map(b=>b.left+b.width*.2)), gr = Math.max(...bs.map(b=>b.right-b.width*.2));
+        const gx = ((gl+gr)/2-sr.left)*sx, gf = (Math.max(...bs.map(b=>b.top+b.height*.8))-sr.top)*sy;
+        width = BU.span ? Math.max(h*BU.min, (gr-gl)*sx*BU.span) : h*BU.w; height = width*2/3;
+        x = (BU.span ? gx : cx) - width*(side==="A" ? 1-BU.ax : BU.ax); y = (BU.at === "body" ? cy : gf) - height*BU.ay;
+        const a = bossUltFxAt(BU, elapsed/duration, 110/1500, side);
+        img.style.opacity = a.o.toFixed(3); img.style.transform = a.tf;
       }
       Object.assign(img.style,{left:x+"px",top:y+"px",width:width+"px",height:height+"px"});
     });
@@ -28949,7 +29023,7 @@ function clrLegacy(){
   if((S.epiLog || []).some(e=> e && e.kind === "friendly")) put("f");
 }
 function openBattle(res, opt, onDone){
-  stylishSkillFxPreload();
+  stylishSkillFxPreload(res);
   SPR_BTSCROLL = 0;
   opt = opt||{};
   const btId = ++BT_SEQ;
@@ -29352,7 +29426,7 @@ function openBattle(res, opt, onDone){
   const camSf = ()=> 280 / Math.max(35, speed);                       // 배속 — 기본(280ms) 이 1
   const camW = (tok, ms)=> new Promise(r=> setTimeout(r, ms / camSf())).then(()=> camRun === tok);
   const uEl = uid=> document.querySelector(`#modalRoot .bf-unit[data-uid="${uid}"]`);
-  const setMot = (el, mot, f)=>{ const c = el && el.querySelector("canvas.spr"); if(!c){ monAtkPose(el, mot === "attack"); return; } c.dataset.m = SPR_M[mot]; c.dataset.f = f; delete c.dataset.still; delete c.dataset.once; };   // 1021 — 마물은 공격 자세 그림
+  const setMot = (el, mot, f)=>{ const c = el && el.querySelector("canvas.spr"); if(!c){ monAtkPose(el, mot === "attack" && f < 3); return; } c.dataset.m = SPR_M[mot]; c.dataset.f = f; delete c.dataset.still; delete c.dataset.once; };   // 1021 — 마물은 공격 자세 그림 · 줌아웃(공격 4장)에서는 대기 그림으로 (1021 넷째 — 예전에는 다음에 맞을 때까지 공격 자세)
   const camPop = (el, list)=>{
     if(!el || !list.length) return;
     const dur = 1500;
@@ -32421,6 +32495,11 @@ const SFX = {
   /* 기술 전용 소리 (1001) — SFX_SKILL 이 기술 id 로 고른다 */
   earthsplit:{f:"ult_earthsplit.mp3"},
   arrowrain:{f:"ult_arrowrain.ogg"},   // 아처 유성 화살 — 화살 한 발(ult_arrowrain_src.mp3)을 0.10~0.15초 간격으로 9번 겹친 것
+  /* 원정 보스 필살기 (1021 넷째 — 사용자가 보낸 소리 · tools/gen/sfx/boss_ult_sfx.py — 원본 mp3 도 bgm/) — 통곡의 안개 · 붕괴의 타종 · 심연의 소용돌이 · 영웅 살해 */
+  bossWraith:{f:"ult_boss_wraith.ogg"},
+  bossGargoyle:{f:"ult_boss_gargoyle.ogg"},
+  bossBrine:{f:"ult_boss_brine.ogg"},
+  bossGuardian:{f:"ult_boss_guardian.ogg"},
   cheer: {f:"tournament_cheer.ogg", v:.85},
   /* 화면 효과음 (0929) — 레벨업 · 시설 공사 · 동전. bgm/ 의 같은 이름 파일을 바꾸면 소리만 갈아 끼울 수 있다 */
   levelup:{f:"sfx_levelup.ogg", v:.8},
@@ -32606,7 +32685,7 @@ document.addEventListener("click", e => { const m = masterSfxAt(e); if(m) sfxPla
 /* 한 프레임에 실린 소리 */
 function sfxFrame(f, rate=1, active=()=>true){
   if(!f || !f.fx || !f.fx.s)return;
-  const id=f.fx.skillId, beats=id==="mo_b"?[0,160]:id==="mo_u"?[0,110,220,330,440,550,660,770,880,990]:[0];
+  const id=f.fx.skillId, beats=id==="mo_b"?[0,160]:(id==="mo_u"||id==="md_u")?[0,110,220,330,440,550,660,770,880,990]:[0];   // md_u — 원정 보스 과부하 연타 (1021 넷째 · 백열권과 같이)
   beats.forEach(ms=>{if(!ms){if(active())sfxPlay(f.fx.s);}else setTimeout(()=>{if(active())sfxPlay(f.fx.s);},ms/Math.max(.1,rate));});
 }
 
