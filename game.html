@@ -30670,41 +30670,44 @@ function recordMatch(t, b, oppName, myIds){
    파일이 없거나(단일 HTML 만 옮긴 경우) 브라우저가 막으면
    아무 소리 없이 그냥 넘어간다. 게임 진행에는 영향이 없다.
 
-   intro 가 있는 곡은 인트로를 한 번 틀고 len 초 뒤 loop 를 이어 붙인다.
-   두 파일의 이음매는 미리 맞춰 잘라 뒀으므로 틈이 생기지 않는다.
+   1021 — 긴 원곡 한 파일을 처음부터 끝까지 튼다 (사용자 '거의 가공 안하고 긴 bgm을 재생하는 방식이 좋을듯한데' — 예전의
+   intro/loop 나눔 · 바퀴마다 줄였다 키우기는 걷었다). 곡이 끝나 갈 때 3초 동안 줄이고 1.2초 쉬었다가 처음부터 다시
+   (사용자 '긴 원곡 끝나는 시점에 3초 줄이고, 1.2초 쉬는건 유지하자' — BGM_END). 곡을 바꿀 때만 서로 겹쳐 넘긴다.
+   긴 곡은 메모리에 통째로 풀지 않고 <audio> 로 흘려 읽는다. http(s) 에서는 그 소리를 WebAudio 게인에 물려 음량 · 페이드를
+   부드럽게 하고(iOS 는 <audio> 음량을 바꾸지 못한다), file:// 은 브라우저가 WebAudio 로 넘겨 주지 않으므로 <audio> 음량으로.
    ============================================================ */
 const BGM_DIR = "bgm/";
 const BGM = {
-  title:    {intro:"title_intro.ogg", len:27.96,  loop:"title_loop.ogg",  v:1},
+  /* 타이틀 — 원곡 WAV 가 없어 예전 인트로 + 반복 구간 ×4 를 이어 붙였다 (인트로 → 반복 이음매만 6ms 겹침) */
+  title:    {f:"title.ogg", v:1},
   /* 1005 — 프롤로그 곡(prologue.ogg)은 쓰지 않는다: 프롤로그는 아버지 곡(opFather)이 이어진다. 파일은 bgm/ 에 그대로 두었다 —
-     되살리려면 여기에 prologue: {loop:"prologue.ogg", v:.95} 를 넣고 showPrologue 의 audOver 를 바꾼다 (표에 두면 첫 접속 때 미리 받으므로 뺐다) */
+     되살리려면 여기에 prologue: {f:"prologue.ogg", v:.95} 를 넣고 showPrologue 의 audOver 를 바꾼다 (표에 두면 첫 접속 때 미리 받으므로 뺐다) */
   /* 새 시나리오 오프닝 (1003) — 마왕 곡: 오프닝 첫 화면부터 검은 빛까지 · 여신 곡: 가운데 작은 푸른 빛부터 빛이 화면을 덮을 때까지(1004 — 그 뒤 아버지가 손을 잡기 전까지는 효과음만).
-     free — 다 쓰고 나면 풀어 둔 소리(약 75MB)를 버린다 · xf — 다음 곡으로 넘어갈 때 이 곡이 꺼지는 시간(초) · fin — 켤 때 서서히 커지는 시간(초, 없으면 0.9) */
-  opDemon:  {loop:"opening_demon.ogg",   v:.75, refade:true, free:true},
-  opGoddess:{loop:"opening_goddess.ogg", v:.95, refade:true, free:true, xf:2.2},
+     free — 다 쓰고 나면 그 <audio> 를 놓아준다 · xf — 다음 곡으로 넘어갈 때 이 곡이 꺼지는 시간(초) · fin — 켤 때 서서히 커지는 시간(초, 없으면 0.9) */
+  opDemon:  {f:"opening_demon.ogg",   v:.75, free:true},
+  opGoddess:{f:"opening_goddess.ogg", v:.95, free:true, xf:2.2},
   /* 아버지 곡 (1005) — 아버지가 손을 잡을 때부터 서서히 · 프롤로그 · 학원 이름까지 그대로 (원본 opening_father.mp3 · 178.8초, 끝이 잦아든다) */
-  opFather: {loop:"opening_father.ogg",  v:.95, refade:true, free:true, fin:2.5},
-  /* 계절 — 평소 육성 화면 */
-  /* refade — 이어 붙이지 않고, 한 바퀴가 끝나갈 때 서서히 꺼진 뒤 잠깐 쉬고 다시 켠다 (이음새 위화감 방지) */
-  spring:   {intro:"spring_intro.ogg", len:13.355, loop:"spring_loop.ogg", v:.9, refade:true},
-  summer:   {intro:"summer_intro.ogg", len: 7.595, loop:"summer_loop.ogg", v:.9, refade:true},
-  fall:     {intro:"fall_intro.ogg",   len:61.867, loop:"fall_loop.ogg",   v:.9, refade:true},
-  winter:   {intro:"winter_intro.ogg", len:62.549, loop:"winter_loop.ogg", v:.9, refade:true},
-  /* 전투 */
-  friendly: {intro:"friendlyandexpedition_intro.ogg",      len:11.093, loop:"friendlyandexpedition_loop.ogg"},
-  tour:     {intro:"basetournament_intro.ogg",             len:18.773, loop:"basetournament_loop.ogg"},
-  tourFinal:{intro:"basetournamentfinalbattle_intro.ogg",  len:38.144, loop:"basetournamentfinalbattle_loop.ogg"},
-  fest:     {intro:"finaltournament_intro.ogg",            len:78.763, loop:"finaltournament_loop.ogg"},
-  festFinal:{intro:"finaltournamentfinalbattle_intro.ogg", len:65.024, loop:"finaltournamentfinalbattle_loop.ogg"},
-  league:   {intro:"tournamentleague_intro.ogg",           len:19.157, loop:"tournamentleague_loop.ogg"},
+  opFather: {f:"opening_father.ogg",  v:.95, free:true, fin:2.5},
+  /* 계절 — 평소 육성 화면 (원곡 그대로 · 1021) */
+  spring:   {f:"spring.ogg", v:.9},
+  summer:   {f:"summer.ogg", v:.9},
+  fall:     {f:"fall.ogg",   v:.9},
+  winter:   {f:"winter.ogg", v:.9},
+  /* 전투 (원곡 그대로 · 1021) */
+  friendly: {f:"friendlyandexpedition.ogg"},
+  tour:     {f:"basetournament.ogg"},
+  tourFinal:{f:"basetournamentfinalbattle.ogg"},
+  fest:     {f:"finaltournament.ogg"},
+  festFinal:{f:"finaltournamentfinalbattle.ogg"},
+  league:   {f:"tournamentleague.ogg"},
   /* 한 번만 흐르고 멎는 곡 */
-  win:      {loop:"victory1.ogg", once:true},
-  winBig:   {loop:"victory2.ogg", once:true},
-  lose:     {loop:"defeat.ogg",   once:true},
-  ending:   {loop:"ending.ogg",   once:true, v:.95}
+  win:      {f:"victory1.ogg", once:true},
+  winBig:   {f:"victory2.ogg", once:true},
+  lose:     {f:"defeat.ogg",   once:true},
+  ending:   {f:"ending.ogg",   once:true, v:.95}
 };
-/* refade 곡의 호흡 — 끝나기 전 페이드아웃(초) · 무음 간격 · 다시 켤 때 페이드인 */
-const BGM_REFADE = {out:3.0, gap:1.2, in:2.0};
+/* 곡 끝 — 끝나기 out 초 전부터 줄여 끝에서 0 · gap 초 쉬고 처음부터 (다시 켤 때는 딸깍 소리만 막는 in 초) */
+const BGM_END = {out:3.0, gap:1.2, in:.05};
 /* 이 이름을 덮어쓰기로 걸면 밑바닥 곡(계절)까지 눌러 아무 소리도 나지 않는다 */
 const BGM_NONE = "_none";
 const AUD_KEY = "heroschool_audio_v1";
@@ -30721,9 +30724,11 @@ function audSave(){ try{ localStorage.setItem(AUD_KEY, JSON.stringify(AUD)); }ca
 /* 귀에는 제곱이 선형에 가깝게 들린다 */
 function audGain(){ const x = AUD.on ? AUD.vol/100 : 0; return x*x; }
 
-let ACTX=null, AMAST=null, ABUF={}, ABAD={}, ANOW=null, AWANT=null, AHTML=null, AUD_PV=0;
+let ACTX=null, AMAST=null, ANOW=null, AWANT=null, AUD_PV=0;
 let ABASE=null, AOVER=null;
-/* file:// 로 연 문서는 fetch 가 막혀 WebAudio 로 못 읽는다 — 처음부터 <audio> 로 간다 */
+/* 곡 파일 → {el: <audio>, g: WebAudio 게인(없으면 null — <audio> 음량), lv: 지금 곡 음량(0 ~ v), n: 이 파일을 트는 차례} */
+const AEL = {};
+/* file:// 로 연 문서는 fetch 가 막혀 WebAudio 로 못 읽는다 — 효과음도 처음부터 <audio> 로 간다 */
 let AWEB = (location.protocol === "file:") ? false : null;
 function audCtx(){
   if(ACTX !== null) return ACTX;
@@ -30737,15 +30742,40 @@ function audCtx(){
   }catch(e){ ACTX = false; }
   return ACTX;
 }
-function audLoad(f){
-  if(ABUF[f]) return Promise.resolve(ABUF[f]);
-  if(ABAD[f]) return Promise.reject(0);
-  const ctx = audCtx(); if(!ctx) return Promise.reject(0);
-  return fetch(BGM_DIR + f)
-    .then(r=>{ if(!r.ok) throw 0; return r.arrayBuffer(); })
-    .then(b=> new Promise((ok,no)=> ctx.decodeAudioData(b, ok, no)))
-    .then(buf=>{ ABUF[f] = buf; return buf; })
-    .catch(e=>{ ABAD[f] = 1; throw e; });
+/* 곡 파일 하나의 <audio> — 처음 부를 때 만들고 다시 쓴다 (MediaElementSource 는 한 요소에 한 번만 물린다) */
+function audEl(f){
+  let a = AEL[f];
+  if(a) return a;
+  const el = new Audio(BGM_DIR + f);
+  el.preload = "auto"; el.loop = false;
+  a = AEL[f] = {f:f, el:el, g:null, lv:0, n:null};
+  if(AWEB !== false && location.protocol !== "file:"){
+    const ctx = audCtx();
+    if(ctx){
+      try{ const s = ctx.createMediaElementSource(el), g = ctx.createGain(); g.gain.value = 0; s.connect(g); g.connect(AMAST); a.g = g; }
+      catch(e){ a.g = null; }
+    }
+  }
+  if(!a.g){ try{ el.volume = 0; }catch(e){} }
+  return a;
+}
+/* 이 곡의 음량을 sec 초에 걸쳐 to 로 — WebAudio 는 소리 쪽에서 매끈하게 · <audio> 는 30ms 마다 (걸린 시간으로 셈 — 창이 뒤로 가 타이머가 늦어도 제때 끝난다) */
+function audRamp(a, to, sec){
+  sec = Math.max(.02, sec || 0);
+  if(a.g && ACTX){
+    const t = ACTX.currentTime, p = a.g.gain;
+    try{ p.cancelScheduledValues(t); p.setValueAtTime(p.value, t); p.linearRampToValueAtTime(to, t + sec); }catch(e){ try{ p.value = to; }catch(x){} }
+    a.lv = to;
+    return;
+  }
+  clearInterval(a.iv);
+  const l0 = a.lv || 0, t0 = performance.now();
+  a.iv = setInterval(()=>{
+    const k = Math.min(1, (performance.now() - t0) / (sec * 1000));
+    a.lv = l0 + (to - l0) * k;
+    try{ a.el.volume = Math.max(0, Math.min(1, a.lv * audGain())); }catch(e){}
+    if(k >= 1) clearInterval(a.iv);
+  }, 30);
 }
 /* 틀고 싶은 곡을 지정한다. null 이면 서서히 끈다. */
 function audPlay(key){ AWANT = key || null; audSync(); }
@@ -30761,158 +30791,77 @@ function audSync(){
   const key = AWANT;
   if(!AUD.on || !key || !BGM[key]){ audStop(audXf(.8)); return; }
   if(ANOW && ANOW.key === key) return;
-  if(AWEB === false){ audHtml(key); return; }
-  const ctx = audCtx();
-  if(!ctx){ AWEB = false; audHtml(key); return; }
-  const t = BGM[key];
-  const files = t.intro ? [t.loop, t.intro] : [t.loop];
-  Promise.all(files.map(audLoad)).then(()=>{
-    if(AWANT !== key) return;
-    AWEB = true; audWeb(key);
-  }).catch(()=>{
-    if(AWANT !== key) return;
-    AWEB = false; audHtml(key);   // file:// 처럼 fetch 가 막힌 곳 — <audio> 로 되돌린다
-  });
-}
-function audWeb(key){
-  const ctx = ACTX, t = BGM[key];
   audStop(audXf(.7));
-  const g = ctx.createGain(); g.gain.value = 0; g.connect(AMAST);
-  const t0 = ctx.currentTime + .06;
-  const n = {key:key, g:g, srcs:[]};
-  let at = t0;
-  if(t.intro && ABUF[t.intro]){
-    const s = ctx.createBufferSource();
-    s.buffer = ABUF[t.intro]; s.connect(g); s.start(t0);
-    n.srcs.push(s);
-    at = t0 + (t.len != null ? t.len : ABUF[t.intro].duration);
-  }
-  const vol = (t.v == null ? 1 : t.v);
-  const durL = ABUF[t.loop].duration, RF = BGM_REFADE;
-  if(t.refade && !t.once && durL > RF.out + RF.in + 2){
-    /* 한 바퀴씩 따로 튼다 — 끝나기 out 초 전부터 꺼지고, gap 초 쉬고, in 초 동안 다시 켜진다.
-       첫 바퀴는 인트로에서 그대로 이어지므로 켜는 페이드가 없다. */
-    const R = BGM_REFADE, dur = ABUF[t.loop].duration;
-    const cycle = (start, first)=>{
-      if(n.dead) return;
-      const L = ctx.createBufferSource();
-      L.buffer = ABUF[t.loop]; L.loop = false; L.connect(g); L.start(start);
-      n.srcs.push(L);
-      if(!first){ g.gain.setValueAtTime(0, start); g.gain.linearRampToValueAtTime(vol, start + R.in); }
-      const fo = Math.max(start + R.in + .5, start + dur - R.out);
-      g.gain.setValueAtTime(vol, fo);
-      g.gain.linearRampToValueAtTime(0, start + dur);
-      L.onended = ()=>{
-        n.srcs = n.srcs.filter(x=> x !== L);
-        if(n.dead || ANOW !== n) return;
-        cycle(Math.max(ctx.currentTime, start + dur) + R.gap, false);
-      };
-    };
-    cycle(at, true);
-  } else {
-    const L = ctx.createBufferSource();
-    L.buffer = ABUF[t.loop]; L.loop = !t.once; L.connect(g); L.start(at);
-    n.srcs.push(L);
-    if(t.once) L.onended = ()=>{ if(ANOW === n) ANOW = null; };   // 다시 틀 수 있게 비워 둔다
-  }
-  g.gain.setValueAtTime(0, t0);
-  g.gain.linearRampToValueAtTime(vol, t0 + (t.fin || .9));
+  audStart(key);
+}
+/* 곡을 처음부터 튼다 — 끝나 가면 BGM_END.out 초 동안 줄이고, 끝나면 gap 초 쉬었다가 처음부터 (once 는 한 번만) */
+function audStart(key){
+  const t = BGM[key], a = audEl(t.f), el = a.el, vol = (t.v == null ? 1 : t.v);
+  const n = {key:key, a:a, t:t, vol:vol, dead:false, fading:false, gap:0};
+  clearTimeout(a.stopT);
+  a.n = n;
+  try{ el.pause(); el.currentTime = 0; }catch(e){}
+  if(a.g && ACTX){ try{ const p = a.g.gain; p.cancelScheduledValues(ACTX.currentTime); p.setValueAtTime(0, ACTX.currentTime); }catch(e){} }
+  else { clearInterval(a.iv); a.lv = 0; try{ el.volume = 0; }catch(e){} }
+  a.lv = 0;
+  audRamp(a, vol, t.fin || .9);
+  n.onTime = ()=>{
+    if(n.dead || t.once) return;
+    const d = el.duration;
+    if(!d || !isFinite(d)) return;
+    const left = d - el.currentTime;
+    if(!n.fading && left <= BGM_END.out){ n.fading = true; audRamp(a, 0, left); }
+    else if(n.fading && left > BGM_END.out + .5){ n.fading = false; audRamp(a, vol, .3); }   // 길이를 늦게 바로잡는 서버(Range 없음) — 아직 끝이 아니었다
+  };
+  n.onEnd = ()=>{
+    if(n.dead) return;
+    if(t.once){ if(ANOW === n) ANOW = null; return; }   // 다시 틀 수 있게 비워 둔다
+    n.gap = setTimeout(()=>{
+      n.gap = 0;
+      if(n.dead || ANOW !== n) return;
+      n.fading = false;
+      try{ el.currentTime = 0; }catch(e){}
+      audRamp(a, vol, BGM_END.in);
+      el.play().catch(()=>{});
+    }, BGM_END.gap * 1000);
+  };
+  el.addEventListener("timeupdate", n.onTime);
+  el.addEventListener("ended", n.onEnd);
   ANOW = n;
-  if(ctx.state === "suspended") ctx.resume().catch(()=>{});
+  if(ACTX && ACTX.state === "suspended") ACTX.resume().catch(()=>{});
+  el.play().catch(()=>{});   // 자동 재생 차단 — 첫 조작 때 다시 시도한다 (audUnlock)
 }
 function audStop(fade){
   const n = ANOW; ANOW = null;
-  audHtmlStop();
-  if(!n || n.html || !ACTX) return;
+  if(!n || n.dead) return;
   n.dead = true;
-  const t = ACTX.currentTime, f = fade || .6;
-  try{
-    n.g.gain.cancelScheduledValues(t);
-    n.g.gain.setValueAtTime(n.g.gain.value, t);
-    n.g.gain.linearRampToValueAtTime(0, t + f);
-    n.srcs.forEach(s=>{ try{ s.stop(t + f + .05); }catch(e){} });
-  }catch(e){}
-  const tt = BGM[n.key];
-  if(tt && tt.free) setTimeout(()=>{                       // 한 번 쓰고 마는 긴 곡 — 풀어 둔 소리를 버린다 (다시 틀면 새로 받는다)
-    if(ANOW && ANOW.key === n.key) return;
-    [tt.intro, tt.loop].forEach(x=>{ if(x) delete ABUF[x]; });
-  }, (f + .3) * 1000);
+  clearTimeout(n.gap); n.gap = 0;
+  const a = n.a, el = a.el, f = fade || .6;
+  el.removeEventListener("timeupdate", n.onTime);
+  el.removeEventListener("ended", n.onEnd);
+  audRamp(a, 0, f);
+  clearTimeout(a.stopT);
+  a.stopT = setTimeout(()=>{
+    if(a.n !== n) return;                                  // 그사이 같은 곡을 다시 틀었다
+    try{ el.pause(); }catch(e){}
+    if(n.t.free){ try{ el.removeAttribute("src"); el.load(); }catch(e){} delete AEL[a.f]; }   // 한 번 쓰고 마는 긴 곡 — 놓아준다 (다시 틀면 새로 받는다)
+  }, (f + .1) * 1000);
 }
-/* ── WebAudio 를 못 쓰는 환경 — <audio> 두 장으로 이어 붙인다 ── */
-function audHtmlStop(){
-  if(!AHTML) return;
-  const list = AHTML; AHTML = null;
-  list.forEach(el=>{
-    const iv = setInterval(()=>{
-      const v = (el.volume || 0) - .08;
-      if(v <= .005){ clearInterval(iv); try{ el.pause(); el.volume = 0; }catch(e){} }
-      else { try{ el.volume = v; }catch(e){ clearInterval(iv); } }
-    }, 40);
-  });
-}
-function audHtml(key){
-  audHtmlStop();
-  const t = BGM[key];
-  const mk = (f, lp)=>{ const el = new Audio(BGM_DIR + f); el.preload = "auto"; el.loop = !!lp; el.volume = 0; return el; };
-  const lo = mk(t.loop, !t.once && !t.refade), list = [lo];
-  if(t.once) lo.addEventListener("ended", ()=>{ if(AHTML === list) ANOW = null; });
-  if(t.refade && !t.once){
-    /* <audio> 판 — 끝나기 전 볼륨을 내리고, 끝나면 잠깐 쉬었다가 처음부터 다시 올린다 */
-    const R = BGM_REFADE;
-    const full = ()=> (t.v == null ? 1 : t.v) * audGain();
-    lo.addEventListener("timeupdate", ()=>{
-      if(AHTML !== list || !lo.duration) return;
-      const left = lo.duration - lo.currentTime;
-      if(left < R.out){ try{ lo.volume = full() * Math.max(0, left / R.out); }catch(e){} }
-    });
-    lo.addEventListener("ended", ()=>{
-      if(AHTML !== list) return;
-      setTimeout(()=>{
-        if(AHTML !== list) return;
-        try{ lo.currentTime = 0; lo.volume = 0; }catch(e){}
-        lo.play().catch(()=>{});
-        const st = performance.now();
-        const iv = setInterval(()=>{
-          if(AHTML !== list){ clearInterval(iv); return; }
-          const k = Math.min(1, (performance.now() - st) / (R.in*1000));
-          try{ lo.volume = full() * k; }catch(e){}
-          if(k >= 1) clearInterval(iv);
-        }, 40);
-      }, R.gap*1000);
-    });
-  }
-  let head = lo;
-  if(t.intro){
-    const it = mk(t.intro, false);
-    it.addEventListener("ended", ()=>{ if(AHTML === list){ lo.volume = it.volume; lo.play().catch(()=>{}); } });
-    list.unshift(it); head = it;
-  }
-  AHTML = list; ANOW = {key:key, html:true};
-  const vol = (t.v == null ? 1 : t.v) * audGain(), steps = t.fin ? Math.max(1, Math.round(t.fin * 25)) : 14;   // 40ms 마다 — fin 초에 걸쳐
-  let v = 0;
-  const iv = setInterval(()=>{
-    if(AHTML !== list){ clearInterval(iv); return; }
-    v = Math.min(vol, v + Math.max(vol, .02)/steps);
-    list.forEach(e=>{ try{ e.volume = v; }catch(x){} });
-    if(v >= vol - 1e-4) clearInterval(iv);
-  }, 40);
-  head.play().catch(()=>{});   // 자동 재생 차단 — 첫 조작 때 다시 시도한다
-}
+/* 곡을 미리 받아 둔다 — 그 장면이 오면 바로 나오게 (오프닝) */
+function audPrep(key){ const t = BGM[key]; if(AUD.on && t){ try{ audEl(t.f); }catch(e){} } }
 /* 음량·on/off 를 바꾼 뒤 */
 function audRefresh(){
   if(AMAST){ try{ AMAST.gain.value = audGain(); }catch(e){} }
-  if(AHTML && ANOW){
-    const t = BGM[ANOW.key] || {}, vol = (t.v == null ? 1 : t.v) * audGain();
-    AHTML.forEach(e=>{ try{ e.volume = vol; }catch(x){} });
-  }
+  for(const a of Object.values(AEL)) if(!a.g){ try{ a.el.volume = Math.max(0, Math.min(1, (a.lv || 0) * audGain())); }catch(e){} }
   if(!AUD.on) audStop(.4);
   else if(AWANT && (!ANOW || ANOW.key !== AWANT)) audSync();
 }
 /* 틀고 싶은 곡이 있는데 브라우저가 아직 소리를 막고 있는 상태인가 */
 function audSilent(){
   if(!AUD.on || !AWANT || AWANT === BGM_NONE) return false;
-  if(AWEB === false) return !!(AHTML && AHTML[0] && AHTML[0].paused);
-  return !!(ACTX && ACTX.state && ACTX.state !== "running");
+  const n = ANOW;
+  if(n && n.a.g && ACTX && ACTX.state && ACTX.state !== "running") return true;
+  return !!(n && !n.gap && n.a.el.paused && !n.a.el.ended);
 }
 /* 시작 화면의 음악 단추·안내를 지금 상태에 맞춘다 */
 function audHintSync(){
@@ -31115,10 +31064,8 @@ function sfxFrame(f, rate=1, active=()=>true){
 /* 브라우저는 사용자가 한 번 누르기 전에는 소리를 내주지 않는다 */
 function audUnlock(){
   if(ACTX && ACTX.resume) ACTX.resume().catch(()=>{});
-  if(AHTML && AHTML.length){
-    const e = AHTML[0];
-    if(e.paused && !e.currentTime) e.play().catch(()=>{});
-  }
+  const n = ANOW;
+  if(n && !n.dead && !n.gap && n.a.el.paused && !n.a.el.ended) n.a.el.play().catch(()=>{});
   if(AWANT && !ANOW) audSync();
   audHintSync(); setTimeout(audHintSync, 150); setTimeout(audHintSync, 600);
 }
@@ -31741,7 +31688,7 @@ async function opVoid(tok){
   const reduced = opReduced();
   sfxPlay("op_rift");                                                    // 시공이 빨아들이는 소리
   audFadeOut(2.8);                                                       // 마왕 곡도 함께 빨려 들어가듯 꺼진다
-  if(AUD.on && AWEB !== false && BGM.opGoddess) audLoad(BGM.opGoddess.loop).catch(()=>{});   // 여신 곡을 미리 풀어 둔다
+  audPrep("opGoddess");   // 여신 곡을 미리 받아 둔다
   if(box && !box.hidden){
     box.classList.remove("done");
     const f = box.animate([{opacity:1}, {opacity:0}], {duration:260, easing:"ease-in", fill:"forwards"});
@@ -31963,7 +31910,7 @@ function openingFinish(fast){
    대사는 오프닝과 같이 opSay (OP 자리에 새 토큰) — 누르기 · Enter · Space */
 function opFather(){
   const tok = OP = {adv:null, timer:0, key:null, img:null};
-  if(AUD.on && AWEB !== false && BGM.opFather) audLoad(BGM.opFather.loop).catch(()=>{});   // 아버지 곡을 미리 풀어 둔다 — 손을 잡는 순간 바로 나오게
+  audPrep("opFather");   // 아버지 곡을 미리 받아 둔다 — 손을 잡는 순간 바로 나오게
   const mr = $("#modalRoot");
   mr.replaceChildren();
   mr.insertAdjacentHTML("beforeend", `<div class="opening op-father" id="opRoot" role="dialog" aria-modal="true" aria-label="아버지의 마지막">
@@ -32283,7 +32230,7 @@ function bootAssetList(){
   const re = /(?:\.\.\/)?assets\/[^"'()\s`\\<>${}\[\]]+?\.(?:webp|png|jpe?g|gif|mp3|ogg)(?![\w.\-])(?:\?[^"'()\s`\\<>]*)?/gi;
   let m; while((m = re.exec(html))){ const u = m[0]; if(seen.has(u)) continue; seen.add(u); (/\.(mp3|ogg)(\?|$)/i.test(u) ? aud : img).push(u); }
   const addA = f=>{ if(!f) return; const u = BGM_DIR + f; if(!seen.has(u)){ seen.add(u); aud.push(u); } };
-  try{ Object.values(BGM).forEach(t=>{ addA(t.intro); addA(t.loop); }); }catch(e){}
+  try{ Object.values(BGM).forEach(t=> addA(t.f)); }catch(e){}
   try{ Object.values(SFX).forEach(t=> addA(t.f)); }catch(e){}
   img.forEach(u=> PRELOAD.seen.add(u));                          // 뒤에서 조금씩 받는 쪽(preloadStart)은 다시 받지 않는다
   return img.map(u=>({u, a:false})).concat(aud.map(u=>({u, a:true})));
