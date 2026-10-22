@@ -1,7 +1,9 @@
 """영어판 3단계 시험 (1010) — 세이브 · 서버의 데이터 글(학생 이름 · 이명 · 유물 · 학원 · 진로 · 스킬 이름)이 언어를 따라가는지.
 
-    python3 tools/i18n/check_save.py [--years 3] [--lang en|ja]      (저장소 맨 위 · 빌드 뒤에 · Playwright + 크로미움)
+    python3 tools/i18n/check_save.py [--years 3] [--lang en|ja|zh-Hans|zh-Hant]      (저장소 맨 위 · 빌드 뒤에 · Playwright + 크로미움)
     1014 — --lang ja 면 일본어판(?lang=ja)으로 같은 시험 + 영어판 세이브를 일본어판에서 열기(영어 → 한국어 → 일본어)
+    1022 — --lang zh-Hans · zh-Hant 면 중국어 간체 · 번체판으로 같은 시험 + 영어 · 일본어 · 다른 중국어판 세이브를 그 판에서, 그 판 세이브를 영어 · 일본어 · 다른 중국어판에서
+           (한국어 세이브를 바로 연 것과 칸마다 같아야 한다)
 
 1. 한국어판으로 몇 해 쌓은 세이브를 영어판(?lang=en)에서 연다 → 이름 · 이명 · 유물 · 스킬 · 진로 · 친선전 학원에 한글이 없어야 한다
 2. 그걸 영어판에서 저장해 한국어판에서 연다 → 그 칸들이 처음 한국어 세이브와 같아야 한다 (왕복)
@@ -65,9 +67,9 @@ PACK_JS = r"""() => {
 
 async def main():
     ap = argparse.ArgumentParser(); ap.add_argument('--years', type=int, default=3)
-    ap.add_argument('--lang', default='en', choices=['en', 'ja'])
+    ap.add_argument('--lang', default='en', choices=['en', 'ja', 'zh-Hans', 'zh-Hant'])
     o = ap.parse_args()
-    L, LN = o.lang, {'en': '영어판', 'ja': '일본어판'}[o.lang]
+    L, LN = o.lang, {'en': '영어판', 'ja': '일본어판', 'zh-Hans': '중국어판', 'zh-Hant': '번체판'}[o.lang]
     from playwright.async_api import async_playwright
     fails, errs_all = [], []
     async with async_playwright() as p:
@@ -114,6 +116,20 @@ async def main():
             print('2b. 영어판 세이브 → 일본어판 — 학생 %s · 일본어판 세이브 → 영어판 — 학생 %s' % ([s[0] for s in fields(ja2)['students']][:4], [s[0] for s in fields(en2)['students']][:4]))
             if lat or left2: fails.append('영어 세이브를 일본어판에서: 영어 이름 %s · 한글 %s' % (lat[:3], left2[:3]))
             if jp: fails.append('일본어 세이브를 영어판에서: 일본어 이름 %s' % jp[:3])
+        if L in ('zh-Hans', 'zh-Hant'):                  # 1022 — 다른 언어판 세이브 ↔ 중국어판 (한국어 세이브를 바로 연 것과 같아야 한다)
+            NM = {'en': '영어판', 'ja': '일본어판', 'zh-Hans': '간체판', 'zh-Hant': '번체판'}
+            for X in [x for x in ('en', 'ja', 'zh-Hans', 'zh-Hant') if x != L]:
+                c, pg = await page(X, ko); x_ko = await state(pg); await pg.evaluate('() => save()')
+                x_s = json.loads(await pg.evaluate('() => localStorage.getItem("heroacademy_v1")')); await c.close()
+                c, pg = await page(L, x_s); z2 = await state(pg); await c.close()          # X 세이브 → 중국어판
+                c, pg = await page(X, en_saved); x2 = await state(pg); await c.close()     # 중국어판 세이브 → X
+                A1, B1 = fields(en), fields(z2); A2, B2 = fields(x_ko), fields(x2)
+                d1 = [k for k in A1 if A1[k] != B1[k]]; d2 = [k for k in A2 if A2[k] != B2[k]]
+                kana = [n for n, e in B1['students'] if re.search(r'[\u3040-\u30ff]', n or '')]
+                print('2b. %s 세이브 → %s — 다른 칸 %s · %s 세이브 → %s — 다른 칸 %s' % (NM[X], LN, d1 or '없음', LN, NM[X], d2 or '없음'))
+                if d1: fails.append('%s 세이브를 %s에서: %s' % (NM[X], LN, ['%s: %s → %s' % (k, A1[k], B1[k]) for k in d1][:2]))
+                if d2: fails.append('%s 세이브를 %s에서: %s' % (LN, NM[X], ['%s: %s → %s' % (k, A2[k], B2[k]) for k in d2][:2]))
+                if kana or han_left(B1): fails.append('%s 세이브를 %s에서: 가나 %s · 한글 %s' % (NM[X], LN, kana[:3], han_left(B1)[:3]))
         c, pg = await page(L); r = await pg.evaluate(C.SIM_JS, o.years); out = await pg.evaluate(PACK_JS); await c.close()
         errs_all += ['sim %s: %s' % (L, e) for e in r['err']]
         c, pg = await page('ko'); npc_ko = await pg.evaluate('() => JSON.stringify(l5NpcDoc(3))'); await c.close()

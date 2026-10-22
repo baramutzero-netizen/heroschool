@@ -20,6 +20,9 @@ game.html 은 한국어로만 쓴다. 영어는 빌드할 때 붙는다 — 한�
 | `check_ja.py` | 일본어판 시험 — 일본어 글꼴 · CSS 가 `?lang=ja` 에서만 붙는지 (아래 '일본어판') · 화면 넘침은 `check_layout.py --lang ja` |
 | `og_en.py` | 영어 공유 미리보기 — `site/og-en.png`(1200×630) · 맨 위 `en/index.html`(영어 공유 링크) 를 만든다 (아래 5단계) |
 | `og_ja.py` | 일본어 공유 미리보기 — `site/og-ja.png` · 맨 위 `ja/index.html`(일본어 공유 링크 → `site/?lang=ja`) · og_en.py 의 틀을 그대로 쓴다 (1014) |
+| `zh-Hans.json` · `zh-Hans/*.json` · `zh-Hant.json` · `zh-Hant/*.json` | 중국어 간체 · 번체(대만) 표 (1022 — 아래 '중국어') · 번체는 `zh_work.py hant` 가 간체에서 만든다 (손본 값 `zh-Hant_fix.json`) · 지침 `zh-Hans/GUIDE.md` · `zh-Hant/GUIDE.md` |
+| `zh-Hans_fonts.css` · `zh-Hant_fonts.css` | 중국어 글꼴 `@font-face` — `tools/gen/fonts/zh_fonts.py [--lang zh-Hant]` 가 만든다 |
+| `zh_work.py` · `check_zh.py` · `og_zh.py` | 중국어 표 도우미 · 중국어판 시험(글꼴 · CSS · 공개) · 중국어 공유 미리보기(`site/og-zh-hans.png` · `og-zh-hant.png` · 맨 위 `zh-hans/` · `zh-hant/`) |
 | `unit_ctx.py` | 번역 단위가 game.html 어디에 쓰이는지 (맨 위 선언 · 줄 · 자리표 식 · 조사 자리) · `--todo ja` 일본어 표에 아직 없는 단위 (1014) |
 | `todo_en.py` | 영어 표에 아직 없는 단위 — 갈래별 수 · 작업 칸 TSV 뽑기(`--cat data --out a.tsv`) · 채운 TSV 를 en/*.json 에 넣기(`--merge a.tsv en/data.json`) |
 | `extract_ko.cjs` · `classify_ko.py` | 번역할 글 목록 뽑기 → 갈래 요약 + CSV (Node + acorn · 쓰는 법은 파일 머리말) |
@@ -93,7 +96,8 @@ game.html 은 한국어로만 쓴다. 영어는 빌드할 때 붙는다 — 한�
 
 ## 마무리 · 공개 (5단계)
 
-- **브라우저 언어 자동 선택** — `config.json` public:true (위 '언어 정하기'). 한국어 브라우저 → 한국어 · 그 밖(en · ja …) → English.
+- **브라우저 언어 자동 선택** — `config.json` public:true (위 '언어 정하기'). 한국어 브라우저 → 한국어 · 일본어 → 日本語 · 중국어 간체(zh-CN · zh-SG · zh) → 简体中文 ·
+  번체(zh-TW · zh-HK · zh-MO · zh-Hant) → 繁體中文 (1022) · 그 밖 → English.
 - **공유 미리보기** — 링크 미리보기(og 태그)는 스크립트를 돌리지 않으므로 `site/index.html` 하나로는 언어마다 다르게 할 수 없다.
   그래서 영어 공유 링크를 따로 둔다: 저장소 맨 위 `en/index.html` — 영어 제목 · 설명 · `site/og-en.png` 를 보여 주고 사람은 `site/?lang=en` 으로 넘어간다
   (맨 위 `index.html` → `site/` 와 같은 방식 · 그림 주소도 같은 상대 주소). 다시 만들기: `python3 tools/i18n/og_en.py` (빌드 뒤 · 직업 · 스킬 수는 게임에서 센다 —
@@ -144,6 +148,66 @@ game.html 은 한국어로만 쓴다. 영어는 빌드할 때 붙는다 — 한�
   `python3 tools/i18n/check_layout.py --lang ja` (영어와 같은 화면 92가지 · 일본어에서 새로 넘친 칸 · 남은 한글 — 1014 기준 남은 한글 0, 넘침은 겉보기만인 것 몇 개:
   육각형 위 'チームワーク' · SP 상점 · 시설 카드의 줄바꿈 판정).
 - **남은 것** — 공개(브라우저 언어 · 설정 칸 · 일본어 공유 미리보기 og) · `check_save.py` 일본어판 · 사용자가 일본어 화면을 보고 고를 것.
+
+## 중국어 간체판 (1022)
+
+사용자가 중국어 간체 → 번체 차례로 만들기로 했다 (검수는 못 한다 — Claude 가 옮긴다). **한국어에서 바로** 옮겼다 (일본어 · 영어는 뜻 확인용).
+제목은 **勇者学院养成记 —— 学院倒闭了** (사용자가 고름). 주인공은 모든 직업을 마스터해 학생들이 **大师** 라 부른다 (오프닝 `全职业大师`).
+번역 지침 · 말투(성격 아홉) · 용어집 · 합의한 용어: **`zh-Hans/GUIDE.md`** (중국어 표를 고치거나 새 글을 옮길 때 먼저 읽는다).
+
+- **언어 · 공개** (1022 · 빌드 1022-1223 에서 공개) — 언어 이름 `zh-Hans` (`HS_LANG` · 주소 `?lang=zh-Hans` — `zh` · `zh-cn` · `zh-sg` · `zh-hans` 도 같은 뜻).
+  `config.json` `"zh-Hans": true` — 브라우저 언어 zh(zh-TW · zh-HK · zh-MO · zh-Hant 는 빼고)가 간체로 시작 · 설정 칸에 `简体中文` (`I18N.pubZh` · `HS_LANG_ZH` ·
+  첫 방문 표시 `hs_lang0z` — 공개 전부터 영어로 하던 중국어 브라우저는 영어 그대로). `false` 로 돌리면 `?lang=zh-Hans` 시험 접속에서만.
+  공유 링크는 맨 위 `zh-hans/` (`og_zh.py` — `site/og-zh-hans.png` · 간체 og 태그 → `site/?lang=zh-Hans`). itch 체험판(`build_itch.py`)도 같은 머리 스크립트.
+- **표** — `zh-Hans.json` + `zh-Hans/*.json` (일본어 표와 같은 키 · 같은 파일 나눔). 6,800줄 · 번역 단위 6,782가지 중 6,727 (일본어와 같다 — 남은 것은 조사 · 채팅 금칙어 · 개발용).
+  한자는 전부 GB2312 안 (`zh_work.py check` 가 본다). 표를 고칠 때: `python3 tools/i18n/zh_work.py export <표> [--todo]` → 옮김(TSV `id<TAB>중문`) →
+  `validate` → `merge` → `check` (자리표시 · 태그 · 한글 · 가나 · 곧은 따옴표 · GB2312 · 이름 겹침).
+- **조사** — 중국어 표가 있으면 `jo` · `ro` 를 비운다 (일본어처럼). **학생은 성별이 없다** — 他/她 를 쓰지 않는다 (지침 §3).
+- **이름 · 데이터 글 (toCur · toKo)** — 일본어처럼 먼저 한국어로 되돌린 뒤 지금 언어로 (`koZh` — 한자만 있는 글은 지금 언어 표를 먼저 맞춰 본다 · 일본어 · 중국어 표의 글은 서로 겹치지 않는다).
+  모양: `「称号」名字`(`dn()` · `epiH()` — `nameCJ()`) · `白银勇者学院` · `破旧的戒指`(유물 형용사+명사를 붙인다 — `relicSep()`) · 한국식 성+이름은 빈칸 없이(`金道允`).
+  값 하나에 한국어가 여럿인 것은 `KO_PREF["zh-Hans"]` (斩击 → 베기 · 经验值 → 경험치). 서버로는 늘 한국어 원문.
+- **지난 일지 · 상담 기록(`I18N.line`)** — 한국어 글을 표에 거꾸로 맞춰 중국어로 (이명은 「 」 · 암흑 사제의 ‘마스터’ 는 ‘大师’ — `masterQ` 도).
+- **따옴표 · 날짜** — 대사는 한국어처럼 “ ” (불꽃놀이 대사도) · 안쪽 ‘ ’ · `uiLoc()` = zh-CN.
+- **그림 속 글자** — 운영 안내 · 튜토리얼 · 피드백 단추는 일본어처럼 영어 그림 · 길드 4쪽 편지는 `assets/story_art/guild4-spring-zh.webp`
+  (한글 손글씨를 지우고 Long Cang 으로 '我们也想守护学院。' · 무손실 · `STORY_ART_ZH` · 그림이라 글꼴 파일은 넣지 않는다).
+- **오프닝 캔버스 글** — `optx_block.js` 의 `SC_ZH` (Noto Serif SC 800 `OpTxSerifZh` · Noto Sans SC 500 `OpTxSansZh` — 중국어판에서만 받는 조각 · `zh-Hans_fonts.css`).
+  타자기 제목 `勇者学院养成记` 은 타자 소리 일곱 번에 한 글자씩(오른쪽부터) · 부제 `学院倒闭了` 는 부제 소리 다섯. 로딩 화면 · 페이지 제목도 중국어(`build_boot.py`).
+- **글꼴** — `tools/gen/fonts/zh_fonts.py` → `zh-Hans_fonts.css` · `assets/fonts/zh-Hans/` (게임 글꼴 이름 `Mulmaru` · `Mulmaru Mono` · `HsBombaram21` 에 중국어 조각을 더한다 · 꼬리 스크립트는 일본어와 한 덩어리).
+  도트는 Fusion Pixel 12px 간체(비례 · 고정폭 — GB2312 한자 6,763 전부 + 기호 + 표 글자), 허세 말풍선은 站酷快乐体(ZCOOL KuaiLe — 표 글자만), 오프닝은 SC_ZH 글자만.
+  **표나 SC_ZH 를 고치면 `zh_fonts.py` 를 다시 돌린다.** 원본 글꼴(저장소 밖): Fusion Pixel 2026.08.11 은 npm `@vp-tw/cjk-web-fonts-fusion-pixel-font` 의 나눈 woff2
+  (GitHub releases 는 이 환경에서 막힘 — zh_fonts.py 가 합친다) · ZCOOL KuaiLe · Noto Serif SC · Noto Sans SC 는 raw.githubusercontent.com 의 google/fonts.
+- **도트 폰트를 껐을 때** — 중국 본토에서는 Google 글꼴이 막혀 있어 기기 글꼴: `"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Source Han Sans SC"` ·
+  명조 자리는 `"Songti SC","STSong","SimSun",…` (`i18n_build.zh_css` → `I18N_ZHSCSS` · `html[lang="zh-Hans"]:not([data-font="pixel"])`).
+- **줄바꿈** — 일본어와 같다 (keep-all → normal · `line-break:strict` · 학생 명부 책은 `I18N_ZHSRBCSS`). 손으로 고칠 것은 `zh-Hans_layout.css` (아직 없음 — 만들면 빌드가 읽는다).
+- **고친 game.html** (1022) — `nameZh()` · `nameCJ()` · `dn` · `relicSep` · `masterQ` · `storyArt` + `STORY_ART_ZH` · 불꽃놀이 따옴표 · `uiLoc` · `langOn` · `langPanel` · `langSwitch` ·
+  `FB_ICON` · `TUT_ICON` · 운영 안내 `illOn` · 한국어 글꼴 고르기(`koFontOn` · `KO_GALMURI`)는 중국어에서 끈다.
+- 시험 — `hs.py i18n` · `hs.py layout` (한국어 · 영어 그대로) · `python3 tools/i18n/check_zh.py` (빌드 뒤 · 글꼴 · CSS 가 중국어에서만 · 일본어는 그대로) ·
+  `python3 tools/i18n/check_layout.py --lang zh-Hans` (화면 105 · 1022 기준 넘침 0 · 남은 한글 0) ·
+  `python3 tools/i18n/check_save.py --lang zh-Hans` (한국어 · 영어 · 일본어 세이브 ↔ 중국어판 — 칸마다 같아야 한다).
+- **남은 것** — 사용자가 중국어 화면을 보고 고를 것.
+
+## 중국어 번체판 · 대만 (1022)
+
+간체판 다음에 바로 만들어 둘 다 공개했다 (사용자: '번체 작업 시작하고 그다음 둘 다 공개 진행'). 대상은 **대만 표준(正體 · 台灣用語)** —
+홍콩 · 마카오 브라우저도 이 판. 제목 **勇者學院養成記 —— 學院倒閉了** · 학생이 부르는 주인공 **大師** · 오프닝 `全職業大師`. 지침: **`zh-Hant/GUIDE.md`**.
+
+- **표는 간체에서 만든다** — `python3 tools/i18n/zh_work.py hant` (pip `opencc`): OpenCC s2twp(대만 낱말) + 대만 관례(`HANT_KEEP` · `HANT_TC` — 回復 · 代碼 · 對象 · 復原 ·
+  拖曳 · 教學 · 回饋 · 背景下載 · 項目 · 週 · 王國曆 …) + 따옴표 「」『』 + 손본 값 `zh-Hant_fix.json` ({키: {sc: 그때의 간체 값, tc: 번체 값}}).
+  번체 표를 직접 고치지 않는다 — 간체를 고치고 `hant`. 번체에서만 다른 것은 검토 칸(`export --lang zh-Hant` · sc = 간체 값)을 고쳐 `fix` → `hant`.
+  1022 에 일반 에이전트 여덟이 6,800줄을 대만 기준으로 검토해 173줄을 고쳤다 (글자 고르기 只/隻 · 里/裡 · 回復/回覆 · 대륙 말 → 대만 말 · 通過/透過 · 打開/開啟 …).
+  한자는 전부 Big5 안 (`zh_work.py check --lang zh-Hant`).
+- **언어 · 공개** (빌드 1022-1223 에서 간체와 함께 공개) — 언어 이름 `zh-Hant` (주소 `?lang=zh-Hant` — `zh-tw` · `zh-hk` · `zh-mo` · `zh-hant` 도). `config.json` `"zh-Hant": true` — 브라우저 zh-TW · zh-HK ·
+  zh-MO · zh-Hant → 번체 · 설정 칸 `繁體中文` (`I18N.pubZhT` · `HS_LANG_ZHT` · 첫 방문 표시 `hs_lang0t`). 공유 링크 맨 위 `zh-hant/` (`site/og-zh-hant.png`).
+- **이름 · 데이터 글** — 간체와 같은 모양(`「稱號」名字` · `白銀勇者學院` · 붙인 유물 이름 · 金道允 — `nameZh()` 가 둘 다). 런타임 `koZh(s, L)` · `maps("zh-Hant")` ·
+  `KO_PREF["zh-Hant"]`. 간체 · 번체에 같은 글자인 글(이명 `不屈之壁` 등)이 있어 **다 옮겨진 쪽을 먼저** 고른다 (`anyKo` — 이명만 맞고 이름이 다른 표에 있는 일).
+- **따옴표 · 날짜** — 대사 「」 · 안쪽 『』 (불꽃놀이 · 마을 손님 말도 — `nameZhT()`) · 1년차 암흑 사제 『大師』 (`masterQ` · `I18N.line`) · `uiLoc()` = zh-TW.
+- **그림** — 길드 4쪽 편지 `assets/story_art/guild4-spring-zht.webp` (Iansui 芫荽 로 '我們也想守護學院。' · 무손실 · `STORY_ART_ZHT`) · 운영 안내 등은 영어 그림.
+- **오프닝** — `optx_block.js` 의 `SC_ZHT` (SC_ZH 를 to_hant 로 옮긴 것 · Noto Serif TC 800 `OpTxSerifZhT` · Noto Sans TC 500 `OpTxSansZhT`) · 로딩 화면 · 페이지 제목(`build_boot.py`).
+- **글꼴** — `zh_fonts.py FONTSRC --lang zh-Hant` → `assets/fonts/zh-Hant/zht-*.woff2` · `zh-Hant_fonts.css`: 도트 Fusion Pixel 12px 번체(Big5 기호 + 1급 한자 5,401 + 표 글자) ·
+  허세 말풍선 霞鶩漫黑(LXGW Marker Gothic — 站酷快乐体 에는 번체자가 없다) · 오프닝은 SC_ZHT 글자만. 도트 폰트를 껐을 때 기기 글꼴(PingFang TC · Microsoft JhengHei · Songti TC …).
+- 시험 — `check_zh.py`(간체 · 번체 · 공개: zh-CN · zh-SG · zh → 간체 · zh-TW · zh-HK · zh-MO → 번체 · ?lang=zh-tw · 설정 칸 · 기억 · 영어로 하던 사람) ·
+  `check_layout.py --lang zh-Hant` · `check_save.py --lang zh-Hant`(영 · 일 · 간체 세이브 ↔ 번체 — 칸마다 같아야 한다).
+- **남은 것** — 사용자가 번체 화면을 보고 고를 것 (간체를 고치면 `hant` 로 번체도 다시).
 
 ## 건너뛰는 곳 · 영어에서 달라지는 것
 

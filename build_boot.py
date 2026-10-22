@@ -5,7 +5,7 @@
 · head 에 박혀 있던 글꼴(@font-face data:) 은 파일 맨 뒤로 옮긴다 — head 의 CSS 를 다 받아야
   첫 화면이 그려지는데, 글꼴 두 개가 1.6MB 라서 그동안 빈 화면이었다.
 로딩 화면은 게임의 boot() 가 시작할 때 걷어낸다.
-1010 영어판 — 글은 한국어 · 영어를 둘 다 넣고, <head> 맨 앞의 언어 스크립트(tools/i18n)가 정한 <html lang> 으로 하나만 보인다.
+1010 영어판 — 글은 한국어 · 영어(· 1014 일본어 · 1022 중국어 간체)를 다 넣고, <head> 맨 앞의 언어 스크립트(tools/i18n)가 정한 <html lang> 으로 하나만 보인다.
   영어 제목은 tools/i18n/en.json 의 것과 같게 둔다. 받는 중 글('리소스 받는 중…')은 게임 코드가 바꾸고 영어 표를 따른다.
 """
 import re
@@ -29,7 +29,7 @@ LOADER = '''<div id="bootLoader" role="status" aria-live="polite">
 #bootLoader .bl-skip{margin-top:16px;padding:7px 14px;border-radius:6px;border:1px solid var(--line-soft,#DEDCE8);background:transparent;color:var(--muted,#5B5D72);font:inherit;font-size:12px;cursor:pointer}
 #bootLoader .bl-skip:hover{color:var(--text,#191A24);border-color:var(--brass-b,#B98E23)}
 @media (prefers-reduced-motion:reduce){#bootLoader .bl-bar i{animation-duration:3s}}
-html[lang=en] #bootLoader .ko,html[lang=ja] #bootLoader .ko,html:not([lang=en]) #bootLoader .en,html:not([lang=ja]) #bootLoader .ja{display:none}
+html[lang=en] #bootLoader .ko,html[lang=ja] #bootLoader .ko,html[lang=zh-Hans] #bootLoader .ko,html[lang=zh-Hant] #bootLoader .ko,html:not([lang=en]) #bootLoader .en,html:not([lang=ja]) #bootLoader .ja,html:not([lang=zh-Hans]) #bootLoader .zh,html:not([lang=zh-Hant]) #bootLoader .zht{display:none}
 </style>
 <div class="bl-in">
 <svg viewBox="0 0 40 40" aria-hidden="true" shape-rendering="crispEdges">
@@ -41,13 +41,13 @@ html[lang=en] #bootLoader .ko,html[lang=ja] #bootLoader .ko,html:not([lang=en]) 
         <path fill="#fff0be" d="M18 10h4v12h-4zM16 12h2v8h-2z"/>
         <path fill="#e7b953" d="M12 22h16v4h-6v4h-4v-4h-6zM18 30h4v2h-4zM10 14h2v2h-2zM28 14h2v2h-2z"/>
       </svg>
-<p class="bl-t"><span class="ko">용사 학원 키우기</span><span class="en">My Hero's Academy</span><span class="ja">わが英雄のアカデミー</span></p>
-<p class="bl-s"><span class="ko">학원이 망했다</span><span class="en">The Academy Went Under</span><span class="ja">学園がつぶれた</span></p>
+<p class="bl-t"><span class="ko">용사 학원 키우기</span><span class="en">My Hero's Academy</span><span class="ja">わが英雄のアカデミー</span><span class="zh">勇者学院养成记</span><span class="zht">勇者學院養成記</span></p>
+<p class="bl-s"><span class="ko">학원이 망했다</span><span class="en">The Academy Went Under</span><span class="ja">学園がつぶれた</span><span class="zh">学院倒闭了</span><span class="zht">學院倒閉了</span></p>
 <div class="bl-bar" role="progressbar" aria-label="리소스 받기" aria-valuemin="0" aria-valuemax="100"><i></i></div>
-<p class="bl-m"><span class="ko">불러오는 중…</span><span class="en">Loading…</span><span class="ja">読み込み中…</span></p>
+<p class="bl-m"><span class="ko">불러오는 중…</span><span class="en">Loading…</span><span class="ja">読み込み中…</span><span class="zh">加载中…</span><span class="zht">載入中…</span></p>
 </div>
 </div>
-<script>(function(){var L=window.HS_LANG,t,a;if(L==="en"){t="My Hero's Academy - The Academy Went Under";a="Downloading resources";}else if(L==="ja"){t="\u308f\u304c\u82f1\u96c4\u306e\u30a2\u30ab\u30c7\u30df\u30fc \u2015 \u5b66\u5712\u304c\u3064\u3076\u308c\u305f";a="\u30ea\u30bd\u30fc\u30b9\u3092\u8aad\u307f\u8fbc\u307f\u4e2d";}else return;document.title=t;var b=document.querySelector("#bootLoader .bl-bar");if(b)b.setAttribute("aria-label",a);})();</script>
+<script>(function(){var L=window.HS_LANG,t,a;if(L==="en"){t="My Hero's Academy - The Academy Went Under";a="Downloading resources";}else if(L==="ja"){t="\u308f\u304c\u82f1\u96c4\u306e\u30a2\u30ab\u30c7\u30df\u30fc \u2015 \u5b66\u5712\u304c\u3064\u3076\u308c\u305f";a="\u30ea\u30bd\u30fc\u30b9\u3092\u8aad\u307f\u8fbc\u307f\u4e2d";}else if(L==="zh-Hans"){t="\u52c7\u8005\u5b66\u9662\u517b\u6210\u8bb0\u2014\u2014\u5b66\u9662\u5012\u95ed\u4e86";a="\u6b63\u5728\u4e0b\u8f7d\u8d44\u6e90";}else if(L==="zh-Hant"){t="\u52c7\u8005\u5b78\u9662\u990a\u6210\u8a18\u2014\u2014\u5b78\u9662\u5012\u9589\u4e86";a="\u6b63\u5728\u4e0b\u8f09\u8cc7\u6e90";}else return;document.title=t;var b=document.querySelector("#bootLoader .bl-bar");if(b)b.setAttribute("aria-label",a);})();</script>
 '''
 
 FONT_RE = re.compile(r"@font-face\{[^{}]*?url\(data:font/[^)]*\)[^{}]*\}")

@@ -2271,7 +2271,7 @@ html.tfw-dragging .tfw-our .sw{opacity:0}
   .lgrow .lbt{grid-column:4}
 }
 .condrow.rest{background:color-mix(in srgb,var(--ok) 7%,transparent)}
-.condrow .cn{font-weight:600;display:flex;align-items:center;gap:5px}
+.condrow .cn{font-weight:600;display:flex;align-items:center;gap:5px;flex-wrap:wrap;row-gap:3px}   /* 1022 — 좁은 칸에 꼬리표(훈련 · 지침 무시)가 둘이면 이름이 한 자씩 세로로 쌓이고 꼬리표가 막대를 덮었다 → 꼬리표는 다음 줄로 */
 .condrow .cbar{height:7px;background:var(--line-soft);border-radius:2px;overflow:hidden;display:block}
 .condrow .cbar > i{display:block;height:100%;background:var(--ok)}
 .condrow .cbar > i.mid{background:var(--warn)}
@@ -3388,8 +3388,12 @@ html[data-ui-concept="journal"] .modal.btm{border-color:#af946b}
 html[data-ui-concept="journal"] :focus-visible{outline:3px solid #ad782e;outline-offset:3px}
 .ui-concept-picker{display:flex;gap:8px;flex-wrap:wrap}
 .ui-concept-picker .btn[aria-pressed="true"]{outline:2px solid var(--brass);outline-offset:2px}
+/* 1022 — 설정의 언어 이름: 중국어 도트 글꼴은 그 언어일 때만 받으므로 다른 언어로 볼 때는 기기 글꼴 한 벌로 (한 단추 안에서 도트 · 기기 글꼴이 섞이지 않게 — 简体 · 繁體 · 語 · HsNoPixel 은 도트 모드가 바꾸지 않는 표시) */
+html:not([lang="zh-Hans"]) .ui-concept-picker .btn[data-lang="zh-Hans"]{font-family:HsNoPixel,"PingFang SC","Microsoft YaHei","Noto Sans CJK SC","Source Han Sans SC",sans-serif!important}
+html:not([lang="zh-Hant"]) .ui-concept-picker .btn[data-lang="zh-Hant"]{font-family:HsNoPixel,"PingFang TC","Microsoft JhengHei","Noto Sans CJK TC","Source Han Sans TC",sans-serif!important}
+html[lang="zh-Hans"] .ui-concept-picker .btn[data-lang="ja"]{font-family:HsNoPixel,"Hiragino Sans","Yu Gothic UI","Meiryo","Noto Sans CJK JP",sans-serif!important}
 @media(max-width:640px){
-  .ui-concept-picker{width:100%}.ui-concept-picker .btn{flex:1;min-height:44px}
+  .ui-concept-picker{width:100%}.ui-concept-picker .btn{flex:1;min-height:44px;white-space:nowrap}   /* 1022 — 단추가 많으면(언어 다섯) 글자를 한 자씩 쌓지 않고 다음 줄로 */
   html[data-ui-concept="journal"] .panel{border-radius:4px;padding:12px}
   html[data-ui-concept="journal"] .optlab{min-width:0;flex-basis:100%}
   html[data-ui-concept="journal"] .panel-h{gap:6px}
@@ -4864,8 +4868,8 @@ const FX_IMG=HS_A["fx_img.webp"];
 const FIELD_IMG={"spring":"assets/field_img/spring.webp?v=66c40f96","summer":"assets/field_img/summer.webp?v=ead0b161","fall":"assets/field_img/fall.webp?v=60a4f20d","winter":"assets/field_img/winter.webp?v=81258736","citytournament":"assets/field_img/citytournament.webp?v=80e84f65","areatournament":"assets/field_img/areatournament.webp?v=9c4db436","final":"assets/field_img/final.webp?v=c2fe6d58","jolupseng":"assets/field_img/jolupseng.webp?v=bb87d046","brine":"assets/field_img/brine.webp?v=a9b2ab8e","dummy":"assets/field_img/dummy.webp?v=c1dae1ec","gargoyle":"assets/field_img/gargoyle.webp?v=0accf091","guardian":"assets/field_img/guardian.webp?v=6d1e1c5e","wraith":"assets/field_img/wraith.webp?v=9a885fc1","demonking":"assets/field_img/demonking.webp?v=3ef553b3"};
 /* 파스텔 필터(ILLUS_FILTER_SPEC §4.1)를 입힌 전투 배경 — tools/bake_field_pastel.py 로 굽는다. 설정에서 끄면 원본(FIELD_IMG) */
 const FIELD_PASTEL={"areatournament":"assets/field_pastel/areatournament.webp?v=f0e68224","brine":"assets/field_pastel/brine.webp?v=77113596","citytournament":"assets/field_pastel/citytournament.webp?v=0e3e2353","demonking":"assets/field_pastel/demonking.webp?v=a20b14a0","dummy":"assets/field_pastel/dummy.webp?v=7f6bb410","fall":"assets/field_pastel/fall.webp?v=c24352d1","final":"assets/field_pastel/final.webp?v=0dc4781c","gargoyle":"assets/field_pastel/gargoyle.webp?v=230f5055","guardian":"assets/field_pastel/guardian.webp?v=ad19bac1","jolupseng":"assets/field_pastel/jolupseng.webp?v=5215b42b","spring":"assets/field_pastel/spring.webp?v=87520ef8","summer":"assets/field_pastel/summer.webp?v=bce21271","winter":"assets/field_pastel/winter.webp?v=e5e7f4ef","wraith":"assets/field_pastel/wraith.webp?v=4240b025"};
-const FB_ICON=(typeof I18N!=="undefined"&&(I18N.lang==="en"||(I18N.lang==="ja"&&I18N.tab)))? "assets/fb_icon_a_en.webp?v=a1" : "assets/fb_icon_a.webp?v=a1";   // 0930 — 검은 바탕을 걷어낸(투명) 판 · 1010 영어판은 글자만 영어로 다시 구운 판
-const TUT_ICON=(typeof I18N!=="undefined"&&(I18N.lang==="en"||(I18N.lang==="ja"&&I18N.tab)))? "assets/tut_icon_a_en.webp?v=a1" : "assets/tut_icon_a.webp?v=a1";   // 0930 — 둥근 액자 바깥 모서리를 투명하게 한 판 · 1010 영어판 (같은 그림 · 띠 글자만 TUTORIAL)
+const FB_ICON=(typeof I18N!=="undefined"&&(I18N.lang==="en"||((I18N.lang==="ja"||I18N.lang==="zh-Hans"||I18N.lang==="zh-Hant")&&I18N.tab)))? "assets/fb_icon_a_en.webp?v=a1" : "assets/fb_icon_a.webp?v=a1";   // 0930 — 검은 바탕을 걷어낸(투명) 판 · 1010 영어판은 글자만 영어로 다시 구운 판
+const TUT_ICON=(typeof I18N!=="undefined"&&(I18N.lang==="en"||((I18N.lang==="ja"||I18N.lang==="zh-Hans"||I18N.lang==="zh-Hant")&&I18N.tab)))? "assets/tut_icon_a_en.webp?v=a1" : "assets/tut_icon_a.webp?v=a1";   // 0930 — 둥근 액자 바깥 모서리를 투명하게 한 판 · 1010 영어판 (같은 그림 · 띠 글자만 TUTORIAL)
 const TUT_IMG={"1":"assets/tut_img/1.webp?v=5c18ef9f","2":"assets/tut_img/2.webp?v=726ab4c7","3":"assets/tut_img/3.webp?v=7e63bf9a","4":"assets/tut_img/4.webp?v=263eec4a","5":"assets/tut_img/5.webp?v=720735dc","6":"assets/tut_img/6.webp?v=847cc25b","7":"assets/tut_img/7.webp?v=8fd0914b","8":"assets/tut_img/8.webp?v=a946cebf","9":"assets/tut_img/9.webp?v=30bfee6f","10":"assets/tut_img/10.webp?v=d2617b1e","11":"assets/tut_img/11.webp?v=bc305587","12":"assets/tut_img/12.webp?v=42850253"};
 const PROL_IMG={"1":"assets/prol_img/1.webp?v=f8ddf596","2":"assets/prol_img/2.webp?v=83c67738","3":"assets/prol_img/3.webp?v=d4affae4"};
 const VICT_IMG={"paladin":"assets/vict_img/paladin.webp?v=59b9ae54","rogue":"assets/vict_img/rogue.webp?v=9d21f67b","forcemage":"assets/vict_img/forcemage.webp?v=974e6141","ninja":"assets/vict_img/ninja.webp?v=697d2112","spellsword":"assets/vict_img/spellsword.webp?v=c61cea2c","druid":"assets/vict_img/druid.webp?v=bf940093","sword":"assets/vict_img/sword.webp?v=8410e9aa","gunner":"assets/vict_img/gunner.webp?v=e9318d49","darkpriest":"assets/vict_img/darkpriest.webp?v=e72d0c97","priest":"assets/vict_img/priest.webp?v=e145e946","monk":"assets/vict_img/monk.webp?v=07b36c81","wizard":"assets/vict_img/wizard.webp?v=3a13afae","archer":"assets/vict_img/archer.webp?v=e2f0f613","bard":"assets/vict_img/bard.webp?v=450f51ce","enchanter":"assets/vict_img/enchanter.webp?v=2d160b78","timemage":"assets/vict_img/timemage.webp?v=f6dc5b3f"};
@@ -6212,7 +6216,7 @@ function relicAffixPick(n){
   }
   return out;
 }
-function relicSep(){ return (typeof nameJa === "function" && nameJa()) ? "" : " "; }   // 1014 — 유물 이름 사이 빈칸 (일본어판은 붙인다 · 세이브를 옮길 때는 i18n 런타임이 모양을 맞춘다)
+function relicSep(){ return (typeof nameCJ === "function" && nameCJ()) ? "" : " "; }   // 1014 — 유물 이름 사이 빈칸 (일본어판 · 1022 중국어판은 붙인다 · 세이브를 옮길 때는 i18n 런타임이 모양을 맞춘다)
 const RELIC_NOUN = ["반지","목걸이","문장","부적","깃털","조각","성물","인장","고리","서약서","향로","나침반"];
 const RELIC_ADJ  = {C:["낡은","무명의","흔한"],B:["연마된","견고한","은빛"],A:["고대의","봉인된","황금"],S:["용사의","신탁의","불멸의"],
                     "S+":["초월한","영겁의","찬란한"]};
@@ -7720,7 +7724,7 @@ function pixelFontApply(on){
     const fs = st.getPropertyValue("font-size").trim(), m = /^([0-9.]+)px$/.exec(fs);
     if(m){ const v = PIXEL_BODY.test(r.selectorText) ? 12 : pixelSnap(+m[1]); if(v !== +m[1]) set("font-size", v + "px"); }
     const ff = st.getPropertyValue("font-family");
-    if(ff && !/inherit|Chronicle/i.test(ff)) set("font-family", /mono/i.test(ff) ? `${PIXEL_MONO},monospace` : `${PIXEL_SANS},${ff}`);
+    if(ff && !/inherit|Chronicle|HsNoPixel/i.test(ff)) set("font-family", /mono/i.test(ff) ? `${PIXEL_MONO},monospace` : `${PIXEL_SANS},${ff}`);   // HsNoPixel — 도트로 바꾸지 않는 표시 (없는 글꼴 이름 · 1022 설정의 언어 이름)
     const ls = st.getPropertyValue("letter-spacing").trim();
     if(ls && ls !== "0" && ls !== "normal" && ls !== "0px") set("letter-spacing", "0");
     if(Object.keys(o).length) PIXEL_ORIG.set(r, o);
@@ -7735,7 +7739,7 @@ try{ pixelFontApply(PREF.pixelFont !== false); }catch(e){}
 /*KO-FONTS 시작 — tools/gen/fonts/ko_fonts.py 가 만든다 (손으로 고치지 않는다)*/
 const KO_GALMURI = {css:"@font-face{font-family:\"Mulmaru\";src:url(assets/fonts/ko/galmuri11.woff2?v=6d46a69f) format(\"woff2\");unicode-range:U+20-7E,U+A1,U+A5-A6,U+A9,U+AE,U+B0-B4,U+B7,U+B9,U+BF-FF,U+391-3A1,U+3A3-3A9,U+3B1-3C9,U+410-44F,U+451,U+2013-2015,U+2018-2019,U+201C-201D,U+2026,U+2032-2033,U+203B,U+20A9,U+2103,U+2109,U+2122,U+2160-216B,U+2170-217B,U+2190-2199,U+21D0-21D5,U+2208,U+220B,U+221E,U+2220,U+2229-222A,U+2260,U+2264-2265,U+2282-2283,U+2460-2482,U+249C-24E9,U+25A0-25A1,U+25A3,U+25B2-25B3,U+25B6-25B7,U+25BC-25BD,U+25C0-25C1,U+25C6-25C8,U+25CB,U+25CE-25D1,U+2605-2606,U+261C,U+261E,U+2640,U+2642,U+2660-266F,U+3001-3003,U+3008-3011,U+3013-3015,U+3041-3094,U+309B-309E,U+30A1-30F6,U+30FB-30FE,U+3131-3163,U+4E2D,U+4F53,U+6587,U+65E5,U+672C,U+8A9E,U+AC00-D7A3;font-display:swap}@font-face{font-family:\"Mulmaru Mono\";src:url(assets/fonts/ko/galmuri11-mono.woff2?v=53515bda) format(\"woff2\");unicode-range:U+20-7E,U+A1,U+A5-A6,U+A9,U+AE,U+B0-B4,U+B7,U+B9,U+BF-FF,U+391-3A1,U+3A3-3A9,U+3B1-3C9,U+410-44F,U+451,U+2013-2015,U+2018-2019,U+201C-201D,U+2026,U+2032-2033,U+203B,U+20A9,U+2103,U+2109,U+2122,U+2160-216B,U+2170-217B,U+2190-2199,U+21D0-21D5,U+2208,U+220B,U+221E,U+2220,U+2229-222A,U+2260,U+2264-2265,U+2282-2283,U+2460-2482,U+249C-24E9,U+25A0-25A1,U+25A3,U+25B2-25B3,U+25B6-25B7,U+25BC-25BD,U+25C0-25C1,U+25C6-25C8,U+25CB,U+25CE-25D1,U+2605-2606,U+261C,U+261E,U+2640,U+2642,U+2660-266F,U+3001-3003,U+3008-3011,U+3013-3015,U+3041-3094,U+309B-309E,U+30A1-30F6,U+30FB-30FE,U+3131-3163,U+4E2D,U+4F53,U+6587,U+65E5,U+672C,U+8A9E,U+AC00-D7A3;font-display:swap}", pre:["assets/fonts/ko/galmuri11.woff2?v=6d46a69f","assets/fonts/ko/galmuri11-mono.woff2?v=53515bda"]};
 /*KO-FONTS 끝*/
-function koFontOn(){ return !(window.HS_LANG === "en" || window.HS_LANG === "ja") && PREF.koFont === "galmuri" && !!KO_GALMURI.css; }
+function koFontOn(){ return !(window.HS_LANG === "en" || window.HS_LANG === "ja" || window.HS_LANG === "zh-Hans" || window.HS_LANG === "zh-Hant") && PREF.koFont === "galmuri" && !!KO_GALMURI.css; }
 function koFontApply(redraw){
   const on = koFontOn(), el = document.getElementById("koGalmuri");
   document.documentElement.dataset.koFont = on ? "galmuri" : "mulmaru";
@@ -7759,11 +7763,11 @@ function koFontAfter(redraw){                 // 글자 폭이 바뀌었다 — 
 if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", ()=> koFontApply(false));   // lateFonts(물마루)가 붙은 뒤에 — 그보다 뒤여야 앞선다
 else koFontApply(false);
 function koFontRow(){                          // 설정의 한국어 글꼴 줄 — 한국어일 때만 (늘 한국어인 글이라 번역하지 않는다)
-  if(window.HS_LANG === "en" || window.HS_LANG === "ja" || !KO_GALMURI.css) return "";
+  if(window.HS_LANG === "en" || window.HS_LANG === "ja" || window.HS_LANG === "zh-Hans" || window.HS_LANG === "zh-Hant" || !KO_GALMURI.css) return "";
   return /*no-i18n*/`<section class="panel"><div class="optrow"><div class="optlab"><b>한국어 글꼴</b><span>글자를 어떤 도트 폰트로 보여 줄지 고른다. 갈무리11 은 획이 가늘고 글자 폭이 조금 넓어(한글 한 자 11 → 12px) 몇몇 칸에서 글이 넘칠 수 있다.</span></div><div class="optctl"><span class="btnpair">${[["mulmaru", /*no-i18n*/"물마루"], ["galmuri", /*no-i18n*/"갈무리11"]].map(([v, l])=>`<button class="btn sm${(PREF.koFont||"mulmaru")===v?" primary":""}" data-kofont="${v}" aria-pressed="${(PREF.koFont||"mulmaru")===v}">${l}</button>`).join("")}</span></div></div></section>`;
 }
 function koFontTitleRow(){                     // 시작 화면 설정 — 같은 것을 고르는 칸
-  if(window.HS_LANG === "en" || window.HS_LANG === "ja" || !KO_GALMURI.css) return "";
+  if(window.HS_LANG === "en" || window.HS_LANG === "ja" || window.HS_LANG === "zh-Hans" || window.HS_LANG === "zh-Hant" || !KO_GALMURI.css) return "";
   return /*no-i18n*/`<label>한국어 글꼴<select id="titleKoFont"><option value="mulmaru" ${PREF.koFont!=="galmuri"?"selected":""}>물마루</option><option value="galmuri" ${PREF.koFont==="galmuri"?"selected":""}>갈무리11</option></select></label>`;
 }
 function koFontSet(v){
@@ -8068,7 +8072,7 @@ const EPI_TITLES = {
 /* 표시용 이름 — 이명이 있으면 이름 앞에 붙는다 */
 /* 이벤트 팝업(의식)을 그리는 동안에는 이명을 빼고 이름만 쓴다 (0929) — NAME_PLAIN 이 켜져 있을 때 */
 let NAME_PLAIN = false;
-function dn(st){ if(!st) return ""; return (st.epithet && !NAME_PLAIN) ? (nameEnFirst() ? st.name + " \u201c" + st.epithet + "\u201d" : nameJa() ? "\u300c" + st.epithet + "\u300d" + st.name : "\u201c" + st.epithet + "\u201d " + st.name) : st.name; }
+function dn(st){ if(!st) return ""; return (st.epithet && !NAME_PLAIN) ? (nameEnFirst() ? st.name + " \u201c" + st.epithet + "\u201d" : nameCJ() ? "\u300c" + st.epithet + "\u300d" + st.name : "\u201c" + st.epithet + "\u201d " + st.name) : st.name; }
 /* 저장된 이름 문자열도 그대로 받아 이명 부분만 황동색으로 */
 function epiH(nm){
   const v = String(nm==null? "" : nm);
@@ -17295,7 +17299,7 @@ const UNIQ_GREET = {
 /* 그 학생의 말 속 마스터를 ‘마스터’로. inQuote 면 “ ” 안의 말만 바꾼다 (졸업 사유처럼 서술이 섞인 글) */
 function masterQ(t, who, inQuote){
   if(!t || !who || who.uniq !== "dp1") return t;
-  const q = s => s.replace(/‘?마스터’?/g, "‘마스터’").replace(/‘?\bMaster\b’?/g, "‘Master’").replace(/[『‘]?マスター[』’]?/g, "『マスター』");   // 1010 — 영어판도 같은 따옴표 · 1014 일본어판 『マスター』
+  const q = s => s.replace(/‘?마스터’?/g, "‘마스터’").replace(/‘?\bMaster\b’?/g, "‘Master’").replace(/[『‘]?マスター[』’]?/g, "『マスター』").replace(/‘?大师’?/g, "‘大师’").replace(/[『‘]?大師[』’]?/g, "『大師』");   // 1010 — 영어판도 같은 따옴표 · 1014 일본어판 『マスター』 · 1022 중국어 ‘大师’ · 번체 『大師』
   return inQuote ? String(t).replace(/“[^”]*”|「[^」]*」/g, q) : q(String(t));
 }
 function greetLine(st){
@@ -21938,7 +21942,7 @@ function openAvatarLab(){showModal(`<div class="panel-h"><h2>애니메이션 테
    (공개 뒤 첫 방문에 세이브가 이미 있으면 한국어로 기억해 둔다 — tools/i18n/i18n_build.py head_script)
    바꾸면 저장한 뒤 다시 불러온다 — 직업 · 스킬 이름 같은 데이터 글은 불러올 때 정해진다.
    글은 따로 떼어 둔다 — 템플릿 안에 한글을 섞으면 HTML 째로 영어 표의 키가 된다 */
-function uiLoc(){ return (typeof I18N !== "undefined" && I18N.lang === "en") ? "en-US" : nameJa() ? "ja-JP" : "ko-KR"; }   // 날짜 · 시각 표기 (영어판은 en-US · 1014 일본어판 ja-JP)
+function uiLoc(){ return (typeof I18N !== "undefined" && I18N.lang === "en") ? "en-US" : nameJa() ? "ja-JP" : nameZhT() ? "zh-TW" : nameZh() ? "zh-CN" : "ko-KR"; }   // 날짜 · 시각 표기 (영어판은 en-US · 1014 일본어판 ja-JP · 1022 중국어 간체판 zh-CN)
 /* 1010 영어판 3단계 — 세이브 · 서버에 글 그대로 남는 데이터 글(학생 이름 · 이명 · 유물 · 학원 이름 · 진로 · 스킬 이름).
    I18N(빌드가 넣는 번역 장치 — tools/i18n/i18n_runtime.js)이 없으면 그대로 돌려준다 */
 function koData(x){ return (typeof I18N !== "undefined" && I18N.toKo) ? I18N.toKo(x) : x; }      // 서버로 — 언어와 상관없이 한국어 원문 (받는 쪽이 자기 언어로 바꾼다)
@@ -21946,23 +21950,31 @@ function curData(x){ return (typeof I18N !== "undefined" && I18N.toCur) ? I18N.t
 function curLog(s){ return (typeof I18N !== "undefined" && I18N.line) ? I18N.line(s) : s; }      // 1010 5단계 — 세이브에 글로 남은 문장(일지 · 상담 기록)을 보여 줄 때: 영어판이면 지난 한국어 글을 영어 표에 맞춰 영어로 (세이브는 그대로)
 function nameEnFirst(){ return typeof I18N !== "undefined" && I18N.lang === "en"; }                // 영어판 — 이름 먼저: Gawain “the Unbroken Wall”
 function nameJa(){ return typeof I18N !== "undefined" && I18N.lang === "ja" && I18N.tab !== null; }   // 1014 일본어판 — 이명은 「二つ名」名前 · 대사 따옴표 「」 · 유물 이름은 빈칸 없이
-function langOn(){ return typeof I18N !== "undefined" && (I18N.pub || /[?&]lang=(en|ko|ja)\b/.test(location.search)); }
+function nameZh(){ return typeof I18N !== "undefined" && (I18N.lang === "zh-Hans" || I18N.lang === "zh-Hant") && I18N.tab !== null; }   // 1022 중국어판(간체 · 번체) — 이명은 「二つ名」名字 · 유물 이름은 빈칸 없이
+function nameZhT(){ return nameZh() && I18N.lang === "zh-Hant"; }   // 1022 번체(대만) — 대사 따옴표는 「」 (간체는 한국어처럼 “ ”) · 날짜 zh-TW
+function nameCJ(){ return nameJa() || nameZh(); }   // 1022 — 일본어 · 중국어: 「이명」이름 · 유물 이름 붙임 · 문장 사이 빈칸 없이
+function langOn(){ return typeof I18N !== "undefined" && (I18N.pub || /[?&]lang=(en|ko|ja|zh)\b/i.test(location.search)); }
 function langSaved(){ try{ return localStorage.getItem("hs_lang") || ""; }catch(e){ return ""; } }
 function langPanel(){
   if(!langOn()) return "";
-  const url = new URLSearchParams(location.search).get("lang");
+  const url0 = new URLSearchParams(location.search).get("lang"), url = (url0 && /^zh(-(cn|sg|hans))?$/i.test(url0)) ? "zh-Hans" : (url0 && /^zh-(tw|hk|mo|hant)$/i.test(url0)) ? "zh-Hant" : url0;   // 1022 — zh · zh-cn 도 간체 · zh-tw · zh-hk 는 번체
   const jaOn = I18N.pubJa || I18N.lang === "ja";   // 1014 일본어 — 공개(config.json "ja") 뒤에는 늘 · 그 전에는 ?lang=ja 시험 접속에서만
-  const sv = langSaved(), cur = I18N.pub ? ((url === "en" || url === "ko" || (url === "ja" && jaOn)) ? url : ((sv === "ja" && !jaOn) ? "auto" : (sv || "auto"))) : I18N.lang;   // 주소의 ?lang= 이 있으면 지금 보이는 그 언어가 눌려 있다
-  const opts = (I18N.pub ? [["auto", "자동"]] : []).concat([["ko", /*no-i18n*/"한국어"], ["en", "English"]], jaOn ? [["ja", "日本語"]] : []);   // 언어 이름은 늘 그 언어로
+  const zhOn = I18N.pubZh || I18N.lang === "zh-Hans";   // 1022 중국어 간체 — 공개(config.json "zh-Hans") 뒤에는 늘 · 그 전에는 ?lang=zh-Hans 시험 접속에서만
+  const zhtOn = I18N.pubZhT || I18N.lang === "zh-Hant";   // 1022 중국어 번체(대만) — 공개(config.json "zh-Hant") 뒤에는 늘 · 그 전에는 ?lang=zh-Hant 시험 접속에서만
+  const sv = langSaved(), cur = I18N.pub ? ((url === "en" || url === "ko" || (url === "ja" && jaOn) || (url === "zh-Hans" && zhOn) || (url === "zh-Hant" && zhtOn)) ? url
+    : (((sv === "ja" && !jaOn) || (sv === "zh-Hans" && !zhOn) || (sv === "zh-Hant" && !zhtOn)) ? "auto" : (sv || "auto"))) : I18N.lang;   // 주소의 ?lang= 이 있으면 지금 보이는 그 언어가 눌려 있다
+  const opts = (I18N.pub ? [["auto", "자동"]] : []).concat([["ko", /*no-i18n*/"한국어"], ["en", "English"]], jaOn ? [["ja", "日本語"]] : [], zhOn ? [["zh-Hans", "简体中文"]] : [], zhtOn ? [["zh-Hant", "繁體中文"]] : []);   // 언어 이름은 늘 그 언어로
   const lab = "언어 · Language", grp = "언어";
   const desc = [I18N.pub ? "게임 글을 보여 줄 언어. 자동은 브라우저 언어를 따른다." : "영어판 준비 중 — 주소에 ?lang= 을 붙인 시험 접속에서만 보인다.",
-    "바꾸면 저장한 뒤 다시 불러온다.", (I18N.lang === "en" ? "한국어로 쓰인 지난 일지 · 상담 기록도 맞춰 볼 수 있는 줄은 영어로 보여 준다." : I18N.lang === "ja" ? "한국어로 쓰인 지난 일지 · 상담 기록도 맞춰 볼 수 있는 줄은 일본어로 보여 준다." : "영어 · 일본어로 쓰인 지난 일지 · 상담 기록은 쓰인 그대로다.")].join(nameJa() ? "" : " ");   // 일본어는 문장 사이 빈칸 없이
+    "바꾸면 저장한 뒤 다시 불러온다.", (I18N.lang === "en" ? "한국어로 쓰인 지난 일지 · 상담 기록도 맞춰 볼 수 있는 줄은 영어로 보여 준다." : I18N.lang === "ja" ? "한국어로 쓰인 지난 일지 · 상담 기록도 맞춰 볼 수 있는 줄은 일본어로 보여 준다." : (I18N.lang === "zh-Hans" || I18N.lang === "zh-Hant") ? "한국어로 쓰인 지난 일지 · 상담 기록도 맞춰 볼 수 있는 줄은 중국어로 보여 준다." : "영어 · 일본어로 쓰인 지난 일지 · 상담 기록은 쓰인 그대로다.")].join(nameCJ() ? "" : " ");   // 일본어 · 중국어는 문장 사이 빈칸 없이
   return `<section class="panel"><div class="optrow"><div class="optlab"><b>${lab}</b><span>${desc}</span></div><div class="ui-concept-picker" role="group" aria-label="${grp}">${
     opts.map(([k, n])=>`<button type="button" class="btn" data-lang="${k}" aria-pressed="${cur===k}">${n}</button>`).join("")}</div></div></section>`;
 }
 function langSwitch(k){
   if(typeof I18N === "undefined") return;
   if(k === "ja" && !I18N.pubJa) return;           // 1014 — 일본어 공개(config.json "ja") 전에는 ?lang=ja 시험 접속에서만 (기억하지 않는다)
+  if(k === "zh-Hans" && !I18N.pubZh) return;     // 1022 — 중국어 간체도 공개(config.json "zh-Hans") 전에는 ?lang=zh-Hans 시험 접속에서만
+  if(k === "zh-Hant" && !I18N.pubZhT) return;    // 1022 — 번체도 공개(config.json "zh-Hant") 전에는 ?lang=zh-Hant 시험 접속에서만
   const q = new URLSearchParams(location.search);
   if(I18N.pub){
     try{ if(k === "auto") localStorage.removeItem("hs_lang"); else localStorage.setItem("hs_lang", k); }catch(e){}
@@ -22813,7 +22825,7 @@ function tinAfterSay(run){
   TIN.step = "menu";
   tinPaint();
 }
-function tinSayText(){ return !TIN.say ? "" : (typeof nameJa === "function" && nameJa()) ? `「${TIN.say}」` : `“${TIN.say}”`; }   // 일본어판은 「」 (i18n/ja/GUIDE — 대사 따옴표)
+function tinSayText(){ return !TIN.say ? "" : (typeof nameJa === "function" && (nameJa() || nameZhT())) ? `「${TIN.say}」` : `“${TIN.say}”`; }   // 일본어판은 「」 (i18n/ja/GUIDE — 대사 따옴표)
 /* 창 — viewFacil(넓은 화면)이 부른다. 열 게 없으면 "" */
 function tinView(open){
   if(!tinOn()) return "";
@@ -23931,8 +23943,10 @@ const STORY_ART = {"guild1": "assets/story_art/guild1-spring.webp?v=f2da1d2b", "
 /* 1010 영어판 — 편지 글만 영어로 다시 쓴 판 (STORY_ART 블록은 sprites/story.py 가 쓰므로 밖에 둔다) */
 const STORY_ART_EN = {"guild4": "assets/story_art/guild4-spring-en.webp?v=127079db"};
 const STORY_ART_JA = {"guild4": "assets/story_art/guild4-spring-ja.webp?v=b9df3e1b"};   // 1014 일본어판 — 한글 손글씨를 지우고 Yomogi 로 '私たちも、学園を守りたいです。' (무손실)
+const STORY_ART_ZH = {"guild4": "assets/story_art/guild4-spring-zh.webp?v=4154ed6e"};   // 1022 중국어 간체판 — 한글 손글씨를 지우고 Long Cang 으로 '我们也想守护学院。' (무손실)
+const STORY_ART_ZHT = {"guild4": "assets/story_art/guild4-spring-zht.webp?v=a417a1b5"};   // 1022 중국어 번체판(대만) — 한글 손글씨를 지우고 Iansui(芫荽)로 '我們也想守護學院。' (무손실)
 function storyArt(k, alt){
-  const src = (nameEnFirst() && STORY_ART_EN[k]) || (nameJa() && STORY_ART_JA[k]) || ((typeof STORY_ART!=="undefined") && STORY_ART[k]);
+  const src = (nameEnFirst() && STORY_ART_EN[k]) || (nameJa() && STORY_ART_JA[k]) || (nameZhT() && STORY_ART_ZHT[k]) || (nameZh() && STORY_ART_ZH[k]) || ((typeof STORY_ART!=="undefined") && STORY_ART[k]);
   return src ? `<div class="valentine-art story-art"><img src="${src}" alt="${esc(alt)}" draggable="false"></div>` : "";
 }
 const GUILD_WYVERN = 5000, GUILD_CHORES = 300;
@@ -24086,7 +24100,7 @@ function sparklerCeremony(c){
       <div class="eyebrow">${yrName(c.year)} 여름 · ${SPARKLER_WEEK}주차를 마치고</div>
       <h2 style="font-size:24px;margin-top:2px">학원제 개막식의 밤</h2></div>${art}`;
   const P = t => `<p class="ev-p">${t}</p>`;
-  const Q = t => nameEnFirst() ? `<p class="ev-q">“${esc(t)}”</p>` : `<p class="ev-q">「${esc(t)}」</p>`;   // 1010 — 영어판은 “ ”
+  const Q = t => (nameEnFirst() || (nameZh() && !nameZhT())) ? `<p class="ev-q">“${esc(t)}”</p>` : `<p class="ev-q">「${esc(t)}」</p>`;   // 1010 — 영어판 · 1022 중국어 간체판은 “ ” (번체는 「」)
   const btn = (t)=> `<div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">${t}</button></div>`;
   if(c.page===1) return head + `<div class="ev-body">
       ${P("한여름 밤, 해변에 앉아 하늘을 올려다본다. 멀리서 폭죽이 하나, 둘… 이내 셀 수 없이 터지기 시작한다. 그제야 실감이 난다 — 가을 학원제의 개막식이 열리고 있다는 것을.")}
@@ -26374,7 +26388,7 @@ function tutGuideHTML(k){
   // Illustrated guides, WebP quality 90. Other pages retain their existing guide.
   const illustrated = {1:"01",2:"02",3:"03",4:"04",5:"05",12:"12"};
   /* 1010 영어판 — 그림 속 글자가 한국어라, 영어판 그림이 나올 때까지 영어에서는 예전 글 안내를 쓴다 (I18N 은 빌드가 넣는다 · tools/i18n) */
-  const illOn = !(typeof I18N !== "undefined" && (I18N.lang === "en" || (I18N.lang === "ja" && I18N.tab)));   // 1014 일본어판도 글 안내
+  const illOn = !(typeof I18N !== "undefined" && (I18N.lang === "en" || ((I18N.lang === "ja" || I18N.lang === "zh-Hans" || I18N.lang === "zh-Hant") && I18N.tab)));   // 1014 일본어판 · 1022 중국어판도 글 안내
   if(illOn && Object.prototype.hasOwnProperty.call(illustrated, String(k))){
     return `<article class="tg-illustrated" data-guide="${esc(String(k))}" aria-label="${esc(d.title)}" style="margin:0;padding:0"><img src="assets/tutorial-illustrated/${illustrated[k]}.webp?v=20261010-1" alt="${esc(d.title)}" style="display:block;width:100%;height:auto;image-rendering:auto"></article>`;
   }
@@ -29069,11 +29083,11 @@ function openBattle(res, opt, onDone){
     stamPrev = v;
     const age = performance.now() - stamAt;
     const pop = stamAt && age < 900 ? `<em class="bf-stam-pop" style="animation-delay:-${Math.round(age)}ms">−${stamDrop}</em>` : "";
-    const sub = ex ? `공격력 · 속도 −${Math.round(STAM_EX*100)}%` : ST.drain ? `${ST.per}행동마다 −${ST.drain}` : "줄지 않는다";
+    const sub = ex ? `공격력 · 속도 −${Math.round(STAM_EX*100)}%` : "";   // 1022 — 사용자: 아랫줄 '6행동마다 −1'(이계 −2) 숨김 · 탈진일 때만 깎인 능력
     return `<div class="bf-stam${ex?" ex": p <= 25 ? " low" : ""}" role="meter" aria-valuemin="0" aria-valuemax="${ST.max}" aria-valuenow="${v}" aria-label="원정 지구력">
       <div class="bf-stam-h"><span>${ex? "탈진" : "지구력"}</span><b>${v}</b><small>/ ${ST.max}</small>${pop}</div>
       <div class="bf-stam-bar"><i style="width:${p.toFixed(1)}%"></i></div>
-      <div class="bf-stam-d">${sub}</div></div>`;
+      ${sub ? `<div class="bf-stam-d">${sub}</div>` : ""}</div>`;
   };
   const stamSync = F=>{ const el = document.querySelector("#modalRoot .bf-stam"); if(el && ST && F && F.sg != null) el.outerHTML = stamHtml(F); };
   const BS_ICON = {
@@ -32936,8 +32950,73 @@ const OPTX = (()=>{
       {t:["―王国暦230年、冬", "父が亡くなった。"], y:[315.5, 403.5],
        at:[[110, 460, 510, 610, 760, 860, 960, 1010, 1060, 1410], [3360, 3460, 3560, 3660, 3760, 3910, 4010, 4160]], fade:[6470, 7100]}]}
   };
+  /* 중국어 간체판 (1022) — 한국어에서 바로 옮긴 글 · 때는 SC 그대로 (at 는 글자 수에 맞춰 고르게 · 문장부호 뒤는 조금 쉰다).
+     글꼴은 Noto Serif SC 800(OpTxSerifZh) · Noto Sans SC 500(OpTxSansZh) — 중국어판에서만 받는 조각 (tools/gen/fonts/zh_fonts.py · zh-Hans_fonts.css).
+     타자기 제목 勇者学院养成记 은 타자 소리 일곱 번에 맞춰 오른쪽부터 한 글자씩, 부제 学院倒闭了 는 부제 소리 다섯 (OP_TYPE_AT) */
+  const SERIF_ZH = ["OpTxSerifZh", 800, 46, 4, 0.4];
+  const SANS_ZH = ["OpTxSansZh", 400, 44, 2.2, 0.5];
+  const SC_ZH = {
+    intro: {ms:29250, tail:300, look:"cream", font:SERIF_ZH, st:[
+      {t:["王国历236年——", "魔王军发动了全面进攻。"], y:[318, 402], ln:[[110, 760], [1710, 2810]], fade:[4880, 5480]},
+      {t:["长年沉浸于和平之中的王国军", "毫无招架之力，节节溃败，", "王国陷入了前所未有的危机。"], y:[274, 361, 448], ln:[[5760, 7360], [7960, 8760], [9360, 10660]], fade:[12720, 13300]},
+      {t:["然而，这样的王国仍有一线希望。", "史上空前绝后的全职业大师，", "人类最强的英雄，正是你。"], y:[274, 361, 448], ln:[[13610, 15310], [16110, 17860], [18410, 19860]], fade:[21880, 22450]},
+      {t:["为了阻止魔王，你与同伴们", "不顾安危，向敌阵进发。"], y:[318, 402], ln:[[22760, 24360], [24910, 26310]], fade:[28370, 28950]}]},
+    rift: {ms:19300, tail:300, look:"red", font:SANS_ZH,
+      glitch:[1700, 1750, 1800, 3400, 3450, 3500, 5150, 5200, 6800, 6850, 6900, 10250, 10300, 11900, 11950, 12000, 13600, 13650, 13700, 15300, 15350, 15400, 17000, 17050, 17100], st:[
+      {t:["眼前的时空翻涌着，剧烈摇晃，", "随即开始贪婪地吞噬周围的一切。"], y:[318, 400], ln:[[110, 1610], [2060, 4410]], out:[[6360, 6960], [7010, 7910]], flash:8500, end:8700},
+      {t:["魔王笑着被吸入了时空的彼端……", "与我并肩作战的同伴们也措手不及，相继被吞没。"], y:[318, 400], ln:[[9010, 11710], [12360, 14560]], out:[[16510, 17360], [17410, 18210]], flash:18800, end:19300}]},
+    danger: {ms:7000, tail:350, look:"red", font:["OpTxSansZh", 400, 50, 1.6, 0.55], glitch:[1700, 1750, 1800, 3400, 3450, 3500], st:[
+      {t:["啊，这下糟了……"], y:[359.5], at:[[110, 160, 460, 560, 710, 810, 1260, 1610]], mal:{t0:3700, tab:MAL_DANGER}}]},
+    date: {ms:4700, tail:300, look:"ink", font:SERIF_ZH, light:true, st:[
+      {t:["——王国历230年，秋"], y:[359.5], at:[[110, 110, 460, 510, 610, 760, 860, 960, 1010, 1060, 1410]], fade:[3750, 4380]}]},
+    typer: {ms:5950, tail:300, light:true, reveal:"pop", ghost:[108, 150, 177], ghost2:[196, 92, 132], glitch:[100, 1700, 1750, 1800, 3400, 3450, 3500], st:[
+      {t:["勇者学院养成记", "学院倒闭了"], y:[299.5, 423.5], fonts:[["OpTxSansZh", 400, 108, 44, 2], ["OpTxSansZh", 400, 34, 14, 0.2]], looks:["metal", "metalSub"],
+       at:[[2700, 2250, 1850, 1400, 1000, 550, 100], [2750, 2650, 2600, 2550, 2500]], cut:[4750, 4800], rule:{y:381.5, x0:72, x1:1207, grow:[100, 950], shrink:[4800, 5650]}}]},
+    dontsay: {ms:5050, tail:300, look:"dad", font:["OpTxSansZh", 400, 55, 2, 0.8], reveal:"fade", st:[
+      {t:["别说这种话。"], y:[359.5], at:[[110, 310, 610, 910, 1210, 1560]], fade:[4050, 4750]}]},
+    dream: {ms:5050, tail:300, look:"dad", font:["OpTxSansZh", 400, 55, 2, 0.8], reveal:"fade", st:[
+      {t:["我的梦想是……"], y:[359.5], at:[[110, 360, 560, 760, 910, 1260, 1510]], fade:[4000, 4720]}]},
+    hero: {ms:5100, tail:300, look:"dad", font:["OpTxSansZh", 400, 44, 2, 0.8], reveal:"fade", st:[
+      {t:["成为像我引以为傲的爸爸那样的英雄啊……"], y:[360],
+       at:[[110, 160, 260, 310, 410, 460, 510, 610, 660, 760, 810, 910, 960, 1060, 1110, 1210, 1310, 1460, 1560]], fade:[4080, 4790]}]},
+    winter: {ms:7400, tail:300, look:"cream", font:SERIF_ZH, st:[
+      {t:["——王国历230年，冬", "父亲去世了。"], y:[315.5, 403.5],
+       at:[[110, 110, 460, 510, 610, 760, 860, 960, 1010, 1060, 1410], [3360, 3510, 3760, 3960, 4110, 4160]], fade:[6470, 7100]}]}
+  };
+  /* 중국어 번체판(대만 · 1022) — SC_ZH 를 번체로 옮긴 것 (글자 수가 같아 at 그대로 · tools/i18n/zh_work.py 의 to_hant).
+     글꼴은 Noto Serif TC 800(OpTxSerifZhT) · Noto Sans TC 500(OpTxSansZhT) — 번체판에서만 받는 조각 (zh_fonts.py --lang zh-Hant · zh-Hant_fonts.css) */
+  const SERIF_ZHT = ["OpTxSerifZhT", 800, 46, 4, 0.4];
+  const SANS_ZHT = ["OpTxSansZhT", 400, 44, 2.2, 0.5];
+  const SC_ZHT = {
+    intro: {ms:29250, tail:300, look:"cream", font:SERIF_ZHT, st:[
+      {t:["王國曆236年——", "魔王軍發動了全面進攻。"], y:[318, 402], ln:[[110, 760], [1710, 2810]], fade:[4880, 5480]},
+      {t:["長年沉浸於和平之中的王國軍", "毫無招架之力，節節潰敗，", "王國陷入了前所未有的危機。"], y:[274, 361, 448], ln:[[5760, 7360], [7960, 8760], [9360, 10660]], fade:[12720, 13300]},
+      {t:["然而，這樣的王國仍有一線希望。", "史上空前絕後的全職業大師，", "人類最強的英雄，正是你。"], y:[274, 361, 448], ln:[[13610, 15310], [16110, 17860], [18410, 19860]], fade:[21880, 22450]},
+      {t:["為了阻止魔王，你與同伴們", "不顧安危，向敵陣進發。"], y:[318, 402], ln:[[22760, 24360], [24910, 26310]], fade:[28370, 28950]}]},
+    rift: {ms:19300, tail:300, look:"red", font:SANS_ZHT,
+      glitch:[1700, 1750, 1800, 3400, 3450, 3500, 5150, 5200, 6800, 6850, 6900, 10250, 10300, 11900, 11950, 12000, 13600, 13650, 13700, 15300, 15350, 15400, 17000, 17050, 17100], st:[
+      {t:["眼前的時空翻湧著，劇烈搖晃，", "隨即開始貪婪地吞噬周圍的一切。"], y:[318, 400], ln:[[110, 1610], [2060, 4410]], out:[[6360, 6960], [7010, 7910]], flash:8500, end:8700},
+      {t:["魔王笑著被吸入了時空的彼端……", "與我並肩作戰的同伴們也措手不及，相繼被吞沒。"], y:[318, 400], ln:[[9010, 11710], [12360, 14560]], out:[[16510, 17360], [17410, 18210]], flash:18800, end:19300}]},
+    danger: {ms:7000, tail:350, look:"red", font:["OpTxSansZhT", 400, 50, 1.6, 0.55], glitch:[1700, 1750, 1800, 3400, 3450, 3500], st:[
+      {t:["啊，這下糟了……"], y:[359.5], at:[[110, 160, 460, 560, 710, 810, 1260, 1610]], mal:{t0:3700, tab:MAL_DANGER}}]},
+    date: {ms:4700, tail:300, look:"ink", font:SERIF_ZHT, light:true, st:[
+      {t:["——王國曆230年，秋"], y:[359.5], at:[[110, 110, 460, 510, 610, 760, 860, 960, 1010, 1060, 1410]], fade:[3750, 4380]}]},
+    typer: {ms:5950, tail:300, light:true, reveal:"pop", ghost:[108, 150, 177], ghost2:[196, 92, 132], glitch:[100, 1700, 1750, 1800, 3400, 3450, 3500], st:[
+      {t:["勇者學院養成記", "學院倒閉了"], y:[299.5, 423.5], fonts:[["OpTxSansZhT", 400, 108, 44, 2], ["OpTxSansZhT", 400, 34, 14, 0.2]], looks:["metal", "metalSub"],
+       at:[[2700, 2250, 1850, 1400, 1000, 550, 100], [2750, 2650, 2600, 2550, 2500]], cut:[4750, 4800], rule:{y:381.5, x0:72, x1:1207, grow:[100, 950], shrink:[4800, 5650]}}]},
+    dontsay: {ms:5050, tail:300, look:"dad", font:["OpTxSansZhT", 400, 55, 2, 0.8], reveal:"fade", st:[
+      {t:["別說這種話。"], y:[359.5], at:[[110, 310, 610, 910, 1210, 1560]], fade:[4050, 4750]}]},
+    dream: {ms:5050, tail:300, look:"dad", font:["OpTxSansZhT", 400, 55, 2, 0.8], reveal:"fade", st:[
+      {t:["我的夢想是……"], y:[359.5], at:[[110, 360, 560, 760, 910, 1260, 1510]], fade:[4000, 4720]}]},
+    hero: {ms:5100, tail:300, look:"dad", font:["OpTxSansZhT", 400, 44, 2, 0.8], reveal:"fade", st:[
+      {t:["成為像我引以為傲的爸爸那樣的英雄啊……"], y:[360],
+       at:[[110, 160, 260, 310, 410, 460, 510, 610, 660, 760, 810, 910, 960, 1060, 1110, 1210, 1310, 1460, 1560]], fade:[4080, 4790]}]},
+    winter: {ms:7400, tail:300, look:"cream", font:SERIF_ZHT, st:[
+      {t:["——王國曆230年，冬", "父親去世了。"], y:[315.5, 403.5],
+       at:[[110, 110, 460, 510, 610, 760, 860, 960, 1010, 1060, 1410], [3360, 3510, 3760, 3960, 4110, 4160]], fade:[6470, 7100]}]}
+  };
   const OPTX_LANG = typeof I18N !== "undefined" ? I18N.lang : "ko";
-  const SCX = OPTX_LANG === "en" ? SC_EN : (OPTX_LANG === "ja" && I18N.tab) ? SC_JA : SC;   // 일본어 표가 없으면(빈 빌드) 한국어 그대로
+  const SCX = OPTX_LANG === "en" ? SC_EN : (OPTX_LANG === "ja" && I18N.tab) ? SC_JA : (OPTX_LANG === "zh-Hans" && I18N.tab) ? SC_ZH : (OPTX_LANG === "zh-Hant" && I18N.tab) ? SC_ZHT : SC;   // 일본어 · 중국어 표가 없으면(빈 빌드) 한국어 그대로
   const meas = document.createElement("canvas").getContext("2d");
   const FILTER_OK = (()=>{ try{ const c = document.createElement("canvas").getContext("2d"); if(!("filter" in c)) return false; c.filter = "blur(2px)"; return c.filter === "blur(2px)"; }catch(e){ return false; } })();
   const isSpace = c=> c === " " || c === "　";
@@ -33154,10 +33233,10 @@ const OPTX = (()=>{
     if(fontP) return fontP;
     const all = Object.values(SCX).flatMap(sc=> sc.st.flatMap(sp=> sp.t)).join("");
     const load = (document.fonts && document.fonts.load)
-      ? Promise.all((SCX === SC_JA ? ["800 46px OpTxSerifJa", "400 46px OpTxSansJa"] : [SCX === SC_EN ? "800 46px OpTxSerifEn" : "800 46px OpTxSerif", "400 46px OpTxSans"])
+      ? Promise.all((SCX === SC_JA ? ["800 46px OpTxSerifJa", "400 46px OpTxSansJa"] : SCX === SC_ZH ? ["800 46px OpTxSerifZh", "400 46px OpTxSansZh"] : SCX === SC_ZHT ? ["800 46px OpTxSerifZhT", "400 46px OpTxSansZhT"] : [SCX === SC_EN ? "800 46px OpTxSerifEn" : "800 46px OpTxSerif", "400 46px OpTxSans"])
           .map(f=> document.fonts.load(f, all))).catch(()=>{})
       : Promise.resolve();
-    fontP = Promise.race([load, new Promise(r=> setTimeout(r, SCX === SC_JA ? 5000 : 2500))]);   // 일본어 조각은 파일로 받는다 (data: 가 아니다)
+    fontP = Promise.race([load, new Promise(r=> setTimeout(r, (SCX === SC_JA || SCX === SC_ZH || SCX === SC_ZHT) ? 5000 : 2500))]);   // 일본어 · 중국어 조각은 파일로 받는다 (data: 가 아니다)
     return fontP;
   }
   /* 예전 APNG 와 같은 클래스의 화면 폭 — 붙이기 전에 미리 그 크기로 글자를 굽는다 */

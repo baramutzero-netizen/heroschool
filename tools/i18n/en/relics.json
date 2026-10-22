@@ -564,8 +564,6 @@
  "_relicStam": "원정 지구력 게이지 (1017 · 4단계 — runBattle opt.stam · openBattle 원정대 칸 · expedApply 탈진 철수) — 원정 지구력 Expedition Endurance / 遠征持久力 · 탈진 Exhausted / 疲労困憊",
  "<b>탈진</b> — {0}의 지구력이 바닥났다 · 공격력 · 속도 −{1}%": "<b>Exhausted</b> — {0} has run out of endurance · ATK · SPD −{1}%",
  "공격력 · 속도 −{0}%": "ATK · SPD −{0}%",
- "{0}행동마다 −{1}": "−{1} every {0} actions",
- "줄지 않는다": "Doesn't drain",
  "탈진": "Exhausted",
  "원정 지구력": "Expedition Endurance",
  "· <b>탈진</b>": "· <b>Exhausted</b>",

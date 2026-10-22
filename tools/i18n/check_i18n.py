@@ -208,6 +208,8 @@ T0_RE = re.compile(r'data-t0="[\d.]+"')     # 애니메이션 시작 때(perform
 CFG = json.load(open(os.path.join(ROOT, 'tools', 'i18n', 'config.json'), encoding='utf-8'))
 PUBLIC = bool(CFG.get('public'))
 JA_PUB = PUBLIC and bool(CFG.get('ja'))   # 1014 일본어 공개
+ZH_EXTRA = ((['zh-Hans:false:简体中文'] if PUBLIC and CFG.get('zh-Hans') else [])      # 1022 중국어 간체 · 번체 공개 — 설정의 언어 칸 끝에 더해진다
+            + (['zh-Hant:false:繁體中文'] if PUBLIC and CFG.get('zh-Hant') else []))     # (브라우저 · 주소 · 기억은 tools/i18n/check_zh.py 가 본다)
 LANG_RE = re.compile(r'<section class="panel"><div class="optrow"><div class="optlab"><b>언어 · Language</b>[\s\S]*?</section>')   # 공개 뒤 — B 에만 있는 설정의 언어 칸
 
 
@@ -339,7 +341,7 @@ def main():
             pg.evaluate("() => { UI.view = 'opt'; render(); }")
             pg.wait_for_timeout(200)
             lp = pg.evaluate("() => [...document.querySelectorAll('[data-lang]')].map(b => b.dataset.lang + ':' + b.getAttribute('aria-pressed') + ':' + b.textContent)")
-            want_lp = (['auto:false:Auto', 'ko:false:한국어', 'en:true:English'] if PUBLIC else ['ko:false:한국어', 'en:true:English']) + (['ja:false:日本語'] if JA_PUB else [])   # 주소의 ?lang=en 이 눌려 있다
+            want_lp = (['auto:false:Auto', 'ko:false:한국어', 'en:true:English'] if PUBLIC else ['ko:false:한국어', 'en:true:English']) + (['ja:false:日本語'] if JA_PUB else []) + ZH_EXTRA   # 주소의 ?lang=en 이 눌려 있다
             if lp != want_lp:
                 fails.append('영어: 설정의 언어 칸 %s' % lp)
             if o.shots:
@@ -388,7 +390,7 @@ def main():
                     fails.append('공개: 한국어 브라우저인데 한국어가 아니다 %s' % r2)
                 pg.evaluate("() => { __hsReset(9); closeModal(); newScenarioStart('전환 학원'); closeModal(); UI.view = 'opt'; render(); }")
                 lp2 = pg.evaluate(lpj)
-                if lp2 != ['auto:true:자동', 'ko:false:한국어', 'en:false:English'] + (['ja:false:日本語'] if JA_PUB else []):
+                if lp2 != ['auto:true:자동', 'ko:false:한국어', 'en:false:English'] + (['ja:false:日本語'] if JA_PUB else []) + ZH_EXTRA:
                     fails.append('공개: 한국어 설정의 언어 칸 %s' % lp2)
                 with pg.expect_navigation(timeout=30000):
                     pg.click('[data-lang=en]')
@@ -439,7 +441,7 @@ def main():
                         fails.append('일본어 공개: 日本語 를 누른 뒤 %s' % j2)
                     pg.evaluate("() => { closeModal(); UI.view = 'opt'; render(); }")
                     lpj2 = pg.evaluate(lpj)
-                    if lpj2 != ['auto:false:自動', 'ko:false:한국어', 'en:false:English', 'ja:true:日本語']:
+                    if lpj2 != ['auto:false:自動', 'ko:false:한국어', 'en:false:English', 'ja:true:日本語'] + ZH_EXTRA:
                         fails.append('일본어 공개: 일본어 설정의 언어 칸 %s' % lpj2)
                     c.close()
                     was_en = ('if(!sessionStorage.getItem("__old")){localStorage.setItem("heroacademy_v1", %s);localStorage.setItem("hs_lang0","1");sessionStorage.setItem("__old","1")}'

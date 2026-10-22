@@ -27,6 +27,13 @@ wrap.py · wrap_site.py 가 strip_dev 다음에 부른다:  src = apply_i18n(src
   일본어일 때만: 게임 글꼴 이름(물마루 · 물마루 Mono · 봄바람체)에 일본어 글자 조각 글꼴을 더하고(ja_fonts.css — 빌드 맨 끝 I18N_TAIL ·
   build_boot 가 lateFonts 뒤로 옮긴다), 줄바꿈(keep-all → normal) · 도트 폰트를 껐을 때의 글꼴(IBM Plex Sans JP · Shippori Mincho)을
   게임 CSS 에서 만든 덧규칙으로 고친다 (ja_css · ja_layout.css). 표가 비어 있으면 글은 한국어 그대로 — 글꼴 · CSS 만 달라진다.
+· 중국어 간체판 (1022) — tools/i18n/zh-Hans.json + zh-Hans/*.json · 언어 이름 zh-Hans (주소 ?lang=zh-Hans · zh · zh-cn 도 받는다).
+  공개 전(config.json "zh-Hans": false)에는 주소로만. 일본어와 같은 방식으로 글꼴 조각(zh-Hans_fonts.css — tools/gen/fonts/zh_fonts.py) ·
+  줄바꿈(keep-all → normal · line-break:strict) · 도트 폰트를 껐을 때의 글꼴(중국 본토에서 Google 글꼴이 막혀 있어 기기 글꼴 — PingFang SC ·
+  Microsoft YaHei · Noto Sans CJK SC …)을 덧규칙으로 (cjk_css · zh-Hans_layout.css).
+· 중국어 번체판(대만 · 1022) — tools/i18n/zh-Hant.json + zh-Hant/*.json (간체 표에서 zh_work.py hant 로 만든다) · 언어 이름 zh-Hant
+  (주소 ?lang=zh-Hant · zh-tw · zh-hk · zh-mo 도 받는다 · 공개 뒤 브라우저 zh-TW · zh-HK · zh-MO · zh-Hant). config.json "zh-Hant".
+  글꼴 조각 zh-Hant_fonts.css · 도트 폰트를 껐을 때 기기 글꼴(PingFang TC · Microsoft JhengHei …) · zh-Hant_layout.css.
 
   python3 tools/i18n/i18n_build.py game.html out.html          변환 시험
   python3 tools/i18n/i18n_build.py --dump game.html keys.json  번역 단위 목록 (키 · 맨 위 선언 · 줄 · 자리표 식 · 번역 여부)
@@ -736,6 +743,16 @@ def load_ja(verbose=False):
     return load_table('ja', verbose)
 
 
+def load_zh(verbose=False):
+    """중국어 간체 표 (1022) — zh-Hans.json + zh-Hans/*.json. 영어 표와 같은 규칙"""
+    return load_table('zh-Hans', verbose)
+
+
+def load_zht(verbose=False):
+    """중국어 번체 표 (1022 · 대만) — zh-Hant.json + zh-Hant/*.json (간체 표에서 zh_work.py hant 로 만든다)"""
+    return load_table('zh-Hant', verbose)
+
+
 def load_table(lang, verbose=False):
     files = [os.path.join(HERE, lang + '.json')] + sorted(glob.glob(os.path.join(HERE, lang, '*.json')))
     en, src, dup = {}, {}, []
@@ -762,31 +779,46 @@ def load_table(lang, verbose=False):
 JA_GFONTS = 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=Shippori+Mincho:wght@400;700&display=swap'
 
 
-def head_script(public, save_key=None, ja_preload=None, ja_public=False):
+def head_script(public, save_key=None, ja_preload=None, ja_public=False, zh_preload=None, zh_public=False, zht_preload=None, zht_public=False):
     """<head> 맨 앞의 언어 정하기 — 주소 ?lang > (공개 뒤) 저장한 값 hs_lang > (공개 뒤) 브라우저 언어 > 한국어.
     공개 뒤 첫 방문(hs_lang0 표시가 없을 때)에 세이브가 이미 있으면 공개 전부터 한국어로 하던 사람 → 한국어로 기억해 둔다
     (브라우저가 영어여도 하던 언어 그대로 · 설정의 '자동'을 고르면 그때부터 브라우저를 따른다 — 표시가 남아 다시 걸리지 않는다).
     일본어(1014 · config.json "ja")가 공개되면 브라우저 언어 ja → 일본어 · 설정에서 日本語 를 고를 수 있다. 공개 전에는 주소 ?lang=ja 로만.
     일본어 공개 뒤 첫 방문(hs_lang0j 표시가 없을 때)에 일본어 브라우저 · 세이브 있음 · 고른 언어 없음 · 영어 공개 뒤에 와 본 적 있음(hs_lang0)이면
     그동안 영어로 하던 사람 → 영어로 기억한다 (하던 언어 그대로 · '자동'을 고르면 일본어).
-    일본어일 때 도트 글꼴(ja_preload)을 미리 받고 도트 폰트를 껐을 때 쓸 Google 글꼴을 붙인다.
-    L= 줄은 tools/itch/build_itch.py 가 글자 그대로 찾아 바꾼다 (영어 기본) — 고치면 거기도."""
-    ja = ('if(L==="ja"){try{var d=document,h=d.head||d.documentElement,a;'
-          + ('if(/^https?:$/.test(location.protocol)){a=d.createElement("link");a.rel="preload";a.as="font";a.type="font/woff2";a.crossOrigin="anonymous";'
-             'a.href=' + json.dumps(ja_preload) + ';h.appendChild(a);}'          # 파일로 연 문서(file://)는 미리 받기가 CORS 로 막힌다 — 그때는 글꼴 규칙이 받는다
-             if ja_preload else '')
+    중국어 간체(1022 · config.json "zh-Hans")도 같다 — 주소 ?lang=zh-Hans (zh · zh-cn · zh-sg · zh-hans 도 받는다) · 공개 뒤 브라우저 zh(번체 지역 tw · hk · mo ·
+    zh-Hant 빼고) → 간체 · 첫 방문 표시 hs_lang0z. 번체(대만 · config.json "zh-Hant")는 주소 ?lang=zh-Hant (zh-tw · zh-hk · zh-mo · zh-hant 도) ·
+    공개 뒤 브라우저 zh-TW · zh-HK · zh-MO · zh-Hant → 번체 · 첫 방문 표시 hs_lang0t (그동안 영어로 하던 사람은 영어 그대로).
+    일본어일 때 도트 글꼴(ja_preload)을 미리 받고 도트 폰트를 껐을 때 쓸 Google 글꼴을 붙인다. 중국어는 도트 글꼴만 미리 받는다
+    (Google 글꼴은 중국 본토에서 막혀 있다 — 도트 폰트를 껐을 때는 기기 글꼴 · cjk_css).
+    L= 줄은 tools/itch/build_itch.py 가 글자 그대로 찾는다 (브라우저 언어로 고르는지) — 고치면 거기도."""
+    def preload(url):
+        return ('if(/^https?:$/.test(location.protocol)){a=d.createElement("link");a.rel="preload";a.as="font";a.type="font/woff2";a.crossOrigin="anonymous";'
+                'a.href=' + json.dumps(url) + ';h.appendChild(a);}') if url else ''    # 파일로 연 문서(file://)는 미리 받기가 CORS 로 막힌다 — 그때는 글꼴 규칙이 받는다
+    ja = ('if(L==="ja"){try{var d=document,h=d.head||d.documentElement,a;' + preload(ja_preload)
           + 'a=d.createElement("link");a.rel="stylesheet";a.href=' + json.dumps(JA_GFONTS) + ';h.appendChild(a);}catch(e){}}')
-    lead = ('<script>/* I18N 언어 (tools/i18n) */(function(){var P=%s,J=%s,K=%s,q=null,s=null,L="ko";'
+    zh = ('if(L==="zh-Hans"){try{var d=document,h=d.head||d.documentElement,a;' + preload(zh_preload) + '}catch(e){}}') if zh_preload else ''
+    zh += ('if(L==="zh-Hant"){try{var d=document,h=d.head||d.documentElement,a;' + preload(zht_preload) + '}catch(e){}}') if zht_preload else ''
+    zhb = '/^zh\\b/i.test(n)&&!/^zh-(tw|hk|mo|hant)\\b/i.test(n)'                  # 간체 브라우저 (번체 지역 · zh-Hant 빼고)
+    zhtb = '/^zh-(tw|hk|mo|hant)\\b/i.test(n)'                                       # 번체 브라우저 (대만 · 홍콩 · 마카오 · zh-Hant)
+    lead = ('<script>/* I18N 언어 (tools/i18n) */(function(){var P=%s,J=%s,Z=%s,T=%s,K=%s,q=null,s=null,L="ko";'
             'try{q=new URLSearchParams(location.search).get("lang")}catch(e){}'
+            'if(q&&/^zh(-(cn|sg|hans))?$/i.test(q))q="zh-Hans";else if(q&&/^zh-(tw|hk|mo|hant)$/i.test(q))q="zh-Hant";'
             'var n=(navigator.languages&&navigator.languages[0])||navigator.language||"ko";'
             'if(P){try{s=localStorage.getItem("hs_lang");var o=localStorage.getItem("hs_lang0");'
             'if(!o){if(!s&&K&&localStorage.getItem(K)){s="ko";localStorage.setItem("hs_lang",s)}'
             'localStorage.setItem("hs_lang0","1")}'
             'if(J&&!localStorage.getItem("hs_lang0j")){if(!s&&o&&K&&localStorage.getItem(K)&&/^ja\\b/i.test(n)){s="en";localStorage.setItem("hs_lang",s)}'
-            'localStorage.setItem("hs_lang0j","1")}}catch(e){}}'
-            'L=(q==="en"||q==="ko"||q==="ja")?q:(s==="en"||s==="ko"||(J&&s==="ja"))?s:P?(/^ko\\b/i.test(n)?"ko":(J&&/^ja\\b/i.test(n))?"ja":"en"):"ko";') % (
-        'true' if public else 'false', 'true' if (public and ja_public) else 'false', json.dumps(save_key) if save_key else 'null')
-    return lead + ja + 'window.HS_LANG=L;window.HS_LANG_PUBLIC=P;window.HS_LANG_JA=J;document.documentElement.lang=L;})();</script>'
+            'localStorage.setItem("hs_lang0j","1")}'
+            'if(Z&&!localStorage.getItem("hs_lang0z")){if(!s&&o&&K&&localStorage.getItem(K)&&' + zhb + '){s="en";localStorage.setItem("hs_lang",s)}'
+            'localStorage.setItem("hs_lang0z","1")}'
+            'if(T&&!localStorage.getItem("hs_lang0t")){if(!s&&o&&K&&localStorage.getItem(K)&&' + zhtb + '){s="en";localStorage.setItem("hs_lang",s)}'
+            'localStorage.setItem("hs_lang0t","1")}}catch(e){}}'
+            'L=(q==="en"||q==="ko"||q==="ja"||q==="zh-Hans"||q==="zh-Hant")?q:(s==="en"||s==="ko"||(J&&s==="ja")||(Z&&s==="zh-Hans")||(T&&s==="zh-Hant"))?s:'
+            'P?(/^ko\\b/i.test(n)?"ko":(J&&/^ja\\b/i.test(n))?"ja":(Z&&' + zhb + ')?"zh-Hans":(T&&' + zhtb + ')?"zh-Hant":"en"):"ko";') % (
+        'true' if public else 'false', 'true' if (public and ja_public) else 'false', 'true' if (public and zh_public) else 'false',
+        'true' if (public and zht_public) else 'false', json.dumps(save_key) if save_key else 'null')
+    return lead + ja + zh + 'window.HS_LANG=L;window.HS_LANG_PUBLIC=P;window.HS_LANG_JA=J;window.HS_LANG_ZH=Z;window.HS_LANG_ZHT=T;document.documentElement.lang=L;})();</script>'
 
 
 def _node_ok(code):
@@ -838,36 +870,55 @@ def _report(en, info, verbose):
         print('i18n: 번역 단위 %d가지 중 %d 번역됨 · 영어 표에만 있고 지금 빌드에 없는 키 %d' % (len(seen), done, len(stale)))
 
 
-def _report_ja(ja, info, verbose):
-    """일본어 표 (1014) — 번역된 단위 수 · 지금 빌드에 없는 키 · 일본어 글꼴(ja-pixel · ja-boast)에 없는 일본어 글자"""
+def _report_lang(tab, info, verbose, label, fdir, pixel, boast, chars_re, tool):
+    """일본어 (1014) · 중국어 (1022) 표 — 번역된 단위 수 · 지금 빌드에 없는 키 · 그 언어 글꼴(도트 · 허세 말풍선)에 없는 글자"""
     if not verbose:
         return
     seen, done, used = set(), 0, set()
     for key, top, callee, pos, kind, exprs in info.get('units', []):
         c = _ctx_name(top)
-        hit = (c + '|' + key) if (c and (c + '|' + key) in ja) else (key if key in ja else None)
+        hit = (c + '|' + key) if (c and (c + '|' + key) in tab) else (key if key in tab else None)
         if key not in seen:
             seen.add(key)
             done += hit is not None
         if hit:
             used.add(hit)
     used |= info.get('static', set())
-    stale = [k for k in ja if k not in used]
+    stale = [k for k in tab if k not in used]
+    info['stale_' + label] = stale
     miss = ''
     try:                                                   # fontTools 가 없으면(윈도우에서 체험판 빌드 등) 건너뛴다
         from fontTools.ttLib import TTFont
-        fdir = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'assets', 'fonts', 'ja')
-        have = set(TTFont(os.path.join(fdir, 'ja-pixel.woff2')).getBestCmap())
-        have_b = set(TTFont(os.path.join(fdir, 'ja-boast.woff2')).getBestCmap())       # 허세 말풍선 — 표의 한자만 넣었다
-        jp = re.compile(r'[\u3000-\u30ff\u3400-\u9fff\uf900-\ufaff\uff00-\uffef]')   # 일본어 글자만 (그 밖의 기호 − ✓ 등은 원래 글꼴 물마루가 그린다)
-        chars = sorted({ch for v in ja.values() for ch in v if jp.match(ch)
-                        and (ord(ch) not in have or (re.match(r'[\u3400-\u9fff\uf900-\ufaff]', ch) and ord(ch) not in have_b))})
+        fd = os.path.join(os.path.dirname(os.path.dirname(HERE)), 'assets', 'fonts', fdir)
+        have = set(TTFont(os.path.join(fd, pixel)).getBestCmap())
+        have_b = set(TTFont(os.path.join(fd, boast)).getBestCmap())       # 허세 말풍선 — 표의 한자만 넣었다
+        han = re.compile(r'[㐀-鿿豈-﫿]')
+        chars = sorted({ch for v in tab.values() for ch in v if chars_re.match(ch)
+                        and (ord(ch) not in have or (han.match(ch) and ord(ch) not in have_b))})
         if chars:
-            miss = ' · 일본어 글꼴에 없는 글자 %d (%s) — tools/gen/fonts/ja_fonts.py 를 다시 돌린다' % (len(chars), ''.join(chars[:20]))
+            miss = ' · %s 글꼴에 없는 글자 %d (%s) — %s 를 다시 돌린다' % (label, len(chars), ''.join(chars[:20]), tool)
     except Exception:
         pass
-    print('i18n: 일본어 — 표 %d줄 · 번역 단위 %d가지 중 %d · 표에만 있고 빌드에 없는 키 %d%s'
-          % (len(ja), len(seen), done, len(stale), miss))
+    print('i18n: %s — 표 %d줄 · 번역 단위 %d가지 중 %d · 표에만 있고 빌드에 없는 키 %d%s'
+          % (label, len(tab), len(seen), done, len(stale), miss))
+
+
+def _report_ja(ja, info, verbose):
+    """일본어 표 (1014) — 번역된 단위 수 · 지금 빌드에 없는 키 · 일본어 글꼴(ja-pixel · ja-boast)에 없는 일본어 글자"""
+    _report_lang(ja, info, verbose, '일본어', 'ja', 'ja-pixel.woff2', 'ja-boast.woff2',
+                 re.compile(r'[　-ヿ㐀-鿿豈-﫿＀-￯]'), 'tools/gen/fonts/ja_fonts.py')   # 일본어 글자만 (− ✓ 등은 물마루가 그린다)
+
+
+def _report_zh(zh, info, verbose):
+    """중국어 간체 표 (1022) — 일본어와 같은 점검 (zh-pixel · zh-boast)"""
+    _report_lang(zh, info, verbose, '중국어', 'zh-Hans', 'zh-pixel.woff2', 'zh-boast.woff2',
+                 re.compile(r'[　-〿㐀-鿿豈-﫿＀-￯]'), 'tools/gen/fonts/zh_fonts.py')
+
+
+def _report_zht(zht, info, verbose):
+    """중국어 번체 표 (1022 · 대만) — 같은 점검 (zht-pixel · zht-boast)"""
+    _report_lang(zht, info, verbose, '중국어 번체', 'zh-Hant', 'zht-pixel.woff2', 'zht-boast.woff2',
+                 re.compile(r'[　-〿㐀-鿿豈-﫿＀-￯]'), 'tools/gen/fonts/zh_fonts.py --lang zh-Hant')
 
 
 def _static_texts(src):
@@ -882,6 +933,12 @@ def _static_texts(src):
 JA_SCOPE = 'html[lang="ja"]'
 JA_NONPIXEL = ':not([data-font="pixel"])'              # 도트 폰트를 껐을 때 (pixelFontApply 가 <html data-font="pixel">)
 JA_FAMILY = (('"IBM Plex Sans KR"', '"IBM Plex Sans JP"'), ('"Gowun Batang"', '"Shippori Mincho"'))
+ZH_SCOPE = 'html[lang="zh-Hans"]'                      # 중국어 간체 (1022) — 도트 폰트를 껐을 때는 기기 글꼴 (Google 글꼴은 중국 본토에서 막혀 있다)
+ZH_FAMILY = (('"IBM Plex Sans KR"', '"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Source Han Sans SC"'),
+             ('"Gowun Batang"', '"Songti SC","STSong","SimSun","Noto Serif CJK SC","Source Han Serif SC"'))
+ZHT_SCOPE = 'html[lang="zh-Hant"]'                     # 중국어 번체 (1022 · 대만) — 도트 폰트를 껐을 때 기기 글꼴 (간체와 같은 방식)
+ZHT_FAMILY = (('"IBM Plex Sans KR"', '"PingFang TC","Heiti TC","Microsoft JhengHei","Noto Sans CJK TC","Source Han Sans TC"'),
+              ('"Gowun Batang"', '"Songti TC","PMingLiU","MingLiU","Noto Serif CJK TC","Source Han Serif TC"'))
 KEEP_ALL_RE = re.compile(r'word-break\s*:\s*keep-all\s*(!important)?', re.I)
 FONT_DECL_RE = re.compile(r'(?:^|;)\s*(font-family|font)\s*:\s*([^;]+)', re.I)
 FONT_SHORT_RE = re.compile(r'^(?:[^,]*?\s)?[\d.]+(?:px|em|rem|%|pt|vw|vh)(?:\s*/\s*[^\s,]+)?\s+(.+)$')
@@ -956,9 +1013,9 @@ def _split_sel(sel):
     return [p.strip() for p in parts if p.strip()]
 
 
-def ja_sel(sel, nonpixel=False):
-    """선택자 → 일본어판에서만 맞는 선택자 (html 로 시작하면 그 html 에 붙인다) · 붙일 수 없는 것은 뺀다"""
-    scope = JA_SCOPE + (JA_NONPIXEL if nonpixel else '')
+def ja_sel(sel, nonpixel=False, scope0=None):
+    """선택자 → 일본어판(중국어판)에서만 맞는 선택자 (html 로 시작하면 그 html 에 붙인다) · 붙일 수 없는 것은 뺀다"""
+    scope = (scope0 or JA_SCOPE) + (JA_NONPIXEL if nonpixel else '')
     out = []
     for p in _split_sel(sel):
         if re.match(r'html(?![\w-])', p):
@@ -992,7 +1049,21 @@ def ja_css(src):
     """게임 CSS 에서 일본어판 덧규칙을 만든다 → (문서 CSS, 학생 명부 책(그림자 DOM) CSS)
     · word-break:keep-all → normal (keep-all 은 일본어를 아예 줄바꿈하지 못하게 한다) · 줄바꿈 금칙은 line-break:strict
     · 도트 폰트를 껐을 때 — IBM Plex Sans KR · Gowun Batang 앞에 IBM Plex Sans JP · Shippori Mincho (Google 글꼴 — head 스크립트가 일본어일 때 붙인다)"""
-    doc = ['%s{line-break:strict}' % JA_SCOPE, '%s [style*="keep-all"]{word-break:normal!important}' % JA_SCOPE]
+    return cjk_css(src, JA_SCOPE, JA_FAMILY)
+
+
+def zh_css(src):
+    """중국어 간체판 덧규칙 (1022) — 일본어와 같다 (줄바꿈 · 금칙) · 도트 폰트를 껐을 때는 기기의 중국어 글꼴을 앞에"""
+    return cjk_css(src, ZH_SCOPE, ZH_FAMILY)
+
+
+def zht_css(src):
+    """중국어 번체판 덧규칙 (1022 · 대만) — 간체와 같다 (기기의 번체 글꼴)"""
+    return cjk_css(src, ZHT_SCOPE, ZHT_FAMILY)
+
+
+def cjk_css(src, SCOPE, FAMILY):
+    doc = ['%s{line-break:strict}' % SCOPE, '%s [style*="keep-all"]{word-break:normal!important}' % SCOPE]
     html = re.sub(r'<script\b[^>]*>[\s\S]*?</script>', ' ', src)
     css = '\n'.join(re.findall(r'<style\b[^>]*>([\s\S]*?)</style>', html))
 
@@ -1004,20 +1075,20 @@ def ja_css(src):
     for at, sel, decl in css_rules(css):
         m = KEEP_ALL_RE.search(decl)
         if m:
-            js = ja_sel(sel)
+            js = ja_sel(sel, scope0=SCOPE)
             if js:
                 emit(doc, at, '%s{word-break:normal%s}' % (js, '!important' if m.group(1) else ''))
         for fam, imp in _families(decl):
             new = fam
-            for ko, ja in JA_FAMILY:
+            for ko, ja in FAMILY:
                 if ko in new and ja not in new:
                     new = new.replace(ko, ja + ',' + ko)
             if new != fam:
-                js = ja_sel(sel, nonpixel=True)
+                js = ja_sel(sel, nonpixel=True, scope0=SCOPE)
                 if js:
                     emit(doc, at, '%s{font-family:%s%s}' % (js, new, '!important' if imp else ''))
-    for ko, ja in JA_FAMILY:
-        doc.append('%s%s [style*=%s]{font-family:%s,%s,%s!important}' % (JA_SCOPE, JA_NONPIXEL, json.dumps(ko.strip('"')), ja, ko,
+    for ko, ja in FAMILY:
+        doc.append('%s%s [style*=%s]{font-family:%s,%s,%s!important}' % (SCOPE, JA_NONPIXEL, json.dumps(ko.strip('"')), ja, ko,
                                                                          'serif' if 'Batang' in ko else 'sans-serif'))
     rb = []
     m = re.search(r'const RB_CSS = ("(?:[^"\\\n]|\\.)*");', src)
@@ -1031,21 +1102,30 @@ def ja_css(src):
 
 def ja_fonts():
     """tools/i18n/ja_fonts.css (tools/gen/fonts/ja_fonts.py 가 만든다) → (CSS 글, 도트 글꼴 주소) · 없으면 ('', None)"""
-    p = os.path.join(HERE, 'ja_fonts.css')
+    return lang_fonts('ja', 'ja')
+
+
+def lang_fonts(code, key):
+    """tools/i18n/<code>_fonts.css → (CSS 글, 도트 글꼴 주소 assets/fonts/<code>/<key>-pixel.woff2) · 없으면 ('', None) — 일본어 ja · 중국어 zh-Hans(zh)"""
+    p = os.path.join(HERE, code + '_fonts.css')
     if not os.path.exists(p):
         return '', None
     css = re.sub(r'/\*[\s\S]*?\*/', '', open(p, encoding='utf-8').read()).strip()
-    m = re.search(r'url\((assets/fonts/ja/ja-pixel\.woff2[^)]*)\)', css)
+    m = re.search(r'url\((assets/fonts/%s/%s-pixel\.woff2[^)]*)\)' % (re.escape(code), re.escape(key)), css)
     return css, (m.group(1) if m else None)
 
 
-def ja_tail(css):
-    """빌드 맨 끝 — 일본어일 때만 글꼴 덧규칙을 붙이는 스크립트. build_boot.boot_split 이 lateFonts(원래 글꼴) 뒤로 옮긴다
-    (@font-face 는 뒤에 쓴 것이 앞선다 — 가나 · 라틴처럼 물마루에도 있는 글자를 일본어 글꼴로)"""
-    return ('\n<!-- I18N_TAIL_START -->\n<script>/* 일본어 글꼴 (1014 · tools/i18n/ja_fonts.css) — 일본어일 때만 게임 글꼴 이름에 일본어 글자를 더한다 */'
-            '(function(){if(window.HS_LANG!=="ja")return;var s=document.createElement("style");s.id="i18nJaFonts";s.textContent=%s;'
+TAIL_IDS = {'ja': 'i18nJaFonts', 'zh-Hans': 'i18nZhFonts', 'zh-Hant': 'i18nZhtFonts'}
+
+
+def ja_tail(css, zh_css_='', zht_css_=''):
+    """빌드 맨 끝 — 일본어 · 중국어일 때만 글꼴 덧규칙을 붙이는 스크립트 (한 덩어리 — build_boot.boot_split 이 하나만 lateFonts 뒤로 옮긴다)
+    (@font-face 는 뒤에 쓴 것이 앞선다 — 가나 · 라틴처럼 물마루에도 있는 글자를 그 언어 글꼴로)"""
+    m = {k: v for k, v in (('ja', css), ('zh-Hans', zh_css_), ('zh-Hant', zht_css_)) if v}
+    return ('\n<!-- I18N_TAIL_START -->\n<script>/* 일본어 · 중국어 글꼴 (1014 · 1022 · tools/i18n/ja_fonts.css · zh-Hans_fonts.css) — 그 언어일 때만 게임 글꼴 이름에 그 언어 글자를 더한다 */'
+            '(function(){var M=%s,I=%s,c=M[window.HS_LANG];if(!c)return;var s=document.createElement("style");s.id=I[window.HS_LANG];s.textContent=c;'
             '(document.body||document.documentElement).appendChild(s);})();</script>\n<!-- I18N_TAIL_END -->\n'
-            % json.dumps(css, ensure_ascii=False).replace('</', '<\\/'))
+            % (json.dumps(m, ensure_ascii=False).replace('</', '<\\/'), json.dumps(TAIL_IDS)))
 
 
 def js_css(path):
@@ -1066,7 +1146,9 @@ def apply_i18n(src, verbose=True, info=None):
     cfg = _load_json('config.json', {"public": False})
     en = load_en(verbose)
     ja = load_ja(verbose)
-    keys = dict(ja); keys.update(en)                     # 문맥 키(맨위선언|한국어)는 두 표 어느 쪽에 있어도 붙인다
+    zh = load_zh(verbose)
+    zht = load_zht(verbose)
+    keys = dict(zht); keys.update(zh); keys.update(ja); keys.update(en)    # 문맥 키(맨위선언|한국어)는 어느 표에 있어도 붙인다
     info = {} if info is None else info
     try:
         runtime = open(os.path.join(HERE, 'i18n_runtime.js'), encoding='utf-8').read()
@@ -1099,20 +1181,40 @@ def apply_i18n(src, verbose=True, info=None):
             if os.path.exists(jlay):                              # 손으로 고친 일본어 화면 CSS (영어의 en_layout.css 와 같은 자리)
                 jdoc += '\n' + re.sub(r'\s*\n\s*', '\n', re.sub(r'/\*[\s\S]*?\*/', '', open(jlay, encoding='utf-8').read())).strip()
             jcss = [json.dumps(c.strip(), ensure_ascii=False).replace('</', '<\\/') for c in (jdoc, jrb)]
-            parts[main_at] = '\n' + runtime.replace('/*@@EN@@*/{}', table).replace('/*@@JA@@*/{}', jtab).replace('/*@@CTX@@*/{}', ctx) \
+            ztab = json.dumps(zh, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/').replace('<!--', '<\\!--')
+            zdoc, zrb = zh_css(src)
+            zlay = os.path.join(HERE, 'zh-Hans_layout.css')
+            if os.path.exists(zlay):                              # 손으로 고친 중국어 화면 CSS (1022)
+                zdoc += '\n' + re.sub(r'\s*\n\s*', '\n', re.sub(r'/\*[\s\S]*?\*/', '', open(zlay, encoding='utf-8').read())).strip()
+            zcss = [json.dumps(c.strip(), ensure_ascii=False).replace('</', '<\\/') for c in (zdoc, zrb)]
+            tttab = json.dumps(zht, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/').replace('<!--', '<\\!--')
+            tdoc, trb = zht_css(src)
+            tlay = os.path.join(HERE, 'zh-Hant_layout.css')
+            if os.path.exists(tlay):                              # 손으로 고친 번체 화면 CSS (1022)
+                tdoc += '\n' + re.sub(r'\s*\n\s*', '\n', re.sub(r'/\*[\s\S]*?\*/', '', open(tlay, encoding='utf-8').read())).strip()
+            tcss = [json.dumps(c.strip(), ensure_ascii=False).replace('</', '<\\/') for c in (tdoc, trb)]
+            parts[main_at] = '\n' + runtime.replace('/*@@EN@@*/{}', table).replace('/*@@JA@@*/{}', jtab).replace('/*@@ZHS@@*/{}', ztab).replace('/*@@ZHT@@*/{}', tttab).replace('/*@@CTX@@*/{}', ctx) \
                 .replace('/*@@CSS@@*/""', css[0]).replace('/*@@RBCSS@@*/""', css[1]) \
-                .replace('/*@@JACSS@@*/""', jcss[0]).replace('/*@@JARBCSS@@*/""', jcss[1]) + '\n'
+                .replace('/*@@JACSS@@*/""', jcss[0]).replace('/*@@JARBCSS@@*/""', jcss[1]) \
+                .replace('/*@@ZHSCSS@@*/""', zcss[0]).replace('/*@@ZHSRBCSS@@*/""', zcss[1]) \
+                .replace('/*@@ZHTCSS@@*/""', tcss[0]).replace('/*@@ZHTRBCSS@@*/""', tcss[1]) + '\n'
         out = ''.join(parts)
         fcss, fpre = ja_fonts()
-        if fcss:
-            out = out.rstrip('\n') + '\n' + ja_tail(fcss)       # 일본어 글꼴 — build_boot 가 lateFonts 뒤로 옮긴다
+        zfcss, zfpre = lang_fonts('zh-Hans', 'zh')
+        tfcss, tfpre = lang_fonts('zh-Hant', 'zht')
+        if fcss or zfcss or tfcss:
+            out = out.rstrip('\n') + '\n' + ja_tail(fcss, zfcss, tfcss)       # 일본어 · 중국어 글꼴 — build_boot 가 lateFonts 뒤로 옮긴다
         sk = re.search(r'const SAVE_KEY = "([^"]+)";', src)              # 공개 뒤 첫 방문 — 이미 세이브가 있으면 한국어 그대로
-        out = head_script(bool(cfg.get('public')), sk.group(1) if sk else None, fpre, bool(cfg.get('ja'))) + out   # game.html 은 머리말 없는 조각 — 맨 앞이 곧 <head> 안
+        out = head_script(bool(cfg.get('public')), sk.group(1) if sk else None, fpre, bool(cfg.get('ja')),
+                          zfpre, bool(cfg.get('zh-Hans')), tfpre, bool(cfg.get('zh-Hant'))) + out   # game.html 은 머리말 없는 조각 — 맨 앞이 곧 <head> 안
         if verbose:
             print(f"i18n: 문자열 {nT} · 템플릿 단위 {nL} 감쌈 · 영어 표 {len(en)}줄 · 공개 {bool(cfg.get('public'))} · 일본어 공개 {bool(cfg.get('public') and cfg.get('ja'))}"
+                  + f" · 중국어 공개 {bool(cfg.get('public') and cfg.get('zh-Hans'))} · 번체 공개 {bool(cfg.get('public') and cfg.get('zh-Hant'))}"
                   + (" · 문법 검사 통과" if checked else " · 문법 검사 못 함(node 없음)"))
         _report(en, info, verbose)
         _report_ja(ja, info, verbose)
+        _report_zh(zh, info, verbose)
+        _report_zht(zht, info, verbose)
         return out
     except (ScanError, OSError, ValueError) as e:
         print(f"i18n: 경고 — 변환하지 못해 한국어만으로 빌드한다 ({e})", file=sys.stderr)

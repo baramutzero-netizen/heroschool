@@ -1,6 +1,6 @@
-"""영어판 화면 점검 (1010 · 2단계) — 영어로 띄운 화면에서 넘치거나 잘린 칸을 찾는다. 1014 — --lang ja 면 일본어판(?lang=ja)을 같은 방법으로.
+"""영어판 화면 점검 (1010 · 2단계) — 영어로 띄운 화면에서 넘치거나 잘린 칸을 찾는다. 1014 — --lang ja 면 일본어판(?lang=ja)을 같은 방법으로. 1022 — --lang zh-Hans 면 중국어 간체판 · zh-Hant 면 번체판(대만).
 
-    python3 tools/i18n/check_layout.py [--lang en|ja] [--sizes 1440x900,1100x700,900x1000,390x844] [--only home,plan] [--shots 폴더] [--years 3]
+    python3 tools/i18n/check_layout.py [--lang en|ja|zh-Hans|zh-Hant] [--sizes 1440x900,1100x700,900x1000,390x844] [--only home,plan] [--shots 폴더] [--years 3]
     크기 — 1440x900 넓은 화면 · 1100x700 넓은 화면의 가장 좁은 폭(1013 — PC 좁은 창 · 태블릿이 이 폭으로 그려 줄인다) ·
     900x1000 좁은 화면(화면 크기를 직접 키운 PC · 가로로 든 폰) · 390x844 폰
     hs.py 를 쓰는 세션이면:  python3 ~/hs.py layout   (빌드 뒤에)
@@ -198,8 +198,8 @@ MEASURE = r"""() => {
       const rg = document.createRange(); rg.selectNodeContents(el);
       const tops = new Set([...rg.getClientRects()].filter(q => q.width > 0.5).map(q => Math.round(q.top / 3)));
       const n = Math.max(1, tops.size);
-      const letters = text.replace(/[^A-Za-z가-힣]/g, '').length;
-      if (n >= 3 && letters >= 4 && n >= letters * 0.6 && cs.writingMode === 'horizontal-tb') add('stack', n);
+      const letters = text.replace(/[^A-Za-z가-힣\u3040-\u30ff\u4e00-\u9fff]/g, '').length;   // 1022 — 가나 · 한자도 (좁은 칸에 한 글자씩 세로로)
+      if (n >= 3 && letters >= 4 && n >= letters * 0.6 && cs.writingMode === 'horizontal-tb' && r.width < parseFloat(cs.fontSize) * 3) add('stack', n);   // 1022 — 세로로 쌓이면 칸이 글자 두세 개 폭 안 (칩 · 값이 줄 높이만 다른 넓은 줄은 아님)
       if (r.width < 420 && (/^(BUTTON|TH|H1|H2|H3|H4|LABEL|SUMMARY|A)$/.test(el.tagName) || el.closest('button, th, h1, h2, h3, nav, .ttab, .tab, .eyebrow, .btn, [role=tab]')))
         lines[path(el)] = {n, el: desc(el), text: text.slice(0, 60), w: Math.round(r.width)};
     }
@@ -233,12 +233,12 @@ HAN_JS = r"""() => {
 
 
 FULL = False
-LANG_KO = {'en': '영어', 'ja': '일본어'}
+LANG_KO = {'en': '영어', 'ja': '일본어', 'zh-Hans': '중국어', 'zh-Hant': '번체 중국어'}
 
 
 def run(br, path, query, size, scenes_only, shots, years, tag):
     w, h = size
-    c = br.new_context(viewport={'width': w, 'height': h}, device_scale_factor=1, locale={'ko': 'ko-KR', 'ja': 'ja-JP'}.get(tag, 'en-US'))   # 브라우저 언어도 맞춘다 (공개 뒤)
+    c = br.new_context(viewport={'width': w, 'height': h}, device_scale_factor=1, locale={'ko': 'ko-KR', 'ja': 'ja-JP', 'zh-Hans': 'zh-CN', 'zh-Hant': 'zh-TW'}.get(tag, 'en-US'))   # 브라우저 언어도 맞춘다 (공개 뒤)
     c.route(re.compile(r'^https?://'), lambda r: r.abort())
     c.add_init_script(C.INIT_JS)
     pg = c.new_page()
@@ -282,7 +282,7 @@ def main():
     ap.add_argument('--full', action='store_true', help='스크린샷을 페이지 전체로')
     ap.add_argument('--wrap', action='store_true', help='한국어보다 줄이 늘어난 칸도 하나하나 보여 준다 (넘침은 아님 · 기본은 개수만)')
     ap.add_argument('--ko-shots', action='store_true', help='한국어 화면도 찍는다 (견주기용)')
-    ap.add_argument('--lang', default='en', choices=['en', 'ja'], help='점검할 언어 (1014 — ja 는 ?lang=ja 일본어판 · 기본 en)')
+    ap.add_argument('--lang', default='en', choices=['en', 'ja', 'zh-Hans', 'zh-Hant'], help='점검할 언어 (1014 — ja 는 ?lang=ja 일본어판 · 1022 — zh-Hans 간체 · zh-Hant 번체(대만) · 기본 en)')
     o = ap.parse_args()
     global FULL
     FULL = o.full
