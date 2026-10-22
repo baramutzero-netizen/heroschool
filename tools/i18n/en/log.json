@@ -58,6 +58,7 @@
  "훈련 실패 {0}명": "{0} failed training",
  "· <b>부상 {0}명</b>": "· <b>{0} injured</b>",
  "<b>{1} {2}</b> — 전원 컨디션 <b>{4}{5}</b>": "<b>{1} {2}</b> — everyone's Condition <b>{4}{5}</b>",
+ "<b>{1} {2}</b> — 전원 신뢰 <b>{4}</b>": "<b>{1} {2}</b> — everyone's Trust <b>{4}</b>",
  "두 배": "doubled",
  "절반": "halved",
  "<b>{1} {2}</b> — 이날 훈련 효과 <b>{4}</b>": "<b>{1} {2}</b> — that day's training gains <b>{4}</b>",

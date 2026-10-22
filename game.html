@@ -1690,6 +1690,49 @@ html body .skwrap .skfit .skstage .sk-card > .fst-who{left:72px;top:-13px;width:
 .card > .fst-who{right:2px;top:-10px;width:22px;height:22px}                                         /* 예전 스케줄 카드 — 수명 꼬리표 반대쪽 */
 .card > .fst-who::before{border-width:1.5px}
 /* FSTUT_CSS_END */
+/* CMARK_CSS_START — 일과 카드 표식 (1022 · apply_cmark.py · 목업 mockups/card-marks) ─ 표식 그림(assets/card_marks — 사용자가 준 tools/card-effect-marks-v1 · 24 도트 · 5색)을 카드 아래 한쪽에 붙이고
+   컨디션 글 · 값은 다른 쪽으로 모은다 (카드 오른쪽 위는 추천 학생 얼굴 자리 · 왼쪽 위는 남은 주). html[data-cmk-side="r"] 이면 표식이 오른쪽 · 컨디션이 왼쪽 */
+/* 두루마리 스케줄 (2배 무대 · 카드 118 × 170 · 컨디션 줄 146 ~ 158) — 표식 24 (그림 그대로 · 사용자 1022 '24px로 넣자' — 목업 조작판은 24 · 32 · 48) */
+html body .skwrap .skfit .skstage .sk-card > .sk-ck{left:auto;right:14px;width:auto;justify-content:flex-end;gap:6px}   /* .sk-card > — 두루마리 CSS 가 뒤에 와도 이긴다 */
+html[data-cmk-side="r"] body .skwrap .skfit .skstage .sk-card > .sk-ck{left:8px;right:auto}
+html body .skwrap .skfit .skstage .sk-card > .cmk-ic{position:absolute;left:5px;top:calc(152px - var(--cmk-sk,24px) / 2);width:var(--cmk-sk,24px);height:var(--cmk-sk,24px);
+  image-rendering:pixelated;z-index:2;cursor:help}
+html[data-cmk-side="r"] body .skwrap .skfit .skstage .sk-card > .cmk-ic{left:auto;right:5px}
+/* 예전 스케줄 카드 (폭 1100 아래) — 표식 24 (그림 그대로) · 컨디션 줄 왼쪽 아래 */
+.card > .cmk-ic{position:absolute;left:5px;bottom:4px;width:24px;height:24px;image-rendering:pixelated;z-index:2;cursor:help}
+html[data-cmk-side="r"] .card > .cmk-ic{left:auto;right:5px}
+html .card .ceff{text-align:right}
+html[data-cmk-side="r"] .card .ceff{text-align:left}
+@media (max-width:599px){                                     /* 폰 — 카드 폭 64 쯤: 표식은 아래 모서리에 걸치고 컨디션 줄은 그만큼 비운다 (넘치면 원정 카드처럼 두 줄) */
+  .card > .cmk-ic{left:-6px;bottom:-6px}
+  html[data-cmk-side="r"] .card > .cmk-ic{left:auto;right:-6px}
+  html .card.marked .ceff{padding-left:16px;word-break:keep-all}
+  html[data-cmk-side="r"] .card.marked .ceff{padding-left:0;padding-right:16px}
+}
+/* 도감 카드 목록의 표식 범례 */
+.marklegend .cmk-ic{width:24px;height:24px;image-rendering:pixelated;vertical-align:middle;margin-right:4px}
+/* 경과 보고 — 학생마다 효과 캔버스 (학생 단추 안 · 장면 시간을 따라 그린다) · 요일 칸 표식 */
+.dr-student > .cmk-fx{position:absolute;left:-60%;top:-110%;width:220%;height:230%;pointer-events:none;z-index:6}
+.dr-days button > .cmk-day{position:absolute;right:8px;bottom:7px;width:24px;height:24px;image-rendering:pixelated}
+@media (max-width:600px){.dr-days button > .cmk-day{display:none}}   /* 폰 — 요일 칸이 좁아 훈련 이름을 가린다 */
+/* CMARK_CSS_END */
+/* CREC_CSS_START — 일과 카드 추천 (1022 · apply_crec.py) ─ 추천 얼굴 말풍선(원정 띠 .bl-bub 모양 — 글꼴 · 색 · 테두리 · 꼬리 그대로) · 새 카드는 날아오기 전에 숨긴다 */
+.crec-bub{position:fixed;left:0;top:0;z-index:75;box-sizing:border-box;max-width:min(232px,calc(100vw - 12px));padding:4px 8px 5px;pointer-events:none;
+  font:400 12px/1.45 "Mulmaru",sans-serif;color:#2a1a12;background:#fff8e8;box-shadow:0 0 0 2px #2a1a12,3px 3px 0 2px #0005;
+  white-space:normal;overflow-wrap:anywhere;word-break:keep-all;text-align:left;-webkit-font-smoothing:none;font-synthesis:none;letter-spacing:0;
+  opacity:0;transform:translateY(3px);transition:opacity .12s ease-out,transform .12s ease-out}
+.crec-bub.on{opacity:1;transform:none}
+.crec-bub.dn{transform:translateY(-3px)}
+.crec-bub.dn.on{transform:none}
+.crec-bub::after{content:"";position:absolute;left:var(--tail,50%);bottom:-8px;margin-left:-5px;border:5px solid transparent;border-top:6px solid #fff8e8;
+  filter:drop-shadow(0 2px 0 #2a1a12)}
+.crec-bub.dn::after{bottom:auto;top:-8px;border-top:5px solid transparent;border-bottom:6px solid #fff8e8;filter:drop-shadow(0 -2px 0 #2a1a12)}
+html[lang="ja"] .crec-bub,html[lang^="zh"] .crec-bub{word-break:normal}   /* 일본어 · 중국어는 띄어쓰기가 없다 — 글자 사이에서 줄을 바꾼다 (문장부호는 줄 머리에 오지 않게) */
+/* 말풍선을 띄운 얼굴 — 고리가 밝게 */
+#view .fst-who.crec-on{filter:drop-shadow(0 0 2px #fff6c8) drop-shadow(0 0 1px #fff6c8) drop-shadow(1px 1px 0 rgba(0,0,0,.4))}
+/* 새 카드 — 스케줄 화면에서 날아오기 전에는 숨긴다 (CREC — 팝업이 닫히면 한 장씩) */
+#view .crec-wait{opacity:0!important}
+/* CREC_CSS_END */
 /* SCOUTWIN_CSS_START — 겨울 스카우트 개편 (1019 · apply_scout.py) ─ 목록 · 확인 팝업은 건물 안 창 색(TOWNIN 과 같은 값 — 밝은 · 어두운 화면 · 도트 마감 · 팔레트와 상관없이 같다 ·
    게임이 모든 button 에 붙이는 테두리 · 그림자는 html body #view / #modalRoot … 로 걷는다). 설득 대화는 상담창(.cw-* — CSLWIN_CSS) 그대로에 효과만 (.scw-cw) */
 .scw,.scw-pal{--scw-ink:#fff4e6;--scw-line:#e9cdbf;--scw-edge:#b98f84;--scw-win:#2a1418;--scw-panel:#42191f;--scw-card:#5b2a30;--scw-gold:#ffd36a;--scw-dim:#e2c2b6;
@@ -7254,10 +7297,13 @@ const CARD_MARK = {
   heal : {n:"회복", i:"✚",  w:40, mul:1,  cond:+1, c:"var(--ok)",    d:"쓰는 날 전원 컨디션 +1"},
   dbl  : {n:"두 배", i:"×2", w:40, mul:2,  cond:0,  c:"var(--brass)", d:"그날 훈련 효과가 두 배"},
   skull: {n:"소진", i:"☠",  w:10, mul:1,  cond:-1, c:"var(--bad)",   d:"쓰는 날 전원 컨디션 −1"},
-  half : {n:"절반", i:"½",  w:10, mul:.5, cond:0,  c:"var(--dim)",   d:"그날 훈련 효과가 절반"}
+  half : {n:"절반", i:"½",  w:10, mul:.5, cond:0,  c:"var(--dim)",   d:"그날 훈련 효과가 절반"},
+  /* 1022 — 신뢰 (사용자 '전체 신뢰도 하락과 전체 신뢰도 증가. 각각 0.1씩') · 값은 그대로 더한다 (addTrust raw) · 신뢰는 숫자 대신 말로 (trustGainWord 와 같다) */
+  tup  : {n:"신뢰 상승", i:"♪", w:20, mul:1, cond:0, trust:+.1, c:"#bc678f", d:"쓰는 날 전원 신뢰 증가"},
+  tdn  : {n:"신뢰 하락", i:"|||", w:10, mul:1, cond:0, trust:-.1, c:"#6d62a0", d:"쓰는 날 전원 신뢰 감소"}
 };
 const CARD_MARK_W = Object.keys(CARD_MARK).reduce((a,k)=>{ a[k]=CARD_MARK[k].w; return a; }, {});
-function markOf(c){ return (c && c.m && CARD_MARK[c.m]) ? CARD_MARK[c.m] : null; }
+function markOf(c){ return (c && c.m && c.t !== "exped" && CARD_MARK[c.m]) ? CARD_MARK[c.m] : null; }   // 1022 — 원정 카드에는 표식이 붙지 않는다 (예전 저장의 표식도 쓰지 않는다)
 /* 휴식과 원정은 덱이 늘어나도 뽑힐 확률이 고정이고,
    남은 몫을 훈련 카드가 똑같이 나눠 갖는다.
    합숙 기간처럼 원정이 덱에서 빠지면 그 몫도 훈련 카드로 돌아간다. */
@@ -7292,19 +7338,13 @@ function newCard(){
   S.cardSeq = (S.cardSeq||0)+1;
   const c = {u:S.cardSeq, t:drawCardType(), w:(S.weekSeq|0)};
   if(CARD_COL[c.t] === null) c.c = pick(REST_COLORS);
-  if(RNG() < CARD_MARK_P) c.m = wchoose(CARD_MARK_W);
+  if(c.t !== "exped" && RNG() < CARD_MARK_P) c.m = wchoose(CARD_MARK_W);   // 1022 — 원정 카드에는 표식이 붙지 않는다 (사용자 '모든 표식은 이제 원정에는 안붙고')
+  if(window.CREC) CREC.born(c);   // 1022 — 추천 학생 · 스케줄에서 한 장씩 날아온다 (CREC)
   return c;
 }
 /* 튜토리얼 12 — 표식이 붙은 카드가 처음 손패(또는 칸)에 들어온 주에 한 번 */
-function tryMarkTut(){
-  if(tutSeen("12")) return false;
-  const has = (S.hand||[]).some(c=> c && c.m) || (S.slots||[]).some(c=> c && c.m);
-  if(!has) return false;
-  UI.ceremonies = UI.ceremonies||[];
-  if(UI.ceremonies.some(c=> c.type==="tut" && c.page==="12")) return false;
-  queueCeremony({type:"tut", page:"12"});
-  return true;
-}
+/* 1022 — 운영 안내 12(카드 표식)는 숨긴다 (사용자 '표식 관련 튜토리얼은 숨김 처리') — 띄우지 않고 운영 안내 목록에서도 뺀다 (TUT_HIDE · 장 내용은 그대로) */
+function tryMarkTut(){ return false; }
 function handInit(){
   S.hand = []; S.slots = Array(WEEK_DAYS).fill(null); S.cardSeq = 0;
   for(let i=0;i<HAND_SIZE;i++) S.hand.push(newCard());
@@ -9313,7 +9353,7 @@ function newGame(name){
   try{ lgNew = leagueNewId(); }catch(e){}
   S = {
     v:1, lgid:lgNew || leagueGenId(), acadName: name || (pick(ACAD)+" 용사 학원"),
-    master:{name:"마스터", lead:0, info:0, net:0, pts:6},
+    master:{name:"마스터", lead:0, info:0, net:0, pts:0},   // 1022 — 마스터 육성 포인트는 0 에서 시작 (사용자 '게임 처음 시작 시 마스터 육성 포인트는 0으로' · 예전 6) · 여름 합숙 뒤 grantMasterPts 로 받는다
     tier:1, fame:0, gold:3000, sp:0, debt:DIFFS.normal.debt, debt0:DIFFS.normal.debt, debtV:1, bank:{repay:0}, jobUnlock:0, actUnlock:0, jobN:{}, jobEv:{}, jobW:{}, jobGr:{}, diet:"plain",
     year:1, phase:"spring", week:0,
     students:[], graduates:[], log:[],
@@ -9321,14 +9361,16 @@ function newGame(name){
     items:{}, church:{}, epiUsed:[], epiLog:[], focusPrev:null, focusHist:[], books:0, waters:0, scouts:null, incoming:[], history:[], opts:{report:true, fxA:FX_A_DEFAULT}, mission:newMission(), relicPool:[], skillPool:[],
     lastTour:null, cleared:{}   // 1021 셋째 — 클리어 기록 (clrHas — 처음 치르는 전투는 스킵 못 한다)
   };
-  /* 개교 멤버 — 팔라딘(탱커) · 마법사(딜러) · 암흑 사제(힐러)로 고정 (1003, 예전: 팔라딘 + 무작위 딜러 · 힐러). 등급은 그대로 무작위 */
+  /* 개교 멤버 — 팔라딘(탱커) · 마법사(딜러) · 암흑 사제(힐러)로 고정 (1003, 예전: 팔라딘 + 무작위 딜러 · 힐러). 등급은 그대로 무작위.
+     성격도 고정 — 암흑 사제 천재적(1003) · 마법사 차분 · 팔라딘 활발 (1022 사용자 '1년차 마법사 성격 차분으로 고정 · 1년차 팔라딘 성격 활발로 고정' — 새 학원부터) */
+  const FOUND_PERS = {darkpriest:"genius", wizard:"stone", paladin:"lively"};
   const jobs = shuffle(["paladin", "wizard", "darkpriest"]);
   const un=[];
   const startGrade = ()=> wchoose({D:30, C:40, B:23, A:7});   // 개교 시점에는 S급이 오지 않는다
   const startEval = base => Math.max(0, base + ri(-10,10));
   for(let i=0;i<3;i++){
     const job = jobs[i%jobs.length], dp = job === "darkpriest";
-    const st = newStudent(1, startGrade(), job, dp ? "genius" : null);
+    const st = newStudent(1, startGrade(), job, FOUND_PERS[job] || null);
     if(dp) st.uniq = "dp1";   // 1년차 암흑 사제 (1003) — 성격 천재적 고정 · 혼자만의 인사 한마디(UNIQ_GREET) · 마스터는 늘 ‘마스터’(masterQ)
     st.note = pickUnique(ENROLL_NOTE, un); S.students.push(st);
   }
@@ -10018,6 +10060,10 @@ function dayRun(tr0, bonus, day, opt){
     S.students.forEach(x=>{ x.cond = clamp(x.cond + mark.cond, 0, 100); });
     dlog(`<b style="color:${mark.c}">${mark.i} ${mark.n}</b> — 전원 컨디션 <b style="color:${mark.c}">${mark.cond>0?"+":""}${mark.cond}</b>`, "note");
   }
+  if(mark && mark.trust){   // 1022 — 신뢰 상승 · 하락 표식: 전원 ±0.1 (CMARK)
+    S.students.forEach(x=> addTrust(x, mark.trust, true));
+    dlog(`<b style="color:${mark.c}">${mark.i} ${mark.n}</b> — 전원 신뢰 <b style="color:${mark.c}">${mark.trust>0? "증가" : "감소"}</b>`, "note");
+  }
   if(mark && mark.mul !== 1){
     dlog(`<b style="color:${mark.c}">${mark.i} ${mark.n}</b> — 이날 훈련 효과 <b style="color:${mark.c}">${mark.mul>1? "두 배":"절반"}</b>`, "note");
   }
@@ -10044,7 +10090,7 @@ function dayRun(tr0, bonus, day, opt){
     }
   }
   // 오후 — 개인 행동 (훈련 · 의뢰). 휴식 카드 날은 하루 내내 쉰다 — 자금 부족으로 오전만 휴식이 된 날(opt.pm)은 오후를 그대로 (1004)
-  reportRecord(day, tr, bonus, "am", snap, S.students.filter(s=>!skip || !skip.has(s.id)), sceneStatus, sceneLogStart);
+  reportRecord(day, tr, bonus, "am", snap, S.students.filter(s=>!skip || !skip.has(s.id)), sceneStatus, sceneLogStart, mark && window.CMK? {mark:CMK.key(mark)} : undefined);   // 1022 — 경과 보고 표식 효과 (CMARK)
   if(!resting || opt.pm){
     const fs = mentSnap();
     const focusLogStart = DAYLOG.length;
@@ -10401,7 +10447,7 @@ function reportRecord(day, tr, bonus, phase, before, members, status, logStart, 
   const scenes = UI.wrun.scenes ||= [];
   Object.entries(groups).forEach(([facility, group])=> scenes.push({
     day, season:UI.wrun.startPhase || S.phase, training:tr.n, trainingId:tr.id, color:cardColor(UI.wrun.days?.[day] || tr.id).c, bonus, phase, facility,
-    logs:DAYLOG.slice(logStart), reward:extra?.reward || "", job:extra?.job || null, jobIntro:!!extra?.jobIntro,
+    logs:DAYLOG.slice(logStart), reward:extra?.reward || "", job:extra?.job || null, jobIntro:!!extra?.jobIntro, mark:extra?.mark || null,
     students:group.map(s=>{
       const old=before[s.id], changes=[];
       if(old){
@@ -10498,7 +10544,7 @@ function reportSceneShell(records, dlg, plan){
     <nav class="dr-days" aria-label="요일 선택">${DAY_N.slice(0,5).map((n,d)=>{
       const list=scenes.filter(s=>s.day===d), first=list[0];
       const pl=!first && plan ? plan[d] : null;   // 아직 오지 않은 요일 (원정 대기 중 · 1003)
-      return `<button type="button" data-dr-day="${d}" style="--day-color:${first?.color||pl?.c||cardColor(first?.trainingId).c}" ${!first?"disabled":""}><span>${n}요일 <i></i></span><strong>${esc(first?.training||pl?.n||"기록 없음")}</strong>${first?.bonus?`<em>+${Math.round(first.bonus*100)}%</em>`:""}</button>`;
+      return `<button type="button" data-dr-day="${d}" style="--day-color:${first?.color||pl?.c||cardColor(first?.trainingId).c}" ${!first?"disabled":""}><span>${n}요일 <i></i></span><strong>${esc(first?.training||pl?.n||"기록 없음")}</strong>${window.CMK? CMK.dayIc((list.find(x=>x.mark)||{}).mark) : ""}${first?.bonus?`<em>+${Math.round(first.bonus*100)}%</em>`:""}</button>`;
     }).join("")}</nav>
     <div class="dr-stage" id="drStage"><img class="dr-room" id="drRoom" alt="" draggable="false"><canvas class="dr-shadows" aria-hidden="true"></canvas><svg class="dr-defs" width="0" height="0" aria-hidden="true"><defs><filter id="dr-ol" x="-60%" y="-60%" width="220%" height="220%"><feMorphology in="SourceAlpha" operator="dilate" radius="1.333" result="e"/><feComposite in="e" in2="SourceAlpha" operator="out" result="edge"/><feFlood flood-color="#111111" result="ink"/><feComposite in="ink" in2="edge" operator="in" result="ol"/><feMerge><feMergeNode in="ol"/><feMergeNode in="SourceGraphic"/></feMerge></filter><filter id="dr-ols" x="-15%" y="-15%" width="130%" height="130%"><feMorphology in="SourceAlpha" operator="dilate" radius="1.25" result="e"/><feComposite in="e" in2="SourceAlpha" operator="out" result="edge"/><feFlood flood-color="#111111" result="ink"/><feComposite in="ink" in2="edge" operator="in" result="ol"/><feMerge><feMergeNode in="ol"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs></svg>
       <div class="dr-top"><div><span class="dr-eyebrow">오늘의 학원</span><h3 id="drFacility"></h3><span id="drActivity"></span></div><span class="dr-chain" id="drChain"></span></div>
@@ -10621,6 +10667,7 @@ function reportSceneBind(records, opt){
     $("#drResultHint").textContent=`${phaseName(s)} · ${s.students.length}명${fail?` · 실패 ${fail}명`:""}`;
     const totals={};s.students.forEach(x=>x.changes.forEach(c=>{totals[c.label]=(totals[c.label]||0)+c.value;}));
     $("#drResultChips").innerHTML=s.reward?`<span>${esc(s.reward)}</span>`:Object.entries(totals).map(([label,value])=>chip({label:`${label} 합계`,value:Math.round(value*10)/10,kind:value<0?"loss":label==="컨디션"?"heal":"gain"})).join("")||`<span class="hint">오늘의 기록을 차곡차곡 쌓았어요.</span>`;
+    if(window.CMK)CMK.draw(s);   // 1022 — 표식이 붙은 요일의 오전 장면이면 학생마다 효과 캔버스 (CMARK)
     details();sync();timeline(false);progress();
     if(s.jobIntro && !jobShown){
       jobShown=true; if(opt.onJob)opt.onJob(); paused=true; sync();
@@ -10644,6 +10691,7 @@ function reportSceneBind(records, opt){
     ok.onclick=()=>{ el.remove(); done(); };
   }
   function timeline(sound){
+    if(window.CMK)CMK.tick(elapsed);   // 1022 — 표식 효과 (장면 시간 · CMARK)
     const n=Math.floor((elapsed-leadMs)/stepMs);
     root.querySelectorAll(".dr-study-sprite[data-study-job]").forEach((el,i)=>{
       const frame=reduced?0:Math.floor(elapsed/360+i*.7)%4;
@@ -17937,6 +17985,7 @@ function render(){
   audBase(S && PHASES[S.phase] ? S.phase : null);
   if(window.RBK) RBK.after();   // 1009 — 책에서 연 이름 변경 · 스킬 강화 팝업이 끝나면 책을 다시 그린다 (apply_roster)
   if(window.FST) FST.after();   // 1022 — 첫 시간표 튜토리얼 (FSTUT) — 카드의 추천 얼굴 · 02 스케줄이 열렸는지 · 이어하기
+  if(window.CREC) CREC.after();   // 1022 — 일과 카드 추천 (CREC) — 얼굴 말풍선 · 새 카드가 한 장씩 날아온다
 }
 /* 학원 이름 (1007) — 두 줄을 넘으면 두 줄에 들어가는 크기까지 글자를 비례로 줄인다
    (가로 화면 사이드가 길어져 스케줄의 잉크 단지 · 깃펜을 가리지 않게). 도트 폰트도 같은 방식 — 12 · 24px 사이 크기는 조금 흐리게 보인다.
@@ -18681,7 +18730,7 @@ function cardHtml(c){
   const tr = TR[c.t] || TR.free, col = cardColor(c), mk = markOf(c);
   return `<div class="card${mk?" marked":""}" draggable="true" data-card="${c.u}" style="--cc:${col.c};--cs:${col.s}${col.t?`;--ct:${col.t}`:""}${
       mk? `;--mk:${mk.c}`:""}" title="${esc(tr.n)}${cardCost(c)? ` · ${cardCostTip(c)}`:""}${mk? ` — ${mk.i} ${mk.n}: ${mk.d}`:""}">
-    ${mk? `<span class="cmark" title="${esc(mk.n)} — ${esc(mk.d)}">${mk.i}</span>`:""}
+    ${mk && window.CMK? CMK.ic(c.m, "c") : ""}
     ${(()=>{ const L = clamp(cardLeft(c), 1, CARD_LIFE); return `<span class="clife l${L}" title="쓰지 않으면 ${L<=1? "이번 주가 끝날 때" : `${L}주 뒤`} 사라진다"><i></i>${cardLeftText(L)}</span>`; })()}
     <div class="ctop"><span class="cdot"></span><span class="ccol">${col.n}</span></div>
     <div class="cname">${esc(tr.n)}</div>
@@ -18708,9 +18757,9 @@ function cardLegendHtml(){
       }).join("")}
       <span style="color:var(--dim)">* 휴식 — 랜덤</span>
     </div>
-    <div class="marklegend">가끔 카드에 <b>표식</b>이 붙어 들어온다 —
+    <div class="marklegend">가끔 카드에 <b>표식</b>이 붙어 들어온다 (원정 카드 빼고) —
       ${Object.keys(CARD_MARK).map(k=>{ const m=CARD_MARK[k];
-        return `<span><i style="background:${m.c}">${m.i}</i>${esc(m.d)}</span>`; }).join("")}
+        return `<span>${window.CMK? CMK.ic(k, "lg") : `<i style="background:${m.c}">${m.i}</i>`}${esc(m.d)}</span>`; }).join("")}
     </div>
     <p class="opthint" style="margin-top:12px;line-height:1.7">컨디션 70 이상 훈련 효율 100% · 40~69 60% · 39 이하 20%.
       훈련 성공률은 컨디션 70 이상이면 100%, 그 아래는 <b style="color:var(--text)">컨디션이 하락할수록 훈련 실패 확률 증가</b> (휴식은 항상 성공).
@@ -18846,7 +18895,7 @@ function skCard(c, x, y){                                       // x, y = 카드
     + (cost? `<span class="sk-cc">${esc(cost)}</span>` : "") + fx
     + `<span class="sk-ck">컨디션<b class="${good? "sk-grn" : "sk-red"}">${esc(cv)}</b></span>`
     + `<span class="sk-life" style="--lc:${lc}">${cardLeftText(L)}</span>`
-    + (mk? `<span class="sk-mark" title="${esc(mk.n)} — ${esc(mk.d)}">${esc(mk.i)}</span>` : "")
+    + (mk && window.CMK? CMK.ic(c.m, "sk") : "")   // 1022 — 표식 그림은 카드 아래 (CMARK)
     + `</div>`;
 }
 function skRibbon(cx, label, key){
@@ -28006,7 +28055,7 @@ const STYLISH_SKILL_FX = {
   groups: {dr_u:["natureRoots"],sw_u:["earthWave"], dp_u:["bloodRitual"], bd_u:["ensemble"], nj_1:["waterSwamp"], ar_1:["greenPierce"], wz_2:["blizzardBack","blizzardFront"], wz_u:["gravityBeam","gravityFoot","gravityCircle"]}
 };
 /* 원정 보스 필살기 (1021 넷째 — 사용자 'newmonsterimage/ultimate-fx-v1 에 각 보스 필살기 효과를 넣어놨으니 그것도 webp로 적용') — 원정지 주인 다섯의 필살기 그림
-   (원본 1536 × 1024 PNG → assets/skill-fx/boss/*.webp · tools/gen/patch/bossult_art.py). 스타일리시 줌인에서만 (학생 스킬 그림과 같다 · 심플 모드는 예전 효과).
+   (원본 1536 × 1024 PNG → skill-fx/boss 폴더의 WebP · tools/gen/patch/bossult_art.py). 스타일리시 줌인에서만 (학생 스킬 그림과 같다 · 심플 모드는 예전 효과).
    한 장짜리 그림을 목업(ultimate-fx-v1/preview.html)처럼 움직인다 — burst: 작게 나타나 커지며 사라짐 · barrage: 주먹 잔상이 0.11초마다 앞뒤로(백열권 소리와 같은 박자) · slash: 오른쪽 위에서 내리긋고 왼쪽 아래로.
    과부하 연타 · 영웅 살해는 대상 하나(targets), 나머지 셋은 대상 무리 전체(groups). 소용돌이만 유닛 아래(바닥)에 깐다.
    w — 대상 도트 칸 높이 h 의 몇 배 · span — 무리 폭의 몇 배(min — 그래도 h 의 몇 배) · ax · ay — 그림의 어느 점(폭 · 높이 비율)을 대상(무리) 가운데 · at(body 몸 가운데 / foot 발)에 맞추나 */
@@ -30734,7 +30783,7 @@ function lkwFit(){
    · 넓은 화면(폭 1100 이상 — 두루마리 스케줄 · 사이드 Schedule 단추) · 좁은 화면(예전 스케줄 · 폰 메뉴의 스케줄 칸) 둘 다. 글자 소리는 상담창 cwBlip ·
      효과음 SFX fs_door · fs_clat · fs_glint · fs_slam · 곡 BGM.fsch. 자동화(navigator.webdriver)에서는 열지 않는다 — 시험은 window.__fstForce = true */
 (() => {
-const FST_FACE = {"paladin":{"motivated":"assets/fst_faces/paladin-motivated.png?v=9f80f84f","joy":"assets/fst_faces/paladin-joy.png?v=3e213740","surprised":"assets/fst_faces/paladin-surprised.png?v=b0ed2bf6","smile":"assets/fst_faces/paladin-smile.png?v=f5c93a74"},"wizard":{"tired":"assets/fst_faces/wizard-tired.png?v=8c795a66","sleepy-cat":"assets/fst_faces/wizard-sleepy-cat.png?v=02b87b13","smile":"assets/fst_faces/wizard-smile.png?v=d2ae512d","glasses":"assets/fst_faces/wizard-glasses.png?v=359e79c5","pout":"assets/fst_faces/wizard-pout.png?v=8831934e","joy":"assets/fst_faces/wizard-joy.png?v=a1a0733e"},"darkpriest":{"heroic-confidence":"assets/fst_faces/darkpriest-heroic-confidence.png?v=a6082822","smile":"assets/fst_faces/darkpriest-smile.png?v=51f67484","flustered":"assets/fst_faces/darkpriest-flustered.png?v=fb006c8c","joy":"assets/fst_faces/darkpriest-joy.png?v=775cc84f"}};   // apply_fstut.py — {직업: {표정: "assets/fst_faces/직업-표정.png?v=…"}} (tools/newcharactericon/*-expressions-v1 의 128 도트 · 학생 얼굴이라 WebP 로 바꾸지 않는다)
+const FST_FACE = {"paladin":{"motivated":"assets/fst_faces/paladin-motivated.png?v=9f80f84f","joy":"assets/fst_faces/paladin-joy.png?v=3e213740","surprised":"assets/fst_faces/paladin-surprised.png?v=b0ed2bf6","smile":"assets/fst_faces/paladin-smile.png?v=f5c93a74"},"wizard":{"tired":"assets/fst_faces/wizard-tired.png?v=8c795a66","sleepy-cat":"assets/fst_faces/wizard-sleepy-cat.png?v=02b87b13","smile":"assets/fst_faces/wizard-smile.png?v=d2ae512d","glasses":"assets/fst_faces/wizard-glasses.png?v=359e79c5","pout":"assets/fst_faces/wizard-pout.png?v=8831934e","joy":"assets/fst_faces/wizard-joy.png?v=a1a0733e"},"darkpriest":{"heroic-confidence":"assets/fst_faces/darkpriest-heroic-confidence.png?v=a6082822","smile":"assets/fst_faces/darkpriest-smile.png?v=51f67484","flustered":"assets/fst_faces/darkpriest-flustered.png?v=fb006c8c","joy":"assets/fst_faces/darkpriest-joy.png?v=775cc84f"}};   // apply_fstut.py — {직업: {표정: fst_faces 폴더의 〈직업〉-〈표정〉 PNG + ?v=}} (주소처럼 적지 않는다 — 시작 로딩이 페이지 안의 assets 주소를 모두 받으려 한다) (tools/newcharactericon/*-expressions-v1 의 128 도트 · 학생 얼굴이라 WebP 로 바꾸지 않는다)
 /* 추천 얼굴 — 학생 명부 책(RB_LAYOUT_SRC.jobs)과 같은 맞춤 [배율, x%, y%] */
 const FST_CROP = {paladin:[.97,.5,5], sword:[.97,-.5,-1], monk:[1.06,-7.5,-3.5], archer:[1.04,-2,5.5], rogue:[1.07,-1.5,-2], priest:[1.02,0,4], timemage:[1.05,-2,0],
   wizard:[1.09,.5,.5], druid:[1.01,2,4.5], forcemage:[1.05,0,.5], enchanter:[.94,0,2.5], darkpriest:[1.04,0,7.5], bard:[.94,-3,2.5], spellsword:[1.07,-2.5,-2], gunner:[1.06,2,4.5], ninja:[.98,-5.5,-1.5]};
@@ -30924,30 +30973,100 @@ function fNewCard(i, T){
 function fDeal(list, sess){
   if(sess !== F.sess) return Promise.resolve();
   const T = fTrio(), add = list.map(i => fNewCard(i, T));
+  fSlamPrime(add.length);                                                                   // 1022 — 쾅 <audio> 를 미리 (file:// · 첫 쾅이 묻히지 않게)
   S.hand = (S.hand || []).concat(add);
   render();
   return Promise.all(add.map((c, j) => fFly(c, j * FST_GAP2, sess)));
 }
+/* 1022 — 쾅(소리 · 흔들림)은 카드가 눈에 앉는 때에 (사용자 '소리 타이밍이 조금씩 늦는듯한 느낌') — 날기 곡선(.3,.75,.4,1)은 끝 가까이 거의 멈춰 있어서
+   끝(onfinish)에 울리면 60 ~ 110ms 늦었다. 남은 거리가 6px 안이 되는 때에 흔들고, 소리는 나오기까지 걸리는 만큼 먼저 (file:// 의 미리 load 한 <audio> 30ms · WebAudio 는 출력 지연).
+   대사가 기다리는 때(카드가 앉고 0.42초 …)는 그대로 날기가 끝날 때 */
+function fEase(x){                                                                         // cubic-bezier(.3,.75,.4,1) — 시간 비율 → 진행 비율
+  let lo = 0, hi = 1;
+  for(let i = 0; i < 24; i++){ const m = (lo + hi) / 2, bx = .9 * m * (1 - m) * (1 - m) + 1.2 * m * m * (1 - m) + m * m * m; if(bx < x) lo = m; else hi = m; }
+  const m = (lo + hi) / 2; return 2.25 * m * (1 - m) * (1 - m) + 3 * m * m * (1 - m) + m * m * m;
+}
+function fHit(dist){ for(let t = 0; t < FST_FLIGHT; t += 5){ const p = fEase(t / FST_FLIGHT); if(p >= .1 && dist * (1 - p) / .9 <= 6) return t; } return FST_FLIGHT; }
+function fLead(){
+  try{
+    const f = SFX.fs_slam && SFX.fs_slam.f;
+    if(AWEB === false) return 30;                                                        // file:// — 미리 load 한 <audio>(fSlam)는 바로 시작한다 · 기기 출력 지연만
+    if(ASBAD[f] || !ASBUF[f]) return 40;
+    const c = audCtx(); return c ? Math.min(60, Math.round(((c.outputLatency || 0) + (c.baseLatency || 0)) * 1000)) : 0;
+  }catch(e){ return 30; }
+}
+/* 쾅 소리 (1022) — 튜토리얼 · 새 주 카드(CREC 가 FST.slam 으로 같이 쓴다).
+   · 연타면(0.6초 안에 다음 쾅) 조금씩 높게 — 1 → +0.035 씩 · 1.3 까지 (사용자 '쾅이 연타될때 피치를 조금씩 올리자')
+   · file://(효과음이 <audio>)는 쾅 <audio> 를 미리 만들어 load 해 두고 그것을 울린다 · 카드를 날리기 직전에 한 번 들리지 않게(음량 0.0001) 울려
+     디코더 · 소리 장치를 깨운다 (사용자 '첫 카드의 쾅이 안들림' — 새로 만든 <audio> 는 처음 울릴 때 준비가 늦어 첫 쾅이 묻혔다). WebAudio 는 소리를 받아 두고 문맥을 깨운다
+   · SLAM.log — 울린 때 · 빠르기 (시험이 읽는다 · 최근 40) */
+const SLAM = {pool: [], at: -1e9, n: 0, prime: -1e9, log: []};
+const SLAM_COMBO = 600, SLAM_STEP = .035, SLAM_MAX = 1.3, SLAM_POOL = 12;
+function fSlamPrime(n){
+  try{
+    const t = SFX.fs_slam; if(!t) return;
+    if(AWEB !== false){
+      if(!ASBUF[t.f]) sfxLoad(t.f);
+      const c = audCtx(); if(c && c.state === "suspended") c.resume().catch(() => {});
+      return;
+    }
+    let base = ASEL[t.f]; if(!base){ base = ASEL[t.f] = new Audio(BGM_DIR + t.f); base.preload = "auto"; }
+    const now = performance.now();
+    if(n > 0 && now - SLAM.prime > 2000 && sfxGain() > 0){
+      SLAM.prime = now;
+      const w = base.cloneNode(); w.volume = .0001; const p = w.play(); if(p && p.catch) p.catch(() => {});
+    }
+    SLAM.pool = SLAM.pool.filter(x => now - x.t < 8000);                                  // 오래 쉰 <audio> 는 브라우저가 재워 둔다 — 새로
+    while(SLAM.pool.length < Math.min(SLAM_POOL, Math.max(n, 2))){ const e = base.cloneNode(); e.preload = "auto"; try{ e.load(); }catch(x){} SLAM.pool.push({e, t: now}); }
+  }catch(e){}
+}
+function fSlamRate(){
+  const now = performance.now();
+  SLAM.n = now - SLAM.at < SLAM_COMBO ? SLAM.n + 1 : 0; SLAM.at = now;
+  return Math.min(SLAM_MAX, 1 + SLAM.n * SLAM_STEP);
+}
+function fSlam(){
+  const t = SFX.fs_slam; if(!t) return;
+  const rate = fSlamRate();
+  SLAM.log.push({t: performance.now(), rate}); if(SLAM.log.length > 40) SLAM.log.shift();
+  if(AWEB !== false){ sfxPlay("fs_slam", rate); return; }                               // WebAudio — 받아 둔 소리 (fSlamPrime 이 미리 받는다)
+  const g = sfxGain(); if(g <= 0) return;
+  if(!SLAM.pool.length || performance.now() - SLAM.pool[0].t >= 8000) fSlamPrime(1);
+  const x = SLAM.pool.shift(); if(!x) return;
+  const e = x.e;
+  e.volume = clamp(g * (t.v == null ? 1 : t.v), 0, 1);
+  e.preservesPitch = e.mozPreservesPitch = e.webkitPreservesPitch = false; e.playbackRate = rate;
+  const p = e.play(); if(p && p.catch) p.catch(() => {});
+  setTimeout(() => fSlamPrime(1), 0);                                                   // 다음 쾅 몫을 채워 둔다
+}
+function fWarm(k){                                                                         // 소리를 미리 받아 둔다 — file:// 는 <audio> 를 만들어 두고 (처음 울릴 때 늦지 않게)
+  try{
+    const t = SFX[k]; if(!t || ASBUF[t.f]) return;
+    if(AWEB === false){ if(!ASEL[t.f]){ const a = ASEL[t.f] = new Audio(BGM_DIR + t.f); a.preload = "auto"; try{ a.load(); }catch(e){} } }
+    else sfxLoad(t.f);
+  }catch(e){}
+}
+function fJolt(el){
+  if(fRM()) el.animate([{filter: "drop-shadow(0 0 6px #ffd36a)"}, {filter: "none"}], {duration: 700, easing: "ease-out"});
+  else el.animate([{transform: "scale(1.08) rotate(-1.4deg)"}, {transform: "scale(1.02) rotate(.8deg)", offset: .55}, {transform: "none"}],
+                  {duration: 130, easing: "ease-out", composite: "add"});                 // 남은 몇 px 의 날기 위에 더한다
+}
 function fFly(c, delay, sess){
   return new Promise(res => {
     const el = document.querySelector(`#view [data-card="${c.u}"]`);
-    const land = () => {
-      if(sess === F.sess){
-        sfxPlay("fs_slam", .94 + Math.random() * .12);
-        if(el && el.isConnected){
-          if(fRM()) el.animate([{filter: "drop-shadow(0 0 6px #ffd36a)"}, {filter: "none"}], {duration: 700, easing: "ease-out"});
-          else el.animate([{transform: "scale(1.08) rotate(-1.4deg)"}, {transform: "scale(1.02) rotate(.8deg)", offset: .55}, {transform: "none"}], {duration: 130, easing: "ease-out"});
-        }
-      }
-      res();
-    };
-    if(!el){ setTimeout(land, delay + FST_FLIGHT); return; }
-    if(fRM()){ el.animate([{opacity: 0}, {opacity: 1}], {duration: 180, delay, fill: "backwards"}).onfinish = land; return; }
+    const slam = (a, at) => a.ready.then(() => {                                            // 애니메이션이 실제로 시작한 때(startTime)부터 센다
+      const now = performance.now(), t = (a.startTime == null ? now : a.startTime) + delay + at;
+      setTimeout(() => { if(sess === F.sess) fSlam(); }, Math.max(0, t - fLead() - now));
+      setTimeout(() => { if(sess === F.sess && el.isConnected) fJolt(el); }, Math.max(0, t - now));
+    }).catch(() => {});
+    if(!el){ setTimeout(() => { if(sess === F.sess) fSlam(); res(); }, delay + FST_FLIGHT); return; }
+    if(fRM()){ const a = el.animate([{opacity: 0}, {opacity: 1}], {duration: 180, delay, fill: "backwards"}); a.onfinish = res; slam(a, 150); return; }
     const r = el.getBoundingClientRect(), k = (el.offsetWidth && r.width) ? r.width / el.offsetWidth : 1;
     const zone = el.closest(".sk-hand, .handrow"), zr = zone ? zone.getBoundingClientRect() : r;
     const sx = Math.min(innerWidth, zr.right) + 26, dx = (sx - r.left) / k, d2 = dx - 26 / k;
-    el.animate([{transform: `translateX(${dx}px)`, opacity: 0}, {transform: `translateX(${d2}px)`, opacity: 1, offset: .1}, {transform: "translateX(0)", opacity: 1}],
-               {duration: FST_FLIGHT, delay, easing: "cubic-bezier(.3,.75,.4,1)", fill: "backwards"}).onfinish = land;
+    const a = el.animate([{transform: `translateX(${dx}px)`, opacity: 0}, {transform: `translateX(${d2}px)`, opacity: 1, offset: .1}, {transform: "translateX(0)", opacity: 1}],
+                         {duration: FST_FLIGHT, delay, easing: "cubic-bezier(.3,.75,.4,1)", fill: "backwards"});
+    a.onfinish = res; slam(a, fHit(d2 * k));
   });
 }
 
@@ -31051,7 +31170,7 @@ function fFinish(){
 }
 function fPreload(){
   if(typeof AWEB !== "undefined" && AWEB === false) return;
-  ["fs_door", "fs_clat", "fs_glint", "fs_slam", "csl_mst", "csl_stu"].forEach(k => { if(SFX[k]) sfxLoad(SFX[k].f); });
+  ["fs_door", "fs_clat", "fs_glint", "fs_slam", "csl_mst", "csl_stu"].forEach(fWarm);   // 1022 — file:// 는 <audio> 를 미리 (fWarm)
 }
 function fBegin(){
   fBuild();
@@ -31101,9 +31220,626 @@ function fAfter(){
     }, 0);
   }
 }
-window.FST = {start: fStart, after: fAfter, state: F, cues: FST_CUES, advance: fAdvance};
+window.FST = {start: fStart, after: fAfter, state: F, cues: FST_CUES, advance: fAdvance, slam: fSlam, slamPrime: fSlamPrime, slamLead: fLead, slamLog: SLAM.log};
 })();
 /* FSTUT_END */
+/* CMARK_START — 일과 카드 표식 (1022 · apply_cmark.py · 목업 mockups/card-marks) ─ 사용자 1022 'card-effect-marks-v1 에다가 새로운 일과 표식을 추가해뒀는데,
+   컨디션 텍스트하고 수치를 한쪽으로 몰아놓고 해당 표식을 하단에다 붙이자. 이제 학생 얼굴이 우상단에 표시되니까 · 새로 추가된건 전체 신뢰도 하락과 전체 신뢰도 증가.
+   각각 0.1씩, 모든 표식은 이제 원정에는 안붙고 해당 표식 진행 날에는 경과 보고 캐릭터에게 효과 추가 · 컨디션 회복은 원정 진행 중에 모닥불에서 회복하는 느낌의 이펙트,
+   2배 훈련은 해당 이펙트 색상을 주황색, 1/2는 해당 이펙트 색상을 회색으로 하고 방향을 내려가게, 해골은 빨간색하고 방향을 내려가게,
+   신뢰도 하락은 학생들 머리에 ||| 마크 한번씩 재생해주고 신뢰도 상승은 ~ 한번씩' → 목업을 보고 '그 ~ 효과는 락커룸에서 좋은 반응 나왔을때 나오는 이펙트 쓰면 될듯하고
+   (카드 표식 그림은) 24px로 넣자. 그다음 적용하고 표식 관련 튜토리얼은 숨김 처리'.
+   · 카드 — 표식 그림(assets/card_marks · 24 도트)을 아래 한쪽에 · 컨디션 글과 값은 다른 쪽에 모은다 (두루마리 cmk-sk · 예전 스케줄 cmk-c · 범례 cmk-lg). CSS 는 CMARK_CSS.
+   · 경과 보고 — 표식이 붙은 요일의 오전 장면(scene.mark)에서 학생마다:
+     알갱이 = 원정 모닥불 명상(beltPart 'aura')과 같은 셈 (발밑 위 0.15 ~ 0.65 키에서 생겨 0.75초에 0.44 키만큼 · 1 × 2 칸 + 한 칸 아래 그림자 · 1.8초 동안 —
+     모닥불(몸 둘레 ±0.22 키 · 1초에 15개)보다 넓고(±0.3 키) 많게(40개) · 수명 60% 까지 또렷하게: 경과 보고 무대는 밝고 학생이 작다) —
+     회복 초록 · 두 배 주황은 올라가고, 절반 회색 · 소진 빨강은 머리 쪽에서 생겨 내려간다.
+     신뢰 하락 = 머리에 ||| (선 셋이 위에서 내려 그어진다) · 신뢰 상승 = 락커룸 납득(lkw-joy)과 같은 그림 · 움직임 (lkwArt 의 ~ · ♪ · ♫ — 튀어 나와 ~ 는 흔들리고 ♪ 는 까딱 ·
+     ♫ 가 떠오른다 · 스카우트 승낙처럼 2.2초부터 옅어져 한 번으로 끝) — 크기는 락커룸과 같은 비율 (학생 도트 배율 × 4/3 — 락커룸은 학생 1.5배에 그림 2배).
+     한 칸 — 알갱이 = 학생 도트 키 ÷ 28 · ||| = ÷ 24 (넓은 화면 2 · 3px). 장면 시간(elapsed)을 따라 그린다 — 일시정지 · 배속 · 장면 넘기기와 같이 간다.
+   · window.CMK_OPT = {fx, sfx, day} — 목업 조작판이 끈다 (게임에서는 늘 켬). 소리는 원정 띠 소리를 빌려 쓴다 */
+(function(){
+  const CMK_IC = {"heal":"assets/card_marks/heal.png?v=00062473","dbl":"assets/card_marks/dbl.png?v=9ccc7223","skull":"assets/card_marks/skull.png?v=e2d415fb","half":"assets/card_marks/half.png?v=fdef6336","tup":"assets/card_marks/trust-up.png?v=96287ceb","tdn":"assets/card_marks/trust-down.png?v=5f01c2a6"};
+  const FX = {                                                     // col = 알갱이 두 색 · sh = 한 칸 아래 그림자 (밝은 무대에서도 보이게 — 표식 그림의 '기호 그림자'와 같은 방식)
+    heal : {k:"mote", dir:-1, col:["#8ee26c", "#c9f5b4"], sh:"#2f6b35", sfx:"belt_heal"},             // 모닥불 명상의 초록 (조금 진하게 — 밝은 무대)
+    dbl  : {k:"mote", dir:-1, col:["#ff9a2e", "#ffd88a"], sh:"#9a4a10", sfx:"belt_heal", rate:1.25},
+    half : {k:"mote", dir: 1, col:["#9a9a9a", "#d6d6d6"], sh:"#4a4a4a", sfx:"belt_mire"},
+    skull: {k:"mote", dir: 1, col:["#e2433f", "#ff998b"], sh:"#6e1c1e", sfx:"belt_spike"},
+    tup  : {k:"joy", sfx:"belt_item"},
+    tdn  : {k:"gloom", col:"#7a6db8", hi:"#b0a1d9", ink:"#352b32", sfx:"belt_retreat"}
+  };
+  const OPT = window.CMK_OPT || (window.CMK_OPT = {fx:true, sfx:true, day:true});
+  const T0 = 200, DUR = 1800, LIFE = 750, RATE = 40 / 1000, SPREAD = .6, STAG = 120, HT = 250, HEND = {gloom:1300, joy:2600}, JOYK = 4 / 3;
+  const reduced = ()=>{ try{ return matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){ return false; } };
+  const e = s => (typeof esc === "function") ? esc(s) : String(s);
+  function key(def){ if(!def) return null; for(const k in CARD_MARK) if(CARD_MARK[k] === def) return k; return null; }
+  function ic(k, kind){
+    const m = CARD_MARK[k]; if(!m || !CMK_IC[k]) return "";
+    return `<img class="cmk-ic cmk-${kind || "c"}" src="${CMK_IC[k]}" alt="${e(m.n)}" title="${e(m.n)} — ${e(m.d)}" draggable="false">`;
+  }
+  function dayIc(k){
+    const m = k && CARD_MARK[k];
+    return (m && CMK_IC[k] && OPT.day) ? `<img class="cmk-day" src="${CMK_IC[k]}" alt="${e(m.n)}" title="${e(m.n)} — ${e(m.d)}" draggable="false">` : "";
+  }
+
+  /* ── 경과 보고 ── */
+  let R = null;                                   // 지금 장면 {k, fx, studs:[{el, cv, box, acc, parts}], last, played, demo}
+  function draw(scene){
+    R = null;
+    const k = scene && scene.mark;
+    if(k && FX[k] && OPT.fx) start(k, false);
+  }
+  function start(k, demo){
+    if(FX[k].k === "joy") joyArt();               // 그림을 먼저 (data: 그림도 읽는 데 한 박자)
+    const studs = Array.from(document.querySelectorAll("#drStudents [data-dr-student]")).map(el=>{
+      el.querySelectorAll(".cmk-fx").forEach(x=> x.remove());
+      const cv = document.createElement("canvas");
+      cv.className = "cmk-fx"; cv.setAttribute("aria-hidden", "true");
+      el.appendChild(cv);
+      return {el, cv, box:null, acc:0, parts:[]};
+    });
+    R = studs.length ? {k, fx:FX[k], studs, last:0, played:false, demo} : null;
+    return R;
+  }
+  function tick(el){
+    if(!R || R.demo) return;
+    step(el);
+  }
+  function step(el){
+    if(!R.studs[0].el.isConnected){ R = null; return; }
+    let dt = el - R.last;
+    if(dt < 0){ R.played = false; R.studs.forEach(s=>{ s.acc = 0; s.parts.length = 0; }); dt = el; }   // 처음부터 다시 본다
+    R.last = el;
+    if(!R.played && el >= T0){
+      R.played = true;
+      if(OPT.sfx && R.fx.sfx && typeof sfxPlay === "function") try{ sfxPlay(R.fx.sfx, R.fx.rate || 1); }catch(x){}
+    }
+    const rm = reduced();
+    R.studs.forEach((s, i)=> paint(s, i, el, dt, rm));
+  }
+  /* 목업 조작판 — 지금 장면의 학생에게 효과 k 를 바로 한 번 (장면 시간과 따로 · 화면 시간) */
+  function demo(k){
+    if(!FX[k] || !document.querySelector("#drStudents [data-dr-student]")) return false;
+    const me = start(k, true); if(!me) return false;
+    const t0 = performance.now(), sp = ()=> (typeof PREF !== "undefined" && [1, 2, 3].includes(PREF.reportSpeed)) ? PREF.reportSpeed : 2;
+    const loop = ()=>{
+      if(R !== me) return;
+      const el = (performance.now() - t0) * sp();
+      step(el);
+      if(R === me && el < Math.max(T0 + DUR + LIFE, HT + STAG * me.studs.length + HEND.joy) + 100) requestAnimationFrame(loop);
+      else if(R === me) R = null;
+    };
+    requestAnimationFrame(loop);
+    return true;
+  }
+  function sprBox(cv){
+    try{
+      const w = cv.width, h = cv.height, d = cv.getContext("2d").getImageData(0, 0, w, h).data;
+      let x0 = w, y0 = h, x1 = -1, y1 = -1;
+      for(let y = 0; y < h; y++){ const o = y * w * 4; for(let x = 0; x < w; x++) if(d[o + x * 4 + 3] > 40){ if(x < x0) x0 = x; if(x > x1) x1 = x; if(y < y0) y0 = y; if(y > y1) y1 = y; } }
+      return x1 < 0 ? null : [x0, y0, x1 + 1, y1 + 1];
+    }catch(x){ return [cv.width * .3, cv.height * .27, cv.width * .7, cv.height * .66]; }   // 읽지 못하면 대강 (도트 칸 — 발밑이 66%)
+  }
+  /* 학생 도트의 머리 · 발밑 · 가운데 · 도트 배율 (효과 캔버스 좌표 · CSS px) */
+  function geo(s){
+    const cv = s.cv, w = cv.offsetWidth, h = cv.offsetHeight, cr = cv.getBoundingClientRect();
+    if(!w || !h || !cr.width) return null;
+    const rx = cr.width / w, ry = cr.height / h;
+    let cx, top, feet, k;
+    const spr = s.el.querySelector("canvas.spr");
+    if(spr){
+      const b = s.box || (s.box = sprBox(spr)), sr = spr.getBoundingClientRect(), kx = sr.width / spr.width, ky = sr.height / spr.height;
+      if(!b) return null;                         // 아직 그리지 않은 도트 — 다음 장에
+      const mx = (b[0] + b[2]) / 2;
+      cx = sr.left + (spr.classList.contains("flip") ? spr.width - mx : mx) * kx;
+      top = sr.top + b[1] * ky; feet = sr.top + b[3] * ky; k = kx;
+    }else{                                        // 수련관 책상 (도트 칸 256 · 미리 잰 상자)
+      const d = s.el.querySelector(".dr-study-sprite") || s.el, a = d.getBoundingClientRect();
+      const bx = (typeof REPORT_SPR_BOX !== "undefined" && REPORT_SPR_BOX[d.dataset && d.dataset.studyJob]) || null, b = bx ? bx[0] : [64, 30, 192, 230];
+      cx = a.left + (b[0] + b[2]) / 2 / 256 * a.width; top = a.top + b[1] / 256 * a.height; feet = a.top + b[3] / 256 * a.height; k = a.width / 256;
+    }
+    return {w, h, cx:(cx - cr.left) / rx, top:(top - cr.top) / ry, feet:(feet - cr.top) / ry, k:k / rx};
+  }
+  function paint(s, i, el, dt, rm){
+    const g = geo(s); if(!g) return;
+    const cv = s.cv, dpr = window.devicePixelRatio || 1, W = Math.max(1, Math.round(g.w * dpr)), H = Math.max(1, Math.round(g.h * dpr));
+    if(cv.width !== W || cv.height !== H){ cv.width = W; cv.height = H; }
+    const c = cv.getContext("2d");
+    c.setTransform(1, 0, 0, 1, 0, 0); c.clearRect(0, 0, W, H);
+    c.setTransform(dpr, 0, 0, dpr, 0, 0); c.imageSmoothingEnabled = false;
+    const hgt = Math.max(8, g.feet - g.top), u = Math.max(1, Math.round(hgt / 28)), uh = Math.max(2, Math.round(hgt / 24)), sn = v=> Math.round(v * dpr) / dpr;
+    const f = R.fx;
+    if(f.k === "mote") motes(s, c, g, hgt, u, el, dt, rm, sn);
+    else{
+      const t = el - (HT + i * STAG);
+      if(t < 0 || t > HEND[f.k]) return;
+      if(f.k === "joy") joy(c, g, t, rm, sn, Math.max(1, Math.round(g.k * JOYK)));   // 그림 한 칸 = 화면 1px 이상 (CSS px — 화면 배율에 따라 작아지지 않게)
+      else gloom(c, g, hgt, uh, t, rm, sn, f);
+    }
+    c.globalAlpha = 1;
+  }
+  function motes(s, c, g, hgt, u, el, dt, rm, sn){
+    const f = R.fx, up = f.dir < 0;
+    if(!rm && el > T0 && el - dt < T0 + DUR){
+      const a = Math.max(T0, el - dt), b = Math.min(T0 + DUR, el);
+      s.acc += Math.max(0, b - a) * RATE;
+      while(s.acc >= 1){
+        s.acc -= 1;
+        s.parts.push({born:a + Math.random() * (b - a), x:(Math.random() - .5) * SPREAD, y:up ? .15 + Math.random() * .5 : .5 + Math.random() * .5, c:f.col[Math.random() < .5 ? 0 : 1]});
+      }
+    }
+    s.parts = s.parts.filter(p=> el - p.born < LIFE);
+    for(const p of s.parts){
+      const q = (el - p.born) / LIFE; if(q < 0) continue;
+      const x = sn(g.cx + p.x * hgt), y = sn(g.feet - p.y * hgt + (up ? -.44 : .44) * hgt * q);
+      const al = q < .6 ? 1 : 1 - (q - .6) / .4;                       // 수명의 60% 까지는 또렷하게 · 그 뒤 옅어진다
+      c.globalAlpha = al * .8; c.fillStyle = f.sh; c.fillRect(x, y + u, u, 2 * u);
+      c.globalAlpha = al; c.fillStyle = p.c; c.fillRect(x, y, u, 2 * u);
+    }
+  }
+  function cells(c, rows, x0, y0, u, fill, ink, hi, sn){   // 칸 그림 (가장자리 1칸을 ink 로 · 맨 위 줄은 hi)
+    const H = rows.length, W = rows[0].length, on = (x, y)=> y >= 0 && y < H && x >= 0 && x < W && rows[y][x] === "#";
+    c.fillStyle = ink;
+    for(let y = -1; y <= H; y++) for(let x = -1; x <= W; x++){
+      if(on(x, y)) continue;
+      if(on(x - 1, y) || on(x + 1, y) || on(x, y - 1) || on(x, y + 1) || on(x - 1, y - 1) || on(x + 1, y - 1) || on(x - 1, y + 1) || on(x + 1, y + 1))
+        c.fillRect(sn(x0 + x * u), sn(y0 + y * u), u, u);
+    }
+    for(let y = 0; y < H; y++) for(let x = 0; x < W; x++) if(on(x, y)){
+      c.fillStyle = (hi && !on(x, y - 1)) ? hi : fill;
+      c.fillRect(sn(x0 + x * u), sn(y0 + y * u), u, u);
+    }
+  }
+  /* 락커룸 납득 그림 (lkwArt — 1배 그림 · 테두리 1칸) */
+  let JOY = null;
+  function joyArt(){
+    if(JOY) return JOY;
+    if(typeof lkwArt !== "function") return null;
+    try{
+      const A = lkwArt(), out = {};
+      for(const k of ["tilde", "note", "note2"]){
+        const m = /width:(\d+)px;height:(\d+)px;background-image:url\(([^)]+)\)/.exec(A[k] || "");
+        if(!m) return null;
+        const im = new Image(); im.src = m[3];
+        out[k] = {im, w:+m[1] / 2, h:+m[2] / 2};
+      }
+      return (JOY = out);
+    }catch(x){ return null; }
+  }
+  function joy(c, g, t, rm, sn, p){
+    /* 락커룸 .lkw-joy 그대로 — 상자 30 × 16 칸(머리 x − 15 · 머리 위 − 20) 안에 ~ (0, 8) · ♪ (11, 0) · ♫ (18, 2).
+       튀어 나옴(0.36초 · 3단 .4 → 1.15 → 1) · ~ 흔들림(1.2초마다 한 칸) · ♪ 까딱(0.9초) · ♫ 0.5초 뒤 2.6초 동안 13단으로 떠오름(4, −13칸) ·
+       2.2초부터 0.4초에 네 단으로 옅어진다 (스카우트 승낙 scwJoyOut 처럼 — 한 번) */
+    const J = joyArt(); if(!J || !J.tilde.im.complete || !J.note.im.complete || !J.note2.im.complete) return;
+    let s = 1, a = 1;
+    if(!rm){
+      if(t < 360){ const q = Math.floor(t / 120) / 3; s = q < .6 ? .4 + .75 * q / .6 : 1.15 - .15 * (q - .6) / .4; }
+      if(t >= 2200) a = Math.max(0, 1 - (Math.floor((t - 2200) / 100) + 1) / 4);
+    }
+    const ox = g.cx, oy = g.top - 12 * p;                                 // 상자 가운데 (머리 위 −20 + 8)
+    const put = (o, x, y, al)=>{
+      if(al <= 0) return;
+      c.globalAlpha = a * al;
+      c.drawImage(o.im, sn(ox + (x - 15) * p * s), sn(oy + (y - 8) * p * s), o.w * p * s, o.h * p * s);
+    };
+    put(J.tilde, rm ? 0 : (Math.floor(t / 600) % 2), 8, 1);
+    put(J.note, 11, rm ? 0 : -(Math.floor(t / 450) % 2), 1);
+    const t2 = t - 500;
+    if(!rm && t2 >= 0 && t2 < 2600){
+      const q = Math.floor(t2 / 200) / 13, op = q < .12 ? q / .12 : q <= .72 ? 1 : (1 - q) / .28;
+      put(J.note2, 18 + 4 * q, 2 - 13 * q, op);
+    }
+  }
+  function gloom(c, g, hgt, u, t, rm, sn, f){
+    /* 머리 위에서 선 셋(5 · 7 · 6칸)이 차례로 내려 그어지고(한 줄 0.2초 · 0.06초씩 늦게) 머문 뒤 옅어진다 */
+    const L = [5, 7, 6], x0 = g.cx - 3.5 * u, y0 = g.top - 3 * u;
+    const a = rm ? 1 : t > 1000 ? 1 - (t - 1000) / (HEND.gloom - 1000) : 1;
+    c.globalAlpha = Math.max(0, a);
+    const rows = [];
+    for(let y = 0; y < 7; y++) rows.push([0, 1, 2].map(j=>{ const n = rm ? L[j] : Math.min(L[j], Math.floor(L[j] * clampP((t - j * 60) / 200))); return y < n ? "#" : "."; }).join(".."));
+    if(rows[0].indexOf("#") < 0) return;
+    cells(c, rows, x0, y0, u, f.col, f.ink, f.hi, sn);
+  }
+  function clampP(v){ return v < 0 ? 0 : v > 1 ? 1 : v; }
+
+  window.CMK = {ic, dayIc, key, draw, tick, demo, IC:CMK_IC, FX, opt:OPT};
+})();
+/* CMARK_END */
+/* CREC_START — 일과 카드 추천 (1022 · apply_crec.py · 목업 mockups/card-recs) ─ 사용자 1022 '2주차 부터 한 주가 시작되었을 때 새로 발급된 일과들에 학생 추천 마크가 안붙었어 ·
+   새로운 주가 시작되었을 때 재충전 하는 일과는 첫 시나리오처럼 순차적으로 쾅쾅쾅쾅하고 출현하도록 · 아이콘에 마우스 오버를 하면 신뢰가 올라간다는 설명 대신
+   원정 시작할때 쓰는 작은 텍스트 박스 형식으로 해당 학생이 왜 해당 훈련을 추천하는지 · 성격/훈련/계절에 따라 대사가 변하도록 봄하고 가을은 계절감 넣지말고 여름하고 겨울은 계절감'.
+   · 추천 학생 — 새로 받는 카드마다 한 명 (newCard → CREC.born). 성격에 맞는 일과일수록(CREC_AFF) · 휴식은 컨디션이 낮을수록 · 손패에서 이미 여러 장을 추천한 학생은 덜.
+     예전 저장의 추천 없는 카드(또는 떠난 학생의 카드)는 불러올 때 붙인다 (CREC.fix). 첫 시간표 튜토리얼 카드 아홉 장은 대본대로 (FST_BY — 이것을 거치지 않는다)
+   · 새 카드 — 손패에 새로 들어온 카드는 스케줄 화면에서 팝업이 모두 닫히면 손패 오른쪽 바깥에서 한 장씩 날아와 제자리에 · 쾅 (첫 시간표 튜토리얼 fFly 그대로 · fs_slam).
+     날아오기 전에는 숨겨 둔다 (.crec-wait). 날아오는 중에 화면을 다시 그리면 남은 카드는 그냥 보인다
+   · 추천 얼굴(.fst-who — FST 가 그린다) — 마우스를 올리면(폰은 누르면) 원정 띠 말풍선(.bl-bub) 모양으로 그 학생의 한마디가 한 글자씩 (34ms — 띠와 같다).
+     대사 CREC_LINES[일과][성격] = [봄 · 가을, 여름, 겨울] — 봄 · 가을은 계절 이야기 없이 · 여름은 합숙 · 더위 · 겨울은 추위 · 눈 · 신인전 (원정은 여름에 없어서 비운다).
+     얼굴의 설명(title — '신뢰가 오른다')은 지운다. 얼굴을 누르면 카드는 옮겨지지 않는다 (말풍선만) */
+(() => {
+const CREC_LINES = {
+  rest: {
+    intro:  ["저기…… 다들 조금 지쳐 보여서요. 오늘은 쉬는 게 어떨까요……?", "이렇게 더우면 쓰러지는 애가 나올지도 몰라요…… 그늘에서 쉬어요.", "다들 추위에 몸이 굳은 것 같아요…… 난로 앞에서 쉬면 안 될까요?"],
+    hot:    ["쉬는 건 싫지만, 몸이 무거우면 전력을 못 내니까요! 하루만입니다!", "더위 먹으면 내일 못 뜁니다! 오늘 쉬고 내일 두 배로 하겠습니다!", "감기 걸리면 훈련을 못 하니까요! 오늘은 따뜻하게 쉬겠습니다!"],
+    stone:  ["피로가 쌓였습니다. 하루 쉬면 다음 훈련이 더 잘 듣습니다.", "합숙 피로가 쌓였습니다. 한낮엔 쉬는 게 맞습니다.", "추위로 체력 소모가 큽니다. 하루 쉬어 두죠."],
+    dilig:  ["다들 무리하고 있어요. 하루쯤은 푹 쉬게 해 주세요.", "합숙이라 다들 지쳤어요. 물 많이 마시고 푹 쉬게 해 주세요.", "기침하는 애가 있어요. 따뜻한 차 끓여 둘 테니 하루 쉬어요."],
+    tsun:   ["제가 쉬고 싶어서가 아니라요. …다른 애들이 힘들어 보여서요.", "더워서 그러는 거 아니에요. …다들 얼굴이 시뻘게서 보기 그래서요.", "추워서 쉬자는 거 아니거든요. …감기 옮으면 곤란하니까요."],
+    lively: ["오늘은 다 같이 뒹굴뒹굴하는 날 해요~! 간식은 제가 챙길게요!", "수박 잘라 놨어요~! 오늘은 그늘에서 다 같이 쉬어요!", "난로 앞에서 군고구마 구워 먹어요~! 오늘은 쉬는 날!"],
+    boast:  ["영웅에게도 숨 고를 시간은 필요한 법. 오늘은 쉬어 주마.", "이 몸은 더위 따위 끄떡없다만…… 다른 녀석들을 위해 쉬어 주지.", "겨울잠도 영웅의 수련이다. 오늘은 힘을 비축하마."],
+    plain:  ["가끔은 쉬는 것도 훈련이라던데요. 하루 쉬어요.", "이 더위엔 쉬는 게 제일이에요. 매미 소리나 들으면서요.", "이렇게 추운 날은 그냥 쉬어요. 이불 밖은 너무 추워요."],
+    genius: ["지금 쉬어 두는 게 계산상 제일 이득이에요.", "이 기온이면 쉬는 게 효율적이에요. 무리하면 손해예요.", "추운 날 무리하면 회복이 더뎌요. 쉬는 게 더 빨라요."]
+  },
+  basic: {
+    intro:  ["저, 체력이 제일 모자라서요…… 기초 체력부터 하고 싶어요.", "덥지만…… 아침 일찍 달리면 조금은 괜찮을 것 같아요.", "추울 땐…… 뛰면 몸이 좀 따뜻해지니까요."],
+    hot:    ["역시 기초 체력이죠! 뛰고 또 뛰면 뭐든 됩니다!", "땀이 날수록 강해집니다! 이 더위에 달려야 진짜죠!", "입김 뿜으면서 눈길 달리기! 최고의 계절입니다!"],
+    stone:  ["오래 버티는 쪽이 이깁니다. 기초 체력부터 하죠.", "더위 속에서 뛰면 지구력이 붙습니다. 합숙에 맞는 훈련입니다.", "추위에 몸이 굳기 전에 움직이는 게 좋습니다."],
+    dilig:  ["기본이 제일 중요하잖아요. 같이 달리면서 페이스도 봐 줄게요.", "새벽 공기가 시원할 때 달려요. 물통은 제가 챙길게요.", "눈 치우면서 달리면 일석이조예요. 길은 제가 먼저 치울게요."],
+    tsun:   ["체력이 없어서 하자는 거 아니에요. …기본은 해 둬야죠.", "땀 흘리는 거 싫은데…… 합숙이니까 어쩔 수 없잖아요.", "추워서 뛰자는 거예요. …딱히 같이 뛰고 싶은 건 아니고요."],
+    lively: ["다 같이 달리기 시합해요~! 꼴찌가 물 떠 오기!", "달리기 끝나고 다 같이 물놀이해요~! 그 생각으로 뛰기!", "눈 쌓인 운동장 한 바퀴~! 끝나면 눈싸움해요!"],
+    boast:  ["이 몸의 끝없는 체력을 보여 주마. 따라올 수 있다면 말이지.", "태양조차 이 몸의 질주를 막을 수는 없다!", "한파 따위, 이 몸이 달리면 녹아내린다!"],
+    plain:  ["뭘 할지 모를 땐 그냥 달리는 게 낫더라고요.", "덥긴 한데, 합숙 중이니까 뛰어야죠.", "가만히 있으면 더 추우니까, 그냥 뛰어요."],
+    genius: ["체력은 계산으로는 안 늘어요. 그러니까 이건 해야죠.", "기온 낮은 새벽에 뛰면 효과는 그대로고 덜 지쳐요.", "추울수록 열량 소모가 커요. 체력 훈련엔 오히려 좋은 날이에요."]
+  },
+  spar: {
+    intro:  ["무섭긴 한데…… 직접 부딪쳐 봐야 늘 것 같아서요.", "합숙이니까…… 평소에 못 붙어 본 상대랑도 해 볼게요.", "추우니까…… 움직이는 대련이 오히려 나을 것 같아요."],
+    hot:    ["대련 갑시다! 붙어 봐야 실력이 늘죠!", "더위보다 뜨겁게! 합숙 대련 붙어 봅시다!", "몸이 꽁꽁 얼기 전에 붙어 봅시다! 열 좀 내 보죠!"],
+    stone:  ["실전에 가까운 쪽이 낫습니다. 대련으로 하죠.", "덥다고 집중이 흐트러지면 안 됩니다. 그래서 대련입니다.", "손이 굳었을 때 싸우는 연습도 필요합니다."],
+    dilig:  ["서로 약점을 봐 줄 수 있잖아요. 다치지 않게 제가 살필게요.", "합숙 동안 모두랑 한 번씩 붙어 보는 게 목표예요.", "손 시리니까 장갑 끼고 해요. 다치면 안 되니까요."],
+    tsun:   ["…한번 겨뤄 보고 싶은 상대가 있어서요. 그게 다예요.", "더운데 굳이 붙자는 건…… 오늘은 질 것 같지 않아서예요.", "추워서 움직이고 싶은 것뿐이에요. …상대는 아무나요."],
+    lively: ["대련하면서 친해지는 거죠~! 상대는 아무나 좋아요!", "땀 흘리고 나서 먹는 수박이 최고잖아요~! 대련해요!", "눈밭 대련~! 넘어지면 눈사람 되기예요!"],
+    boast:  ["누가 이 몸의 상대가 되겠나? 한 명씩 덤벼라.", "여름 태양 아래 이 몸의 기량을 똑똑히 봐라!", "눈보라를 가르는 이 몸의 일격, 보고 싶지 않나?"],
+    plain:  ["몸으로 부딪쳐 보면 뭔가 알게 되더라고요.", "더워서 지치기 전에 짧게 대련하면 좋을 것 같아요.", "추울 땐 가만히 있는 것보다 대련이 나아요."],
+    genius: ["책으로 배운 걸 확인하려면 대련이 제일 빨라요.", "더우면 다들 집중력이 떨어져요. 그때 붙어 보면 배우는 게 많죠.", "추위에 반응이 느려지는 걸 몸으로 알아 두면 좋아요."]
+  },
+  tact: {
+    intro:  ["조용히 앉아서 생각하는 거라면…… 저도 잘할 수 있을 것 같아요.", "더울 땐…… 시원한 도서관에서 전술 연구 어때요?", "밖은 너무 추워서요…… 안에서 전술 연구하면 안 될까요?"],
+    hot:    ["머리 쓰는 건 약하지만…… 이기려면 알아야 하니까요!", "더위에 지친 머리도 작전 짜면 깨어납니다! 아마도요!", "밖이 꽁꽁 얼었으니 오늘은 머리를 달굽시다!"],
+    stone:  ["싸우기 전에 이기는 길을 정해 두는 겁니다.", "한낮엔 머리를 쓰고 저녁에 몸을 쓰는 게 효율적입니다.", "눈 때문에 밖에 못 나가는 날엔 전술입니다."],
+    dilig:  ["지난번 전투 기록을 정리해 왔어요. 같이 복기해요.", "합숙 동안 배운 걸 정리해 둬야 잊지 않아요.", "난로 옆에서 올해 전투를 정리해 봐요. 차도 끓일게요."],
+    tsun:   ["다들 생각 없이 덤비잖아요. …제가 정리해 줄게요.", "밖에서 땀 흘리는 것보단 나으니까요. …도서관이 시원해서요.", "추워서가 아니라요. …지금 정리해 둬야 신인전에 쓰니까요."],
+    lively: ["다 같이 작전 짜는 거 재밌잖아요~! 작전 이름도 멋있게!", "합숙 밤엔 다 같이 모여서 작전 회의해요~!", "난로 앞에서 작전 회의~! 귤 까먹으면서요!"],
+    boast:  ["이 몸의 천재적인 작전을 전수해 주지.", "더위에 녹은 너희 머리를 이 몸의 지략으로 식혀 주마.", "겨울은 군사의 계절. 이 몸의 책략이 꽃피는 때다."],
+    plain:  ["생각해 두면 실전에서 덜 당황하더라고요.", "더우니까 앉아서 하는 게 좋겠어요.", "추운 날은 안에서 공부하는 게 맞는 것 같아요."],
+    genius: ["패턴만 보이면 전투는 퍼즐이에요. 같이 풀어요.", "합숙으로 몸이 지칠 때 머리를 쓰면 하루를 두 번 쓰는 셈이에요.", "겨울엔 다음 해를 설계하기 딱 좋아요."]
+  },
+  medit: {
+    intro:  ["명상이 좋아요. 조용하고…… 아무도 저를 안 보니까요.", "매미 소리 들으면서 눈을 감으면…… 더위도 좀 잊혀요.", "추울수록 마음이 또렷해지는 것 같아요…… 명상하고 싶어요."],
+    hot:    ["가만히 있는 건 힘들지만…… 마음도 단련해야죠! 해 보겠습니다!", "더울 때 가만히 버티는 게 진짜 수행이죠! 견뎌 보겠습니다!", "찬 바람 맞으면서 명상! 정신이 번쩍 들 겁니다!"],
+    stone:  ["흔들리지 않는 마음이 있어야 앞에 설 수 있습니다.", "더위에도 흔들리지 않는 게 수행입니다.", "찬 공기는 머리를 맑게 합니다. 명상하기 좋은 날입니다."],
+    dilig:  ["다들 긴장한 것 같아서요. 마음을 가라앉힐 시간이 필요해요.", "그늘에서 하면 덜 지쳐요. 자리는 제가 깔아 둘게요.", "눈 오는 소리 들으면서 조용히 해 봐요. 담요 챙길게요."],
+    tsun:   ["…다들 시끄러워서요. 조용히 좀 있고 싶은 것뿐이에요.", "더워서 움직이기 싫은 거 아니에요. …명상은 원래 좋아해요.", "…눈 오는 날은 조용해서 좋아요. 그뿐이에요."],
+    lively: ["명상하다 잠들면 안 돼요~! 서로 깨워 주기!", "찬물에 발 담그고 명상해요~! 엄청 시원할걸요!", "다 같이 담요 덮고 명상해요~! 졸면 안 돼요!"],
+    boast:  ["이 몸의 정신은 이미 경지에 올랐지만…… 너희를 위해 함께해 주마.", "마음을 비우면 더위도 사라지는 법. 이 몸처럼.", "눈 속에서도 꿈쩍 않는 이 몸의 정신을 보아라."],
+    plain:  ["가만히 눈 감고 있으면 마음이 좀 편해지더라고요.", "더우니까 시원한 데 앉아서 명상해요.", "추운 날은 가만히 있고 싶으니까, 명상이 딱이에요."],
+    genius: ["머리를 비우는 것도 기술이에요. 생각보다 어려워요.", "더위를 의식하지 않는 연습이 돼요. 정신력엔 딱이에요.", "추위에 집중이 흐트러지지 않게 하는 연습이에요."]
+  },
+  free: {
+    intro:  ["혼자 해 보고 싶은 게 있어서요…… 자율 훈련이면 좋겠어요.", "합숙 동안 혼자 연습하던 걸…… 조금 더 해 보고 싶어요.", "추운 날은…… 각자 편한 곳에서 하면 좋겠어요."],
+    hot:    ["하고 싶은 거 다 해도 되는 날이죠? 그럼 전부 하겠습니다!", "합숙이니까 하고 싶은 거 다 해 봅시다! 해 질 때까지!", "추위 따윈 상관없습니다! 하고 싶은 걸 마음껏!"],
+    stone:  ["제 약점은 제가 압니다. 맡겨 주십시오.", "합숙 동안 각자 과제를 정해 두는 게 좋습니다.", "한 해 동안 부족했던 걸 각자 채울 때입니다."],
+    dilig:  ["각자 부족한 걸 채울 시간이 있으면 좋겠어요.", "더위에 맞춰 각자 페이스대로 하는 게 좋을 것 같아요.", "올해 못 한 걸 하나씩 해 보면 좋겠어요."],
+    tsun:   ["가끔은 제 방식대로 하게 해 주세요. …결과는 보여 드릴게요.", "여름이라고 들뜬 애들이랑 같이 하긴 싫어서요. …혼자 할래요.", "…겨울엔 혼자 있는 게 편해요. 딱히 이유는 없고요."],
+    lively: ["오늘은 다들 뭐 하는지 구경 다녀야지~! 자율 훈련!", "합숙 자유 시간~! 다들 뭐 할지 정했어요?", "눈사람 만들기도 훈련이에요~! 자율 훈련 해요!"],
+    boast:  ["이 몸에게 가르칠 건 이제 없다. 스스로 길을 개척하마.", "여름의 이 몸은 누구도 막을 수 없다. 자유롭게 하마!", "겨울의 고독이 영웅을 만든다. 이 몸에게 맡겨라."],
+    plain:  ["뭘 해야 할지는 모르겠지만, 이것저것 해 볼게요.", "더우니까 각자 편한 거 하면 좋겠어요.", "추우니까 각자 알아서 하는 게 좋겠어요."],
+    genius: ["제 일정은 제가 짜는 게 제일 효율적이에요.", "합숙 효과가 클 때 제가 고른 걸 하면 더 크죠.", "한 해를 돌아보고 제가 고를게요. 그게 빨라요."]
+  },
+  exped: {
+    intro:  ["무섭지만…… 다녀오면 조금은 자신감이 생길 것 같아요.", "", "눈길이라 무섭지만…… 다 같이 가면 괜찮을 거예요."],
+    hot:    ["던전 가고 싶습니다! 진짜 마물이랑 붙어 봐야죠!", "", "눈 덮인 던전! 추위도 마물도 다 이겨 보겠습니다!"],
+    stone:  ["훈련만으로는 모자랍니다. 실전에 나가야 합니다.", "", "겨울 던전은 지형이 다릅니다. 겪어 둬야 합니다."],
+    dilig:  ["학원 살림에도 보탬이 되잖아요. 제가 다 챙겨서 다녀올게요.", "", "겨울 장비는 제가 챙길게요. 두꺼운 망토도 넉넉히요."],
+    tsun:   ["학원에 돈이 필요하잖아요. …딱히 걱정돼서 하는 말은 아니고요.", "", "추운데 굳이…… 뭐, 학원 살림에 보탬은 되니까요."],
+    lively: ["모험이다~! 보물 찾아서 다 같이 가요!", "", "눈 덮인 던전 탐험~! 따뜻한 수프 싸 가요!"],
+    boast:  ["던전의 마물들이 이 몸의 이름을 듣고 떨고 있겠군.", "", "얼어붙은 던전도 이 몸의 열기에 녹아내릴 것이다!"],
+    plain:  ["가끔은 밖에 나가 보는 것도 좋을 것 같아요.", "", "추워도 할 건 해야죠. 다녀올게요."],
+    genius: ["실전 데이터가 필요해요. 그리고 유물도요.", "", "겨울엔 마물도 굼떠요. 지금 가는 게 이득이에요."]
+  },
+  form: {
+    intro:  ["제 자리가 정해져 있으면…… 덜 헤맬 것 같아서요.", "합숙 동안 계속 같이 있으니까…… 진형 맞추기 좋을 것 같아요.", "신인전 전에…… 제 자리를 확실히 익혀 두고 싶어요."],
+    hot:    ["셋이 하나처럼 움직이면 무적이죠! 진형 훈련 갑시다!", "합숙 때 진형을 완성합시다! 가을 대회에서 보여 주자고요!", "신인전을 위해 겨울에 진형을 다집시다!"],
+    stone:  ["앞에 설 자리와 받칠 자리, 그 형태를 몸에 익히죠.", "가을 대회 전에 진형을 굳혀야 합니다.", "신인전에 맞춰 진형을 다시 짜 두죠."],
+    dilig:  ["서로 자리를 알아야 지켜 줄 수 있어요.", "합숙에서 호흡을 맞춰 두면 가을이 편해요.", "신인전에 나갈 애들 자리부터 정해 둬요. 제가 적어 둘게요."],
+    tsun:   ["다들 제멋대로 움직이니까요. …진형 정도는 맞춰 두자고요.", "한여름에 붙어 지내는 건 싫지만…… 움직임은 좀 알 것 같아서요.", "신인전에서 또 엉망이면 곤란하니까요. …지금 맞춰 둬요."],
+    lively: ["셋이 손발 척척 맞추면 엄청 멋있을 거예요~!", "합숙 내내 붙어 다녔으니까 진형도 완벽할걸요~!", "다닥다닥 붙어 있으면 따뜻하고 진형 연습도 되고~!"],
+    boast:  ["이 몸을 중심으로 한 필승의 진형을 완성하자.", "여름 합숙에서 태어날 전설의 진형, 기대해라.", "눈보라 속에서도 흐트러지지 않는 진형, 이 몸이 이끈다."],
+    plain:  ["자리만 알아도 덜 부딪히더라고요.", "합숙 중에 진형을 맞춰 두면 좋을 것 같아요.", "새 학생들 오기 전에 우리끼리 맞춰 둬요."],
+    genius: ["진형은 공식이에요. 외우면 끝이에요.", "가을 대회 일정을 보면 지금 맞춰 두는 게 맞아요.", "신인전 상대를 생각하면 지금 바꿔 두는 게 좋아요."]
+  },
+  heavy: {
+    intro:  ["힘든 건 알지만…… 한 번은 끝까지 해 보고 싶어요.", "합숙이니까…… 무서워도 고강도로 해 볼게요.", "추운 날엔…… 땀 흘릴 만큼 움직이는 게 나을지도요."],
+    hot:    ["숨 넘어갈 때까지 합시다! 그게 제 스타일입니다!", "땀이 비 오듯 쏟아지는 고강도 단련! 합숙의 꽃이죠!", "고강도로 하면 한겨울에도 반팔입니다!"],
+    stone:  ["한계까지 몰아붙여야 한계가 늘어납니다.", "합숙 효과가 클 때 강도를 올리는 게 맞습니다.", "추위에 굳은 몸, 고강도로 풀겠습니다."],
+    dilig:  ["다들 할 수 있어요. 쓰러지면 제가 업고 갈게요.", "이 더위엔 물이랑 소금이 필수예요. 넉넉히 챙겨 둘게요.", "추운 날은 다치기 쉬워요. 몸 충분히 데우고 시작해요."],
+    tsun:   ["힘든 거 싫어하는 줄 아셨죠? …아니거든요.", "더워 죽겠는데 고강도라니…… 뭐, 효과는 좋으니까요.", "추워서 몸 좀 데우려는 거예요. …딱히 열심인 건 아니고요."],
+    lively: ["힘들어도 다 같이 하면 버틸 수 있어요~! 으쌰으쌰!", "끝나면 찬물 뒤집어쓰기~! 그 생각으로 버티기!", "땀 나게 하고 따뜻한 국물 먹으러 가요~!"],
+    boast:  ["이 정도 무게는 이 몸에겐 깃털이나 다름없다.", "작열하는 태양 아래 무쇠를 드는 이 몸, 그림이 되지 않나?", "얼어붙은 쇳덩이도 이 몸의 손에서는 달아오른다!"],
+    plain:  ["힘들긴 한데…… 해 놓으면 뿌듯하더라고요.", "합숙 때 아니면 언제 하겠어요.", "추우니까 세게 움직이면 좀 나을 것 같아요."],
+    genius: ["강도를 올려야 성장이 멈추지 않아요.", "합숙 배율이 붙을 때 고강도를 하면 효율이 제일 좋아요.", "겨울에 근력을 쌓아 두면 봄에 차이가 나요."]
+  },
+  strike: {
+    intro:  ["허수아비라면…… 마음껏 쳐 볼 수 있을 것 같아요.", "더울 땐 짧고 세게…… 그게 덜 지칠 것 같아요.", "손이 시려도…… 치다 보면 따뜻해질 거예요."],
+    hot:    ["마음껏 때려 부숴도 되는 거죠? 실전 타격 갑시다!", "더위를 날려 버릴 일격! 허수아비, 각오해라!", "한 방 칠 때마다 몸이 뜨거워집니다! 겨울엔 이거죠!"],
+    stone:  ["한 방의 정확도를 올리겠습니다.", "짧게 집중해서 치면 더위에도 효율이 납니다.", "언 손으로도 정확하게 칠 수 있어야 합니다."],
+    dilig:  ["장비 점검도 겸할 수 있어요. 망가진 건 제가 고쳐 둘게요.", "장비가 더위에 상하기 전에 한번 써 봐야 해요.", "장갑 끼고 해요. 손 다치면 겨울 내내 고생해요."],
+    tsun:   ["…스트레스가 쌓여서요. 뭘 좀 치고 싶어요.", "더워서 짜증 나니까 좀 쳐야겠어요. …그게 다예요.", "추워서 몸 좀 풀려는 거예요. 딱히 신나서가 아니라요."],
+    lively: ["누가 더 세게 치나 내기해요~!", "타격 소리랑 매미 소리, 누가 더 큰지 대결~!", "눈덩이 맞히기 대회도 해요~!"],
+    boast:  ["이 몸의 일격에 허수아비가 남아나질 않겠군.", "여름 하늘을 가르는 이 몸의 일격을 보라!", "얼음 허수아비라도 이 몸의 일격 앞엔 산산조각이다!"],
+    plain:  ["직접 쳐 보면 감이 오더라고요.", "덥지만 금방 끝나니까 괜찮을 것 같아요.", "추운 날엔 치는 게 몸 풀기 좋아요."],
+    genius: ["타격 각도를 실험해 보고 싶어요.", "땀에 손이 미끄러울 때 치는 연습도 필요해요.", "추우면 무기가 무겁게 느껴져요. 그 감각도 익혀 둬야죠."]
+  },
+  deep: {
+    intro:  ["깊이 들어가면…… 제 안의 무서운 것도 마주할 수 있을까요.", "더위 속에서도…… 마음 깊은 곳은 서늘할 것 같아요.", "긴 겨울밤엔…… 깊이 생각할 게 많아져요."],
+    hot:    ["내면이랑도 한판 붙어 보겠습니다! 심층 명상!", "더위를 잊을 만큼 깊이 들어가 보겠습니다!", "고요한 겨울밤! 내면까지 불태우겠습니다!"],
+    stone:  ["제 안의 흔들림을 끝까지 들여다보겠습니다.", "더위라는 잡념을 걷어 내는 수행입니다.", "긴 밤은 깊이 들어가기 좋습니다."],
+    dilig:  ["요즘 다들 마음이 지쳐 보여요. 깊이 쉬는 시간이 필요해요.", "합숙에 지친 마음도 돌봐야 해요. 그늘에 자리 잡을게요.", "한 해를 돌아보는 시간으로 하면 좋을 것 같아요."],
+    tsun:   ["…가끔은 아무 생각 없이 깊이 가라앉고 싶어요.", "시끄러운 합숙에서 유일하게 조용한 시간이니까요.", "…겨울엔 생각이 많아져서요. 정리하고 싶을 뿐이에요."],
+    lively: ["깊이 들어가면 꿈도 꾼대요~! 무슨 꿈 꿀지 궁금해요!", "깊이 들어가면 더위도 안 느껴진대요~! 진짜일까요?", "눈 오는 밤에 깊이 명상하면 예쁜 꿈 꿀 것 같아요~!"],
+    boast:  ["이 몸의 내면은 우주처럼 깊다. 들여다볼 각오는 됐나?", "이 몸의 깊은 내면엔 여름조차 닿지 못한다.", "얼어붙은 호수처럼 고요한 이 몸의 정신을 보아라."],
+    plain:  ["깊게 하면 뭔가 다르대서요. 해 보고 싶어요.", "더울수록 마음은 차분하게 하고 싶어요.", "조용한 겨울이라 깊이 하기 좋을 것 같아요."],
+    genius: ["의식 아래쪽에도 정리할 게 많아요.", "합숙 배율이 붙을 때 정신 쪽을 크게 올려 두면 좋아요.", "바깥 자극이 적은 계절이라 깊이 들어가기 쉬워요."]
+  },
+  mock: {
+    intro:  ["편을 나눠서 하면…… 저도 뭔가 할 수 있을 것 같아요.", "합숙에서 배운 걸…… 모의전으로 확인해 보고 싶어요.", "신인전 전에…… 연습 상대가 되어 볼게요."],
+    hot:    ["편 나눠서 진짜처럼 싸워 봅시다! 모의전이요!", "합숙의 결실을 모의전으로! 뜨겁게 붙어 봅시다!", "신인전 예행연습! 눈밭에서 모의전 합시다!"],
+    stone:  ["대회 전에 실전과 같은 조건을 겪어 둬야 합니다.", "가을 대회와 같은 조건으로 한번 해 보죠.", "신인전 전에 실전 감각을 유지해야 합니다."],
+    dilig:  ["팀으로 움직이는 연습이 제일 필요해요. 진행은 제가 볼게요.", "합숙에서 맞춘 호흡을 확인해 봐요. 물은 넉넉히 챙길게요.", "새 학기 전에 지금 팀의 장단점을 정리해 봐요."],
+    tsun:   ["저는 이기는 편에 설 거예요. …딱히 이기고 싶어서는 아니고요.", "여름 동안 늘었는지 확인하고 싶어서요. 제 실력이요.", "추운데 밖에서…… 뭐, 신인전에서 지는 것보다는 낫죠."],
+    lively: ["팀 이름부터 정해요~! 진 팀이 저녁 설거지!", "여름 모의전 대축제~! 진 팀이 수박 사기!", "눈싸움 모의전 어때요~? 팀 대항전!"],
+    boast:  ["이 몸이 이끄는 팀이 지는 일은 없다. 증명해 주지.", "여름 합숙의 패자는 정해졌다. 이 몸의 팀이 아닌 쪽이지.", "겨울 모의전에서 이 몸의 지휘를 똑똑히 봐 둬라."],
+    plain:  ["모의전 해 보면 다들 뭘 잘하는지 알 것 같아요.", "합숙 효과가 있었는지 보고 싶어요.", "봄 오기 전에 한 번 맞춰 보는 게 좋겠어요."],
+    genius: ["작전대로 되는지 시험해 볼 수 있어요.", "합숙 동안 바뀐 걸 실전처럼 재 보죠.", "신인전 상대를 가정하고 짜 볼게요."]
+  }
+};
+const CREC_ALIAS = {study: "tact", camp: "heavy", crest: "rest"};   // 덱에 없는 예전 일과 — 비슷한 일과의 대사로
+/* 일과 갈래 · 성격마다 추천하기 좋아하는 정도 (1 = 보통) — 열혈은 몸 · 싸움 · 원정, 소심은 명상 · 전술, 활발은 자율 · 원정 … */
+const CREC_FAM = {rest: "rest", crest: "rest", basic: "body", heavy: "body", camp: "body", spar: "fight", strike: "fight", mock: "fight",
+  medit: "mind", deep: "mind", tact: "brain", form: "brain", study: "brain", free: "free", exped: "exped"};
+const CREC_AFF = {
+  intro:  {rest: 2,   body: 1,   fight: .6,  mind: 3,   brain: 2.2, free: 1.6, exped: .6},
+  hot:    {rest: .4,  body: 3,   fight: 3,   mind: .6,  brain: .6,  free: 1.2, exped: 2.6},
+  stone:  {rest: .6,  body: 1.4, fight: 2.4, mind: 1.8, brain: 2,   free: 1,   exped: 2},
+  dilig:  {rest: 1.8, body: 2,   fight: 1.4, mind: 1.4, brain: 2,   free: 1,   exped: 1.2},
+  tsun:   {rest: 1,   body: 1,   fight: 1.4, mind: 1.6, brain: 2,   free: 2.2, exped: 1},
+  lively: {rest: 1.6, body: 1.6, fight: 2,   mind: .6,  brain: .8,  free: 2.6, exped: 2.2},
+  boast:  {rest: .4,  body: 2,   fight: 3,   mind: 1,   brain: 1.2, free: 1.4, exped: 2.6},
+  plain:  {rest: 1.4, body: 1,   fight: 1,   mind: 1,   brain: 1,   free: 1,   exped: 1},
+  genius: {rest: 1,   body: .6,  fight: 1.4, mind: 1.6, brain: 3,   free: 2.2, exped: 1.4}
+};
+const CREC_FLIGHT = 340, CREC_GAP = 180, CREC_WAIT = 320, CREC_TYPE = 34;   // 첫 시간표 튜토리얼과 같은 날기 · 간격 / 팝업이 닫히고 기다림 / 한 글자 (원정 띠와 같다)
+const OPT = window.CREC_OPT || (window.CREC_OPT = {sfx: true});
+const D = {fresh: new Set(), S: null, sess: 0, busy: 0, timer: 0, fly: new Set()};   // 새로 받은 카드(u) · 날아오는 중 · 날아오는 카드 요소
+const B = {el: null, sp: null, face: null, u: null, text: "", t0: 0, n: -1, raf: 0, tap: false, pt: ""};   // 말풍선
+
+const rm = () => !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+const modal = () => document.documentElement.classList.contains("modal-open") || !!(window.RBK && RBK.isOpen && RBK.isOpen()) || !!(typeof OP !== "undefined" && OP);
+const fstOn = () => !!(window.FST && FST.state && FST.state.on);
+function same(){ if(D.S !== S){ D.S = S; D.fresh.clear(); D.sess++; D.busy = 0; } }
+
+/* ── 추천 학생 ── */
+function pick(c){
+  const L = ((typeof S !== "undefined" && S && S.students) || []).filter(s => s && s.id != null);
+  if(!L.length || !c) return null;
+  const fam = CREC_FAM[c.t] || "free", cnt = {};
+  (S.hand || []).concat(S.slots || []).forEach(x => { if(x && x !== c && x.by != null) cnt[x.by] = (cnt[x.by] || 0) + 1; });
+  let t = 0;
+  const w = L.map(s => {
+    const A = CREC_AFF[s.pers] || CREC_AFF.plain;
+    let v = A[fam] != null ? A[fam] : 1;
+    if(fam === "rest") v *= 1 + Math.max(0, 70 - (+s.cond || 0)) / 20;                     // 지친 학생일수록 휴식을 권한다
+    v /= 1 + .6 * (cnt[s.id] || 0);                                                        // 이미 여러 장을 추천했으면 덜
+    t += v; return v;
+  });
+  let r = RNG() * t;
+  for(let i = 0; i < L.length; i++){ r -= w[i]; if(r <= 0) return L[i].id; }
+  return L[L.length - 1].id;
+}
+function born(c){                                   // newCard — 새로 받는 카드
+  if(!c) return c;
+  same();
+  const id = pick(c); if(id != null) c.by = id;
+  if(!D.fresh.size) warm();                                                                // 쾅은 보고서가 닫히기 전에 받아 둔다
+  D.fresh.add(c.u);
+  return c;
+}
+function fix(){                                     // 불러올 때 — 추천이 없거나 떠난 학생의 카드
+  if(typeof S === "undefined" || !S) return 0;
+  same();
+  let n = 0;
+  [S.hand, S.slots].forEach(L => (L || []).forEach(c => {
+    if(!c || (c.by != null && (S.students || []).some(s => s && s.id === c.by))) return;
+    const id = pick(c); if(id != null){ c.by = id; n++; }
+  }));
+  return n;
+}
+
+/* ── 대사 ── */
+function line(st, c){
+  if(!st || !c) return "";
+  const L = CREC_LINES[CREC_ALIAS[c.t] || c.t] || CREC_LINES.free, a = L[st.pers] || L.plain;
+  const i = S.phase === "summer" ? 1 : S.phase === "winter" ? 2 : 0;
+  const t = a[i] || a[0];
+  return typeof masterQ === "function" ? masterQ(t, st) : t;
+}
+function cardOf(face){
+  const el = face && face.closest("[data-card]"), u = el ? +el.dataset.card : NaN;
+  return (S.hand || []).find(x => x && x.u === u) || (S.slots || []).find(x => x && x.u === u) || null;
+}
+function stOf(c){ return c && c.by != null ? (S.students || []).find(s => s && s.id === c.by) || null : null; }
+
+/* ── 새 카드 — 한 장씩 날아와 쾅 (첫 시간표 튜토리얼 fFly) ── */
+function freshEls(){
+  const v = document.getElementById("view"); if(!v || !D.fresh.size) return [];
+  return [...v.querySelectorAll("[data-card]")].filter(el => D.fresh.has(+el.dataset.card) && el.closest(".sk-hand, .handrow"));
+}
+function arm(){ if(!D.timer) D.timer = setTimeout(poll, CREC_WAIT); }
+function poll(){
+  D.timer = 0;
+  if(!D.fresh.size || D.busy) return;
+  const els = freshEls(); if(!els.length) return;                                         // 다음에 그릴 때 다시 (after)
+  if(UI.view !== "plan" || modal() || fstOn() || document.hidden){ arm(); return; }
+  deal(els);
+}
+function deal(els){
+  const sess = ++D.sess; D.busy = sess;
+  prime(els.length);                                                                      // 쾅 <audio> 를 미리 (튜토리얼 FST.slamPrime)
+  els.forEach(el => el.classList.remove("crec-wait"));
+  Promise.all(els.map((el, j) => { const u = +el.dataset.card; return fly(el, j * CREC_GAP, sess).then(() => { if(sess === D.sess) D.fresh.delete(u); }); }))
+    .then(() => { if(D.busy === sess) D.busy = 0; });
+}
+/* 쾅 타이밍 (1022 · 사용자 '소리 타이밍이 조금씩 늦는듯한 느낌') — 날기 곡선(.3,.75,.4,1)은 끝 0.34초 가까이 거의 멈춰 있어서, 끝(onfinish)에 울리면
+   눈에 앉은 뒤 60 ~ 110ms 늦었다 (가까운 카드일수록 더 — 차례로 '조금씩' 늦게 들린다). 남은 거리가 CREC_HIT px 안이 되는 때에 흔들고,
+   소리는 나오기까지 걸리는 만큼 먼저 (튜토리얼 FST.slamLead — file:// 의 미리 load 한 <audio> 30ms · WebAudio 는 출력 지연) */
+const CREC_HIT = 6, CREC_LEAD_EL = 30;
+function ease(x){                                                                          // cubic-bezier(.3,.75,.4,1) — 시간 비율 → 진행 비율
+  let lo = 0, hi = 1;
+  for(let i = 0; i < 24; i++){ const m = (lo + hi) / 2, bx = .9 * m * (1 - m) * (1 - m) + 1.2 * m * m * (1 - m) + m * m * m; if(bx < x) lo = m; else hi = m; }
+  const m = (lo + hi) / 2; return 2.25 * m * (1 - m) * (1 - m) + 3 * m * m * (1 - m) + m * m * m;
+}
+function hitAt(dist){                                                                      // 날기 시작부터 눈에 앉는 때 (ms) — 10% 뒤 남은 거리 = dist × (1 − p) ÷ 0.9
+  for(let t = 0; t < CREC_FLIGHT; t += 5){ const p = ease(t / CREC_FLIGHT); if(p >= .1 && dist * (1 - p) / .9 <= CREC_HIT) return t; }
+  return CREC_FLIGHT;
+}
+function lead(){                                                                           // 소리가 실제로 나오기까지 (ms)
+  if(window.FST && FST.slamLead) return FST.slamLead();
+  try{
+    const f = SFX.fs_slam && SFX.fs_slam.f;
+    if(AWEB === false || ASBAD[f] || !ASBUF[f]) return CREC_LEAD_EL;
+    const c = audCtx(); return c ? Math.min(60, Math.round(((c.outputLatency || 0) + (c.baseLatency || 0)) * 1000)) : 0;
+  }catch(e){ return 30; }
+}
+function slamNow(){                                                                        // 1022 — 쾅은 튜토리얼과 같은 소리 도우미 (FST.slam — 연타면 조금씩 높게 · file:// 는 미리 load 한 <audio>)
+  try{ if(window.FST && FST.slam) FST.slam(); else sfxPlay("fs_slam", 1); }catch(e){}
+}
+function prime(n){ try{ if(window.FST && FST.slamPrime) FST.slamPrime(n); else warm(); }catch(e){} }
+function warm(){                                                                           // 쾅을 미리 받아 둔다 — file:// 는 <audio> 를 만들어 두고, 아니면 WebAudio 로
+  try{
+    const t = SFX.fs_slam; if(!t || ASBUF[t.f]) return;
+    if(AWEB === false){ if(!ASEL[t.f]){ const a = ASEL[t.f] = new Audio(BGM_DIR + t.f); a.preload = "auto"; try{ a.load(); }catch(e){} } }
+    else sfxLoad(t.f);
+  }catch(e){}
+}
+function jolt(el){
+  if(rm()) el.animate([{filter: "drop-shadow(0 0 6px #ffd36a)"}, {filter: "none"}], {duration: 700, easing: "ease-out"});
+  else el.animate([{transform: "scale(1.08) rotate(-1.4deg)"}, {transform: "scale(1.02) rotate(.8deg)", offset: .55}, {transform: "none"}],
+                  {duration: 130, easing: "ease-out", composite: "add"});                 // 남은 몇 px 의 날기 위에 더한다 (튀지 않게)
+}
+function fly(el, delay, sess){
+  return new Promise(res => {
+    let done = false;
+    D.fly.add(el);
+    const end = () => { if(done) return; done = true; D.fly.delete(el); res(); };
+    const slam = (a, at) => a.ready.then(() => {                                            // 애니메이션이 실제로 시작한 때(startTime)부터 센다 — 무거운 장면에서 시작이 늦어도 맞게
+      const now = performance.now(), t = (a.startTime == null ? now : a.startTime) + delay + at;
+      setTimeout(() => { if(sess === D.sess && OPT.sfx) slamNow(); }, Math.max(0, t - lead() - now));
+      setTimeout(() => { if(sess === D.sess && el.isConnected) jolt(el); }, Math.max(0, t - now));
+    }).catch(() => {});
+    setTimeout(end, delay + CREC_FLIGHT + 250);                                             // 그사이 다시 그려져 애니메이션이 사라져도
+    if(rm()){ const a = el.animate([{opacity: 0}, {opacity: 1}], {duration: 180, delay, fill: "backwards"}); a.onfinish = end; slam(a, 150); return; }
+    const r = el.getBoundingClientRect(), k = (el.offsetWidth && r.width) ? r.width / el.offsetWidth : 1;
+    const zone = el.closest(".sk-hand, .handrow"), zr = zone ? zone.getBoundingClientRect() : r;
+    const sx = Math.min(innerWidth, zr.right) + 26, dx = (sx - r.left) / k, d2 = dx - 26 / k;
+    const a = el.animate([{transform: `translateX(${dx}px)`, opacity: 0}, {transform: `translateX(${d2}px)`, opacity: 1, offset: .1}, {transform: "translateX(0)", opacity: 1}],
+                         {duration: CREC_FLIGHT, delay, easing: "cubic-bezier(.3,.75,.4,1)", fill: "backwards"});
+    a.onfinish = end; slam(a, hitAt(d2 * k));
+  });
+}
+
+/* ── 말풍선 (원정 띠 .bl-bub 모양) ── */
+function bubEl(){
+  if(B.el && B.el.isConnected) return B.el;
+  const d = document.createElement("div");
+  d.className = "crec-bub"; d.setAttribute("aria-hidden", "true");
+  d.innerHTML = "<span></span>";
+  document.body.appendChild(d);
+  B.el = d; B.sp = d.firstChild;
+  return d;
+}
+function show(face, tap){
+  if(D.fly.has(face.closest("[data-card]"))) return;                                    // 날아오는 카드 — 앉은 뒤에 (말풍선이 엉뚱한 자리에 남지 않게)
+  const c = cardOf(face), st = stOf(c); if(!st) return;
+  const text = line(st, c); if(!text) return;
+  if(B.face === face && B.text === text && B.el && B.el.classList.contains("on")){ B.tap = B.tap || !!tap; return; }
+  hide();
+  const el = bubEl();
+  B.face = face; B.u = c.u; B.text = text; B.tap = !!tap;
+  face.classList.add("crec-on");
+  el.classList.remove("on", "dn"); el.style.width = ""; el.style.height = "";
+  B.sp.textContent = text; el.style.visibility = "hidden";                                 // 다 쓴 크기로 고정 — 글이 찍히는 동안 상자가 자라지 않게 (원정 띠와 같다)
+  el.style.width = Math.ceil(el.getBoundingClientRect().width) + "px"; el.style.height = Math.ceil(el.getBoundingClientRect().height) + "px";
+  place();
+  B.sp.textContent = ""; el.style.visibility = "";
+  void el.offsetWidth; el.classList.add("on");
+  B.t0 = performance.now(); B.n = 0;
+  cancelAnimationFrame(B.raf); B.raf = requestAnimationFrame(type);
+}
+function place(){
+  const el = B.el, f = B.face; if(!el || !f) return;
+  const r = f.getBoundingClientRect(), w = el.offsetWidth, h = el.offsetHeight, gap = 9, m = 6;
+  const cx = r.left + r.width / 2, up = r.top - h - gap >= m;
+  const left = Math.round(Math.max(m, Math.min(innerWidth - m - w, cx - w / 2)));
+  el.style.left = left + "px"; el.style.top = Math.round(up ? r.top - h - gap : r.bottom + gap) + "px";
+  el.style.setProperty("--tail", Math.round(Math.max(10, Math.min(w - 10, cx - left))) + "px");
+  el.classList.toggle("dn", !up);
+}
+function type(){
+  B.raf = 0; if(!B.face) return;
+  const n = Math.min(B.text.length, Math.floor((performance.now() - B.t0) / CREC_TYPE));
+  if(n !== B.n){ B.n = n; B.sp.textContent = B.text.slice(0, n); }
+  if(n < B.text.length) B.raf = requestAnimationFrame(type);
+}
+function hide(){
+  cancelAnimationFrame(B.raf); B.raf = 0;
+  if(B.face) B.face.classList.remove("crec-on");
+  B.face = null; B.u = null; B.tap = false;
+  if(B.el) B.el.classList.remove("on");
+}
+const mouse = e => e.pointerType === "mouse" || e.pointerType === "pen";
+const faceAt = e => (e.target && e.target.closest) ? e.target.closest("#view .fst-who") : null;
+document.addEventListener("pointerover", e => { if(!mouse(e) || e.buttons) return; const f = faceAt(e); if(f && f !== B.face) show(f, false); }, true);
+document.addEventListener("pointerout", e => {
+  if(!B.face || B.tap || !mouse(e)) return;
+  const f = faceAt(e); if(f === B.face && !(e.relatedTarget && f.contains(e.relatedTarget))) hide();
+}, true);
+document.addEventListener("pointerdown", e => { B.pt = e.pointerType || ""; if(B.face && faceAt(e) !== B.face) hide(); }, true);
+document.addEventListener("pointermove", e => { if(B.face && e.buttons && mouse(e)) hide(); }, true);       // 얼굴을 잡고 카드를 끌면 걷는다
+document.addEventListener("click", e => {                                                                      // 얼굴을 누르면 말풍선만 (카드는 옮기지 않는다)
+  const f = faceAt(e); if(!f) return;
+  e.stopPropagation(); e.preventDefault();
+  const tap = !!B.pt && B.pt !== "mouse" && B.pt !== "pen";
+  if(tap && B.face === f && B.tap) hide(); else show(f, tap);
+}, true);
+window.addEventListener("scroll", () => { if(B.face) hide(); }, true);
+window.addEventListener("resize", () => { if(B.face) hide(); });
+document.addEventListener("keydown", e => { if(e.key === "Escape" && B.face) hide(); });
+
+/* ── render 끝에서 (FST.after 다음) — 얼굴 설명 지우기 · 새 카드 숨기고 날릴 준비 · 말풍선 자리 ── */
+function after(){
+  if(typeof S === "undefined" || !S) return;
+  same();
+  if(D.fresh.size){
+    const has = new Set((S.hand || []).filter(Boolean).map(c => c.u));
+    D.fresh.forEach(u => { if(!has.has(u)) D.fresh.delete(u); });
+  }
+  if(D.busy){ D.sess++; D.busy = 0; D.fresh.clear(); }                                    // 날아오는 중에 다시 그렸다 — 남은 카드는 그냥 보인다
+  const v = document.getElementById("view");
+  if(v && UI.view === "plan"){
+    v.querySelectorAll(".fst-who").forEach(f => {
+      if(f.dataset.crec) return;
+      f.dataset.crec = "1"; f.setAttribute("title", "");                                     // 빈 title — 카드의 설명도 얼굴 위에서는 뜨지 않는다
+      const c = cardOf(f), st = stOf(c);
+      if(st) f.setAttribute("aria-label", `${dn(st)} — ${line(st, c)}`);
+    });
+    const els = freshEls();
+    if(els.length){ els.forEach(el => el.classList.add("crec-wait")); prime(els.length); arm(); }
+  }
+  if(B.face && !B.face.isConnected){
+    const nf = B.u != null && UI.view === "plan" ? document.querySelector(`#view [data-card="${B.u}"] > .fst-who`) : null;
+    if(nf){ B.face = nf; nf.classList.add("crec-on"); place(); } else hide();
+  }
+}
+window.CREC = {born, fix, after, pick, line, lines: CREC_LINES, aff: CREC_AFF, fam: CREC_FAM, state: D, bub: B, opt: OPT, hide, hitAt, lead};
+})();
+/* CREC_END */
 /* TFWIN_START — 대회 편성 창 (1019 · apply_tfwin.py) ─ mockups/tour-formation 목업 그대로. '대진 확정'(scout 단계) 자리에 뜬다:
    가을 대회 컵(시내 · 광역 · 본선 — 라운드마다 · 1팀 대회도) · 친선전(경기 전에 한 번) · 봄 신인전(경기마다 — 상대가 경기마다 다르다) ·
    예선 리그(1019 ③ — 라운드마다 · 조 순위 · 우리 일정) · 본선 결승(1019 ③ — 세트마다 · 세트판 · 세트를 진 상대가 바꾼 진형은 맞붙기 전까지 숨김).
@@ -34360,7 +35096,8 @@ const TUT_EXTRA = {"2":true, "5":true, "6":true, "7":true, "8":true, "9":true, "
 /* 1003 — 글로만 된 안내(옛 그림이 없는 장). TUT_IMG 는 옛 그림 목록이라 여기에 따로 둔다 — 13 의뢰 */
 const TUT_LIVE = ["13", "14"];
 function tutKeyOk(k){ return (typeof TUT_IMG!=="undefined" && !!TUT_IMG[k]) || TUT_LIVE.includes(String(k)); }
-function tutAll(){ return [...new Set([...(typeof TUT_IMG!=="undefined" ? Object.keys(TUT_IMG) : []), ...TUT_LIVE])].sort((a,b)=> (+a)-(+b)); }   // 숫자 순 (10 이 2 앞에 오지 않게)
+const TUT_HIDE = {"12":true};   /* 1022 — 숨긴 장 (12 카드 표식 — 표식이 카드 아래 그림으로 바뀌었다 · 사용자 '표식 관련 튜토리얼은 숨김 처리') */
+function tutAll(){ return [...new Set([...(typeof TUT_IMG!=="undefined" ? Object.keys(TUT_IMG) : []), ...TUT_LIVE])].filter(k=> !TUT_HIDE[k]).sort((a,b)=> (+a)-(+b)); }   // 숫자 순 (10 이 2 앞에 오지 않게)
 function tutSeen(k){ return !!(S.tutSeen && S.tutSeen[String(k)]); }
 function tutMark(k){ S.tutSeen = S.tutSeen||{}; S.tutSeen[String(k)] = true; }
 /* opt.start 면 처음 네 장만, 아니면 이미 열린 장까지 */
@@ -34556,6 +35293,7 @@ function bootMain(){
   [S.hand, S.slots].forEach(L=> (L||[]).forEach(c=>{ if(c && CARD_COL[c.t]===null && !c.c) c.c = pick(REST_COLORS); }));
   S.slots = S.slots.map(c=> (c && TR[c.t]) ? c : null);
   handRefill();
+  if(window.CREC) CREC.fix();   // 1022 — 추천 학생이 없는(또는 떠난 학생의) 예전 카드에도 붙인다 (CREC)
   if(S.broYear && S.broYear.wk > phaseWeeks("summer")) S.broYear.wk = ri(1, phaseWeeks("summer"));
   S.students.forEach(x=>{
     if(/^[가-힣]/.test(x.name) && /[A-Za-z]/.test(x.name)) x.name = x.name.charAt(0) + pick(GIV);   // 1010 — 예전 세이브의 '성 + 영문' 이름만 (영어판 이름 Gawain 은 그대로)
