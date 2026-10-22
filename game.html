@@ -1613,6 +1613,83 @@ html body .cw-ov .cw-win button.cw-cookie-plate:is(:hover,:active,:focus,:focus-
 .lkw-win.compact .lkw-tt,.lkw-win.compact .lkw-unk{display:none}
 @media (prefers-reduced-motion:reduce){.lkw-spr,.lkw-joy i,.lkw-gloom.on,.lkw-think.on{animation:none}.lkw-gloom.on{clip-path:none}}
 /* LKWIN_CSS_END */
+/* FSTUT_CSS_START — 첫 시간표 튜토리얼 (1022 · apply_fstut.py) ─ mockups/first-schedule 목업 그대로: 게임 팝업 상자 색의 대화창 · 같은 크기의 마스터 생각 창 ·
+   대화창 뒤에 나란히 선 초상화 셋(128 도트 — 넓은 화면 1.5배 · 좁은 화면 1배) · 02 스케줄 단추 포커스(금색 원 · 손가락 · 보조 문구 — 화면은 어둡게 하지 않는다) ·
+   카드 오른쪽 위 추천 얼굴(.fst-who — 유물 보관고 아래 학생 띠와 같은 고리 얼굴). 넓은 화면 = 폭 1100 이상 (townMode 와 같다) */
+.fst{--fst-ink:#fff4e6;--fst-line:#e9cdbf;--fst-edge:#b98f84;--fst-win:#2a1418;--fst-panel:#42191f;--fst-gold:#ffd36a;--fst-dim:#e2c2b6;--fst-name:#ffd8c8;--fst-dark:#140a0c;
+  --fst-side:8px;--fst-bot:8px;--fst-h:104px;--fst-fs:16px;--fst-lh:24px;--fst-pad:12px 16px 10px;--fst-bust:128px;--fst-step:110px;--fst-over:20px;
+  position:fixed;inset:0;z-index:900;pointer-events:none;font-family:"Mulmaru",sans-serif;color:var(--fst-ink);-webkit-font-smoothing:none;font-synthesis:none}
+@media (min-width:600px){.fst{--fst-side:16px;--fst-h:92px;--fst-fs:20px;--fst-lh:28px;--fst-pad:14px 24px 10px}}
+@media (min-width:1100px){.fst{--fst-side:max(40px,calc(50vw - 600px));--fst-h:96px;--fst-fs:24px;--fst-lh:32px;--fst-pad:16px 34px 12px;--fst-bust:192px;--fst-step:172px;--fst-over:26px}}
+.fst *{box-sizing:border-box}
+.fst-hit{position:absolute;inset:0;pointer-events:none;touch-action:none}
+.fst.on .fst-hit{pointer-events:auto;cursor:pointer}
+.fst-fx{position:absolute;inset:0;pointer-events:none}
+/* 대화창 (학생 · 마스터의 말) — 게임 팝업 상자 색 · 테두리 */
+.fst-talk,.fst-think{position:absolute;left:var(--fst-side);right:var(--fst-side);bottom:calc(var(--fst-bot) + env(safe-area-inset-bottom,0px));height:var(--fst-h);
+  padding:var(--fst-pad);font-size:var(--fst-fs);line-height:var(--fst-lh);opacity:0;transform:translateY(10px);transition:opacity .16s,transform .16s;z-index:4}
+.fst-talk{background:var(--fst-panel);border:2px solid var(--fst-line);
+  box-shadow:inset 0 0 0 2px var(--fst-panel),inset 0 0 0 3px var(--fst-edge),0 0 0 2px var(--fst-dark),4px 5px 0 2px rgba(0,0,0,.44)}
+.fst-talk.show,.fst-think.show{opacity:1;transform:none}
+.fst-nm{position:absolute;left:20px;top:-36px;height:38px;padding:0 16px 0 12px;display:flex;align-items:center;gap:10px;white-space:nowrap;
+  background:var(--fst-win);border:2px solid var(--fst-line);box-shadow:0 0 0 2px var(--fst-dark),3px 3px 0 1px rgba(0,0,0,.4);font-size:var(--fst-fs);line-height:1;color:var(--fst-name)}
+.fst-nm i{width:12px;height:12px;flex:none;background:var(--rc,#ffd36a);box-shadow:0 0 0 2px var(--fst-dark)}
+@media (max-width:599px){.fst-nm{left:12px;top:-30px;height:32px;padding:0 12px 0 10px;gap:8px}.fst-nm i{width:10px;height:10px}}
+.fst-tx{white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere;overflow:hidden;max-height:100%}
+.fst-nx{position:absolute;right:16px;bottom:8px;color:var(--fst-gold);opacity:0}
+.fst-nx.on{animation:fstNx .8s steps(2) infinite}
+@keyframes fstNx{0%{opacity:1;translate:0 0}50%{opacity:1;translate:0 3px}}
+/* 마스터의 생각 — 이름 없는 독백 창 (대화창과 같은 크기 · 점선 안쪽 줄 · 흐린 글) */
+.fst-think{background:#2a1418;border:2px solid var(--fst-edge);box-shadow:0 0 0 2px var(--fst-dark),3px 4px 0 2px rgba(0,0,0,.4);color:var(--fst-dim)}
+.fst-think::before{content:"";position:absolute;inset:5px;border:1px dashed rgba(185,143,132,.53);pointer-events:none}
+/* 초상화 — 대화창 뒤에 나란히 (오른쪽 끝을 대화창에 맞춘다 · 셋 다 같은 크기 · 같은 높이) */
+.fst-cast{position:absolute;right:var(--fst-side);bottom:calc(var(--fst-bot) + env(safe-area-inset-bottom,0px) + var(--fst-h) - var(--fst-over));
+  width:calc(var(--fst-bust) + var(--fst-step) * 2);height:var(--fst-bust);z-index:3}
+.fst-bust{position:absolute;bottom:0;width:var(--fst-bust);height:var(--fst-bust);transform-origin:50% 100%;
+  filter:drop-shadow(1.5px 0 0 #140a0c) drop-shadow(-1.5px 0 0 #140a0c) drop-shadow(0 -1.5px 0 #140a0c) brightness(.52) saturate(.8);transition:filter .18s}
+.fst-bust.on{filter:drop-shadow(1.5px 0 0 #140a0c) drop-shadow(-1.5px 0 0 #140a0c) drop-shadow(0 -1.5px 0 #140a0c);z-index:2}
+.fst-bust[hidden]{display:none}
+.fst-bust[data-who="darkpriest"]{right:0}
+.fst-bust[data-who="paladin"]{right:var(--fst-step);z-index:1}
+.fst-bust[data-who="paladin"].on{z-index:3}
+.fst-bust[data-who="wizard"]{right:calc(var(--fst-step) * 2)}
+.fst-bust img{display:block;width:100%;height:100%;image-rendering:pixelated;-webkit-mask-image:linear-gradient(#000 76%,transparent 97%);mask-image:linear-gradient(#000 76%,transparent 97%)}
+.fst-spark{position:absolute;width:24px;height:24px;margin:-12px 0 0 -12px;pointer-events:none;animation:fstSpark .62s ease-out both}
+.fst-spark::before,.fst-spark::after{content:"";position:absolute;left:50%;top:50%;background:#fff;box-shadow:0 0 5px #fff,0 0 2px #ffe08a}
+.fst-spark::before{width:3px;height:24px;margin:-12px 0 0 -1.5px}
+.fst-spark::after{width:24px;height:3px;margin:-1.5px 0 0 -12px}
+@keyframes fstSpark{0%{transform:scale(0) rotate(0);opacity:1}45%{transform:scale(1.15) rotate(20deg);opacity:1}100%{transform:scale(0) rotate(45deg);opacity:0}}
+/* 강조 테두리 (04 월요일 칸 · 25 손패) */
+.fst-hl{position:fixed;border:3px solid var(--fst-gold);border-radius:6px;pointer-events:none;
+  box-shadow:0 0 0 2px var(--fst-dark),0 0 18px 4px rgba(255,211,106,.67),inset 0 0 12px rgba(255,211,106,.4);animation:fstHl .8s ease-in-out 2 both}
+@keyframes fstHl{0%,100%{opacity:0}50%{opacity:1}}
+/* 02 — 스케줄 단추 포커스 (원 · 손가락 · 보조 문구) */
+.fst-guide[hidden]{display:none}
+.fst-ring,.fst-ring2{position:fixed;border:3px solid var(--fst-gold);border-radius:12px;pointer-events:none;box-shadow:0 0 0 2px var(--fst-dark)}
+.fst-ring{box-shadow:0 0 0 2px var(--fst-dark),0 0 14px rgba(255,211,106,.67);animation:fstRing 1.25s ease-out infinite}
+@keyframes fstRing{0%{transform:scale(1);opacity:1}70%{transform:scale(1.08);opacity:.3}100%{transform:scale(1.1);opacity:0}}
+.fst-finger{--k:3;position:fixed;width:calc(16px * var(--k));height:calc(16px * var(--k));image-rendering:pixelated;pointer-events:none;animation:fstPoke .9s ease-in-out infinite;   /* 건물 안 아이콘 hand (TIN_ART.icons) — 오른쪽(단추 쪽)을 가리킨다 · 넓은 화면 3배 · 좁은 화면 2배 */
+  background:var(--fi,none) calc(var(--fax,64) * -1px * var(--k)) calc(var(--fay,64) * -1px * var(--k)) / calc(var(--fiw,128) * 1px * var(--k)) calc(var(--fih,80) * 1px * var(--k)) no-repeat}
+.fst-finger.l{transform:scaleX(-1);animation-name:fstPokeL}
+@keyframes fstPoke{0%,100%{translate:0 0}50%{translate:9px 0}}
+@keyframes fstPokeL{0%,100%{translate:0 0}50%{translate:-9px 0}}
+@media (max-width:1099px){.fst-finger{--k:2}}
+.fst-tip{position:fixed;padding:8px 18px;font-size:var(--fst-fs);line-height:var(--fst-lh);white-space:nowrap;color:var(--fst-ink);background:var(--fst-win);
+  border:2px solid var(--fst-line);box-shadow:0 0 0 2px var(--fst-dark),3px 4px 0 2px rgba(0,0,0,.4);pointer-events:none}
+.fst-tip::after{content:"";position:absolute;left:var(--ax,50%);bottom:-12px;width:0;height:0;margin-left:-10px;border:10px solid transparent;border-bottom:0;border-top:10px solid var(--fst-line)}
+.fst-tip.dn::after{bottom:auto;top:-12px;border-top:0;border-bottom:10px solid var(--fst-line)}
+@media (max-width:599px){.fst-tip{padding:6px 12px}}
+/* 좁은 화면 — 대화하는 동안(03 ~ 30) 위 칸(학원 이름 · 수치 · 메뉴)을 붙박지 않는다: 요일 칸 · 손패를 맨 위로 올려 대화창 · 초상화에 가리지 않게 */
+@media (max-width:1099px){html.fst-dlg #app > .topbar{position:relative}html.fst-dlg #view{padding-bottom:75vh}}   /* 아래 여백 — 손패가 비어 있어도 요일 칸을 맨 위로 올릴 수 있게 */
+/* 카드 오른쪽 위 추천 얼굴 — 유물 보관고 아래 학생 띠(.vf .ring)와 같은 고리 · 맞춤 */
+.fst-who{position:absolute;z-index:3;border-radius:50%;pointer-events:auto;cursor:help;filter:drop-shadow(1px 1px 0 rgba(0,0,0,.4))}
+.fst-who::before{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid #8b5a2b;z-index:1;pointer-events:none}
+.fst-who .fst-face{position:absolute;inset:0;border-radius:50%;overflow:hidden;background:#efdfbf}
+.fst-who img{display:block;width:100%;height:100%;object-fit:cover;transform:translate(var(--fx,0%),var(--fy,2%)) scale(var(--fs,1.04))}
+html body .skwrap .skfit .skstage .sk-card > .fst-who{left:72px;top:-13px;width:30px;height:30px}   /* 두루마리 스케줄 (2배 무대) — '3주' 꼬리표 옆 · 머리띠 오른쪽 끝 */
+.card > .fst-who{right:2px;top:-10px;width:22px;height:22px}                                         /* 예전 스케줄 카드 — 수명 꼬리표 반대쪽 */
+.card > .fst-who::before{border-width:1.5px}
+/* FSTUT_CSS_END */
 /* SCOUTWIN_CSS_START — 겨울 스카우트 개편 (1019 · apply_scout.py) ─ 목록 · 확인 팝업은 건물 안 창 색(TOWNIN 과 같은 값 — 밝은 · 어두운 화면 · 도트 마감 · 팔레트와 상관없이 같다 ·
    게임이 모든 button 에 붙이는 테두리 · 그림자는 html body #view / #modalRoot … 로 걷는다). 설득 대화는 상담창(.cw-* — CSLWIN_CSS) 그대로에 효과만 (.scw-cw) */
 .scw,.scw-pal{--scw-ink:#fff4e6;--scw-line:#e9cdbf;--scw-edge:#b98f84;--scw-win:#2a1418;--scw-panel:#42191f;--scw-card:#5b2a30;--scw-gold:#ffd36a;--scw-dim:#e2c2b6;
@@ -7640,7 +7717,7 @@ const BSPEEDS = [440, 280, 120, 93];          // ×0.5 · ×1 · ×2 · ×3 (093
 const OPT_FIELD_PASTEL = false;     // 전투 배경 파스텔 필터 켜고 끄기
 const OPT_XFER_FILE    = false;     // 이어하기 — 파일로 내보내기 · 파일에서 불러오기
 const OPT_PIXEL_FONT   = false;     // 도트 폰트 켜고 끄기 (1004 — 숨긴 동안은 모두 기본값: 켬)
-const OPT_BATTLE_CAM   = false;     // 전투 연출 심플 · 스타일리시 (1004 — 숨긴 동안은 모두 기본값: 스타일리시)
+const OPT_BATTLE_CAM   = true;      // 전투 연출 심플 · 스타일리시 (1004 숨김 → 1022 다시 보임 — 사용자 · 기본값은 스타일리시)
 const PREF = {bspeed: 280, reportSpeed: 2, chronicleTest: false, uiConcept: "riso-pixel", uiV: 4, lvPopup: true, fieldPastel: false, pixelFont: true, bfGrid: false, battleCam: "stylish", schedScroll: true, skillPick: "all", koFont: "mulmaru"};
 /* uiV 4 — 삽화를 기본으로 적용하고 이전 화면 분위기 선택은 숨긴다. */
 try{
@@ -10123,6 +10200,7 @@ function weekRunStepGo(){
       expedDay(R, bonus); return;                                         // 팝업으로 넘어간다
     }
     dayRun(tr, bonus, R.day, {mark:mark, charge:card});
+    recTrust(card);   // 1022 — 추천 일과(c.by)를 한 날 그 학생의 신뢰 +0.02 (FSTUT)
     dlog("", "gap");
     R.day++;
   }
@@ -14068,7 +14146,7 @@ function answerCounsel(qi, oi, win){   // win — 상담창(1008): 화면을 다
     }
   }
   const tb0 = trustBand(trustOf(st)).step, tr0 = trustRaw(st);
-  const tUp = ok ? (addTrust(st, 1), true) : false;
+  addTrust(st, ok ? TRUST_D.csl : TRUST_D.cslMiss, true);   // 1022 — 통하면 +0.2 · 안 통하면 −0.1 (예전: 통할 때만 +1 × TRUST_MUL)
   const tb1 = trustBand(trustOf(st)).step;
   C.queue.splice(qi,1);
   C.usedC.push(c.id); C.usedS.push(st.id);
@@ -14076,9 +14154,9 @@ function answerCounsel(qi, oi, win){   // win — 상담창(1008): 화면을 다
     phase:q.phase||S.phase, week:q.week||(S.week+1)});
   logE(ok
     ? `상담 — <b>${dnH(st)}</b>(${personaOf(st).n})의 마음에 닿았다.${byLead? ` <span style="color:var(--brass)">지도력으로 설득</span>`:""}${byTrust? ` <span style="color:var(--brass)">운명 단계 — 무엇을 말해도 닿는다</span>`:""}${gain? ` <b style="color:var(--ok)">${gain.n} +${gain.d}</b>${dbl? ` <span style="color:var(--brass)">(호소력 2배)</span>`:""}`:""}${cookie? ` <span style="color:var(--brass)">(쿠키 상승량 2배)</span>`:""}${capped? ` <span style="color:var(--dim)">더 오를 항목이 없다 — 멘탈리티가 모두 한계다</span>`:""} · <span style="color:var(--brass)">신뢰 ${trustGainWord(1)}</span>`
-    : `상담 — <b>${dnH(st)}</b>(${personaOf(st).n})${eunn(personaOf(st).n)} 아직 납득하지 못한 표정이다.`, ok?"good":"");
+    : `상담 — <b>${dnH(st)}</b>(${personaOf(st).n})${eunn(personaOf(st).n)} 아직 납득하지 못한 표정이다. <span style="color:var(--bad)">신뢰 감소</span>`, ok?"good":"");
   save();
-  const res = {ok, fit, byLead, byTrust, cookie, gain, dbl, capped, say:ans.say, r:ans.r, trustUp: trustRaw(st) > tr0, trustDown:false, band: tb1 !== tb0 ? tb1 : null};   // 1008 — 상담창
+  const res = {ok, fit, byLead, byTrust, cookie, gain, dbl, capped, say:ans.say, r:ans.r, trustUp: trustRaw(st) > tr0, trustDown: trustRaw(st) < tr0, band: tb1 !== tb0 ? tb1 : null};   // 1008 — 상담창
   if(win) return res;
   render();
   toast(ok? (gain? `${dn(st)} — ${gain.n} +${gain.d}${dbl?" (2배)":""}` : capped? `${dn(st)} — 멘탈리티가 모두 한계다. 신뢰만 깊어졌다` : `${dn(st)}의 마음에 닿았다`) : `${dn(st)}${eunn(st.name)} 납득하지 못했다`);
@@ -14314,8 +14392,8 @@ function answerDefy(pi, oi, win){   // win — 상담창(1008): 화면을 다시
       gain = {k:m.k, n:m.n, d: +(st.ment[m.k]-before).toFixed(2)};
     }
     const c0 = st.cond; setCond(st, st.cond + DEFY_FIT_COND); cond = Math.round(st.cond - c0);
-    addTrust(st, 1);
-  } else addTrust(st, -1);
+    addTrust(st, TRUST_D.defy, true);
+  } else addTrust(st, TRUST_D.defyMiss, true);   // 1022 — 받아들이면 +0.2 · 납득하지 못하면 −0.1
   const tb1 = trustBand(trustOf(st)).step;
   const seasons = ok ? DEFY_FIT_SEASONS : DEFY_MISS_SEASONS;
   D.imm[st.id] = defySeason() + seasons;
@@ -17265,6 +17343,11 @@ const TRUST_LINES_P = {
 /* 신뢰(호감도)는 소수로 쌓고 단계는 정수 자리로 본다.
    상담·사건이 늘어난 만큼 한 번에 오르는 폭은 줄여 둔다. */
 const TRUST_MUL = .3;
+/* 1022 — 신뢰 증감 (사용자 '고민 상담 말이 통하면 0.2, 안 통하면 -0.1 / 지침 무시 상담도 0.2, -0.1 / 락커룸은 0.2, 0.4, 실패하면 -0.1 /
+   추천 일과를 진행하면 그 학생의 신뢰 0.02증가'). 값을 그대로 더한다 — addTrust(st, v, true) (TRUST_MUL 을 먹이지 않는다) */
+const TRUST_D = {csl:.2, cslMiss:-.1, defy:.2, defyMiss:-.1, speech:.2, motive:.4, speechMiss:-.1, rec:.02};
+/* 추천 일과 (1022 · 첫 시간표 튜토리얼 FSTUT) — 카드에 추천한 학생(c.by = 학생 id)이 있으면 그 일과를 한 날 그 학생의 신뢰 +0.02 */
+function recTrust(c){ const st = c && c.by != null && S.students.find(x=> x.id === c.by); if(st) addTrust(st, TRUST_D.rec, true); }
 function trustRaw(st){ const v = st && +st.trust; return isFinite(v) ? v : 0; }
 function trustOf(st){ return clamp(Math.floor(trustRaw(st)), 0, TRUST_MAX); }
 function trustBand(v){ return TRUST_BANDS.find(b=> v>=b.min) || TRUST_BANDS[TRUST_BANDS.length-1]; }
@@ -17853,6 +17936,7 @@ function render(){
   renderLog();
   audBase(S && PHASES[S.phase] ? S.phase : null);
   if(window.RBK) RBK.after();   // 1009 — 책에서 연 이름 변경 · 스킬 강화 팝업이 끝나면 책을 다시 그린다 (apply_roster)
+  if(window.FST) FST.after();   // 1022 — 첫 시간표 튜토리얼 (FSTUT) — 카드의 추천 얼굴 · 02 스케줄이 열렸는지 · 이어하기
 }
 /* 학원 이름 (1007) — 두 줄을 넘으면 두 줄에 들어가는 크기까지 글자를 비례로 줄인다
    (가로 화면 사이드가 길어져 스케줄의 잉크 단지 · 깃펜을 가리지 않게). 도트 폰트도 같은 방식 — 12 · 24px 사이 크기는 조금 흐리게 보인다.
@@ -30050,14 +30134,14 @@ function lockerSpeak(t, L, idx, my){
     let conv = false, byTrust = false;
     if(!ok && trustFull(st)){ ok = true; byTrust = true; }        // 운명 단계는 언제나 통한다
     else if(!ok && !right && RNG() < netP){ ok = true; conv = true; }   // 호소력 — 맞지 않는 말일 때
-    if(ok) addTrust(st, o.type==="motive" ? 2 : 1);   // 동기부여는 신뢰가 두 배로 쌓인다
+    addTrust(st, ok ? (o.type==="motive" ? TRUST_D.motive : TRUST_D.speech) : TRUST_D.speechMiss, true);   // 동기부여는 신뢰가 두 배로 쌓인다 · 1022 — +0.2 (동기부여 +0.4) · 빗나가면 −0.1
     L.res[st.id] = ok; L.conv[st.id] = conv; L.byTrust = L.byTrust||{}; L.byTrust[st.id] = byTrust;
     L.mood[st.id] = Math.round(clamp(L.mood[st.id] + (ok? MOOD_SPEECH : -MOOD_SPEECH), 0, 100));
     (ok? names.ok : names.no).push(st.name);
   });
   logE(`락커룸 — <b>${SPEECH_TYPE[o.type].n}</b> &ldquo;${esc(o.t)}&rdquo;${
     names.ok.length? ` · <b style="color:var(--ok)">통함 ${esc(names.ok.join(", "))}</b> <span style="color:var(--brass)">신뢰 ${trustGainWord(o.type==="motive"?2:1)}</span>`:""}${
-    names.no.length? ` · <span style="color:var(--bad)">빗나감 ${esc(names.no.join(", "))}</span>`:""}`, "");
+    names.no.length? ` · <span style="color:var(--bad)">빗나감 ${esc(names.no.join(", "))}</span> <span style="color:var(--bad)">신뢰 감소</span>`:""}`, "");
 }
 
 /* LKWIN_START — 락커룸 창 (1013 · apply_lkwin.py) ─ 경기 직전 감독의 한마디를 상담창 같은 창으로. mockups/locker-room 목업 그대로
@@ -30150,7 +30234,7 @@ function lockerHtml(L, my){
         <div class="lkf">${v>=MOOD_GOOD? `체력·공격력·방어력·속도 <b style="color:var(--ok)">+${Math.round(MOOD_STAT*100)}%</b>`
           : v<=MOOD_BAD? `체력·공격력·방어력·속도 <b style="color:var(--bad)">-${Math.round(MOOD_STAT*100)}%</b>` : "보정 없음"}</div>
         ${said? `<div class="lkr ${r?"ok":"bad"}">${r? "받아들였다":"통하지 않았다"} ${d>0?"+":""}${d}${
-          r? ` · <span style="color:var(--brass)">신뢰 ${trustGainWord(said.type==="motive"?2:1)}</span>`:""}${
+          r? ` · <span style="color:var(--brass)">신뢰 ${trustGainWord(said.type==="motive"?2:1)}</span>` : ` · <span style="color:var(--bad)">신뢰 감소</span>`}${   /* 1022 — 빗나가면 신뢰 −0.1 (TRUST_D) */
           L.conv[st.id]? ` · <span style="color:var(--brass)">호소력</span>`:""}${
           (L.byTrust&&L.byTrust[st.id])? ` · <span style="color:var(--brass)">운명</span>`:""}</div>`:""}
       </div>`; }).join("")}</div>
@@ -30580,7 +30664,7 @@ function lkwResultHtml(){
   const nm = T=> esc(T.st.name) + (L.conv[T.st.id] ? ` <span class="cw-lead">(호소력)</span>` : (L.byTrust && L.byTrust[T.st.id]) ? ` <span class="cw-lead">(운명)</span>` : "");
   const pct = Math.round(MOOD_STAT * 100), lines = [];
   if(ok.length) lines.push(`<span class="cw-ok">통함 — ${ok.map(nm).join(", ")}</span> · <span class="cw-brass">신뢰 ${trustGainWord(o.type === "motive" ? 2 : 1)}</span>`);
-  if(no.length) lines.push(`<span class="cw-bad">빗나감 — ${no.map(nm).join(", ")}</span>`);
+  if(no.length) lines.push(`<span class="cw-bad">빗나감 — ${no.map(nm).join(", ")}</span> · <span class="cw-bad">신뢰 감소</span>`);   // 1022 — 빗나가면 신뢰 −0.1 (TRUST_D)
   const g = LKW.team.filter(T=> L.mood[T.st.id] >= MOOD_GOOD).length, b = LKW.team.filter(T=> L.mood[T.st.id] <= MOOD_BAD).length;
   if(g && b) lines.push(`이번 경기 체력·공격력·방어력·속도 — 기분 좋음 ${g}명 <span class="cw-ok">+${pct}%</span> · 기분 나쁨 ${b}명 <span class="cw-bad">-${pct}%</span>`);
   else if(g) lines.push(`이번 경기 체력·공격력·방어력·속도 — 기분 좋음 ${g}명 <span class="cw-ok">+${pct}%</span>`);
@@ -30636,6 +30720,390 @@ function lkwFit(){
   }
 }
 /* LKWIN_END */
+/* FSTUT_START — 첫 시간표 튜토리얼 (1022 · apply_fstut.py) ─ 초반 스토리 튜토리얼 01 '첫 번째 시간표'. mockups/first-schedule 목업 그대로
+   (대본 scenario-01-schedule-draft.md 01 ~ 31 · 사용자가 고친 줄 08 '첫 날인데' · 18 앞 '그 안경은 어디서…… 아니,' 뺌).
+   · 새 시나리오를 열면(newScenarioStart) 이것이 시작한다 — 예전 운영 안내(1 · 3 · 4장)는 처음에 띄우지 않고 운영 안내 목록에만 (1022 사용자).
+     세이브 S.fsTut — 1 진행 중 · 2 끝 (예전 세이브는 없음 — 보지 않는다). 중간에 나가면 다음에 이어하기를 누를 때 처음부터 (손패도 비운다).
+   · 흐름 — 01 마스터 생각 → 02 스케줄 단추 포커스(원 · 손가락 · 보조 문구 — 화면은 어둡게 하지 않는다 · 다른 메뉴 · 책상 소품 · 창도 평소처럼, 어디서든 스케줄이 열리면 03) →
+     03 ~ 06 생각(04 월요일 칸 · 25 손패를 금빛으로) → 07 문 + 양동이 · 청소도구(글자 없이) · 흔들림 · 곡(BGM.fsch) · 학생 셋 →
+     08 ~ 30 대화 · 카드 아홉 장(손패 오른쪽 바깥에서 날아와 제자리에 · 쾅) → 31 대화를 닫고 일반 입력 (추가 안내 없음 · 곡은 2.6초에 걸쳐 잦아든다).
+     15 · 28 · 29 는 한 박자 뒤 저절로 · 16 ~ 20 은 누르지 않아도(44자/초 · 카드가 앉고 0.42초) · 29 에도 대화창은 그대로.
+     넘기기 — 아무 데나 누르기 · 스페이스 · 엔터 (글자가 찍히는 중이면 그 줄 끝까지 · 다 찍혔으면 다음 줄). 건너뛰기는 없다 (1022 사용자).
+   · 카드마다 추천한 학생 c.by(학생 id) — 카드 오른쪽 위에 그 학생 얼굴(유물 보관고 아래 학생 띠와 같은 고리 얼굴 · 마우스를 올리면 설명) ·
+     그 일과를 한 날 그 학생의 신뢰 +0.02 (recTrust · TRUST_D.rec). 얼굴은 FST.after 가 render 끝에서 붙인다 (두루마리 스케줄 · 예전 스케줄 · 요일 칸 모두).
+   · 넓은 화면(폭 1100 이상 — 두루마리 스케줄 · 사이드 Schedule 단추) · 좁은 화면(예전 스케줄 · 폰 메뉴의 스케줄 칸) 둘 다. 글자 소리는 상담창 cwBlip ·
+     효과음 SFX fs_door · fs_clat · fs_glint · fs_slam · 곡 BGM.fsch. 자동화(navigator.webdriver)에서는 열지 않는다 — 시험은 window.__fstForce = true */
+(() => {
+const FST_FACE = {"paladin":{"motivated":"assets/fst_faces/paladin-motivated.png?v=9f80f84f","joy":"assets/fst_faces/paladin-joy.png?v=3e213740","surprised":"assets/fst_faces/paladin-surprised.png?v=b0ed2bf6","smile":"assets/fst_faces/paladin-smile.png?v=f5c93a74"},"wizard":{"tired":"assets/fst_faces/wizard-tired.png?v=8c795a66","sleepy-cat":"assets/fst_faces/wizard-sleepy-cat.png?v=02b87b13","smile":"assets/fst_faces/wizard-smile.png?v=d2ae512d","glasses":"assets/fst_faces/wizard-glasses.png?v=359e79c5","pout":"assets/fst_faces/wizard-pout.png?v=8831934e","joy":"assets/fst_faces/wizard-joy.png?v=a1a0733e"},"darkpriest":{"heroic-confidence":"assets/fst_faces/darkpriest-heroic-confidence.png?v=a6082822","smile":"assets/fst_faces/darkpriest-smile.png?v=51f67484","flustered":"assets/fst_faces/darkpriest-flustered.png?v=fb006c8c","joy":"assets/fst_faces/darkpriest-joy.png?v=775cc84f"}};   // apply_fstut.py — {직업: {표정: "assets/fst_faces/직업-표정.png?v=…"}} (tools/newcharactericon/*-expressions-v1 의 128 도트 · 학생 얼굴이라 WebP 로 바꾸지 않는다)
+/* 추천 얼굴 — 학생 명부 책(RB_LAYOUT_SRC.jobs)과 같은 맞춤 [배율, x%, y%] */
+const FST_CROP = {paladin:[.97,.5,5], sword:[.97,-.5,-1], monk:[1.06,-7.5,-3.5], archer:[1.04,-2,5.5], rogue:[1.07,-1.5,-2], priest:[1.02,0,4], timemage:[1.05,-2,0],
+  wizard:[1.09,.5,.5], druid:[1.01,2,4.5], forcemage:[1.05,0,.5], enchanter:[.94,0,2.5], darkpriest:[1.04,0,7.5], bard:[.94,-3,2.5], spellsword:[1.07,-2.5,-2], gunner:[1.06,2,4.5], ninja:[.98,-5.5,-1.5]};
+const FST_JOBS = ["wizard", "paladin", "darkpriest"];                          // 초상화 자리 — 왼쪽 · 가운데(앞) · 오른쪽
+const FST_FACE0 = {paladin: "motivated", wizard: "smile", darkpriest: "smile"};   // 07 들어올 때
+const FST_TUT = ["basic", "medit", "spar", "tact", "basic", "medit", "spar", "tact", "free"];   // 튜토리얼 카드 아홉 장 (대본 카드 명세)
+const FST_BY = ["paladin", "wizard", "darkpriest", "darkpriest", "paladin", "wizard", "darkpriest", "darkpriest", "wizard"];   // 카드마다 추천한 학생
+const FST_QUIET = /[\s….‥]/;                                                  // 이 글자에서는 글자 소리를 내지 않는다 (상담창 CW_QUIET)
+const FST_LK = window.HS_LANG === "en" ? 1.6 : 1;                               // 영어는 글이 1.6배쯤 길다 — 글자 빠르기도 그만큼 (오프닝 대화창처럼)
+const FST_CPS = 32 * FST_LK, FST_FAST = {cps: 44 * FST_LK, hold: 420, pre: 80}, FST_FLIGHT = 340, FST_GAP2 = 180;
+const FST_TIP = "스케줄을 열어 주세요.";
+const FST_ALL = "세 학생";
+const FST_MASTER = "마스터";
+/* 대본 — think 마스터 생각 · say 말(who: 직업 · master · all) · guide 02 · burst 07 · beat 29 · end 31 */
+const FST_CUES = [
+  {id: "01", k: "think", t: "이제 슬슬 학생들이 올 시간이네. 그 전에 이번 주 스케줄부터 준비해 둘까."},
+  {id: "02", k: "guide"},
+  {id: "03", k: "think", t: "월요일부터 금요일까지…… 전부 내가 정하는 거구나."},
+  {id: "04", k: "think", t: "나도 얼마 전까지는 저 자리에 앉아 있었는데. 이제는 내가 가르치는 쪽이라니.", fx: "monday"},
+  {id: "05", k: "think", t: "무작정 달리라고 하면 되나? 아니, 각자 잘하는 것도 다를 텐데."},
+  {id: "06", k: "think", t: "……뭘 해야 괜찮을까."},
+  {id: "07", k: "burst"},
+  {id: "08", k: "say", who: "paladin", face: "motivated", t: "마스터! 좋은 아침이에요! 첫 날인데 무슨 훈련부터 하나요?"},
+  {id: "09", k: "say", who: "master", t: "어, 왔구나. 마침 그걸 정하고 있었어. 우선은……"},
+  {id: "10", k: "say", who: "paladin", face: "joy", t: "역시 기초 체력이죠! 튼튼해야 검도 들고, 친구도 지킬 수 있으니까요!", cards: [0]},
+  {id: "11", k: "say", who: "wizard", face: "tired", t: "에에…… 아침부터 몸을 움직이는 거야?"},
+  {id: "12", k: "say", who: "wizard", face: "sleepy-cat", t: "나는 그냥 느긋하게 명상이나 하고 싶은데~ 눈을 감고…… 마음을 고요하게……", cards: [1]},
+  {id: "13", k: "say", who: "darkpriest", face: "heroic-confidence", t: "두 분 다 한 가지만 보고 계시네요. 지금 저희에게 가장 부족한 건 팀워크예요."},
+  {id: "14", k: "say", who: "darkpriest", face: "smile", t: "각자 잘하는 것과, 함께 잘하는 건 다르니까요. 대련과 전술 연구부터 하면서 합을 맞춰 보죠.", cards: [2, 3]},
+  {id: "15", k: "say", who: "all", t: "……", auto: 650},
+  {id: "16", k: "say", who: "paladin", face: "motivated", t: "좋아요! 그러려면 같이 뛰는 것부터 시작하죠! 달리면서 호흡도 맞추고요!", cards: [4], fast: true},
+  {id: "17", k: "say", who: "wizard", face: "glasses", t: "호흡을 맞추려면 명상이 더 정확하지. 후후…… 이것도 다 근거가 있는 제안이야.", cards: [5], fast: true, glint: true},
+  {id: "18", k: "say", who: "darkpriest", face: "flustered", t: "둘 다 제 말을 안 들으셨죠? 실제로 손발을 맞춰 봐야 한다니까요!", cards: [6], fast: true},
+  {id: "19", k: "say", who: "darkpriest", face: "heroic-confidence", t: "그리고 왜 어긋났는지 함께 복기하고요. 제가 설명할 테니까…… 이번엔 들어 주세요.", cards: [7], fast: true},
+  {id: "20", k: "say", who: "wizard", face: "smile", t: "그럼 각자 해 보고 싶은 걸 하는 시간도 넣자. 그래야 서로 뭘 좋아하는지 알지~", cards: [8], fast: true},
+  {id: "21", k: "say", who: "paladin", face: "joy", t: "아, 좋아요! 그 시간에는 제가 달리기 코스를 정해 올게요!"},
+  {id: "22", k: "say", who: "wizard", face: "pout", t: "……자율 훈련인데 왜 벌써 단체 달리기가 됐어?"},
+  {id: "23", k: "say", who: "darkpriest", face: "flustered", t: "그러니까요! 저도 제 방식대로 해 볼 시간이……"},
+  {id: "24", k: "say", who: "darkpriest", face: "smile", t: "……필요하다는 뜻이에요. 효율을 위해서요."},
+  {id: "25", k: "think", t: "……나름대로 다 생각이 있구나.", fx: "hand"},
+  {id: "26", k: "think", t: "아직 뭘 가르쳐야 할지는 막막하지만, 어떤 아이들인지부터 알아가면 되겠지."},
+  {id: "27", k: "say", who: "master", t: "알겠어. 너희 의견은 잘 들었어. 그럼 내가 이번 주 스케줄을 준비해 볼게."},
+  {id: "28", k: "say", who: "all", faces: {paladin: "surprised", wizard: "smile", darkpriest: "smile"}, t: "……", auto: 500},
+  {id: "29", k: "beat", faces: {paladin: "smile", wizard: "smile", darkpriest: "flustered"}, auto: 750},
+  {id: "30", k: "say", who: "all", faces: {paladin: "joy", wizard: "joy", darkpriest: "joy"}, t: "네!!! 부탁드려요!"},
+  {id: "31", k: "end"}
+];
+const FST_MON = "#view .sk-day[data-slot=\"0\"], #view .dslot[data-slot=\"0\"]", FST_HAND = "#view .sk-hand, #view .handrow";
+const F = {on: false, i: -1, sess: 0, typing: null, wait: null, free: false, guideOn: false, raf: 0, root: null, after: null, castOn: false, fast: false, pend: false, faces: {}};
+const fq = s => F.root ? F.root.querySelector(s) : null;
+const fsleep = ms => new Promise(r => setTimeout(r, ms));
+const fRM = () => !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+function fWanted(){ return !(navigator.webdriver && !window.__fstForce); }
+function fModal(){ return document.documentElement.classList.contains("modal-open") || !!(window.RBK && RBK.isOpen && RBK.isOpen()) || !!(typeof OP !== "undefined" && OP); }
+function fTrio(){
+  const T = {};
+  for(const k of FST_JOBS){ const st = (S.students || []).find(s => s && s.job === k); if(!st) return null; T[k] = st; }
+  return T;
+}
+
+/* ── 무대 ── */
+function fBuild(){
+  if(F.root) return;
+  const r = document.createElement("div");
+  r.id = "fstRoot"; r.className = "fst";
+  r.innerHTML = `<div class="fst-hit"></div><div class="fst-fx"></div>
+    <div class="fst-guide" hidden><i class="fst-ring"></i><i class="fst-ring2"></i><i class="fst-finger"></i><div class="fst-tip">${esc(FST_TIP)}</div></div>
+    <div class="fst-cast">${FST_JOBS.map(k => `<div class="fst-bust" data-who="${k}" hidden><img alt="" draggable="false"></div>`).join("")}</div>
+    <div class="fst-think"><div class="fst-tx"></div><div class="fst-nx">▼</div></div>
+    <div class="fst-talk"><div class="fst-nm"><i></i><span></span></div><div class="fst-tx"></div><div class="fst-nx">▼</div></div>`;
+  document.body.appendChild(r);
+  F.root = r;
+  const hit = r.querySelector(".fst-hit");
+  hit.addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); fAdvance(); });
+  hit.addEventListener("wheel", e => e.preventDefault(), {passive: false});
+  hit.addEventListener("touchmove", e => e.preventDefault(), {passive: false});
+  const I = (typeof TIN_ART !== "undefined" && TIN_ART && TIN_ART.icons) || null, at = I && I.at && I.at.hand;   // 손가락 — 건물 안 아이콘 시트의 hand
+  if(I && at){ const f = r.querySelector(".fst-finger"); f.style.setProperty("--fi", `url("${I.src}")`); f.style.setProperty("--fax", at[0]); f.style.setProperty("--fay", at[1]);
+    f.style.setProperty("--fiw", I.size[0]); f.style.setProperty("--fih", I.size[1]); }
+}
+document.addEventListener("keydown", e => {
+  if(!F.on || F.free || !F.root) return;
+  if(e.key === " " || e.key === "Enter"){ e.preventDefault(); e.stopPropagation(); fAdvance(); }
+}, true);
+function fMode(free){ F.free = !!free; if(F.root) F.root.classList.toggle("on", F.on && !F.free); }
+function fTeardown(){ cancelAnimationFrame(F.raf); F.raf = 0; if(F.root) F.root.remove(); F.root = null; document.documentElement.classList.remove("fst-dlg"); }
+
+/* ── 글 상자 ── */
+function fBox(kind){ const a = fq(".fst-think"), b = fq(".fst-talk"); if(a) a.classList.toggle("show", kind === "think"); if(b) b.classList.toggle("show", kind === "talk"); }
+function fMark(on){ F.root && F.root.querySelectorAll(".fst-nx").forEach(e => e.classList.toggle("on", on)); }
+function fPlate(who){
+  const nm = fq(".fst-nm"), sp = nm.querySelector("span");
+  if(who === "master"){ sp.textContent = FST_MASTER; nm.style.setProperty("--rc", "#ffd36a"); return; }
+  if(who === "all"){ sp.textContent = FST_ALL; nm.style.setProperty("--rc", "#ffd8c8"); return; }
+  const T = fTrio(), st = T && T[who], role = JOBS[who] && JOBS[who].role;
+  sp.textContent = st ? dn(st) : "";
+  nm.style.setProperty("--rc", role === "tank" ? "#8cc4f0" : role === "heal" ? "#86d6a4" : "#f2957d");   // 역할 색 네모 · 이름만 (직업은 뺐다 — 1022 둘째)
+}
+function fLine(c){ const T = fTrio(), st = T && T[c.who]; return st && typeof masterQ === "function" ? masterQ(c.t, st) : c.t; }   // 1년차 암흑 사제는 ‘마스터’
+function fType(el, text, voice, cps, sess){
+  return new Promise(res => {
+    if(F.typing) F.typing();
+    const ch = [...String(text || "")]; let n = 0, tm = 0;
+    const done = () => { clearTimeout(tm); if(F.typing === done) F.typing = null; el.textContent = text; res(); };
+    if(!el || !ch.length){ if(el) el.textContent = ""; res(); return; }
+    const step = () => {
+      if(sess !== F.sess) return;
+      n++; el.textContent = ch.slice(0, n).join("");
+      if(voice && !FST_QUIET.test(ch[n - 1])){ if(typeof cwBlip === "function") cwBlip(voice); else sfxPlay(voice); }
+      if(n >= ch.length){ done(); return; }
+      let d = 1000 / cps;
+      if(ch[n - 1] === "…" && ch[n] !== "…") d += F.fast ? 120 : 300;        // 말줄임표 뒤에서 짧게 호흡 (06)
+      tm = setTimeout(step, d);
+    };
+    el.textContent = ""; F.typing = done;
+    tm = setTimeout(step, 1000 / cps);
+  });
+}
+function fWaitClick(){ return new Promise(r => { F.wait = r; fMark(true); }); }
+function fAdvance(){
+  if(!F.on || F.free) return;
+  if(F.typing){ F.typing(); return; }
+  if(F.wait){ const r = F.wait; F.wait = null; fMark(false); r(); }
+}
+
+/* ── 초상화 ── */
+function fBust(k){ return fq(`.fst-bust[data-who="${k}"]`); }
+function fFace(k, f){ F.faces[k] = f; const b = fBust(k), src = FST_FACE[k] && FST_FACE[k][f]; if(b && src) b.querySelector("img").src = src; }
+function fCast(on, anim){
+  F.castOn = on;
+  const wide = innerWidth >= 1100;
+  FST_JOBS.forEach(k => {
+    const e = fBust(k); if(!e) return;
+    e.getAnimations().forEach(a => a.cancel());
+    if(on){
+      e.hidden = false;
+      if(!anim) return;
+      const delay = {paladin: 0, wizard: 230, darkpriest: 330}[k];
+      if(fRM()) e.animate([{opacity: 0}, {opacity: 1}], {duration: 300, delay, fill: "backwards"});
+      else if(k === "paladin") e.animate([{transform: `translateX(${wide ? 440 : 300}px)`}, {transform: "none"}], {duration: 380, delay, easing: "cubic-bezier(.2,.85,.3,1.15)", fill: "backwards"});   // 성기사 — 오른쪽에서 먼저 뛰어든다
+      else e.animate([{transform: `translateY(${wide ? 84 : 56}px)`, opacity: 0}, {opacity: 1, offset: .6}, {transform: "none", opacity: 1}], {duration: 360, delay, easing: "cubic-bezier(.2,.85,.3,1.2)", fill: "backwards"});   // 마법사 · 암흑 사제 — 뒤에서
+    } else if(anim){
+      const a = e.animate([{transform: "none", opacity: 1}, {transform: "translateY(90px)", opacity: 0}], {duration: 350, easing: "ease-in", fill: "forwards"});
+      a.onfinish = () => { if(!F.castOn) e.hidden = true; };
+    } else e.hidden = true;
+  });
+}
+function fSpeak(who){ FST_JOBS.forEach(k => { const e = fBust(k); if(e) e.classList.toggle("on", who === "all" || who === k); }); }
+function fHop(k){ if(fRM()) return; const e = fBust(k); if(e) e.animate([{transform: "none"}, {transform: "translateY(-9px)", offset: .35}, {transform: "none"}], {duration: 300, easing: "ease-out"}); }
+function fSparkle(){
+  const b = fBust("wizard"); if(!b) return;
+  [[.535, .585, 0], [.69, .57, 140]].forEach(([fx, fy, d]) => setTimeout(() => {
+    const s = document.createElement("i"); s.className = "fst-spark"; s.style.left = (fx * 100) + "%"; s.style.top = (fy * 100) + "%";
+    b.appendChild(s); setTimeout(() => s.remove(), 700);
+  }, d));
+}
+
+/* ── 화면 효과 ── */
+function fShake(){
+  if(fRM()) return;
+  const a = document.getElementById("app"); if(!a) return;
+  a.animate([0, -7, 6, -5, 6, -4, 4, -3, 2, -1, 0].map((x, i) => ({transform: `translate(${x}px,${[0, 3, -4, -2, 3, 2, -3, 1, -1, 1, 0][i]}px)`})), {duration: 400, easing: "linear"});
+}
+function fHl(sel, pad){
+  const t = document.querySelector(sel), fx = fq(".fst-fx"); if(!t || !fx) return;
+  const r = t.getBoundingClientRect(); if(!r.width) return;
+  const e = document.createElement("div"); e.className = "fst-hl";
+  e.style.left = (r.left - pad) + "px"; e.style.top = (r.top - pad) + "px"; e.style.width = (r.width + pad * 2) + "px"; e.style.height = (r.height + pad * 2) + "px";
+  fx.appendChild(e); setTimeout(() => e.remove(), 1700);
+}
+function fScrollPlan(){   // 좁은 화면 — 위 칸(메뉴)을 붙박지 않고 요일 칸이 맨 위에 오게 (요일 칸 · 손패 두 줄이 대화창 · 초상화 위에 보인다)
+  if(innerWidth >= 1100) return;
+  document.documentElement.classList.add("fst-dlg");
+  const d = document.querySelector("#view .dslot[data-slot=\"0\"]"); if(!d) return;
+  const y = d.getBoundingClientRect().top + (window.scrollY || 0) - 8;
+  try{ window.scrollTo({top: Math.max(0, y), behavior: "auto"}); }catch(e){ window.scrollTo(0, Math.max(0, y)); }
+}
+
+/* ── 카드 — 손패 오른쪽 바깥에서 나타나 오른쪽 → 왼쪽으로 0.34초 · 제자리에 내려앉으며 1.08 → 1 · 쾅 ── */
+function fNewCard(i, T){
+  S.cardSeq = (S.cardSeq || 0) + 1;
+  const st = T && T[FST_BY[i]];
+  const c = {u: S.cardSeq, t: FST_TUT[i], w: (S.weekSeq | 0)};
+  if(st) c.by = st.id;
+  return c;
+}
+function fDeal(list, sess){
+  if(sess !== F.sess) return Promise.resolve();
+  const T = fTrio(), add = list.map(i => fNewCard(i, T));
+  S.hand = (S.hand || []).concat(add);
+  render();
+  return Promise.all(add.map((c, j) => fFly(c, j * FST_GAP2, sess)));
+}
+function fFly(c, delay, sess){
+  return new Promise(res => {
+    const el = document.querySelector(`#view [data-card="${c.u}"]`);
+    const land = () => {
+      if(sess === F.sess){
+        sfxPlay("fs_slam", .94 + Math.random() * .12);
+        if(el && el.isConnected){
+          if(fRM()) el.animate([{filter: "drop-shadow(0 0 6px #ffd36a)"}, {filter: "none"}], {duration: 700, easing: "ease-out"});
+          else el.animate([{transform: "scale(1.08) rotate(-1.4deg)"}, {transform: "scale(1.02) rotate(.8deg)", offset: .55}, {transform: "none"}], {duration: 130, easing: "ease-out"});
+        }
+      }
+      res();
+    };
+    if(!el){ setTimeout(land, delay + FST_FLIGHT); return; }
+    if(fRM()){ el.animate([{opacity: 0}, {opacity: 1}], {duration: 180, delay, fill: "backwards"}).onfinish = land; return; }
+    const r = el.getBoundingClientRect(), k = (el.offsetWidth && r.width) ? r.width / el.offsetWidth : 1;
+    const zone = el.closest(".sk-hand, .handrow"), zr = zone ? zone.getBoundingClientRect() : r;
+    const sx = Math.min(innerWidth, zr.right) + 26, dx = (sx - r.left) / k, d2 = dx - 26 / k;
+    el.animate([{transform: `translateX(${dx}px)`, opacity: 0}, {transform: `translateX(${d2}px)`, opacity: 1, offset: .1}, {transform: "translateX(0)", opacity: 1}],
+               {duration: FST_FLIGHT, delay, easing: "cubic-bezier(.3,.75,.4,1)", fill: "backwards"}).onfinish = land;
+  });
+}
+
+/* ── 02 — 스케줄 단추에 포커스. 다른 메뉴 · 소품 · 창은 평소처럼 (화면을 어둡게 하지 않는다) — 스케줄이 열리면 FST.after → fPlanCheck 가 03 으로 ── */
+function fGuideTarget(){
+  /* 넓은 화면 사이드의 Schedule · 가운데 폭 메뉴 줄의 '진행' · 폰 메뉴의 스케줄 칸 — 보이는 것 하나 */
+  return [...document.querySelectorAll("#nav button[data-view=\"plan\"], #sideSched, #navm button[data-view=\"plan\"]")].find(e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && e.offsetParent !== null; }) || null;
+}
+function fGuideLoop(){
+  const g = fq(".fst-guide");
+  if(!F.on || !F.guideOn || !g){ F.raf = 0; if(g) g.hidden = true; return; }
+  const t = fModal() ? null : fGuideTarget();
+  if(!t) g.hidden = true;
+  else {
+    const r = t.getBoundingClientRect(), pad = 6, W = innerWidth;
+    const box = [r.left - pad, r.top - pad, r.width + pad * 2, r.height + pad * 2];
+    g.querySelectorAll(".fst-ring, .fst-ring2").forEach(e => { e.style.left = box[0] + "px"; e.style.top = box[1] + "px"; e.style.width = box[2] + "px"; e.style.height = box[3] + "px"; });
+    const f = g.querySelector(".fst-finger"), fs = f.offsetWidth || 48, leftSide = r.left >= fs + 16;
+    f.classList.toggle("l", !leftSide);   // 왼쪽에 자리가 없으면 오른쪽에서 왼쪽을 가리킨다
+    f.style.left = (leftSide ? r.left - fs - 10 : r.right + 10) + "px"; f.style.top = (r.top + r.height / 2 - fs / 2) + "px";
+    const tp = g.querySelector(".fst-tip"); g.hidden = false;
+    const tw = tp.offsetWidth, th = tp.offsetHeight, up = r.top - th - 18 >= 4;
+    tp.classList.toggle("dn", !up);
+    const cx = r.left + r.width / 2, left = Math.min(W - 8 - tw, Math.max(8, cx - tw / 2));
+    tp.style.left = left + "px"; tp.style.top = (up ? r.top - th - 16 : r.bottom + 16) + "px"; tp.style.setProperty("--ax", (cx - left) + "px");
+  }
+  F.raf = requestAnimationFrame(fGuideLoop);
+}
+function fGuide(){
+  F.guideOn = true; fMode(true);
+  if(!F.raf) F.raf = requestAnimationFrame(fGuideLoop);
+  fPlanCheck();
+}
+function fPlanCheck(){
+  if(!F.on || !F.guideOn || UI.view !== "plan" || fModal()) return;
+  F.guideOn = false; fMode(false);
+  const g = fq(".fst-guide"); if(g) g.hidden = true;
+  const sess = F.sess, i = F.i;
+  setTimeout(() => { if(sess === F.sess) fRun(i + 1); }, 360);
+}
+
+/* ── 진행 ── */
+async function fRun(i){
+  const sess = F.sess, c = FST_CUES[i]; if(!c || !F.on) return;
+  F.i = i; F.fast = !!c.fast;
+  const cps = c.fast ? FST_FAST.cps : FST_CPS;
+  if(c.k === "think"){
+    if(F.castOn) fSpeak(null);
+    if(c.id === "03") fScrollPlan();
+    if(c.fx === "monday") fHl(FST_MON, 4);
+    if(c.fx === "hand") fHl(FST_HAND, 3);
+    fBox("think");
+    await fType(fq(".fst-think .fst-tx"), c.t, "csl_mst", cps, sess);
+  } else if(c.k === "say"){
+    if(c.face) fFace(c.who, c.face);
+    if(c.faces) Object.keys(c.faces).forEach(k => fFace(k, c.faces[k]));
+    fSpeak(c.who);
+    if(c.who === "all") FST_JOBS.forEach(fHop); else if(c.who !== "master") fHop(c.who);
+    if(c.glint){ sfxPlay("fs_glint"); fSparkle(); }
+    fPlate(c.who); fBox("talk");
+    await fType(fq(".fst-talk .fst-tx"), fLine(c), c.who === "master" ? "csl_mst" : "csl_stu", cps, sess);
+  } else if(c.k === "guide"){
+    fBox(null); fGuide(); return;
+  } else if(c.k === "burst"){
+    fBox(null);
+    audOver("fsch");
+    sfxPlay("fs_door"); setTimeout(() => { if(sess === F.sess) sfxPlay("fs_clat"); }, 110);   // 와장창창 — 글자 없이 소리만 (1022 사용자)
+    fShake();
+    await fsleep(420); if(sess !== F.sess) return;
+    FST_JOBS.forEach(k => fFace(k, FST_FACE0[k])); fSpeak("all"); fCast(true, true);
+    await fsleep(720); if(sess !== F.sess) return;
+    fRun(i + 1); return;
+  } else if(c.k === "beat"){
+    fBox("talk"); fMark(false);                                               // 대화창은 닫지 않는다 — 28 의 '……' 그대로 (1022 넷째)
+    if(c.faces) Object.keys(c.faces).forEach(k => fFace(k, c.faces[k]));
+    fSpeak("all"); FST_JOBS.forEach(fHop);
+  } else if(c.k === "end"){
+    fFinish(); return;
+  }
+  if(sess !== F.sess) return;
+  if(c.cards){ await fsleep(c.fast ? FST_FAST.pre : 160); if(sess !== F.sess) return; await fDeal(c.cards, sess); }
+  if(sess !== F.sess) return;
+  if(c.auto) await fsleep(c.auto);
+  else if(c.fast) await fsleep(FST_FAST.hold);
+  else await fWaitClick();
+  if(sess !== F.sess) return;
+  fRun(i + 1);
+}
+function fFinish(){
+  fBox(null); fMark(false); fCast(false, true);
+  F.guideOn = false; F.on = false; fMode(true);
+  document.documentElement.classList.remove("fst-dlg");
+  S.fsTut = 2; save();
+  audOver(null);                                                              // 곡은 BGM.fsch 의 xf 2.6초에 걸쳐 잦아든다
+  const after = F.after; F.after = null;
+  setTimeout(() => {
+    fTeardown();
+    if(after) after();
+    else { render(); toast("새 학기가 시작되었다."); if(typeof tryMarkTut === "function" && tryMarkTut()) showCeremony(); }
+  }, 420);
+}
+function fPreload(){
+  if(typeof AWEB !== "undefined" && AWEB === false) return;
+  ["fs_door", "fs_clat", "fs_glint", "fs_slam", "csl_mst", "csl_stu"].forEach(k => { if(SFX[k]) sfxLoad(SFX[k].f); });
+}
+function fBegin(){
+  fBuild();
+  F.on = true; F.sess++; F.i = -1; F.typing = null; F.wait = null; F.guideOn = false;
+  fMode(false); fBox(null); fMark(false);
+  FST_JOBS.forEach(k => fFace(k, FST_FACE0[k])); fCast(false, false); fSpeak(null);
+  fPreload();
+  if(UI.view !== "home"){ UI.view = "home"; render(); }
+  const sess = F.sess;
+  setTimeout(() => { if(sess === F.sess) fRun(0); }, 700);                    // 01 은 첫 마스터 화면이 자리 잡은 뒤
+}
+/* 새 시나리오 — 시작하면 true (afterStart 는 끝난 뒤에) */
+function fStart(after){
+  if(!fWanted() || !fTrio()) return false;
+  F.after = after || null;
+  S.fsTut = 1; S.hand = []; S.slots = Array(WEEK_DAYS).fill(null);
+  save();
+  fBegin();
+  return true;
+}
+
+/* ── 카드 오른쪽 위 추천 얼굴 (render 끝에서) ── */
+function fDecor(){
+  if(UI.view !== "plan") return;
+  const v = document.getElementById("view"); if(!v) return;
+  v.querySelectorAll(".sk-card[data-card], .card[data-card]").forEach(el => {
+    if(el.querySelector(":scope > .fst-who")) return;
+    const u = +el.dataset.card, c = (S.hand || []).find(x => x && x.u === u) || (S.slots || []).find(x => x && x.u === u);
+    const st = c && c.by != null && (S.students || []).find(s => s && s.id === c.by);
+    if(!st || typeof FACE_IMG === "undefined" || !FACE_IMG[st.job]) return;
+    const nm = dn(st), cr = FST_CROP[st.job] || [1.04, 0, 2];
+    const tip = `${nm} 추천 · 이 일과를 하면 ${nm}의 신뢰가 오른다`;
+    el.insertAdjacentHTML("beforeend", `<span class="fst-who" title="${esc(tip)}"><span class="fst-face"><img src="${FACE_IMG[st.job]}" alt="" draggable="false" style="--fs:${cr[0]};--fx:${cr[1]}%;--fy:${cr[2]}%"></span></span>`);
+  });
+}
+function fAfter(){
+  try{ fDecor(); }catch(e){}
+  if(!S) return;
+  if(F.on) fPlanCheck();
+  else if(S.fsTut === 1 && !F.pend && fWanted() && !fModal()){                // 이어하기 — 끝까지 보지 않고 나갔으면 처음부터 (손패도 비운다)
+    F.pend = true;
+    setTimeout(() => {
+      F.pend = false;
+      if(F.on || S.fsTut !== 1 || fModal() || !fTrio()) return;
+      F.after = null; S.hand = []; S.slots = Array(WEEK_DAYS).fill(null);
+      fBegin();
+    }, 0);
+  }
+}
+window.FST = {start: fStart, after: fAfter, state: F, cues: FST_CUES, advance: fAdvance};
+})();
+/* FSTUT_END */
 /* TFWIN_START — 대회 편성 창 (1019 · apply_tfwin.py) ─ mockups/tour-formation 목업 그대로. '대진 확정'(scout 단계) 자리에 뜬다:
    가을 대회 컵(시내 · 광역 · 본선 — 라운드마다 · 1팀 대회도) · 친선전(경기 전에 한 번) · 봄 신인전(경기마다 — 상대가 경기마다 다르다) ·
    예선 리그(1019 ③ — 라운드마다 · 조 순위 · 우리 일정) · 본선 결승(1019 ③ — 세트마다 · 세트판 · 세트를 진 상대가 바꾼 진형은 맞붙기 전까지 숨김).
@@ -32297,6 +32765,8 @@ const BGM = {
   fest:     {f:"finaltournament.ogg"},
   festFinal:{f:"finaltournamentfinalbattle.ogg"},
   league:   {f:"tournamentleague.ogg"},   // 1021 둘째 — 새 곡으로 갈아 끼움 (사용자 'tournamentleague 곡 교체' · tourFinal 도 'basetournamentfinalbattle 곡 교체')
+  /* 첫 시간표 튜토리얼 (1022 · FSTUT) — 학생들이 들이닥칠 때부터 · 끝나면(다른 곡으로 넘어갈 때) 2.6초에 걸쳐 잦아든다. 사용자가 준 '첫 시간표는 시끌벅적.wav' (119.5초) */
+  fsch:     {f:"first_schedule.ogg", v:.9, xf:2.6},
   /* 원정 (1021 둘째 — 사용자 '각 원정의 지역곡/전투곡/보스곡 추가해주고') — 벨트 원정: 띠를 걷는 동안 지역곡 · 전투 1 · 2 는 전투곡 · 셋째(90% 보스 방)는 보스곡 (beltBgm — 원정지 id 로).
      keep — 지역곡은 전투가 끝나면 멈춘 자리부터 잇는다 (원정 창을 열 때 처음부터 — audForget) · lazy — 첫 접속 로딩 화면에서 받지 않는다 (15곡 27MB — 원정 창을 열 때 그 원정지 셋만) */
   ex_d1:        {f:"exped_training.ogg", v:.9, keep:true, lazy:true},
@@ -32576,6 +33046,12 @@ const SFX = {
   book_flip1:{f:"book_flip1.ogg", v:.9},
   book_flip2:{f:"book_flip2.ogg", v:.9},
   book_flip3:{f:"book_flip3.ogg", v:.9},
+  /* 첫 시간표 튜토리얼 (1022 · FSTUT) — 07 학생들이 문을 벌컥(사용자가 준 '문열리는 소리.mp3' · 원본 fs_door.mp3) · 0.11초 뒤 문 옆 양동이 · 청소도구가 우르르
+     (합성 — mockups/first-schedule/src/sfx.py) · 17 안경 반짝(사용자가 준 '안경 반짝.mp3' · 원본 fs_glint.mp3) · 카드가 손패에 내려앉는 쾅(합성 · 빠르기 .94 ~ 1.06) */
+  fs_door: {f:"fs_door.ogg"},
+  fs_clat: {f:"fs_clatter.ogg", v:.75},
+  fs_glint:{f:"fs_glint.ogg", v:.9},
+  fs_slam: {f:"fs_slam.ogg"},
   /* 원정 지도 (1016 · apply_exmap) — 목업의 짧은 소리를 같은 파형으로 합성 (tools/gen/sfx/exmap_sfx.py · v 는 설정 효과음 70 에서 목업과 같은 크기).
      원정지 핀에 마우스 · 닫힌 핀 · 나무판 ◀ ▶ (pick_hop 과 같은 파일을 목업 크기로) · 이동 중 발소리 셋 (학생 차례마다 음 높이 — 같은 소리는 55ms 안에 두 번 못 내서 셋으로 나눴다) */
   xm_hover:{f:"xm_hover.ogg", v:.192},
@@ -33857,8 +34333,9 @@ function newScenarioStart(name){
   if(S.diff !== "normal") logE(`난이도 <b>${DIFFS[S.diff].n}</b> — ${DIFFS[S.diff].d}.`, "");
   closeModal(); UI.view="home"; UI.sel=null; render();
   const afterStart = ()=>{ render(); toast("새 학기가 시작되었다."); if(tryMarkTut()) showCeremony(); };
-  if(tutHas()) showTutorial(0, {start:true, after:afterStart});
-  else afterStart();
+  /* 1022 — 첫 시간표 튜토리얼(FSTUT)이 시작한다 · 예전 운영 안내(1 · 3 · 4장)는 처음에 띄우지 않고 운영 안내 목록에만
+     (사용자 '기존 튜토리얼 처음에 출현하지 않게 하고 튜토리얼 탭에 등록만') */
+  if(!(window.FST && FST.start(afterStart))) afterStart();
 }
 function showPrologue(i){   // 1003 — 제목 위 '프롤로그 1 / 3' 쪽수 표시는 뺐다
   const pg = PROLOGUE[i], last = i>=PROLOGUE.length-1;
