@@ -1949,6 +1949,16 @@ html[lang="ja"] .crec-bub,html[lang^="zh"] .crec-bub{word-break:normal}   /* 일
 .flst .rv-skip[hidden]{display:none}
 .flst .fst-tip{white-space:normal;width:max-content;max-width:min(560px,calc(100vw - 16px));text-align:center}
 /* FLST_CSS_END */
+/* RSTO_CSS_START — 초반 스토리 01B 첫 학생 명부 (1023 목업 · apply_rost.py) ─ 무대는 첫 시간표(.fst) 그대로 · 배경 없음 (책상 · 명부 책이 보인다 — 책은 그 아래 z 79).
+   더한 것만: 암전 '잠시 후…' · 마스터 대화창(금빛 이름표) · 강조 테두리 조금 더 오래 · 다시 보기 건너뛰기(오른쪽 위 — 02 와 같다) · 안내 문구 줄바꿈 */
+.fst.rost{z-index:906;--rv-top:12px}
+.rost .rs-black{position:absolute;inset:0;background:#0b0507;opacity:0;pointer-events:none;display:flex;align-items:center;justify-content:center;z-index:8}
+.rost .rs-black b{font-weight:400;font-size:calc(var(--fst-fs) * 1.2);letter-spacing:.06em;color:var(--fst-dim);opacity:0}
+.rost .fst-talk.mst .fst-tx{color:#fff1cf}
+.rost .fst-talk.mst .fst-nm span{color:#ffd36a}
+.rost .rs-hl{animation-iteration-count:3}
+.rost .rv-skip[hidden]{display:none}
+/* RSTO_CSS_END */
 /* SCOUTWIN_CSS_START — 겨울 스카우트 개편 (1019 · apply_scout.py) ─ 목록 · 확인 팝업은 건물 안 창 색(TOWNIN 과 같은 값 — 밝은 · 어두운 화면 · 도트 마감 · 팔레트와 상관없이 같다 ·
    게임이 모든 button 에 붙이는 테두리 · 그림자는 html body #view / #modalRoot … 로 걷는다). 설득 대화는 상담창(.cw-* — CSLWIN_CSS) 그대로에 효과만 (.scw-cw) */
 .scw,.scw-pal{--scw-ink:#fff4e6;--scw-line:#e9cdbf;--scw-edge:#b98f84;--scw-win:#2a1418;--scw-panel:#42191f;--scw-card:#5b2a30;--scw-gold:#ffd36a;--scw-dim:#e2c2b6;
@@ -17986,6 +17996,9 @@ function modalEscape(){
    ============================================================ */
 /* 1002 — 메뉴 묶기: 팀 편성은 학생 안, 리그 등록 · SP 상점 · 순위표는 리그 안, 기록(졸업생 명부) · 도감은 일지 안의 서브탭으로.
    시설 · 상점은 '마을'. 서브탭 화면들은 예전 화면(UI.view)을 그대로 쓴다 — 다른 곳에서 UI.view="team" 으로 바로 가도 된다 */
+/* 1023 — 메뉴에서 숨기는 단추 (사용자 1023 '유물 아이콘 숨김처리하고 피드백 아이콘도 숨김처리하자' · 넓은 · 좁은 화면 모두) — 유물 · 스킬 보관고 화면 자체는 그대로
+   (명부의 유물 칸 · 대회 정비 등 다른 길로 연다) · 피드백 창도 그대로 (단추만 숨긴다) */
+const MENU_HIDE = {relic: true, feedback: true};
 const VIEWS = [
   {id:"home", n:"마스터 노트"},
   {id:"roster", n:"학생"},
@@ -18090,11 +18103,12 @@ function renderPrepBar(){
   };
 }
 function render(){
+  if(window.RSTO) RSTO.gate();   // 1023 — 초반 스토리 01B (RSTO) — 첫 주를 마치기 전에는 학생 명부 · 팀 편성으로 가지 않고 안내 (명부 책보다 먼저)
   if(window.RBK) RBK.intercept();   // 1009 — 가로 넓은 화면: 학생 명부 · 팀 편성은 책 팝업 (apply_roster)
   { const fb = $("#btnFeed");
     if(fb && !fb.dataset.on && typeof FB_ICON!=="undefined" && FB_ICON){
       fb.innerHTML = `<img src="${FB_ICON}" alt="피드백">`;
-      fb.hidden = false; fb.dataset.on = "1";
+      fb.hidden = !!MENU_HIDE.feedback; fb.dataset.on = "1";   // 1023 — 피드백 단추 숨김 (MENU_HIDE)
       fb.onclick = ()=> feedModal();
     } }
   if(UI.pendingTour && UI.tour && !(UI.tour.stage==="prep" && !UI.tour._prepOpen)){ renderTournament(); }
@@ -18115,7 +18129,7 @@ function render(){
     const g = $("#mGradP"), n = (S.phase==="winter" && S.pendingGrad && S.pendingGrad.list) ? S.pendingGrad.list.length : 0;
     if(g){ g.textContent = n ? `(${n}명 졸업 준비 중)` : ""; g.hidden = !n; } }
 
-  const tabs = VIEWS.map(v=> Object.assign({}, v));
+  const tabs = VIEWS.filter(v=> !MENU_HIDE[v.id]).map(v=> Object.assign({}, v));   // 1023 — 숨긴 단추 (MENU_HIDE)
   { // 학생 — 스킬 강화 포인트를 가진 학생 수
     const rv = tabs.find(v=>v.id==="roster");
     if(rv) rv.badge = S.students.filter(x=>(x.sp||0)>0).length || null;
@@ -18134,6 +18148,7 @@ function render(){
   { const lv = tabs.find(v=>v.id==="league"); if(lv && !lgUnlocked()) lv.lock = LG_LOCK_MSG; }
   if(S.townLock && UI.view==="facil") UI.view = "home";                      // 1022 — 마을은 초반 스토리 03 이 끝나면 열린다 (메뉴 단추는 자물쇠 · 졸업생 리그와 같은 방식)
   { const tv = tabs.find(v=>v.id==="facil"); if(tv && S.townLock){ tv.lock = TOWN_LOCK_MSG; tv.badge = null; } }
+  if(window.RSTO) RSTO.tabs(tabs);   // 1023 — 초반 스토리 01B — 첫 주를 마치기 전에는 학생 메뉴에 자물쇠
   const curG = viewGroupOf(UI.view);                                        // 서브탭 화면이면 그 묶음의 메뉴 단추가 켜진다
   {  // 스케줄 탭에는 지금 몇 주차인지 붙여둔다
     const pv = tabs.find(v=>v.id==="plan");
@@ -18147,7 +18162,7 @@ function render(){
     if(!S.mission) S.mission = newMission();
     const mc = missionCur(), misT = mc ? `${S.mission.idx+1}/${MISSIONS.length}` : "완수";
     const sideH = `<button type="button" class="side-only side-mis" data-act="mission" aria-haspopup="dialog" title="목표 ${misT}${mc? " · "+esc(mc.n) : ""}">${menuArt("lgentry")}<span class="nl">목표</span><span class="ns">목표 ${misT}</span></button>`
-      + (typeof feedModal==="function" ? `<button type="button" class="side-only side-fb" data-act="feedback" aria-haspopup="dialog" title="피드백">${menuArt("feedback")}<span class="nl">피드백</span><span class="ns">피드백</span></button>` : "");
+      + (typeof feedModal==="function" && !MENU_HIDE.feedback ? `<button type="button" class="side-only side-fb" data-act="feedback" aria-haspopup="dialog" title="피드백">${menuArt("feedback")}<span class="nl">피드백</span><span class="ns">피드백</span></button>` : "");
     const nav = $("#nav");
     if(nav._h !== navH + sideH){
       nav.innerHTML = navH + sideH; nav._h = navH + sideH;
@@ -18228,6 +18243,7 @@ function render(){
   if(window.XPST) XPST.after();   // 1023 — 원정 이야기 (XPST) — 기록 정리 · 가져온 기록이 남은 채 다시 열었으면 그 줄부터 (S.xpst)
   if(window.FRIS) FRIS.after();   // 1023 — 첫 친선전 이야기 (FRIS) — 결말 중에 다시 열었으면 그 결말부터 (S.fris)
   if(window.FLST) FLST.after();   // 1023 — 첫 친선전 신청 이야기 (FLST) — 첫 편지가 왔을 때 도착 이야기 · 편지 안내 (S.flst)
+  if(window.RSTO) RSTO.after();   // 1023 — 초반 스토리 01B (RSTO) — 첫 주를 마치면 첫 학생 명부 · 중간에 나갔으면 그 단락부터 (S.rost)
 }
 /* 학원 이름 (1007) — 두 줄을 넘으면 두 줄에 들어가는 크기까지 글자를 비례로 줄인다
    (가로 화면 사이드가 길어져 스케줄의 잉크 단지 · 깃펜을 가리지 않게). 도트 폰트도 같은 방식 — 12 · 24px 사이 크기는 조금 흐리게 보인다.
@@ -33440,7 +33456,7 @@ window.RQST = {start: rqStart, play: rqPlay, after: rqAfter, preview: rqPreview,
 /* RQST_END */
 /* SCEN_START — 시나리오 다시 보기 (1023 · apply_scen.py) ─ 사용자 1023: '처음 볼 때는 무조건 건너뛰기를 안보여주고 마스터 화면의 모래시계를 시나리오 팝업으로 하고
    처음으로 시나리오 완료 시 해당 모래 시계를 클릭하면 나오는 팝업에 버튼으로 등록하도록 하자. 거기서 재생을 하면 건너뛰기 가능하게 하고'.
-   · 시나리오 — 01 '첫 번째 시간표'(FST) · 02 '한 번만 더'(RVST) · 03 '저희도 학원을 지키고 싶어요'(RQST). 블록이 있고 replay 가 있는 것만.
+   · 시나리오 — 01 '첫 번째 시간표'(FST) · 01B '한 장씩 알아가는 중'(RSTO · 1023) · 02 '한 번만 더'(RVST) · 03 '저희도 학원을 지키고 싶어요'(RQST). 블록이 있고 replay 가 있는 것만.
      1023 — 04 '첫걸음과 남겨진 불씨'(XPST · 원정 이야기 묶음 — 사용자 '4번째로 적용하는 시나리오 묶음'): 한 장면이라도 보면 등록 · 팝업에는 한 줄 전체로
      본 장면마다 작은 단추(첫 원정 · 원정지마다 입장 · 모닥불 · 보스 · 기록 · 기록 정리 — XPST.replayList) · data-scen "xpst:<장면>" → XPST.replay(장면, 배우).
      1023 — 05 '연습 상대'(FRIS · 첫 친선전): 도입을 보면 등록 · 경기 전 · (첫 친선전이 끝나면) 이겼을 때 · 졌을 때 — 결말은 둘 다 (대본 '반대 결말도 열람').
@@ -33455,6 +33471,7 @@ window.RQST = {start: rqStart, play: rqPlay, after: rqAfter, preview: rqPreview,
 (() => {
 const SCEN_LIST = [
   {k: "fst", n: "01", t: "첫 번째 시간표"},
+  {k: "rost", n: "01B", t: "한 장씩 알아가는 중"},                         // 1023 — 첫 학생 명부 (RSTO — 셋이 학원에 있을 때 다시 보기)
   {k: "rvst", n: "02", t: "한 번만 더"},
   {k: "rqst", n: "03", t: "저희도 학원을 지키고 싶어요"},
   {k: "xpst", n: "04", t: "첫걸음과 남겨진 불씨", bundle: true},             // 1023 — 원정 이야기 묶음 (XPST — 본 장면마다 단추: 첫 원정 · 원정지마다 입장 · 모닥불 · 보스 · 기록 · 기록 정리)
@@ -33462,11 +33479,12 @@ const SCEN_LIST = [
 ];
 const SCEN_T = {title: "시나리오", none: "아직 다시 볼 시나리오가 없다.", close: "닫기"};
 const SCEN_JOBS = ["paladin", "darkpriest", "wizard"];
-function scenApi(k){ const a = k === "fst" ? window.FST : k === "rvst" ? window.RVST : k === "rqst" ? window.RQST : k === "xpst" ? window.XPST : k === "fris" ? window.FRIS : null; return a && typeof a.replay === "function" ? a : null; }
+function scenApi(k){ const a = k === "fst" ? window.FST : k === "rvst" ? window.RVST : k === "rqst" ? window.RQST : k === "xpst" ? window.XPST : k === "fris" ? window.FRIS : k === "rost" ? window.RSTO : null; return a && typeof a.replay === "function" ? a : null; }
 /* 처음 끝냈는가 — 장면이 끝난 때 (요약 · 팝업이 남아 있어도) · 04 묶음은 한 장면이라도 보면 */
 function scenDone(k){
   if(!S) return false;
   if(k === "fst") return S.fsTut === 2;
+  if(k === "rost") return !!(window.RSTO && RSTO.done());
   if(k === "rvst") return !!(S.rvst && (S.rvst.step | 0) >= 1);
   if(k === "rqst") return !!(S.rqst && (S.rqst.step | 0) >= 1);
   if(k === "xpst") return !!(window.XPST && XPST.anySeen());
@@ -35345,6 +35363,474 @@ window.FLST = {after: fsAfter, open: fsOpen, answered: fsAnswered, later: fsLate
   reset: fsResetAll, end: fsEnd, advance: fsAdvance, target: fsTarget, trio: fsTrio, state: R, cues: FS_CUES, face: FL_FACE, T: FS_T, s: fsS};
 })();
 /* FLST_END */
+/* RSTO_START — 초반 스토리 튜토리얼 01B '한 장씩 알아가는 중' (1023 목업 · apply_rost.py · mockups/first-roster) ─ 대본 scenario-01b-first-student-roster-draft.md (초안 v1 · RST01 ~ 51).
+   사용자 1023: '이거 목업해보자'. 물음 · 답: 시작 '결과창 닫으면 바로' · 잠금 '명부 · 팀 편성 모두 잠금'.
+   · 잠금 — 새 학원은 학생 명부를 '첫 주 관찰 후 열람'으로 잠근다 (메뉴 '학생'에 자물쇠 · 누르면 안내 · 책상의 명부 · 학생 이름 · 팀 편성도 열리지 않고 안내).
+     예전 세이브(첫 주를 이미 넘겼다) · 셋(첫 시간표의 팔라딘 · 마법사 · 암흑 사제)이 없으면 잠그지 않고 이야기도 없다.
+   · 시작 — 첫 시간표 튜토리얼(01)이 끝나고 첫 주 일과 · 경과 보고가 끝나 화면이 한가해지면 바로 (어느 화면이든 마스터 화면으로 옮겨서).
+     A 관찰 RST01 ~ 04 (마스터 독백) → 끝나면 명부를 연다(해금 · 저장) → 누르지 않아도 B: 암전 0.4초 · 사각사각(sk_sign) · '잠시 후…' · 밝아지며 펼쳐진 명부(팔라딘 쪽 · 책 넘기는 소리) →
+     RST09 ~ 12 (RST10 전투 능력치 탭을 열어 강조하고 학적으로 돌아온다 · RST12 멘탈리티 여섯 강조) → C 팔라딘 RST13 ~ 16 (적극성 · 지구력) →
+     저절로 마법사 쪽으로 넘긴다 (책장 소리 · 사용자 1023 '자동으로 학생을 눌러서 이동') → D 마법사 RST17 ~ 20 (침착성 · 정신력) → 저절로 암흑 사제 쪽 →
+     E RST21 ~ 24 (천재성 · 팀워크) → F RST25 ~ 27 → '명부를 덮는다' → 책상 → G 와장창(fs_door · fs_clat · 흔들림 — 움직임 줄이기면 흔들지 않는다) RST29 ~ 51 (셋이 차례로 등장) →
+     끝 (스케줄 안내는 없다 — 사용자 1023 '필요 없을듯').
+     넓은 화면은 학생 명부 책(RBK) · 좁은 화면은 학생 화면(목록 · 상세). 멘탈리티는 육각형의 이름 · 좁은 화면의 줄을 강조한다.
+   · 학생을 바꾸면 책장 넘기는 소리 한 번 (같은 학생 · 다시 그리기에는 없다 — 대본 · 이 뒤 일반 사용에도).
+   · 세이브 S.rost = {id, st: "lock" 잠김(기다림) · "intro" · "reveal" · "p" · "w" · "d" · "reflect" · "visit" · "done", unlock, old, cast {직업: {id, name, uniq}}}
+     — 단락마다 저장 · 다시 열면 그 단락 처음부터 (해금한 명부는 다시 잠그지 않는다 · 학생 수치 · 주차는 건드리지 않는다).
+   · 처음 보는 진짜 흐름에는 건너뛰기가 없다 · 다시 보기(SCEN '01B' — 셋이 학원에 있을 때)는 오른쪽 위 건너뛰기 · 세이브를 건드리지 않는다.
+   · 자동화(navigator.webdriver)에서는 잠그지도 띄우지도 않는다 — 시험은 window.__rostForce = true */
+(() => {
+const RS_FACE = {"paladin":{"joy":"assets/fst_faces/paladin-joy.png?v=3e213740","smile":"assets/fst_faces/paladin-smile.png?v=f5c93a74","motivated":"assets/fst_faces/paladin-motivated.png?v=9f80f84f","surprised":"assets/fst_faces/paladin-surprised.png?v=b0ed2bf6","flustered":"assets/fst_faces/paladin-flustered.png?v=4622b965"},"darkpriest":{"smile":"assets/fst_faces/darkpriest-smile.png?v=51f67484","motivated":"assets/fst_faces/darkpriest-motivated.png?v=20951f88","flustered":"assets/fst_faces/darkpriest-flustered.png?v=fb006c8c","impish":"assets/fst_faces/darkpriest-impish.png?v=a470ecdb"},"wizard":{"sleepy-cat":"assets/fst_faces/wizard-sleepy-cat.png?v=02b87b13","smile":"assets/fst_faces/wizard-smile.png?v=d2ae512d","tired":"assets/fst_faces/wizard-tired.png?v=8c795a66","surprised":"assets/fst_faces/wizard-surprised.png?v=79818b69"}};   // apply_rost.py — {직업: {표정: 표정 그림 + ?v=}} (학생 얼굴 — WebP 로 바꾸지 않는다)
+const RS_ID = "first-roster-v1";
+const RS_JOBS = ["wizard", "paladin", "darkpriest"];
+const RS_FACE0 = {paladin: "joy", darkpriest: "smile", wizard: "tired"};
+const RS_LK = window.HS_LANG === "en" ? 1.6 : 1;
+const RS_CPS = 32 * RS_LK;
+const RS_QUIET = /[\s….‥]/;
+const RS_HEX = ["team", "stam", "aggr", "genius", "will", "calm"];            // 명부 책 육각형 이름 차례 (roster_block HEX_ORDER)
+const RS_T = {skip: "건너뛰기", master: "마스터", later: "잠시 후…", close: "명부를 덮는다",
+  lock: "학생 명부는 첫 주를 마치면 열린다.", title: "한 장씩 알아가는 중"};
+/* 대본 — k think 독백 · say 말 (who 직업 · master) / face / hop · shake / enter 그 줄 앞에 등장 / hl 강조 (bat 전투 능력치 탭 · hex 멘탈리티 여섯 · m:키+키 항목 · desk 책상 명부)
+   tab 그 줄 앞에 명부 탭 (bat · rec) / back 그 줄 뒤에 학적 탭으로 / {p} {w} {d} 학생 이름 ({w:eunn} 은 · 는) */
+const RS_CUES = {
+  intro: [
+    {id: "RST01", k: "think", t: "벌써 일주일이 지났네. 처음에는 하루하루 따라가기에도 정신이 없었는데…"},
+    {id: "RST02", k: "think", t: "함께 훈련하다 보니, 학생들에 대해서도 어느 정도는 알 것 같아."},
+    {id: "RST03", k: "think", t: "잘하는 것, 아직 어려워하는 것. 같은 일과를 보내도 반응이 제각각이네."},
+    {id: "RST04", k: "think", t: "앞으로 어떻게 가르칠지… 지금까지 본 걸 정리해 볼까."}
+  ],
+  reveal: [
+    {id: "RST09", k: "think", t: "좋아. 한눈에 보기에는 훨씬 낫네."},
+    {id: "RST10", k: "think", tab: "bat", hl: "bat", back: 1, t: "지금의 전투 능력은 따로 살펴볼 수 있게 해 뒀어. 앞으로 훈련한 결과도 여기서 확인하면 되겠지."},
+    {id: "RST11", k: "think", t: "하지만 실력만 보고 훈련을 정할 수는 없어. 어떤 마음가짐과 방식으로 임하는지도 중요하니까."},
+    {id: "RST12", k: "think", hl: "hex", t: "그 부분은 여섯 가지 항목으로 정리했어. 한 명씩 살펴보자."}
+  ],
+  p: [
+    {id: "RST13", k: "think", t: "먼저 {p}. 훈련 이야기가 나오면 눈빛부터 달라지지."},
+    {id: "RST14", k: "think", hl: "m:aggr", t: "적극성은 배운 것을 행동으로 옮기는 데 영향을 줘. 공격과 움직임에서도 차이가 나겠지."},
+    {id: "RST15", k: "think", hl: "m:stam", t: "지구력은 그 움직임을 얼마나 오래 이어 갈 수 있는지와 연결돼. 원정을 버틸 힘도 여기서 나오고."},
+    {id: "RST16", k: "think", hl: "m:aggr+stam", t: "의욕이 있다고 몸까지 언제나 준비된 건 아니야. 앞서가려는 마음만큼, 버틸 힘도 함께 살펴봐야겠어."}
+  ],
+  w: [
+    {id: "RST17", k: "think", t: "{w:eunn} 서두르는 모습을 좀처럼 안 보이네. 느긋해 보여도, 보고 있는 건 놓치지 않는 걸까."},
+    {id: "RST18", k: "think", hl: "m:calm", t: "침착성은 상황을 보고 판단하는 데 연결돼. 대상을 고르고, 공격을 맞히거나 피할 때도 중요하겠지."},
+    {id: "RST19", k: "think", hl: "m:will", t: "정신력은 충격을 받았을 때 버티는 힘이야. 싸우는 동안 흔들리지 않고 대응하는 데 도움이 될 거고."},
+    {id: "RST20", k: "think", hl: "m:calm+will", t: "평소 말투가 차분하다고 전투에서도 늘 괜찮을 거라 단정하면 안 되겠지. 실제로 어떻게 버티는지 계속 지켜보자."}
+  ],
+  d: [
+    {id: "RST21", k: "think", t: "그리고 {d}. 설명을 듣고 나면, 벌써 다음 이야기를 기다리는 것 같단 말이지."},
+    {id: "RST22", k: "think", hl: "m:genius", t: "천재성은 새로운 기술을 익힐 기회나, 전투에서 결정적인 힘을 끌어내는 데 연결돼."},
+    {id: "RST23", k: "think", hl: "m:team", t: "팀워크는 혼자 잘하는 것과는 다른 능력이야. 함께 훈련하고, 진형 안에서 힘을 맞추는 데 영향을 주니까."},
+    {id: "RST24", k: "think", hl: "m:genius+team", t: "스스로 이해하는 것과 동료에게 맞춰 주는 건 다른 일이겠지. 각자 잘하는 걸 함께 써 볼 기회도 만들어 줘야겠어."}
+  ],
+  reflect: [
+    {id: "RST25", k: "think", t: "좋아. 이제 어떤 부분을 살펴봐야 할지는 조금 정리됐어."},
+    {id: "RST26", k: "think", t: "그렇다고 이 기록만으로 너희를 다 안다고 생각하면 안 되겠지. 아직 일주일을 지켜봤을 뿐이니까."},
+    {id: "RST27", k: "think", btn: 1, t: "앞으로 함께 훈련하면서, 한 장씩 채워 가자."}
+  ],
+  visit: [
+    {id: "RST30", k: "say", who: "paladin", face: "joy", hop: 1, enter: "paladin", t: "마스터—! 이번 주 스케줄은 정하셨어요?"},
+    {id: "RST31", k: "say", who: "master", t: "으앗! …들어올 때는 조금만 천천히 와 줄래?"},
+    {id: "RST32", k: "say", who: "paladin", face: "flustered", shake: 1, t: "아, 죄송해요! 기다리다가 궁금해서요!"},
+    {id: "RST33", k: "say", who: "wizard", face: "tired", enter: "wizard", t: "문 앞에서부터 계속 물어봤어어. 내가 정하는 것도 아닌데…"},
+    {id: "RST34", k: "say", who: "darkpriest", face: "smile", enter: "darkpriest", t: "복도에서도 이번 주 훈련 이야기를 하고 있었어요. 아직 스케줄도 안 나왔는데요."},
+    {id: "RST35", k: "say", who: "paladin", face: "motivated", hop: 1, t: "미리 마음의 준비를 하는 거죠! 이번 주는 좀 더 힘내 보고 싶어요!"},
+    {id: "RST36", k: "say", who: "wizard", face: "sleepy-cat", t: "나는 앉아서 하는 것도 들어갔으면 좋겠는데. 명상이라든가…"},
+    {id: "RST37", k: "say", who: "darkpriest", face: "impish", t: "앉아 있는 동안 잠들지만 않으면 괜찮겠네요."},
+    {id: "RST38", k: "say", who: "wizard", face: "surprised", shake: 1, t: "명상할 때는 눈을 감는 거잖아! 벌써부터 의심하는 거야?"},
+    {id: "RST39", k: "say", who: "paladin", face: "joy", hop: 1, t: "그럼 몸을 움직이는 훈련을 먼저 하고 명상하면 되겠네요!"},
+    {id: "RST40", k: "say", who: "wizard", face: "tired", t: "그 순서면 더 졸릴 것 같은데에."},
+    {id: "RST41", k: "say", who: "darkpriest", face: "motivated", t: "순서도 중요하죠. 같은 훈련이라도 어느 순서로 진행할지 생각해야 하고요."},
+    {id: "RST42", k: "say", who: "wizard", face: "smile", t: "너도 원하는 거 있잖아. 말해 봐."},
+    {id: "RST43", k: "say", who: "darkpriest", face: "flustered", shake: 1, t: "…같이 맞춰 보는 훈련도 있으면 좋겠어요."},
+    {id: "RST44", k: "say", who: "paladin", face: "joy", hop: 1, t: "좋아요! 같이 하는 거면 저도 찬성이에요!"},
+    {id: "RST45", k: "think", t: "…얼마 전만 해도 조용했던 학원이, 벌써 이렇게 떠들썩해졌네."},
+    {id: "RST46", k: "think", t: "그래. 숫자만 보고 정할 일은 아니지. 너희 이야기도 들어 가면서 준비해 보자."},
+    {id: "RST47", k: "say", who: "master", t: "알겠어. 바라는 건 들었으니까, 이번 주에 필요한 것부터 맞춰 볼게."},
+    {id: "RST48", k: "say", who: "paladin", face: "motivated", hop: 1, t: "네! 이번 주도 잘 부탁드려요!"},
+    {id: "RST49", k: "say", who: "wizard", face: "smile", t: "쉬는 시간도 부탁해요오."},
+    {id: "RST50", k: "say", who: "darkpriest", face: "smile", t: "저도요. …이번 주도, 잘 부탁드려요."},
+    {id: "RST51", k: "say", who: "master", t: "그래. 이번 주도 같이 해 보자."}
+  ]
+};
+const RS_ORDER = ["intro", "reveal", "p", "w", "d", "reflect", "visit", "done"];
+const R = {on: false, sess: 0, i: -1, typing: null, wait: null, root: null, sc: "", cast: {}, preview: false, live: false, pend: false, ending: false,
+  hl: 0, last: "home", flipPrev: null};
+const xq = s => R.root ? R.root.querySelector(s) : null;
+const rsleep = ms => new Promise(r => setTimeout(r, ms));
+const rRM = () => !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+/* ── 세이브 · 잠금 ── */
+function rsOn(){ return !!S && !((navigator.webdriver && !window.__rostForce) || window.__rostOff); }
+function rsTrio(){                                                             // 첫 시간표의 셋 — 개교 멤버 (암흑 사제 dp1 · 같은 해 팔라딘 · 마법사) · 적어 둔 셋이 있으면 그 셋
+  const X = S && S.rost, L = S.students || [];
+  if(X && X.cast){ const o = {}; for(const j of RS_JOBS){ const st = L.find(s => s && X.cast[j] && s.id === X.cast[j].id); if(!st) return null; o[j] = st; } return o; }
+  const d = L.find(s => s && s.uniq === "dp1"); if(!d) return null;
+  const p = L.find(s => s && s.job === "paladin" && s.year === d.year), w = L.find(s => s && s.job === "wizard" && s.year === d.year);
+  return p && w ? {paladin: p, darkpriest: d, wizard: w} : null;
+}
+function rsS(){
+  if(!S) return null;
+  if(!S.rost || typeof S.rost !== "object"){
+    const fresh = (S.year | 0) <= 1 && S.phase === "spring" && (S.week | 0) === 0 && !(S.weekSeq | 0) && !!rsTrio();   // 새 학원 첫 주 — 잠근다
+    S.rost = fresh ? {id: RS_ID, st: "lock", unlock: 0, old: 0, cast: null} : {id: RS_ID, st: "done", unlock: 1, old: 1, cast: null};
+  }
+  return S.rost;
+}
+function rsLocked(){ if(!S || !rsOn()) return false; const X = rsS(); return !!(X && !X.unlock); }
+function rsSet(st){ const X = rsS(); if(!X || R.preview) return; X.st = st; if(RS_ORDER.indexOf(st) >= 1) X.unlock = X.unlock || (st !== "intro" ? 1 : 0); try{ save(); }catch(e){} }
+function rsCapture(T){ const X = S.rost; if(!X || X.cast || !T) return; const o = {}; RS_JOBS.forEach(j => { o[j] = {id: T[j].id, name: T[j].name, uniq: T[j].uniq || null}; }); X.cast = o; }
+/* render 맨 앞 — 잠긴 동안 학생 명부 · 팀 편성으로 가려 하면 안내만 (화면은 그대로) */
+function rsGate(){
+  if(!UI) return;
+  if(UI.view !== "roster" && UI.view !== "team"){ R.last = UI.view; return; }
+  if(!rsLocked() || R.on) return;
+  UI.view = R.last && R.last !== "roster" && R.last !== "team" ? R.last : "home";
+  try{ toast(RS_T.lock); }catch(e){}
+}
+/* 메뉴 '학생' 단추에 자물쇠 (마을 · 졸업생 리그와 같은 방식) */
+function rsTabs(tabs){ if(!rsLocked()) return; const v = tabs.find(t => t.id === "roster"); if(v){ v.lock = RS_T.lock; v.badge = null; } }
+
+/* ── 무대 (첫 시간표 .fst 그대로 · 배경 없음) ── */
+function rsBuild(){
+  if(R.root) return;
+  const r = document.createElement("div");
+  r.id = "rostRoot"; r.className = "fst rost";
+  r.innerHTML = `<div class="fst-hit"></div><div class="fst-fx"></div>
+    <div class="fst-cast">${RS_JOBS.map(k => `<div class="fst-bust" data-who="${k}" hidden><img alt="" draggable="false"></div>`).join("")}</div>
+    <div class="fst-think"><div class="fst-tx"></div><div class="fst-nx">▼</div><button type="button" class="rv-leave" hidden>${esc(RS_T.close)}</button></div>
+    <div class="fst-talk"><div class="fst-nm"><i></i><span></span></div><div class="fst-tx"></div><div class="fst-nx">▼</div></div>
+    <div class="rs-black"><b>${esc(RS_T.later)}</b></div>
+    <button type="button" class="rv-skip" hidden>${esc(RS_T.skip)}</button>`;
+  document.body.appendChild(r);
+  R.root = r;
+  const hit = r.querySelector(".fst-hit");
+  hit.addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); rsAdvance(); });
+  hit.addEventListener("wheel", e => e.preventDefault(), {passive: false});
+  hit.addEventListener("touchmove", e => e.preventDefault(), {passive: false});
+  r.querySelector(".rv-leave").addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); rsLeave(); });
+  r.querySelector(".rv-skip").addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); rsSkip(); });
+}
+function rsTeardown(){ if(R.root) R.root.remove(); R.root = null; }
+document.addEventListener("keydown", e => {
+  if(!R.root || !R.on) return;
+  if(e.key === " " || e.key === "Enter"){
+    e.preventDefault(); e.stopPropagation();
+    const b = xq(".rv-leave");
+    if(b && !b.hidden && !R.typing) rsLeave(); else rsAdvance();
+  } else if(e.key === "Escape"){ e.preventDefault(); e.stopPropagation(); }        // 장면 중 — 명부 책의 Esc(닫기)가 먹지 않게
+}, true);
+function rsFade(el, to, ms){
+  return new Promise(res => {
+    if(!el){ res(); return; }
+    const from = +getComputedStyle(el).opacity;
+    el.getAnimations().forEach(a => a.cancel());
+    el.style.opacity = to;
+    if(rRM()) ms = Math.min(ms, 140);
+    const a = el.animate([{opacity: from}, {opacity: to}], {duration: Math.max(1, ms), easing: "ease"});
+    a.onfinish = a.oncancel = () => res();
+  });
+}
+function rsBox(kind){ const a = xq(".fst-think"), b = xq(".fst-talk"); if(a) a.classList.toggle("show", kind === "think"); if(b) b.classList.toggle("show", kind === "talk"); }
+function rsMark(on){ R.root && R.root.querySelectorAll(".fst-nx").forEach(e => e.classList.toggle("on", on)); }
+function rsName(who){
+  if(who === "master") return RS_T.master;
+  const st = R.cast[who]; if(!st) return (JOBS[who] && JOBS[who].name) || "";
+  return (S.students || []).indexOf(st) >= 0 && typeof dn === "function" ? dn(st) : (st.name || "");
+}
+function rsPlate(who){
+  const nm = xq(".fst-nm"), sp = nm.querySelector("span"), tk = xq(".fst-talk"), role = JOBS[who] && JOBS[who].role;
+  sp.textContent = rsName(who);
+  nm.style.setProperty("--rc", who === "master" ? "#ffd36a" : role === "tank" ? "#8cc4f0" : role === "heal" ? "#86d6a4" : "#f2957d");
+  tk.classList.toggle("mst", who === "master");
+}
+function rsLine(c){
+  const nm = j => { const st = R.cast[j]; return st ? st.name : ((JOBS[j] && JOBS[j].name) || ""); };
+  let t = String(c.t || "");
+  [["p", "paladin"], ["w", "wizard"], ["d", "darkpriest"]].forEach(([k, j]) => {
+    t = t.split("{" + k + ":eunn}").join(nm(j) + (typeof eunn === "function" ? eunn(nm(j)) : "")).split("{" + k + "}").join(nm(j));
+  });
+  const st = RS_JOBS.indexOf(c.who) >= 0 ? R.cast[c.who] : null;
+  return st && typeof masterQ === "function" ? masterQ(t, st) : t;
+}
+function rsType(el, text, voice, sess){
+  return new Promise(res => {
+    if(R.typing) R.typing();
+    const ch = [...String(text || "")]; let n = 0, tm = 0;
+    const done = () => { clearTimeout(tm); if(R.typing === done) R.typing = null; if(el) el.textContent = text; res(); };
+    if(!el || !ch.length){ if(el) el.textContent = ""; res(); return; }
+    const step = () => {
+      if(sess !== R.sess){ if(R.typing === done) R.typing = null; res(); return; }
+      n++; el.textContent = ch.slice(0, n).join("");
+      if(voice && !RS_QUIET.test(ch[n - 1]) && typeof cwBlip === "function") cwBlip(voice);
+      if(n >= ch.length){ done(); return; }
+      let d = 1000 / RS_CPS;
+      if(ch[n - 1] === "…" && ch[n] !== "…") d += 300;
+      tm = setTimeout(step, d);
+    };
+    el.textContent = ""; R.typing = done;
+    tm = setTimeout(step, 1000 / RS_CPS);
+  });
+}
+function rsWaitClick(){ return new Promise(r => { R.wait = r; rsMark(true); }); }
+function rsAdvance(){
+  if(!R.on || R.ending) return;
+  if(R.typing){ R.typing(); return; }
+  if(R.wait){ const r = R.wait; R.wait = null; rsMark(false); r(); return; }
+  const b = xq(".rv-leave");
+  if(b && !b.hidden){ b.classList.remove("poke"); void b.offsetWidth; b.classList.add("poke"); }
+}
+/* 초상화 */
+function rsBust(k){ return xq(`.fst-bust[data-who="${k}"]`); }
+function rsFace(k, f){ const set = RS_FACE[k], src = set && (set[f] || set.smile); const b = rsBust(k); if(b && src){ const im = b.querySelector("img"); if(im.getAttribute("src") !== src) im.src = src; } }
+function rsLit(list){ RS_JOBS.forEach(k => { const e = rsBust(k); if(e) e.classList.toggle("on", !!(list && list.indexOf(k) >= 0)); }); }
+function rsHop(k){ if(rRM()) return; const e = rsBust(k); if(e && !e.hidden) e.animate([{transform: "none"}, {transform: "translateY(-9px)", offset: .35}, {transform: "none"}], {duration: 300, easing: "ease-out"}); }
+function rsShake(k){ if(rRM()) return; const e = rsBust(k); if(e && !e.hidden) e.animate([0, -4, 4, -3, 3, 0].map(x => ({transform: `translateX(${x}px)`})), {duration: 280, easing: "ease-in-out"}); }
+function rsEnter(k){
+  const e = rsBust(k); if(!e || !R.cast[k] || !e.hidden) return;
+  e.hidden = false;
+  e.animate(rRM() ? [{opacity: 0}, {opacity: 1}] : [{transform: "translateY(60px)", opacity: 0}, {opacity: 1, offset: .6}, {transform: "none", opacity: 1}],
+    {duration: rRM() ? 200 : 380, easing: "cubic-bezier(.2,.85,.3,1.2)", fill: "backwards"});
+}
+
+/* ── 명부 — 넓은 화면 책(RBK) · 좁은 화면 학생 화면 ── */
+function rsWide(){ return !!(window.RBK && RBK.on && RBK.on()); }
+function rbq(sel){ const r = window.RBK && RBK.state && RBK.state.root; return r ? r.querySelector(sel) : null; }
+function rbqa(sel){ const r = window.RBK && RBK.state && RBK.state.root; return r ? [...r.querySelectorAll(sel)] : []; }
+function rsOpenBook(id){
+  if(typeof bookFlipSfx === "function") try{ bookFlipSfx(); }catch(e){}
+  if(rsWide()){ RBK.open({mode: "detail", sel: id}); return; }
+  UI.view = "roster"; UI.sel = id; render();
+  const el = document.getElementById("stuDetail"); if(el) el.scrollIntoView({block: "start"});
+}
+function rsCloseBook(){
+  if(rsWide() && RBK.isOpen()) RBK.close(true);
+  if(UI.view === "roster" || UI.view === "team") UI.view = "home";
+  UI.sel = null; render();
+}
+function rsSel(){ return rsWide() ? (RBK.state && RBK.state.sel) : (UI.view === "roster" ? UI.sel : null); }
+function rsTab(rt){ if(!rsWide()) return; const b = rbq(`#recCard .rt[data-rt="${rt}"]`); if(b && !b.classList.contains("on")) b.click(); }
+function rsMentRows(){                                                        // 좁은 화면 — 상세의 멘탈리티 줄 (MENTAL 차례)
+  const d = document.getElementById("stuDetail"); if(!d) return [];
+  return [...d.querySelectorAll(".st")].filter(r => r.querySelector(".mentbar"));
+}
+function rsHlEls(what){
+  if(what === "bat") return rsWide() ? [rbq(`#recCard`)] : [document.querySelector("#stuDetail .stats")];
+  if(what === "hex"){
+    if(rsWide()) return [rbq("#hexCard")];
+    const rows = rsMentRows(); return MENTAL.map((m, i) => m.fixed ? null : rows[i]);
+  }
+  if(what === "desk") return [document.querySelector('#view .mdk[data-mdesk="roster"]') || [...document.querySelectorAll('#nav [data-view="roster"], #navm [data-view="roster"]')].find(e => e.offsetParent)];
+  if(what.indexOf("m:") === 0){
+    const ks = what.slice(2).split("+");
+    if(rsWide()){ const labs = rbqa("#hexLab .lab"); return ks.map(k => labs[RS_HEX.indexOf(k)]); }
+    const rows = rsMentRows(); return ks.map(k => rows[MENTAL.findIndex(m => m.k === k)]);
+  }
+  return [];
+}
+function rsHl(what){
+  const fx = xq(".fst-fx"); if(!fx) return;
+  const els = rsHlEls(what).filter(Boolean); if(!els.length) return;
+  if(!rsWide() && what !== "desk"){                                              // 좁은 화면 — 위쪽 칸(붙박이) 아래 · 대화창 위에 보이게 한 번 굴린다
+    const tb = document.querySelector("#app>.topbar"), top0 = tb ? Math.max(0, tb.getBoundingClientRect().bottom) : 0;
+    const box = xq(".fst-think.show, .fst-talk.show"), bot0 = box ? box.getBoundingClientRect().top : innerHeight;
+    const rs = els.map(e => e.getBoundingClientRect()), top = Math.min(...rs.map(r => r.top)), bot = Math.max(...rs.map(r => r.bottom));
+    if(top < top0 + 8 || bot > bot0 - 8) window.scrollBy(0, top - (top0 + 16));
+  }
+  requestAnimationFrame(() => els.forEach(el => {
+    const r = el.getBoundingClientRect(); if(!r.width) return;
+    R.hl++;
+    const d = document.createElement("i"); d.className = "fst-hl rs-hl";
+    d.style.left = (r.left - 4) + "px"; d.style.top = (r.top - 4) + "px"; d.style.width = (r.width + 8) + "px"; d.style.height = (r.height + 8) + "px";
+    fx.appendChild(d); setTimeout(() => d.remove(), 2600);
+  }));
+}
+/* 학생을 바꾸면 책장 넘기는 소리 한 번 — 넓은 화면 책의 명부 칸 · 좁은 화면 학생 목록 (같은 학생 · 다시 그리기에는 없다) */
+function rsFlipWire(){
+  if(R.flipWired) return;
+  const r = window.RBK && RBK.state && RBK.state.root; if(!r) return;
+  R.flipWired = true;
+  r.addEventListener("pointerdown", e => { if(e.target.closest && e.target.closest("#grid .cell")) R.flipPrev = RBK.state.sel; }, true);
+  r.addEventListener("click", e => {
+    const c = e.target.closest && e.target.closest("#grid .cell"); if(!c || RBK.state.mode === "team") return;
+    if(R.flipPrev != null && RBK.state.sel !== R.flipPrev && typeof bookFlipSfx === "function") try{ bookFlipSfx(); }catch(x){}
+    R.flipPrev = null;
+  });
+}
+document.addEventListener("click", e => {
+  if(!UI || UI.view !== "roster") return;
+  const b = e.target.closest && e.target.closest("#view [data-sid]"); if(!b) return;
+  const before = UI.sel;
+  setTimeout(() => { if(UI.view === "roster" && UI.sel && UI.sel !== before && typeof bookFlipSfx === "function") try{ bookFlipSfx(); }catch(x){} }, 0);
+}, true);
+
+/* ── 장면 ── */
+function rsCues(sc){ return (RS_CUES[sc] || []).map(c => Object.assign({}, c)); }
+async function rsLines(sc){
+  const sess = R.sess, list = rsCues(sc);
+  R.sc = sc; R.root.classList.add("on");
+  for(let i = 0; i < list.length; i++){
+    const c = list[i]; if(sess !== R.sess) return false;
+    R.i = i;
+    if(c.enter && R.cast[c.enter]){ rsBox(null); rsEnter(c.enter); await rsleep(rRM() ? 100 : 420); if(sess !== R.sess) return false; }
+    if(c.tab){ rsTab(c.tab); await rsleep(160); }
+    if(c.hl) setTimeout(() => { if(sess === R.sess) rsHl(c.hl); }, 60);
+    if(c.k === "think" || c.who === "master") rsLit(null);
+    else { rsFace(c.who, c.face); rsLit([c.who]); if(c.hop) rsHop(c.who); if(c.shake) rsShake(c.who); }
+    let el;
+    if(c.k === "think"){ rsBox("think"); el = xq(".fst-think .fst-tx"); }
+    else { rsPlate(c.who); rsBox("talk"); el = xq(".fst-talk .fst-tx"); }
+    await rsType(el, rsLine(c), c.k === "think" || c.who === "master" ? "csl_mst" : "csl_stu", sess);
+    if(sess !== R.sess) return false;
+    if(c.btn){
+      const b = xq(".rv-leave"); b.hidden = false; rsMark(false);
+      await new Promise(r => { R.leave = r; }); if(sess !== R.sess) return false;
+      b.hidden = true;
+    } else { await rsWaitClick(); if(sess !== R.sess) return false; }
+    if(c.back) rsTab("rec");
+  }
+  return true;
+}
+function rsLeave(){ if(R.leave && !R.typing){ const r = R.leave; R.leave = null; r(); } }
+async function rsBlack(){                                                       // B 암전 · 사각사각 · '잠시 후…' · 밝아지며 명부
+  const sess = R.sess, bk = xq(".rs-black"), cap = bk.querySelector("b");
+  rsBox(null); R.root.classList.add("on");
+  cap.style.opacity = 0;
+  await rsFade(bk, 1, 400); if(sess !== R.sess) return false;
+  try{ sfxPlay("sk_sign"); }catch(e){}
+  await rsleep(rRM() ? 500 : 1200); if(sess !== R.sess) return false;
+  await rsFade(cap, 1, 220); if(sess !== R.sess) return false;
+  rsOpenBook(R.cast.paladin.id); rsTab("rec");
+  await rsleep(rRM() ? 300 : 700); if(sess !== R.sess) return false;
+  await rsFade(cap, 0, 160);
+  await rsFade(bk, 0, 400); if(sess !== R.sess) return false;
+  return true;
+}
+async function rsNext(j){                                                      // 다음 학생 — 저절로 그 학생 쪽으로 넘긴다 (책장 소리 한 번)
+  const sess = R.sess, id = R.cast[j].id;
+  if(rsSel() === id) return true;
+  rsBox(null);
+  await rsleep(rRM() ? 80 : 260); if(sess !== R.sess) return false;
+  const c = rsWide() && rbq(`#grid .cell[data-sid="${CSS.escape(String(id))}"]`);
+  if(c && RBK.state.mode !== "team"){ c.click(); if(typeof bookFlipSfx === "function") try{ bookFlipSfx(); }catch(e){} }
+  if(rsSel() !== id) rsOpenBook(id);                                            // 좁은 화면 · 칸이 없으면 (소리는 rsOpenBook)
+  await rsleep(rRM() ? 120 : 420);
+  return sess === R.sess;
+}
+async function rsCrash(){                                                       // G 와장창 — 소리 · 짧은 흔들림 (움직임 줄이기면 흔들지 않는다)
+  try{ sfxPlay("fs_door"); setTimeout(() => { try{ sfxPlay("fs_clat"); }catch(e){} }, 110); }catch(e){}
+  const app = document.getElementById("app");
+  if(app && !rRM()) app.animate([0, -7, 6, -5, 4, -2, 0].map(x => ({transform: `translate(${x}px, ${x / 2}px)`})), {duration: 420, easing: "ease-out"});
+  await rsleep(rRM() ? 200 : 520);
+}
+/* 흐름 — from 단락부터 (다시 열기 · 다시 보기는 처음부터) */
+async function rsFlow(from){
+  const sess = R.sess, at = s => RS_ORDER.indexOf(from) <= RS_ORDER.indexOf(s);
+  const ok = () => sess === R.sess;
+  rsBuild(); R.on = true; R.ending = false;
+  const sk = xq(".rv-skip"); if(sk){ sk.hidden = !R.preview; sk.disabled = false; }
+  RS_JOBS.forEach(k => { const e = rsBust(k); if(e){ e.hidden = true; rsFace(k, RS_FACE0[k]); } });
+  if(at("intro")){
+    if(UI.view !== "home"){ UI.view = "home"; render(); }
+    rsSet("intro");
+    if(!await rsLines("intro") || !ok()) return;
+    rsSet("reveal");                                                            // RST04 끝 — 명부 해금 (다시 잠그지 않는다)
+  }
+  if(at("reveal")){
+    if(!await rsBlack() || !ok()) return;
+    rsFlipWire();
+    if(!await rsLines("reveal") || !ok()) return;
+    rsSet("p");
+  } else if(at("d")){ rsOpenBook(R.cast[from === "w" ? "wizard" : from === "d" ? "darkpriest" : "paladin"].id); rsFlipWire(); await rsleep(500); }
+  if(at("p")){
+    if(!await rsLines("p") || !ok()) return;
+    if(!await rsNext("wizard") || !ok()) return;
+    rsSet("w");
+  }
+  if(at("w")){
+    if(!await rsLines("w") || !ok()) return;
+    if(!await rsNext("darkpriest") || !ok()) return;
+    rsSet("d");
+  }
+  if(at("d")){
+    if(!await rsLines("d") || !ok()) return;
+    rsSet("reflect");
+  }
+  if(at("reflect")){
+    if(from === "reflect"){ rsOpenBook(R.cast.darkpriest.id); await rsleep(500); }
+    if(!await rsLines("reflect") || !ok()) return;
+    rsCloseBook();                                                              // 명부를 덮고 책상으로 (마지막으로 본 학생은 책이 기억한다)
+    rsSet("visit");
+    await rsleep(rRM() ? 150 : 420); if(!ok()) return;
+  }
+  if(at("visit")){
+    if(UI.view !== "home"){ UI.view = "home"; render(); }
+    R.root.classList.add("on"); rsBox(null);
+    await rsCrash(); if(!ok()) return;
+    if(!await rsLines("visit") || !ok()) return;
+    rsBox(null); rsLit(null);
+    await Promise.all(RS_JOBS.map(rsBust).filter(e => e && !e.hidden).map(e => rsFade(e, 0, 260)));
+    RS_JOBS.forEach(k => { const e = rsBust(k); if(e){ e.hidden = true; e.style.opacity = ""; } });
+  }
+  if(R.preview){ rsEnd(); return; }
+  rsSet("done");
+  rsEnd();
+}
+function rsEnd(){
+  R.sess++; R.on = false; R.ending = false; R.typing = null; R.wait = null; R.leave = null;
+  rsTeardown();
+  const was = R.preview; R.preview = false; R.live = false;
+  if(was){ rsCloseBook(); }
+}
+function rsSkip(){ if(!R.preview) return; rsEnd(); }                            // 다시 보기 · 미리 보기에만
+function rsStart(from, cast, preview){
+  R.cast = cast; R.preview = !!preview; R.live = true; R.sess++; R.hl = 0;
+  ["fs_door", "fs_clat", "sk_sign"].forEach(k => { try{ if(SFX[k]) sfxLoad(SFX[k].f); }catch(e){} });
+  rsFlow(from).catch(e => { try{ errPush("rost", e.message, e.stack); }catch(x){} rsTeardown(); R.on = false; R.live = false; });
+}
+
+/* render 끝 — 첫 주를 마치고 한가할 때 시작 · 중간에 나갔으면 그 단락부터 */
+function rsIdle(){
+  const mr = document.getElementById("modalRoot");
+  return !(UI.wrun || UI.battle || UI.tour || UI.pendingTour || (UI.ceremonies || []).length || (mr && mr.innerHTML.trim()) || document.getElementById("bootLoader")
+    || (typeof OP !== "undefined" && OP) || (typeof BELT !== "undefined" && BELT.on) || (window.FST && FST.state && FST.state.on) || S.fsTut === 1
+    || (window.RVST && RVST.state && (RVST.state.on || RVST.state.live)) || (window.RQST && RQST.state && (RQST.state.on || RQST.state.live))
+    || (window.XPST && XPST.state && (XPST.state.on || XPST.state.live)) || (window.FRIS && FRIS.state && (FRIS.state.on || FRIS.state.live))
+    || (window.FLST && FLST.state && (FLST.state.on || FLST.state.live)) || document.documentElement.classList.contains("modal-open"));
+}
+function rsAfter(){
+  if(!S || !rsOn() || !Array.isArray(S.students) || !S.students.length) return;
+  const X = rsS(); if(X && RS_ORDER.indexOf(X.st) < 0 && X.st !== "lock") X.st = "done";   // 예전 목업 세이브의 'guide' 등
+  if(!X || X.old || X.st === "done" || R.on || R.live || R.pend) return;
+  if(X.st === "lock" && (S.week | 0) < 1 && (S.year | 0) <= 1 && S.phase === "spring") return;     // 첫 주 전
+  if(!rsIdle() || (rsWide() && RBK.isOpen() && X.st === "lock")) return;
+  R.pend = true;
+  setTimeout(() => {
+    R.pend = false;
+    const Y = S && S.rost;
+    if(!Y || Y.st === "done" || R.on || R.live || !rsIdle()) return;
+    const T = rsTrio();
+    if(!T){ Y.st = "done"; Y.unlock = 1; try{ save(); }catch(e){} try{ render(); }catch(e){} return; }   // 셋이 없다 — 잠금만 푼다
+    rsCapture(T);
+    rsStart(Y.st === "lock" ? "intro" : Y.st, T, false);
+  }, 0);
+}
+
+/* ── 다시 보기 (SCEN 01B) · 미리 보기 (목업) — 세이브를 건드리지 않고 오른쪽 위 건너뛰기 · 스케줄 안내는 없다 ── */
+function rsReplay(cast){
+  if(R.on || R.live) return false;
+  const L = S.students || [], T = {};
+  for(const j of RS_JOBS){ const id = cast && cast[j] && cast[j].id; const st = L.find(s => s && s.id === id) || (rsTrio() || {})[j]; if(!st) return false; T[j] = st; }
+  rsStart("intro", T, true);
+  return true;
+}
+function rsPreview(from){ const T = rsTrio(); if(!T || R.on || R.live) return false; rsStart(RS_ORDER.indexOf(from) >= 0 ? from : "intro", T, true); return true; }
+function rsDone(){ const X = S && S.rost; return !!(X && !X.old && X.st === "done"); }
+function rsResetAll(){ R.sess++; R.on = false; R.live = false; R.pend = false; R.preview = false; R.typing = null; R.wait = null; R.leave = null; rsTeardown(); }
+window.RSTO = {gate: rsGate, tabs: rsTabs, after: rsAfter, locked: rsLocked, replay: rsReplay, preview: rsPreview, done: rsDone, reset: rsResetAll, advance: rsAdvance,
+  leave: rsLeave, sel: rsSel, hlEls: rsHlEls, trio: rsTrio, state: R, cues: RS_CUES, order: RS_ORDER, face: RS_FACE, T: RS_T, s: rsS};
+})();
+/* RSTO_END */
 /* TFWIN_START — 대회 편성 창 (1019 · apply_tfwin.py) ─ mockups/tour-formation 목업 그대로. '대진 확정'(scout 단계) 자리에 뜬다:
    가을 대회 컵(시내 · 광역 · 본선 — 라운드마다 · 1팀 대회도) · 친선전(경기 전에 한 번) · 봄 신인전(경기마다 — 상대가 경기마다 다르다) ·
    예선 리그(1019 ③ — 라운드마다 · 조 순위 · 우리 일정) · 본선 결승(1019 ③ — 세트마다 · 세트판 · 세트를 진 상대가 바꾼 진형은 맞붙기 전까지 숨김).
