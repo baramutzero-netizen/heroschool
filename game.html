@@ -1689,6 +1689,9 @@ html body .cw-ov .cw-win button.cw-cookie-plate:is(:hover,:active,:focus,:focus-
 html body .skwrap .skfit .skstage .sk-card > .fst-who{left:72px;top:-13px;width:30px;height:30px}   /* 두루마리 스케줄 (2배 무대) — '3주' 꼬리표 옆 · 머리띠 오른쪽 끝 */
 .card > .fst-who{right:2px;top:-10px;width:22px;height:22px}                                         /* 예전 스케줄 카드 — 수명 꼬리표 반대쪽 */
 .card > .fst-who::before{border-width:1.5px}
+#fstRoot{--rv-top:12px}                                                                              /* 1023 — 다시 보기의 건너뛰기 (.rv-skip — 02 블록 CSS 를 같이 쓴다) */
+#fstRoot .rv-skip{right:auto;left:var(--fst-side)}                                                  /* 게임 화면 위라 왼쪽 위 (오른쪽 위는 사이드 메뉴 칸과 겹친다) */
+#fstRoot .rv-skip[hidden]{display:none}
 /* FSTUT_CSS_END */
 /* CMARK_CSS_START — 일과 카드 표식 (1022 · apply_cmark.py · 목업 mockups/card-marks) ─ 표식 그림(assets/card_marks — 사용자가 준 tools/card-effect-marks-v1 · 24 도트 · 5색)을 카드 아래 한쪽에 붙이고
    컨디션 글 · 값은 다른 쪽으로 모은다 (카드 오른쪽 위는 추천 학생 얼굴 자리 · 왼쪽 위는 남은 주). html[data-cmk-side="r"] 이면 표식이 오른쪽 · 컨디션이 왼쪽 */
@@ -1765,6 +1768,7 @@ html[lang="ja"] .crec-bub,html[lang^="zh"] .crec-bub{word-break:normal}   /* 일
   font:inherit;font-size:calc(var(--fst-fs) * .7);line-height:1.2;color:var(--fst-dim);background:rgba(42,20,24,.88);border:2px solid var(--fst-edge);box-shadow:0 0 0 2px var(--fst-dark);padding:5px 12px}
 .rv-skip:hover,.fst.rvst .rv-skip:focus-visible{color:var(--fst-ink);border-color:var(--fst-line);outline:none}
 .rv-skip:disabled{opacity:.5;cursor:default}
+.rv-skip[hidden]{display:none}                                     /* 1023 — 다시 보기 · 미리 보기에만 */
 /* 마지막 줄 — '자리를 비킨다' (생각 창 오른쪽 아래 · ▼ 자리) */
 .rv-leave{position:absolute;right:14px;bottom:10px;pointer-events:auto;cursor:pointer;font:inherit;font-size:calc(var(--fst-fs) * .8);line-height:1.2;
   color:var(--fst-dark);background:var(--fst-gold);border:2px solid var(--fst-dark);box-shadow:0 0 0 2px var(--fst-gold),3px 3px 0 2px rgba(0,0,0,.45);padding:5px 16px}
@@ -1780,6 +1784,71 @@ html[lang="ja"] .crec-bub,html[lang^="zh"] .crec-bub{word-break:normal}   /* 일
 .rv-card i[hidden]{display:none}
 .rv-card b{font-weight:400;font-size:calc(var(--fst-fs) * 1.25);line-height:1.35;letter-spacing:.04em;padding:8px 22px;border-top:2px solid var(--fst-edge);border-bottom:2px solid var(--fst-edge);word-break:keep-all}
 /* RVST_CSS_END */
+/* RQST_CSS_START — 초반 스토리 03 '저희도 학원을 지키고 싶어요' (1022 목업 · apply_rqst.py) ─ 무대는 02(.rvst)와 첫 시간표(.fst) 그대로 쓰고 여기에는 더한 것만:
+   나와 있는 초상화를 가운데로 모으기(은행장까지 넷 · 들어오고 나갈 때 옆으로 미끄러진다) · 삽화 배경(부드럽게 · 정문 삽화가 넓어지는 움직임) · 아침 빛 ·
+   땀 · 의뢰서 꼬리표 · 이자 영수증 · 책상 위 봉투 · 편지(종이 위 글 — 잉크 색으로 누가 썼는지) · 요약 팝업의 줄. 마을 메뉴 자물쇠는 졸업생 리그와 같은 .lk */
+.fst.rqst{z-index:906}
+.rqst .rv-skip[hidden]{display:none}                           /* 1023 — 건너뛰기는 다시 보기에만 */
+.rvst.rqst .fst-cast{left:0;right:0;width:auto;margin-left:0;translate:none}
+.rqst .fst-bust{right:auto;transition:left .42s cubic-bezier(.3,.8,.3,1),filter .18s,translate .36s cubic-bezier(.25,.9,.3,1.3)}
+.rqst .fst-bust[data-who="bank"]{z-index:1}
+.rqst.ill .rv-img{image-rendering:auto}
+.rqst .rv-img.pan{transition:background-size var(--rq-pan,2s) cubic-bezier(.45,.05,.25,1),background-position var(--rq-pan,2s) cubic-bezier(.45,.05,.25,1)}
+.rqst.ill .rv-vig{background:linear-gradient(180deg,rgba(20,10,12,0) 56%,rgba(20,10,12,.45) 100%)}
+.rqst.morn .rv-img{filter:brightness(1.05) saturate(1.06) sepia(.08)}
+/* 땀 (Q02 ~ Q04 — 팔라딘 초상화 오른쪽 위) */
+.rq-sweat{position:absolute;left:70%;top:12%;width:calc(var(--fst-bust) * .1);z-index:2;pointer-events:none;animation:rqDrip 1.6s ease-in-out infinite}
+.rq-sweat[hidden]{display:none}
+.rq-sweat svg{display:block;width:100%;height:auto;shape-rendering:crispEdges}
+@keyframes rqDrip{0%,100%{translate:0 0}50%{translate:0 4px}}
+/* 의뢰서 꼬리표 (Q26 ~ Q29 — 위쪽 가운데) */
+.rq-tag{position:absolute;left:50%;top:calc(var(--rv-top) + env(safe-area-inset-top,0px));translate:-50% 0;z-index:5;display:flex;align-items:center;gap:10px;padding:6px 16px 6px 10px;
+  background:#f1e2bf;color:#3a2416;border:2px solid #5a3a22;box-shadow:0 0 0 2px var(--fst-dark),3px 3px 0 1px rgba(0,0,0,.4);font-size:calc(var(--fst-fs) * .8);line-height:1.2;white-space:nowrap}
+.rq-tag i{width:14px;height:14px;flex:none;background:#b8322a;box-shadow:inset -2px -2px 0 #7e1f19,0 0 0 2px #3a1410}
+.rq-tag[hidden]{display:none}
+/* 이자 영수증 (Q20) */
+.rq-sys{position:absolute;left:50%;top:40%;translate:-50% -50%;z-index:6;min-width:min(340px,calc(100% - 32px));padding:14px 28px 16px;text-align:center;
+  background:var(--fst-win);border:2px solid var(--fst-line);box-shadow:0 0 0 2px var(--fst-dark),4px 5px 0 2px rgba(0,0,0,.44);font-size:var(--fst-fs);line-height:var(--fst-lh)}
+.rq-sys span{display:block;color:var(--fst-dim);font-size:calc(var(--fst-fs) * .8)}
+.rq-sys b{display:block;margin-top:6px;font-weight:400;font-size:calc(var(--fst-fs) * 1.4);line-height:1.2;color:#ff8c7a}
+.rq-sys .fst-nx{right:10px;bottom:6px}
+.rq-sys[hidden]{display:none}
+/* 책상 위 봉투 (Q56 ~ — 책상 그림의 편지 도트 · 넓은 화면 3배 · 폰 2배) */
+.rq-env{position:absolute;left:50%;top:42%;translate:-50% -50%;z-index:2;width:calc(94px * var(--rq-k,3));pointer-events:none}
+.rq-env img{display:block;width:100%;height:auto;image-rendering:pixelated;filter:drop-shadow(3px 4px 0 rgba(0,0,0,.35));animation:rqBob 2.2s ease-in-out infinite}
+@keyframes rqBob{0%,100%{translate:0 0}50%{translate:0 -4px}}
+.rq-env[hidden]{display:none}
+@media (max-width:599px){.rq-env{--rq-k:2}}
+/* 편지 (Q57 · Q58 — 대화창 위 칸 가운데 · 글은 번역할 수 있게 그림에 굽지 않는다) */
+.rq-letter{position:absolute;left:50%;top:calc(var(--rv-top) + env(safe-area-inset-top,0px));bottom:calc(var(--fst-bot) + env(safe-area-inset-bottom,0px) + var(--fst-h) + 14px);translate:-50% 0;
+  width:min(600px,calc(100% - var(--fst-side) * 2));z-index:5;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.rq-letter[hidden]{display:none}
+.rq-paper{position:relative;width:100%;max-height:100%;overflow:hidden;padding:22px 30px 18px;background:#f4e7c6;color:#3a2416;border:2px solid #5a3a22;
+  box-shadow:0 0 0 2px var(--fst-dark),5px 6px 0 2px rgba(0,0,0,.45);font-size:calc(var(--fst-fs) * .8);line-height:1.6;transform-origin:50% 0;word-break:keep-all;overflow-wrap:anywhere}
+.rq-paper::before{content:"";position:absolute;inset:6px;border:1px dashed rgba(90,58,34,.35);pointer-events:none}
+.rq-paper p{margin:0 0 .7em}
+.rq-paper .rq-pal,.rq-paper .rq-re{color:#2c5aa0}                    /* 팔라딘 — 파란 잉크 */
+.rq-paper .rq-dp{color:#6a2230}                                       /* 암흑 사제 — 검붉은 잉크 */
+.rq-paper .rq-key{font-size:1.18em;color:#7a2418;text-align:center;margin:.9em 0}
+.rq-paper .rq-sign{text-align:right;color:#5a3a22}
+.rq-paper .rq-ps{color:#6b4bb0;margin-bottom:.15em}                    /* 마법사 — 보라 잉크 */
+.rq-paper .rq-re{display:inline-block;transform:rotate(-3deg);font-size:1.06em;margin:0 0 0 1.4em}
+.rq-letter.dim .rq-paper{filter:brightness(.84)}
+.rq-paper .fst-nx{right:10px;bottom:4px}
+@media (max-width:599px){.rq-paper{padding:14px 16px 10px;line-height:1.5}.rq-paper p{margin-bottom:.55em}}
+/* 요약 팝업 (Q59 — 게임 팝업 안) */
+.rq-sum .rq-row{display:flex;justify-content:space-between;align-items:baseline;gap:18px;font-size:14px;line-height:2}
+.rq-sum .rq-row b{font-weight:700;color:var(--brass)}
+.rq-sum .rq-row b.dn{color:var(--bad)}
+.rq-sum .rq-tot{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line,#c9b28a);font-size:18px}
+/* RQST_CSS_END */
+/* SCEN_CSS_START — 시나리오 다시 보기 목록 (1023 · apply_scen.py) — 마스터 책상 모래시계 팝업 · 좁은 화면 창 (같은 몸통 .scen-pop) */
+.scen-pop .scen-list{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));margin-top:4px}
+.scen-pop .scen-btn{display:flex;align-items:center;justify-content:flex-start;gap:12px;text-align:left;padding:12px 16px;min-height:54px;white-space:normal;line-height:1.35}
+.scen-pop .scen-btn b{flex:none;min-width:2.2ch;color:var(--brass);font-size:1.15em;font-variant-numeric:tabular-nums}
+.scen-pop .scen-btn span{flex:1;min-width:0}
+.scen-pop .scen-none{padding:12px 2px}
+/* SCEN_CSS_END */
 /* SCOUTWIN_CSS_START — 겨울 스카우트 개편 (1019 · apply_scout.py) ─ 목록 · 확인 팝업은 건물 안 창 색(TOWNIN 과 같은 값 — 밝은 · 어두운 화면 · 도트 마감 · 팔레트와 상관없이 같다 ·
    게임이 모든 button 에 붙이는 테두리 · 그림자는 html body #view / #modalRoot … 로 걷는다). 설득 대화는 상담창(.cw-* — CSLWIN_CSS) 그대로에 효과만 (.scw-cw) */
 .scw,.scw-pal{--scw-ink:#fff4e6;--scw-line:#e9cdbf;--scw-edge:#b98f84;--scw-win:#2a1418;--scw-panel:#42191f;--scw-card:#5b2a30;--scw-gold:#ffd36a;--scw-dim:#e2c2b6;
@@ -4202,14 +4271,14 @@ html body .skwrap .skfit .skstage .sk-hold{position:absolute;inset:0;z-index:40;
 /* 누를 수 있는 소품 — 마우스를 올리면(키보드로 고르면) 테두리 빛 + 이름표 */
 .mdesk .mdh{opacity:0;transition:opacity .12s}
 .mdesk[data-hot="1"] .mdh[data-g="1"],.mdesk[data-hot="2"] .mdh[data-g="2"],.mdesk[data-hot="3"] .mdh[data-g="3"],.mdesk[data-hot="4"] .mdh[data-g="4"],
-.mdesk[data-hot="5"] .mdh[data-g="5"],.mdesk[data-hot="6"] .mdh[data-g="6"],.mdesk[data-hot="7"] .mdh[data-g="7"]{opacity:1}
+.mdesk[data-hot="5"] .mdh[data-g="5"],.mdesk[data-hot="6"] .mdh[data-g="6"],.mdesk[data-hot="7"] .mdh[data-g="7"],.mdesk[data-hot="8"] .mdh[data-g="8"]{opacity:1}   /* 8 — 모래시계 (1023 · 시나리오) */
 html body #view .mdesk .mdk{position:absolute;display:block;margin:0!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;
   border-radius:0!important;outline:0!important;min-width:0!important;min-height:0!important;pointer-events:none;color:inherit;transform:none!important}
 .mdesk .mdtag{position:absolute;left:50%;bottom:100%;transform:translate(-50%,-4px);white-space:nowrap;font-size:12px;line-height:1.35;padding:1px 7px;
   background:#2a1a11e6;color:#fff0ce;border-radius:3px;pointer-events:none;opacity:0;transition:opacity .12s;z-index:4}
 .mdesk .mdk.below .mdtag{top:100%;bottom:auto;transform:translate(-50%,4px)}
 .mdesk[data-hot="1"] .mdk[data-g="1"] .mdtag,.mdesk[data-hot="2"] .mdk[data-g="2"] .mdtag,.mdesk[data-hot="3"] .mdk[data-g="3"] .mdtag,.mdesk[data-hot="4"] .mdk[data-g="4"] .mdtag,
-.mdesk[data-hot="5"] .mdk[data-g="5"] .mdtag,.mdesk[data-hot="6"] .mdk[data-g="6"] .mdtag,.mdesk[data-hot="7"] .mdk[data-g="7"] .mdtag{opacity:1}
+.mdesk[data-hot="5"] .mdk[data-g="5"] .mdtag,.mdesk[data-hot="6"] .mdk[data-g="6"] .mdtag,.mdesk[data-hot="7"] .mdk[data-g="7"] .mdtag,.mdesk[data-hot="8"] .mdk[data-g="8"] .mdtag{opacity:1}
 /* 표식 — 남은 마스터 육성 포인트(회중시계) · 1021 남은 친선전 신청 편지(편지) 오른쪽 위 (사이드 메뉴의 숫자 표식과 같은 결 · 1021 둘째 — 기울이지 않고 똑바로) */
 .mdesk .mdbadge{position:absolute;z-index:3;transform:translate(-50%,-50%);min-width:24px;height:24px;padding:0 5px;box-sizing:border-box;
   font-size:14px;line-height:20px;font-weight:700;text-align:center;color:#fff;background:#b0412c;border:2px solid #4a1d14;border-radius:0;
@@ -9401,7 +9470,7 @@ function newGame(name){
   S = {
     v:1, lgid:lgNew || leagueGenId(), acadName: name || (pick(ACAD)+" 용사 학원"),
     master:{name:"마스터", lead:0, info:0, net:0, pts:0},   // 1022 — 마스터 육성 포인트는 0 에서 시작 (사용자 '게임 처음 시작 시 마스터 육성 포인트는 0으로' · 예전 6) · 여름 합숙 뒤 grantMasterPts 로 받는다
-    tier:1, fame:0, gold:3000, sp:0, debt:DIFFS.normal.debt, debt0:DIFFS.normal.debt, debtV:1, bank:{repay:0}, jobUnlock:0, actUnlock:0, jobN:{}, jobEv:{}, jobW:{}, jobGr:{}, diet:"plain",
+    tier:1, fame:0, gold:3000, sp:0, debt:DIFFS.normal.debt, debt0:DIFFS.normal.debt, debtV:1, bank:{repay:0}, jobUnlock:0, actUnlock:0, townLock:1, jobN:{}, jobEv:{}, jobW:{}, jobGr:{}, diet:"plain",
     year:1, phase:"spring", week:0,
     students:[], graduates:[], log:[],
     facil:{expand:0,gym:0,hall:0,chapel:0,infirm:0,library:0,arena:0,counsel:0}, facilV:FACIL_VER, skgV:SKG_VER, shopUnlock:0,
@@ -17834,6 +17903,7 @@ function subTabsOpen(g){   // 리그 등록은 4년차 봄부터 · 졸업생 �
    누르면 안내 토스트만 (render 가 tabs 에 lock 을 단다 · 모양은 NAV_LOCK CSS). SP 도 졸업생으로만 생기니 그 전에는 쓸 곳이 없다.
    잠금 안내는 문장 하나로 둔다 — 토스트 · 단추 title 에 그대로 쓴다 (메뉴 이름 + 조사 + 조각을 이어 붙이면 영어판에서 어순을 못 바꾼다) */
 const LG_LOCK_MSG = "졸업생 리그는 첫 졸업생이 나오면 열린다.";
+const TOWN_LOCK_MSG = "마을은 1년차 봄 7주를 마치면 열린다.";   // 1022 — 초반 스토리 03 (RQST) 이 끝나기 전에는 마을 메뉴를 잠근다 (새 게임부터 · S.townLock)
 function lgUnlocked(){ return !!(S && (S.graduates||[]).length); }
 const LOCK_ICO = `<i class="lki" aria-hidden="true"><svg viewBox="0 0 7 8" shape-rendering="crispEdges"><path fill="currentColor" fill-rule="evenodd" d="M2 0h3v1H2zM1 1h1v2H1zM5 1h1v2H5zM0 3h7v5H0zM3 5h1v2H3z"/></svg></i>`;
 function navLockToast(b){ toast(b.dataset.lock); }
@@ -17945,6 +18015,8 @@ function render(){
   if(!(S.graduates||[]).length && UI.view==="record") UI.view = "log";       // 졸업생 명부 — 첫 졸업생이 나온 뒤에야
   if(!lgUnlocked() && viewGroupOf(UI.view)==="league") UI.view = "home";     // 1010 — 졸업생 리그 묶음도 첫 졸업생이 나온 뒤에야 (메뉴 단추는 자물쇠)
   { const lv = tabs.find(v=>v.id==="league"); if(lv && !lgUnlocked()) lv.lock = LG_LOCK_MSG; }
+  if(S.townLock && UI.view==="facil") UI.view = "home";                      // 1022 — 마을은 초반 스토리 03 이 끝나면 열린다 (메뉴 단추는 자물쇠 · 졸업생 리그와 같은 방식)
+  { const tv = tabs.find(v=>v.id==="facil"); if(tv && S.townLock){ tv.lock = TOWN_LOCK_MSG; tv.badge = null; } }
   const curG = viewGroupOf(UI.view);                                        // 서브탭 화면이면 그 묶음의 메뉴 단추가 켜진다
   {  // 스케줄 탭에는 지금 몇 주차인지 붙여둔다
     const pv = tabs.find(v=>v.id==="plan");
@@ -18034,6 +18106,8 @@ function render(){
   if(window.FST) FST.after();   // 1022 — 첫 시간표 튜토리얼 (FSTUT) — 카드의 추천 얼굴 · 02 스케줄이 열렸는지 · 이어하기
   if(window.CREC) CREC.after();   // 1022 — 일과 카드 추천 (CREC) — 얼굴 말풍선 · 새 카드가 한 장씩 날아온다
   if(window.RVST) RVST.after();   // 1022 — 초반 스토리 02 (RVST) — 장면 중에 나갔다가 다시 열면 그 줄부터 (S.rvst)
+  if(window.RQST) RQST.after();   // 1022 — 초반 스토리 03 (RQST) — 장면 중에 나갔다가 다시 열면 그 줄부터 (S.rqst)
+  if(window.SCEN) SCEN.after();   // 1023 — 시나리오 다시 보기 (SCEN) — 처음 끝낸 시나리오를 S.scen 에 적는다 (모래시계 팝업 단추)
 }
 /* 학원 이름 (1007) — 두 줄을 넘으면 두 줄에 들어가는 크기까지 글자를 비례로 줄인다
    (가로 화면 사이드가 길어져 스케줄의 잉크 단지 · 깃펜을 가리지 않게). 도트 폰트도 같은 방식 — 12 · 24px 사이 크기는 조금 흐리게 보인다.
@@ -18136,10 +18210,12 @@ const SHOW_FOCUSHELP= false;   // 개인 집중 훈련 · 일괄 지정 안내 �
    누르는 자리는 소품 모양 + 1점(MDESK_GEO.hit — 줄마다 [시작, 길이, 묶음] · 모양은 그림에서 그랩컷으로 찾았다 — hot_masks.py).
    남은 마스터 육성 포인트 · 편지 수 표식은 회중시계 · 편지 오른쪽 위에 똑바로 (1021 둘째 — 예전 -15도 기울기를 뺐다 · MDESK_GEO.badge).
    두루마리를 누르면(mdeskGo) — 두루마리 위 내용이 사라지고, 책상이 두루마리로 다가간 뒤(액자는 그대로 — 1011 부터 같은 크기)
-   스케줄 그림이 겹쳐 나타나고, 스케줄 내용이 두루마리 위로 떠오른다 */
-const MDESK_ART = {"ext":"assets/mdesk_art/ext.webp?v=f1546c6a","items":"assets/mdesk_art/items.webp?v=27ec41b7","letter":"assets/mdesk_art/letter.webp?v=19b05550","hl_map":"assets/mdesk_art/hl_map.webp?v=bb59c1cb","hl_books":"assets/mdesk_art/hl_books.webp?v=f7fac122","hl_master":"assets/mdesk_art/hl_master.webp?v=4a0baee1","hl_globe":"assets/mdesk_art/hl_globe.webp?v=9c23f67c","hl_book":"assets/mdesk_art/hl_book.webp?v=c2d00a03","hl_scroll":"assets/mdesk_art/hl_scroll.webp?v=b5010202","hl_letter":"assets/mdesk_art/hl_letter.webp?v=5f52d9f9"};
-const MDESK_GEO = {"size":[746,478],"groups":[{"k":"map","act":"tut","bb":[358,25,461,89],"hl":[356,23,107,68]},{"k":"books","act":"log","bb":[80,331,218,445],"hl":[78,329,142,118]},{"k":"master","act":"master","bb":[406,377,543,436],"hl":[404,375,141,63]},{"k":"globe","act":"info","bb":[508,11,563,71],"hl":[506,9,59,64]},{"k":"book","act":"roster","bb":[257,343,388,438],"hl":[255,341,135,99]},{"k":"scroll","act":"plan","bb":[40,89,415,300],"hl":[38,87,379,215]},{"k":"letter","act":"letter","bb":[211,29,294,80],"hl":[209,27,87,55]}],"scroll":{"x":40,"y":89,"w":375,"h":211},"letter":{"x":209,"y":27,"w":94,"h":59},"badge":{"master":[521,385],"letter":[295,43]},"hit":";;;;;;;;;;534,12,4;533,17,4;532,20,4;529,24,4;526,28,4;524,31,4;521,35,4;520,38,4;519,40,4;518,42,4;517,44,4;516,45,4;515,46,4;514,48,4;448,2,1,513,49,4;447,5,1,513,50,4;445,8,1,512,51,4;443,11,1,512,52,4;224,1,7,441,14,1,512,52,4;223,7,7,439,17,1,511,53,4;222,16,7,437,20,1,511,53,4;221,23,7,434,23,1,510,54,4;221,29,7,432,26,1,509,55,4;220,38,7,430,28,1,508,56,4;220,45,7,428,31,1,507,57,4;220,52,7,426,34,1,507,57,4;219,59,7,424,36,1,507,57,4;219,66,7,422,38,1,508,56,4;219,74,7,419,42,1,509,55,4;219,75,7,417,44,1,510,54,4;219,76,7,415,46,1,511,53,4;218,77,7,414,47,1,511,53,4;218,77,7,413,48,1,512,51,4;218,77,7,412,50,1,512,51,4;217,78,7,413,49,1,513,50,4;217,77,7,414,48,1,514,48,4;217,77,7,401,7,1,415,46,1,515,46,4;216,78,7,399,10,1,416,45,1,515,46,4;216,78,7,397,13,1,416,45,1,516,44,4;216,78,7,395,16,1,416,44,1,517,42,4;216,78,7,392,19,1,416,43,1,518,40,4;215,78,7,389,23,1,415,42,1,520,37,4;215,78,7,387,26,1,414,40,1,522,34,4;215,78,7,384,67,1,522,34,4;214,79,7,382,67,1,521,36,4;214,78,7,380,67,1,521,37,4;214,78,7,378,67,1,521,37,4;213,79,7,376,66,1,521,37,4;213,79,7,373,67,1,521,37,4;213,79,7,370,68,1,521,37,4;212,79,7,368,68,1,521,37,4;212,79,7,365,68,1,521,36,4;212,79,7,363,68,1,522,35,4;212,78,7,361,67,1,523,33,4;211,79,7,360,66,1,523,33,4;211,79,7,359,66,1,524,31,4;211,79,7,358,67,1,525,29,4;210,80,7,357,69,1,526,27,4;211,79,7,357,69,1,528,24,4;212,77,7,357,57,1,416,11,1,530,20,4;217,72,7,357,55,1,417,10,1,531,17,4;228,61,7,358,52,1,417,10,1,536,9,4;230,59,7,358,49,1,417,9,1;235,54,7,358,47,1,418,4,1,423,2,1;242,46,7,358,45,1,419,2,1;252,36,7,359,42,1;257,31,7,359,40,1;263,25,7,359,38,1;269,18,7,359,35,1;277,9,7,360,32,1;282,3,7,361,29,1;362,25,1;363,3,1,368,18,1;367,17,1;366,16,1;365,16,1;365,13,1;366,10,1;367,7,1,401,4,6;57,4,6,370,2,1,400,6,6;55,7,6,399,8,6;54,9,6,398,10,6;53,11,6,398,10,6;53,11,6,398,10,6;53,12,6,398,10,6;53,11,6,398,10,6;53,11,6,399,8,6;54,9,6,400,9,6;54,10,6,400,10,6;53,12,6,182,2,6,399,12,6;52,14,6,181,4,6,398,14,6;52,14,6,163,3,6,173,1,6,176,10,6,190,10,6,209,11,6,223,7,6,232,2,6,236,5,6,247,13,6,265,9,6,278,38,6,320,77,6,398,14,6;52,30,6,83,104,6,189,223,6;52,360,6;52,360,6;52,360,6;52,360,6;52,360,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;50,362,6;50,362,6;50,362,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,366,6;48,366,6;48,366,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;47,367,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;46,368,6;45,369,6;45,369,6;45,369,6;45,369,6;45,369,6;45,369,6;45,369,6;45,369,6;45,369,6;45,370,6;45,370,6;45,370,6;45,370,6;45,370,6;45,370,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;44,371,6;43,372,6;43,372,6;43,372,6;43,372,6;43,372,6;43,372,6;43,372,6;43,372,6;43,372,6;43,372,6;43,372,6;42,373,6;42,373,6;42,373,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;41,375,6;41,375,6;41,375,6;41,375,6;41,375,6;41,375,6;41,375,6;41,375,6;42,373,6;43,1,6,53,355,6,412,2,6;54,349,6,404,3,6;43,3,6,55,347,6,405,1,6;42,5,6,56,345,6;41,7,6,57,343,6,406,5,6;40,9,6,58,341,6,405,7,6;40,9,6,180,5,6,404,9,6;39,11,6,180,5,6,404,9,6;39,11,6,180,5,6,403,11,6;39,11,6,180,5,6,403,11,6;39,11,6,180,5,6,403,11,6;40,9,6,180,5,6,403,11,6;40,9,6,181,3,6,404,9,6;41,7,6,182,1,6,405,7,6;43,3,6,406,5,6;408,1,6;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;178,2,2,181,2,2;177,7,2;175,10,2;172,13,2;168,17,2;165,20,2;160,1,2,162,23,2;157,28,2;156,29,2;153,32,2;150,35,2;143,43,2;142,44,2,362,6,5;138,48,2,358,11,5;135,52,2,352,19,5;132,56,2,346,26,5;130,58,2,342,31,5;126,63,2,337,37,5;123,66,2,334,41,5;119,71,2,331,45,5;117,74,2,192,3,2,329,48,5;113,83,2,326,51,5;108,1,2,110,87,2,324,53,5;107,91,2,323,54,5;104,95,2,321,56,5;98,1,2,101,98,2,320,58,5;94,106,2,290,21,5,318,60,5;90,1,2,93,108,2,282,96,5;89,112,2,274,104,5;88,114,2,268,110,5;87,115,2,267,112,5;86,117,2,266,113,5;86,117,2,263,116,5;85,119,2,259,120,5;85,120,2,258,122,5;85,120,2,257,123,5;85,121,2,256,124,5;85,121,2,256,124,5;85,121,2,256,125,5;85,122,2,256,125,5;85,123,2,256,125,5;85,123,2,256,125,5;86,123,2,256,125,5;86,123,2,256,126,5;85,125,2,257,125,5;84,126,2,257,125,5;83,128,2,257,125,5,488,1,3,494,8,3;81,130,2,257,125,5,481,1,3,483,7,3,492,12,3;80,131,2,257,126,5,477,2,3,480,26,3;79,133,2,257,126,5,476,39,3;79,134,2,258,125,5,473,43,3,517,2,3;79,134,2,258,125,5,472,48,3;79,135,2,258,126,5,472,49,3;79,135,2,258,126,5,472,38,3,512,9,3;79,136,2,258,126,5,472,39,3,518,2,3;79,137,2,258,126,5,473,38,3;79,137,2,258,126,5,473,38,3;79,138,2,258,127,5,474,37,3;80,137,2,259,126,5,477,34,3;80,138,2,259,126,5,478,33,3;81,138,2,259,126,5,482,29,3;81,138,2,259,126,5,483,28,3;82,136,2,259,127,5,483,28,3;83,135,2,260,126,5,416,8,3,483,28,3;84,133,2,260,126,5,414,12,3,484,26,3;84,132,2,260,126,5,412,16,3,484,26,3;85,130,2,260,126,5,411,18,3,484,25,3;85,132,2,260,127,5,406,2,3,410,20,3,485,24,3,512,11,3;85,133,2,260,127,5,405,26,3,486,22,3,509,16,3;86,133,2,260,127,5,405,27,3,487,40,3;86,133,2,260,127,5,406,26,3,488,40,3,533,1,3;87,131,2,260,127,5,407,25,3,489,40,3,532,5,3;87,131,2,261,127,5,407,26,3,490,48,3;88,130,2,261,127,5,406,27,3,492,49,3;88,130,2,261,127,5,406,27,3,495,5,3,501,41,3;89,128,2,261,127,5,406,28,3,500,43,3;90,126,2,261,127,5,406,28,3,500,43,3;91,123,2,261,127,5,406,28,3,447,11,3,499,45,3;92,120,2,261,128,5,406,33,3,445,15,3,499,45,3;92,117,2,261,128,5,406,34,3,444,17,3,498,46,3;93,114,2,262,127,5,406,36,3,443,19,3,498,39,3,538,5,3;93,111,2,262,127,5,406,57,3,498,39,3,539,3,3;94,107,2,262,127,5,406,58,3,498,39,3;94,104,2,262,127,5,406,59,3,499,38,3;95,101,2,262,126,5,406,60,3,498,39,3;95,98,2,262,125,5,407,58,3,498,38,3;95,96,2,263,121,5,408,58,3,498,38,3;96,92,2,263,116,5,409,57,3,498,38,3;96,89,2,263,109,5,410,56,3,498,38,3;97,85,2,263,103,5,411,55,3,498,38,3;97,83,2,263,97,5,412,16,3,429,37,3,498,37,3;97,81,2,263,90,5,413,12,3,438,28,3,498,37,3;98,76,2,263,84,5,415,8,3,438,28,3,498,36,3;99,73,2,263,79,5,438,28,3,498,36,3;99,70,2,263,75,5,438,28,3,499,35,3;100,66,2,264,73,5,438,28,3,499,35,3;100,64,2,264,74,5,438,28,3,500,34,3;101,60,2,264,50,5,318,20,5,438,27,3,502,31,3;102,56,2,264,42,5,322,16,5,439,26,3,503,29,3;103,52,2,264,36,5,323,15,5,439,25,3,504,26,3;104,49,2,264,27,5,328,11,5,439,25,3,505,24,3;105,45,2,264,20,5,329,10,5,440,23,3,507,20,3;106,42,2,264,13,5,329,10,5,441,20,3,510,15,3;107,38,2,265,11,5,329,10,5,442,19,3,514,8,3;107,36,2,266,9,5,330,9,5,444,16,3;107,33,2,267,6,5,330,9,5,445,13,3;107,30,2,330,8,5,448,8,3;107,28,2,331,6,5;108,24,2,332,1,5,334,2,5;109,21,2;109,18,2;110,14,2;110,12,2;111,7,2,119,1,2;112,4,2;113,2,2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;","zoom":{"m":[50.5,402.5,195.5],"s":[25.5,587.5,243.0]},"ext":{"w":746,"h":478,"x":0,"y":0}};
-const MDESK_TAG = {tut:"튜토리얼", log:"일지", master:"마스터 육성", info:"학원 정보", roster:"학생 명부", plan:"스케줄", letter:"친선전 신청"};   // 하는 일(act)마다 이름표
+   스케줄 그림이 겹쳐 나타나고, 스케줄 내용이 두루마리 위로 떠오른다
+   1023 — 사용자 '마스터 화면의 모래시계를 시나리오 팝업으로': 모래시계가 여덟째 소품(act story) — 누르면 책상 위 시나리오 팝업(UI.mdeskPop "story" · 목록은 SCEN 블록 —
+   처음 끝낸 시나리오만 단추 · 누르면 다시 보기(건너뛰기 있음)) */
+const MDESK_ART = {"ext":"assets/mdesk_art/ext.webp?v=f1546c6a","items":"assets/mdesk_art/items.webp?v=27ec41b7","letter":"assets/mdesk_art/letter.webp?v=19b05550","hl_map":"assets/mdesk_art/hl_map.webp?v=bb59c1cb","hl_books":"assets/mdesk_art/hl_books.webp?v=f7fac122","hl_master":"assets/mdesk_art/hl_master.webp?v=4a0baee1","hl_globe":"assets/mdesk_art/hl_globe.webp?v=9c23f67c","hl_book":"assets/mdesk_art/hl_book.webp?v=c2d00a03","hl_scroll":"assets/mdesk_art/hl_scroll.webp?v=b5010202","hl_letter":"assets/mdesk_art/hl_letter.webp?v=5f52d9f9","hl_hourglass":"assets/mdesk_art/hl_hourglass.webp?v=e55e91c8"};
+const MDESK_GEO = {"size":[746,478],"groups":[{"k":"map","act":"tut","bb":[358,25,461,89],"hl":[356,23,107,68]},{"k":"books","act":"log","bb":[80,331,218,445],"hl":[78,329,142,118]},{"k":"master","act":"master","bb":[406,377,543,436],"hl":[404,375,141,63]},{"k":"globe","act":"info","bb":[508,11,563,71],"hl":[506,9,59,64]},{"k":"book","act":"roster","bb":[257,343,388,438],"hl":[255,341,135,99]},{"k":"scroll","act":"plan","bb":[40,89,415,300],"hl":[38,87,379,215]},{"k":"letter","act":"letter","bb":[211,29,294,80],"hl":[209,27,87,55]},{"k":"hourglass","act":"story","bb":[450,173,518,253],"hl":[448,171,72,84]}],"scroll":{"x":40,"y":89,"w":375,"h":211},"letter":{"x":209,"y":27,"w":94,"h":59},"badge":{"master":[521,385],"letter":[295,43]},"hit":";;;;;;;;;;534,12,4;533,17,4;532,20,4;529,24,4;526,28,4;524,31,4;521,35,4;520,38,4;519,40,4;518,42,4;517,44,4;516,45,4;515,46,4;514,48,4;448,2,1,513,49,4;447,5,1,513,50,4;445,8,1,512,51,4;443,11,1,512,52,4;224,1,7,441,14,1,512,52,4;223,7,7,439,17,1,511,53,4;222,16,7,437,20,1,511,53,4;221,23,7,434,23,1,510,54,4;221,29,7,432,26,1,509,55,4;220,38,7,430,28,1,508,56,4;220,45,7,428,31,1,507,57,4;220,52,7,426,34,1,507,57,4;219,59,7,424,36,1,507,57,4;219,66,7,422,38,1,508,56,4;219,74,7,419,42,1,509,55,4;219,75,7,417,44,1,510,54,4;219,76,7,415,46,1,511,53,4;218,77,7,414,47,1,511,53,4;218,77,7,413,48,1,512,51,4;218,77,7,412,50,1,512,51,4;217,78,7,413,49,1,513,50,4;217,77,7,414,48,1,514,48,4;217,77,7,401,7,1,415,46,1,515,46,4;216,78,7,399,10,1,416,45,1,515,46,4;216,78,7,397,13,1,416,45,1,516,44,4;216,78,7,395,16,1,416,44,1,517,42,4;216,78,7,392,19,1,416,43,1,518,40,4;215,78,7,389,23,1,415,42,1,520,37,4;215,78,7,387,26,1,414,40,1,522,34,4;215,78,7,384,67,1,522,34,4;214,79,7,382,67,1,521,36,4;214,78,7,380,67,1,521,37,4;214,78,7,378,67,1,521,37,4;213,79,7,376,66,1,521,37,4;213,79,7,373,67,1,521,37,4;213,79,7,370,68,1,521,37,4;212,79,7,368,68,1,521,37,4;212,79,7,365,68,1,521,36,4;212,79,7,363,68,1,522,35,4;212,78,7,361,67,1,523,33,4;211,79,7,360,66,1,523,33,4;211,79,7,359,66,1,524,31,4;211,79,7,358,67,1,525,29,4;210,80,7,357,69,1,526,27,4;211,79,7,357,69,1,528,24,4;212,77,7,357,57,1,416,11,1,530,20,4;217,72,7,357,55,1,417,10,1,531,17,4;228,61,7,358,52,1,417,10,1,536,9,4;230,59,7,358,49,1,417,9,1;235,54,7,358,47,1,418,4,1,423,2,1;242,46,7,358,45,1,419,2,1;252,36,7,359,42,1;257,31,7,359,40,1;263,25,7,359,38,1;269,18,7,359,35,1;277,9,7,360,32,1;282,3,7,361,29,1;362,25,1;363,3,1,368,18,1;367,17,1;366,16,1;365,16,1;365,13,1;366,10,1;367,7,1,401,4,6;57,4,6,370,2,1,400,6,6;55,7,6,399,8,6;54,9,6,398,10,6;53,11,6,398,10,6;53,11,6,398,10,6;53,12,6,398,10,6;53,11,6,398,10,6;53,11,6,399,8,6;54,9,6,400,9,6;54,10,6,400,10,6;53,12,6,182,2,6,399,12,6;52,14,6,181,4,6,398,14,6;52,14,6,163,3,6,173,1,6,176,10,6,190,10,6,209,11,6,223,7,6,232,2,6,236,5,6,247,13,6,265,9,6,278,38,6,320,77,6,398,14,6;52,30,6,83,104,6,189,223,6;52,360,6;52,360,6;52,360,6;52,360,6;52,360,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;51,361,6;50,362,6;50,362,6;50,362,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;50,363,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;49,364,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6;48,365,6,483,7,8;48,365,6,482,12,8;48,366,6,481,16,8;48,366,6,481,18,8;48,366,6,480,21,8;47,367,6,480,25,8;47,367,6,479,28,8;47,367,6,479,30,8;47,367,6,479,31,8;47,367,6,479,33,8;47,367,6,479,34,8;47,367,6,480,34,8;47,367,6,481,34,8;47,367,6,481,35,8;47,367,6,480,37,8;47,367,6,480,38,8;47,367,6,479,40,8;47,367,6,479,40,8;47,367,6,478,41,8;47,367,6,478,41,8;47,367,6,477,42,8;46,368,6,476,42,8;46,368,6,476,42,8;46,368,6,475,42,8;46,368,6,475,41,8;46,368,6,474,41,8;46,368,6,473,41,8;46,368,6,472,41,8;46,368,6,472,40,8;46,368,6,471,40,8;46,368,6,470,42,8;46,368,6,469,42,8;46,368,6,469,42,8;46,368,6,470,40,8;46,368,6,469,41,8;46,368,6,469,40,8;46,368,6,468,41,8;46,368,6,468,40,8;46,368,6,467,41,8;46,368,6,467,40,8;46,368,6,466,41,8;45,369,6,465,41,8;45,369,6,465,41,8;45,369,6,464,41,8;45,369,6,464,41,8;45,369,6,463,41,8;45,369,6,462,42,8;45,369,6,462,41,8;45,369,6,461,41,8;45,369,6,461,40,8;45,370,6,460,41,8;45,370,6,460,40,8;45,370,6,454,46,8;45,370,6,453,47,8;45,370,6,452,47,8;45,370,6,452,46,8;44,371,6,451,47,8;44,371,6,451,47,8;44,371,6,450,47,8;44,371,6,449,47,8;44,371,6,449,47,8;44,371,6,449,46,8;44,371,6,449,46,8;44,371,6,450,44,8;44,371,6,450,44,8;44,371,6,451,42,8;44,371,6,452,40,8;44,371,6,453,39,8;44,371,6,454,38,8;44,371,6,456,35,8;44,371,6,457,34,8;44,371,6,458,34,8;44,371,6,459,33,8;44,371,6,460,32,8;44,371,6,462,30,8;43,372,6,464,27,8;43,372,6,465,26,8;43,372,6,467,23,8;43,372,6,469,20,8;43,372,6,471,17,8;43,372,6,474,13,8;43,372,6,477,9,8;43,372,6;43,372,6;43,372,6;43,372,6;42,373,6;42,373,6;42,373,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;42,374,6;41,375,6;41,375,6;41,375,6;41,375,6;41,375,6;41,375,6;41,375,6;41,375,6;42,373,6;43,1,6,53,355,6,412,2,6;54,349,6,404,3,6;43,3,6,55,347,6,405,1,6;42,5,6,56,345,6;41,7,6,57,343,6,406,5,6;40,9,6,58,341,6,405,7,6;40,9,6,180,5,6,404,9,6;39,11,6,180,5,6,404,9,6;39,11,6,180,5,6,403,11,6;39,11,6,180,5,6,403,11,6;39,11,6,180,5,6,403,11,6;40,9,6,180,5,6,403,11,6;40,9,6,181,3,6,404,9,6;41,7,6,182,1,6,405,7,6;43,3,6,406,5,6;408,1,6;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;178,2,2,181,2,2;177,7,2;175,10,2;172,13,2;168,17,2;165,20,2;160,1,2,162,23,2;157,28,2;156,29,2;153,32,2;150,35,2;143,43,2;142,44,2,362,6,5;138,48,2,358,11,5;135,52,2,352,19,5;132,56,2,346,26,5;130,58,2,342,31,5;126,63,2,337,37,5;123,66,2,334,41,5;119,71,2,331,45,5;117,74,2,192,3,2,329,48,5;113,83,2,326,51,5;108,1,2,110,87,2,324,53,5;107,91,2,323,54,5;104,95,2,321,56,5;98,1,2,101,98,2,320,58,5;94,106,2,290,21,5,318,60,5;90,1,2,93,108,2,282,96,5;89,112,2,274,104,5;88,114,2,268,110,5;87,115,2,267,112,5;86,117,2,266,113,5;86,117,2,263,116,5;85,119,2,259,120,5;85,120,2,258,122,5;85,120,2,257,123,5;85,121,2,256,124,5;85,121,2,256,124,5;85,121,2,256,125,5;85,122,2,256,125,5;85,123,2,256,125,5;85,123,2,256,125,5;86,123,2,256,125,5;86,123,2,256,126,5;85,125,2,257,125,5;84,126,2,257,125,5;83,128,2,257,125,5,488,1,3,494,8,3;81,130,2,257,125,5,481,1,3,483,7,3,492,12,3;80,131,2,257,126,5,477,2,3,480,26,3;79,133,2,257,126,5,476,39,3;79,134,2,258,125,5,473,43,3,517,2,3;79,134,2,258,125,5,472,48,3;79,135,2,258,126,5,472,49,3;79,135,2,258,126,5,472,38,3,512,9,3;79,136,2,258,126,5,472,39,3,518,2,3;79,137,2,258,126,5,473,38,3;79,137,2,258,126,5,473,38,3;79,138,2,258,127,5,474,37,3;80,137,2,259,126,5,477,34,3;80,138,2,259,126,5,478,33,3;81,138,2,259,126,5,482,29,3;81,138,2,259,126,5,483,28,3;82,136,2,259,127,5,483,28,3;83,135,2,260,126,5,416,8,3,483,28,3;84,133,2,260,126,5,414,12,3,484,26,3;84,132,2,260,126,5,412,16,3,484,26,3;85,130,2,260,126,5,411,18,3,484,25,3;85,132,2,260,127,5,406,2,3,410,20,3,485,24,3,512,11,3;85,133,2,260,127,5,405,26,3,486,22,3,509,16,3;86,133,2,260,127,5,405,27,3,487,40,3;86,133,2,260,127,5,406,26,3,488,40,3,533,1,3;87,131,2,260,127,5,407,25,3,489,40,3,532,5,3;87,131,2,261,127,5,407,26,3,490,48,3;88,130,2,261,127,5,406,27,3,492,49,3;88,130,2,261,127,5,406,27,3,495,5,3,501,41,3;89,128,2,261,127,5,406,28,3,500,43,3;90,126,2,261,127,5,406,28,3,500,43,3;91,123,2,261,127,5,406,28,3,447,11,3,499,45,3;92,120,2,261,128,5,406,33,3,445,15,3,499,45,3;92,117,2,261,128,5,406,34,3,444,17,3,498,46,3;93,114,2,262,127,5,406,36,3,443,19,3,498,39,3,538,5,3;93,111,2,262,127,5,406,57,3,498,39,3,539,3,3;94,107,2,262,127,5,406,58,3,498,39,3;94,104,2,262,127,5,406,59,3,499,38,3;95,101,2,262,126,5,406,60,3,498,39,3;95,98,2,262,125,5,407,58,3,498,38,3;95,96,2,263,121,5,408,58,3,498,38,3;96,92,2,263,116,5,409,57,3,498,38,3;96,89,2,263,109,5,410,56,3,498,38,3;97,85,2,263,103,5,411,55,3,498,38,3;97,83,2,263,97,5,412,16,3,429,37,3,498,37,3;97,81,2,263,90,5,413,12,3,438,28,3,498,37,3;98,76,2,263,84,5,415,8,3,438,28,3,498,36,3;99,73,2,263,79,5,438,28,3,498,36,3;99,70,2,263,75,5,438,28,3,499,35,3;100,66,2,264,73,5,438,28,3,499,35,3;100,64,2,264,74,5,438,28,3,500,34,3;101,60,2,264,50,5,318,20,5,438,27,3,502,31,3;102,56,2,264,42,5,322,16,5,439,26,3,503,29,3;103,52,2,264,36,5,323,15,5,439,25,3,504,26,3;104,49,2,264,27,5,328,11,5,439,25,3,505,24,3;105,45,2,264,20,5,329,10,5,440,23,3,507,20,3;106,42,2,264,13,5,329,10,5,441,20,3,510,15,3;107,38,2,265,11,5,329,10,5,442,19,3,514,8,3;107,36,2,266,9,5,330,9,5,444,16,3;107,33,2,267,6,5,330,9,5,445,13,3;107,30,2,330,8,5,448,8,3;107,28,2,331,6,5;108,24,2,332,1,5,334,2,5;109,21,2;109,18,2;110,14,2;110,12,2;111,7,2,119,1,2;112,4,2;113,2,2;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;","zoom":{"m":[50.5,402.5,195.5],"s":[25.5,587.5,243.0]},"ext":{"w":746,"h":478,"x":0,"y":0}};
+const MDESK_TAG = {tut:"튜토리얼", log:"일지", master:"마스터 육성", info:"학원 정보", roster:"학생 명부", plan:"스케줄", letter:"친선전 신청", story:"시나리오"};   // 하는 일(act)마다 이름표 (1023 모래시계 — 시나리오)
 const MDESK_ACT_OLD = {map:"tut", books:"master", info:"info", book:"roster", scroll:"plan"};   // 예전 책상(desk_art.py · act 없음) — 책 더미가 마스터 육성 · 회중시계가 학원 정보
 let MDESK_ROWS = null, MDESK_GOING = false;
 function mdeskActOf(g){ return (g && (g.act || MDESK_ACT_OLD[g.k])) || ""; }
@@ -18165,13 +18241,13 @@ function mdeskBox(x, y, w, h){
 }
 /* 팝업 — 마을 상점처럼 책상 위에 뜬다 (책상은 흐려진다). 학원 정보 = 예전 '학원 정보' 서브탭 (튜토리얼 단추는 말린 지도가 맡는다) */
 function mdeskPop(k){
-  const body = k === "info" ? viewHome({desk:true}) : viewMaster();
-  return `<div class="townpop mdesk-pop" data-mdpop="${k}" role="dialog" aria-label="${k === "info" ? "학원 정보" : "마스터 육성"}">${body}`
+  const body = k === "info" ? viewHome({desk:true}) : k === "story" ? ((window.SCEN && SCEN.popBody()) || "") : viewMaster();   // 1023 — 모래시계 = 시나리오 (SCEN 블록)
+  return `<div class="townpop mdesk-pop" data-mdpop="${k}" role="dialog" aria-label="${k === "info" ? "학원 정보" : k === "story" ? "시나리오" : "마스터 육성"}">${body}`
     + `<div class="townpop-foot"><button type="button" class="btn primary" data-deskdone>닫기</button></div></div>`;
 }
 function viewHomeDesk(){
   const G = MDESK_GEO, A = MDESK_ART, L = G.light;                  // 1020 도트 책상 — 소품 겹 · 촛불 빛이 없다 (L · A.props · A.light 없음)
-  const pop = UI.mdeskPop === "info" || UI.mdeskPop === "master" ? UI.mdeskPop : null;
+  const pop = UI.mdeskPop === "info" || UI.mdeskPop === "master" || UI.mdeskPop === "story" ? UI.mdeskPop : null;
   const pts = (S.master && S.master.pts|0) || 0;
   const nL = mdeskLetters(), LT = G.letter;                          // 1021 — 친선전 신청 편지 (남아 있을 때만 편지 그림 · 편지 소품)
   const on = g=> mdeskActOf(g) !== "letter" || nL > 0;
@@ -18211,12 +18287,14 @@ function mdeskAct(act){
   if(act === "info"){ UI.mdeskPop = "info"; render(); return; }      // 1021 — 지구본 = 학원 정보
   if(act === "roster"){ UI.view = "roster"; render(); return; }
   if(act === "letter"){ if(typeof fletOpen === "function") fletOpen(); return; }   // 1021 — 친선전 신청 창 (FLETTER)
+  if(act === "story"){ UI.mdeskPop = "story"; render(); return; }    // 1023 — 모래시계 = 시나리오 다시 보기 팝업 (SCEN)
   if(act === "plan") mdeskGo();
 }
 function bindMasterDesk(v){
   const sec = v.querySelector(".mdesk");
   if(!sec) return;
   v.querySelectorAll("[data-deskdone]").forEach(b=> b.onclick = ()=>{ UI.mdeskPop = null; render(); });
+  v.querySelectorAll(".mdesk-pop [data-scen]").forEach(b=> b.onclick = ()=>{ UI.mdeskPop = null; render(); if(window.SCEN) SCEN.play(b.dataset.scen); });   // 1023 — 시나리오 다시 보기
   const art = sec.querySelector(".mdesk-art");
   if(!art || sec.classList.contains("popopen")) return;
   const hot = (g)=>{
@@ -18436,6 +18514,7 @@ function viewHome(o){   // o.desk — 마스터 노트 책상의 학원 정보 �
         <div class="btnrow" style="margin-top:12px">
           <button class="btn sm" id="btnRename">학원 이름 변경</button>
           <button class="btn sm" id="btnNew">새 학원 시작</button>
+          ${!(o && o.desk) ? `<button class="btn sm" id="btnScen">시나리오</button>` : ""}
         </div>
       </div>
       <div></div>
@@ -24131,16 +24210,19 @@ function storyArt(k, alt){
   return src ? `<div class="valentine-art story-art"><img src="${src}" alt="${esc(alt)}" draggable="false"></div>` : "";
 }
 const GUILD_WYVERN = 5000, GUILD_CHORES = 300;
+function guildPay(){ const m = diffOf().gold; return {wy: Math.round(GUILD_WYVERN * m), ch: Math.round(GUILD_CHORES * m)}; }   // 1022 — 직접 의뢰 보수 (난이도 배율 · 초반 스토리 03 RQST 와 예전 5쪽이 같이 쓴다)
 function tryGuildJob(){
   if(jobUnlocked()) return;
   /* 1년차 봄 7주차를 마친 시점 (주차는 아직 넘어가기 전). 가을 1주차 기준일 때 만든 세이브가 이미 그 뒤에 와 있으면
      다음 주를 마칠 때 바로 받는다 (1003) */
   if(S.year <= 1 && S.phase === "spring" && S.week < 6) return;
   S.jobUnlock = S.year;
-  const gw = Math.round((GUILD_WYVERN + GUILD_CHORES) * diffOf().gold);
+  if(window.RQST && RQST.start()) return;   // 1022 — 초반 스토리 03 '저희도 학원을 지키고 싶어요' (RQST) — 이자 · 보수를 한 번에 · 예전 다섯 쪽 대신 대화 장면 (마을은 이야기가 끝나면 열린다)
+  S.townLock = 0;                          // 1022 — 예전 다섯 쪽이면 마을도 같이 연다
+  const gp = guildPay(), gw = gp.wy + gp.ch;   // 1022 — 난이도 배율을 곱한 실제 보수 (예전 표시는 늘 +5,000 · +300 이었다)
   S.gold += gw;
   if(FIN) FIN.later = (FIN.later||0) + gw;   // 이벤트 팝업에서 받는 돈 — 이번 주 자금 상황에는 미리 넣지 않는다 (0929)
-  logE(`<b>직접 의뢰를 받다</b> — 와이번 토벌 <b style="color:var(--brass)">+${fmt(GUILD_WYVERN)} G</b> · 학생들의 잡일 보수 <b style="color:var(--brass)">+${fmt(GUILD_CHORES)} G</b>. 이제 학생들이 마을의 의뢰를 받을 수 있다.`, "big");
+  logE(`<b>직접 의뢰를 받다</b> — 와이번 토벌 <b style="color:var(--brass)">+${fmt(gp.wy)} G</b> · 학생들의 잡일 보수 <b style="color:var(--brass)">+${fmt(gp.ch)} G</b>. 이제 학생들이 마을의 의뢰를 받을 수 있다.`, "big");
   for(let pg=1; pg<=5; pg++) queueCeremony({type:"guild", page:pg, year:S.year, phase:S.phase, week:S.week+1});
 }
 /* 이야기에 들어가는 때 — 받은 계절 · 주차와 그다음 계절 (1003) */
@@ -24180,10 +24262,10 @@ function guildCeremony(c){
       <div style="font-size:14px;line-height:1.9;color:var(--text)">${esc(txt)}</div></div>
     <div class="btnrow" style="margin-top:16px"><span class="hint" style="color:var(--dim)">${c.page} / 5</span><button class="btn primary" id="cerOk">${esc(P.btn)}</button></div>`;
   return head + `<div class="opt" style="cursor:default;margin-top:12px;border-color:var(--brass);padding:16px 20px">
-      <div style="font-size:14px;line-height:2">와이번 처리를 완료했다! <b style="color:var(--brass)">(+${fmt(GUILD_WYVERN)} G)</b><br>
-        학생들이 마을에서 잡일을 진행하여 보수를 받았다! <b style="color:var(--brass)">(+${fmt(GUILD_CHORES)} G)</b><br>
+      <div style="font-size:14px;line-height:2">와이번 처리를 완료했다! <b style="color:var(--brass)">(+${fmt(guildPay().wy)} G)</b><br>
+        학생들이 마을에서 잡일을 진행하여 보수를 받았다! <b style="color:var(--brass)">(+${fmt(guildPay().ch)} G)</b><br>
         <b>학생들이 마을의 의뢰를 받을 수 있게 되었다!</b></div>
-      <div style="margin-top:12px;font-size:18px;font-weight:700;color:var(--brass)">${fmt(GUILD_WYVERN + GUILD_CHORES)} G 획득</div>
+      <div style="margin-top:12px;font-size:18px;font-weight:700;color:var(--brass)">${fmt(guildPay().wy + guildPay().ch)} G 획득</div>
       <div class="od" style="margin-top:8px;color:var(--dim)">개인 행동에서 <b style="color:var(--text)">의뢰</b>를 고를 수 있다.</div></div>
     <div class="btnrow" style="margin-top:16px"><span class="hint" style="color:var(--dim)">5 / 5</span><button class="btn primary" id="cerOk">확인</button></div>`;
 }
@@ -26455,6 +26537,7 @@ function bindView(){
     });
   };
   const tb = $("#btnTut"); if(tb) tb.onclick=()=> showTutorial(0, {});
+  const scb = $("#btnScen"); if(scb) scb.onclick=()=>{ if(window.SCEN) SCEN.open(); };   // 1023 — 좁은 화면(책상 없음) 시나리오 다시 보기 목록 (SCEN)
   const nb = $("#btnNew"); if(nb) nb.onclick=()=>{
     showModal(`<h2 style="font-size:17px;margin-bottom:8px">새 학원을 시작할까?</h2>
       <p style="color:var(--muted);font-size:13px">현재 진행 상황은 사라진다.</p>
@@ -26615,6 +26698,7 @@ function showCeremony(){
   const c = (UI.ceremonies||[]).shift();
   if(!c){ audOver(null); render(); return; }
   if(window.RVST && (c.type==="rvst" || (c.type==="tut" && (String(c.page)==="2" || String(c.page)==="5")))) return RVST.play(c);   // 1022 — 초반 스토리 02 '한 번만 더' (대화 장면 → 라이벌 팝업 → 개인 행동 안내 — 곡은 RVST 가) · 예전 운영 안내 2 · 5 는 띄우지 않는다 (2 자리에 안내 한 장)
+  if(window.RQST && c.type==="rqst") return RQST.play(c);   // 1022 — 초반 스토리 03 (대화 장면 → 요약 팝업 — 곡은 RQST 가 · 확인하면 마을이 열린다)
   audOver(c.type==="grad" ? "ending" : null);
   if(c.type==="tut") return tutOneCeremony(c);
   NAME_PLAIN = !["epithet","lvup","grad"].includes(c.type);   // 이명 · 레벨업 · 졸업식 팝업은 이명을 보여 준다
@@ -30831,7 +30915,11 @@ function lkwFit(){
    · 카드마다 추천한 학생 c.by(학생 id) — 카드 오른쪽 위에 그 학생 얼굴(유물 보관고 아래 학생 띠와 같은 고리 얼굴 · 마우스를 올리면 설명) ·
      그 일과를 한 날 그 학생의 신뢰 +0.02 (recTrust · TRUST_D.rec). 얼굴은 FST.after 가 render 끝에서 붙인다 (두루마리 스케줄 · 예전 스케줄 · 요일 칸 모두).
    · 넓은 화면(폭 1100 이상 — 두루마리 스케줄 · 사이드 Schedule 단추) · 좁은 화면(예전 스케줄 · 폰 메뉴의 스케줄 칸) 둘 다. 글자 소리는 상담창 cwBlip ·
-     효과음 SFX fs_door · fs_clat · fs_glint · fs_slam · 곡 BGM.fsch. 자동화(navigator.webdriver)에서는 열지 않는다 — 시험은 window.__fstForce = true */
+     효과음 SFX fs_door · fs_clat · fs_glint · fs_slam · 곡 BGM.fsch. 자동화(navigator.webdriver)에서는 열지 않는다 — 시험은 window.__fstForce = true
+   · 1023 다시 보기(FST.replay — 마스터 책상 모래시계의 시나리오 팝업 · SCEN): 세이브를 건드리지 않는다 — S.fsTut · 카드 번호 그대로 · 손패 · 요일 칸은 처음처럼 비워 보이고
+     (원래 것은 F.rp 에 맡겨 두었다가 끝나면 그대로 돌려놓는다 · 다시 보기 중에는 아무것도 save 하지 않는다 — 시험 scen_check 가 센다) · 튜토리얼 카드 아홉 장은 번호 9억대 ·
+     rp 표시 (남아 있으면 FST.after 가 걷는다) · 일과 카드 추천(CREC)이 날릴 차례였던 새 카드도 그대로 둔다 · 02 는 스케줄을 바로 연다(책상이면 두루마리로 다가간다) ·
+     오른쪽 위 건너뛰기 (처음 보는 진짜 흐름에는 없다 — 사용자 '처음 볼 때는 무조건 건너뛰기를 안보여주고') · 끝나면 마스터 노트로 */
 (() => {
 const FST_FACE = {"paladin":{"motivated":"assets/fst_faces/paladin-motivated.png?v=9f80f84f","joy":"assets/fst_faces/paladin-joy.png?v=3e213740","surprised":"assets/fst_faces/paladin-surprised.png?v=b0ed2bf6","smile":"assets/fst_faces/paladin-smile.png?v=f5c93a74"},"wizard":{"tired":"assets/fst_faces/wizard-tired.png?v=8c795a66","sleepy-cat":"assets/fst_faces/wizard-sleepy-cat.png?v=02b87b13","smile":"assets/fst_faces/wizard-smile.png?v=d2ae512d","glasses":"assets/fst_faces/wizard-glasses.png?v=359e79c5","pout":"assets/fst_faces/wizard-pout.png?v=8831934e","joy":"assets/fst_faces/wizard-joy.png?v=a1a0733e"},"darkpriest":{"heroic-confidence":"assets/fst_faces/darkpriest-heroic-confidence.png?v=a6082822","smile":"assets/fst_faces/darkpriest-smile.png?v=51f67484","flustered":"assets/fst_faces/darkpriest-flustered.png?v=fb006c8c","joy":"assets/fst_faces/darkpriest-joy.png?v=775cc84f"}};   // apply_fstut.py — {직업: {표정: fst_faces 폴더의 〈직업〉-〈표정〉 PNG + ?v=}} (주소처럼 적지 않는다 — 시작 로딩이 페이지 안의 assets 주소를 모두 받으려 한다) (tools/newcharactericon/*-expressions-v1 의 128 도트 · 학생 얼굴이라 WebP 로 바꾸지 않는다)
 /* 추천 얼굴 — 학생 명부 책(RB_LAYOUT_SRC.jobs)과 같은 맞춤 [배율, x%, y%] */
@@ -30845,6 +30933,7 @@ const FST_QUIET = /[\s….‥]/;                                                
 const FST_LK = window.HS_LANG === "en" ? 1.6 : 1;                               // 영어는 글이 1.6배쯤 길다 — 글자 빠르기도 그만큼 (오프닝 대화창처럼)
 const FST_CPS = 32 * FST_LK, FST_FAST = {cps: 44 * FST_LK, hold: 420, pre: 80}, FST_FLIGHT = 340, FST_GAP2 = 180;
 const FST_TIP = "스케줄을 열어 주세요.";
+const FST_SKIP = "건너뛰기";                                                   // 1023 — 다시 보기에만
 const FST_ALL = "세 학생";
 const FST_MASTER = "마스터";
 /* 대본 — think 마스터 생각 · say 말(who: 직업 · master · all) · guide 02 · burst 07 · beat 29 · end 31 */
@@ -30882,13 +30971,14 @@ const FST_CUES = [
   {id: "31", k: "end"}
 ];
 const FST_MON = "#view .sk-day[data-slot=\"0\"], #view .dslot[data-slot=\"0\"]", FST_HAND = "#view .sk-hand, #view .handrow";
-const F = {on: false, i: -1, sess: 0, typing: null, wait: null, free: false, guideOn: false, raf: 0, root: null, after: null, castOn: false, fast: false, pend: false, faces: {}};
+const F = {on: false, i: -1, sess: 0, typing: null, wait: null, free: false, guideOn: false, raf: 0, root: null, after: null, castOn: false, fast: false, pend: false, faces: {}, rp: null};   // rp — 다시 보기 (1023)
 const fq = s => F.root ? F.root.querySelector(s) : null;
 const fsleep = ms => new Promise(r => setTimeout(r, ms));
 const fRM = () => !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
 function fWanted(){ return !(navigator.webdriver && !window.__fstForce); }
 function fModal(){ return document.documentElement.classList.contains("modal-open") || !!(window.RBK && RBK.isOpen && RBK.isOpen()) || !!(typeof OP !== "undefined" && OP); }
 function fTrio(){
+  if(F.rp) return F.rp.cast;                                                  // 다시 보기 — 받은 배우 (그때 이름)
   const T = {};
   for(const k of FST_JOBS){ const st = (S.students || []).find(s => s && s.job === k); if(!st) return null; T[k] = st; }
   return T;
@@ -30903,9 +30993,11 @@ function fBuild(){
     <div class="fst-guide" hidden><i class="fst-ring"></i><i class="fst-ring2"></i><i class="fst-finger"></i><div class="fst-tip">${esc(FST_TIP)}</div></div>
     <div class="fst-cast">${FST_JOBS.map(k => `<div class="fst-bust" data-who="${k}" hidden><img alt="" draggable="false"></div>`).join("")}</div>
     <div class="fst-think"><div class="fst-tx"></div><div class="fst-nx">▼</div></div>
-    <div class="fst-talk"><div class="fst-nm"><i></i><span></span></div><div class="fst-tx"></div><div class="fst-nx">▼</div></div>`;
+    <div class="fst-talk"><div class="fst-nm"><i></i><span></span></div><div class="fst-tx"></div><div class="fst-nx">▼</div></div>
+    <button type="button" class="rv-skip" hidden>${esc(FST_SKIP)}</button>`;
   document.body.appendChild(r);
   F.root = r;
+  r.querySelector(".rv-skip").addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); fRpSkip(); });
   const hit = r.querySelector(".fst-hit");
   hit.addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); fAdvance(); });
   hit.addEventListener("wheel", e => e.preventDefault(), {passive: false});
@@ -31014,8 +31106,9 @@ function fScrollPlan(){   // 좁은 화면 — 위 칸(메뉴)을 붙박지 않�
 
 /* ── 카드 — 손패 오른쪽 바깥에서 나타나 오른쪽 → 왼쪽으로 0.34초 · 제자리에 내려앉으며 1.08 → 1 · 쾅 ── */
 function fNewCard(i, T){
-  S.cardSeq = (S.cardSeq || 0) + 1;
   const st = T && T[FST_BY[i]];
+  if(F.rp){ const c = {u: 900000000 + (++F.rp.seq), t: FST_TUT[i], w: (S.weekSeq | 0), rp: 1}; if(st && st.id != null) c.by = st.id; return c; }   // 다시 보기 — 카드 번호를 쓰지 않는다 · 끝나면 걷는다
+  S.cardSeq = (S.cardSeq || 0) + 1;
   const c = {u: S.cardSeq, t: FST_TUT[i], w: (S.weekSeq | 0)};
   if(st) c.by = st.id;
   return c;
@@ -31179,7 +31272,9 @@ async function fRun(i){
     fPlate(c.who); fBox("talk");
     await fType(fq(".fst-talk .fst-tx"), fLine(c), c.who === "master" ? "csl_mst" : "csl_stu", cps, sess);
   } else if(c.k === "guide"){
-    fBox(null); fGuide(); return;
+    fBox(null);
+    if(F.rp){ fRpPlan(); return; }                                            // 다시 보기 — 안내 없이 스케줄을 바로 연다
+    fGuide(); return;
   } else if(c.k === "burst"){
     fBox(null);
     audOver("fsch");
@@ -31207,6 +31302,13 @@ async function fRun(i){
 }
 function fFinish(){
   fBox(null); fMark(false); fCast(false, true);
+  if(F.rp){                                                                   // 다시 보기 — 세이브는 그대로 · 원래 손패로 · 마스터 노트로
+    F.guideOn = false; F.on = false;
+    document.documentElement.classList.remove("fst-dlg");
+    audOver(null);
+    setTimeout(() => { fTeardown(); fRpDone(); }, 420);
+    return;
+  }
   F.guideOn = false; F.on = false; fMode(true);
   document.documentElement.classList.remove("fst-dlg");
   S.fsTut = 2; save();
@@ -31226,6 +31328,7 @@ function fBegin(){
   fBuild();
   F.on = true; F.sess++; F.i = -1; F.typing = null; F.wait = null; F.guideOn = false;
   fMode(false); fBox(null); fMark(false);
+  const sk = fq(".rv-skip"); if(sk) sk.hidden = !F.rp;                        // 1023 — 건너뛰기는 다시 보기에만
   FST_JOBS.forEach(k => fFace(k, FST_FACE0[k])); fCast(false, false); fSpeak(null);
   fPreload();
   if(UI.view !== "home"){ UI.view = "home"; render(); }
@@ -31240,6 +31343,39 @@ function fStart(after){
   save();
   fBegin();
   return true;
+}
+
+/* ── 다시 보기 (1023 — SCEN.play) ── 받은 배우 {직업: {id, name, uniq, job}} · 세이브 · 손패 · 카드 번호는 끝나면 그대로 */
+function fReplay(cast){
+  if(F.on || F.pend || !cast || fModal()) return false;
+  const fr = window.CREC && CREC.state && CREC.state.fresh;                    // 날릴 차례였던 새 카드 (손패를 비우면 CREC 가 잊는다 — 끝나면 돌려준다)
+  F.rp = {cast, hand: S.hand, slots: S.slots, seq: 0, fresh: fr ? [...fr] : []};
+  S.hand = []; S.slots = Array(WEEK_DAYS).fill(null);                          // 처음처럼 빈 손패 · 빈 요일 칸 (원래 것은 F.rp 에)
+  F.after = null;
+  fBegin();
+  return true;
+}
+/* 02 대신 — 스케줄을 연다 (책상이면 두루마리로 다가가는 움직임 그대로 · 열리면 FST.after → fPlanCheck 가 03 으로) */
+function fRpPlan(){
+  F.guideOn = true;
+  if(UI.view === "plan"){ fPlanCheck(); return; }
+  if(typeof mdeskGo === "function" && typeof mdeskOn === "function" && mdeskOn() && UI.view === "home") mdeskGo();
+  else { UI.view = "plan"; render(); }
+}
+function fRpDone(){
+  const rp = F.rp; if(!rp) return;
+  F.rp = null;
+  S.hand = rp.hand; S.slots = rp.slots;                                       // 원래 손패 · 요일 칸 그대로
+  const fr = window.CREC && CREC.state && CREC.state.fresh;
+  if(fr && rp.fresh.length) rp.fresh.forEach(u => fr.add(u));
+  UI.view = "home"; render();
+}
+function fRpSkip(){
+  if(!F.on || !F.rp) return;
+  F.sess++; F.typing = null; F.wait = null; F.on = false; F.guideOn = false;
+  cancelAnimationFrame(F.raf); F.raf = 0;
+  audOver(null);
+  fTeardown(); fRpDone();
 }
 
 /* ── 카드 오른쪽 위 추천 얼굴 (render 끝에서) ── */
@@ -31257,6 +31393,10 @@ function fDecor(){
   });
 }
 function fAfter(){
+  if(S && !F.rp){                                                             // 다시 보기 카드가 남아 있으면 (창을 닫았다 열었을 때 등) 걷는다
+    if((S.hand || []).some(c => c && c.rp)) S.hand = S.hand.filter(c => !(c && c.rp));
+    if((S.slots || []).some(c => c && c.rp)) S.slots = S.slots.map(c => (c && c.rp) ? null : c);
+  }
   try{ fDecor(); }catch(e){}
   if(!S) return;
   if(F.on) fPlanCheck();
@@ -31270,7 +31410,7 @@ function fAfter(){
     }, 0);
   }
 }
-window.FST = {start: fStart, after: fAfter, state: F, cues: FST_CUES, advance: fAdvance, slam: fSlam, slamPrime: fSlamPrime, slamLead: fLead, slamLog: SLAM.log};
+window.FST = {start: fStart, after: fAfter, replay: fReplay, skip: fRpSkip, state: F, cues: FST_CUES, advance: fAdvance, slam: fSlam, slamPrime: fSlamPrime, slamLead: fLead, slamLog: SLAM.log};
 })();
 /* FSTUT_END */
 /* CMARK_START — 일과 카드 표식 (1022 · apply_cmark.py · 목업 mockups/card-marks) ─ 사용자 1022 'card-effect-marks-v1 에다가 새로운 일과 표식을 추가해뒀는데,
@@ -31894,15 +32034,16 @@ window.CREC = {born, fix, after, pick, line, lines: CREC_LINES, aff: CREC_AFF, f
    · 첫 개인 행동 해금(1년차 봄 2주를 마칠 때 · tryBonds) — 개교 멤버 팔라딘 · 암흑 사제 · 마법사가 모두 1학년으로 있고 팔라딘 · 암흑 사제에게 라이벌이 없으면
      그 둘을 라이벌로 (RVST.pick — 무작위 makeRivals 대신 · 같은 일지 한 줄). 조건이 안 맞으면 예전 그대로 (무작위 · 소개 두 쪽).
      이 대화 장면이 예전 소개 두 쪽(rivalintro)을 대신한다.
-   · 장면이 끝나면(마지막 '자리를 비킨다' · 건너뛰기) — 라이벌 팝업(고정 소개 글 — 무작위 RIVAL_SCENE 대신) → 개인 행동 안내 한 장(대본의 제안 문구) → 끝.
+   · 장면이 끝나면(마지막 '자리를 비킨다') — 라이벌 팝업(고정 소개 글 — 무작위 RIVAL_SCENE 대신) → 개인 행동 안내 한 장(1022 사용자 문구 두 줄) → 끝.
      예전 운영 안내 2장(개인 행동) · 5장(라이벌)은 띄우지 않는다 (1022 사용자 '기존 라이벌/개인 훈련 튜토리얼은 출력안하도록') — 본 것으로만 적어 운영 안내 목록에서는 다시 볼 수 있다.
-     예전 흐름(조건이 안 맞을 때)에서 그 두 장이 의식 줄에 오면 — 2 자리에 같은 안내 한 장(라이벌이 없으면 첫 줄만) · 5 는 건너뛴다 (RVST.play 가 받는다).
+     예전 흐름(조건이 안 맞을 때)에서 그 두 장이 의식 줄에 오면 — 2 자리에 같은 안내 한 장 · 5 는 건너뛴다 (RVST.play 가 받는다).
      곡 BGM.rival (사용자가 준 '라이벌.ogg') — 장면부터 안내 한 장까지 · 그다음 의식이나 화면에서 계절 곡으로.
    · 세이브 S.rvst = {cast: {paladin · darkpriest · wizard 학생 id}, step 0 장면 · 1 팝업 · 2 안내 · 3 마무리 · 4 끝, cue 장면의 줄 번호, y · wk 연차 · 주}.
      줄마다 저장 — 다시 열면 그 줄부터 (RVST.after · 같은 학생). 장면은 학생 · 관계 · 능력치를 바꾸지 않는다 (라이벌은 pick 에서 한 번만).
    · 무대 — 화면 전체 수련장 배경(REPORT_PX 도트 배경 — 회상 '입학 첫날 · 기초 훈련' 단련장 · '며칠 뒤 · 대련장' 대련장 · 지금 대련장) ·
      첫 시간표 튜토리얼(FSTUT)의 대화창 · 생각 창 · 초상화(.fst 클래스 그대로 — 넓은 화면 1.5배). 회상은 바랜 빛 · 둘레를 어둡게 · 왼쪽 위 '회상' 꼬리표 ·
-     장면이 바뀔 때 짧은 암전과 자막. 넘기기 — 아무 데나 누르기 · 스페이스 · 엔터 (글자가 찍히는 중이면 그 줄 끝까지). 오른쪽 위 건너뛰기. 새 효과음 없음 (글자 소리만).
+     장면이 바뀔 때 짧은 암전과 자막. 넘기기 — 아무 데나 누르기 · 스페이스 · 엔터 (글자가 찍히는 중이면 그 줄 끝까지). 처음 보는 진짜 흐름에는 건너뛰기가 없다 (1022) —
+     1023 다시 보기(RVST.replay — 마스터 책상 모래시계의 시나리오 팝업 · SCEN)와 미리 보기에만 오른쪽 위 건너뛰기 (사용자 '거기서 재생을 하면 건너뛰기 가능하게'). 새 효과음 없음 (글자 소리만).
      자동화(navigator.webdriver)에서는 고르지 않는다 (예전 흐름) — 시험은 window.__rvstForce = true */
 (() => {
 const RV_FACE = {"paladin":{"motivated":"assets/fst_faces/paladin-motivated.png?v=9f80f84f","surprised":"assets/fst_faces/paladin-surprised.png?v=b0ed2bf6","joy":"assets/fst_faces/paladin-joy.png?v=3e213740","tired":"assets/fst_faces/paladin-tired.png?v=db3d4dc8","heroic-confidence":"assets/fst_faces/paladin-heroic-confidence.png?v=d8cf8cb0","smile":"assets/fst_faces/paladin-smile.png?v=f5c93a74"},"darkpriest":{"smile":"assets/fst_faces/darkpriest-smile.png?v=51f67484","impish":"assets/fst_faces/darkpriest-impish.png?v=a470ecdb","flustered":"assets/fst_faces/darkpriest-flustered.png?v=fb006c8c","motivated":"assets/fst_faces/darkpriest-motivated.png?v=20951f88","tired":"assets/fst_faces/darkpriest-tired.png?v=e7cf88c4","heroic-confidence":"assets/fst_faces/darkpriest-heroic-confidence.png?v=a6082822"},"wizard":{"sleepy-cat":"assets/fst_faces/wizard-sleepy-cat.png?v=02b87b13","tired":"assets/fst_faces/wizard-tired.png?v=8c795a66","smile":"assets/fst_faces/wizard-smile.png?v=d2ae512d"}};   // apply_rvst.py — {직업: {표정: 표정 그림 + ?v=}} (tools/newcharactericon/*-expressions-v1 의 128 도트 · 학생 얼굴이라 WebP 로 바꾸지 않는다)
@@ -31912,10 +32053,9 @@ const RV_JOBS = ["wizard", "paladin", "darkpriest"];                        // �
 const RV_LK = window.HS_LANG === "en" ? 1.6 : 1;
 const RV_CPS = 32 * RV_LK;                                                    // 글자 / 초 (첫 시간표 · 상담창과 같다)
 const RV_QUIET = /[\s….‥]/;
-const RV_T = {skip: "건너뛰기", past: "회상", leave: "자리를 비킨다", note: "개인 행동", ok: "확인"};
+const RV_T = {past: "회상", leave: "자리를 비킨다", note: "개인 행동", ok: "확인", skip: "건너뛰기"};   // 건너뛰기 — 1022 진짜 흐름에서는 없앴다 · 1023 다시 보기 · 미리 보기에만
 function rvPopText(a, b){ return `훈련이 끝나도, 둘의 ‘한 번만 더’는 끝나지 않았다. ${a.name}${gwa(a.name)} ${b.name}${iga(b.name)} 서로를 라이벌로 여기기 시작했다.`; }   // 라이벌 팝업 소개 글 (조사 gwa · iga)
-const RV_NOTE = ["개인 행동이 열렸습니다. 학생마다 스케줄과 별개로 오후에 할 일을 정해줄 수 있습니다.",
-  "라이벌인 두 학생이 같은 분야를 개인 훈련하면, 해당 분야의 성장이 빨라집니다."];
+const RV_NOTE = ["개인 행동이 열렸습니다.", "훈련 또는 휴식이 진행 가능해졌습니다."];   // 1022 — 사용자가 고친 두 줄 (예전: 오후에 할 일 · 라이벌 개인 훈련 설명)
 /* 장면 — bg 배경(REPORT_PX) · pos 배경 맞춤(폰처럼 세로 화면에서 보이는 곳) · tone past 회상 / late 늦은 시간 · cap 자막 · cast 나와 있는 초상화 · sit 앉은 초상화 · faces 처음 표정 */
 const RV_SCENES = {
   now:   {bg: "arena", pos: "68% 50%", cast: []},
@@ -31977,7 +32117,8 @@ function rvTrio(){
   return p && w && d ? {paladin: p, darkpriest: d, wizard: w} : null;
 }
 function rvCastNow(){
-  const ids = (R.preview ? R.pv : S.rvst && S.rvst.cast) || {}, T = {};
+  if(R.preview) return Object.assign({wizard: null, paladin: null, darkpriest: null}, R.pv || {});   // 미리 보기 · 다시 보기 — 받은 배우 (다시 보기는 그때 이름 — 지금 학원에 없는 학생도)
+  const ids = (S.rvst && S.rvst.cast) || {}, T = {};
   RV_JOBS.forEach(k => { T[k] = (S.students || []).find(s => s && s.id === ids[k]) || null; });
   return T;
 }
@@ -32005,10 +32146,10 @@ function rvBuild(){
   r.id = "rvstRoot"; r.className = "fst rvst on";
   r.innerHTML = `<div class="rv-bg"><div class="rv-img"></div><div class="rv-vig"></div></div><div class="fst-hit"></div>
     <div class="rv-chip" hidden><b>${esc(RV_T.past)}</b><span></span></div>
-    <button type="button" class="rv-skip">${esc(RV_T.skip)}</button>
     <div class="fst-cast">${RV_JOBS.map(k => `<div class="fst-bust" data-who="${k}" hidden><img alt="" draggable="false"></div>`).join("")}</div>
     <div class="fst-think"><div class="fst-tx"></div><div class="fst-nx">▼</div><button type="button" class="rv-leave" hidden>${esc(RV_T.leave)}</button></div>
     <div class="fst-talk"><div class="fst-nm"><i></i><span></span></div><div class="fst-tx"></div><div class="fst-nx">▼</div></div>
+    <button type="button" class="rv-skip" hidden>${esc(RV_T.skip)}</button>
     <div class="rv-black"><div class="rv-card"><i>${esc(RV_T.past)}</i><b></b></div></div>`;
   document.body.appendChild(r);
   R.root = r;
@@ -32016,8 +32157,8 @@ function rvBuild(){
   hit.addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); rvAdvance(); });
   hit.addEventListener("wheel", e => e.preventDefault(), {passive: false});
   hit.addEventListener("touchmove", e => e.preventDefault(), {passive: false});
-  r.querySelector(".rv-skip").addEventListener("click", e => { e.stopPropagation(); rvEnd("skip"); });
   r.querySelector(".rv-leave").addEventListener("click", e => { e.stopPropagation(); rvEnd("leave"); });
+  r.querySelector(".rv-skip").addEventListener("click", e => { e.stopPropagation(); rvEnd("skip"); });   // 1023 — 다시 보기 · 미리 보기에만 보인다
   Object.keys(RV_FACE).forEach(k => Object.keys(RV_FACE[k]).forEach(f => { const im = new Image(); im.decoding = "async"; im.src = RV_FACE[k][f]; }));   // 표정을 바꿀 때 깜빡이지 않게 미리
 }
 function rvTeardown(){ if(R.root) R.root.remove(); R.root = null; }
@@ -32195,6 +32336,7 @@ async function rvOpen(i){
   const sess = R.sess;
   R.cast = rvCastNow(); R.faces = {};
   R.root.classList.add("on");
+  const sk = rq(".rv-skip"); if(sk){ sk.hidden = !R.preview; sk.disabled = false; }   // 1023 — 건너뛰기는 다시 보기(미리 보기)에만
   const bk = rq(".rv-black"), bg = rq(".rv-bg");
   bk.style.opacity = 0; bg.style.opacity = 0;
   audOver(RV_BGM);
@@ -32209,7 +32351,7 @@ async function rvOpen(i){
   await rvFade(bk, 0, 520); if(sess !== R.sess) return;
   rvRun(i, true);
 }
-/* 끝 — 마지막 단추 · 건너뛰기 (한 번만). 팝업을 무대 아래에 먼저 띄우고 무대를 걷는다 */
+/* 끝 — 마지막 단추 · 건너뛰기(다시 보기 · 미리 보기에만 — 1023) · 시험의 RVST.end (한 번만). 팝업을 무대 아래에 먼저 띄우고 무대를 걷는다 */
 async function rvEnd(how){
   if(!R.on || R.ending) return;
   R.ending = true; R.sess++; R.wait = null; R.typing = null;
@@ -32245,12 +32387,12 @@ function rvPop(){
     ok.onclick = () => { if(R.done1) return; R.done1 = true; S.rvst.step = 2; try{ save(); }catch(e){} closeModal(); rvNote(); };
   }, true);
 }
-/* 개인 행동 안내 한 장 — 장면 뒤(라이벌 팝업 다음) · alone: 예전 흐름에서 운영 안내 2 자리 (라이벌이 없으면 첫 줄만 · 곡은 다른 팝업처럼 계절 곡) */
+/* 개인 행동 안내 한 장 — 장면 뒤(라이벌 팝업 다음) · alone: 예전 흐름에서 운영 안내 2 자리 (두 줄 그대로 — 1022 문구는 라이벌과 상관없다 · 곡은 다른 팝업처럼 계절 곡) */
 function rvNote(alone){
   R.done2 = false;
   if(!alone) audOver(RV_BGM);
   const y = alone ? S.year : ((S.rvst && S.rvst.y) || S.year), ph = alone ? S.phase : "spring", wk = alone ? S.week : ((S.rvst && S.rvst.wk) || 2);
-  const lines = alone && !(S.students || []).some(s => s && s.rival) ? RV_NOTE.slice(0, 1) : RV_NOTE;
+  const lines = RV_NOTE;
   showModal(`<div class="cerhead"><div class="eyebrow">${yrName(y)} ${(PHASES[ph] || PHASES.spring).n} ${wk}주</div>
       <h2 style="font-size:26px;margin-top:2px">${esc(RV_T.note)}</h2></div>
     <div class="opt rv-note" style="cursor:default;margin-top:12px;border-color:var(--brass);padding:16px 20px">
@@ -32312,15 +32454,824 @@ function rvAfter(){
 function rvPreview(i){
   if(R.on) return false;
   const T = rvTrio(); if(!T) return false;
-  R.preview = true; R.pv = {paladin: T.paladin.id, darkpriest: T.darkpriest.id, wizard: T.wizard.id};
+  R.preview = true; R.pv = {paladin: T.paladin, darkpriest: T.darkpriest, wizard: T.wizard};
   rvOpen(Math.max(0, Math.min(RV_CUES.length - 1, i | 0)));
   return true;
 }
+/* 다시 보기 (1023 — 마스터 책상 모래시계의 시나리오 팝업 · SCEN.play) — 처음부터 · 받은 배우 {직업: {id, name, uniq, job}}(그때 이름) ·
+   미리 보기와 같다: 세이브 · 관계를 건드리지 않고 오른쪽 위 건너뛰기 · 끝나면(마지막 단추 · 건너뛰기) 팝업 없이 닫고 마스터 노트로 */
+function rvReplay(cast){
+  if(R.on || R.ending || !cast) return false;
+  R.preview = true; R.pv = cast;
+  rvOpen(0);
+  return true;
+}
 function rvReset(){ R.sess++; R.on = false; R.ending = false; R.live = false; R.pend = false; R.preview = false; R.typing = null; R.wait = null; rvTeardown(); }
-window.RVST = {pick: rvPick, queue: rvQueue, play: rvPlay, after: rvAfter, preview: rvPreview, reset: rvReset, end: rvEnd, advance: rvAdvance,
+window.RVST = {pick: rvPick, queue: rvQueue, play: rvPlay, after: rvAfter, preview: rvPreview, replay: rvReplay, reset: rvReset, end: rvEnd, advance: rvAdvance,
   state: R, cues: RV_CUES, scenes: RV_SCENES, face: RV_FACE, trio: rvTrio, note: RV_NOTE, popText: rvPopText};
 })();
 /* RVST_END */
+/* RQST_START — 초반 스토리 03 '저희도 학원을 지키고 싶어요' (1022 목업 · apply_rqst.py · mockups/request-story) ─ 대본 scenario-03-requests-draft.md Q01 ~ Q58 (+ Q51a · Q51b) · Q59 는 요약 팝업.
+   · 직접 의뢰 해금(1년차 봄 7주를 마칠 때 · tryGuildJob) — 개교 멤버 팔라딘 · 암흑 사제 · 마법사가 1학년으로 있으면 예전 다섯 쪽(guild) 대신 이 대화 장면 (RQST.start).
+     돈은 이야기가 시작될 때 한 번에 — 지난겨울 이자 −(난이도마다 한 계절 이자 · debtInterest) · 와이번 토벌 + · 잡일 보수 + (난이도 배율 · guildPay) ·
+     이번 주 자금 상황에는 넣지 않는다(FIN.later) · 일지 한 줄. 장면은 돈 · 관계 · 학생을 바꾸지 않는다 (이어하기 · 건너뛰기 · 미리 보기에서 두 번 받지 않는다).
+   · 장면이 끝나면(마지막 '편지를 접는다' · 건너뛰기) — 요약 팝업(받은 돈 · 낸 이자 — 실제 값) → 확인하면 마을이 열린다(S.townLock 을 지운다) → 의뢰 안내(운영 안내 13 — 예전 그대로 다음 차례).
+   · 마을 잠금 — 새 게임은 S.townLock = 1 (졸업생 리그처럼 메뉴 단추에 자물쇠 · 누르면 안내 한 줄 · render 가 마을 화면을 막는다). 옛 저장은 그대로 열려 있다.
+   · 세이브 S.rqst = {cast, step 0 장면 · 1 요약 · 2 끝, cue 장면의 줄, y · ph · wk, pay {wy · ch · it}} — 줄마다 저장 · 다시 열면 그 줄부터 (RQST.after).
+   · 무대 — 첫 시간표 · 02 의 대화창 · 생각 창 · 초상화(.fst · .rvst 그대로) 위에: 배경(마스터 책상 · 마을 지도 확대(회상 · 저녁) · 은행 안 · 길드 삽화 2 ·
+     정문 삽화 3 — 하늘만 보이다가 Q34 에 넓어지며 마스터가 드러난다 · 두 삽화는 책상 · 세계 지도와 같은 방식으로 도트화한 그림) · 마스터(초상화 없이 이름만) ·
+     은행장(마을 도트 얼굴 · 기본 / 굳은 얼굴) · 접수원(이름만) ·
+     이자 영수증(Q20) · 의뢰서 꼬리표(Q26) · 땀(Q02 ~ Q04) · 책상 위 봉투(Q56) · 편지(Q57 — 종이 위 글 · 번역할 수 있게 그림에 굽지 않는다).
+     곡 — 계절 곡 → Q13 '…올 것이 왔군.'에서 끊긴다 → Q17 '혼자 짊어진 것'(BGM.rq_alone) → Q45 '작은 봉투'(BGM.rq_env) → 요약 팝업까지 · 그다음 계절 곡.
+     효과음 — Q16 문 · Q20 동전 · Q24 · Q30 문종 · Q25 의뢰서를 떼는 소리 · Q56 반짝 · Q57 편지 (문종 · 의뢰서 · 편지는 tools/gen/sfx/rq_sfx.py 합성).
+   · 자동화(navigator.webdriver)에서는 고르지 않는다 (예전 다섯 쪽) — 시험은 window.__rqstForce = true */
+(() => {
+const RQ_FACE = {"paladin":{"joy":"assets/fst_faces/paladin-joy.png?v=3e213740","smile":"assets/fst_faces/paladin-smile.png?v=f5c93a74","surprised":"assets/fst_faces/paladin-surprised.png?v=b0ed2bf6","flustered":"assets/fst_faces/paladin-flustered.png?v=4622b965","motivated":"assets/fst_faces/paladin-motivated.png?v=9f80f84f","sad":"assets/fst_faces/paladin-sad.png?v=b323dbd8","heroic-confidence":"assets/fst_faces/paladin-heroic-confidence.png?v=d8cf8cb0"},"darkpriest":{"cold-empty":"assets/fst_faces/darkpriest-cold-empty.png?v=f69aa9fd","smile":"assets/fst_faces/darkpriest-smile.png?v=51f67484","motivated":"assets/fst_faces/darkpriest-motivated.png?v=20951f88","sad":"assets/fst_faces/darkpriest-sad.png?v=36bef770","impish":"assets/fst_faces/darkpriest-impish.png?v=a470ecdb"},"wizard":{"sleepy-cat":"assets/fst_faces/wizard-sleepy-cat.png?v=02b87b13","surprised":"assets/fst_faces/wizard-surprised.png?v=79818b69","flustered":"assets/fst_faces/wizard-flustered.png?v=ca94f433","tired":"assets/fst_faces/wizard-tired.png?v=8c795a66"}};   // apply_rqst.py — {직업: {표정: 표정 그림 + ?v=}} (학생 얼굴 — WebP 로 바꾸지 않는다)
+const RQ_ART = {"guild":"assets/story_art/guild2-spring-px.webp?v=591e3409","gate":"assets/story_art/guild3-spring-px.webp?v=c40eba16"};     // apply_rqst.py — 도트화한 길드 삽화 2 · 정문 삽화 3 {guild, gate} (1022 사용자 '와이번 삽화하고 마을 정문 삽화 픽셀화' — mockups/request-story/src/pixelize.py)
+const RQ_ID = "request-unlock-v1";
+const RQ_JOBS = ["wizard", "paladin", "darkpriest"];
+const RQ_ALL = ["wizard", "paladin", "darkpriest", "bank"];                  // 초상화 — 왼쪽부터 (나와 있는 것만 가운데로 모은다)
+const RQ_NPC = {bank: {base: "bank", stern: "bank-debt"}};                    // 은행장 — 마을 도트 얼굴 (TIN_ART.face128 · 기본 / 굳은 얼굴)
+const RQ_BGM = {alone: "rq_alone", env: "rq_env"};
+const RQ_SWAP_OUT = 1.4;                                                       // 곡이 바뀌는 장면 — 지금 곡을 줄여 끄는 초 (암전 2.3초 안 · 1023)
+const RQ_LK = window.HS_LANG === "en" ? 1.6 : 1;
+const RQ_CPS = 32 * RQ_LK;                                                     // 글자 / 초 (첫 시간표 · 02 와 같다)
+const RQ_QUIET = /[\s….‥]/;
+const RQ_T = {skip: "건너뛰기", past: "회상", fold: "편지를 접는다", master: "마스터", bank: "은행장", clerk: "접수원", quest: "A급 · 와이번 토벌",
+  pay: "지난겨울 미납 이자 납부", title: "마을과 의뢰가 열렸습니다", wy: "와이번 토벌 보수", ch: "학생들의 잡일 보수", it: "지난겨울 이자", ok: "확인"};
+/* 편지 (Q57) — 첫 문단은 팔라딘 · 둘째는 암흑 사제 · 추신은 마법사 · 맨 끝 한 줄은 팔라딘이 덧쓴 글씨 (잉크 색만 다르다) */
+const RQ_LETTER = {to: "마스터께.",
+  p1: ["마을에서 저희가 할 수 있는 일을 찾아봤어요.", "짐도 나르고, 청소도 하고, 설거지도 했어요!", "많지는 않지만 학원에 보태 주세요."],
+  p2: ["그리고 다음에는 혼자 무리하지 마세요.", "저희에게도 할 수 있는 일을 나눠 주세요."],
+  key: "저희도 학원을 지키고 싶어요.",
+  ps: "추신. 내일 근육통이 심하면 훈련은 조금만…",
+  re: "그건 내일 생각해요!"};
+/* 배경 — px 도트 그림(픽셀 그대로) · z 확대 · f 맞출 곳(그림의 비율 — 화면 가운데 조금 위에 둔다 · 세로 화면은 그 언저리만 보인다) */
+const RQ_BG = {
+  desk:  {px: 1, z: 1, f: [.42, .46], src: () => (typeof MDESK_ART !== "undefined" && MDESK_ART.ext) || ""},
+  town:  {px: 1, z: 2.5, f: [.45, .57], src: () => (typeof TOWN_IMG !== "undefined" && (TOWN_IMG[townSeason() + "_lv" + townStage()] || TOWN_IMG.spring_lv1)) || ""},
+  bank:  {px: 1, z: 1, f: [.5, .52], src: () => (typeof TIN_ART !== "undefined" && TIN_ART.room && TIN_ART.room.bank) || ""},
+  guild: {px: 1, z: 1, f: [.58, .42], src: () => RQ_ART.guild || ""},
+  gate:  {px: 1, z: 1, f: [.42, .6], src: () => RQ_ART.gate || "",
+          views: {crop: {z: 2.7, f: [.34, .1]}, full: {z: 1, f: [.42, .6]}}}   // crop — 노을 하늘 · 해 · 언덕 위 성만 (마스터 두건 꼭대기가 그림 36% 높이 — 어느 화면이든 대화창 위로 안 보이게 2.7배 · 위쪽에 붙인다 · 숨은 세 학생은 오른쪽 밖)
+};
+/* 장면 — bg 배경 · z · f 배경 맞춤(배경 기본값 대신) · tone past 회상 / late 저녁 / morn 아침 · cap 자막 · cast 나와 있는 초상화 · faces 처음 표정 · view 정문 삽화 보기 */
+const RQ_SCENES = {
+  desk:   {bg: "desk", cast: []},
+  past:   {bg: "town", z: 2.6, f: [.45, .57], tone: "past", cap: "조금 전 · 마을", cast: ["paladin"], faces: {paladin: "smile"}},
+  back:   {bg: "desk", cast: ["paladin"], faces: {paladin: "smile"}},
+  bank:   {bg: "bank", cap: "마을 · 은행", cast: ["bank"], faces: {bank: "base"}},
+  street: {bg: "town", z: 2.9, f: [.57, .62], cast: []},
+  guild:  {bg: "guild", cap: "모험가 길드", cast: []},
+  gate:   {bg: "gate", view: "crop", cap: "해 질 무렵 · 학원 정문", cast: ["wizard", "paladin", "darkpriest"], faces: {wizard: "sleepy-cat", paladin: "sad", darkpriest: "cold-empty"}},
+  town:   {bg: "town", z: 2.3, f: [.40, .55], tone: "late", cap: "잠시 후 · 마을", cast: ["wizard", "paladin", "darkpriest"], faces: {wizard: "tired", paladin: "sad", darkpriest: "cold-empty"}},
+  after:  {bg: "desk", z: 1.12, f: [.42, .44], tone: "morn", cap: "며칠 뒤 · 아침", cast: []}
+};
+/* 대본 — think 마스터 생각(독백 창) · say 말(who: 학생 · bank 은행장 · master 마스터 · clerk 접수원) · sys 영수증(Q20) · fx 연출(글 없음 · wait 뒤에 저절로 다음 줄) ·
+   letter 편지. scene 이 줄부터 장면이 바뀐다(암전 · 자막) · enter 등장 · hop 콩 · shake 움찔 · sweat 땀 · tag 의뢰서 꼬리표 · env 책상 위 봉투 · sfx 효과음 ·
+   bgm 곡(_none 끊기 · alone · env) · fx tear 의뢰서를 뗀다 / reveal 정문 삽화가 넓어진다 / hush 암흑 사제가 입을 막는다 / crop 다시 하늘로 ·
+   dash 이 줄을 넘기면 그 학생이 뛰어나간다 · out 셋이 나간다(run) · auto 다 찍히면 그만큼(ms) 뒤에 저절로 다음 줄(누르면 바로) ·
+   drag 이 줄이 찍히는 동안 팔라딘이 마법사의 귀를 잡고 끌고 나간다(Q44 · rqDrag) · btn 마지막 단추 */
+const RQ_CUES = [
+  {id: "Q01", k: "think", scene: "desk", t: "오늘은 무슨 스케줄을 짜볼까…"},
+  {id: "Q02", k: "say", who: "paladin", face: "joy", enter: "paladin", hop: 1, sweat: 1, t: "마스터~ 좋은 아침이에요!"},
+  {id: "Q03", k: "say", who: "master", t: "응, 그래. 안녕. 그런데 왜 그렇게 땀을 흘려?"},
+  {id: "Q04", k: "say", who: "paladin", face: "flustered", t: "아, 그게요…"},
+  {id: "Q05", k: "say", scene: "past", who: "paladin", face: "smile", t: "룰루루~"},
+  {id: "Q06", k: "say", who: "bank", face: "base", enter: "bank", t: "아, 자네. 저기 학원 학생인가?"},
+  {id: "Q07", k: "say", who: "paladin", face: "joy", hop: 1, t: "네! 무슨 일이세요?"},
+  {id: "Q08", k: "say", who: "bank", face: "base", t: "그… 마스터하고 잠시 할 이야기가 있는데, 좀 불러줄 수 있겠나?"},
+  {id: "Q09", k: "say", who: "paladin", face: "motivated", hop: 1, dash: "paladin", t: "금방 불러올게요!"},
+  {id: "Q10", k: "say", who: "bank", face: "base", shake: 1, t: "아! 아, 그렇게 급하게 뛸 필요까진…"},
+  {id: "Q11", k: "say", scene: "back", who: "paladin", face: "smile", t: "이렇게 됐어요! 그런데 무슨 일 있나요?"},
+  {id: "Q12", k: "say", who: "master", t: "아, 별일 아니야."},
+  {id: "Q13", k: "think", bgm: "_none", t: "…올 것이 왔군."},
+  {id: "Q14", k: "say", who: "master", t: "나 잠시 외출하고 올게. 오늘은 자율이다."},
+  {id: "Q15", k: "say", who: "paladin", face: "joy", t: "아, 네! 다녀오세요!"},
+  {id: "Q16", k: "say", who: "paladin", face: "surprised", sfx: "fs_door", t: "…"},
+  {id: "Q17", k: "say", scene: "bank", bgm: "alone", who: "bank", face: "base", t: "내가 예전에 자네 아버지께 신세를 졌지. 그러니 당장 전부 갚으라는 건 아닐세."},
+  {id: "Q18", k: "say", who: "bank", face: "stern", t: "그래도 적어도 이자는 성실히 내주길 바라네. 지난겨울 몫이 아직 남았네."},
+  {id: "Q19", k: "say", who: "master", t: "아, 네… 죄송합니다. 우선 밀린 이자부터 드리겠습니다."},
+  {id: "Q20", k: "sys", sfx: "coin"},
+  {id: "Q21", k: "say", who: "bank", face: "base", t: "자네 아버지를 봐서 이번 한 번만일세. 다음부터는 늦지 않게 부탁하네."},
+  {id: "Q22", k: "say", who: "master", t: "…네."},
+  {id: "Q23", k: "think", scene: "street", t: "어떻게든 돈을 벌어야 해."},
+  {id: "Q24", k: "say", scene: "guild", sfx: "rq_bell", who: "clerk", t: "모험가 길드에 어서 오세요~"},
+  {id: "Q25", k: "fx", fx: "tear", sfx: "rq_tear", wait: 1000},
+  {id: "Q26", k: "say", who: "master", tag: 1, t: "…이 의뢰를 받겠습니다."},
+  {id: "Q27", k: "say", who: "clerk", t: "네? 이건 A급 와이번 토벌인데… 파티는 등록되어 있나요?"},
+  {id: "Q28", k: "say", who: "master", t: "…아니요. 혼자입니다."},
+  {id: "Q29", k: "say", who: "clerk", t: "혼자서는 절대 무리예요! 먼저 설명을… 아, 저기! 저기요!"},
+  {id: "Q30", k: "fx", sfx: "rq_bell", wait: 1300},
+  {id: "Q31", k: "say", scene: "gate", who: "paladin", face: "sad", t: "벌써 해가 저물어 가는데… 마스터는 어디 계시지?"},
+  {id: "Q32", k: "say", who: "darkpriest", face: "cold-empty", t: "…"},
+  {id: "Q33", k: "say", who: "wizard", face: "sleepy-cat", t: "흐아암… 이제 집에 가자아."},
+  {id: "Q34", k: "fx", fx: "reveal", wait: 700},
+  {id: "Q35", k: "say", who: "paladin", face: "surprised", enter: ["wizard", "paladin", "darkpriest"], fx: "hush", t: "아, 마스… 읍!"},
+  {id: "Q36", k: "say", who: "darkpriest", face: "cold-empty", t: "쉿. 잠깐만요."},
+  {id: "Q37", k: "say", who: "wizard", face: "surprised", t: "…우와. 상처가 심한데. 무슨 일이 있었던 거야?"},
+  {id: "Q38", k: "say", who: "paladin", face: "flustered", fx: "crop", shake: 1, t: "푸하! 무슨 짓이에요! 상처부터 치료해 드려야죠!"},
+  {id: "Q39", k: "say", who: "darkpriest", face: "cold-empty", t: "붕대는 감으셨어요. 일단 방에서 쉬시게 두죠. 우리가 몰려가면 괜찮다고만 하실 거예요."},
+  {id: "Q40", k: "say", who: "darkpriest", face: "motivated", t: "먼저 마을에 가서 무슨 일이 있었는지 알아봐요. 돌아와서 필요한 걸 챙겨 드리고요."},
+  {id: "Q41", k: "say", who: "paladin", face: "sad", t: "알겠어요. …빨리 가요!"},
+  {id: "Q42", k: "say", who: "wizard", face: "sleepy-cat", t: "그럼 나는 집에 가도 돼?"},
+  {id: "Q43", k: "say", who: "paladin", face: "smile", auto: 1000, t: "…"},
+  {id: "Q44", k: "say", who: "wizard", face: "flustered", drag: 1, t: "으앙, 알겠어! 알겠다고오…!"},
+  {id: "Q45", k: "say", scene: "town", bgm: "env", who: "paladin", face: "sad", t: "그렇게 된 거였군요… 빚을 갚으려고 직접 그런 의뢰를…"},
+  {id: "Q46", k: "say", who: "wizard", face: "surprised", t: "그런데 A급 의뢰를 혼자 해낸 거야? 유명한 용사들도 파티를 갖춰서 가잖아."},
+  {id: "Q47", k: "say", who: "darkpriest", face: "sad", t: "…"},
+  {id: "Q48", k: "say", who: "paladin", face: "motivated", hop: 1, t: "이렇게 된 이상, 우리도 도와요!"},
+  {id: "Q49", k: "say", who: "darkpriest", face: "cold-empty", t: "어떻게요?"},
+  {id: "Q50", k: "say", who: "paladin", face: "heroic-confidence", hop: 1, t: "마을 분들께 여쭤보죠! 짐 나르기든 청소든, 몸을 움직이는 일이라면 할 수 있어요!"},
+  {id: "Q51", k: "say", who: "darkpriest", face: "smile", t: "…그런 일이라면, 셋이 나눠서 하면 되겠네요."},
+  {id: "Q51a", k: "say", who: "paladin", face: "motivated", hop: 1, t: "그럼 누가 더 많이 하는지 내기예요!"},
+  {id: "Q51b", k: "say", who: "darkpriest", face: "impish", t: "좋아요. 대신 이번엔 ‘한 번만 더’는 없기예요."},
+  {id: "Q52", k: "say", who: "wizard", face: "tired", t: "에에… 귀찮은데에."},
+  {id: "Q53", k: "say", who: "paladin", face: "joy", hop: 1, out: "run", t: "따라오세욧!"},
+  {id: "Q54", k: "fx", scene: "after", wait: 150},
+  {id: "Q55", k: "say", who: "master", t: "어… 깜빡 잠들었었나."},
+  {id: "Q56", k: "say", who: "master", env: 1, sfx: "fs_glint", t: "이건 뭐지?"},
+  {id: "Q57", k: "letter", sfx: "rq_paper"},
+  {id: "Q58", k: "say", who: "master", btn: 1, t: "…너희들."}
+];
+/* 땀 — 8 × 10 도트 (# 테두리 · o 물 · b 그늘 · w 반짝) */
+const RQ_SWEAT = (() => {
+  const P = ["...##...", "..#oo#..", "..#oo#..", ".#oooo#.", ".#owoo#.", "#owoooo#", "#owoooo#", "#oooobb#", ".#oobb#.", "..####.."];
+  const C = {"#": "#140a0c", o: "#9bd8ff", b: "#5aa8e0", w: "#ffffff"};
+  let r = "";
+  P.forEach((row, y) => [...row].forEach((ch, x) => { if(C[ch]) r += `<rect x="${x}" y="${y}" width="1" height="1" fill="${C[ch]}"/>`; }));
+  return `<svg viewBox="0 0 8 10" aria-hidden="true">${r}</svg>`;
+})();
+const R = {on: false, sess: 0, i: -1, typing: null, wait: null, root: null, scene: null, view: null, faces: {}, cast: {}, preview: false, pv: null, live: false, pend: false, ending: false, done: false};
+const rq = s => R.root ? R.root.querySelector(s) : null;
+const rsleep = ms => new Promise(r => setTimeout(r, ms));
+const rRM = () => !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+/* ── 누가 나오나 · 돈 ── */
+function rqTrio(){
+  const y1 = (S.students || []).filter(s => s && s.year === 1);
+  const p = y1.find(s => s.job === "paladin"), w = y1.find(s => s.job === "wizard");
+  const d = y1.find(s => s.uniq === "dp1") || y1.find(s => s.job === "darkpriest");   // 1년차 암흑 사제(개교 멤버)를 먼저 (02 와 같다)
+  return p && w && d ? {paladin: p, darkpriest: d, wizard: w} : null;
+}
+function rqCastNow(){
+  if(R.preview) return Object.assign({wizard: null, paladin: null, darkpriest: null}, R.pv || {});   // 미리 보기 · 다시 보기 — 받은 배우 (다시 보기는 그때 이름 — 지금 학원에 없는 학생도)
+  const ids = (S.rqst && S.rqst.cast) || {}, T = {};
+  RQ_JOBS.forEach(k => { T[k] = (S.students || []).find(s => s && s.id === ids[k]) || null; });
+  return T;
+}
+/* 받을 돈 · 낼 이자 — 이야기에 든 값(세이브 — 다시 보기도) · 이야기 전의 미리 보기는 지금 값으로 */
+function rqPay(){
+  if(S && S.rqst && S.rqst.pay) return S.rqst.pay;
+  const g = typeof guildPay === "function" ? guildPay() : {wy: 5000, ch: 300};
+  return {wy: g.wy, ch: g.ch, it: Math.max(0, typeof debtInterest === "function" ? debtInterest() : 0)};
+}
+/* tryGuildJob — 직접 의뢰 해금 때 (S.jobUnlock 을 적은 뒤). 돈을 한 번에 넣고 장면을 줄에 — 조건이 안 맞으면 false (예전 다섯 쪽) */
+function rqStart(){
+  if((navigator.webdriver && !window.__rqstForce) || window.__rqstOff) return false;
+  if(!S || S.rqst || typeof guildPay !== "function") return false;
+  const T = rqTrio(); if(!T) return false;
+  const g = guildPay(), it = Math.max(0, debtInterest()), net = g.wy + g.ch - it;
+  S.gold += net;
+  if(typeof FIN !== "undefined" && FIN) FIN.later = (FIN.later || 0) + net;   // 이벤트에서 오가는 돈 — 이번 주 자금 상황에는 넣지 않는다 (예전과 같다)
+  logE(`<b>직접 의뢰를 받다</b> — 지난겨울 이자 <b style="color:var(--bad)">−${fmt(it)} G</b> · 와이번 토벌 <b style="color:var(--brass)">+${fmt(g.wy)} G</b> · 학생들의 잡일 보수 <b style="color:var(--brass)">+${fmt(g.ch)} G</b>. 마을과 의뢰가 열렸다.`, "big");
+  S.rqst = {id: RQ_ID, cast: {paladin: T.paladin.id, darkpriest: T.darkpriest.id, wizard: T.wizard.id}, step: 0, cue: 0, y: S.year, ph: S.phase, wk: S.week + 1, pay: {wy: g.wy, ch: g.ch, it}};
+  R.live = true;
+  queueCeremony({type: "rqst"});
+  return true;
+}
+
+/* ── 무대 ── */
+function rqBuild(){
+  if(R.root) return;
+  const r = document.createElement("div");
+  r.id = "rqstRoot"; r.className = "fst rvst rqst on";
+  r.innerHTML = `<div class="rv-bg"><div class="rv-img"></div><div class="rv-vig"></div></div><div class="fst-hit"></div>
+    <div class="rv-chip" hidden><b>${esc(RQ_T.past)}</b><span></span></div>
+    <button type="button" class="rv-skip" hidden>${esc(RQ_T.skip)}</button>
+    <div class="rq-tag" hidden><i></i><span>${esc(RQ_T.quest)}</span></div>
+    <div class="rq-env" hidden><img alt="" draggable="false"></div>
+    <div class="fst-cast">${RQ_ALL.map(k => `<div class="fst-bust" data-who="${k}" hidden><img alt="" draggable="false">${k === "paladin" ? `<i class="rq-sweat" hidden>${RQ_SWEAT}</i>` : ""}</div>`).join("")}</div>
+    <div class="rq-letter" hidden><div class="rq-paper"><div class="rq-ptx"></div><div class="fst-nx">▼</div></div></div>
+    <div class="rq-sys" hidden><span>${esc(RQ_T.pay)}</span><b></b><div class="fst-nx">▼</div></div>
+    <div class="fst-think"><div class="fst-tx"></div><div class="fst-nx">▼</div></div>
+    <div class="fst-talk"><div class="fst-nm"><i></i><span></span></div><div class="fst-tx"></div><div class="fst-nx">▼</div><button type="button" class="rv-leave rq-fold" hidden>${esc(RQ_T.fold)}</button></div>
+    <div class="rv-black"><div class="rv-card"><i>${esc(RQ_T.past)}</i><b></b></div></div>`;
+  document.body.appendChild(r);
+  R.root = r;
+  const hit = r.querySelector(".fst-hit");
+  hit.addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); rqAdvance(); });
+  hit.addEventListener("wheel", e => e.preventDefault(), {passive: false});
+  hit.addEventListener("touchmove", e => e.preventDefault(), {passive: false});
+  r.querySelector(".rv-skip").addEventListener("click", e => { e.stopPropagation(); rqEnd("skip"); });
+  r.querySelector(".rq-fold").addEventListener("click", e => { e.stopPropagation(); rqEnd("fold"); });
+  const env = r.querySelector(".rq-env img"); if(env && typeof MDESK_ART !== "undefined") env.src = MDESK_ART.letter || "";
+  Object.keys(RQ_FACE).forEach(k => Object.keys(RQ_FACE[k]).forEach(f => { const im = new Image(); im.decoding = "async"; im.src = RQ_FACE[k][f]; }));   // 표정을 바꿀 때 깜빡이지 않게 미리
+  Object.keys(RQ_NPC.bank).forEach(f => { const u = rqNpcFace(f); if(u){ const im = new Image(); im.src = u; } });
+  Object.keys(RQ_BG).forEach(k => rqImg(RQ_BG[k].src()));
+}
+function rqTeardown(){ if(R.root) R.root.remove(); R.root = null; }
+document.addEventListener("keydown", e => {
+  if(!R.root || !R.on) return;
+  if(e.key === " " || e.key === "Enter"){
+    e.preventDefault(); e.stopPropagation();
+    const b = rq(".rq-fold");
+    if(b && !b.hidden) rqEnd("fold"); else rqAdvance();
+  }
+}, true);
+addEventListener("resize", () => { if(R.on && R.root) rqFit(0); });
+function rqFade(el, to, ms){
+  return new Promise(res => {
+    if(!el){ res(); return; }
+    const from = +getComputedStyle(el).opacity;
+    el.getAnimations().forEach(a => a.cancel());
+    el.style.opacity = to;
+    if(rRM()) ms = Math.min(ms, 140);
+    const a = el.animate([{opacity: from}, {opacity: to}], {duration: Math.max(1, ms), easing: "ease"});
+    a.onfinish = a.oncancel = () => res();
+  });
+}
+function rqBox(kind){ const a = rq(".fst-think"), b = rq(".fst-talk"); if(a) a.classList.toggle("show", kind === "think"); if(b) b.classList.toggle("show", kind === "talk"); }
+function rqMark(on){ R.root && R.root.querySelectorAll(".fst-nx").forEach(e => e.classList.toggle("on", on)); }
+function rqPlate(who){
+  const nm = rq(".fst-nm"), sp = nm.querySelector("span");
+  let t = RQ_T.master, col = "#ffd36a";
+  if(RQ_JOBS.indexOf(who) >= 0){
+    const st = R.cast[who], role = JOBS[who] && JOBS[who].role;
+    t = st ? dn(st) : ((JOBS[who] && JOBS[who].name) || "");
+    col = role === "tank" ? "#8cc4f0" : role === "heal" ? "#86d6a4" : "#f2957d";        // 역할 색 네모 (첫 시간표 · 02 와 같다)
+  } else if(who === "bank"){ t = RQ_T.bank; col = "#d8c39a"; }
+  else if(who === "clerk"){ t = RQ_T.clerk; col = "#f3b4c4"; }
+  sp.textContent = t;
+  nm.style.setProperty("--rc", col);
+}
+function rqLine(c){ const st = R.cast[c.who], t = c.t || ""; return st && typeof masterQ === "function" ? masterQ(t, st) : t; }
+function rqVoice(who){ return who === "master" || who === "bank" ? "csl_mst" : "csl_stu"; }
+function rqType(el, text, voice, sess){
+  return new Promise(res => {
+    if(R.typing) R.typing();
+    const ch = [...String(text || "")]; let n = 0, tm = 0;
+    const done = () => { clearTimeout(tm); if(R.typing === done) R.typing = null; if(el) el.textContent = text; res(); };
+    if(!el || !ch.length){ if(el) el.textContent = ""; res(); return; }
+    const step = () => {
+      if(sess !== R.sess){ if(R.typing === done) R.typing = null; res(); return; }
+      n++; el.textContent = ch.slice(0, n).join("");
+      if(voice && !RQ_QUIET.test(ch[n - 1]) && typeof cwBlip === "function") cwBlip(voice);
+      if(n >= ch.length){ done(); return; }
+      let d = 1000 / RQ_CPS;
+      if(ch[n - 1] === "…" && ch[n] !== "…") d += 300;                        // 말줄임표 뒤에서 짧게 호흡
+      tm = setTimeout(step, d);
+    };
+    el.textContent = ""; R.typing = done;
+    tm = setTimeout(step, 1000 / RQ_CPS);
+  });
+}
+function rqWaitClick(){ return new Promise(r => { R.wait = r; rqMark(true); }); }
+function rqWaitAuto(ms){                                                       // auto 줄 — ms 뒤에 저절로 (누르면 바로 · ▼ 는 띄우지 않는다)
+  return new Promise(r => { let done = false; const go = () => { if(done) return; done = true; if(R.wait === go) R.wait = null; r(); }; R.wait = go; setTimeout(go, ms); });
+}
+function rqAdvance(){
+  if(!R.on || R.ending) return;
+  if(R.typing){ R.typing(); return; }
+  if(R.wait){ const r = R.wait; R.wait = null; rqMark(false); r(); return; }
+  const b = rq(".rq-fold");
+  if(b && !b.hidden){ b.classList.remove("poke"); void b.offsetWidth; b.classList.add("poke"); }   // 마지막 줄 — 단추를 콕
+}
+function rqSfx(k){ if(k && typeof SFX !== "undefined" && SFX[k] && typeof sfxPlay === "function") sfxPlay(k); }
+function rqSfxLoad(){
+  if(typeof sfxLoad !== "function" || typeof SFX === "undefined" || (typeof AWEB !== "undefined" && AWEB === false) || (typeof sfxGain === "function" && sfxGain() <= 0)) return;
+  ["rq_bell", "rq_tear", "rq_paper", "fs_door", "fs_glint", "coin"].forEach(k => { if(SFX[k]) sfxLoad(SFX[k].f); });
+}
+/* 곡 — _none 은 끊기(줄을 넘길 때는 1.6초에 걸쳐) · alone · env · 없으면 계절 곡 */
+function rqBgm(k, fade){
+  if(k === "_none"){ if(fade && typeof audFadeOut === "function") audFadeOut(1.6); else audOver(typeof BGM_NONE !== "undefined" ? BGM_NONE : "_none"); return; }
+  audOver(RQ_BGM[k] || null);
+}
+function rqBgmAt(i){ let b = null; for(let j = 0; j <= i && j < RQ_CUES.length; j++) if(RQ_CUES[j].bgm) b = RQ_CUES[j].bgm; return b; }
+
+/* ── 배경 — 그림 크기를 알면 확대 · 맞출 곳을 px 로 (도트는 픽셀 그대로) ── */
+const RQ_IMG = {};
+function rqImg(src, then){
+  if(!src) return null;
+  let o = RQ_IMG[src];
+  if(o && o.w) return o;
+  if(!o){
+    o = RQ_IMG[src] = {w: 0, h: 0, cb: []};
+    const im = new Image(); im.decoding = "async";
+    im.onload = () => { o.w = im.naturalWidth; o.h = im.naturalHeight; const cb = o.cb; o.cb = []; cb.forEach(f => f()); };
+    im.src = src;
+  }
+  if(then) o.cb.push(then);
+  return null;
+}
+function rqView(){
+  const s = RQ_SCENES[R.scene] || RQ_SCENES.desk, B = RQ_BG[s.bg] || RQ_BG.desk;
+  const v = (B.views && B.views[R.view || s.view]) || {};
+  return {src: B.src(), px: !!B.px, z: v.z || s.z || B.z || 1, f: v.f || s.f || B.f || [.5, .5]};
+}
+function rqFit(pan){
+  const img = rq(".rv-img"); if(!img) return;
+  const V = rqView(), W = R.root.clientWidth || innerWidth, H = R.root.clientHeight || innerHeight;
+  const u = V.src ? `url("${V.src}")` : "none";
+  if(img.dataset.src !== V.src){ img.style.backgroundImage = u; img.dataset.src = V.src; }
+  R.root.classList.toggle("ill", !V.px);
+  const sz = rqImg(V.src, () => { if(R.root && rqView().src === V.src) rqFit(0); });
+  img.classList.toggle("pan", !!pan && !!sz);
+  if(pan) img.style.setProperty("--rq-pan", pan + "ms");
+  if(!sz){ img.style.backgroundSize = "cover"; img.style.backgroundPosition = `${V.f[0] * 100}% ${V.f[1] * 100}%`; return; }
+  const s = Math.max(W / sz.w, H / sz.h) * V.z, bw = sz.w * s, bh = sz.h * s;
+  const x = Math.min(0, Math.max(W - bw, W * .5 - V.f[0] * bw)), y = Math.min(0, Math.max(H - bh, H * .44 - V.f[1] * bh));   // 맞출 곳을 화면 가운데 조금 위에 (아래는 대화창)
+  img.style.backgroundSize = `${bw.toFixed(1)}px ${bh.toFixed(1)}px`;
+  img.style.backgroundPosition = `${x.toFixed(1)}px ${y.toFixed(1)}px`;
+}
+
+/* ── 초상화 ── */
+function rqBust(k){ return rq(`.fst-bust[data-who="${k}"]`); }
+function rqNpcFace(f){ const A = typeof TIN_ART !== "undefined" && TIN_ART && (TIN_ART.face128 || TIN_ART.face); const key = RQ_NPC.bank[f] || RQ_NPC.bank.base; return (A && A[key]) || ""; }
+function rqFace(k, f){
+  if(!f) return;
+  R.faces[k] = f;
+  const b = rqBust(k), src = k === "bank" ? rqNpcFace(f) : (RQ_FACE[k] && RQ_FACE[k][f]);
+  if(b && src){ const im = b.querySelector("img"); if(im.getAttribute("src") !== src) im.src = src; }
+}
+function rqLit(list){ RQ_ALL.forEach(k => { const e = rqBust(k); if(e) e.classList.toggle("on", !!(list && list.indexOf(k) >= 0)); }); }
+/* 나와 있는 초상화를 가운데로 모은다 (한 칸 = --fst-step · 들어오고 나갈 때 옆 사람은 미끄러진다) · snap true 모두 · 배열이면 그 초상화만 제자리로 바로 */
+function rqLayout(snap){
+  const vis = RQ_ALL.filter(k => { const e = rqBust(k); return e && !e.hidden; }), n = vis.length;
+  vis.forEach((k, j) => {
+    const e = rqBust(k), now = snap === true || (Array.isArray(snap) && snap.indexOf(k) >= 0);
+    if(now) e.style.transition = "none";
+    e.style.left = `calc(50% + var(--fst-step) * ${(j - (n - 1) / 2).toFixed(2)} - var(--fst-bust) / 2)`;
+    if(now){ void e.offsetWidth; e.style.transition = ""; }
+  });
+}
+function rqHop(k){ if(rRM()) return; const e = rqBust(k); if(e && !e.hidden) e.animate([{transform: "none"}, {transform: "translateY(-9px)", offset: .35}, {transform: "none"}], {duration: 300, easing: "ease-out"}); }
+function rqShake(k){ if(rRM()) return; const e = rqBust(k); if(e && !e.hidden) e.animate([0, -4, 4, -3, 3, 0].map(x => ({transform: `translateX(${x}px)`})), {duration: 280, easing: "ease-in-out"}); }
+/* 등장 — 새로 나오는 초상화는 제자리에 바로 서고(이미 있던 사람만 옆으로 비켜 선다) 아래에서 · Q02 팔라딘은 오른쪽에서 뛰어 들어온다 */
+function rqEnter(list){
+  const add = [].concat(list).filter(k => { const e = rqBust(k); return e && e.hidden; });
+  if(!add.length) return;
+  add.forEach(k => { rqBust(k).hidden = false; });
+  rqLayout(add);
+  add.forEach((k, n) => {
+    const kf = rRM() ? [{opacity: 0}, {opacity: 1}]
+      : k === "paladin" && R.i <= 2 ? [{transform: "translateX(90px)", opacity: 0}, {opacity: 1, offset: .5}, {transform: "none", opacity: 1}]
+      : [{transform: "translateY(60px)", opacity: 0}, {opacity: 1, offset: .6}, {transform: "none", opacity: 1}];
+    rqBust(k).animate(kf, {duration: rRM() ? 200 : 380, delay: rRM() ? 0 : n * 70, easing: "cubic-bezier(.2,.85,.3,1.2)", fill: "backwards"});
+  });
+}
+/* 나간다 — dash 한 명이 뛰어나감 · run 셋이 차례로 (얼굴 그림은 늘리거나 비틀지 않는다 — 옮기기만 · Q44 의 끌려가기는 rqDrag) */
+function rqExit(list, how, sess){
+  rqLit(null);
+  const plan = how === "run" ? {paladin: [0, 320, 0], darkpriest: [170, 420, 0], wizard: [360, 600, 0]} : null;
+  return Promise.all(list.map(k => new Promise(res => {
+    const e = rqBust(k); if(!e || e.hidden){ res(); return; }
+    const [dl, du, dragged] = plan ? (plan[k] || [0, 360, 0]) : [0, 300, 0];
+    const far = -(innerWidth * .6);
+    const kf = rRM() ? [{opacity: 1}, {opacity: 0}]
+      : dragged ? [{transform: "none", opacity: 1}, {transform: "translate(-14px,-6px)", offset: .18}, {transform: "translate(-40px,0)", offset: .32},
+          {transform: "translate(-90px,-7px)", offset: .5}, {transform: `translate(${far * .5}px,0)`, opacity: 1, offset: .75}, {transform: `translate(${far}px,-4px)`, opacity: 0}]
+      : [{transform: "none", opacity: 1}, {transform: `translateX(${far * .4}px)`, opacity: 1, offset: .6}, {transform: `translateX(${far}px)`, opacity: 0}];
+    const a = e.animate(kf, {duration: rRM() ? 200 : du, delay: rRM() ? 0 : dl, easing: "ease-in", fill: "forwards"});
+    a.onfinish = () => { if(sess === R.sess){ e.hidden = true; a.cancel(); } res(); };
+    a.oncancel = () => res();
+  }))).then(() => { if(sess === R.sess) rqLayout(false); });
+}
+/* Q44 — 팔라딘이 마법사의 귀를 잡고 끌고 간다 (1022 사용자 'Q43 이후 Q44 는 자동으로 · 팔라딘 좀 더 느리게 퇴장 · 같은 방향으로 마법사 얼굴을 팔라딘 뒤에 붙여서
+   살짝 위아래로 움직이면서 끌려가는 연출'): 팔라딘은 천천히 왼쪽으로(2.6초 · 걸음마다 아주 살짝) · 마법사는 팔라딘이 지나가면 붙잡혀 팔라딘 오른쪽 뒤(한 겹 아래)에 붙어
+   콩콩 흔들리며 같이 끌려간다 · 암흑 사제는 조금 뒤에 왼쪽으로 몇 걸음 가며 사라진다. 얼굴 그림은 옮기기만 (늘리거나 비틀지 않는다) */
+function rqDrag(sess){
+  return new Promise(res => {
+    const p = rqBust("paladin"), w = rqBust("wizard"), d = rqBust("darkpriest"), live = e => !!(e && !e.hidden);
+    if(!live(p)){ res(); return; }
+    rqLit(["wizard", "paladin"]);
+    const all = [p, w, d].filter(live);
+    const finish = () => {
+      all.forEach(e => { e.style.transform = ""; e.style.zIndex = ""; e.style.opacity = ""; if(sess === R.sess) e.hidden = true; });
+      if(sess === R.sess) rqLayout(false);
+      res();
+    };
+    if(rRM()){ setTimeout(finish, 400); return; }
+    all.forEach(e => e.getAnimations().forEach(a => a.cancel()));
+    const pr = p.getBoundingClientRect(), bw = pr.width, wr = live(w) ? w.getBoundingClientRect() : null, hasD = live(d);
+    const A = bw * .38;                                                         // 마법사 — 팔라딘 오른쪽 뒤 (끌려오는 쪽)
+    const D = pr.left + A + bw + 24;                                            // 마법사까지 화면 왼쪽 밖으로 나갈 때까지
+    const grab = wr ? wr.left - pr.left - A : 0;                                // 팔라딘이 이만큼(음수) 오면 마법사를 붙잡는다
+    const T = 2600, Td0 = 1250, Td = 1200, t0 = performance.now();
+    p.style.zIndex = 4; if(wr) w.style.zIndex = 2;
+    const step = now => {
+      if(sess !== R.sess){ finish(); return; }
+      const e = now - t0, t = Math.min(1, e / T), xp = -D * Math.pow(t, 1.35);
+      p.style.transform = `translate(${xp.toFixed(1)}px,${(Math.sin(e / 1000 * Math.PI * 7) * 1.5).toFixed(1)}px)`;
+      if(wr){
+        if(xp <= grab){
+          const k = Math.min(1, (grab - xp) / 40);                              // 붙잡히는 순간부터 흔들림이 서서히
+          w.style.transform = `translate(${(xp - grab).toFixed(1)}px,${(-Math.abs(Math.sin(e / 1000 * Math.PI * 2.6)) * 8 * k).toFixed(1)}px)`;
+        } else w.style.transform = "none";
+      }
+      if(hasD){
+        const u = Math.max(0, Math.min(1, (e - Td0) / Td));
+        d.style.transform = `translateX(${(-bw * .8 * u * u).toFixed(1)}px)`;
+        d.style.opacity = String(1 - u);
+      }
+      if(t >= 1 && (!hasD || e >= Td0 + Td)){ finish(); return; }
+      requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+}
+function rqSweat(on){ const s = rq(".rq-sweat"); if(s) s.hidden = !on; }
+function rqTag(on){ const t = rq(".rq-tag"); if(!t) return; if(on && t.hidden){ t.hidden = false; if(!rRM()) t.animate([{opacity: 0, transform: "translateY(-8px)"}, {opacity: 1, transform: "none"}], {duration: 260, easing: "ease-out"}); } else if(!on) t.hidden = true; }
+function rqEnv(on){
+  const v = rq(".rq-env"); if(!v) return;
+  if(on && v.hidden){
+    v.hidden = false;
+    if(!rRM()) v.animate([{opacity: 0, transform: "scale(.9)"}, {opacity: 1, transform: "none"}], {duration: 320, easing: "ease-out"});
+    const b = v.getBoundingClientRect();                                       // 반짝 (첫 시간표의 반짝이 그대로)
+    [[.22, .3, 0], [.8, .22, 160], [.55, .75, 320]].forEach(([fx, fy, d]) => setTimeout(() => {
+      if(!R.root || v.hidden) return;
+      const s = document.createElement("i"); s.className = "fst-spark"; s.style.left = (b.left + b.width * fx) + "px"; s.style.top = (b.top + b.height * fy) + "px";
+      R.root.appendChild(s); setTimeout(() => s.remove(), 700);
+    }, d + 120));
+  } else if(!on) v.hidden = true;
+}
+function rqSys(on){
+  const y = rq(".rq-sys"); if(!y) return;
+  if(!on){ y.hidden = true; return; }
+  y.querySelector("b").textContent = `−${fmt(rqPay().it)} G`;
+  y.hidden = false;
+  if(!rRM()) y.animate([{opacity: 0, transform: "scale(.94)"}, {opacity: 1, transform: "none"}], {duration: 240, easing: "ease-out"});
+}
+function rqLetterHTML(){
+  const T = R.cast, nm = k => (T[k] && T[k].name) || ((JOBS[k] && JOBS[k].name) || ""), L = RQ_LETTER, p = a => a.map(esc).join("<br>");
+  return `<p class="rq-to">${esc(L.to)}</p><p class="rq-pal">${p(L.p1)}</p><p class="rq-dp">${p(L.p2)}</p><p class="rq-key">${esc(L.key)}</p>
+    <p class="rq-sign">— ${esc(nm("paladin"))} · ${esc(nm("darkpriest"))} · ${esc(nm("wizard"))}</p><p class="rq-ps">${esc(L.ps)}</p><p class="rq-re">${esc(L.re)}</p>`;
+}
+/* 편지 — 두 번 접힌 종이를 두 번 펼친다 (소리 rq_paper 와 같은 때) · dim: 다음 줄(Q58)에서 조금 어둡게 */
+async function rqLetter(on, sess, dim){
+  const l = rq(".rq-letter"); if(!l) return;
+  if(!on){ l.hidden = true; return; }
+  const p = l.querySelector(".rq-paper"), tx = p.querySelector(".rq-ptx");
+  if(l.hidden || !tx.innerHTML){ tx.innerHTML = rqLetterHTML(); p.scrollTop = 0; }
+  l.classList.toggle("dim", !!dim);
+  if(!l.hidden) return;
+  l.hidden = false;
+  if(rRM()) return;
+  const a = p.animate([{transform: "scaleY(.08)", opacity: .2}, {transform: "scaleY(.36)", opacity: 1, offset: .3}, {transform: "scaleY(.42)", offset: .45},
+    {transform: "scaleY(1.02)", offset: .85}, {transform: "none"}], {duration: 620, easing: "ease-out"});
+  await new Promise(r => { a.onfinish = a.oncancel = r; });
+}
+async function rqFx(fx, sess){
+  if(fx === "tear"){                                                            // Q25 — 의뢰서를 핀에서 떼어 낸다 (삽화가 살짝 흔들리고 다가간다)
+    const img = rq(".rv-img");
+    if(img && !rRM()) img.animate([{transform: "none"}, {transform: "translate(-3px,1px) scale(1.012)", offset: .15}, {transform: "translate(3px,-1px) scale(1.016)", offset: .3},
+      {transform: "translate(-2px,0) scale(1.018)", offset: .45}, {transform: "scale(1.02)", offset: .6}, {transform: "none"}], {duration: 900, easing: "ease-out"});
+    return;
+  }
+  if(fx === "reveal"){                                                          // Q34 — 초상화가 내려가고 정문 삽화가 넓어지며 다친 마스터가 드러난다
+    RQ_ALL.forEach(k => { const e = rqBust(k); if(!e || e.hidden) return;
+      const a = e.animate([{transform: "none", opacity: 1}, {transform: "translateY(45%)", opacity: 0}], {duration: rRM() ? 160 : 420, easing: "ease-in", fill: "forwards"});
+      a.onfinish = () => { if(sess === R.sess){ e.hidden = true; a.cancel(); } }; });
+    await rsleep(rRM() ? 160 : 460); if(sess !== R.sess) return;
+    R.view = "full"; rqFit(rRM() ? 0 : 2600);
+    await rsleep(rRM() ? 200 : 2650);
+    return;
+  }
+  if(fx === "crop"){ R.view = "crop"; rqFit(rRM() ? 0 : 1400); return; }      // Q38 — 다시 하늘 쪽으로 (세 학생 초상화로)
+  if(fx === "hush"){                                                            // Q35 — 암흑 사제가 팔라딘의 입을 막는다 (옆으로 겹쳤다 돌아간다)
+    await rsleep(rRM() ? 0 : 380); if(sess !== R.sess) return;
+    const d = rqBust("darkpriest"), p = rqBust("paladin");
+    if(!d || !p || d.hidden || p.hidden || rRM()) return;
+    const dx = (p.getBoundingClientRect().left - d.getBoundingClientRect().left) * .55;
+    d.style.zIndex = 4;
+    const a = d.animate([{transform: "none"}, {transform: `translateX(${dx.toFixed(1)}px)`, offset: .22}, {transform: `translateX(${dx.toFixed(1)}px)`, offset: .78}, {transform: "none"}], {duration: 1150, easing: "ease-in-out"});
+    a.onfinish = a.oncancel = () => { d.style.zIndex = ""; };
+    setTimeout(() => { if(sess === R.sess) rqShake("paladin"); }, 260);
+  }
+}
+
+/* ── 장면 ── */
+function rqState(i){                                                           // i 번째 줄을 시작하기 직전의 무대 (이어하기 · 미리 보기)
+  let scene = "desk", faces = {}, on = [], view = null, tag = false, sweat = false, env = false, letter = false;
+  for(let j = 0; j <= i && j < RQ_CUES.length; j++){
+    const c = RQ_CUES[j];
+    if(c.scene){ const s = RQ_SCENES[c.scene]; scene = c.scene; on = s.cast.slice(); faces = Object.assign({}, faces, s.faces || {}); view = s.view || null; tag = sweat = env = letter = false; }
+    if(j === i) break;
+    if(c.enter) [].concat(c.enter).forEach(k => { if(on.indexOf(k) < 0) on.push(k); });
+    if(c.face && c.who) faces[c.who] = c.face;
+    if(c.fx === "reveal"){ view = "full"; on = []; }
+    if(c.fx === "crop") view = "crop";
+    if(c.tag) tag = true;
+    if(c.sweat) sweat = true;
+    if(c.env) env = true;
+    if(c.k === "letter") letter = true;
+    if(c.dash) on = on.filter(k => k !== c.dash);
+    if(c.out || c.drag) on = [];
+  }
+  return {scene, faces, on, view, tag, sweat, env, letter};
+}
+function rqSet(st){                                                            // 암전 동안 한 번에 바꾼다
+  const s = RQ_SCENES[st.scene] || RQ_SCENES.desk;
+  R.scene = st.scene; R.view = st.view || s.view || null;
+  R.root.classList.toggle("past", s.tone === "past");
+  R.root.classList.toggle("late", s.tone === "late");
+  R.root.classList.toggle("morn", s.tone === "morn");
+  rqFit(0);
+  const chip = rq(".rv-chip");
+  if(chip){ chip.hidden = s.tone !== "past"; chip.querySelector("span").textContent = s.cap || ""; }
+  RQ_ALL.forEach(k => {
+    const e = rqBust(k); if(!e) return;
+    e.getAnimations().forEach(a => a.cancel());
+    e.hidden = st.on.indexOf(k) < 0;
+    rqFace(k, st.faces[k] || (k === "bank" ? "base" : null));
+  });
+  rqLayout(true);
+  rqTag(st.tag); rqSweat(st.sweat); rqEnv(st.env); rqSys(false);
+  if(st.letter) rqLetter(true, R.sess, true); else rqLetter(false);
+  const b = rq(".rq-fold"); if(b) b.hidden = true;
+  rqLit(null); rqBox(null); rqMark(false);
+}
+/* 짧은 암전 — 검게 → (자막) → 바꾸고 → 밝게. 자막은 장면의 cap (회상이면 위에 '회상') */
+async function rqGo(st, sess, cap){
+  const bk = rq(".rv-black"), card = rq(".rv-card");
+  rqBox(null); rqMark(false);
+  await rqFade(bk, 1, 320); if(sess !== R.sess) return false;
+  rqSet(st);
+  const s = RQ_SCENES[st.scene] || {};
+  if(cap && s.cap && card){
+    card.querySelector("i").hidden = s.tone !== "past";
+    card.querySelector("b").textContent = s.cap;
+    await rqFade(card, 1, 240); if(sess !== R.sess) return false;
+    await rsleep(rRM() ? 500 : 1000); if(sess !== R.sess) return false;
+    await rqFade(card, 0, 240); if(sess !== R.sess) return false;
+  } else { await rsleep(rRM() ? 120 : 380); if(sess !== R.sess) return false; }
+  await rqFade(bk, 0, 460);
+  return sess === R.sess;
+}
+function rqPersist(i){ if(!R.preview && S.rqst && (S.rqst.step | 0) === 0){ S.rqst.cue = i; try{ save(); }catch(e){} } }
+async function rqRun(i, jumped){
+  const sess = R.sess, c = RQ_CUES[i]; if(!c || !R.on || R.ending) return;
+  R.i = i;
+  rqPersist(i);
+  if(c.scene && !jumped){
+    /* 1023 — 곡이 바뀌는 장면(Q45 '혼자 짊어진 것' → '작은 봉투'): 지금 곡을 암전이 시작될 때 줄여 끄고, 새 곡은 다 꺼진 뒤 장면이 밝아질 때 (겹치지 않게 —
+       사용자 'Q44~45 사이 기존 배경 음악하고 새로운 배경 음악하고 겹치는 부분이 있어'. 예전엔 밝아진 뒤 audOver 가 2.6초(xf) 동안 두 곡을 겹쳐 바꿨다) */
+    const swap = !!(c.bgm && c.bgm !== "_none" && typeof ANOW !== "undefined" && ANOW && ANOW.key !== RQ_BGM[c.bgm] && typeof audFadeOut === "function");
+    const t0 = performance.now();
+    if(swap) audFadeOut(RQ_SWAP_OUT);
+    if(!(await rqGo(rqState(i), sess, true))) return;
+    if(swap){ const left = RQ_SWAP_OUT * 1000 + 150 - (performance.now() - t0); if(left > 0){ await rsleep(left); if(sess !== R.sess) return; } }
+  }
+  if(c.bgm && !jumped) rqBgm(c.bgm, true);
+  rqSfx(c.sfx);
+  if(c.sweat) rqSweat(true);
+  if(c.enter) rqEnter(c.enter);
+  if(c.tag) rqTag(true);
+  if(c.env) rqEnv(true);
+  if(c.k === "think"){
+    rqLit(null); rqBox("think");
+    await rqType(rq(".fst-think .fst-tx"), c.t, "csl_mst", sess);
+  } else if(c.k === "say"){
+    const bust = RQ_ALL.indexOf(c.who) >= 0;
+    if(bust) rqFace(c.who, c.face);
+    rqLit(bust ? [c.who] : null);
+    if(c.hop) rqHop(c.who);
+    if(c.shake) rqShake(c.who);
+    if(c.fx) rqFx(c.fx, sess);
+    if(c.btn) rqLetter(true, sess, true);
+    const dragging = c.drag ? rqDrag(sess) : null;                            // Q44 — 글자가 찍히는 동안 끌려 나간다
+    rqPlate(c.who); rqBox("talk");
+    await rqType(rq(".fst-talk .fst-tx"), rqLine(c), rqVoice(c.who), sess);
+    if(dragging){ await dragging; if(sess !== R.sess) return; }
+  } else if(c.k === "sys"){
+    rqLit(null); rqBox(null); rqSys(true);
+  } else if(c.k === "fx"){
+    rqLit(null); rqBox(null);
+    if(c.fx) await rqFx(c.fx, sess);
+    if(sess !== R.sess) return;
+    await rsleep(c.wait || 0); if(sess !== R.sess) return;
+    rqRun(i + 1);
+    return;
+  } else if(c.k === "letter"){
+    rqLit(null); rqBox(null);
+    await rqLetter(true, sess, false);
+  }
+  if(sess !== R.sess) return;
+  if(c.auto){ await rqWaitAuto(c.auto); if(sess !== R.sess) return; rqRun(i + 1); return; }   // Q43 — '…' 한 박자 뒤 Q44 가 저절로
+  if(c.btn){                                                                   // Q58 — '편지를 접는다' (누르거나 스페이스 · 엔터)
+    const b = rq(".rq-fold"); if(b){ b.hidden = false; try{ b.focus({preventScroll: true}); }catch(e){} }
+    return;
+  }
+  await rqWaitClick(); if(sess !== R.sess) return;
+  if(c.k === "sys") rqSys(false);
+  if(c.dash){ await rqExit([c.dash], "dash", sess); if(sess !== R.sess) return; }
+  if(c.out){ await rqExit(RQ_JOBS.slice(), c.out, sess); if(sess !== R.sess) return; }
+  rqRun(i + 1);
+}
+/* 장면 열기 — 게임 화면을 검게 덮고 i 번째 줄의 무대 · 곡을 세운 뒤 밝게 (첫 줄이 장면의 시작이면 자막도) */
+async function rqOpen(i){
+  rqBuild();
+  R.on = true; R.ending = false; R.sess++; R.i = -1; R.typing = null; R.wait = null;
+  const sess = R.sess;
+  R.cast = rqCastNow(); R.faces = {};
+  R.root.classList.add("on");
+  const sk = rq(".rv-skip"); if(sk){ sk.hidden = !R.preview; sk.disabled = false; }   // 1023 — 건너뛰기는 다시 보기(미리 보기)에만 · 처음 보는 진짜 흐름에는 없다 (사용자 '처음 볼 때는 무조건 건너뛰기를 안보여주고')
+  const bk = rq(".rv-black"), bg = rq(".rv-bg");
+  bk.style.opacity = 0; bg.style.opacity = 0;
+  const b0 = rqBgmAt(i);
+  if(b0) rqBgm(b0, false); else audOver(null);
+  if(typeof audPrep === "function"){ audPrep(RQ_BGM.alone); audPrep(RQ_BGM.env); }   // 두 곡은 lazy — 장면이 열릴 때 미리 받는다
+  rqSfxLoad();
+  await rqFade(bk, 1, 360); if(sess !== R.sess) return;
+  bg.style.opacity = 1;
+  const st = rqState(i), c = RQ_CUES[i] || {};
+  rqSet(st);
+  const s = RQ_SCENES[st.scene] || {};
+  if(c.scene && s.cap){ const card = rq(".rv-card"); card.querySelector("i").hidden = s.tone !== "past"; card.querySelector("b").textContent = s.cap;
+    await rqFade(card, 1, 240); if(sess !== R.sess) return; await rsleep(rRM() ? 500 : 1000); if(sess !== R.sess) return; await rqFade(card, 0, 240); if(sess !== R.sess) return; }
+  else { await rsleep(220); if(sess !== R.sess) return; }
+  await rqFade(bk, 0, 520); if(sess !== R.sess) return;
+  rqRun(i, true);
+}
+/* 끝 — 마지막 단추 · 건너뛰기 (한 번만). 요약 팝업을 무대 아래에 먼저 띄우고 무대를 걷는다 */
+async function rqEnd(how){
+  if(!R.on || R.ending) return;
+  R.ending = true; R.sess++; R.wait = null; R.typing = null;
+  const b = rq(".rq-fold"), sk = rq(".rv-skip");
+  if(b) b.hidden = true; if(sk) sk.disabled = true;
+  await rqFade(rq(".rv-black"), 1, how === "skip" ? 260 : 600);
+  R.on = false;
+  if(R.root) R.root.classList.remove("on");
+  if(R.preview){
+    R.preview = false; audOver(null);
+    await rqFade(R.root, 0, 320);
+    rqTeardown(); R.ending = false; render(); return;
+  }
+  if(!S.rqst){ await rqFade(R.root, 0, 320); rqTeardown(); R.ending = false; R.live = false; showCeremony(); return; }
+  S.rqst.step = 1; S.rqst.cue = RQ_CUES.length; try{ save(); }catch(e){}
+  rqSum();
+  await rqFade(R.root, 0, 400);
+  rqTeardown(); R.ending = false;
+}
+
+/* ── 장면 뒤 — 요약 팝업(Q59 · 받은 돈과 낸 이자 — 실제 값) → 확인하면 마을이 열린다 ── */
+function rqSum(){
+  R.done = false;
+  audOver(RQ_BGM.env);                                                        // 곡은 이어서 (showCeremony 는 팝업마다 계절 곡으로 돌린다 — 여기서는 직접 띄운다)
+  const P = rqPay(), net = P.wy + P.ch - P.it, Q = S.rqst || {}, ph = PHASES[Q.ph] ? Q.ph : "spring";
+  const row = (t, v, dn) => `<div class="rq-row"><span>${esc(t)}</span><b${dn ? ` class="dn"` : ""}>${dn ? "−" : "+"}${fmt(v)} G</b></div>`;
+  showModal(`<div class="cerhead"><div class="eyebrow">${yrName(Q.y || S.year)} ${PHASES[ph].n} · ${Q.wk || 7}주차를 마치고</div>
+      <h2 style="font-size:26px;margin-top:2px">${esc(RQ_T.title)}</h2></div>
+    <div class="opt rq-sum" style="cursor:default;margin-top:12px;border-color:var(--brass);padding:14px 20px">
+      ${row(RQ_T.wy, P.wy)}${row(RQ_T.ch, P.ch)}${P.it ? row(RQ_T.it, P.it, true) : ""}
+      <div class="rq-row rq-tot"><span></span><b${net < 0 ? ` class="dn"` : ""}>${net < 0 ? "−" : "+"}${fmt(Math.abs(net))} G</b></div></div>
+    <div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">${esc(RQ_T.ok)}</button></div>`, () => {
+    const ok = $("#cerOk"); if(!ok) return;
+    ok.onclick = () => { if(R.done) return; R.done = true; closeModal(); rqDone(); };
+  }, true);
+}
+function rqDone(){
+  S.townLock = 0;                                                             // 마을이 열린다 (메뉴 단추의 자물쇠가 풀린다)
+  if(S.rqst) S.rqst.step = 2;
+  R.live = false;
+  if(typeof tutSeen === "function" && !tutSeen("13") && !(UI.ceremonies || []).some(c => c && c.type === "tut" && String(c.page) === "13"))
+    queueCeremony({type: "tut", page: "13"});                                 // 의뢰 안내 — 이야기 중에 다시 불러와 줄이 비었어도 바로 다음에 (보통은 tryGuildJob 다음 줄에 이미 있다)
+  try{ save(); }catch(e){}
+  try{ render(); }catch(e){}                                                  // 메뉴 단추의 자물쇠를 바로 풀어 보인다 (다음 팝업 뒤로)
+  showCeremony();                                                             // 다음 의식 — 의뢰 안내(운영 안내 13) · 곡은 계절 곡으로 (BGM.rq_env 의 xf)
+}
+/* showCeremony — {type: "rqst"} 차례가 오면 (세이브의 step 부터) */
+function rqPlay(c){
+  if(!S || !S.rqst || (S.rqst.step | 0) >= 2){ R.live = false; showCeremony(); return; }
+  R.live = true;
+  if((S.rqst.step | 0) <= 0) return void rqOpen(Math.max(0, Math.min(RQ_CUES.length - 1, S.rqst.cue | 0)));
+  return rqSum();
+}
+/* render 끝 — 장면 중에 나갔다가 다시 열면 그 자리부터 (이 창에서 이미 띄운 것 · 다른 창 · 팝업 · 전투가 있으면 기다린다) */
+function rqAfter(){
+  if(!S) return;
+  if(S.townLock && typeof jobUnlocked === "function" && jobUnlocked() && !(S.rqst && (S.rqst.step | 0) < 2)) S.townLock = 0;   // 의뢰가 이미 열렸는데 잠겨 있으면 (예전 다섯 쪽 · 끝난 이야기) 연다
+  if(!S.rqst || (S.rqst.step | 0) >= 2 || R.live || R.on || R.pend) return;
+  const idle = () => {
+    const mr = document.getElementById("modalRoot");
+    return !(UI.wrun || UI.battle || UI.pendingTour || (UI.ceremonies || []).length || (mr && mr.innerHTML.trim()) || document.getElementById("bootLoader")
+      || (typeof OP !== "undefined" && OP) || (window.FST && FST.state && FST.state.on) || (window.RVST && RVST.state && (RVST.state.on || RVST.state.live))
+      || document.documentElement.classList.contains("modal-open"));
+  };
+  if(!idle()) return;
+  R.pend = true;
+  setTimeout(() => {
+    R.pend = false;
+    if(!S || !S.rqst || (S.rqst.step | 0) >= 2 || R.live || R.on || !idle()) return;
+    R.live = true;
+    queueCeremony({type: "rqst"});
+    showCeremony();
+  }, 0);
+}
+/* 미리 보기 (목업 조작판) — 지금 학생으로 i 번째 줄부터 · 끝나면 그냥 닫는다 (세이브 · 돈 · 마을 잠금을 건드리지 않는다 · 오른쪽 위 건너뛰기) */
+function rqPreview(i){
+  if(R.on) return false;
+  const T = rqTrio(); if(!T) return false;
+  R.preview = true; R.pv = {paladin: T.paladin, darkpriest: T.darkpriest, wizard: T.wizard};
+  rqOpen(Math.max(0, Math.min(RQ_CUES.length - 1, i | 0)));
+  return true;
+}
+/* 다시 보기 (1023 — 마스터 책상 모래시계의 시나리오 팝업 · SCEN.play) — 처음부터 · 받은 배우 {직업: {id, name, uniq, job}}(그때 이름) ·
+   미리 보기와 같다: 세이브 · 돈 · 마을 잠금을 건드리지 않고 오른쪽 위 건너뛰기 · 끝나면 그냥 닫고 마스터 노트로 */
+function rqReplay(cast){
+  if(R.on || R.ending || !cast) return false;
+  R.preview = true; R.pv = cast;
+  rqOpen(0);
+  return true;
+}
+function rqReset(){ R.sess++; R.on = false; R.ending = false; R.live = false; R.pend = false; R.preview = false; R.typing = null; R.wait = null; rqTeardown(); }
+window.RQST = {start: rqStart, play: rqPlay, after: rqAfter, preview: rqPreview, replay: rqReplay, reset: rqReset, end: rqEnd, advance: rqAdvance,
+  state: R, cues: RQ_CUES, scenes: RQ_SCENES, face: RQ_FACE, npcFace: rqNpcFace, trio: rqTrio, pay: rqPay, letter: RQ_LETTER, T: RQ_T, bgmAt: rqBgmAt, stateAt: rqState};
+})();
+/* RQST_END */
+/* SCEN_START — 시나리오 다시 보기 (1023 · apply_scen.py) ─ 사용자 1023: '처음 볼 때는 무조건 건너뛰기를 안보여주고 마스터 화면의 모래시계를 시나리오 팝업으로 하고
+   처음으로 시나리오 완료 시 해당 모래 시계를 클릭하면 나오는 팝업에 버튼으로 등록하도록 하자. 거기서 재생을 하면 건너뛰기 가능하게 하고'.
+   · 시나리오 — 01 '첫 번째 시간표'(FST) · 02 '한 번만 더'(RVST) · 03 '저희도 학원을 지키고 싶어요'(RQST). 블록이 있고 replay 가 있는 것만.
+   · 등록 — 처음 끝내면(장면이 끝난 때 — 01 S.fsTut 2 · 02 S.rvst.step 1 이상 · 03 S.rqst.step 1 이상) S.scen[키] = {cast: {직업: {id, name, uniq}}} (세이브 — 학원마다).
+     render 끝(SCEN.after)이 적는다 — 그때 학생 이름을 남겨 둔다 (졸업 · 퇴학한 뒤에도 다시 보기 · 이명은 빼고 그때 이름). 예전 세이브도 같은 기준으로 (본 적 있으면 등록).
+   · 처음 보는 진짜 흐름에는 건너뛰기가 없다 (FST · RVST · RQST — 각 블록). 다시 보기에는 오른쪽 위 건너뛰기.
+   · 마스터 책상(가로 화면)의 모래시계(MDESK act story) → 책상 팝업(UI.mdeskPop "story" · SCEN.popBody) ·
+     세로 · 좁은 화면(책상 없음)은 마스터 노트 학원 정보의 '시나리오' 단추 → 같은 목록 창(SCEN.open).
+   · 다시 보기 — 각 블록의 replay(배우): 세이브 · 돈 · 관계 · 손패를 건드리지 않는다. 끝나면(건너뛰기 · 마지막) 마스터 노트로.
+     01 은 스케줄 화면에서 튜토리얼 카드 아홉 장을 손패에 잠깐 얹었다가 원래 손패로 (FST.replay — 02 단계는 스케줄을 바로 연다). */
+(() => {
+const SCEN_LIST = [
+  {k: "fst", n: "01", t: "첫 번째 시간표"},
+  {k: "rvst", n: "02", t: "한 번만 더"},
+  {k: "rqst", n: "03", t: "저희도 학원을 지키고 싶어요"}
+];
+const SCEN_T = {title: "시나리오", none: "아직 다시 볼 시나리오가 없다.", close: "닫기"};
+const SCEN_JOBS = ["paladin", "darkpriest", "wizard"];
+function scenApi(k){ const a = k === "fst" ? window.FST : k === "rvst" ? window.RVST : k === "rqst" ? window.RQST : null; return a && typeof a.replay === "function" ? a : null; }
+/* 처음 끝냈는가 — 장면이 끝난 때 (요약 · 팝업이 남아 있어도) */
+function scenDone(k){
+  if(!S) return false;
+  if(k === "fst") return S.fsTut === 2;
+  if(k === "rvst") return !!(S.rvst && (S.rvst.step | 0) >= 1);
+  if(k === "rqst") return !!(S.rqst && (S.rqst.step | 0) >= 1);
+  return false;
+}
+/* 배우 — 02 · 03 은 이야기에 든 학생 id · 01 은 첫 시간표처럼 직업으로 (암흑 사제는 개교 멤버 dp1 먼저) */
+function scenCast(k){
+  const L = S.students || [], ids = k === "rvst" ? (S.rvst && S.rvst.cast) : k === "rqst" ? (S.rqst && S.rqst.cast) : null, out = {};
+  SCEN_JOBS.forEach(j => {
+    const st = ids ? L.find(s => s && s.id === ids[j]) : ((j === "darkpriest" && L.find(s => s && s.uniq === "dp1")) || L.find(s => s && s.job === j));
+    if(st) out[j] = {id: st.id, name: st.name, uniq: st.uniq || null};
+  });
+  return out;
+}
+/* 처음 끝낸 시나리오를 적는다 (render 끝 · 목록을 열 때) — 적은 것이 있으면 true */
+function scenSync(){
+  if(!S) return false;
+  let add = false;
+  SCEN_LIST.forEach(s => {
+    if((S.scen && S.scen[s.k]) || !scenApi(s.k) || !scenDone(s.k)) return;
+    S.scen = S.scen || {};
+    S.scen[s.k] = {cast: scenCast(s.k)};
+    add = true;
+  });
+  return add;
+}
+/* 다시 보기 배우 — 그때 이름 (이명은 빼고 · 지금 학원에 없어도) · 모르는 자리는 직업 이름 */
+function scenActors(k){
+  const e = S.scen && S.scen[k], c = (e && e.cast) || {}, out = {};
+  SCEN_JOBS.forEach(j => {
+    const x = c[j];
+    out[j] = {id: x ? x.id : null, name: x ? x.name : ((JOBS[j] && JOBS[j].name) || ""), uniq: x ? x.uniq : null, job: j};
+  });
+  return out;
+}
+function scenReady(){ return SCEN_LIST.filter(s => S && S.scen && S.scen[s.k] && scenApi(s.k)); }
+/* 목록 — 마스터 책상 팝업(UI.mdeskPop "story")과 좁은 화면 창이 같이 쓴다 */
+function scenPopBody(){
+  scenSync();
+  const done = scenReady();
+  return `<section class="panel scen-pop"><div class="panel-h"><h2>${esc(SCEN_T.title)}</h2></div>`
+    + (done.length ? `<div class="scen-list">${done.map(s => `<button type="button" class="btn scen-btn" data-scen="${s.k}"><b>${s.n}</b><span>${esc(s.t)}</span></button>`).join("")}</div>`
+                   : `<div class="empty scen-none">${esc(SCEN_T.none)}</div>`)
+    + `</section>`;
+}
+/* 좁은 화면 — 마스터 노트의 '시나리오' 단추 */
+function scenOpen(){
+  showModal(scenPopBody() + `<div class="btnrow" style="margin-top:14px"><button class="btn primary" id="scenClose">${esc(SCEN_T.close)}</button></div>`, () => {
+    const c = $("#scenClose"); if(c) c.onclick = () => closeModal();
+    document.querySelectorAll("#modalRoot .scen-pop [data-scen]").forEach(b => b.onclick = () => { closeModal(); scenPlay(b.dataset.scen); });
+  });
+}
+function scenPlay(k){
+  const api = scenApi(k);
+  if(!api || !S || !S.scen || !S.scen[k]) return false;
+  return api.replay(scenActors(k));
+}
+function scenAfter(){ try{ scenSync(); }catch(e){} }
+window.SCEN = {list: SCEN_LIST, T: SCEN_T, sync: scenSync, done: scenDone, ready: scenReady, actors: scenActors, popBody: scenPopBody, open: scenOpen, play: scenPlay, after: scenAfter};
+})();
+/* SCEN_END */
 /* TFWIN_START — 대회 편성 창 (1019 · apply_tfwin.py) ─ mockups/tour-formation 목업 그대로. '대진 확정'(scout 단계) 자리에 뜬다:
    가을 대회 컵(시내 · 광역 · 본선 — 라운드마다 · 1팀 대회도) · 친선전(경기 전에 한 번) · 봄 신인전(경기마다 — 상대가 경기마다 다르다) ·
    예선 리그(1019 ③ — 라운드마다 · 조 순위 · 우리 일정) · 본선 결승(1019 ③ — 세트마다 · 세트판 · 세트를 진 상대가 바꾼 진형은 맞붙기 전까지 숨김).
@@ -33987,6 +34938,10 @@ const BGM = {
   /* 초반 스토리 02 '한 번만 더' (1022 · RVST) — 대화 장면부터 개인 행동 안내 한 장까지 · 운영 안내에서 계절 곡으로 2.6초에 걸쳐.
      사용자가 준 '라이벌.ogg' (116초 · 원곡 그대로 — 봄 곡보다 7.8dB 커서 v .4 로 봄 곡과 같은 크기) */
   rival:    {f:"rival.ogg", v:.4, xf:2.6},
+  /* 초반 스토리 03 '저희도 학원을 지키고 싶어요' (1022 · RQST) — 사용자가 준 두 곡 (끝 무음만 덜어 냄 · lazy — 장면이 열릴 때 받는다).
+     '혼자 짊어진 것' Q17 은행 → 길드 → 정문 (−10.9 LUFS → v .57 로 봄 곡과 같은 크기) · '작은 봉투' Q45 → 요약 팝업 (−16.5 LUFS · v 1) */
+  rq_alone: {f:"rq_alone.ogg", v:.57, xf:2.6, fin:1.6, lazy:true},
+  rq_env:   {f:"rq_env.ogg", v:1, xf:2.6, lazy:true},
   /* 원정 (1021 둘째 — 사용자 '각 원정의 지역곡/전투곡/보스곡 추가해주고') — 벨트 원정: 띠를 걷는 동안 지역곡 · 전투 1 · 2 는 전투곡 · 셋째(90% 보스 방)는 보스곡 (beltBgm — 원정지 id 로).
      keep — 지역곡은 전투가 끝나면 멈춘 자리부터 잇는다 (원정 창을 열 때 처음부터 — audForget) · lazy — 첫 접속 로딩 화면에서 받지 않는다 (15곡 27MB — 원정 창을 열 때 그 원정지 셋만) */
   ex_d1:        {f:"exped_training.ogg", v:.9, keep:true, lazy:true},
@@ -34272,6 +35227,10 @@ const SFX = {
   fs_clat: {f:"fs_clatter.ogg", v:.75},
   fs_glint:{f:"fs_glint.ogg", v:.9},
   fs_slam: {f:"fs_slam.ogg"},
+  /* 초반 스토리 03 (1022 · RQST) — 길드 문종 '딸랑딸랑' · 의뢰서를 핀에서 떼는 소리 · 접힌 편지를 펼치는 소리 (합성 — tools/gen/sfx/rq_sfx.py · 녹음이 있으면 같은 이름으로 덮어쓴다) */
+  rq_bell: {f:"rq_bell.ogg", v:.75},
+  rq_tear: {f:"rq_tear.ogg", v:.9},
+  rq_paper:{f:"rq_paper.ogg", v:.9},
   /* 원정 지도 (1016 · apply_exmap) — 목업의 짧은 소리를 같은 파형으로 합성 (tools/gen/sfx/exmap_sfx.py · v 는 설정 효과음 70 에서 목업과 같은 크기).
      원정지 핀에 마우스 · 닫힌 핀 · 나무판 ◀ ▶ (pick_hop 과 같은 파일을 목업 크기로) · 이동 중 발소리 셋 (학생 차례마다 음 높이 — 같은 소리는 55ms 안에 두 번 못 내서 셋으로 나눴다) */
   xm_hover:{f:"xm_hover.ogg", v:.192},
