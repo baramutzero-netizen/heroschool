@@ -1978,6 +1978,44 @@ html[lang="ja"] .crec-bub,html[lang^="zh"] .crec-bub{word-break:normal}   /* 일
 .spst .rv-card b{max-width:min(720px,calc(100vw - 48px))}
 .spst .rv-skip[hidden]{display:none}
 /* SPST_CSS_END */
+/* TCOM_CSS_START — 대회 중계 · 해설 자막 (1024 목업 · apply_tcom.py) ─ 사용자 1024: '실황 텍스트 위치 좌측 학원 이름 위쪽으로 · 캐릭터 프로필 아이콘은 시나리오 느낌으로 바깥에 꺼내놓자'
+   자리는 블록이 우리 학원 이름표(.bf-school.ally) 바로 위 · 왼쪽 끝을 맞춘다 (못 찾으면 전장 · 화면 왼쪽 아래).
+   → 이름표는 시나리오처럼 띠 위 왼쪽 탭 → '얼굴을 해설/실황 텍스트 옆에' — 얼굴은 띠 왼쪽 옆 · 띠는 사용자 시안 그대로 (어두운 띠 · 금빛 테두리 · 이름표 · 자막). 해설은 푸른 테두리 · 흥분한 실황은 밝은 금빛 */
+.tcom-cap{position:fixed;left:16px;bottom:18px;z-index:95;width:min(640px,calc(100vw - 32px));box-sizing:border-box;pointer-events:none;color:#f4ead8;animation:tcomIn .18s ease-out both}
+.tcom-cap[hidden]{display:none}
+.tcom-cap.out{animation:tcomOut .2s ease-in both}
+/* 얼굴 — 이름표 탭 바로 오른쪽 · 띠 위에 올라앉는다 (사용자 1024 '이쪽에 둬보자' 그림) · 192 칸 그림판(이펙트와 같은 크기)에 초상화 128 을 (32, 40) 자리에 — 이펙트 그림과 맞물리게
+   (그림판 아래 1/8 은 비어 있다 — 그만큼 띠 안쪽으로 내려 띠 윗변에 닿게) */
+.tcom-face{position:absolute;left:-16px;bottom:calc(100% - 25px);width:168px;height:168px;z-index:-1}   /* 1024 사용자 — 얼굴을 왼쪽 끝(이름표 자리)으로 · 5px 아래로 · 초상화 왼쪽 끝 = 띠 안쪽 12px */
+.tcom-face img{position:absolute;display:block;image-rendering:pixelated}
+.tcom-pt{left:16.667%;top:20.833%;width:66.667%;height:66.667%;filter:drop-shadow(1.5px 0 0 #140a0c) drop-shadow(-1.5px 0 0 #140a0c) drop-shadow(0 -1.5px 0 #140a0c)}
+/* 흥분한 실황(tone 2 — .hot) — 스킬 강화 완료 화면의 등 뒤 그림 · 앞 번개를 캐스터 색으로 (사용자 1024 '이펙트 이거 말하는거였어 캐릭터 뒤에 있는거. 실황 캐릭터 색상에 맞춰서') */
+.tcom-bb,.tcom-bf{inset:0;width:100%;height:100%;opacity:0;transform:scale(.7);transition:opacity .2s,transform .26s cubic-bezier(.3,1.5,.5,1)}
+.tcom-cap.hot .tcom-bb,.tcom-cap.hot .tcom-bf{opacity:1;transform:none}
+.tcom-body{position:relative;padding:11px 16px 12px;min-height:30px;
+  background:rgba(33,27,32,.94);border:1px solid #c9a36a;border-radius:8px;box-shadow:0 8px 25px rgba(0,0,0,.45)}
+/* 이름표 — 시나리오처럼 띠 위 탭 (네모 점 · 금빛 글) · 1024 사용자 '해설 텍스트를 쭉 우측으로' — 띠 위 오른쪽 끝 */
+.tcom-nm{position:absolute;right:14px;top:-26px;height:26px;box-sizing:border-box;display:flex;align-items:center;gap:7px;padding:0 11px 0 9px;
+  font-weight:400;font-size:12px;line-height:1;color:#ffd36a;background:rgba(33,27,32,.96);border:1px solid #c9a36a;border-bottom:0;border-radius:6px 6px 0 0}
+.tcom-nm{display:none}   /* 1024 사용자 '해설/실황 텍스트 숨김처리 해볼까' — 이름표 탭은 숨긴다 (글은 그대로 채워 둔다 · 다시 보이려면 이 줄만 지운다) */
+.tcom-nm::before{content:"";width:9px;height:9px;flex:none;background:#ffd36a;box-shadow:0 0 0 2px #140a0c}
+.tcom-tx{display:block;font-size:clamp(14px,1.45vw,18px);line-height:1.45;font-weight:700;word-break:keep-all;overflow-wrap:anywhere}
+.tcom-cap.hot .tcom-body,.tcom-cap.hot .tcom-nm{border-color:#ffc86d}
+.tcom-cap.hot .tcom-body{box-shadow:0 0 0 1px rgba(255,200,109,.35),0 8px 25px rgba(0,0,0,.45)}
+.tcom-cap.hot .tcom-tx{color:#ffe4b2}
+.tcom-cap.an .tcom-body,.tcom-cap.an .tcom-nm{border-color:#7fa3c9}
+.tcom-cap.an .tcom-nm{color:#bcd6f2}
+.tcom-cap.an .tcom-nm::before{background:#9cc0e6}
+@keyframes tcomIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes tcomOut{to{opacity:0;transform:translateY(6px)}}
+@media (max-width:640px){
+  .tcom-face{width:112px;height:112px;left:-7px;bottom:calc(100% - 18px)}
+  .tcom-nm{right:10px}
+  .tcom-body{padding:8px 10px 9px}
+  .tcom-tx{font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){.tcom-cap,.tcom-cap.out{animation:none}.tcom-bb,.tcom-bf{transition:none}}
+/* TCOM_CSS_END */
 /* SCOUTWIN_CSS_START — 겨울 스카우트 개편 (1019 · apply_scout.py) ─ 목록 · 확인 팝업은 건물 안 창 색(TOWNIN 과 같은 값 — 밝은 · 어두운 화면 · 도트 마감 · 팔레트와 상관없이 같다 ·
    게임이 모든 button 에 붙이는 테두리 · 그림자는 html body #view / #modalRoot … 로 걷는다). 설득 대화는 상담창(.cw-* — CSLWIN_CSS) 그대로에 효과만 (.scw-cw) */
 .scw,.scw-pal{--scw-ink:#fff4e6;--scw-line:#e9cdbf;--scw-edge:#b98f84;--scw-win:#2a1418;--scw-panel:#42191f;--scw-card:#5b2a30;--scw-gold:#ffd36a;--scw-dim:#e2c2b6;
@@ -8004,7 +8042,7 @@ const OPT_FIELD_PASTEL = false;     // 전투 배경 파스텔 필터 켜고 끄
 const OPT_XFER_FILE    = false;     // 이어하기 — 파일로 내보내기 · 파일에서 불러오기
 const OPT_PIXEL_FONT   = false;     // 도트 폰트 켜고 끄기 (1004 — 숨긴 동안은 모두 기본값: 켬)
 const OPT_BATTLE_CAM   = true;      // 전투 연출 심플 · 스타일리시 (1004 숨김 → 1022 다시 보임 — 사용자 · 기본값은 스타일리시)
-const PREF = {bspeed: 280, reportSpeed: 2, chronicleTest: false, uiConcept: "riso-pixel", uiV: 4, lvPopup: true, fieldPastel: false, pixelFont: true, bfGrid: false, battleCam: "stylish", schedScroll: true, skillPick: "all", koFont: "mulmaru"};
+const PREF = {bspeed: 280, reportSpeed: 2, chronicleTest: false, uiConcept: "riso-pixel", uiV: 4, lvPopup: true, fieldPastel: false, pixelFont: true, bfGrid: false, battleCam: "stylish", schedScroll: true, skillPick: "all", koFont: "mulmaru", tcom: "both"};
 /* uiV 4 — 삽화를 기본으로 적용하고 이전 화면 분위기 선택은 숨긴다. */
 try{
   const j = JSON.parse(localStorage.getItem(PREF_KEY) || "null");
@@ -8020,7 +8058,8 @@ try{
   if(j && typeof j.bfGrid === "boolean") PREF.bfGrid = j.bfGrid;
   if(j && typeof j.schedScroll === "boolean") PREF.schedScroll = j.schedScroll;   // 두루마리 스케줄 (1006)
   if(j && ["all","mine","foe","off"].includes(j.skillPick)) PREF.skillPick = j.skillPick;   // 기술 선택 연출 (1015 — 기본은 모든 학생)
-  if(j && ["mulmaru","galmuri"].includes(j.koFont)) PREF.koFont = j.koFont;                  // 한국어 글꼴 — 물마루 · 갈무리11 (1017)
+  if(j && ["mulmaru","galmuri"].includes(j.koFont)) PREF.koFont = j.koFont;
+  if(j && ["both","sub","off"].includes(j.tcom)) PREF.tcom = j.tcom;   // 1024 — 대회 중계 (TCOM) — 음성 + 자막 · 음성 숨김 · 숨김                  // 한국어 글꼴 — 물마루 · 갈무리11 (1017)
   if(j && j.sign && Array.isArray(j.sign.s) && j.sign.s.length) PREF.sign = j.sign;          // 결재 서명 — 이 브라우저에 남는다 (1006)
   if(j && ["simple","stylish"].includes(j.battleCam) && OPT_BATTLE_CAM) PREF.battleCam = j.battleCam;   // 0930 — 스타일리시가 기본. 예전 "basic" 저장값은 한 번 무시한다 · 설정을 숨긴 동안은 모두 기본값(1004)
 }catch(e){}
@@ -20885,7 +20924,7 @@ function seasonWatch(r, i){
   }
   const m = seasonBattle(U.SE, U.vg, U.C.order, r, i);
   if(!m){ toast("경기를 불러오지 못했다."); return; }
-  openBattle(m.b, {titleA:m.A.acad, titleB:m.B.acad, field:"citytournament", bgm:"league", jingle:true,   /* 3인 리그 — 시내 대회 필드 (1007 · 예전: 본선 필드) */
+  openBattle(m.b, {titleA:m.A.acad, titleB:m.B.acad, field:"citytournament", bgm:"league", jingle:true, tcom:"league3", tcomUs:(U.C.order[rr[r][i][1]] === leagueId() ? "B" : "A"),   /* 1024 — 대회 중계 (TCOM) · 3인 리그 — 시내 대회 필드 (1007 · 예전: 본선 필드) */
     head:`시즌 ${seasonNo(U.SE.n)} · ${r+1}라운드 — ${m.A.acad} 대 ${m.B.acad}`, doneLabel:"닫는다"}, ()=> render());
 }
 /* 화면에 떠 있는 동안 남은 시간을 센다 */
@@ -21541,7 +21580,7 @@ function l5Watch(r, i){
   }
   const m = l5Battle(U.SE, U.vg, U.C.order, r, i);
   if(!m){ toast("경기를 불러오지 못했다."); return; }
-  openBattle(m.b, {titleA:m.A.acad, titleB:m.B.acad, field:"final", bgm:"league", jingle:true,
+  openBattle(m.b, {titleA:m.A.acad, titleB:m.B.acad, field:"final", bgm:"league", jingle:true, tcom:"league5", tcomUs:(U.C.order[rr[r][i][1]] === leagueId() ? "B" : "A"),   // 1024 — 대회 중계 (TCOM)
     head:`5인 리그 시즌 ${l5No(U.SE.n)} · ${r+1}라운드 — ${m.A.acad} 대 ${m.B.acad}`, doneLabel:"닫는다"}, ()=> render());
 }
 let L5_T = 0;
@@ -22497,7 +22536,7 @@ function viewOpt(){
   const gridPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>전투 배치 격자</b><span>전투 화면 바닥에 학생이 설 자리(격자)를 표시한다. 기본은 표시하지 않는다.</span></div><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="optBfGrid" ${PREF.bfGrid?"checked":""}> 표시</label></div></section>`;
   const camPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>전투 연출</b><span>스타일리시 모드는 넓은 화면에서만 — 행동 게이지가 차오르고, 차례가 온 학생과 스킬 대상을 카메라가 가까이 잡아 보여 준다. 좁은 화면에서는 심플 모드로 돈다.</span></div><div class="ui-concept-picker" role="group" aria-label="전투 연출"><button type="button" class="btn" data-battle-cam="simple" aria-pressed="${PREF.battleCam!=="stylish"}">심플 모드</button><button type="button" class="btn" data-battle-cam="stylish" aria-pressed="${PREF.battleCam==="stylish"}">스타일리시 모드</button></div></div></section>`;
   const skPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>두루마리 스케줄</b><span>넓은 화면의 스케줄을 책상 위 두루마리로 보여 준다. 결재는 깃펜을 잉크 단지에 찍어 서명한다. 끄면 예전 스케줄 화면.</span></div><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="optSchedScroll" ${PREF.schedScroll!==false?"checked":""}> 켜기</label></div>${PREF.sign? `<div class="optrow" style="margin-top:8px"><div class="optlab"><b>저장된 서명</b><span>결재 때 쓰는 서명. 지우면 다음 결재 때 새로 그린다 — 서명줄에 새로 그어도 바뀐다.</span></div><button class="btn sm" id="optSignClear">서명 지우기</button></div>` : ""}</section>`;   // 두루마리 스케줄 (1006)
-  return langPanel() + scalePanel() + conceptPanel + koFontRow() + (OPT_PIXEL_FONT ? pxPanel : "") + skPanel + lvPanel + (OPT_FIELD_PASTEL ? fpPanel : "") + gridPanel + (OPT_BATTLE_CAM ? camPanel : "") + errPanel() + xferPanel() + `<section class="panel"><div class="optrow"><div class="optlab"><b>애니메이션 테스트</b><span>공통 몸체와 부위별 착용 레이어의 동작을 확인합니다.</span></div><button class="btn" id="avatarLabOpen">테스트 열기</button></div></section><section class="panel"><div class="optrow"><div class="optlab"><b>진행 페이지 테스트 모드</b><span>양피지 책으로 일정과 학생 집중 훈련을 기록합니다. 기본은 꺼짐이며 다른 페이지는 유지됩니다.</span></div><label><input type="checkbox" id="chronicleToggle" ${PREF.chronicleTest?"checked":""}> 사용</label></div></section><section class="panel">
+  return langPanel() + scalePanel() + conceptPanel + koFontRow() + (OPT_PIXEL_FONT ? pxPanel : "") + skPanel + lvPanel + (OPT_FIELD_PASTEL ? fpPanel : "") + gridPanel + (OPT_BATTLE_CAM ? camPanel : "") + (window.TCOM ? TCOM.prefPanel() : "") + errPanel() + xferPanel() + `<section class="panel"><div class="optrow"><div class="optlab"><b>애니메이션 테스트</b><span>공통 몸체와 부위별 착용 레이어의 동작을 확인합니다.</span></div><button class="btn" id="avatarLabOpen">테스트 열기</button></div></section><section class="panel"><div class="optrow"><div class="optlab"><b>진행 페이지 테스트 모드</b><span>양피지 책으로 일정과 학생 집중 훈련을 기록합니다. 기본은 꺼짐이며 다른 페이지는 유지됩니다.</span></div><label><input type="checkbox" id="chronicleToggle" ${PREF.chronicleTest?"checked":""}> 사용</label></div></section><section class="panel">
     <div class="panel-h"><h2>설정</h2><span class="hint">빌드 ${esc(BUILD)} · 규칙 ${RULES_VER} · 전투 연출과 화면 표시를 조절한다</span></div>
     <div class="optrow">
       <div class="optlab">
@@ -26063,6 +26102,7 @@ function bindView(){
   document.querySelectorAll("[data-battle-cam]").forEach(b=> b.onclick = ()=>{ PREF.battleCam = b.dataset.battleCam; prefSave();
     document.querySelectorAll("[data-battle-cam]").forEach(x=> x.setAttribute("aria-pressed", String(x.dataset.battleCam === PREF.battleCam)));
     toast(PREF.battleCam==="stylish"? "스타일리시 모드 — 넓은 화면의 전투에서 카메라 연출이 켜진다." : "심플 모드로 전투를 본다."); });
+  if(window.TCOM) TCOM.prefBind();   // 1024 — 대회 중계 설정
   { const bg = $("#optBfGrid"); if(bg) bg.onchange = ()=>{ PREF.bfGrid = bg.checked; prefSave(); bfGridApply(); toast(bg.checked? "전투 배치 격자를 표시한다." : "전투 배치 격자를 숨겼다."); }; }
   document.querySelectorAll("[data-kofont]").forEach(b=> b.onclick = ()=> koFontSet(b.dataset.kofont));   // 한국어 글꼴 (1017)
   { const px = $("#optPixelFont"); if(px) px.onchange = ()=>{ PREF.pixelFont = px.checked; prefSave(); pixelFontApply(px.checked); toast(px.checked? "도트 폰트를 켰다." : "도트 폰트를 껐다."); }; }
@@ -29789,6 +29829,7 @@ function openBattle(res, opt, onDone){
   const drawerHtml = (f, logs)=> battlePanel==='stats'?`${statBox(f, "B", opt.titleB||"상대", true)}${statBox(f, "A", opt.titleA||"우리 팀", false)}`: `<div class="blog" id="blog">${logs.map(x=>`<div class="ln ${x.cls}">${x.line}</div>`).join("")}</div>`;
   const draw = ()=>{
     drawnPrev = drawnI; drawnI = i;
+    if(window.TCOM) TCOM.see(btId, res, i, opt);   // 1024 — 대회 중계 · 해설 (TCOM) — 우리 학원의 광역 대회 · 예선 리그 · 본선 경기만
     if(DROP && !dropAt && i >= res.frames.length-1){   // 1018 — 끝 장면을 처음 그린다: 유물 떨어뜨리기 시작 · 뿅 소리 (그새 전투 화면이 닫혔으면 울리지 않는다)
       dropAt = performance.now();
       DROP.list.forEach((r, q)=> setTimeout(()=>{ if(document.querySelector(`#modalRoot .modal[data-bt="${btId}"]`)) sfxPlay("relic_pop"); }, RD_POP + q * RD_GAP));
@@ -29858,9 +29899,9 @@ function openBattle(res, opt, onDone){
     $("#modalRoot").querySelectorAll('[data-bpanel]').forEach(btn=>btn.onclick=()=>{battlePanel=battlePanel===btn.dataset.bpanel?null:btn.dataset.bpanel;draw();});
     $("#bPlay").onclick = ()=> timer? pause() : play();
     $("#bDone").onclick = ()=>{
-      if(i < res.frames.length-1){ if(noSkip) return; pause(); i = res.frames.length-1; bgmEnd(); skipAt = performance.now(); draw(); return; }   // 1021 셋째 — 숨긴 단추를 눌러도 (시험의 click) 건너뛰지 않는다
+      if(i < res.frames.length-1){ if(noSkip) return; pause(); if(window.TCOM) TCOM.skip(btId); i = res.frames.length-1; bgmEnd(); skipAt = performance.now(); draw(); return; }   // 1021 셋째 — 숨긴 단추를 눌러도 (시험의 click) 건너뛰지 않는다
       if(performance.now() - skipAt < 450) return;                      // 두 번 눌러 결과를 못 보고 닫히지 않게
-      pause(); audOver(opt.bgmAfter || null); closeModal(); onDone && onDone(res);   // bgmAfter — 닫은 뒤 이어질 곡 (원정 지역곡 · 1021) · 없으면 밑바닥 곡(계절)
+      pause(); if(window.TCOM) TCOM.close(btId); audOver(opt.bgmAfter || null); closeModal(); onDone && onDone(res);   // bgmAfter — 닫은 뒤 이어질 곡 (원정 지역곡 · 1021) · 없으면 밑바닥 곡(계절)
     };
     $("#modalRoot").querySelectorAll("[data-sp]").forEach(b=> b.onclick=()=>{ bspeedSet(+b.dataset.sp); speed=bspeedNow(); if(timer){pause();play();} draw(); });
     if(window.__btDrawHook) window.__btDrawHook(i, false);              // 시험용 (tools/gen/sim/btpatch_check.py)
@@ -30021,6 +30062,7 @@ function openBattle(res, opt, onDone){
     if(F.fx && !STYLISH_SKILL_FX.targets[skillId]) ((F.fx.t)||[]).forEach(u=>{ const el = uEl(u); if(el) el.insertAdjacentHTML("beforeend", fxHTML(F.fx.n, F.fx.e, Math.max(18, Math.round(speed/(typeof FX_N!=="undefined"?FX_N:8)))/SPR_PLAYBACK_RATE, F.fx.u?1.16:1, performance.now())); });
     const byU = {}; pops.forEach(x=> (byU[x.u] = byU[x.u] || []).push(x));
     Object.keys(byU).forEach(u=> camPop(uEl(u), byU[u]));
+    if(window.TCOM) TCOM.hit(btId, j, e);   // 1024 — 대회 중계 (TCOM) — 스타일리시는 맞는 순간에 실황
     camBars(LF);
     if(tests.length){
       /* 정신력 시험 — 1.5초 흐름 대신 맞는 순간을 조금 보여 준 뒤 맞은 학생에게 천천히 다가간다 (camTest) */
@@ -30041,6 +30083,7 @@ function openBattle(res, opt, onDone){
     stage.style.setProperty("--cam", "none");
     stage.querySelectorAll(".bf-unit.cam-in").forEach(el=>{ el.style.left = el.dataset.ox; el.style.top = el.dataset.oy; el.style.setProperty("--cs", 1); });
     stage.classList.remove("cam-focus");
+    if(window.TCOM) TCOM.out(btId);   // 1024 — 대회 중계 (TCOM) — 줌아웃에 해설 (실황이 말하는 중이면 그 뒤에 이어서)
     const say = ae.querySelector(".cam-say"); if(say) say.remove();
     setMot(ae, "attack", 3);
     faintT.forEach(u=>{ camFell.add(u); const el = uEl(u); if(el){ setMot(el, "down", 3); el.classList.add("dead", "hr-faint"); } });   // 1015 — 정신력 시험에서 기절한 학생은 누운 채 (차례 뒤 다시 그려도 다시 쓰러지지 않게)
@@ -36701,6 +36744,404 @@ window.SPST = {play: spPlay, after: spAfter, replay: spReplay, preview: spPrevie
   state: R, cues: SP_CUES, order: SP_ORDER, face: SP_FACE, T: SP_T, snd: SND, s: spS};
 })();
 /* SPST_END */
+/* TCOM_START — 대회 중계 · 해설 · 관중 (1024 목업 · apply_tcom.py · mockups/tournament-commentary) ─ 자료 tools/tournament-commentary-v1 (사용자가 만든 일본어 음성 14 · 초상화 6 · 재생 규칙).
+   사용자 1024: '전투 사건 연결은 현재 게임 시스템 기준으로 규칙을 정해줘. 언어는 일본어 음성에 자막을 붙이고, 배속은 해설의 속도를 빠르게 하지는 않는 방향으로,
+   결과 보기는 중간에 컷오프하고 바로 승리나 패배 대사로' → '목업부터 만들어보자' → 둘째 (1024): '해설 빈도가 너무 낮아서 규칙을 좀 완화' — 스타일리시 전투는 줌인 · 줌아웃 시점에 맞춘다.
+   · 어느 경기 — 우리 학원의 대회 경기(openBattle 의 opt.field 가 대회 단계)만: 광역 대회(region) 여성 캐스터 혼자 · 예선 리그(qual) · 본선(final) 은 캐스터 + 남성 해설.
+     시내 대회는 관중만 · 친선전 · 신인전 · 원정 · 졸업생 리그 · 실험실은 없다.
+   · 사건은 전투 결과(runBattle 의 frames)를 재생하는 대로 읽는다 (판정에 손대지 않는다) — 장마다 units(체력 · 살아 있음) · pop(머리 위 숫자 dmg · crit · heal · shield) ·
+     cls "ult"(필살기) · actor(행동한 유닛). 우리 학원 = A 편.
+   · 언제 읽나 — 스타일리시 전투(줌인 연출): 한 차례(camTurn)의 '맞는 순간'(숫자가 뜰 때 · TCOM.hit)에 실황 · 줌아웃(TCOM.out)에 해설.
+     심플 연출 · 차례 사이 줄(지속 피해 등): 장을 그릴 때(TCOM.see) 바로.
+   · 실황 — C01 경기 시작 · C02 선공: 처음으로 상대 편에 피해 (C01 이 말하는 중이면 생략) · C03 크리티컬 (같은 장이 필살기 · 다운이면 그쪽만) ·
+     C04 공격 필살기: 필살기 행동(같은 행동자의 이어진 장)에 상대 편 피해 (어느 편이든) · C05 위기: 우리 학생 체력 50% 초과 → 50% 이하 (그 장에 쓰러졌으면 생략) ·
+     C06 반격: 위기에 든 그 학생이 쓰러지지 않고 상대 편에 피해 · C07 첫 다운: 어느 편이든 처음 쓰러짐 · C08 승리 / C09 패배: 마지막 장 (res.winner).
+   · C10 연속 행동 (사용자 1024): 한 편이 차례를 두 번 연달아 가져감 (기술 외침이 있는 장 = 차례) · 말한 뒤 40초 · ×2 · ×3 생략 · 해설 C10A 가 이어서 (음성 사용자 1024).
+   · 1024 더한 대사 (사용자 — C13 · C14 · C16 은 뺐다): C11 영웅의 기상 · C12 기절 (정신력 시험 · 어느 편이든 · 스타일리시는 줌아웃에) · A06 회피 두 번 연달아 ·
+     빈 틈(말이 6초 넘게 없을 때 — idleTick): A09 한 명 남음 > A07 체력 차 > A08 보호막 > C15 팽팽함 (60초에 한 번).
+   · 이어 말하는 해설 C01A ~ C09A (C01A 는 쉰다 — off · 사용자 1024 'C01A 를 재생 안 하게') — 그 실황 뒤에 0.6초 (조건 해설이 기다리고 있으면 그쪽이 먼저 · 자막만 · 사용자 1024).
+   · 해설 — A01 전열 버티기: 상대 공격에 우리 딜러가 아닌 학생만 맞았고 우리 딜러가 살아 있다 · A02 화력 집중: 상대가 쓰러졌고 상대가 아직 남았다 ·
+     A03 지원: 우리 힐러가 아군에게 회복 · 보호막 · 그 아군이 살아 있다 · A04 보조 필살기: 우리 편 필살기인데 상대 편 피해가 없다 · A05 전세: 살아 있는 인원이 적던 편이 많아질 때.
+   · 몇 번 — C03 · C04 · 해설은 말한 뒤 50초가 지나면 다시 (cd) · C02 · C07 은 처음 한 번 (사건이 생기면 소비) · C01 · C05 · C06 은 말하면 끝 (못 말했으면 다음 사건에 다시).
+   · 1024 사용자 '큐가 걸리면 기다렸다가 말하지 말고 쿨타임 발생시키지 말고 다음 타이밍에' — 누가 말하는 중이거나 차례를 기다리는 대사가 있으면 새 사건은 버린다 (busy · 재사용 대기 없음 ·
+     처음 한 번 C02 · C07 은 그대로 소비) · 기다려 이어 말하는 건 이어 말하는 해설(C0nA)과 승패 대사뿐 · 한꺼번에 생긴 사건은 우선이 높은 것 하나.
+   · 말하기 — 한 번에 한 명 · 기다리는 실황 하나 · 해설 하나 (같은 쪽은 우선이 높은 것이 바꾼다) · 실황이 먼저, 해설은 실황 뒤에 이어서 (0.6초) ·
+     실황 대기 4초(위기 · 필살기 · 반격 · 첫 다운은 8초) · 해설 대기 8초 지나면 버림 · 줄 사이 2초 · 말하는 동안 배경음 · 관중 −6dB(0.15초 → 풀 때 0.4초).
+   · 배속 — 목소리는 늘 1배 (빠르게 틀지 않는다) · ×2 · ×3 이면 해설 · 선공 · 크리티컬은 말하지 않는다 (큰 사건만).
+   · 결과로 건너뛰기 · 경기가 끝남 — 말하던 것을 0.15초에 끊고 대기를 버리고 0.3초 뒤 승리 · 패배 대사. 전투 창을 닫으면 모두 멈춘다.
+   · 화면 — 우리 학원 이름표(.bf-school.ally) 오른쪽에 아랫변을 맞춰 자막 띠 (사용자 1024) · 얼굴은 띠 위 왼쪽 끝에 올라앉고 (5px 아래로) 이름표 탭은 띠 위 오른쪽 끝 (사용자 1024 '얼굴을 왼쪽으로' → '해설 텍스트를 쭉 우측으로') · 흥분한 실황(C04 · C06 · C08)은 얼굴 뒤 · 앞에 스킬 강화 완료 화면의 이펙트를 캐스터 색으로 (사용자 1024 '캐릭터 뒤에 있는거. 실황 캐릭터 색상에 맞춰서' — assets/commentary/burst-back · burst-front.png). 음성은 일본어 · 자막은 그 언어 (일본어판은 일본어 원문).
+   · 관중 (사용자 1024 '함성도 같이' · '경기 등급 기준으로 볼륨 차이') — 시내 대회부터 · 크기 시내 .3 · 광역 .45 · 예선 리그 .6 · 본선 .75 · 본선 결승 .95 (효과음 크기에 곱한다)
+     관중 소리 되풀이 · 시작 박수 · 상대 쓰러짐 / 우리 공격 필살기 → 함성 득점 · 우리 학생 쓰러짐 → 함성 아쉬운 (1.2초에 하나) · 끝 — 승리 함성 · 패배 아쉬움 → 0.9초 뒤 박수
+   · 설정 '대회 중계' (사용자 1024): 음성 + 자막 · 음성 숨김(자막만) · 숨김(중계 없음 — 관중 소리는 그대로) — PREF.tcom both · sub · off.
+   · 졸업생 3인 · 5인 리그도 (opt.tcom league3 · league5 — 캐스터 + 해설 · 관중 .6 · .75 · 내 학원이 B 편이면 opt.tcomUs 'B' 로 편을 바꿔 읽는다) · 이계 대회(차원 포탈)는 같은 대회 단계라 그대로 나온다.
+   · 자동화(navigator.webdriver)에서는 말하지 않는다 — 시험은 window.__tcomForce = true (소리 없이 시험하려면 window.__tcomMute = true) */
+(() => {
+const TC_ASSET = {"face":{"caster-cool":"assets/commentary/caster-cool.png?v=c7fdb7c1","caster-focused":"assets/commentary/caster-focused.png?v=e093c0c1","caster-excited":"assets/commentary/caster-excited.png?v=0432037d","analyst-calm":"assets/commentary/analyst-calm.png?v=7e7b1291","analyst-analysis":"assets/commentary/analyst-analysis.png?v=3d3c989f","analyst-surprised":"assets/commentary/analyst-surprised.png?v=824803b6","burst-back":"assets/commentary/burst-back.png?v=a41b7646","burst-front":"assets/commentary/burst-front.png?v=a62cb247"},"snd":{"C01":"bgm/tc_C01.mp3?v=abedb1d9","C02":"bgm/tc_C02.mp3?v=d6a8c10d","C03":"bgm/tc_C03.mp3?v=01fc9b62","C04":"bgm/tc_C04.mp3?v=1d687bc5","C05":"bgm/tc_C05.mp3?v=7dc3e1c7","C06":"bgm/tc_C06.mp3?v=2aecd8f0","C07":"bgm/tc_C07.mp3?v=844ea583","C08":"bgm/tc_C08.mp3?v=94080e7b","C09":"bgm/tc_C09.mp3?v=5c86b0d4","A01":"bgm/tc_A01.mp3?v=aa6be19d","A02":"bgm/tc_A02.mp3?v=f36ce971","A03":"bgm/tc_A03.mp3?v=a81bc624","A04":"bgm/tc_A04.mp3?v=8ed67cf8","A05":"bgm/tc_A05.mp3?v=27b32d1f","C01A":"bgm/tc_C01A.mp3?v=ef7c545e","C02A":"bgm/tc_C02A.mp3?v=903097c7","C03A":"bgm/tc_C03A.mp3?v=ba653adc","C04A":"bgm/tc_C04A.mp3?v=5251e73e","C05A":"bgm/tc_C05A.mp3?v=f794dca5","C06A":"bgm/tc_C06A.mp3?v=5e295a4f","C07A":"bgm/tc_C07A.mp3?v=b6a78484","C08A":"bgm/tc_C08A.mp3?v=d2dd82e5","C09A":"bgm/tc_C09A.mp3?v=3e30ebcb","C10":"bgm/tc_C10.mp3?v=0f63871e","C10A":"bgm/tc_C10A.mp3?v=4ef0ef5a","C11":"bgm/tc_C11.mp3?v=ec09ca27","C12":"bgm/tc_C12.mp3?v=8eab72f2","C15":"bgm/tc_C15.mp3?v=9ced8794","A06":"bgm/tc_A06.mp3?v=34f4b693","A07":"bgm/tc_A07.mp3?v=3ad65a05","A08":"bgm/tc_A08.mp3?v=f52d63ee","A09":"bgm/tc_A09.mp3?v=2a3b1fd2"},"crowd":{"amb":"bgm/crowd_amb.ogg?v=0729693b","cheer":"bgm/crowd_cheer.ogg?v=0f05102c","groan":"bgm/crowd_groan.ogg?v=d759ec20","clap":"bgm/crowd_clap.ogg?v=5f721627"}};   // apply_tcom.py — {face: {키: 그림 경로?v=}, snd: {대사 ID: 음원 경로}, crowd: {amb · cheer · groan · clap: 관중 소리}} (목업은 자료 폴더 그대로)
+const TC_T = {caster: "실황", analyst: "해설"};
+/* 대사 — who caster · analyst / tone 0 차분 · 1 긴장 · 2 흥분 / face / pr 우선순위(클수록 먼저) / fast 0 — ×2 · ×3 에서 생략 / cd 1 — 말한 뒤 TC_RULE.cd 지나면 다시 / first 1 — 처음 한 번 / ja 음성 원문 · ko 자막 */
+const TC_CUES = {
+  C01: {who: "caster", tone: 0, pr: 10, face: "cool", ja: "両チーム、静かに間合いを詰めていきます。", ko: "양 팀, 조용히 거리를 좁혀 갑니다."},
+  C02: {who: "caster", tone: 1, pr: 20, face: "focused", fast: 0, first: 1, ja: "先に動いた！ 最初の一撃を決めました！", ko: "먼저 움직입니다! 첫 공격을 가져가네요!"},
+  C03: {who: "caster", tone: 1, pr: 30, face: "focused", fast: 0, cd: 1, ja: "隙を突いた！ 鋭い一撃です！", ko: "빈틈을 꿰뚫었습니다! 날카로운 일격!"},
+  C04: {who: "caster", tone: 2, pr: 50, face: "excited", cd: 1, ja: "ここで必殺技！ 一気に仕掛けます！", ko: "여기서 필살기! 단숨에 몰아붙입니다!"},
+  C05: {who: "caster", tone: 1, pr: 40, face: "focused", ja: "危ない！ ここを持ちこたえられるか！？", ko: "위험합니다! 여기서 버틸 수 있을까요?!"},
+  C06: {who: "caster", tone: 2, pr: 60, face: "excited", ja: "耐えた！ まだ倒れません！ ここから反撃です！", ko: "버텼습니다! 아직 쓰러지지 않았어요! 이제 반격입니다!"},
+  C07: {who: "caster", tone: 1, pr: 70, face: "focused", first: 1, ja: "最初に倒れた生徒が出ました！", ko: "먼저 쓰러진 학생이 나왔습니다!"},
+  C08: {who: "caster", tone: 2, pr: 99, face: "excited", ja: "勝負あり！ 最後まで戦い抜いた生徒たちが、勝利をつかみました！", ko: "승부가 결정됐습니다! 끝까지 버텨 낸 학생들이 승리를 가져갑니다!"},
+  C09: {who: "caster", tone: 0, pr: 99, face: "cool", ja: "ここで試合終了！ 残念ですが、今回の挑戦はここまでです。", ko: "여기서 경기 종료! 아쉽지만, 이번 도전은 여기까지입니다."},
+  C10: {who: "caster", tone: 2, pr: 35, face: "excited", fast: 0, cd: 40000, ja: "止まらない！ 連続で畳みかけます！", ko: "멈추지 않습니다! 연달아 몰아칩니다!"},   // 1024 — 몰아치는 연속 행동 (사용자 '한 팀이 턴을 2번 연달아 가져갈 때, 40초 마다') · 음성 사용자 1024 (추천 문구 그대로)
+  /* 1024 사용자 '나머지 적용시키자' (C13 · C14 · C16 은 뺐다) — 음성 사용자 1024 */
+  C11: {who: "caster", tone: 2, pr: 80, face: "excited", cd: 1, ja: "立ち上がった！ これが…これが英雄です！", ko: "일어섰습니다! 이것이… 이것이 영웅입니다!"},   // 정신력 시험 — 영웅의 기상 (어느 편이든 · 줌아웃에 · 사용자 '이것이 영웅입니다! 느낌으로')
+  C12: {who: "caster", tone: 1, pr: 65, face: "focused", cd: 1, ja: "ああっ、耐えきれない！ 意識を失いました！", ko: "아, 버티지 못했습니다! 의식을 잃습니다!"},   // 정신력 시험 — 기절 (어느 편이든 · 줌아웃에)
+  C15: {who: "caster", tone: 1, pr: 3, face: "focused", cd: 60000, idle: 1, ja: "互角です！ どちらも一歩も引きません！", ko: "팽팽합니다! 어느 쪽도 물러서지 않습니다!"},   // 빈 틈 — 다운 없이 30초 넘게
+  A01: {who: "analyst", cd: 1, pr: 5, face: "calm", fast: 0, ja: "前衛が持ちこたえたことで、後衛に攻撃の時間が生まれました。", ko: "전열이 버텨 준 덕분에, 후열이 공격할 시간을 벌었습니다."},
+  A02: {who: "analyst", cd: 1, pr: 5, face: "analysis", fast: 0, ja: "攻撃を妨げる相手がいませんね。今こそ、火力を集中させる好機です。", ko: "공격을 방해할 상대가 없군요. 지금이 화력을 집중할 기회입니다."},
+  A03: {who: "analyst", cd: 1, pr: 5, face: "analysis", fast: 0, ja: "いい支援です。崩れかけた前衛を、見事に立て直しました。", ko: "좋은 지원입니다. 무너지려던 전열을 다시 붙잡았어요."},
+  A04: {who: "analyst", cd: 1, pr: 5, face: "analysis", fast: 0, ja: "直接のダメージ以上に重要なのは、この技が生み出す次の好機です。", ko: "직접적인 피해보다 중요한 건, 이 기술이 만들어 줄 다음 기회죠."},
+  A05: {who: "analyst", cd: 1, pr: 8, face: "surprised", fast: 0, ja: "流れが変わってきました。押されていた側が、主導権を取り戻しています。", ko: "흐름이 바뀌고 있습니다. 밀리던 쪽이 주도권을 되찾았어요."},
+  A06: {who: "analyst", cd: 1, pr: 6, face: "analysis", fast: 0, ja: "なかなか攻撃が当たりませんね。動きを完全に読んでいます。", ko: "공격이 좀처럼 닿지 않네요. 움직임을 완전히 읽고 있습니다."},   // 회피(MISS)가 두 번 연달아
+  A07: {who: "analyst", cd: 60000, pr: 4, face: "analysis", fast: 0, idle: 1, ja: "人数は同じですが、体力差が開いてきました。じきに表れますよ。", ko: "인원은 같지만 체력 차이가 벌어지고 있어요. 이 차이가 곧 드러날 겁니다."},   // 빈 틈 — 인원 같고 체력 비율 30% 넘게 차이
+  A08: {who: "analyst", cd: 60000, pr: 3, face: "calm", fast: 0, idle: 1, ja: "防御壁が厚く重なっています。並の攻撃では崩せないでしょう。", ko: "보호막이 두텁게 쌓였습니다. 웬만한 공격으로는 뚫기 어렵겠네요."},   // 빈 틈 — 한 편 보호막 합이 살아 있는 최대 체력 합의 25% 이상
+  A09: {who: "analyst", cd: 60000, pr: 5, face: "analysis", fast: 0, idle: 1, ja: "まだ終わっていません。一人でも十分ひっくり返せます。", ko: "아직 끝난 게 아닙니다. 한 명이라도 충분히 뒤집을 수 있어요."},   // 빈 틈 — 우리 편이 한 명 남았고 그 학생 체력 50% 이상
+  /* 이어 말하는 해설 (사용자 1024 '각 실황 대사에 연계할 해설' → '흐름 확인해보자 텍스트 준비할께') — 그 실황을 말하기 시작할 때 해설 대기에 넣는다 (조건 해설이 기다리고 있으면 그쪽이 먼저 · 우선 4).
+     음성 — 사용자 1024 아홉 (자료 폴더 manual-v1/C01A ~ C09A.mp3 · 문구는 추천 문구 그대로 녹음). C08A · C09A 는 결과 대사 뒤에 늘 (배속 · 건너뛰기에도) · 나머지는 말한 뒤 50초 · ×2 · ×3 생략 */
+  C01A: {who: "analyst", off: 1, link: 1, cd: 1, pr: 4, face: "calm", fast: 0, ja: "最初の一手をどちらが取るか。そこが今日の流れを決めるでしょう。", ko: "첫 수를 누가 잡느냐가 오늘 흐름을 정할 겁니다."},
+  C02A: {who: "analyst", link: 1, cd: 1, pr: 4, face: "analysis", fast: 0, ja: "先手は勢いを生みます。ただ、相手もここから対応してくるでしょう。", ko: "선공은 기세를 줍니다. 다만 상대도 이제 대응해 오겠죠."},
+  C03A: {who: "analyst", link: 1, cd: 1, pr: 4, face: "analysis", fast: 0, ja: "守りが崩れた一瞬を正確に狙いましたね。いい集中力です。", ko: "방어가 풀린 순간을 정확히 노렸네요. 집중력이 좋습니다."},
+  C04A: {who: "analyst", link: 1, cd: 1, pr: 4, face: "analysis", fast: 0, ja: "今が勝負所です。この流れを続けられるかが鍵ですね。", ko: "지금이 승부처입니다. 이 흐름을 이어 갈 수 있느냐가 관건이죠."},
+  C05A: {who: "analyst", link: 1, cd: 1, pr: 4, face: "calm", fast: 0, ja: "ここは無理に前へ出るより、一度耐える判断が大切です。", ko: "무리하게 나서기보다, 한 번 버티는 판단이 중요합니다."},
+  C06A: {who: "analyst", link: 1, cd: 1, pr: 4, face: "surprised", fast: 0, ja: "危機でも引きませんでした。こういう一手が、チームの勢いを変えます。", ko: "위기에서도 물러서지 않았어요. 이런 한 수가 팀의 기세를 바꿉니다."},
+  C07A: {who: "analyst", link: 1, cd: 1, pr: 4, face: "analysis", fast: 0, ja: "一人欠けると、陣形全体が揺らぎます。残った生徒たちの対応に注目です。", ko: "한 명이 빠지면 진형 전체가 흔들립니다. 남은 학생들의 대응에 주목하죠."},
+  C08A: {who: "analyst", link: 1, pr: 4, face: "calm", ja: "最後まで役割を守り抜いた結果です。いい試合でした。", ko: "마지막까지 각자의 역할을 지킨 결과입니다. 좋은 경기였어요."},
+  C10A: {who: "analyst", link: 1, cd: 40000, pr: 4, face: "analysis", fast: 0, ja: "行動が続くと、相手は立て直す隙がありません。今、流れを完全につかんでいます。", ko: "행동이 이어지면 상대는 정비할 틈이 없습니다. 지금 흐름을 완전히 잡았어요."},
+  C09A: {who: "analyst", link: 1, pr: 4, face: "calm", ja: "結果は惜しいですが、今日見えた課題は次の試合の武器になるはずです。", ko: "결과는 아쉽지만, 오늘 드러난 과제는 다음 경기의 무기가 될 겁니다."}
+};
+const TC_TIER = {region: "solo", qual: "duo", final: "duo", league3: "duo", league5: "duo"};   // league3 · league5 — 졸업생 3인 · 5인 리그 (opt.tcom · 사용자 1024 '졸업생 3인 리그하고 5인 리그에도') · 이계 대회(차원 포탈)는 같은 단계 그대로   // 대회 단계 → 말하는 사람 (광역 대회 캐스터 혼자 · 학원제 예선부터 해설 함께)
+const TC_RULE = {gap: 2000, analystAfter: 600, afterAnalyst: 2000, expire: 4000, bigPr: 40, bigExpire: 8000, anExpire: 8000, cd: 50000,
+  endDelay: 300, cutFade: 150, duck: .5, duckIn: .15, duckOut: .4, danger: .5, fastSpeed: 120, idleMs: 6000, idleCalm: 30000, idleHp: .3, idleShield: .25, idleLast: .5, missRun: 2};
+let B = null, TC_LAST = null;                   // 지금 중계하는 전투 하나 · 마지막 전투(기록 — 목업 · 시험)
+const now = () => (typeof performance !== "undefined" ? performance.now() : Date.now());
+function tcOn(){ return !((navigator.webdriver && !window.__tcomForce) || window.__tcomOff); }
+/* 설정 '대회 중계' (사용자 1024 '설정에 음성+자막 · 음성만 숨김 · 숨김 3가지') — both 음성 + 자막 · sub 음성만 숨김(자막만 · 글자 수만큼) · off 숨김(중계 없음 · 관중 소리는 그대로) */
+function tcMode(){ try{ const m = typeof PREF !== "undefined" && PREF.tcom; return m === "sub" || m === "off" ? m : "both"; }catch(e){ return "both"; } }
+const TC_PREF = [["both", "음성 + 자막"], ["sub", "음성 숨김"], ["off", "숨김"]];
+function tcPrefPanel(){
+  return `<section class="panel"><div class="optrow"><div class="optlab"><b>대회 중계</b><span>광역 대회 · 예선 리그 · 본선 · 졸업생 리그에서 실황 · 해설이 경기를 중계한다 (일본어 음성 · 자막). 음성 숨김은 자막만, 숨김은 중계를 끈다.</span></div><div class="ui-concept-picker" role="group" aria-label="대회 중계">${TC_PREF.map(([k, n]) => `<button type="button" class="btn" data-tcom-mode="${k}" aria-pressed="${tcMode() === k}">${n}</button>`).join("")}</div></div></section>`;
+}
+function tcPrefBind(){
+  document.querySelectorAll("[data-tcom-mode]").forEach(b => b.onclick = () => {
+    PREF.tcom = b.dataset.tcomMode; try{ prefSave(); }catch(e){}
+    document.querySelectorAll("[data-tcom-mode]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.tcomMode === PREF.tcom)));
+    try{ toast(PREF.tcom === "both" ? "대회 중계 — 음성과 자막으로 듣는다." : PREF.tcom === "sub" ? "대회 중계 — 음성 없이 자막만 본다." : "대회 중계를 숨겼다."); }catch(e){}
+  });
+}
+function lineText(c){ return window.HS_LANG === "ja" ? c.ja : c.ko; }
+
+/* ── 자막 띠 ── */
+function capEl(){
+  let el = document.getElementById("tcomCap");
+  if(!el){
+    el = document.createElement("div"); el.id = "tcomCap"; el.className = "tcom-cap"; el.hidden = true;
+    const fx = k => TC_ASSET.face["burst-" + k] || "";   // 흥분한 실황 — 초상화 뒤 · 앞 이펙트 (스킬 강화 완료 그림을 캐스터 색으로 — burst.py)
+    el.innerHTML = `<div class="tcom-body"><b class="tcom-nm"></b><div class="tcom-face"><img class="tcom-bb" src="${fx("back")}" alt="" draggable="false"><img class="tcom-pt" alt="" draggable="false"><img class="tcom-bf" src="${fx("front")}" alt="" draggable="false"></div><span class="tcom-tx"></span></div>`;   // 띠 위 왼쪽 끝에 얼굴 · 오른쪽 끝에 이름표 탭 (사용자 1024)
+    document.body.appendChild(el);
+  }
+  return el;
+}
+function capPlace(){                                                           // 우리 학원 이름표 오른쪽 · 아랫변을 맞춘다 (사용자 1024 '학원 이름 오른쪽으로 가로를 맞춰서') — 없으면 전장 왼쪽 아래 · 그것도 없으면 화면 왼쪽 아래 (CSS)
+  const el = document.getElementById("tcomCap"); if(!el || el.hidden) return;
+  const m = B && document.querySelector(`#modalRoot .modal[data-bt="${B.btId}"]`), st = m && m.querySelector(".bf-stage"), r = st && st.getBoundingClientRect();
+  if(!r || r.width < 200 || r.height < 120){ el.style.left = el.style.bottom = el.style.width = ""; return; }
+  const lab = m.querySelector(".bf-school.ally"), q = lab && lab.getBoundingClientRect(), okL = q && q.width > 0 && q.top > r.top + r.height * .4;
+  const nar = okL && r.right - 10 - (q.right + 8) < 260;                        // 좁은 화면 — 이름표 오른쪽이 좁으면(폰 · 진형 이름이 길 때) 이름표 바로 위로 · 왼쪽 끝을 맞춘다
+  const left = !okL ? r.left + 12 : nar ? Math.max(r.left + 6, q.left) : q.right + 8, bot = !okL ? innerHeight - r.bottom + 12 : nar ? innerHeight - q.top + 6 : innerHeight - q.bottom;
+  el.style.left = Math.round(left) + "px";
+  el.style.bottom = Math.max(8, Math.round(bot)) + "px";
+  const bar = m.querySelector(".btbar"), w = bar && bar.getBoundingClientRect();   // 재생 · 배속 단추 판이 같은 높이에 있으면 그 앞까지
+  const right = w && w.width > 0 && w.left > left + 200 && w.top < innerHeight - bot && w.bottom > innerHeight - bot - 90 ? w.left - 10 : r.right - 10;
+  el.style.width = Math.round(Math.max(200, Math.min(820, right - left))) + "px";
+}
+function capShow(id){
+  const c = TC_CUES[id], el = capEl();
+  el.classList.toggle("an", c.who === "analyst"); el.classList.toggle("hot", c.who === "caster" && c.tone === 2);
+  const src = TC_ASSET.face[(c.who === "analyst" ? "analyst-" : "caster-") + c.face] || "";
+  const im = el.querySelector(".tcom-pt"); if(im.getAttribute("src") !== src) im.src = src;
+  el.querySelector(".tcom-nm").textContent = TC_T[c.who];
+  el.querySelector(".tcom-tx").textContent = lineText(c);
+  clearTimeout(el._t); el.hidden = false; el.classList.remove("out"); capPlace();
+}
+function capHide(ms){
+  const el = document.getElementById("tcomCap"); if(!el || el.hidden) return;
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.classList.add("out"); el._t = setTimeout(() => { el.hidden = true; el.classList.remove("out"); }, 220); }, ms == null ? 500 : ms);
+}
+
+
+/* ── 배경음 줄이기 ── */
+function duck(on){
+  ambDuck(B, on);
+  try{
+    if(typeof ANOW === "undefined" || !ANOW || !ANOW.a || typeof audRamp !== "function") return;
+    audRamp(ANOW.a, ANOW.vol * (on ? TC_RULE.duck : 1), on ? TC_RULE.duckIn : TC_RULE.duckOut);
+    if(B) B.ducked = on ? ANOW : null;
+  }catch(e){}
+}
+function vgain(){ try{ return typeof sfxGain === "function" ? sfxGain() : 1; }catch(e){ return 1; } }
+
+/* ── 관중 (사용자 1024 '함성도 같이 추가해볼까' · '경기 등급(시내/광역/본선/일반/파이널) 기준으로 볼륨 차이') ──
+   관중 소리는 경기 내내 되풀이 · 박수(시작 · 끝) · 함성 득점(상대가 쓰러짐 · 우리 공격 필살기 · 승리) · 함성 아쉬운(우리 학생이 쓰러짐 · 패배).
+   크기 = 효과음 크기 × 경기 등급 × 소리마다 — 중계가 말하는 동안은 관중도 줄인다 · 반응끼리 1.2초 (시작 · 끝은 늘) */
+const TC_CROWD = {city: .3, region: .45, qual: .6, final: .75, finale: .95, league3: .6, league5: .75};   // 시내 대회 · 광역 대회 · 예선 리그 · 본선 · 본선 결승(파이널)
+const TC_CR = {amb: .5, cheer: 1, groan: .85, clap: .8, ult: .6, duck: .6, fadeIn: 1.2, fadeOut: .6, cd: 1200, endClap: 900};
+function crowdKey(opt){ return opt.tcom || (opt.field === "final" && opt.bgm === "festFinal" ? "finale" : opt.field); }
+function crVol(b, k){ return Math.max(0, Math.min(1, vgain() * (TC_CROWD[b.crowd] || 0) * (TC_CR[k] || 1))); }
+function fadeEl(a, to, sec, end){
+  clearInterval(a._fi); const v0 = a.volume, t0 = now();
+  a._fi = setInterval(() => { const k = Math.min(1, (now() - t0) / (sec * 1000 || 1)); try{ a.volume = Math.max(0, Math.min(1, v0 + (to - v0) * k)); }catch(e){} if(k >= 1){ clearInterval(a._fi); if(end) end(); } }, 30);
+}
+function ambStart(b){
+  const src = TC_ASSET.crowd.amb; if(!src || !b.crowd || vgain() <= 0) return;
+  const a = new Audio(src); a.loop = true; a.volume = 0; b.amb = a;
+  const p = a.play(); if(p && p.catch) p.catch(() => {});
+  fadeEl(a, crVol(b, "amb"), TC_CR.fadeIn);
+}
+function ambDuck(b, on){ if(b && b.amb) fadeEl(b.amb, crVol(b, "amb") * (on ? TC_CR.duck : 1), on ? TC_RULE.duckIn : TC_RULE.duckOut); }
+function crowdStop(b){
+  const a = b.amb; b.amb = null;
+  if(a) fadeEl(a, 0, TC_CR.fadeOut, () => { try{ a.pause(); }catch(e){} });
+  (b.fx || []).forEach(x => fadeEl(x, 0, .4, () => { try{ x.pause(); }catch(e){} })); b.fx = [];
+}
+function react(k, why, force){
+  const b = B; if(!b || !b.crowd) return;
+  const t = now(); if(!force && t - b.lastReact < TC_CR.cd) return;
+  b.lastReact = t;
+  b.log.push({id: k, at: Math.round(t - b.t0), k: "crowd", why});
+  const src = TC_ASSET.crowd[k === "ult" ? "cheer" : k]; if(!src || vgain() <= 0) return;
+  const a = new Audio(src); a.volume = crVol(b, k) * (b.speaking ? TC_CR.duck : 1);
+  const p = a.play(); if(p && p.catch) p.catch(() => {});
+  b.fx = (b.fx || []).filter(x => !x.ended).concat(a);
+}
+
+
+/* ── 말하기 ── */
+function say(id){
+  const b = B; if(!b) return;
+  const c = TC_CUES[id];
+  b.speaking = {id, who: c.who, t: now()};
+  b.said[id] = now();
+  b.log.push({id, at: Math.round(now() - b.t0), k: "say"});
+  capShow(id); duck(true);
+  if(c.who === "caster" && TC_CUES[id + "A"] && !TC_CUES[id + "A"].off && b.tier === "duo"){              // 이어 말하는 해설 — 결과 대사 뒤는 늘 · 나머지는 대기(조건 해설이 먼저)
+    if(id === "C08" || id === "C09"){ b.pendA = {id: id + "A", final: 1}; b.log.push({id: id + "A", at: Math.round(now() - b.t0), k: "event", why: "link"}); }
+    else if(!b.pendA) fire(id + "A", "link");
+  }
+  const done = () => { if(B !== b || !b.speaking || b.speaking.id !== id) return; b.speaking = null; b.el = null; b.lastEnd = now(); b.lastWho = c.who; capHide(); if(!b.pendC && !b.pendA) duck(false); pump(); };
+  const src = TC_ASSET.snd[id];
+  if(window.__tcomMute || tcMode() === "sub" || !src || vgain() <= 0){ b.timer = setTimeout(done, Math.max(1600, [...lineText(c)].length * 110)); return; }   // 소리 없이 — 글자 수만큼
+  const a = new Audio(src); a.volume = Math.min(1, vgain()); b.el = a;
+  a.onended = done; a.onerror = () => { b.timer = setTimeout(done, 1600); };
+  const p = a.play(); if(p && p.catch) p.catch(() => { b.timer = setTimeout(done, Math.max(1600, [...lineText(c)].length * 110)); });
+}
+function cut(){                                                                 // 말하던 것을 짧게 줄이며 끊고 · 대기를 버린다
+  const b = B; if(!b) return;
+  clearTimeout(b.timer); clearTimeout(b.pumpT);
+  const a = b.el; b.el = null; b.speaking = null; b.pendC = b.pendA = null; b.turnA = [];
+  if(a){ a.onended = a.onerror = null; const v0 = a.volume, t0 = now(); const iv = setInterval(() => { const k = 1 - (now() - t0) / TC_RULE.cutFade; if(k <= 0){ clearInterval(iv); try{ a.pause(); }catch(e){} } else try{ a.volume = v0 * k; }catch(e){} }, 20); }
+  capHide(0);
+}
+function pump(){
+  const b = B; if(!b || b.speaking) return;
+  clearTimeout(b.pumpT);
+  const t = now();
+  ["pendC", "pendA"].forEach(s => { const p = b[s]; if(p && !p.final && t > p.exp){ b.log.push({id: p.id, at: Math.round(t - b.t0), k: "expired"}); b[s] = null; } });
+  const slot = b.pendC ? "pendC" : b.pendA ? "pendA" : "";                    // 실황이 먼저 · 해설은 그 뒤에 이어서
+  if(!slot){ duck(false); return; }
+  const p = b[slot], c = TC_CUES[p.id];
+  const wait = !b.lastEnd ? 0 : p.final && c.who === "caster" ? 0 : p.final ? TC_RULE.analystAfter : c.who === "analyst" ? (b.lastWho === "caster" ? TC_RULE.analystAfter : TC_RULE.gap) : (b.lastWho === "analyst" ? TC_RULE.afterAnalyst : TC_RULE.gap);
+  const at = (b.lastEnd || 0) + wait;
+  if(t < at){ b.pumpT = setTimeout(pump, at - t + 5); return; }
+  b[slot] = null; say(p.id);
+}
+/* 사건 → 대기 (실황 · 해설 따로 하나씩) */
+function fire(id, why){
+  const b = B; if(!b || !b.tier || b.ended) return;
+  const c = TC_CUES[id], t = now();
+  if(c.first){ if(b.used[id]) return; b.used[id] = 1; }                         // 처음 한 번 — 생기면 소비
+  else if(c.cd){ if(b.said[id] != null && t - b.said[id] < (c.cd > 1 ? c.cd : TC_RULE.cd)) return; }  // 말한 뒤 50초 (cd 가 숫자면 그 ms — C10 40초)
+  else if(b.said[id] != null) return;                                            // 말하면 끝
+  const drop = k => b.log.push({id, at: Math.round(t - b.t0), k, why});
+  if(c.who === "analyst" && b.tier !== "duo") return drop("no-analyst");
+  if(c.fast === 0 && b.speed <= TC_RULE.fastSpeed) return drop("fast");
+  if(id === "C02" && b.speaking && b.speaking.id === "C01") return drop("start-talking");
+  if(b.speaking && b.speaking.id === id) return;                                 // 지금 그 대사를 말하는 중
+  if(!c.link && (b.speaking || b.pendC || b.pendA)) return drop("busy");         // 1024 사용자 — 누가 말하는 중(또는 차례를 기다리는 대사가 있으면) 기다리지 않고 버린다 · 말하지 않았으니 재사용 대기(50 · 40초)도 없다 → 다음에 조건이 오면 그때
+  const slot = c.who === "analyst" ? "pendA" : "pendC", cur = b[slot];
+  if(cur && cur.id === id) return;
+  b.log.push({id, at: Math.round(t - b.t0), k: "event", why});
+  if(cur && TC_CUES[cur.id].pr >= c.pr) return drop("lower");
+  if(cur) b.log.push({id: cur.id, at: Math.round(t - b.t0), k: "replaced"});
+  b[slot] = {id, exp: t + (c.who === "analyst" ? TC_RULE.anExpire : c.pr >= TC_RULE.bigPr ? TC_RULE.bigExpire : TC_RULE.expire)};
+  pump();
+}
+function finish(win){                                                           // 경기 끝 — 끊고 · 버리고 · 0.3초 뒤 결과
+  const b = B; if(!b || b.ended) return;
+  cut(); b.ended = true;
+  react(win ? "cheer" : "groan", "end", true);
+  b.clapT = setTimeout(() => { if(B === b) react("clap", "end", true); }, TC_CR.endClap);
+  if(!b.tier) return;                                                           // 시내 대회 — 관중만
+  const id = win ? "C08" : "C09";
+  b.log.push({id, at: Math.round(now() - b.t0), k: "event", why: "end"});
+  b.pumpT = setTimeout(() => { if(B === b){ b.pendC = {id, final: 1}; b.lastEnd = 0; pump(); } }, TC_RULE.endDelay);
+}
+
+/* ── 사건 읽기 — 한 장씩 (cam: 스타일리시 차례 안 — 해설은 줌아웃까지 모아 둔다) ── */
+function sideOf(uid){ return String(uid || "").charAt(0); }
+function roleOf(b, k){ const n = b.res.names[k], J = n && JOBS[n.job]; return J ? J.role : ""; }
+function ratio(u){ return u && u.maxHp ? u.hp / u.maxHp : 0; }
+function hitFoe(f, side){ return (f.pop || []).some(x => (x.k === "dmg" || x.k === "crit") && sideOf(x.u) && sideOf(x.u) !== side); }
+function actOf(res, j){                                                         // 같은 행동자의 이어진 장 (필살기 한 번 = 몇 장)
+  const a = res.frames[j].actor; let e = j;
+  while(e + 1 < res.frames.length && res.frames[e + 1].actor === a && res.frames[e + 1].cls !== "ult" && res.frames[e + 1].cls !== "sec") e++;
+  return [j, e];
+}
+function scan(j, cam){
+  const b = B, res = b.res, F = res.frames[j], P = j > 0 ? res.frames[j - 1].units : null, U = F.units, uids = b.uids, US = b.us, TH = b.them;   // 우리 편 · 상대 편 (보통 A · B — 졸업생 리그에서 내 학원이 B 면 바꾼다 · opt.tcomUs)
+  if(!U || !U.length || !P) return;
+  const actor = F.actor, ak = uids.indexOf(actor), aside = sideOf(actor);
+  const evs = [], an = [];
+  // 다운 (먼저 — 같은 장의 크리티컬보다 위)
+  let downNow = false, foeDown = false, cr = "";
+  U.forEach((u, k) => {
+    if(P[k] && P[k].alive && !u.alive){ downNow = true; b.lastDownT = now(); b.downs.add(uids[k]); if(sideOf(uids[k]) === TH){ foeDown = true; cr = "cheer"; } else cr = cr || "groan"; }
+  });
+  if(downNow) evs.push("C07");
+  // 필살기
+  let ult = false;
+  if(F.cls === "ult" && actor){
+    const [s, e] = actOf(res, j); let off = false;
+    for(let q = s; q <= e; q++) if(hitFoe(res.frames[q], aside)) off = true;
+    if(off){ ult = true; evs.push("C04"); if(aside === US && !cr) cr = "ult"; }
+    else if(aside === US) an.push("A04");
+  }
+  // 연속 행동 — 차례(기술 외침 call 이 있는 장)마다 편을 적어 두고, 앞 차례와 같은 편이면 (어느 편이든)
+  if(F.call && actor){ if(b.turnSide === aside) evs.push("C10"); b.turnSide = aside; }
+  // 정신력 시험 — 기상 · 기절 (어느 편이든 · 스타일리시는 시험 연출이 끝난 줌아웃에 · 심플은 바로)
+  if(F.test && uids.includes(F.test.u)) an.push(F.test.k === "hero" ? "C11" : "C12");
+  // 회피 — 공격이 연달아 빗나감 (MISS 두 번 · 사이에 맞으면 다시)
+  if(actor && (F.pop || []).length){
+    if((F.pop || []).some(x => x.k === "miss" && sideOf(x.u) !== aside)){ b.miss = (b.miss | 0) + 1; if(b.miss >= TC_RULE.missRun){ an.push("A06"); b.miss = 0; } }
+    else if(hitFoe(F, aside)) b.miss = 0;
+  }
+  // 선공 · 크리티컬
+  const hits = !!actor && hitFoe(F, aside);
+  if(hits) evs.push("C02");
+  if((F.pop || []).some(x => x.k === "crit") && !ult && !downNow) evs.push("C03");
+  // 위기 · 반격 (우리 편)
+  U.forEach((u, k) => {
+    const id = uids[k]; if(sideOf(id) !== US || !P[k]) return;
+    if(u.alive && ratio(P[k]) > TC_RULE.danger && ratio(u) <= TC_RULE.danger){ if(!b.danger[id]) b.danger[id] = 1; evs.push("C05"); }
+  });
+  if(actor && aside === US && b.danger[actor] && hits && !b.downs.has(actor)) evs.push("C06");
+  // 해설 — 전열 버티기 · 화력 집중 · 지원 · 전세
+  if(actor && aside === TH){
+    const hitA = [...new Set((F.pop || []).filter(x => (x.k === "dmg" || x.k === "crit") && sideOf(x.u) === US).map(x => uids.indexOf(x.u)))].filter(k => k >= 0);
+    const dpsAlive = U.some((u, k) => sideOf(uids[k]) === US && roleOf(b, k) === "dps" && u.alive);
+    if(hitA.length && hitA.every(k => roleOf(b, k) !== "dps") && dpsAlive) an.push("A01");
+  }
+  if(foeDown && U.some((u, k) => sideOf(uids[k]) === TH && u.alive)) an.push("A02");
+  if(actor && aside === US && roleOf(b, ak) === "heal") (F.pop || []).forEach(x => {
+    if((x.k !== "heal" && x.k !== "shield") || sideOf(x.u) !== US) return;
+    const k = uids.indexOf(x.u); if(k >= 0 && U[k] && U[k].alive && !an.includes("A03")) an.push("A03");
+  });
+  const alive = s => U.filter((u, k) => sideOf(uids[k]) === s && u.alive).length, nA = alive("A"), nB = alive("B");
+  const lead = nA > nB ? "A" : nB > nA ? "B" : "";
+  if(lead && b.behind === lead) an.push("A05");                                 // 적던 편이 많아졌다
+  if(lead) b.behind = lead === "A" ? "B" : "A";
+  if(cr) react(cr, "f" + j);
+  const byPr = (x, y) => TC_CUES[y].pr - TC_CUES[x].pr;                          // 한꺼번에 생기면 우선이 높은 것 하나만 (나머지는 busy 로 버려진다)
+  if(cam) evs.forEach(id => { if(!b.turnC.includes(id)) b.turnC.push(id); });
+  else evs.sort(byPr).forEach(id => fire(id, "f" + j));
+  if(cam) an.forEach(id => { if(!b.turnA.includes(id)) b.turnA.push(id); });
+  else an.forEach(id => fire(id, "f" + j));
+}
+
+/* ── 빈 틈 (사용자 1024 '비어있는 타이밍에 넣을만한 해설이나 실황') — 말이 6초 넘게 없고 기다리는 대사도 없을 때, 지금 장면의 상황을 보고 하나 ──
+   우선: A09 한 명 남음(우리 편 · 체력 50% 이상) > A07 체력 차(인원 같고 체력 비율 30% 넘게) > A08 보호막(한 편 보호막 합 ≥ 살아 있는 최대 체력 합 25%) > C15 팽팽함(다운 없이 30초)
+   같은 대사는 60초에 한 번 · 해설은 해설이 있는 경기 · ×2 · ×3 이면 해설 생략 (실황 C15 는 그대로) */
+function idlePick(){
+  const b = B; if(!b || !b.res || b.last < 1) return [];
+  const F = b.res.frames[Math.min(b.last, b.res.frames.length - 1)], U = F && F.units; if(!U) return [];
+  const sd = k => sideOf(b.uids[k]), live = s => U.filter((u, k) => sd(k) === s && u.alive);
+  const hpR = s => { const L = live(s), mx = L.reduce((a, u) => a + (u.maxHp || 0), 0); return mx ? L.reduce((a, u) => a + Math.max(0, u.hp), 0) / mx : 0; };
+  const C = [], us = live(b.us), th = live(b.them);
+  if(us.length === 1 && th.length >= 1 && ratio(us[0]) >= TC_RULE.idleLast) C.push("A09");
+  if(us.length && us.length === th.length && Math.abs(hpR(b.us) - hpR(b.them)) >= TC_RULE.idleHp) C.push("A07");
+  if([b.us, b.them].some(s => { const L = live(s), mx = L.reduce((a, u) => a + (u.maxHp || 0), 0), sh = L.reduce((a, u) => a + Math.max(0, u.sh || 0), 0); return mx && sh >= mx * TC_RULE.idleShield; })) C.push("A08");
+  if(now() - (b.lastDownT || b.t0) >= TC_RULE.idleCalm && us.length && th.length) C.push("C15");
+  return C;
+}
+function idleTick(){
+  const b = B; if(!b || !b.tier || b.ended || b.speaking || b.pendC || b.pendA) return;
+  const t = now(); if(t - Math.max(b.lastEnd || 0, b.t0) < TC_RULE.idleMs) return;
+  for(const id of idlePick()){                                                   // 우선 차례로 — 말할 수 있는 첫 대사 하나
+    const c = TC_CUES[id];
+    if(c.who === "analyst" && (b.tier !== "duo" || b.speed <= TC_RULE.fastSpeed)) continue;
+    if(b.said[id] != null && t - b.said[id] < c.cd) continue;
+    fire(id, "idle"); if(b.speaking || b.pendC || b.pendA) return;
+  }
+}
+
+/* ── openBattle 고리 ── 장을 그릴 때(see) · 스타일리시 맞는 순간(hit) · 줌아웃(out) · 결과로 건너뛰기(skip) · 확인(close) */
+function tcSee(btId, res, i, opt){
+  if(!B || B.btId !== btId){
+    if(B) tcStop();
+    const tier = (opt && !opt.lab && tcMode() !== "off" && TC_TIER[opt.tcom || opt.field]) || null, crowd = opt && !opt.lab && TC_CROWD[crowdKey(opt)] != null ? crowdKey(opt) : null;
+    if(!(tier || crowd) || !tcOn() || !res || !res.frames || !res.names) return;
+    let a = 0, c = 0;
+    B = {btId, res, tier, crowd, us: opt.tcomUs === "B" ? "B" : "A", them: opt.tcomUs === "B" ? "A" : "B", lastReact: -1e9, fx: [], amb: null, field: opt.field, last: -1, used: {}, said: {}, danger: {}, downs: new Set(), behind: "", turnSide: "", turnA: [], turnC: [],
+      t0: now(), log: [], speaking: null, pendC: null, pendA: null, lastEnd: 0, lastWho: "", lastDownT: now(), miss: 0, ended: false, speed: 280, cam: false,
+      uids: res.names.map(n => n.side === "A" ? "A" + (a++) : "B" + (c++))};
+    TC_LAST = B;
+    B.watch = setInterval(() => { if(!B) return; capPlace(); idleTick(); if(!document.querySelector(`#modalRoot .modal[data-bt="${B.btId}"]`)) tcStop(); }, 300);
+    ambStart(B); react("clap", "start", true);
+    fire("C01", "start");
+  }
+  const b = B;
+  try{ b.speed = typeof bspeedNow === "function" ? bspeedNow() : 280; }catch(e){}
+  capPlace();
+  if(b.ended) return;
+  const last = res.frames.length - 1;
+  for(let j = b.last + 1; j <= Math.min(i, last); j++){ b.last = j; if(j < last) scan(j, false); }
+  if(i >= last) finish(res.winner === b.us);
+}
+function tcHit(btId, j, e){                                                     // 스타일리시 — 한 차례(j ~ e)의 맞는 순간 · 실황은 지금 · 해설은 줌아웃에
+  const b = B; if(!b || b.btId !== btId || b.ended) return;
+  try{ b.speed = typeof bspeedNow === "function" ? bspeedNow() : 280; }catch(x){}
+  b.cam = true;
+  const last = b.res.frames.length - 1;
+  b.turnC = [];
+  for(let q = b.last + 1; q <= Math.min(e, last); q++){ b.last = q; if(q < last) scan(q, q >= j); }
+  let L = b.turnC.slice().sort((x, y) => TC_CUES[y].pr - TC_CUES[x].pr); b.turnC = [];
+  for(let q = j; q <= e; q++) if(b.res.frames[q] && b.res.frames[q].test){ L.forEach(id => b.log.push({id, at: Math.round(now() - b.t0), k: "test-wait", why: "f" + j})); L = []; break; }   // 정신력 시험이 든 차례 — 맞는 순간은 말하지 않고 시험 결과(줌아웃 · C11 · C12)를 위해 비워 둔다   // 한 차례의 실황 사건 — 우선이 높은 것부터 (첫째만 말하고 나머지는 busy)
+  L.forEach(id => fire(id, "f" + j));
+}
+function tcOut(btId){                                                           // 스타일리시 — 줌아웃 · 모아 둔 해설 (실황이 말하는 중이면 그 뒤에 이어서)
+  const b = B; if(!b || b.btId !== btId || b.ended) return;
+  const L = b.turnA.slice().sort((x, y) => TC_CUES[y].pr - TC_CUES[x].pr); b.turnA = [];
+  L.forEach(id => fire(id, "out"));
+}
+function tcSkip(btId){ if(!B || B.btId !== btId || B.ended) return; B.log.push({id: "skip", at: Math.round(now() - B.t0), k: "skip"}); B.last = B.res.frames.length - 1; finish(B.res.winner === B.us); }
+function tcStop(){
+  const b = B; if(!b) return;
+  cut(); clearInterval(b.watch); clearTimeout(b.clapT); duck(false); crowdStop(b); B = null;
+  const el = document.getElementById("tcomCap"); if(el){ el.hidden = true; clearTimeout(el._t); }
+}
+function tcClose(btId){ if(B && B.btId === btId) tcStop(); }
+window.TCOM = {prefPanel: tcPrefPanel, prefBind: tcPrefBind, mode: tcMode, see: tcSee, hit: tcHit, out: tcOut, skip: tcSkip, close: tcClose, stop: tcStop, cues: TC_CUES, rule: TC_RULE, tier: TC_TIER, crowd: TC_CROWD, cr: TC_CR, T: TC_T, asset: TC_ASSET,
+  state: () => B, last: () => TC_LAST, idlePick,
+  peek: (id, ms) => { if(!TC_CUES[id]) return; capShow(id); capHide(ms == null ? 2600 : ms); }};   // 목업 · 시험 — 그 대사의 자막 띠만 잠깐
+})();
+/* TCOM_END */
 /* TFWIN_START — 대회 편성 창 (1019 · apply_tfwin.py) ─ mockups/tour-formation 목업 그대로. '대진 확정'(scout 단계) 자리에 뜬다:
    가을 대회 컵(시내 · 광역 · 본선 — 라운드마다 · 1팀 대회도) · 친선전(경기 전에 한 번) · 봄 신인전(경기마다 — 상대가 경기마다 다르다) ·
    예선 리그(1019 ③ — 라운드마다 · 조 순위 · 우리 일정) · 본선 결승(1019 ③ — 세트마다 · 세트판 · 세트를 진 상대가 바꾼 진형은 맞붙기 전까지 숨김).
