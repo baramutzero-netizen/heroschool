@@ -1783,6 +1783,8 @@ html[lang="ja"] .crec-bub,html[lang^="zh"] .crec-bub{word-break:normal}   /* 일
 .rv-card i{font-style:normal;font-size:calc(var(--fst-fs) * .72);line-height:1.2;color:var(--fst-dark);background:var(--fst-gold);padding:2px 10px}
 .rv-card i[hidden]{display:none}
 .rv-card b{font-weight:400;font-size:calc(var(--fst-fs) * 1.25);line-height:1.35;letter-spacing:.04em;padding:8px 22px;border-top:2px solid var(--fst-edge);border-bottom:2px solid var(--fst-edge);word-break:keep-all}
+/* 1023 — 마스터 독백 뒤 개인 행동 칸 안내 (#rvmRoot · 첫 시간표 02 와 같은 .fst-guide) — 보조 문구가 좁은 화면을 넘지 않게 (영어 · 일본어는 길다) */
+.rvm .fst-tip{white-space:normal;width:max-content;max-width:min(560px,calc(100vw - 16px));text-align:center}
 /* RVST_CSS_END */
 /* RQST_CSS_START — 초반 스토리 03 '저희도 학원을 지키고 싶어요' (1022 목업 · apply_rqst.py) ─ 무대는 02(.rvst)와 첫 시간표(.fst) 그대로 쓰고 여기에는 더한 것만:
    나와 있는 초상화를 가운데로 모으기(은행장까지 넷 · 들어오고 나갈 때 옆으로 미끄러진다) · 삽화 배경(부드럽게 · 정문 삽화가 넓어지는 움직임) · 아침 빛 ·
@@ -1926,6 +1928,27 @@ html[lang="ja"] .crec-bub,html[lang^="zh"] .crec-bub{word-break:normal}   /* 일
   .xp-recs{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 }
 /* XPST_CSS_END */
+/* FRIS_CSS_START — 첫 친선전 이야기 '연습 상대' (1023 목업 · apply_fris.py) ─ 무대는 02(.rvst) · 첫 시간표(.fst) 그대로 쓰고 더한 것만:
+   배경(학원 연습장 쿼터뷰 지도를 조금 흐리게) · 초상화 다섯(셋 + 상대 둘 — 상대는 마주 보게 좌우를 뒤집는다 · 셋과 같은 직업이면 색을 돌린다) · 마스터 대화창(초상화 없이 금빛 이름표) */
+.fst.fris{z-index:907}
+.fris .rv-skip[hidden]{display:none}
+.rvst.fris .fst-cast{left:0;right:0;width:auto;margin-left:0;translate:none}
+.fris .fst-bust{right:auto;transition:left .42s cubic-bezier(.3,.8,.3,1),filter .18s,translate .36s cubic-bezier(.25,.9,.3,1.3)}
+.fris .rv-img{filter:blur(1.5px) saturate(.92) brightness(.82);transform:scale(1.02)}
+.fris .fst-bust.foe img{transform:scaleX(-1)}
+.fris .fst-bust.foe.alt img{filter:hue-rotate(150deg) saturate(.9)}
+.fris .fst-talk.mst .fst-tx{color:#fff1cf}
+.fris .fst-talk.mst .fst-nm span{color:#ffd36a}
+/* FRIS_CSS_END */
+/* FLST_CSS_START — 첫 친선전 신청 이야기 (1023 목업 · apply_flst.py) ─ 무대는 첫 시간표(.fst — 대화창 · 생각 창 · 초상화 · 원 · 손가락 · 강조 테두리) 그대로 · 배경 없음 (책상이 보인다).
+   더한 것만: 신청 창(.overlay) 위 · 마스터 대화창(초상화 없이 금빛 이름표 — 05 와 같다) · 다시 보기 건너뛰기 자리(게임 화면 위 — 첫 시간표처럼 왼쪽 위) · 안내 문구 줄바꿈(좁은 화면) */
+.fst.flst{z-index:906;--rv-top:12px}
+.flst .fst-talk.mst .fst-tx{color:#fff1cf}
+.flst .fst-talk.mst .fst-nm span{color:#ffd36a}
+.flst .rv-skip{right:auto;left:var(--fst-side)}
+.flst .rv-skip[hidden]{display:none}
+.flst .fst-tip{white-space:normal;width:max-content;max-width:min(560px,calc(100vw - 16px));text-align:center}
+/* FLST_CSS_END */
 /* SCOUTWIN_CSS_START — 겨울 스카우트 개편 (1019 · apply_scout.py) ─ 목록 · 확인 팝업은 건물 안 창 색(TOWNIN 과 같은 값 — 밝은 · 어두운 화면 · 도트 마감 · 팔레트와 상관없이 같다 ·
    게임이 모든 button 에 붙이는 테두리 · 그림자는 html body #view / #modalRoot … 로 걷는다). 설득 대화는 상담창(.cw-* — CSLWIN_CSS) 그대로에 효과만 (.scw-cw) */
 .scw,.scw-pal{--scw-ink:#fff4e6;--scw-line:#e9cdbf;--scw-edge:#b98f84;--scw-win:#2a1418;--scw-panel:#42191f;--scw-card:#5b2a30;--scw-gold:#ffd36a;--scw-dim:#e2c2b6;
@@ -18203,6 +18226,8 @@ function render(){
   if(window.RQST) RQST.after();   // 1022 — 초반 스토리 03 (RQST) — 장면 중에 나갔다가 다시 열면 그 줄부터 (S.rqst)
   if(window.SCEN) SCEN.after();   // 1023 — 시나리오 다시 보기 (SCEN) — 처음 끝낸 시나리오를 S.scen 에 적는다 (모래시계 팝업 단추)
   if(window.XPST) XPST.after();   // 1023 — 원정 이야기 (XPST) — 기록 정리 · 가져온 기록이 남은 채 다시 열었으면 그 줄부터 (S.xpst)
+  if(window.FRIS) FRIS.after();   // 1023 — 첫 친선전 이야기 (FRIS) — 결말 중에 다시 열었으면 그 결말부터 (S.fris)
+  if(window.FLST) FLST.after();   // 1023 — 첫 친선전 신청 이야기 (FLST) — 첫 편지가 왔을 때 도착 이야기 · 편지 안내 (S.flst)
 }
 /* 학원 이름 (1007) — 두 줄을 넘으면 두 줄에 들어가는 크기까지 글자를 비례로 줄인다
    (가로 화면 사이드가 길어져 스케줄의 잉크 단지 · 깃펜을 가리지 않게). 도트 폰트도 같은 방식 — 12 · 24px 사이 크기는 조금 흐리게 보인다.
@@ -18486,7 +18511,8 @@ function mdeskGo(){
      한 창에 한 학원 · 요청 주가 이른 편지부터 · 머리에 '편지 1 / 3'. 종이(학원 이름 · 등급 · 한 줄 사연 · 요청 주 · 서명) · 요청 주(요청 주가 이번 주면 '이번 주까지') ·
      방식(단판 · 1팀 / 3판 2선승제 · n팀 — 3인 팀이 모자라면 '팀 부족') · 상대(팀마다 평균 Lv · 정수) · 명성(승리 + · 패배 −).
      회신 → 도장 '회신' → 다음 편지 · 거절 → 도장 '거절' → 다음 편지 · 나중에(Esc) → 창만 닫는다 (편지는 남는다). 다 처리하면 창이 닫힌다.
-     처음 여는 창에는 운영 안내 7(친선전)을 겹쳐 띄운다 (예전에는 친선전 요청 창이 처음 뜰 때).
+     처음 여는 창에는 운영 안내 7(친선전)을 겹쳐 띄운다 (예전에는 친선전 요청 창이 처음 뜰 때) — 1023 첫 친선전 신청 이야기(FLST)가 이 창에서 독백을 띄우면 띄우지 않고 본 것으로.
+     1023 — 도장 뒤(fletNext) · 나중에 뒤(fletLater)에 FLST 의 선택 뒤 반응 (FLST.answered · later).
    · fletN() · fletBadge(n) — 메뉴 마스터 단추의 편지 표식 (편지 모양 + 수 · 오른쪽 위). 남은 마스터 육성 포인트 표식은 편지가 있는 동안 왼쪽 위로 (render 의 고리 — .badge.l)
    · fletNarrowBtn() — 좁은 화면(책상이 없는 예전 마스터 노트) 맨 위 단추 (viewHome 의 고리)
    창 색은 팝업 테마(POPTHEME — 건물 안 색) · 글꼴은 대회 편성 창처럼 도트 글꼴(Mulmaru 12 · 24) · 종이는 밝은 양피지 */
@@ -18511,6 +18537,7 @@ function fletOpen(){
   FL.open = P.length; FL.done = 0;
   if(typeof bookFlipSfx === "function") bookFlipSfx();
   fletShow();
+  if(window.FLST && FLST.open()) return;                               // 1023 — 첫 친선전 신청 이야기(FLST)가 이 창에서 독백을 띄우면 운영 안내 7 은 띄우지 않는다 (본 것으로)
   if(!tutSeen("7")) tutOverPage("7");                                  // 첫 편지 — 운영 안내 7 (친선전)을 그 위에
 }
 function fletShow(){
@@ -18573,10 +18600,15 @@ function fletAnswer(yes){
   setTimeout(()=>{
     if(document.getElementById("flPaper") !== paper) return;          // 그새 창이 바뀌었다
     paper.classList.add("go");
-    setTimeout(()=>{ if(document.getElementById("flPaper") === paper) fletShow(); }, 200 * slow);
+    setTimeout(()=>{ if(document.getElementById("flPaper") === paper) fletNext(o, yes); }, 200 * slow);
   }, 650 * slow + 150);
 }
-function fletLater(){ fletClose(); }
+/* 1023 — 도장 뒤 다음 편지 · 첫 친선전 신청 이야기(FLST)가 선택 뒤 반응을 띄우면 그 뒤에 (남은 편지가 있으면 다음 편지 · 없으면 책상) */
+function fletNext(o, yes){
+  if(window.FLST && FLST.answered(o, yes, ()=> fletShow())) return;
+  fletShow();
+}
+function fletLater(){ fletClose(); if(window.FLST) FLST.later(); }   // 1023 — 나중에(Esc) 뒤 반응 (FLST)
 function fletClose(){
   if(FL.key){ document.removeEventListener("keydown", FL.key, true); FL.key = null; }
   FL.cur = null; FL.busy = false;
@@ -32134,7 +32166,9 @@ window.CREC = {born, fix, after, pick, line, lines: CREC_LINES, aff: CREC_AFF, f
      예전 운영 안내 2장(개인 행동) · 5장(라이벌)은 띄우지 않는다 (1022 사용자 '기존 라이벌/개인 훈련 튜토리얼은 출력안하도록') — 본 것으로만 적어 운영 안내 목록에서는 다시 볼 수 있다.
      예전 흐름(조건이 안 맞을 때)에서 그 두 장이 의식 줄에 오면 — 2 자리에 같은 안내 한 장 · 5 는 건너뛴다 (RVST.play 가 받는다).
      곡 BGM.rival (사용자가 준 '라이벌.ogg') — 장면부터 안내 한 장까지 · 그다음 의식이나 화면에서 계절 곡으로.
-   · 세이브 S.rvst = {cast: {paladin · darkpriest · wizard 학생 id}, step 0 장면 · 1 팝업 · 2 안내 · 3 마무리 · 4 끝, cue 장면의 줄 번호, y · wk 연차 · 주}.
+   · 1023 — 안내 한 장 뒤 마스터 독백 셋 → 팔라딘의 개인 행동 칸(넓은 화면 스케줄 명부의 행동 칸 · 좁은 화면 학생 상세의 개인 행동 고르기)에 원 · 손가락 · 보조 문구 →
+     그 칸을 누르면 끝 (사용자 1023 '라이벌 확인 버튼까지 다 누르고 마스터 독백을 하나 추가하자' · 답: 안내 팝업 뒤 · 팔라딘 칸 · 그 칸을 누르면 · 바로 게임에).
+   · 세이브 S.rvst = {cast: {paladin · darkpriest · wizard 학생 id}, step 0 장면 · 1 팝업 · 2 안내 · 3 독백 · 안내 · 4 끝, cue 장면의 줄 번호, y · wk 연차 · 주}.
      줄마다 저장 — 다시 열면 그 줄부터 (RVST.after · 같은 학생). 장면은 학생 · 관계 · 능력치를 바꾸지 않는다 (라이벌은 pick 에서 한 번만).
    · 무대 — 화면 전체 수련장 배경(REPORT_PX 도트 배경 — 회상 '입학 첫날 · 기초 훈련' 단련장 · '며칠 뒤 · 대련장' 대련장 · 지금 대련장) ·
      첫 시간표 튜토리얼(FSTUT)의 대화창 · 생각 창 · 초상화(.fst 클래스 그대로 — 넓은 화면 1.5배). 회상은 바랜 빛 · 둘레를 어둡게 · 왼쪽 위 '회상' 꼬리표 ·
@@ -32498,7 +32532,7 @@ function rvNote(alone){
     ok.onclick = () => {
       if(R.done2) return; R.done2 = true; closeModal();
       if(alone){ try{ save(); }catch(e){} showCeremony(); return; }
-      S.rvst.step = 3; rvTail();
+      S.rvst.step = 3; try{ save(); }catch(e){} rvMono();                        // 1023 — 마스터 독백 · 훈련 칸 안내 → 마무리
     };
   }, true);
 }
@@ -32509,6 +32543,124 @@ function rvTail(){
   try{ save(); }catch(e){}
   showCeremony();                                                              // 다음 의식(있으면) · 없으면 화면으로 — 곡은 계절 곡으로 (BGM.rival 의 xf)
 }
+/* ── 1023 — 마스터 독백 · 개인 행동 칸 안내 (안내 한 장 뒤 · step 3) ──
+   첫 시간표 튜토리얼 02 와 같은 모양(.fst 생각 창 · 금색 원 · 손가락 · 보조 문구 — 화면은 어둡게 하지 않는다). 독백 동안은 넘기기만 (아무 데나 · 스페이스 · 엔터),
+   안내 동안은 화면을 평소처럼 쓴다 — 팔라딘의 그 칸을 누르면(넓은 화면 행동 칸은 평소처럼 지침이 바뀐다) 끝 · 주를 진행해도 끝. 다시 열면 독백 첫 줄부터 */
+const RV_MONO = ["서로 지기 싫은 모양이네. 정해진 훈련이 끝나도 더 해 보겠다니…", "스스로 개인 훈련을 하는 건 좋지만, 의욕만 앞서서 무리하면 안 되지.",
+  "필요할 때는 개인 행동 지침을 바꾸면서 컨디션을 조절해 줘야겠어."];
+const RV_TIP = "학생의 개인 행동 지침을 확인해 보세요.";
+const M = {on: false, sess: 0, root: null, typing: null, wait: null, guide: false, raf: 0, sid: null, narrow: false};
+const mq = s => M.root ? M.root.querySelector(s) : null;
+function rvmTarget(){
+  if(!M.sid) return null;
+  const e = M.narrow ? (UI.view === "roster" && UI.sel === M.sid ? document.getElementById("focusSel") : null)
+                     : (UI.view === "plan" ? document.querySelector(`#view .skstage [data-sk-act="${CSS.escape(String(M.sid))}"]`) : null);
+  if(!e) return null;
+  const r = e.getBoundingClientRect();
+  return r.width > 0 && r.height > 0 ? e : null;
+}
+function rvmBuild(){
+  if(M.root) return;
+  const r = document.createElement("div");
+  r.id = "rvmRoot"; r.className = "fst rvm";
+  r.innerHTML = `<div class="fst-hit"></div>
+    <div class="fst-guide" hidden><i class="fst-ring"></i><i class="fst-ring2"></i><i class="fst-finger"></i><div class="fst-tip">${esc(RV_TIP)}</div></div>
+    <div class="fst-think"><div class="fst-tx"></div><div class="fst-nx">▼</div></div>`;
+  document.body.appendChild(r);
+  M.root = r;
+  const hit = r.querySelector(".fst-hit");
+  hit.addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); rvmAdvance(); });
+  hit.addEventListener("wheel", e => e.preventDefault(), {passive: false});
+  hit.addEventListener("touchmove", e => e.preventDefault(), {passive: false});
+  const I = (typeof TIN_ART !== "undefined" && TIN_ART && TIN_ART.icons) || null, at = I && I.at && I.at.hand;   // 손가락 — 첫 시간표와 같은 아이콘
+  if(I && at){ const f = r.querySelector(".fst-finger"); f.style.setProperty("--fi", `url("${I.src}")`); f.style.setProperty("--fax", at[0]); f.style.setProperty("--fay", at[1]);
+    f.style.setProperty("--fiw", I.size[0]); f.style.setProperty("--fih", I.size[1]); }
+}
+function rvmTeardown(){ cancelAnimationFrame(M.raf); M.raf = 0; if(M.root) M.root.remove(); M.root = null; }
+document.addEventListener("keydown", e => {
+  if(!M.on || M.guide || !M.root) return;
+  if(e.key === " " || e.key === "Enter"){ e.preventDefault(); e.stopPropagation(); rvmAdvance(); }
+}, true);
+document.addEventListener("pointerdown", e => {                               // 안내 중 — 그 칸을 누르면 끝 (칸 자신의 동작은 그대로)
+  if(!M.on || !M.guide) return;
+  const t = rvmTarget();
+  if(t && (e.target === t || t.contains(e.target))) rvmDone();
+}, true);
+function rvmAdvance(){
+  if(!M.on || M.guide) return;
+  if(M.typing){ M.typing(); return; }
+  if(M.wait){ const r = M.wait; M.wait = null; M.root && M.root.querySelectorAll(".fst-nx").forEach(e => e.classList.remove("on")); r(); }
+}
+function rvmType(el, text, sess){
+  return new Promise(res => {
+    const ch = [...String(text || "")]; let n = 0, tm = 0;
+    const done = () => { clearTimeout(tm); if(M.typing === done) M.typing = null; el.textContent = text; res(); };
+    const step = () => {
+      if(sess !== M.sess){ if(M.typing === done) M.typing = null; res(); return; }
+      n++; el.textContent = ch.slice(0, n).join("");
+      if(!RV_QUIET.test(ch[n - 1]) && typeof cwBlip === "function") cwBlip("csl_mst");
+      if(n >= ch.length){ done(); return; }
+      let d = 1000 / RV_CPS;
+      if(ch[n - 1] === "…" && ch[n] !== "…") d += 300;
+      tm = setTimeout(step, d);
+    };
+    el.textContent = ""; M.typing = done;
+    tm = setTimeout(step, 1000 / RV_CPS);
+  });
+}
+function rvmGuideLoop(){
+  const g = mq(".fst-guide");
+  if(!M.on || !M.guide || !g){ M.raf = 0; if(g) g.hidden = true; return; }
+  if(UI.wrun){ rvmDone(); return; }                                           // 주를 진행했다 — 안내는 끝
+  const busy = document.documentElement.classList.contains("modal-open") || !!(window.RBK && RBK.isOpen && RBK.isOpen());
+  const t = busy ? null : rvmTarget();
+  if(!t) g.hidden = true;
+  else {
+    const r = t.getBoundingClientRect(), pad = 5, W = innerWidth;
+    const box = [r.left - pad, r.top - pad, r.width + pad * 2, r.height + pad * 2];
+    g.querySelectorAll(".fst-ring, .fst-ring2").forEach(e => { e.style.left = box[0] + "px"; e.style.top = box[1] + "px"; e.style.width = box[2] + "px"; e.style.height = box[3] + "px"; });
+    const f = g.querySelector(".fst-finger"), fs = f.offsetWidth || 48, leftSide = r.left >= fs + 16;
+    f.classList.toggle("l", !leftSide);
+    f.style.left = (leftSide ? r.left - fs - 10 : r.right + 10) + "px"; f.style.top = (r.top + r.height / 2 - fs / 2) + "px";
+    const tp = g.querySelector(".fst-tip"); g.hidden = false;
+    const tw = tp.offsetWidth, th = tp.offsetHeight, up = r.top - th - 18 >= 4;
+    tp.classList.toggle("dn", !up);
+    const cx = r.left + r.width / 2, left = Math.min(W - 8 - tw, Math.max(8, cx - tw / 2));
+    tp.style.left = left + "px"; tp.style.top = (up ? r.top - th - 16 : r.bottom + 16) + "px"; tp.style.setProperty("--ax", (cx - left) + "px");
+  }
+  M.raf = requestAnimationFrame(rvmGuideLoop);
+}
+async function rvMono(){
+  const p = rvCastNow().paladin;
+  if(!p || !actUnlocked() || M.on){ if(!M.on) rvTail(); return; }
+  M.on = true; M.guide = false; M.sid = p.id; const sess = ++M.sess;
+  try{ closeModal(); }catch(e){}
+  M.narrow = !townMode();
+  if(M.narrow){ UI.view = "roster"; UI.sel = p.id; } else { UI.view = "plan"; UI.skPage = 0; }
+  render();
+  if(M.narrow){ const el = document.getElementById("focusSel"); if(el) el.scrollIntoView({block: "center"}); }
+  rvmBuild();
+  M.root.classList.add("on");
+  await rsleep(rRM() ? 60 : 260); if(sess !== M.sess) return;
+  const box = mq(".fst-think"), tx = mq(".fst-think .fst-tx");
+  box.classList.add("show");
+  for(const t of RV_MONO){
+    await rvmType(tx, t, sess); if(sess !== M.sess) return;
+    M.root.querySelectorAll(".fst-nx").forEach(e => e.classList.add("on"));
+    await new Promise(r => { M.wait = r; }); if(sess !== M.sess) return;
+  }
+  box.classList.remove("show");
+  M.root.classList.remove("on");                                              // 화면을 평소처럼 (원 · 손가락 · 문구만)
+  M.guide = true;
+  if(!M.raf) M.raf = requestAnimationFrame(rvmGuideLoop);
+}
+function rvmDone(){
+  if(!M.on) return;
+  M.on = false; M.guide = false; M.sess++; M.typing = null; M.wait = null;
+  rvmTeardown();
+  if(S && S.rvst && (S.rvst.step | 0) === 3) rvTail();
+}
+function rvmReset(){ M.on = false; M.guide = false; M.sess++; M.typing = null; M.wait = null; rvmTeardown(); }
 /* 예전 흐름의 운영 안내 2 · 5 (의식 줄 {type:"tut", page:"2" | "5"}) — 띄우지 않는다. 2 자리에는 안내 한 장 */
 function rvOldTut(c){
   const k = String(c.page);
@@ -32526,7 +32678,7 @@ function rvPlay(c){
   if(st <= 0) return void rvOpen(Math.max(0, Math.min(RV_CUES.length - 1, S.rvst.cue | 0)));
   if(st === 1) return rvPop();
   if(st === 2) return rvNote();
-  return rvTail();
+  return rvMono();                                                             // 3 — 독백 · 안내 (다시 열면 독백 첫 줄부터)
 }
 /* render 끝 — 장면 중에 나갔다가 다시 열면 그 자리부터 (이 창에서 이미 띄운 것 · 다른 창 · 팝업 · 전투가 있으면 기다린다) */
 function rvAfter(){
@@ -32562,9 +32714,10 @@ function rvReplay(cast){
   rvOpen(0);
   return true;
 }
-function rvReset(){ R.sess++; R.on = false; R.ending = false; R.live = false; R.pend = false; R.preview = false; R.typing = null; R.wait = null; rvTeardown(); }
+function rvReset(){ R.sess++; R.on = false; R.ending = false; R.live = false; R.pend = false; R.preview = false; R.typing = null; R.wait = null; rvTeardown(); rvmReset(); }
 window.RVST = {pick: rvPick, queue: rvQueue, play: rvPlay, after: rvAfter, preview: rvPreview, replay: rvReplay, reset: rvReset, end: rvEnd, advance: rvAdvance,
-  state: R, cues: RV_CUES, scenes: RV_SCENES, face: RV_FACE, trio: rvTrio, note: RV_NOTE, popText: rvPopText};
+  state: R, cues: RV_CUES, scenes: RV_SCENES, face: RV_FACE, trio: rvTrio, note: RV_NOTE, popText: rvPopText,
+  mono: {state: M, lines: RV_MONO, tip: RV_TIP, advance: rvmAdvance, target: rvmTarget, done: rvmDone}};
 })();
 /* RVST_END */
 /* RQST_START — 초반 스토리 03 '저희도 학원을 지키고 싶어요' (1022 목업 · apply_rqst.py · mockups/request-story) ─ 대본 scenario-03-requests-draft.md Q01 ~ Q58 (+ Q51a · Q51b) · Q59 는 요약 팝업.
@@ -33290,6 +33443,8 @@ window.RQST = {start: rqStart, play: rqPlay, after: rqAfter, preview: rqPreview,
    · 시나리오 — 01 '첫 번째 시간표'(FST) · 02 '한 번만 더'(RVST) · 03 '저희도 학원을 지키고 싶어요'(RQST). 블록이 있고 replay 가 있는 것만.
      1023 — 04 '첫걸음과 남겨진 불씨'(XPST · 원정 이야기 묶음 — 사용자 '4번째로 적용하는 시나리오 묶음'): 한 장면이라도 보면 등록 · 팝업에는 한 줄 전체로
      본 장면마다 작은 단추(첫 원정 · 원정지마다 입장 · 모닥불 · 보스 · 기록 · 기록 정리 — XPST.replayList) · data-scen "xpst:<장면>" → XPST.replay(장면, 배우).
+     1023 — 05 '연습 상대'(FRIS · 첫 친선전): 도입을 보면 등록 · 경기 전 · (첫 친선전이 끝나면) 이겼을 때 · 졌을 때 — 결말은 둘 다 (대본 '반대 결말도 열람').
+     1023 — 그 앞에 첫 친선전 신청 편지(FLST — 편지 도착 · 회신 · 거절 · 나중에 · 본 것만 · data-scen "fris:fl.<장면>").
    · 등록 — 처음 끝내면(장면이 끝난 때 — 01 S.fsTut 2 · 02 S.rvst.step 1 이상 · 03 S.rqst.step 1 이상) S.scen[키] = {cast: {직업: {id, name, uniq}}} (세이브 — 학원마다).
      render 끝(SCEN.after)이 적는다 — 그때 학생 이름을 남겨 둔다 (졸업 · 퇴학한 뒤에도 다시 보기 · 이명은 빼고 그때 이름). 예전 세이브도 같은 기준으로 (본 적 있으면 등록).
    · 처음 보는 진짜 흐름에는 건너뛰기가 없다 (FST · RVST · RQST — 각 블록). 다시 보기에는 오른쪽 위 건너뛰기.
@@ -33302,11 +33457,12 @@ const SCEN_LIST = [
   {k: "fst", n: "01", t: "첫 번째 시간표"},
   {k: "rvst", n: "02", t: "한 번만 더"},
   {k: "rqst", n: "03", t: "저희도 학원을 지키고 싶어요"},
-  {k: "xpst", n: "04", t: "첫걸음과 남겨진 불씨", bundle: true}              // 1023 — 원정 이야기 묶음 (XPST — 본 장면마다 단추: 첫 원정 · 원정지마다 입장 · 모닥불 · 보스 · 기록 · 기록 정리)
+  {k: "xpst", n: "04", t: "첫걸음과 남겨진 불씨", bundle: true},             // 1023 — 원정 이야기 묶음 (XPST — 본 장면마다 단추: 첫 원정 · 원정지마다 입장 · 모닥불 · 보스 · 기록 · 기록 정리)
+  {k: "fris", n: "05", t: "연습 상대", bundle: true}                        // 1023 — 첫 친선전 (FRIS — 경기 전 · 이겼을 때 · 졌을 때 — 결말은 둘 다 다시 볼 수 있다)
 ];
 const SCEN_T = {title: "시나리오", none: "아직 다시 볼 시나리오가 없다.", close: "닫기"};
 const SCEN_JOBS = ["paladin", "darkpriest", "wizard"];
-function scenApi(k){ const a = k === "fst" ? window.FST : k === "rvst" ? window.RVST : k === "rqst" ? window.RQST : k === "xpst" ? window.XPST : null; return a && typeof a.replay === "function" ? a : null; }
+function scenApi(k){ const a = k === "fst" ? window.FST : k === "rvst" ? window.RVST : k === "rqst" ? window.RQST : k === "xpst" ? window.XPST : k === "fris" ? window.FRIS : null; return a && typeof a.replay === "function" ? a : null; }
 /* 처음 끝냈는가 — 장면이 끝난 때 (요약 · 팝업이 남아 있어도) · 04 묶음은 한 장면이라도 보면 */
 function scenDone(k){
   if(!S) return false;
@@ -33314,11 +33470,13 @@ function scenDone(k){
   if(k === "rvst") return !!(S.rvst && (S.rvst.step | 0) >= 1);
   if(k === "rqst") return !!(S.rqst && (S.rqst.step | 0) >= 1);
   if(k === "xpst") return !!(window.XPST && XPST.anySeen());
+  if(k === "fris") return !!((window.FRIS && FRIS.anySeen()) || (window.FLST && FLST.anySeen()));   // 1023 — 첫 친선전 신청 이야기(FLST)도 05 묶음
   return false;
 }
 /* 배우 — 02 · 03 은 이야기에 든 학생 id · 04 는 XPST 가 처음 장면 때 적어 둔 셋(그때 이름) · 01 은 첫 시간표처럼 직업으로 (암흑 사제는 개교 멤버 dp1 먼저) */
 function scenCast(k){
-  if(k === "xpst" && S.xpst && S.xpst.cast){ const o = {}; SCEN_JOBS.forEach(j => { const x = S.xpst.cast[j]; if(x) o[j] = {id: x.id, name: x.name, uniq: x.uniq || null}; }); return o; }
+  const XC = k === "xpst" ? S.xpst : k === "fris" ? ((S.fris && S.fris.cast) ? S.fris : S.flst) : null;
+  if(XC && XC.cast){ const o = {}; SCEN_JOBS.forEach(j => { const x = XC.cast[j]; if(x) o[j] = {id: x.id, name: x.name, uniq: x.uniq || null}; }); return o; }
   const L = S.students || [], ids = k === "rvst" ? (S.rvst && S.rvst.cast) : k === "rqst" ? (S.rqst && S.rqst.cast) : null, out = {};
   SCEN_JOBS.forEach(j => {
     const st = ids ? L.find(s => s && s.id === ids[j]) : ((j === "darkpriest" && L.find(s => s && s.uniq === "dp1")) || L.find(s => s && s.job === j));
@@ -33359,7 +33517,7 @@ function scenPopBody(){
 }
 /* 묶음 (04 원정 이야기) — 한 줄 전체: 번호 · 제목 · 본 장면 단추 (무리마다 — 첫 원정 · 원정지 · 기록 정리 · 얻은 기록 이름) */
 function scenBundle(s){
-  const api = scenApi(s.k), G = api && typeof api.replayList === "function" ? api.replayList() : [];
+  const api = scenApi(s.k), G = (s.k === "fris" && window.FLST ? FLST.replayList() : []).concat(api && typeof api.replayList === "function" ? api.replayList() : []);   // 1023 — 05 묶음 앞에 신청 편지(FLST)
   return `<div class="scen-bundle"><div class="scen-bh"><b>${s.n}</b><span>${esc(s.t)}</span></div>`
     + G.map(g => `<div class="scen-row"><em>${esc(g.n)}</em><div class="scen-subs">${g.items.map(it => `<button type="button" class="btn sm scen-sub" data-scen="${s.k}:${esc(it.k)}">${esc(it.t)}</button>`).join("")}</div>${g.clue ? `<span class="scen-clue">${esc(g.clue)}</span>` : ""}</div>`).join("")
     + `</div>`;
@@ -33375,6 +33533,7 @@ function scenPlay(k){
   const [base, sub] = String(k).split(":");                                      // 묶음의 장면 — "xpst:d2.win"
   const api = scenApi(base);
   if(!api || !S || !S.scen || !S.scen[base]) return false;
+  if(base === "fris" && sub && sub.indexOf("fl.") === 0) return !!(window.FLST && FLST.replay(sub.slice(3), scenActors(base)));   // 1023 — 신청 편지 장면 "fris:fl.arr"
   return sub ? api.replay(sub, scenActors(base)) : api.replay(scenActors(base));
 }
 function scenAfter(){ try{ scenSync(); }catch(e){} }
@@ -34264,6 +34423,928 @@ window.XPST = {depart: xpDepart, belt: xpBelt, pending: xpPending, weekEnd: xpWe
   state: R, cues: XP_CUES, rec: XP_REC, lore: XP_LORE, link: XP_LINK, boss: XP_BOSS, dgn: XP_DGN, kind: XP_KIND, face: XP_FACE, seal: XP_SEAL, fig: XP_FIG, T: XP_T, s: xpS};
 })();
 /* XPST_END */
+/* FRIS_START — 첫 친선전 이야기 '연습 상대' (1023 목업 · apply_fris.py · mockups/friendly-story) ─ 대본 scenario-05-first-friendly-draft.md (초안 v1 · 도입 FRI01 ~ 22 · 승리 FW01 ~ 15 · 패배 FL01 ~ 17).
+   사용자 1023: '이제 첫 친선전 시나리오 고'. 물음 · 답: 도입 자리 '경기 시작 → 도입 → 락커룸' · 셋이 다 출전하지 않아도 '04처럼 셋의 대사로' · 예전 세이브 '본 것으로 + 다시 보기에'.
+   · 장면 — 처음 한 번 (세이브 S.fris · 학원마다) · 무대: 학원 연습장(그 계절 쿼터뷰 지도 — 친선전 필드 dummy 와 같다)을 흐리게 · 셋(왼쪽) · 상대 학생 둘(오른쪽 · 그 직업 초상화를 마주 보게) ·
+     마스터는 초상화 없이 이름표만(금빛 · 02 · 03 의 마스터와 같다)
+     intro 경기 전 — 첫 친선전의 첫 경기 화면이 뜰 때 (renderFriendly 의 경기 화면 · 락커룸 창이 같이 뜨기 전 — 끝나면 경기 화면을 다시 그려 락커룸이 그대로 뜬다).
+       그 전(편지 · 출전 · 편성)에는 소비하지 않는다 · 도입을 보고 다시 열면 반복하지 않는다
+     win / lose 결말 — 친선전 전체 결과(t.w > t.l)가 정해지고 보상 · 저장이 끝난 뒤 (finishFriendly — 결과 상세 창 전). 다전제도 마지막에 한 번. 결말 중에 다시 열면 그 결말부터
+       (S.fris.pend · render 끝 FRIS.after). 첫 친선전의 결과 하나만 — 다음 친선전에서 다시 나오지 않는다
+   · 상대 둘 — 그 친선전 상대 학원의 첫 팀에서 (셋과 직업이 다른 학생 먼저 · 같으면 초상화 색을 돌린다) · 이름 · 학원 이름은 도입 때 적어 두어 결말에도 같은 둘
+   · 처음 보는 진짜 흐름에는 건너뛰기가 없다. 다시 보기(마스터 책상 모래시계 — 05 묶음 · SCEN)와 미리 보기에만 오른쪽 위 건너뛰기 · 다시 보기는 반대 결말도 볼 수 있다 (대본)
+   · 예전 세이브 — 친선전을 치른 적이 있으면(S.cleared f · f:ow) 다 본 것으로 · 다시 보기 셋 (상대는 직업 이름 · 학원은 '다른 학원')
+   · 자동화(navigator.webdriver)에서는 띄우지 않는다 (예전 친선전 시험이 그대로 돈다) — 시험은 window.__frisForce = true */
+(() => {
+const FR_FACE = {"paladin":{"joy":"assets/fst_faces/paladin-joy.png?v=3e213740","smile":"assets/fst_faces/paladin-smile.png?v=f5c93a74","surprised":"assets/fst_faces/paladin-surprised.png?v=b0ed2bf6","flustered":"assets/fst_faces/paladin-flustered.png?v=4622b965","motivated":"assets/fst_faces/paladin-motivated.png?v=9f80f84f","sad":"assets/fst_faces/paladin-sad.png?v=b323dbd8","heroic-confidence":"assets/fst_faces/paladin-heroic-confidence.png?v=d8cf8cb0","pout":"assets/fst_faces/paladin-pout.png?v=bc84cff4"},"darkpriest":{"smile":"assets/fst_faces/darkpriest-smile.png?v=51f67484","impish":"assets/fst_faces/darkpriest-impish.png?v=a470ecdb","cold-empty":"assets/fst_faces/darkpriest-cold-empty.png?v=f69aa9fd","flustered":"assets/fst_faces/darkpriest-flustered.png?v=fb006c8c","motivated":"assets/fst_faces/darkpriest-motivated.png?v=20951f88","sad":"assets/fst_faces/darkpriest-sad.png?v=36bef770","pout":"assets/fst_faces/darkpriest-pout.png?v=9821f856","heroic-confidence":"assets/fst_faces/darkpriest-heroic-confidence.png?v=a6082822"},"wizard":{"sleepy-cat":"assets/fst_faces/wizard-sleepy-cat.png?v=02b87b13","smile":"assets/fst_faces/wizard-smile.png?v=d2ae512d","surprised":"assets/fst_faces/wizard-surprised.png?v=79818b69","tired":"assets/fst_faces/wizard-tired.png?v=8c795a66","pout":"assets/fst_faces/wizard-pout.png?v=8831934e","motivated":"assets/fst_faces/wizard-motivated.png?v=633442bc","flustered":"assets/fst_faces/wizard-flustered.png?v=ca94f433","heroic-confidence":"assets/fst_faces/wizard-heroic-confidence.png?v=28b86a7c"},"sword":{"smile":"assets/fst_faces/sword-smile.png?v=6e1921ca","pout":"assets/fst_faces/sword-pout.png?v=53c40d3d","flustered":"assets/fst_faces/sword-flustered.png?v=880c961e","heroic-confidence":"assets/fst_faces/sword-heroic-confidence.png?v=fb6d1add","motivated":"assets/fst_faces/sword-motivated.png?v=0c0e6698"},"archer":{"smile":"assets/fst_faces/archer-smile.png?v=815916fb","pout":"assets/fst_faces/archer-pout.png?v=1c68747f","flustered":"assets/fst_faces/archer-flustered.png?v=327d6cf1","heroic-confidence":"assets/fst_faces/archer-heroic-confidence.png?v=78a80e46","motivated":"assets/fst_faces/archer-motivated.png?v=0947b334"},"gunner":{"smile":"assets/fst_faces/gunner-smile.png?v=4edc0809","pout":"assets/fst_faces/gunner-pout.png?v=bdeaaffe","flustered":"assets/fst_faces/gunner-flustered.png?v=36281988","heroic-confidence":"assets/fst_faces/gunner-heroic-confidence.png?v=cbb68bdb","motivated":"assets/fst_faces/gunner-motivated.png?v=bdaccc76"},"monk":{"smile":"assets/fst_faces/monk-smile.png?v=3e544b78","pout":"assets/fst_faces/monk-pout.png?v=c4f67f96","flustered":"assets/fst_faces/monk-flustered.png?v=24299943","heroic-confidence":"assets/fst_faces/monk-heroic-confidence.png?v=f68d2d0b","motivated":"assets/fst_faces/monk-motivated.png?v=2b734e4b"},"priest":{"smile":"assets/fst_faces/priest-smile.png?v=399f3725","pout":"assets/fst_faces/priest-pout.png?v=7348e7a5","flustered":"assets/fst_faces/priest-flustered.png?v=c158bfd0","heroic-confidence":"assets/fst_faces/priest-heroic-confidence.png?v=798d2d10","motivated":"assets/fst_faces/priest-motivated.png?v=10b230b7"},"bard":{"smile":"assets/fst_faces/bard-smile.png?v=2427ef42","pout":"assets/fst_faces/bard-pout.png?v=84ea0ced","flustered":"assets/fst_faces/bard-flustered.png?v=f5d5b1ee","heroic-confidence":"assets/fst_faces/bard-heroic-confidence.png?v=4d668db7","motivated":"assets/fst_faces/bard-motivated.png?v=d2a089c2"},"spellsword":{"smile":"assets/fst_faces/spellsword-smile.png?v=4b338dc8","pout":"assets/fst_faces/spellsword-pout.png?v=6f15f712","flustered":"assets/fst_faces/spellsword-flustered.png?v=aa23c801","heroic-confidence":"assets/fst_faces/spellsword-heroic-confidence.png?v=5dd744dd","motivated":"assets/fst_faces/spellsword-motivated.png?v=c650275f"},"ninja":{"smile":"assets/fst_faces/ninja-smile.png?v=d9513fef","pout":"assets/fst_faces/ninja-pout.png?v=7bae6669","flustered":"assets/fst_faces/ninja-flustered.png?v=adf5124e","heroic-confidence":"assets/fst_faces/ninja-heroic-confidence.png?v=dc10b59f","motivated":"assets/fst_faces/ninja-motivated.png?v=8a37a94a"},"rogue":{"smile":"assets/fst_faces/rogue-smile.png?v=028bc302","pout":"assets/fst_faces/rogue-pout.png?v=edcb410d","flustered":"assets/fst_faces/rogue-flustered.png?v=f64452fb","heroic-confidence":"assets/fst_faces/rogue-heroic-confidence.png?v=26ee6699","motivated":"assets/fst_faces/rogue-motivated.png?v=2b01e2c1"},"enchanter":{"smile":"assets/fst_faces/enchanter-smile.png?v=940e3b26","pout":"assets/fst_faces/enchanter-pout.png?v=2f8312e3","flustered":"assets/fst_faces/enchanter-flustered.png?v=de5fbc92","heroic-confidence":"assets/fst_faces/enchanter-heroic-confidence.png?v=fa5bbd55","motivated":"assets/fst_faces/enchanter-motivated.png?v=a4d68f5c"},"timemage":{"smile":"assets/fst_faces/timemage-smile.png?v=d9f110c8","pout":"assets/fst_faces/timemage-pout.png?v=2c86cfd5","flustered":"assets/fst_faces/timemage-flustered.png?v=2c336c4c","heroic-confidence":"assets/fst_faces/timemage-heroic-confidence.png?v=5f884e74","motivated":"assets/fst_faces/timemage-motivated.png?v=0954691c"},"druid":{"smile":"assets/fst_faces/druid-smile.png?v=8a4972fa","pout":"assets/fst_faces/druid-pout.png?v=762083cc","flustered":"assets/fst_faces/druid-flustered.png?v=2bb2ce9b","heroic-confidence":"assets/fst_faces/druid-heroic-confidence.png?v=98d66442","motivated":"assets/fst_faces/druid-motivated.png?v=a1c08518"},"forcemage":{"smile":"assets/fst_faces/forcemage-smile.png?v=ef57db88","pout":"assets/fst_faces/forcemage-pout.png?v=67428ddf","flustered":"assets/fst_faces/forcemage-flustered.png?v=68cce7b6","heroic-confidence":"assets/fst_faces/forcemage-heroic-confidence.png?v=54158bd2","motivated":"assets/fst_faces/forcemage-motivated.png?v=7448d36b"}};   // apply_fris.py — {직업: {표정: 표정 그림 + ?v=}} (학생 얼굴 — WebP 로 바꾸지 않는다)
+const FR_ID = "first-friendly-v1";
+const FR_JOBS = ["wizard", "paladin", "darkpriest"];                          // 초상화 자리 — 왼쪽부터 (02 · 03 · 04 와 같다)
+const FR_FOES = ["A", "B"];
+const FR_FACE0 = {paladin: "smile", darkpriest: "smile", wizard: "sleepy-cat"};
+const FR_LK = window.HS_LANG === "en" ? 1.6 : 1;
+const FR_CPS = 32 * FR_LK;                                                    // 글자 / 초 (01 ~ 04 와 같다)
+const FR_QUIET = /[\s….‥]/;
+const FR_T = {skip: "건너뛰기", master: "마스터", cap0: "학원 연습장 · 경기 전", cap1: "학원 연습장 · 경기 뒤", title: "연습 상대", first: "첫 친선전",
+  intro: "경기 전", win: "이겼을 때", lose: "졌을 때", acad: "다른 학원"};
+/* 대본 — who 학생(직업) · A · B 상대 학생 · master 마스터 / face 표정 / hop 콩 · shake 흔들 / in 그 줄 앞에 상대가 들어온다 · out 그 줄 뒤에 나간다
+   {acad} — 우리 학원 이름 ('이에요 · 예요'는 받침대로) */
+const FR_CUES = {
+  intro: [
+    {id: "FRI01", who: "paladin", face: "joy", hop: 1, t: "다른 학원이랑 겨루는 건 처음이에요! 우리 훈련이 얼마나 통할까요?"},
+    {id: "FRI02", who: "wizard", face: "sleepy-cat", t: "일단 시작 전에 다치지는 말자. 아까부터 너무 뛰어다녀…"},
+    {id: "FRI03", who: "darkpriest", face: "smile", t: "상대도 학생이에요. 해온 대로 하면 돼요."},
+    {id: "FRI04", who: "A", face: "smile", in: 1, t: "오늘 상대가 저쪽이야? 처음 듣는 학원인데."},
+    {id: "FRI05", who: "B", face: "pout", t: "시내 대회 앞두고 연습 좀 하려 했더니… 이래서 연습이나 되겠어?"},
+    {id: "FRI06", who: "paladin", face: "surprised", shake: 1, t: "…네?"},
+    {id: "FRI07", who: "A", face: "smile", t: "아, 들렸어? 너무 긴장하지 말라고. 친선전이잖아."},
+    {id: "FRI08", who: "B", face: "heroic-confidence", t: "금방 끝날 테니까."},
+    {id: "FRI09", who: "paladin", face: "pout", hop: 1, t: "아직 시작도 안 했거든요?"},
+    {id: "FRI10", who: "darkpriest", face: "cold-empty", t: "상대할 필요 없어요. 경기 전에 떠드는 것과 실력은 별개니까."},
+    {id: "FRI11", who: "A", face: "heroic-confidence", out: 1, t: "그래? 그럼 경기장에서 보여줘."},
+    {id: "FRI12", who: "wizard", face: "sleepy-cat", t: "금방 끝난다는데… 우리도 그렇게 해주면 되는 거 아니야? 이기는 쪽으로."},
+    {id: "FRI13", who: "paladin", face: "motivated", hop: 1, t: "당연하죠! 제가 바로…!"},
+    {id: "FRI14", who: "darkpriest", face: "cold-empty", t: "혼자 나서지는 마세요. 저도 할 말이 있으니까."},
+    {id: "FRI15", who: "wizard", face: "smile", t: "상대할 필요 없다며?"},
+    {id: "FRI16", who: "darkpriest", face: "flustered", shake: 1, t: "…말로 상대하지 않겠다는 뜻이에요."},
+    {id: "FRI17", who: "master", t: "다 들었어. 기분 나쁜 것도 알겠고."},
+    {id: "FRI18", who: "master", t: "그래도 상대가 한 말 때문에, 우리가 준비한 것까지 잊지는 말자."},
+    {id: "FRI19", who: "paladin", face: "flustered", t: "…네. 혼자 앞서가지 않기."},
+    {id: "FRI20", who: "darkpriest", face: "motivated", t: "서로 움직임 확인하기."},
+    {id: "FRI21", who: "wizard", face: "smile", t: "그리고 끝나면 다 같이 쉬기."},
+    {id: "FRI22", who: "master", t: "그래. 너희가 연습한 걸 보여주고 와."}
+  ],
+  win: [
+    {id: "FW01", who: "paladin", face: "surprised", hop: 1, t: "…이겼다. 우리, 이겼어요!"},
+    {id: "FW02", who: "wizard", face: "tired", t: "응… 연습은 제대로 됐네. 양쪽 다."},
+    {id: "FW03", who: "darkpriest", face: "smile", t: "그러게요. 금방 끝날 거라더니."},
+    {id: "FW04", who: "B", face: "flustered", in: 1, t: "아까는… 우리가 너무 쉽게 생각했네."},
+    {id: "FW05", who: "A", face: "flustered", t: "미안. 너희 학원 이름, 다시 알려줄래?"},
+    {id: "FW06", who: "paladin", face: "heroic-confidence", hop: 1, t: "{acad}이에요. 다음에는 처음부터 제대로 상대해 주세요!"},
+    {id: "FW07", who: "A", face: "motivated", out: 1, t: "…그래. 다음엔 우리도 안 질 거야."},
+    {id: "FW08", who: "paladin", face: "joy", hop: 1, t: "마스터! 들으셨어요? 우리 이름을 물어봤어요!"},
+    {id: "FW09", who: "master", t: "응. 이제 기억하겠네. 잘했어, 모두."},
+    {id: "FW10", who: "darkpriest", face: "smile", t: "처음부터 그렇게 봤으면 좋았을 텐데요."},
+    {id: "FW11", who: "wizard", face: "smile", t: "그래도 기분 좋지?"},
+    {id: "FW12", who: "darkpriest", face: "flustered", t: "…나쁘지는 않네요."},
+    {id: "FW13", who: "paladin", face: "joy", hop: 1, t: "그럼 오늘은 조금 더 훈련해도 될 것 같아요!"},
+    {id: "FW14", who: "wizard", face: "pout", shake: 1, t: "끝나면 쉰다며! 그건 우리가 이긴 거랑 상관없잖아아."},
+    {id: "FW15", who: "master", t: "오늘은 쉬자. 잘된 것도 고칠 것도, 내일 같이 보자."}
+  ],
+  lose: [
+    {id: "FL01", who: "paladin", face: "sad", t: "…졌네요."},
+    {id: "FL02", who: "B", face: "smile", in: 1, t: "뭐, 처음이면 그럴 수 있지. 시내 대회까지는 더 연습해야겠네."},
+    {id: "FL03", who: "A", face: "heroic-confidence", out: 1, t: "가자."},
+    {id: "FL04", who: "paladin", face: "sad", t: "그렇게 말하는데… 아무 말도 못 했어요."},
+    {id: "FL05", who: "darkpriest", face: "cold-empty", t: "…다음에는 못 하게 만들면 돼요."},
+    {id: "FL06", who: "wizard", face: "tired", t: "너도 꽤 분하구나."},
+    {id: "FL07", who: "darkpriest", face: "sad", t: "…네. 분해요. 준비한 게 통할 줄 알았는데."},
+    {id: "FL08", who: "paladin", face: "sad", t: "마스터, 죄송해요. 제대로 보여드리고 싶었는데."},
+    {id: "FL09", who: "master", t: "미안해할 일은 아니야. 이기려고 준비했고, 끝까지 했잖아."},
+    {id: "FL10", who: "paladin", face: "sad", t: "그래도… 졌어요."},
+    {id: "FL11", who: "master", t: "응. 오늘은 상대가 더 잘했어. 그건 인정하자."},
+    {id: "FL12", who: "master", t: "하지만 오늘 졌다고, 앞으로도 연습 상대밖에 안 되는 건 아니야."},
+    {id: "FL13", who: "darkpriest", face: "motivated", t: "…경기를 다시 보고 싶어요. 우리가 놓친 것부터요."},
+    {id: "FL14", who: "paladin", face: "motivated", t: "저도요. 그냥 분해하고 끝내고 싶지 않아요."},
+    {id: "FL15", who: "wizard", face: "motivated", t: "내일 같이 보자. 나도 지고 집에 가는 건 생각보다 별로네."},
+    {id: "FL16", who: "master", t: "좋아. 하나씩 고쳐 보자. 오늘은 몸부터 쉬고."},
+    {id: "FL17", who: "paladin", face: "motivated", hop: 1, t: "…네. 다음에는, 우리 이름을 제대로 기억하게 할 거예요."}
+  ]
+};
+const FR_SCENES = ["intro", "win", "lose"];
+
+const R = {on: false, sess: 0, i: -1, typing: null, wait: null, root: null, sc: "", list: [], cast: {}, foe: null, faces: {}, preview: false, live: false, pend: false, ending: false, done: null};
+const xq = s => R.root ? R.root.querySelector(s) : null;
+const rsleep = ms => new Promise(r => setTimeout(r, ms));
+const fRM = () => typeof rRM === "function" ? rRM() : !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+/* ── 세이브 ── */
+function frOn(){ return !!S && !((navigator.webdriver && !window.__frisForce) || window.__frisOff); }
+function frHadFriendly(){ const C = (S && S.cleared && typeof S.cleared === "object") ? S.cleared : {}; return !!(C.f || C["f:ow"]); }
+function frS(){
+  if(!S) return null;
+  if(!S.fris || typeof S.fris !== "object"){
+    S.fris = {id: FR_ID, seen: {}, done: 0, res: null, pend: 0, old: frHadFriendly() ? 1 : 0};
+    if(S.fris.old){ S.fris.done = 1; S.fris.seen.intro = 1; try{ frCapture(); }catch(e){} }   // 예전 세이브 — 친선전을 치렀다: 다 본 것으로 (다시 보기 셋)
+  }
+  const X = S.fris; X.seen = X.seen || {};
+  return X;
+}
+/* 셋 — 04(XPST)와 같은 차례: 적어 둔 셋 → 02 · 03 의 셋 → 개교 멤버(dp1)와 같은 해 팔라딘 · 마법사 */
+function frCastIds(){
+  const X = S && S.fris;
+  if(X && X.cast) return {paladin: X.cast.paladin && X.cast.paladin.id, darkpriest: X.cast.darkpriest && X.cast.darkpriest.id, wizard: X.cast.wizard && X.cast.wizard.id};
+  if(window.XPST && typeof XPST.castIds === "function"){ const c = XPST.castIds(); if(c) return c; }
+  const c = (S.rqst && S.rqst.cast) || (S.rvst && S.rvst.cast);
+  if(c && c.paladin && c.darkpriest && c.wizard) return {paladin: c.paladin, darkpriest: c.darkpriest, wizard: c.wizard};
+  const L = S.students || [], d = L.find(s => s && s.uniq === "dp1");
+  if(!d) return null;
+  const p = L.find(s => s && s.job === "paladin" && s.year === d.year), w = L.find(s => s && s.job === "wizard" && s.year === d.year);
+  return p && w ? {paladin: p.id, darkpriest: d.id, wizard: w.id} : null;
+}
+function frCapture(){
+  const X = S.fris; if(!X || X.cast) return;
+  const ids = frCastIds(); if(!ids) return;
+  const L = (S.students || []).concat(S.graduates || []), out = {};
+  FR_JOBS.forEach(j => { const st = L.find(s => s && s.id === ids[j]); out[j] = {id: ids[j], name: st ? st.name : ((JOBS[j] && JOBS[j].name) || ""), uniq: (st && st.uniq) || null}; });
+  X.cast = out;
+}
+function frActors(){
+  const ids = frCastIds(); if(!ids) return null;
+  const X = S.fris, out = {};
+  FR_JOBS.forEach(j => {
+    const st = (S.students || []).find(s => s && s.id === ids[j]);
+    const c = X && X.cast && X.cast[j];
+    out[j] = st || {id: ids[j] || ("fr-" + j), name: c ? c.name : ((JOBS[j] && JOBS[j].name) || ""), uniq: c ? c.uniq : null, job: j};
+  });
+  return out;
+}
+/* 상대 둘 — 상대 학원 첫 팀에서 (셋과 직업이 다른 학생 먼저) · 적어 두는 모양 {acad, A: {name, job}, B: {...}} */
+function frFoeOf(t){
+  const teams = (t && t.foe && t.foe.teams) || [], L = [];
+  teams.forEach(tm => (tm || []).forEach(s => { if(s && s.job && JOBS[s.job]) L.push(s); }));
+  if(!L.length) return null;
+  const pick = L.filter(s => FR_JOBS.indexOf(s.job) < 0).concat(L.filter(s => FR_JOBS.indexOf(s.job) >= 0));
+  const a = pick[0], b = pick.find(s => s !== a && s.job !== a.job) || pick.find(s => s !== a) || a;
+  const one = s => ({name: s.name || ((JOBS[s.job] && JOBS[s.job].name) || ""), job: s.job});
+  return {acad: (t.foe && t.foe.name) || "", A: one(a), B: one(b)};
+}
+function frFoeDefault(){                                                      // 다시 보기 · 예전 세이브 — 적어 둔 상대가 없을 때
+  const one = j => ({name: (JOBS[j] && JOBS[j].name) || j, job: j});
+  return {acad: FR_T.acad, A: one("sword"), B: one("archer")};
+}
+
+/* ── 무대 ── */
+function frBuild(){
+  if(R.root) return;
+  const r = document.createElement("div");
+  r.id = "frisRoot"; r.className = "fst rvst fris";
+  r.innerHTML = `<div class="rv-bg"><div class="rv-img"></div><div class="rv-vig"></div></div><div class="fst-hit"></div>
+    <button type="button" class="rv-skip" hidden>${esc(FR_T.skip)}</button>
+    <div class="fst-cast">${FR_JOBS.concat(FR_FOES).map(k => `<div class="fst-bust${FR_FOES.indexOf(k) >= 0 ? " foe" : ""}" data-who="${k}" hidden><img alt="" draggable="false"></div>`).join("")}</div>
+    <div class="fst-talk"><div class="fst-nm"><i></i><span></span></div><div class="fst-tx"></div><div class="fst-nx">▼</div></div>
+    <div class="rv-black"><div class="rv-card"><i hidden></i><b></b></div></div>`;
+  document.body.appendChild(r);
+  R.root = r;
+  const hit = r.querySelector(".fst-hit");
+  hit.addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); frAdvance(); });
+  hit.addEventListener("wheel", e => e.preventDefault(), {passive: false});
+  hit.addEventListener("touchmove", e => e.preventDefault(), {passive: false});
+  r.querySelector(".rv-skip").addEventListener("click", e => { e.stopPropagation(); frEnd("skip"); });
+}
+function frTeardown(){ if(R.root) R.root.remove(); R.root = null; }
+document.addEventListener("keydown", e => {
+  if(!R.root || !R.on) return;
+  if(e.key === " " || e.key === "Enter"){ e.preventDefault(); e.stopPropagation(); frAdvance(); }
+}, true);
+addEventListener("resize", () => { if(R.on && R.root) { frFit(); frLayout(true); } });
+function frFade(el, to, ms){
+  return new Promise(res => {
+    if(!el){ res(); return; }
+    const from = +getComputedStyle(el).opacity;
+    el.getAnimations().forEach(a => a.cancel());
+    el.style.opacity = to;
+    if(fRM()) ms = Math.min(ms, 140);
+    const a = el.animate([{opacity: from}, {opacity: to}], {duration: Math.max(1, ms), easing: "ease"});
+    a.onfinish = a.oncancel = () => res();
+  });
+}
+function frBox(on){ const b = xq(".fst-talk"); if(b) b.classList.toggle("show", !!on); }
+function frMark(on){ R.root && R.root.querySelectorAll(".fst-nx").forEach(e => e.classList.toggle("on", on)); }
+function frName(who){
+  if(who === "master") return FR_T.master;
+  if(FR_FOES.indexOf(who) >= 0) return (R.foe && R.foe[who] && R.foe[who].name) || "";
+  const st = R.cast[who];
+  if(!st) return (JOBS[who] && JOBS[who].name) || "";
+  return (S.students || []).indexOf(st) >= 0 && typeof dn === "function" ? dn(st) : (st.name || "");
+}
+function frJob(who){ return FR_FOES.indexOf(who) >= 0 ? (R.foe && R.foe[who] && R.foe[who].job) : who; }
+function frPlate(who){
+  const nm = xq(".fst-nm"), sp = nm.querySelector("span"), tk = xq(".fst-talk");
+  let col = "#ffd36a";                                                          // 마스터 — 금빛 (02 · 03 과 같다)
+  if(who !== "master"){ const role = JOBS[frJob(who)] && JOBS[frJob(who)].role; col = role === "tank" ? "#8cc4f0" : role === "heal" ? "#86d6a4" : "#f2957d"; }   // 역할 색 네모
+  sp.textContent = frName(who);
+  nm.style.setProperty("--rc", col);
+  tk.classList.toggle("mst", who === "master");
+  tk.classList.toggle("foe", FR_FOES.indexOf(who) >= 0);
+}
+function frLine(c){
+  let t = c.t || "";
+  if(t.indexOf("{acad}") >= 0){
+    const a = (S && S.acadName) || "", ch = a.charCodeAt(a.length - 1), bat = ch >= 0xAC00 && ch <= 0xD7A3 && (ch - 0xAC00) % 28 !== 0;
+    t = t.replace("{acad}이에요", a + (bat ? "이에요" : "예요")).split("{acad}").join(a);
+  }
+  const st = FR_JOBS.indexOf(c.who) >= 0 ? R.cast[c.who] : null;
+  return st && typeof masterQ === "function" ? masterQ(t, st) : t;              // 학생이 마스터를 부르는 말 (02 · 03 과 같다)
+}
+function frType(el, text, voice, sess){
+  return new Promise(res => {
+    if(R.typing) R.typing();
+    const ch = [...String(text || "")]; let n = 0, tm = 0;
+    const done = () => { clearTimeout(tm); if(R.typing === done) R.typing = null; if(el) el.textContent = text; res(); };
+    if(!el || !ch.length){ if(el) el.textContent = ""; res(); return; }
+    const step = () => {
+      if(sess !== R.sess){ if(R.typing === done) R.typing = null; res(); return; }
+      n++; el.textContent = ch.slice(0, n).join("");
+      if(voice && !FR_QUIET.test(ch[n - 1]) && typeof cwBlip === "function") cwBlip(voice);
+      if(n >= ch.length){ done(); return; }
+      let d = 1000 / FR_CPS;
+      if(ch[n - 1] === "…" && ch[n] !== "…") d += 300;
+      tm = setTimeout(step, d);
+    };
+    el.textContent = ""; R.typing = done;
+    tm = setTimeout(step, 1000 / FR_CPS);
+  });
+}
+function frWaitClick(){ return new Promise(r => { R.wait = r; frMark(true); }); }
+function frAdvance(){
+  if(!R.on || R.ending) return;
+  if(R.typing){ R.typing(); return; }
+  if(R.wait){ const r = R.wait; R.wait = null; frMark(false); r(); }
+}
+
+/* ── 배경 — 학원 연습장 (그 계절 쿼터뷰 지도 · 친선전 필드와 같다) · 가장자리 건물 쪽(대기 자리) ── */
+const FR_IMG = {};
+function frImg(src, then){
+  if(!src) return null;
+  let o = FR_IMG[src];
+  if(o && o.w) return o;
+  if(!o){ o = FR_IMG[src] = {w: 0, h: 0, cb: []}; const im = new Image(); im.decoding = "async"; im.onload = () => { o.w = im.naturalWidth; o.h = im.naturalHeight; const cb = o.cb; o.cb = []; cb.forEach(f => f()); }; im.src = src; }
+  if(then) o.cb.push(then);
+  return null;
+}
+function frView(){
+  const ph = (S && PHASES[S.phase]) ? S.phase : "spring", k = "academy-" + ph, m = typeof TQ_MAPS !== "undefined" ? (TQ_MAPS[k] || TQ_MAPS["academy-spring"]) : null;
+  if(!m) return {src: "", z: 1, f: [.5, .5]};
+  return {src: "assets/battle-fields/quarter/" + m.src, z: 1.45, f: [m.mx / 1536, .2]};          // 연습장 가장자리 — 건물 · 깃발 쪽 (대기 자리)
+}
+function frFit(){
+  const img = xq(".rv-img"); if(!img) return;
+  const V = frView(), W = R.root.clientWidth || innerWidth, H = R.root.clientHeight || innerHeight;
+  if(img.dataset.src !== V.src){ img.style.backgroundImage = V.src ? `url("${V.src}")` : "none"; img.dataset.src = V.src; }
+  const sz = frImg(V.src, () => { if(R.root && frView().src === V.src) frFit(); });
+  if(!sz){ img.style.backgroundSize = "cover"; img.style.backgroundPosition = `${V.f[0] * 100}% ${V.f[1] * 100}%`; return; }
+  const s = Math.max(W / sz.w, H / sz.h) * V.z, bw = sz.w * s, bh = sz.h * s;
+  const x = Math.min(0, Math.max(W - bw, W * .5 - V.f[0] * bw)), y = Math.min(0, Math.max(H - bh, H * .44 - V.f[1] * bh));
+  img.style.backgroundSize = `${bw.toFixed(1)}px ${bh.toFixed(1)}px`;
+  img.style.backgroundPosition = `${x.toFixed(1)}px ${y.toFixed(1)}px`;
+}
+
+/* ── 초상화 — 셋도 상대 둘도 표정 그림 (상대는 그 직업의 표정 · 마주 보게 좌우를 뒤집는다 · 표정 그림이 없는 직업이면 직업 초상화 FACE_IMG) ── */
+function frBust(k){ return xq(`.fst-bust[data-who="${k}"]`); }
+function frFaceSrc(k, f){ const set = FR_FACE[frJob(k)]; return set ? (set[f] || set.smile || "") : ""; }
+function frFace(k, f){
+  if(!f) return;
+  const b = frBust(k), src = frFaceSrc(k, f); if(!src) return;
+  R.faces[k] = f;
+  if(b){ const im = b.querySelector("img"); if(im.getAttribute("src") !== src) im.src = src; }
+}
+function frFoeImg(){
+  FR_FOES.forEach(k => {
+    const b = frBust(k), j = frJob(k); if(!b) return;
+    const f = (R.list.find(c => c.who === k && c.face) || {}).face || "smile";
+    if(frFaceSrc(k, f)) frFace(k, f);
+    else { const src = (typeof FACE_IMG !== "undefined" && j && FACE_IMG[j]) || ""; const im = b.querySelector("img"); if(src && im.getAttribute("src") !== src) im.src = src; }
+    b.classList.toggle("alt", FR_JOBS.indexOf(j) >= 0);                        // 셋과 같은 직업 — 색을 돌려 다른 학생으로 보이게
+  });
+}
+/* 이 장면에 나올 표정만 미리 받아 둔다 (셋 + 그 상대 둘) */
+function frPreload(){
+  const seen = {};
+  frAll().forEach(k => { const set = FR_FACE[frJob(k)]; if(set) Object.keys(set).forEach(f => { const s = set[f]; if(s && !seen[s]){ seen[s] = 1; const im = new Image(); im.decoding = "async"; im.src = s; } }); });
+}
+function frAll(){ return FR_JOBS.concat(FR_FOES); }
+function frLit(list){ frAll().forEach(k => { const e = frBust(k); if(e) e.classList.toggle("on", !!(list && list.indexOf(k) >= 0)); }); }
+/* 자리 — 셋은 가운데 · 상대가 있으면 셋은 왼쪽으로 비켜서고 상대 둘은 오른쪽에 (사이를 조금 띄운다) */
+function frLayout(snap){
+  const vis = frAll().filter(k => { const e = frBust(k); return e && !e.hidden; });
+  const foes = vis.filter(k => FR_FOES.indexOf(k) >= 0).length, gap = foes ? .7 : 0;
+  const pos = vis.map((k, j) => j + (FR_FOES.indexOf(k) >= 0 ? gap : 0)), mid = (pos[0] + pos[pos.length - 1]) / 2;
+  /* 좁은 창(폰) — 다섯이 창 안에 들도록 간격을 줄인다 (초상화가 조금 겹친다) */
+  const box = R.root && R.root.querySelector(".fst-cast"), e0 = vis.length && frBust(vis[0]);
+  const W = box ? box.clientWidth : 0, bw = e0 ? e0.offsetWidth : 0, span = pos[pos.length - 1] - pos[0];
+  const room = span > 0 && W && bw ? (W - 16 - bw) / span : 0;
+  const step = room ? `min(var(--fst-step), ${room.toFixed(1)}px)` : "var(--fst-step)";
+  vis.forEach((k, j) => {
+    const e = frBust(k);
+    if(snap) e.style.transition = "none";
+    e.style.left = `calc(50% + ${step} * ${(pos[j] - mid).toFixed(2)} - var(--fst-bust) / 2)`;
+    if(snap){ void e.offsetWidth; e.style.transition = ""; }
+  });
+}
+function frHop(k){ if(fRM()) return; const e = frBust(k); if(e && !e.hidden) e.animate([{transform: "none"}, {transform: "translateY(-9px)", offset: .35}, {transform: "none"}], {duration: 300, easing: "ease-out"}); }
+function frShake(k){ if(fRM()) return; const e = frBust(k); if(e && !e.hidden) e.animate([0, -4, 4, -3, 3, 0].map(x => ({transform: `translateX(${x}px)`})), {duration: 280, easing: "ease-in-out"}); }
+function frEnter(list, from){
+  list.forEach((k, n) => {
+    const e = frBust(k); if(!e) return;
+    e.hidden = false;
+    const kf = fRM() ? [{opacity: 0}, {opacity: 1}] : from === "right" ? [{transform: "translateX(90px)", opacity: 0}, {transform: "none", opacity: 1}]
+      : [{transform: "translateY(60px)", opacity: 0}, {opacity: 1, offset: .6}, {transform: "none", opacity: 1}];
+    e.animate(kf, {duration: fRM() ? 200 : 380, delay: fRM() ? 0 : n * 90, easing: "cubic-bezier(.2,.85,.3,1.2)", fill: "backwards"});
+  });
+}
+function frLeave(list){
+  return Promise.all(list.map((k, n) => new Promise(res => {
+    const e = frBust(k); if(!e || e.hidden){ res(); return; }
+    e.classList.remove("on");
+    const a = e.animate(fRM() ? [{opacity: 1}, {opacity: 0}] : [{transform: "none", opacity: 1}, {transform: "translateX(110px)", opacity: 0}], {duration: fRM() ? 180 : 360, delay: fRM() ? 0 : n * 80, easing: "ease-in", fill: "forwards"});
+    a.onfinish = a.oncancel = () => { e.hidden = true; a.cancel(); res(); };
+  })));
+}
+
+/* ── 장면 ── */
+function frReset(o){
+  frBuild();
+  R.sc = o.sc; R.preview = !!o.preview; R.cast = o.cast || {}; R.foe = o.foe || frFoeDefault();
+  R.list = (FR_CUES[o.sc] || []).map(c => Object.assign({}, c));
+  R.on = true; R.ending = false; R.sess++; R.i = -1; R.typing = null; R.wait = null; R.faces = {};
+  const sk = xq(".rv-skip"); if(sk){ sk.hidden = !R.preview; sk.disabled = false; }   // 건너뛰기는 다시 보기 · 미리 보기에만
+  frBox(null); frMark(false); frLit(null);
+  frAll().forEach(k => { const e = frBust(k); if(!e) return; e.getAnimations().forEach(a => a.cancel()); e.hidden = true; });
+  FR_JOBS.forEach(k => { const f = (R.list.find(c => c.who === k && c.face) || {}).face || FR_FACE0[k]; frFace(k, f); });
+  frFoeImg(); frPreload();
+}
+async function frScene(o){
+  frReset(o);
+  const root = R.root, sess = R.sess;
+  root.classList.add("on"); root.style.opacity = "";
+  const bk = xq(".rv-black"), bg = xq(".rv-bg"), card = xq(".rv-card");
+  bk.style.opacity = 0; bg.style.opacity = 0;
+  await frFade(bk, 1, 360); if(sess !== R.sess) return false;
+  bg.style.opacity = 1;
+  frFit();
+  card.querySelector("i").hidden = true; card.querySelector("b").textContent = o.sc === "intro" ? FR_T.cap0 : FR_T.cap1;
+  await frFade(card, 1, 240); if(sess !== R.sess) return false;
+  await rsleep(fRM() ? 500 : 1000); if(sess !== R.sess) return false;
+  await frFade(card, 0, 240); if(sess !== R.sess) return false;
+  await frFade(bk, 0, 520); if(sess !== R.sess) return false;
+  frEnter(FR_JOBS.filter(k => R.cast[k])); frLayout(true);
+  await rsleep(fRM() ? 100 : 420); if(sess !== R.sess) return false;
+  return new Promise(res => { R.done = res; frRun(0); });
+}
+async function frRun(i){
+  const sess = R.sess, c = R.list[i];
+  if(!R.on || R.ending) return;
+  if(!c){ frEnd("done"); return; }
+  R.i = i;
+  if(c.in){
+    const add = FR_FOES.filter(k => { const e = frBust(k); return e && e.hidden; });
+    if(add.length){ frBox(null); frEnter(add, "right"); frLayout(false); await rsleep(fRM() ? 120 : 460); if(sess !== R.sess) return; }
+  }
+  if(c.who === "master") frLit(null);
+  else {
+    if(c.face) frFace(c.who, c.face);
+    frLit([c.who]);
+    if(c.hop) frHop(c.who);
+    if(c.shake) frShake(c.who);
+  }
+  frPlate(c.who); frBox(true);
+  await frType(xq(".fst-talk .fst-tx"), frLine(c), c.who === "master" ? "csl_mst" : "csl_stu", sess);
+  if(sess !== R.sess) return;
+  await frWaitClick(); if(sess !== R.sess) return;
+  if(c.out){ frBox(null); await frLeave(FR_FOES); if(sess !== R.sess) return; frLayout(false); await rsleep(fRM() ? 60 : 260); if(sess !== R.sess) return; }
+  frRun(i + 1);
+}
+async function frEnd(how){
+  if(!R.on || R.ending) return;
+  R.ending = true; R.sess++; R.wait = null; R.typing = null;
+  const sk = xq(".rv-skip"); if(sk) sk.disabled = true;
+  if(!R.preview) frDone();
+  await frFade(xq(".rv-black"), 1, how === "skip" ? 260 : 560);
+  if(R.root) R.root.classList.remove("on");
+  await frFade(R.root, 0, 320);
+  frTeardown(); R.on = false; R.ending = false;
+  const d = R.done; R.done = null; if(d) d(true);
+}
+/* 본 것으로 (처음 보는 진짜 흐름만) — 도입 / 결말(첫 친선전 하나 · 끝) */
+function frDone(){
+  const X = frS(); if(!X) return;
+  frCapture();
+  if(R.sc === "intro"){ X.seen.intro = 1; return; }
+  X.seen[R.sc] = 1; X.done = 1; X.pend = 0; X.res = R.sc;
+}
+
+/* ── 고리 1 — 첫 친선전의 첫 경기 화면 (renderFriendly · 락커룸 창이 뜨기 전): 도입을 띄웠으면 true (끝나면 again — 경기 화면을 다시 그린다) ── */
+function frIntro(t, again){
+  if(R.on && R.sc === "intro") return true;                                    // 도입 중에 경기 화면을 다시 그린 것
+  if(!frOn() || R.on || R.ending || R.live || !t || t.kind !== "friendly" || (t.matchIdx | 0) !== 0 || (t.results && t.results.length)) return false;
+  const X = frS(); if(!X || X.done || X.seen.intro) return false;
+  const cast = frActors(); if(!cast) return false;
+  X.foe = frFoeOf(t) || X.foe || frFoeDefault();
+  R.live = true;
+  frScene({sc: "intro", cast, foe: X.foe}).catch(e => { errPush("fris", e.message, e.stack); frTeardown(); R.on = false; })
+    .then(() => { R.live = false; try{ again && again(); }catch(e){ errPush("fris", e.message, e.stack); } });
+  return true;
+}
+/* ── 고리 2 — 친선전이 끝나고 보상 · 저장을 마친 뒤 (finishFriendly · 결과 상세 창 전): 결말을 띄웠으면 true (끝나면 next) ── */
+function frOutro(t, next){
+  if(!frOn() || R.on || R.ending || R.live || !t || t.kind !== "friendly" || !(t.results && t.results.length)) return false;
+  const X = frS(); if(!X || X.done) return false;
+  const cast = frActors(); if(!cast) return false;
+  const res = t.w > t.l ? "win" : "lose";
+  const f = frFoeOf(t);
+  if(!X.foe || (f && X.foe.acad !== f.acad)) X.foe = f || X.foe || frFoeDefault();   // 도입을 다른 친선전에서 봤다 — 이번 상대로
+  X.res = res; X.pend = 1;
+  try{ save(); }catch(e){}                                                     // 결말 중에 다시 열면 그 결말부터 (보상은 이미 · 다시 주지 않는다)
+  frPlayOutro(res, next);
+  return true;
+}
+function frPlayOutro(res, next){
+  const X = frS(), cast = frActors();
+  R.live = true;
+  frScene({sc: res, cast, foe: X.foe}).catch(e => { errPush("fris", e.message, e.stack); frTeardown(); R.on = false; })
+    .then(() => { R.live = false; try{ save(); }catch(e){} try{ next && next(); }catch(e){ errPush("fris", e.message, e.stack); } });
+}
+/* render 끝 — 결말 중에 다시 열었으면 (한가할 때) 그 결말을 */
+function frAfter(){
+  if(!S || !frOn() || !Array.isArray(S.students) || !S.students.length) return;
+  const X = frS(); if(!X || !X.pend || X.done || R.on || R.live || R.pend) return;
+  const idle = () => {
+    const mr = document.getElementById("modalRoot");
+    return !(UI.wrun || UI.battle || UI.tour || UI.pendingTour || (UI.ceremonies || []).length || (mr && mr.innerHTML.trim()) || document.getElementById("bootLoader")
+      || (typeof OP !== "undefined" && OP) || (typeof BELT !== "undefined" && BELT.on) || (window.FST && FST.state && FST.state.on)
+      || (window.RVST && RVST.state && (RVST.state.on || RVST.state.live)) || (window.RQST && RQST.state && (RQST.state.on || RQST.state.live))
+      || (window.XPST && XPST.state && (XPST.state.on || XPST.state.live)) || document.documentElement.classList.contains("modal-open"));
+  };
+  if(!idle()) return;
+  R.pend = true;
+  setTimeout(() => {
+    R.pend = false;
+    const Y = S && S.fris;
+    if(!Y || !Y.pend || Y.done || R.on || R.live || !idle() || !frActors()) return;
+    frPlayOutro(Y.res === "win" ? "win" : "lose", () => { try{ render(); }catch(e){} });
+  }, 0);
+}
+
+/* ── 다시 보기 (SCEN 05 묶음) · 미리 보기 (목업) — 세이브를 건드리지 않고 오른쪽 위 건너뛰기 · 결말은 둘 다 ── */
+function frReplay(sc, cast){
+  if(R.on || R.ending || R.live || FR_SCENES.indexOf(sc) < 0 || !cast) return false;
+  const X = S && S.fris;
+  R.live = true;
+  frScene({sc, cast, foe: (X && X.foe) || frFoeDefault(), preview: true}).catch(e => { errPush("fris", e.message, e.stack); frTeardown(); R.on = false; })
+    .then(() => { R.live = false; try{ render(); }catch(e){} });
+  return true;
+}
+function frPreview(sc){ const a = frActors(); return a ? frReplay(sc, a) : false; }
+function frReplayList(){
+  const X = S && S.fris; if(!X || !(X.done || X.seen.intro)) return [];
+  const items = [{k: "intro", t: FR_T.intro}];
+  if(X.done) items.push({k: "win", t: FR_T.win}, {k: "lose", t: FR_T.lose});   // 결말 — 반대 결말도 다시 볼 수 있다 (대본)
+  return [{n: FR_T.first, items}];
+}
+function frAnySeen(){ const X = S && S.fris; return !!(X && (X.done || (X.seen && X.seen.intro))); }
+function frResetAll(){ R.sess++; R.on = false; R.ending = false; R.live = false; R.pend = false; R.preview = false; R.typing = null; R.wait = null; frTeardown(); }
+window.FRIS = {intro: frIntro, outro: frOutro, after: frAfter, replay: frReplay, preview: frPreview, replayList: frReplayList, anySeen: frAnySeen, actors: frActors,
+  castIds: frCastIds, foeOf: frFoeOf, reset: frResetAll, end: frEnd, advance: frAdvance, state: R, cues: FR_CUES, scenes: FR_SCENES, face: FR_FACE, T: FR_T, s: frS};
+})();
+/* FRIS_END */
+/* FLST_START — 첫 친선전 신청 이야기 '우리 학원 앞으로 온 편지' (1023 목업 · apply_flst.py · mockups/friendly-letter) ─ 대본 scenario-05a-first-friendly-letter-draft.md (초안 v1).
+   사용자 1023: 'ㅇㅋ 친선전 신청 시나리오 목업 해보자'. 물음 · 답: 운영 안내 7 '띄우지 않고 본 것으로' · 셋이 없으면 '대본의 공용판대로' · 선택 반응 '대본 규칙대로' · 다시 보기 '05 묶음에 함께'.
+   · A 도착 — 첫 유효한 신청 편지가 남아 있는 채 마스터 화면(UI.view home — 넓은 화면 책상 · 좁은 화면 마스터 노트)이 한가할 때 한 번 (다른 이야기 · 팝업 · 주 진행 중이면 기다린다).
+     셋(02 · 03 · 04 · 05 의 셋)이 학원에 있으면 FLA01 ~ 20 (FLA01 책상 위 편지를 가볍게 강조 · FLA03 셋 등장) · 없으면 공용판 FLG01 ~ 03 (마스터 독백).
+     무대는 첫 시간표(.fst)의 대화창 · 생각 창 · 초상화를 화면 위에 그대로 (배경 없음 — 책상이 보인다).
+   · 편지 안내 — A 뒤 편지 단추(넓은 화면 책상의 편지 · 좁은 화면 '친선전 신청 편지 n통' 단추) 한 곳에 금색 원 · 손가락 · '도착한 친선전 신청을 확인해 보세요.' (02 뒤 안내와 같은 모양).
+     마스터 화면에서만 보이고 다른 화면에 가면 걷었다가 돌아오면 다시 (대화는 반복하지 않는다) · 편지를 열면 끝. 편지가 다 사라지면 다음 유효한 편지 때.
+   · B 신청 창 — 처음 여는 신청 창(fletOpen — 어느 길로 열든) 위에 마스터 독백 FLB01 ~ 04 (FLB02 에 정보 칸을 가볍게 강조 · 팀이 모자라면 FLB02 뒤 한 줄) — 그동안 창의 단추는 막는다.
+     이때 운영 안내 7(친선전)은 띄우지 않고 본 것으로 (사용자 답 — 운영 안내 목록에서는 다시 볼 수 있다). A 를 보기 전에 편지를 먼저 열었으면 A 는 건너뛰고 B 부터.
+   · 선택 뒤 반응 (도장이 끝난 뒤 · 창을 닫고 책상 위에서 — 끝나면 남은 편지가 있으면 다음 편지, 없으면 책상) — 대본 규칙:
+     A(셋)에 이어진 첫 선택은 학생판(회신 FLY01 ~ 08 · 거절 FLN01 ~ 06 · 나중에 FLL01 ~ 04) · 그 뒤 처음 회신하면 학생판 회신(셋이 학원에 있을 때) ·
+     그 밖의 첫 거절 · 첫 나중에(그리고 공용판의 모든 첫 선택)는 마스터 독백 한 줄(공용). 같은 반응은 다시 나오지 않는다 · 나중에는 Esc 도 같다.
+   · 세이브 S.flst = {id, old, arr(A 를 봤다 · 건너뛰었다), guide(편지 안내 끝), b(B 끝), ctx(A 에 이어진 첫 선택 전), v("trio" · "gen"), cast, seen {arr · yes · no · later 학생판}, once {yes · no · later}}
+     예전 세이브 — 친선전 편지에 답했거나 치렀거나 운영 안내 7 을 봤으면 다 지난 것으로 (자동으로 띄우지 않는다 · 다시 보기는 없음).
+   · 처음 보는 진짜 흐름에는 건너뛰기가 없다 · 다시 보기(마스터 책상 모래시계 05 묶음 · SCEN)는 본 장면(도착 · 학생판 반응)만 · 오른쪽 위 건너뛰기 · 세이브를 건드리지 않는다.
+   · 첫 실제 경기 이야기(FRIS — 도입 · 결말)와 따로다 — 편지를 열거나 답해도 그 이야기는 소비하지 않는다.
+   · 자동화(navigator.webdriver)에서는 띄우지 않는다 — 시험은 window.__flstForce = true */
+(() => {
+const FL_FACE = {"paladin":{"joy":"assets/fst_faces/paladin-joy.png?v=3e213740","smile":"assets/fst_faces/paladin-smile.png?v=f5c93a74","surprised":"assets/fst_faces/paladin-surprised.png?v=b0ed2bf6","motivated":"assets/fst_faces/paladin-motivated.png?v=9f80f84f"},"darkpriest":{"smile":"assets/fst_faces/darkpriest-smile.png?v=51f67484","flustered":"assets/fst_faces/darkpriest-flustered.png?v=fb006c8c","motivated":"assets/fst_faces/darkpriest-motivated.png?v=20951f88","impish":"assets/fst_faces/darkpriest-impish.png?v=a470ecdb"},"wizard":{"sleepy-cat":"assets/fst_faces/wizard-sleepy-cat.png?v=02b87b13","smile":"assets/fst_faces/wizard-smile.png?v=d2ae512d","tired":"assets/fst_faces/wizard-tired.png?v=8c795a66"}};   // apply_flst.py — {직업: {표정: 표정 그림 + ?v=}} (학생 얼굴 — WebP 로 바꾸지 않는다)
+const FS_ID = "first-friendly-letter-v1";
+const FS_JOBS = ["wizard", "paladin", "darkpriest"];                          // 초상화 자리 — 왼쪽 · 가운데 · 오른쪽 (첫 시간표와 같다)
+const FS_FACE0 = {paladin: "joy", darkpriest: "smile", wizard: "sleepy-cat"};
+const FS_LK = window.HS_LANG === "en" ? 1.6 : 1;
+const FS_CPS = 32 * FS_LK;
+const FS_QUIET = /[\s….‥]/;
+const FS_T = {skip: "건너뛰기", master: "마스터", tip: "도착한 친선전 신청을 확인해 보세요.", group: "첫 친선전 신청", arr: "편지 도착", yes: "회신했을 때", no: "거절했을 때", later: "나중에",
+  acad: "다른 학원"};
+/* 대본 — k: think 마스터 독백(초상화 없음) · say 말(who 직업 · master) / face 표정 / hop 콩 · shake 흔들 / enter 그 줄 앞에 셋이 들어온다 / fx letter 편지 강조 · info 정보 칸 강조
+   {acad} 상대 학원 이름 · {wk} 요청 주 (실제 편지) */
+const FS_CUES = {
+  arr: [
+    {id: "FLA01", k: "think", fx: "letter", t: "오늘은… 응? 학원 앞으로 편지가 와 있네."},
+    {id: "FLA02", k: "think", t: "다른 학원에서 보냈나. ‘친선전 신청’…"},
+    {id: "FLA03", k: "say", who: "paladin", face: "joy", hop: 1, enter: 1, t: "마스터! 오늘 훈련은… 어, 무슨 편지예요?"},
+    {id: "FLA04", k: "say", who: "master", t: "다른 학원에서 연습 경기를 해 보자는 연락이 왔어."},
+    {id: "FLA05", k: "say", who: "paladin", face: "surprised", shake: 1, t: "다른 학원이랑요?"},
+    {id: "FLA06", k: "say", who: "paladin", face: "joy", hop: 1, t: "좋아요! 해 봐요! 우리가 얼마나 강해졌는지 보여줄 수 있잖아요!"},
+    {id: "FLA07", k: "say", who: "wizard", face: "sleepy-cat", t: "아직 언제 하는지도 안 들었는데에."},
+    {id: "FLA08", k: "say", who: "paladin", face: "motivated", hop: 1, t: "언제든 준비하면 되죠!"},
+    {id: "FLA09", k: "say", who: "wizard", face: "tired", t: "그 준비에 나도 들어가는 거지…?"},
+    {id: "FLA10", k: "say", who: "darkpriest", face: "smile", t: "당연하죠. 그런데 상대가 누구인지부터 확인해야 하지 않을까요?"},
+    {id: "FLA11", k: "say", who: "paladin", face: "smile", t: "아, 맞다. 어떤 학생들일까요?"},
+    {id: "FLA12", k: "say", who: "darkpriest", face: "smile", t: "학원 안에서 연습한 게 다른 상대에게도 통하는지… 확인할 기회는 되겠네요."},
+    {id: "FLA13", k: "say", who: "wizard", face: "smile", t: "너도 하고 싶은 거네."},
+    {id: "FLA14", k: "say", who: "darkpriest", face: "flustered", shake: 1, t: "…확인할 필요가 있다는 뜻이에요."},
+    {id: "FLA15", k: "think", t: "우리도 누군가의 연습 상대가 되는구나."},
+    {id: "FLA16", k: "think", t: "기대되는 건 나도 마찬가지야. 그래도 학생들을 내보낼 일인데, 들뜬 마음만으로 정할 수는 없지."},
+    {id: "FLA17", k: "say", who: "master", t: "우선 편지부터 읽어 보자. 날짜와 경기 방식, 상대를 보고 결정할게."},
+    {id: "FLA18", k: "say", who: "paladin", face: "motivated", hop: 1, t: "네! 저는 준비할 마음부터 갖춰 둘게요!"},
+    {id: "FLA19", k: "say", who: "wizard", face: "smile", t: "마음만 먼저 준비해. 훈련부터 늘리지는 말고오."},
+    {id: "FLA20", k: "say", who: "darkpriest", face: "smile", t: "마스터, 부탁드려요."}
+  ],
+  gen: [
+    {id: "FLG01", k: "think", fx: "letter", t: "학원 앞으로 친선전 신청 편지가 왔네. 다른 학원에서 연습 경기를 제안했어."},
+    {id: "FLG02", k: "think", t: "우리 훈련이 다른 상대에게 얼마나 통하는지 확인할 기회겠지."},
+    {id: "FLG03", k: "think", t: "그렇다고 준비도 보지 않고 결정할 수는 없어. 편지에 적힌 상대와 일정을 먼저 확인하자."}
+  ],
+  b: [
+    {id: "FLB01", k: "think", t: "{acad}에서 온 제안이네. 요청한 날짜는 {wk}."},
+    {id: "FLB02", k: "think", fx: "info", t: "경기 방식과 상대도 적혀 있어. 우리 팀 상태와 준비할 시간을 같이 봐야겠어."},
+    {id: "FLB02a", k: "think", fx: "info", short: 1, t: "필요한 팀 수에 비해, 지금 3인으로 준비된 팀이 부족하네. 회신하기 전에 참가 준비가 가능한지 살펴보자."},
+    {id: "FLB03", k: "think", t: "회신하면 그 주 일과를 마친 뒤 경기를 치르게 된다. 지금 결정하기 어렵다면 잠깐 미뤄도 되고."},
+    {id: "FLB04", k: "think", t: "다만 요청한 주가 지나면 답하지 않은 편지는 만료돼. 잊어버리지 않게 하자."}
+  ],
+  yes: [
+    {id: "FLY01", k: "say", who: "master", enter: 1, t: "좋아. {acad}의 제안에는 회신했어. {wk}에 경기를 하게 될 거야."},
+    {id: "FLY02", k: "say", who: "paladin", face: "joy", hop: 1, t: "정말이죠? 좋아요! 제대로 준비해 볼게요!"},
+    {id: "FLY03", k: "say", who: "darkpriest", face: "motivated", t: "준비할 목표가 생겼네요. 상대만 의식하지 말고, 우리 쪽에서 맞출 것부터 보죠."},
+    {id: "FLY04", k: "say", who: "wizard", face: "sleepy-cat", t: "준비할 목표에 쉬는 시간도 들어가 있지?"},
+    {id: "FLY05", k: "say", who: "paladin", face: "smile", t: "물론이죠! 쉬고 나서 훈련하는 거예요!"},
+    {id: "FLY06", k: "say", who: "wizard", face: "tired", t: "훈련이 늘어나는 건 그대로잖아아."},
+    {id: "FLY07", k: "say", who: "master", t: "무리해서 늘리지는 않을 거야. 해 온 걸 정리하고, 부족한 걸 하나씩 준비하자."},
+    {id: "FLY08", k: "say", who: "paladin", face: "motivated", hop: 1, t: "네!"}
+  ],
+  no: [
+    {id: "FLN01", k: "say", who: "master", enter: 1, t: "이 제안은 거절할게. 이번에는 우리 준비부터 챙기자."},
+    {id: "FLN02", k: "say", who: "paladin", face: "surprised", t: "아… 네. 조금 아쉽기는 하네요."},
+    {id: "FLN03", k: "say", who: "darkpriest", face: "smile", t: "모든 제안을 받아야 하는 건 아니니까요. 준비하는 시간도 필요하죠."},
+    {id: "FLN04", k: "say", who: "wizard", face: "smile", t: "쉬는 시간까지 전부 경기로 채우면 힘들잖아."},
+    {id: "FLN05", k: "say", who: "master", t: "연습한 게 없어지는 건 아니야. 다음 기회를 위해 계속 준비하자."},
+    {id: "FLN06", k: "say", who: "paladin", face: "motivated", hop: 1, t: "알겠어요. 그때는 준비된 모습을 보여드릴게요!"}
+  ],
+  later: [
+    {id: "FLL01", k: "say", who: "master", enter: 1, t: "잠깐만. 우리 일정과 팀 상태를 보고 결정할게."},
+    {id: "FLL02", k: "say", who: "paladin", face: "smile", t: "네! 저는 기다릴게요."},
+    {id: "FLL03", k: "say", who: "wizard", face: "sleepy-cat", t: "그럼 아직 확정은 아닌 거네."},
+    {id: "FLL04", k: "say", who: "master", t: "응. 답할 기한은 확인했으니까, 그전에 다시 읽어보자."}
+  ],
+  cyes: [{id: "FLC-Y", k: "think", t: "{acad}에 회신했다. {wk}까지 팀 상태를 챙기고 준비하자."}],
+  cno: [{id: "FLC-N", k: "think", t: "이번 제안은 거절했다. 지금은 준비할 것부터 챙기자."}],
+  clater: [{id: "FLC-L", k: "think", t: "일정과 팀 상태를 확인한 뒤 결정하자. 답할 기한을 넘기지 않도록 기억해 둬야겠어."}]
+};
+const FS_SCENES = Object.keys(FS_CUES);
+const R = {on: false, sess: 0, i: -1, typing: null, wait: null, root: null, sc: "", list: [], cast: {}, ctx: {}, preview: false, live: false, pend: false, ending: false,
+  guide: false, raf: 0, gsess: 0};
+const xq = s => R.root ? R.root.querySelector(s) : null;
+const fsleep = ms => new Promise(r => setTimeout(r, ms));
+const fRM = () => !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+/* ── 세이브 ── */
+function fsOn(){ return !!S && !((navigator.webdriver && !window.__flstForce) || window.__flstOff); }
+function fsOld(){                                                               // 예전 세이브 — 친선전 편지에 답했거나 · 치렀거나 · 운영 안내 7 을 봤다
+  const C = (S.cleared && typeof S.cleared === "object") ? S.cleared : {};
+  if(C.f || C["f:ow"] || (S.fris && S.fris.done) || (typeof tutSeen === "function" && tutSeen("7"))) return true;
+  const F = S.friendly;
+  return !!(F && typeof F === "object" && Object.keys(F).some(ph => { const st = F[ph]; return st && Array.isArray(st.offers) && st.offers.some(o => o && o.st && o.st !== "new"); }));
+}
+function fsS(){
+  if(!S) return null;
+  if(!S.flst || typeof S.flst !== "object"){
+    const old = fsOld() ? 1 : 0;
+    S.flst = {id: FS_ID, old, arr: old, guide: old, b: old, ctx: 0, v: null, cast: null, seen: {}, once: old ? {yes: 1, no: 1, later: 1} : {}};
+  }
+  const X = S.flst; X.seen = X.seen || {}; X.once = X.once || {};
+  return X;
+}
+/* 셋 — 05(FRIS)와 같은 차례 (적어 둔 셋 → 04 · 03 · 02 의 셋 → 개교 멤버) · 셋 다 지금 학원에 있어야 학생판 */
+function fsCastIds(){
+  const X = S && S.flst;
+  if(X && X.cast) return {paladin: X.cast.paladin && X.cast.paladin.id, darkpriest: X.cast.darkpriest && X.cast.darkpriest.id, wizard: X.cast.wizard && X.cast.wizard.id};
+  if(window.FRIS && typeof FRIS.castIds === "function"){ const c = FRIS.castIds(); if(c) return c; }
+  const c = (S.rqst && S.rqst.cast) || (S.rvst && S.rvst.cast);
+  if(c && c.paladin && c.darkpriest && c.wizard) return {paladin: c.paladin, darkpriest: c.darkpriest, wizard: c.wizard};
+  const L = S.students || [], d = L.find(s => s && s.uniq === "dp1");
+  if(!d) return null;
+  const p = L.find(s => s && s.job === "paladin" && s.year === d.year), w = L.find(s => s && s.job === "wizard" && s.year === d.year);
+  return p && w ? {paladin: p.id, darkpriest: d.id, wizard: w.id} : null;
+}
+function fsTrio(){                                                              // 지금 학원에 있는 셋 (없으면 null)
+  const ids = fsCastIds(); if(!ids) return null;
+  const L = S.students || [], out = {};
+  for(const j of FS_JOBS){ const st = L.find(s => s && s.id === ids[j]); if(!st) return null; out[j] = st; }
+  return out;
+}
+function fsCapture(T){
+  const X = S.flst; if(!X || X.cast || !T) return;
+  const out = {}; FS_JOBS.forEach(j => { out[j] = {id: T[j].id, name: T[j].name, uniq: T[j].uniq || null}; }); X.cast = out;
+}
+function fsPending(){ return typeof friendlyPending === "function" ? friendlyPending() : []; }
+function fsInfo(o){ return o ? {acad: o.name || "", wk: (typeof friendlyWeekName === "function" ? friendlyWeekName(S.phase, o.req) : "")} : {acad: FS_T.acad, wk: ""}; }
+
+/* ── 무대 (첫 시간표 .fst 그대로 — 배경 없음) ── */
+function fsBuild(){
+  if(R.root) return;
+  const r = document.createElement("div");
+  r.id = "flstRoot"; r.className = "fst flst";
+  r.innerHTML = `<div class="fst-hit"></div><div class="fst-fx"></div>
+    <div class="fst-guide" hidden><i class="fst-ring"></i><i class="fst-ring2"></i><i class="fst-finger"></i><div class="fst-tip">${esc(FS_T.tip)}</div></div>
+    <div class="fst-cast">${FS_JOBS.map(k => `<div class="fst-bust" data-who="${k}" hidden><img alt="" draggable="false"></div>`).join("")}</div>
+    <div class="fst-think"><div class="fst-tx"></div><div class="fst-nx">▼</div></div>
+    <div class="fst-talk"><div class="fst-nm"><i></i><span></span></div><div class="fst-tx"></div><div class="fst-nx">▼</div></div>
+    <button type="button" class="rv-skip" hidden>${esc(FS_T.skip)}</button>`;
+  document.body.appendChild(r);
+  R.root = r;
+  const hit = r.querySelector(".fst-hit");
+  hit.addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); fsAdvance(); });
+  hit.addEventListener("wheel", e => e.preventDefault(), {passive: false});
+  hit.addEventListener("touchmove", e => e.preventDefault(), {passive: false});
+  r.querySelector(".rv-skip").addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); fsEnd("skip"); });
+  const I = (typeof TIN_ART !== "undefined" && TIN_ART && TIN_ART.icons) || null, at = I && I.at && I.at.hand;   // 손가락 — 첫 시간표와 같은 아이콘
+  if(I && at){ const f = r.querySelector(".fst-finger"); f.style.setProperty("--fi", `url("${I.src}")`); f.style.setProperty("--fax", at[0]); f.style.setProperty("--fay", at[1]);
+    f.style.setProperty("--fiw", I.size[0]); f.style.setProperty("--fih", I.size[1]); }
+}
+function fsTeardown(){ cancelAnimationFrame(R.raf); R.raf = 0; R.guide = false; if(R.root) R.root.remove(); R.root = null; }
+document.addEventListener("keydown", e => {
+  if(!R.root || !R.on) return;
+  if(e.key === " " || e.key === "Enter"){ e.preventDefault(); e.stopPropagation(); fsAdvance(); }
+  else if(e.key === "Escape"){ e.preventDefault(); e.stopPropagation(); }       // 장면 중 — 신청 창의 Esc(나중에)가 먹지 않게
+}, true);
+function fsFade(el, to, ms){
+  return new Promise(res => {
+    if(!el){ res(); return; }
+    const from = +getComputedStyle(el).opacity;
+    el.getAnimations().forEach(a => a.cancel());
+    el.style.opacity = to;
+    if(fRM()) ms = Math.min(ms, 140);
+    const a = el.animate([{opacity: from}, {opacity: to}], {duration: Math.max(1, ms), easing: "ease"});
+    a.onfinish = a.oncancel = () => res();
+  });
+}
+function fsBox(kind){ const a = xq(".fst-think"), b = xq(".fst-talk"); if(a) a.classList.toggle("show", kind === "think"); if(b) b.classList.toggle("show", kind === "talk"); }
+function fsMark(on){ R.root && R.root.querySelectorAll(".fst-nx").forEach(e => e.classList.toggle("on", on)); }
+function fsName(who){
+  if(who === "master") return FS_T.master;
+  const st = R.cast[who];
+  if(!st) return (JOBS[who] && JOBS[who].name) || "";
+  return (S.students || []).indexOf(st) >= 0 && typeof dn === "function" ? dn(st) : (st.name || "");
+}
+function fsPlate(who){
+  const nm = xq(".fst-nm"), sp = nm.querySelector("span"), tk = xq(".fst-talk");
+  const role = JOBS[who] && JOBS[who].role;
+  sp.textContent = fsName(who);
+  nm.style.setProperty("--rc", who === "master" ? "#ffd36a" : role === "tank" ? "#8cc4f0" : role === "heal" ? "#86d6a4" : "#f2957d");
+  tk.classList.toggle("mst", who === "master");
+}
+function fsLine(c){
+  const t = String(c.t || "").split("{acad}").join(R.ctx.acad || FS_T.acad).split("{wk}").join(R.ctx.wk || "");
+  const st = FS_JOBS.indexOf(c.who) >= 0 ? R.cast[c.who] : null;
+  return st && typeof masterQ === "function" ? masterQ(t, st) : t;              // 학생이 마스터를 부르는 말 (02 ~ 05 와 같다)
+}
+function fsType(el, text, voice, sess){
+  return new Promise(res => {
+    if(R.typing) R.typing();
+    const ch = [...String(text || "")]; let n = 0, tm = 0;
+    const done = () => { clearTimeout(tm); if(R.typing === done) R.typing = null; if(el) el.textContent = text; res(); };
+    if(!el || !ch.length){ if(el) el.textContent = ""; res(); return; }
+    const step = () => {
+      if(sess !== R.sess){ if(R.typing === done) R.typing = null; res(); return; }
+      n++; el.textContent = ch.slice(0, n).join("");
+      if(voice && !FS_QUIET.test(ch[n - 1]) && typeof cwBlip === "function") cwBlip(voice);
+      if(n >= ch.length){ done(); return; }
+      let d = 1000 / FS_CPS;
+      if(ch[n - 1] === "…" && ch[n] !== "…") d += 300;
+      tm = setTimeout(step, d);
+    };
+    el.textContent = ""; R.typing = done;
+    tm = setTimeout(step, 1000 / FS_CPS);
+  });
+}
+function fsWaitClick(){ return new Promise(r => { R.wait = r; fsMark(true); }); }
+function fsAdvance(){
+  if(!R.on || R.ending) return;
+  if(R.typing){ R.typing(); return; }
+  if(R.wait){ const r = R.wait; R.wait = null; fsMark(false); r(); }
+}
+/* 초상화 */
+function fsBust(k){ return xq(`.fst-bust[data-who="${k}"]`); }
+function fsFace(k, f){ const set = FL_FACE[k], src = set && (set[f] || set.smile); const b = fsBust(k); if(b && src){ const im = b.querySelector("img"); if(im.getAttribute("src") !== src) im.src = src; } }
+function fsLit(list){ FS_JOBS.forEach(k => { const e = fsBust(k); if(e) e.classList.toggle("on", !!(list && list.indexOf(k) >= 0)); }); }
+function fsHop(k){ if(fRM()) return; const e = fsBust(k); if(e && !e.hidden) e.animate([{transform: "none"}, {transform: "translateY(-9px)", offset: .35}, {transform: "none"}], {duration: 300, easing: "ease-out"}); }
+function fsShake(k){ if(fRM()) return; const e = fsBust(k); if(e && !e.hidden) e.animate([0, -4, 4, -3, 3, 0].map(x => ({transform: `translateX(${x}px)`})), {duration: 280, easing: "ease-in-out"}); }
+function fsEnter(){
+  FS_JOBS.forEach((k, n) => {
+    const e = fsBust(k); if(!e || !R.cast[k]) return;
+    e.hidden = false;
+    e.animate(fRM() ? [{opacity: 0}, {opacity: 1}] : [{transform: "translateY(60px)", opacity: 0}, {opacity: 1, offset: .6}, {transform: "none", opacity: 1}],
+      {duration: fRM() ? 200 : 380, delay: fRM() ? 0 : n * 90, easing: "cubic-bezier(.2,.85,.3,1.2)", fill: "backwards"});
+  });
+}
+/* 강조 — 편지(FLA01 · FLG01) · 신청 창 정보 칸(FLB02) : 금색 테두리 두 번 깜빡 (첫 시간표 .fst-hl) */
+function fsTarget(){
+  if(UI.view !== "home") return null;
+  const L = [...document.querySelectorAll('#view .mdk[data-mdesk="letter"], #view [data-flopen]')];
+  return L.find(e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && e.offsetParent !== null; }) || null;
+}
+function fsHl(el, n){
+  const fx = xq(".fst-fx"); if(!fx || !el) return;
+  const r = el.getBoundingClientRect(); if(!r.width) return;
+  R.hl = (R.hl | 0) + 1;                                                        // 이 장면에서 강조한 수 (시험이 센다)
+  const d = document.createElement("i"); d.className = "fst-hl";
+  d.style.left = (r.left - 5) + "px"; d.style.top = (r.top - 5) + "px"; d.style.width = (r.width + 10) + "px"; d.style.height = (r.height + 10) + "px";
+  fx.appendChild(d); setTimeout(() => d.remove(), 1800);
+}
+
+/* ── 장면 ── */
+function fsReset(o){
+  fsBuild();
+  R.sc = o.sc; R.preview = !!o.preview; R.cast = o.cast || {}; R.ctx = o.ctx || {};
+  R.list = (FS_CUES[o.sc] || []).filter(c => !c.short || o.short).map(c => Object.assign({}, c));
+  R.on = true; R.ending = false; R.sess++; R.i = -1; R.typing = null; R.wait = null; R.hl = 0;
+  cancelAnimationFrame(R.raf); R.raf = 0; R.guide = false;
+  const g = xq(".fst-guide"); if(g) g.hidden = true;
+  const sk = xq(".rv-skip"); if(sk){ sk.hidden = !R.preview; sk.disabled = false; }   // 건너뛰기는 다시 보기 · 미리 보기에만
+  fsBox(null); fsMark(false); fsLit(null);
+  FS_JOBS.forEach(k => { const e = fsBust(k); if(!e) return; e.getAnimations().forEach(a => a.cancel()); e.hidden = true; const f = (R.list.find(c => c.who === k && c.face) || {}).face || FS_FACE0[k]; fsFace(k, f); });
+  R.root.classList.add("on"); R.root.style.opacity = "";
+}
+function fsScene(o){
+  fsReset(o);
+  return new Promise(res => { R.done = res; fsRun(0); });
+}
+async function fsRun(i){
+  const sess = R.sess, c = R.list[i];
+  if(!R.on || R.ending) return;
+  if(!c){ fsEnd("done"); return; }
+  R.i = i;
+  if(c.enter && FS_JOBS.some(k => { const e = fsBust(k); return e && e.hidden && R.cast[k]; })){
+    fsBox(null); fsEnter(); await fsleep(fRM() ? 120 : 460); if(sess !== R.sess) return;
+  }
+  if(c.fx === "letter") fsHl(fsTarget(), 2);
+  if(c.fx === "info") fsHl(document.querySelector("#modalRoot .fl-win .fl-i"), 2);
+  if(c.k === "think" || c.who === "master") fsLit(null);
+  else { fsFace(c.who, c.face); fsLit([c.who]); if(c.hop) fsHop(c.who); if(c.shake) fsShake(c.who); }
+  let el;
+  if(c.k === "think"){ fsBox("think"); el = xq(".fst-think .fst-tx"); }
+  else { fsPlate(c.who); fsBox("talk"); el = xq(".fst-talk .fst-tx"); }
+  await fsType(el, fsLine(c), c.k === "think" || c.who === "master" ? "csl_mst" : "csl_stu", sess);
+  if(sess !== R.sess) return;
+  await fsWaitClick(); if(sess !== R.sess) return;
+  fsRun(i + 1);
+}
+async function fsEnd(how){
+  if(!R.on || R.ending) return;
+  R.ending = true; R.sess++; R.wait = null; R.typing = null;
+  const sk = xq(".rv-skip"); if(sk) sk.disabled = true;
+  fsBox(null); fsMark(false);
+  const busts = FS_JOBS.map(fsBust).filter(e => e && !e.hidden);
+  await Promise.all(busts.map(e => fsFade(e, 0, how === "skip" ? 160 : 260)));
+  fsTeardown(); R.on = false; R.ending = false;
+  const d = R.done; R.done = null; if(d) d(how);
+}
+function fsErr(e){ try{ errPush("flst", e.message, e.stack); }catch(x){} fsTeardown(); R.on = false; R.live = false; }
+
+/* ── 편지 안내 (A 뒤 · 마스터 화면에서만 · 편지를 열면 끝) ── */
+function fsGuideLoop(){
+  const g = xq(".fst-guide"), X = S && S.flst;
+  if(!R.guide || !g || R.on || !X || X.guide || UI.view !== "home" || !fsPending().length){ fsGuideStop(); return; }
+  const busy = document.documentElement.classList.contains("modal-open") || !!(window.RBK && RBK.isOpen && RBK.isOpen());
+  const t = busy ? null : fsTarget();
+  if(!t) g.hidden = true;
+  else {
+    const r = t.getBoundingClientRect(), pad = 5, W = innerWidth;
+    const box = [r.left - pad, r.top - pad, r.width + pad * 2, r.height + pad * 2];
+    g.querySelectorAll(".fst-ring, .fst-ring2").forEach(e => { e.style.left = box[0] + "px"; e.style.top = box[1] + "px"; e.style.width = box[2] + "px"; e.style.height = box[3] + "px"; });
+    const f = g.querySelector(".fst-finger"), fs = f.offsetWidth || 48, leftSide = r.left >= fs + 16;
+    f.classList.toggle("l", !leftSide);
+    f.style.left = (leftSide ? r.left - fs - 10 : r.right + 10) + "px"; f.style.top = (r.top + r.height / 2 - fs / 2) + "px";
+    const tp = g.querySelector(".fst-tip"); g.hidden = false;
+    const tw = tp.offsetWidth, th = tp.offsetHeight, up = r.top - th - 18 >= 4;
+    tp.classList.toggle("dn", !up);
+    const cx = r.left + r.width / 2, left = Math.min(W - 8 - tw, Math.max(8, cx - tw / 2));
+    tp.style.left = left + "px"; tp.style.top = (up ? r.top - th - 16 : r.bottom + 16) + "px"; tp.style.setProperty("--ax", (cx - left) + "px");
+  }
+  R.raf = requestAnimationFrame(fsGuideLoop);
+}
+function fsGuide(){
+  if(R.on || R.guide) return;
+  fsBuild();
+  R.root.classList.remove("on");                                                 // 화면은 평소처럼 (원 · 손가락 · 문구만)
+  R.guide = true;
+  if(!R.raf) R.raf = requestAnimationFrame(fsGuideLoop);
+}
+function fsGuideStop(){ if(!R.guide && !R.root) return; cancelAnimationFrame(R.raf); R.raf = 0; R.guide = false; if(!R.on) fsTeardown(); }
+
+/* ── A 도착 ── */
+function fsIdle(){
+  const mr = document.getElementById("modalRoot");
+  return !(UI.wrun || UI.battle || UI.tour || UI.pendingTour || (UI.ceremonies || []).length || (mr && mr.innerHTML.trim()) || document.getElementById("bootLoader")
+    || (typeof OP !== "undefined" && OP) || (typeof BELT !== "undefined" && BELT.on) || (window.FST && FST.state && FST.state.on)
+    || (window.RVST && RVST.state && (RVST.state.on || RVST.state.live || (RVST.mono && RVST.mono.state.on))) || (window.RQST && RQST.state && (RQST.state.on || RQST.state.live))
+    || (window.XPST && XPST.state && (XPST.state.on || XPST.state.live)) || (window.FRIS && FRIS.state && (FRIS.state.on || FRIS.state.live))
+    || document.documentElement.classList.contains("modal-open"));
+}
+function fsArrive(){
+  const X = fsS(), T = fsTrio();
+  X.v = T ? "trio" : "gen";
+  if(T) fsCapture(T);
+  R.live = true;
+  fsScene({sc: T ? "arr" : "gen", cast: T || {}}).catch(fsErr).then(how => {
+    R.live = false;
+    const Y = S && S.flst; if(!Y) return;
+    Y.arr = 1; Y.seen.arr = 1; Y.ctx = Y.v === "trio" ? 1 : 0;
+    try{ save(); }catch(e){}
+    try{ render(); }catch(e){}                                                   // render 끝(FLST.after)이 편지 안내를
+  });
+}
+/* render 끝 — 도착(한 번) · 편지 안내 */
+function fsAfter(){
+  if(!S || !fsOn() || !Array.isArray(S.students) || !S.students.length) return;
+  const X = fsS(); if(!X || X.old || R.on || R.live || R.pend) return;
+  if(X.arr && X.guide){ if(R.guide) fsGuideStop(); return; }
+  if(UI.view !== "home" || !fsPending().length){ if(R.guide) fsGuideStop(); return; }
+  if(X.arr){ if(!R.guide && fsIdle()) fsGuide(); return; }
+  if(!fsIdle()) return;
+  R.pend = true;
+  setTimeout(() => {
+    R.pend = false;
+    const Y = S && S.flst;
+    if(!Y || Y.arr || Y.old || R.on || R.live || UI.view !== "home" || !fsPending().length || !fsIdle()) return;
+    fsArrive();
+  }, 0);
+}
+
+/* ── B — 처음 여는 신청 창 (fletOpen · fletShow 뒤): 독백을 띄웠으면 true (운영 안내 7 은 본 것으로) ── */
+function fsOpen(){
+  if(!fsOn()) return false;
+  const X = fsS(); if(!X || X.old) return false;
+  if(!X.guide){ X.guide = 1; fsGuideStop(); }
+  if(!X.arr){ X.arr = 1; X.ctx = 0; }                                            // A 를 보기 전에 편지를 먼저 열었다 — A 는 건너뛴다
+  if(!X.v){ const T = fsTrio(); X.v = T ? "trio" : "gen"; if(T) fsCapture(T); }
+  if(X.b || R.on || R.live){ try{ save(); }catch(e){} return false; }
+  const o = (typeof FL !== "undefined" && FL.cur) || fsPending()[0]; if(!o) return false;
+  if(typeof tutMark === "function") tutMark("7");                                // 운영 안내 7 — 띄우지 않고 본 것으로 (사용자 답)
+  X.b = 1; try{ save(); }catch(e){}
+  const short = typeof tourReadyTeams === "function" && tourReadyTeams() < ((o.teams && o.teams.length) || 1);
+  if(typeof FL !== "undefined") FL.busy = true;                                   // 독백 동안 신청 창의 단추 · Esc 를 막는다
+  R.live = true;
+  setTimeout(() => {
+    fsScene({sc: "b", cast: {}, ctx: fsInfo(o), short}).catch(fsErr).then(() => {
+      R.live = false;
+      if(typeof FL !== "undefined") FL.busy = false;
+      const y = document.getElementById("flYes"); if(y) y.focus({preventScroll: true});
+    });
+  }, 60);
+  return true;
+}
+/* ── 선택 뒤 반응 — 도장 뒤(answered) · 나중에 뒤(later) ── */
+function fsReact(kind, o){
+  const X = fsS(); if(!X || X.old || !fsOn() || R.on || R.live) return null;
+  const T = X.v === "trio" ? fsTrio() : null, ctx = X.ctx;
+  X.ctx = 0;
+  if(X.once[kind]) return null;
+  let sc = null;
+  if(T && (ctx || kind === "yes")) sc = kind;                                    // A 에 이어진 첫 선택 · 그 뒤 처음 회신 — 학생판
+  else sc = "c" + kind;                                                          // 그 밖 — 마스터 독백 한 줄
+  X.once[kind] = 1; if(sc === kind) X.seen[kind] = 1;
+  try{ save(); }catch(e){}
+  return {sc, cast: sc === kind ? T : {}, ctx: fsInfo(o)};
+}
+function fsAnswered(o, yes, next){
+  const p = fsReact(yes ? "yes" : "no", o); if(!p) return false;
+  try{ closeModal(); }catch(e){}                                                 // 신청 창을 닫고 책상 위에서 (끝나면 다음 편지 · 없으면 책상 — next = fletShow)
+  R.live = true;
+  fsScene(p).catch(fsErr).then(() => { R.live = false; try{ next && next(); }catch(e){ try{ errPush("flst", e.message, e.stack); }catch(x){} } });
+  return true;
+}
+function fsLater(){
+  const p = fsReact("later", null); if(!p) return false;
+  R.live = true;
+  fsScene(p).catch(fsErr).then(() => { R.live = false; try{ render(); }catch(e){} });
+  return true;
+}
+
+/* ── 다시 보기 (SCEN 05 묶음 앞 · "fris:fl.<장면>") · 미리 보기 (목업) — 세이브를 건드리지 않고 오른쪽 위 건너뛰기 ── */
+function fsReplay(sc, cast){
+  if(R.on || R.live || FS_SCENES.indexOf(sc) < 0) return false;
+  const X = S && S.flst, o = fsPending()[0];
+  fsGuideStop();
+  R.live = true;
+  const c = {}; FS_JOBS.forEach(j => { if(cast && cast[j]) c[j] = cast[j]; });
+  fsScene({sc, cast: c, ctx: o ? fsInfo(o) : {acad: FS_T.acad, wk: (typeof friendlyWeekName === "function" ? friendlyWeekName("spring", 9) : "")}, preview: true, short: sc === "b"})
+    .catch(fsErr).then(() => { R.live = false; try{ render(); }catch(e){} });
+  return true;
+}
+function fsPreview(sc){ const T = fsTrio(); const c = {}; if(T) FS_JOBS.forEach(j => { c[j] = T[j]; }); return fsReplay(sc, c); }
+function fsReplayList(){
+  const X = S && S.flst; if(!X || X.old || !X.seen) return [];
+  const items = [];
+  if(X.seen.arr) items.push({k: "fl." + (X.v === "gen" ? "gen" : "arr"), t: FS_T.arr});
+  ["yes", "no", "later"].forEach(k => { if(X.seen[k]) items.push({k: "fl." + k, t: FS_T[k]}); });
+  return items.length ? [{n: FS_T.group, items}] : [];
+}
+function fsAnySeen(){ const X = S && S.flst; return !!(X && !X.old && X.seen && X.seen.arr); }
+function fsResetAll(){ R.sess++; R.on = false; R.ending = false; R.live = false; R.pend = false; R.preview = false; R.typing = null; R.wait = null; fsTeardown(); }
+window.FLST = {after: fsAfter, open: fsOpen, answered: fsAnswered, later: fsLater, replay: fsReplay, preview: fsPreview, replayList: fsReplayList, anySeen: fsAnySeen,
+  reset: fsResetAll, end: fsEnd, advance: fsAdvance, target: fsTarget, trio: fsTrio, state: R, cues: FS_CUES, face: FL_FACE, T: FS_T, s: fsS};
+})();
+/* FLST_END */
 /* TFWIN_START — 대회 편성 창 (1019 · apply_tfwin.py) ─ mockups/tour-formation 목업 그대로. '대진 확정'(scout 단계) 자리에 뜬다:
    가을 대회 컵(시내 · 광역 · 본선 — 라운드마다 · 1팀 대회도) · 친선전(경기 전에 한 번) · 봄 신인전(경기마다 — 상대가 경기마다 다르다) ·
    예선 리그(1019 ③ — 라운드마다 · 조 순위 · 우리 일정) · 본선 결승(1019 ③ — 세트마다 · 세트판 · 세트를 진 상대가 바꾼 진형은 맞붙기 전까지 숨김).
@@ -35432,11 +36513,13 @@ function finishFriendly(t){
     standings:null, rows, next:null};
   UI.tour=null; UI.pendingTour=false; closeModal();
   UI.view="plan"; save();   // 1005 — 친선전이 끝나면 스케줄 화면으로 (예전: 마스터 노트)
-  tourResultModal(REC, ()=>{
+  const frNext = ()=> tourResultModal(REC, ()=>{
     // 마지막 주차(하반기 6주차) 친선전이면 이 자리에서 시즌이 끝난다
     if(S.week >= PHASES[S.phase].weeks) endPhase();
     if((UI.ceremonies||[]).length) showCeremony(); else render();
   });
+  if(window.FRIS && FRIS.outro(t, frNext)) return;   // 1023 — 첫 친선전 이야기 (FRIS): 보상 · 저장 뒤 결말 (승리 · 패배) → 결과 상세 창
+  frNext();
 }
 function tourNeedTeams(t){
   if(!t) return 3;
@@ -35501,6 +36584,7 @@ function renderFriendly(){
       </div>
       ${t.results.length? `<div class="rule"></div><div class="eyebrow" style="margin-bottom:5px">경과</div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">${t.results.map(matchPill).join("")}</div>`:""}`, ()=>{
+      if(window.FRIS && FRIS.intro(t, ()=>{ if(UI.tour === t) renderFriendly(); })) return;   // 1023 — 첫 친선전 이야기 (FRIS): 첫 경기 화면이면 도입 → 끝나면 다시 그려 락커룸 창
       bindLocker(t, fL, fMy, renderFriendly, {title:"친선전", label:friendlyMatchLabel(t), foe:t.foe.name, field:"dummy", start:()=> friendlyRun(t,false)});   // 1013 — 락커룸 창
       $("#fPlay").onclick = ()=> lkwGate();   // 1013 — 한마디 전이면 락커룸 창부터
       $("#fQuick").onclick = ()=> friendlyRun(t,true);
