@@ -6106,7 +6106,7 @@ const SFX_TYPE = {
 };
 /* 독·흡혈처럼 피해를 주는 기술은 쓰는 사람의 공격 소리를 그대로 낸다 */
 /* 기술 하나에만 따로 붙는 소리 — 종류 · 직업 소리보다 먼저 본다 */
-const SFX_SKILL = {dr_2:"druidBeast", ar_u:"arrowrain", sw_u:"earthsplit", mo_1:"monkChi", mo_b:"monkPunch", mo_u:"monkPunch",
+const SFX_SKILL = {ss_b:"ssSlash",ss_1:"ssSlash",ss_2:"ssAwaken",ss_u:"ssSlash",dr_2:"druidBeast", ar_u:"arrowrain", sw_u:"earthsplit", mo_1:"monkChi", mo_b:"monkPunch", mo_u:"monkPunch",
   md_u:"monkPunch", mw_u:"bossWraith", mg_u:"bossGargoyle", mb_u:"bossBrine", mk_u:"bossGuardian"};   // 1021 넷째 — 원정 보스 필살기 (과부하 연타는 몽크 백열권 소리 · sfxFrame 열 번)
 function sfxOf(u, sk){
   if(sk && SFX_SKILL[sk.id]) return SFX_SKILL[sk.id];
@@ -20868,7 +20868,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1024-1809";
+const BUILD = "1024-1850";
 const BUILD_TS = 0;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
@@ -28066,8 +28066,8 @@ const STYLISH_SKILL_FX = {
     gravityBeam: "assets/skill-fx/wizard/gravity-beam-px.webp?v=e40cba90",
     gravityFoot: "assets/skill-fx/wizard/gravity-foot-px.webp?v=c692e10b"
   },
-  casters: {rogue:["rogueSignal"],forcemage:["staffThrust"],druid:["druidCircle"], monk:["monkPressure"], sword:["swordSwing"], paladin: ["trail"], darkpriest: ["darkEssence"], gunner:["gunMuzzle"], priest:["holyEssence"], bard:["bardMelody"], ninja:["ninjaRipple"], archer:["archerWind"], wizard:["wizardCircles"]},
-  targets: {fm_b:[],fm_1:[],fm_2:["shadowStep"],fm_u:["unseal0","unseal1","unseal2","unseal3","unseal4","unseal5","unseal6"],dr_b:[],dr_1:["regenSeed"],dr_2:["bearSign"],dr_u:[],mo_b:[], mo_1:["chiHit"], mo_2:["shadowStep"], mo_u:["fistRush","oraText"], sw_b:[], sw_1:["tauntAnger"], sw_2:["shadowStep"], sw_u:[], pa_b: ["impact"], pa_1: ["shield"], pa_2: ["beam"], pa_u: ["beam", "shield"],
+  casters: {spellsword:["ssFlame"],rogue:["rogueSignal"],forcemage:["staffThrust"],druid:["druidCircle"], monk:["monkPressure"], sword:["swordSwing"], paladin: ["trail"], darkpriest: ["darkEssence"], gunner:["gunMuzzle"], priest:["holyEssence"], bard:["bardMelody"], ninja:["ninjaRipple"], archer:["archerWind"], wizard:["wizardCircles"]},
+  targets: {ss_b:["ssBasic"],ss_1:["ssBlue","ssPurple","ssPink"],ss_2:[],ss_u:[],fm_b:[],fm_1:[],fm_2:["shadowStep"],fm_u:["unseal0","unseal1","unseal2","unseal3","unseal4","unseal5","unseal6"],dr_b:[],dr_1:["regenSeed"],dr_2:["bearSign"],dr_u:[],mo_b:[], mo_1:["chiHit"], mo_2:["shadowStep"], mo_u:["fistRush","oraText"], sw_b:[], sw_1:["tauntAnger"], sw_2:["shadowStep"], sw_u:[], pa_b: ["impact"], pa_1: ["shield"], pa_2: ["beam"], pa_u: ["beam", "shield"],
     dp_b:["darkHit"], dp_1:["redDrain"], dp_2:["curseNail"], dp_u:["redDrain"],
     gn_b:["gunHit"], gn_1:["gunHit"], gn_2:["gunPierce"], gn_u:["gunPierce"],
     ro_b:["rogueSlash"], ro_1:["poisonDagger"], ro_2:["shadowStep"], ro_u:["assassination"],
@@ -28076,9 +28076,19 @@ const STYLISH_SKILL_FX = {
     nj_1:["dissonance"], nj_2:["boundaryWave","waterDragon"], nj_u:["fumaPassed","waterFlower"],
     ar_1:[], ar_2:["hawkEye"], ar_u:["meteorRain","meteorFront","meteorImpact"],
     wz_1:["fireExplosion"], wz_2:[], wz_u:[]},
-  skillCasters: {sw_1:["tauntCall"]},
+  skillCasters: {ss_2:["ssAwakeBack","ssAwakeFront"],ss_u:["ssTenCuts"],sw_1:["tauntCall"]},
   groups: {dr_u:["natureRoots"],sw_u:["earthWave"], dp_u:["bloodRitual"], bd_u:["ensemble"], nj_1:["waterSwamp"], ar_1:["greenPierce"], wz_2:["blizzardBack","blizzardFront"], wz_u:["gravityBeam","gravityFoot","gravityCircle"]}
 };
+Object.assign(STYLISH_SKILL_FX.assets, {
+ ssFlame:"assets/skill-fx/spellsword/blade-flame.svg?v=1",
+ ssAwakeBack:"assets/skill-fx/spellsword/awakening-back.svg?v=1",
+ ssAwakeFront:"assets/skill-fx/spellsword/awakening-front.svg?v=1",
+ ssTenCuts:"assets/skill-fx/spellsword/ten-cuts.svg?v=1",
+ ssBasic:"assets/skill-fx/spellsword/slash-blue.png?v=1",
+ ssBlue:"assets/skill-fx/spellsword/slash-blue.png?v=1",
+ ssPurple:"assets/skill-fx/spellsword/slash-purple.png?v=1",
+ ssPink:"assets/skill-fx/spellsword/slash-pink.png?v=1"
+});
 /* 원정 보스 필살기 (1021 넷째 — 사용자 'newmonsterimage/ultimate-fx-v1 에 각 보스 필살기 효과를 넣어놨으니 그것도 webp로 적용') — 원정지 주인 다섯의 필살기 그림
    (원본 1536 × 1024 PNG → skill-fx/boss 폴더의 WebP · tools/gen/patch/bossult_art.py). 스타일리시 줌인에서만 (학생 스킬 그림과 같다 · 심플 모드는 예전 효과).
    한 장짜리 그림을 목업(ultimate-fx-v1/preview.html)처럼 움직인다 — burst: 작게 나타나 커지며 사라짐 · barrage: 주먹 잔상이 0.11초마다 앞뒤로(백열권 소리와 같은 박자) · slash: 오른쪽 위에서 내리긋고 왼쪽 아래로.
@@ -28146,9 +28156,9 @@ function stylishSkillFxPreload(res){
 }
 function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, groupTargets=[], timing={}){
   const plan=stylishSkillFxPlan(job, skillId), entries=[];
-  const mono=skillId==="gn_u", inverted=skillId==="ro_u", shots=skillId==="gn_1"?(timing.shots||[]):[];
+  const mono=skillId==="gn_u", inverted=skillId==="ro_u", shots=skillId==="gn_1"?(timing.shots||[]):skillId==="ss_1"?(timing.shots||Array.from({length:3},(_,i)=>targets[i%Math.max(1,targets.length)]?.dataset.uid).filter(Boolean)):[];
   const started=performance.now(), duration=timing.duration||1500;
-  const shotStep=Math.min(duration/Math.max(1,shots.length),duration*.16);
+  const shotStep=skillId==="ss_1"?duration*.28:Math.min(duration/Math.max(1,shots.length),duration*.16);
   const layer=document.createElement("div");
   layer.className="stylish-skill-fx"; layer.setAttribute("aria-hidden","true");
   layer.style.cssText="position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:325";
@@ -28191,13 +28201,13 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
     if(kind==="staffThrust" && side==="B") img.style.transform="scaleX(-1)";
     if(kind==="oraText" && side==="B") img.src="assets/skill-fx/monk/du-reverse-px.webp?v=f47f542c";
     layer.append(img); entries.push({el,kind,img});
-    if(kind==="rogueSignal" || kind==="gunPierce" || kind==="ninjaRipple" || kind==="fumaPassed" || kind==="waterFlower" || kind==="meteorRain") ground.append(img);
+    if(kind==="ssAwakeBack" || kind==="rogueSignal" || kind==="gunPierce" || kind==="ninjaRipple" || kind==="fumaPassed" || kind==="waterFlower" || kind==="meteorRain") ground.append(img);
     return entries[entries.length-1];
   };
   plan.caster.forEach(kind=>add(caster,kind));
   if(shots.length) shots.forEach((uid,shot)=>{
     const el=targets.find(t=>t.dataset.uid===uid);if(!el)return;
-    plan.target.forEach(kind=>{const entry=add(el,kind);entry.shot=shot;entry.img.dataset.shot=shot;});
+    (skillId==="ss_1"?[plan.target[shot%3]]:plan.target).forEach(kind=>{const entry=add(el,kind);entry.shot=shot;entry.img.dataset.shot=shot;});
   });
   else [...new Set(skillId==="bd_u"?[caster,...targets]:targets)].forEach(el=>plan.target.forEach(kind=>add(el,kind)));
   if(group.length) plan.group.forEach(kind=>{
@@ -28240,7 +28250,7 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
     if(skillId==="fm_u" && unsealPhase!==unsealSoundPhase){unsealSoundPhase=unsealPhase;if(typeof sfxPlay==="function")sfxPlay("unseal"+unsealPhase);}
     entries.forEach(({el,kind,img,group,shot})=>{
       if(shot!=null){
-        const end=shot===shots.length-1?duration:(shot+.6)*shotStep;
+        const end=skillId==="ss_1"||shot===shots.length-1?duration:(shot+.6)*shotStep;
         img.style.visibility=elapsed>=shot*shotStep && elapsed<end?"visible":"hidden";
       }
       if(kind==="gunMuzzle" && shots.length){
@@ -28252,6 +28262,26 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
       const cx=(r.left+r.width/2-sr.left)*sx, cy=(r.top-sr.top)*sy+h*.55;
       const throwSize=Math.min(h,Math.max(1,(side==="B"?cx:stage.clientWidth-cx)-12)/3.6);
       let width=h*1.05, height=width, x=cx-width/2, y=cy-height/2;
+      if(kind==='ssFlame'||kind==='ssAwakeBack'||kind==='ssAwakeFront'){
+        // Frame canvas is 256px inside the 128px anchor, offset -64 on each axis.
+        width=w*2;height=h*2;x=(r.left-sr.left)*sx-w/2;y=(r.top-sr.top)*sy-h/2;
+        img.style.opacity='1';img.style.transform=side==='B'?'scaleX(-1)':'';
+        img.style.imageRendering='pixelated';
+      }
+      if(kind==='ssTenCuts'){
+        width=stage.clientWidth;height=bottom-top;x=0;y=top;
+        img.style.opacity='1';img.style.transform=side==='B'?'scaleX(-1)':'';
+        img.style.imageRendering='pixelated';
+      }
+      if(['ssBasic','ssBlue','ssPurple','ssPink'].includes(kind)){
+        width=h*(kind==='ssBasic'?1.05:1.3);height=width;x=cx-width/2;y=cy-height/2;
+        const index=Math.max(0,['ssBlue','ssPurple','ssPink'].indexOf(kind));
+        const angle=kind==='ssBasic'?-.55:[-.65,.55,.1][index];
+        img.style.transform=(side==='B'?'scaleX(-1) ':'')+`rotate(${angle}rad) scaleX(-1)`;
+        const age=elapsed-(shot==null?0:shot*shotStep);
+        img.style.opacity=String((kind==='ssBasic'?.6:.5)+(kind==='ssBasic'?.4:.5)*Math.max(0,1-age/(duration*.13)));
+        img.style.imageRendering='pixelated';
+      }
       if(kind==='rogueSlash'){
         width=h*1.22;height=width;x=cx-width/2;y=cy-height/2;
         img.style.opacity=String(.48+.52*Math.max(0,1-elapsed/(duration*160/1500)));
@@ -37504,7 +37534,7 @@ function stSkillLane(skillId, nEnemy){
     const S0 = L.scene, C = L.cur; if(!S0.on || !S0.fx || !C || !C.sk || !C.st.isConnected) return;
     const tok = L.fxTok, sk = C.sk, tgt = sk.target || "";
     const targets = tgt === "self" ? [C.actor] : /^ally/.test(tgt) ? [C.actor, ...C.allies] : C.enemies;
-    const shots = sk.id === "gn_1" ? [0, 1, 2, 3].map(i => targets[i % Math.max(1, targets.length)]).filter(Boolean).map(e => e.dataset.uid) : undefined;
+    const shots = ["gn_1","ss_1"].includes(sk.id) ? (sk.id==="ss_1"?[0,1,2]:[0,1,2,3]).map(i => targets[i % Math.max(1, targets.length)]).filter(Boolean).map(e => e.dataset.uid) : undefined;
     try{
       L.stopFx = stylishSkillFxShow(C.st, C.actor, targets, C.job, sk.id, C.side, () => L.fxTok === tok && C.st.classList.contains("cam-focus"),
         targets.filter(e => C.enemies.includes(e)), {shots, duration: 1500});
@@ -39455,6 +39485,8 @@ function audHintSync(){
    효과음 — 짧은 소리 여러 개가 겹쳐 난다. 배경 음악과 음량이 따로 논다.
    ============================================================ */
 const SFX = {
+  ssSlash:{f:"spellsword_slash.mp3",v:.65},
+  ssAwaken:{f:"spellsword_awaken.mp3",v:.65},
   druidBeast:{f:"druid_beast.mp3"},
   monkChi:{f:"monk_chi.mp3"},
   monkPunch:{f:"monk_punch.mp3"},
@@ -39676,7 +39708,13 @@ document.addEventListener("click", e => { const m = masterSfxAt(e); if(m) sfxPla
 /* 한 프레임에 실린 소리 */
 function sfxFrame(f, rate=1, active=()=>true){
   if(!f || !f.fx || !f.fx.s)return;
-  const id=f.fx.skillId, beats=id==="mo_b"?[0,160]:(id==="mo_u"||id==="md_u")?[0,110,220,330,440,550,660,770,880,990]:[0];   // md_u — 원정 보스 과부하 연타 (1021 넷째 · 백열권과 같이)
+  const id=f.fx.skillId;
+  if(id==='ss_1'||id==='ss_u'){
+    const beats=id==='ss_1'?(f.fx.shots||[0,1,2]).map((_,i)=>i*420):[0,85,170,255,340];
+    beats.forEach((ms,i)=>{const play=()=>{if(active())sfxPlay(f.fx.s,1+i*(id==='ss_1'?.12:.07));};if(ms)setTimeout(play,ms/Math.max(.1,rate));else play();});
+    return;
+  }
+  const beats=id==="mo_b"?[0,160]:(id==="mo_u"||id==="md_u")?[0,110,220,330,440,550,660,770,880,990]:[0];   // md_u — 원정 보스 과부하 연타 (1021 넷째 · 백열권과 같이)
   beats.forEach(ms=>{if(!ms){if(active())sfxPlay(f.fx.s);}else setTimeout(()=>{if(active())sfxPlay(f.fx.s);},ms/Math.max(.1,rate));});
 }
 
