@@ -1876,6 +1876,10 @@ html[lang="ja"] .crec-bub,html[lang^="zh"] .crec-bub{word-break:normal}   /* 일
 #beltRoot .belt-win{transition:translate .38s cubic-bezier(.3,.8,.3,1)}       /* 띠 장면 동안 위로 비켜 앉는다 (XPST 가 translate 를 준다 · 창은 BELT 블록) */
 /* 보스 대사 — 이름표 보랏빛 · 글은 창백하게 · 균열의 울림은 겹쳐 울린다 */
 .xpst .fst-talk.boss .fst-tx{color:#e8deff}
+.xpst .fst-talk.mst .fst-tx{color:#fff1cf}                                   /* 1024 공용판 — 마스터 (이름표만 · 02 · 03 과 같다) */
+.xpst .fst-talk.mst .fst-nm span{color:#ffd36a}
+.xpst .fst-talk.nar .fst-nm{visibility:hidden}                                 /* 1024 공용판 — 서술 (이름표 없이 · 조금 옅은 글) */
+.xpst .fst-talk.nar .fst-tx{color:#e6dccb}
 .xpst .fst-talk.echo .fst-tx{letter-spacing:.06em;text-shadow:3px 0 0 rgba(196,176,255,.3),-3px 0 0 rgba(196,176,255,.2)}
 /* 기록창 자리 — 무대: 초상화 위 칸 가운데 · 띠: 띠 그림 위 (XPST 가 띠의 자리를 --xp-st · --xp-sh 로) */
 .xp-recw{position:absolute;left:0;right:0;top:calc(var(--rv-top) + 8px);bottom:calc(var(--fst-bot) + env(safe-area-inset-bottom,0px) + var(--fst-h) - var(--fst-over) + var(--fst-bust) + 12px);
@@ -11937,7 +11941,7 @@ function xmGo(d0){
 /* ── 이동 중 — 창을 회색으로 가라앉히고 그 위에 테두리 없이: SD 도트가 걷고 뒤에 먼지 · '이동 중...' 글자가 흔들린다 (2초) ──
    지도 창(넓은 화면)과 예전 목록 창(좁은 화면의 '원정 시작') 둘 다 쓴다. 끝나면 done (창을 닫고 전투를 연다) */
 function xmTravel(mem, done){
-  if(window.XPST && XPST.depart(()=> xmTravel(mem, done))) return;   // 1023 — 원정 이야기: 첫 원정이면 출발 장면 (학원 · 이동 전 — XPST · 끝나면 다시 여기로)
+  if(window.XPST && XPST.depart(()=> xmTravel(mem, done), mem)) return;   // 1023 — 원정 이야기: 첫 원정이면 출발 장면 (학원 · 이동 전 — XPST · 끝나면 다시 여기로 · 1024 떠나는 파티 mem — 공용판)
   const ov = $("#modalRoot .overlay");
   if(!ov || XM.phase === "go"){ if(!ov) done(); return; }
   const run = ++XM.run;
@@ -28389,7 +28393,7 @@ window.addEventListener('resize',alignDemonField);
 /* One still image per effect. Routing is independent of character sprite sheets. */
 const STYLISH_SKILL_FX = {
   assets: {
-    staffThrust:"assets/skill-fx/forcemage/staff-thrust.svg?v=3",
+    staffThrust:"assets/skill-fx/forcemage/staff-thrust-px.webp?v=2ea18da1",
     unseal0:"assets/skill-fx/rogue/shadow.webp?v=w90",
     unseal1:"assets/skill-fx/rogue/shadow.webp?v=w90",
     unseal2:"assets/skill-fx/rogue/shadow.webp?v=w90",
@@ -28398,61 +28402,61 @@ const STYLISH_SKILL_FX = {
     unseal5:"assets/skill-fx/rogue/shadow.webp?v=w90",
     unseal6:"assets/skill-fx/rogue/shadow.webp?v=w90",
 
-    druidCircle:"assets/skill-fx/druid/hand-circle.svg?v=2",
+    druidCircle:"assets/skill-fx/druid/hand-circle-px.webp?v=6e56d33e",
     regenSeed:"assets/skill-fx/druid/regen.svg?v=1",
-    bearSign:"assets/skill-fx/druid/bear-outline.webp?v=b79c8320",
-    natureRoots:"assets/skill-fx/druid/roots-long.webp?v=bf7af77c",
-    monkPressure:"assets/skill-fx/monk/pressure.svg?v=1",
-    chiHit:"assets/skill-fx/monk/chi.webp?v=0c5670e7",
-    fistRush:"assets/skill-fx/monk/fists-oval.webp?v=b754c079",
-    oraText:"assets/skill-fx/monk/du.svg?v=1",
-    swordSwing:"assets/skill-fx/sword/swing.svg?v=1",
-    tauntCall:"assets/skill-fx/sword/taunt-call.svg?v=2",
-    tauntAnger:"assets/skill-fx/sword/taunt-anger.svg?v=2",
-    earthWave:"assets/skill-fx/sword/earth-wave.webp?v=32425bb9",
+    bearSign:"assets/skill-fx/druid/bear-outline-px.webp?v=85883aba",
+    natureRoots:"assets/skill-fx/druid/roots-long-px.webp?v=df3f4d67",
+    monkPressure:"assets/skill-fx/monk/pressure-px.webp?v=e63d07d3",
+    chiHit:"assets/skill-fx/monk/chi-px.webp?v=a730e174",
+    fistRush:"assets/skill-fx/monk/fists-oval-px.webp?v=62a0e447",
+    oraText:"assets/skill-fx/monk/du-px.webp?v=e30beea1",
+    swordSwing:"assets/skill-fx/sword/swing-px.webp?v=8facdf4f",
+    tauntCall:"assets/skill-fx/sword/taunt-call-px.webp?v=ef94e9c1",
+    tauntAnger:"assets/skill-fx/sword/taunt-anger-px.webp?v=26c2f3b5",
+    earthWave:"assets/skill-fx/sword/earth-wave-px.webp?v=2908ed87",
     trail: "assets/skill-fx/paladin/trail-particles.webp?v=w90",
-    impact: "assets/skill-fx/paladin/impact.webp?v=w90",
-    shield: "assets/skill-fx/paladin/shield.webp?v=w90",
+    impact: "assets/skill-fx/paladin/impact-px.webp?v=77fd81ce",
+    shield: "assets/skill-fx/paladin/shield-px.webp?v=7ab693b2",
     beam: "assets/skill-fx/paladin/beam-particles.webp?v=w90",
-    darkEssence: "assets/skill-fx/darkpriest/essence.webp?v=w90",
-    darkHit: "assets/skill-fx/darkpriest/hit.webp?v=w90",
-    redDrain: "assets/skill-fx/darkpriest/drain.webp?v=w90",
-    curseNail: "assets/skill-fx/darkpriest/nail.webp?v=w90",
-    bloodRitual: "assets/skill-fx/darkpriest/ritual.webp?v=w90",
-    gunMuzzle: "assets/skill-fx/gunner/muzzle.webp?v=w90",
-    gunHit: "assets/skill-fx/gunner/hit.webp?v=w90",
-    gunPierce: "assets/skill-fx/gunner/pierce.webp?v=w90",
-    poisonDagger: "assets/skill-fx/rogue/dagger-embedded.webp?v=w90",
+    darkEssence: "assets/skill-fx/darkpriest/essence-px.webp?v=3b1fdd05",
+    darkHit: "assets/skill-fx/darkpriest/hit-px.webp?v=7a383d1a",
+    redDrain: "assets/skill-fx/darkpriest/drain-px.webp?v=c3643b66",
+    curseNail: "assets/skill-fx/darkpriest/nail-px.webp?v=182b0f5e",
+    bloodRitual: "assets/skill-fx/darkpriest/ritual-px.webp?v=96f9bbd9",
+    gunMuzzle: "assets/skill-fx/gunner/muzzle-px.webp?v=5db34668",
+    gunHit: "assets/skill-fx/gunner/hit-px.webp?v=946cbf49",
+    gunPierce: "assets/skill-fx/gunner/pierce-px.webp?v=5dd0c591",
+    poisonDagger: "assets/skill-fx/rogue/dagger-embedded-px.webp?v=f5ccd5a0",
     shadowStep: "assets/skill-fx/rogue/shadow.webp?v=w90",
-    assassination: "assets/skill-fx/rogue/assassinate.webp?v=w90",
-    holyEssence: "assets/skill-fx/priest/essence.webp?v=w90",
+    assassination: "assets/skill-fx/rogue/assassinate-px.webp?v=d97b0952",
+    holyEssence: "assets/skill-fx/priest/essence-px.webp?v=6b20717d",
     greaterHeal: "assets/skill-fx/priest/heal.webp?v=w90",
-    blessing: "assets/skill-fx/priest/blessing.webp?v=w90",
+    blessing: "assets/skill-fx/priest/blessing-px.webp?v=5cf13c57",
     revival: "assets/skill-fx/priest/revival.webp?v=w90",
-    bardMelody: "assets/skill-fx/bard/melody.webp?v=w90",
-    dissonance: "assets/skill-fx/bard/dissonance.webp?v=w90",
-    ensemble: "assets/skill-fx/bard/ensemble.webp?v=w90",
+    bardMelody: "assets/skill-fx/bard/melody-px.webp?v=ee455f76",
+    dissonance: "assets/skill-fx/bard/dissonance-px.webp?v=1576a490",
+    ensemble: "assets/skill-fx/bard/ensemble-px.webp?v=a6bea858",
     spotlight: "assets/skill-fx/bard/spotlight.webp?v=w90",
-    ninjaRipple: "assets/skill-fx/ninja/ripple.webp?v=w90",
-    waterSwamp: "assets/skill-fx/ninja/swamp.webp?v=w90",
-    waterDragon: "assets/skill-fx/ninja/dragon.webp?v=w90",
-    fumaWave: "assets/skill-fx/ninja/fuma.webp?v=w90",
-    boundaryWave: "assets/skill-fx/ninja/boundary-wave.webp?v=w90",
-    fumaPassed: "assets/skill-fx/ninja/fuma-water-spin.webp?v=w90",
-    waterFlower: "assets/skill-fx/ninja/water-flower.webp?v=w90",
-    archerWind: "assets/skill-fx/archer/wind.webp?v=w90",
-    greenPierce: "assets/skill-fx/archer/pierce-offscreen.webp?v=w90",
-    hawkEye: "assets/skill-fx/archer/hawk-outline.webp?v=w90",
-    meteorRain: "assets/skill-fx/archer/meteor-perspective-back.svg?v=1",
-    meteorFront: "assets/skill-fx/archer/meteor-perspective-front.svg?v=1",
-    meteorImpact: "assets/skill-fx/archer/meteor-impact.svg?v=1",
-    wizardCircles: "assets/skill-fx/wizard/triple-circle.svg?v=2",
-    fireExplosion: "assets/skill-fx/wizard/fire-explosion.webp?v=w90",
+    ninjaRipple: "assets/skill-fx/ninja/ripple-px.webp?v=57787849",
+    waterSwamp: "assets/skill-fx/ninja/swamp-px.webp?v=8d707625",
+    waterDragon: "assets/skill-fx/ninja/dragon-px.webp?v=6353f9c6",
+    fumaWave: "assets/skill-fx/ninja/fuma-px.webp?v=469a124a",
+    boundaryWave: "assets/skill-fx/ninja/boundary-wave-px.webp?v=c36cc5c8",
+    fumaPassed: "assets/skill-fx/ninja/fuma-water-spin-px.webp?v=58726af7",
+    waterFlower: "assets/skill-fx/ninja/water-flower-px.webp?v=7619ad1e",
+    archerWind: "assets/skill-fx/archer/wind-px.webp?v=e9112c21",
+    greenPierce: "assets/skill-fx/archer/pierce-offscreen-px.webp?v=ea547754",
+    hawkEye: "assets/skill-fx/archer/hawk-outline-px.webp?v=a991c8b2",
+    meteorRain: "assets/skill-fx/archer/meteor-perspective-back-px.webp?v=cd6dfddc",
+    meteorFront: "assets/skill-fx/archer/meteor-perspective-front-px.webp?v=ef8cf1c0",
+    meteorImpact: "assets/skill-fx/archer/meteor-impact-px.webp?v=c36662d4",
+    wizardCircles: "assets/skill-fx/wizard/triple-circle-px.webp?v=19472eed",
+    fireExplosion: "assets/skill-fx/wizard/fire-explosion-px.webp?v=56ea6a8d",
     blizzardBack: "assets/skill-fx/wizard/blizzard-back.svg?v=1",
-    blizzardFront: "assets/skill-fx/wizard/blizzard-front.svg?v=1",
-    gravityCircle: "assets/skill-fx/wizard/gravity-circle.svg?v=2",
-    gravityBeam: "assets/skill-fx/wizard/gravity-beam.svg?v=4",
-    gravityFoot: "assets/skill-fx/wizard/gravity-foot.svg?v=4"
+    blizzardFront: "assets/skill-fx/wizard/blizzard-front-px.webp?v=826dc6c0",
+    gravityCircle: "assets/skill-fx/wizard/gravity-circle-px.webp?v=3014576f",
+    gravityBeam: "assets/skill-fx/wizard/gravity-beam-px.webp?v=e40cba90",
+    gravityFoot: "assets/skill-fx/wizard/gravity-foot-px.webp?v=c692e10b"
   },
   casters: {forcemage:["staffThrust"],druid:["druidCircle"], monk:["monkPressure"], sword:["swordSwing"], paladin: ["trail"], darkpriest: ["darkEssence"], gunner:["gunMuzzle"], priest:["holyEssence"], bard:["bardMelody"], ninja:["ninjaRipple"], archer:["archerWind"], wizard:["wizardCircles"]},
   targets: {fm_b:[],fm_1:[],fm_2:["shadowStep"],fm_u:["unseal0","unseal1","unseal2","unseal3","unseal4","unseal5","unseal6"],dr_b:[],dr_1:["regenSeed"],dr_2:["bearSign"],dr_u:[],mo_b:[], mo_1:["chiHit"], mo_2:["shadowStep"], mo_u:["fistRush","oraText"], sw_b:[], sw_1:["tauntAnger"], sw_2:["shadowStep"], sw_u:[], pa_b: ["impact"], pa_1: ["shield"], pa_2: ["beam"], pa_u: ["beam", "shield"],
@@ -28480,11 +28484,11 @@ const BOSS_ULT_FX = {
   bossBrineUlt:    {job:"mon_brine",    span:2.0, min:3.6, ax:.5, ay:.6,  at:"foot", anim:"burst", front:false}   // 소용돌이 — 발밑 (유닛 아래)
 };
 Object.assign(STYLISH_SKILL_FX.assets, {
-  bossDummyUlt: "assets/skill-fx/boss/dummy-ultimate.webp?v=8ccfa65d",
-  bossWraithUlt: "assets/skill-fx/boss/wraith-ultimate.webp?v=dcf72fbc",
-  bossGargoyleUlt: "assets/skill-fx/boss/gargoyle-ultimate.webp?v=f7491de3",
-  bossBrineUlt: "assets/skill-fx/boss/brine-ultimate.webp?v=1f2bda37",
-  bossGuardianUlt: "assets/skill-fx/boss/guardian-ultimate.webp?v=e2368a19"
+  bossDummyUlt: "assets/skill-fx/boss/dummy-ultimate-px.webp?v=d4977f93",
+  bossWraithUlt: "assets/skill-fx/boss/wraith-ultimate-px.webp?v=e99931f2",
+  bossGargoyleUlt: "assets/skill-fx/boss/gargoyle-ultimate-px.webp?v=c19d4df6",
+  bossBrineUlt: "assets/skill-fx/boss/brine-ultimate-px.webp?v=b643d3b3",
+  bossGuardianUlt: "assets/skill-fx/boss/guardian-ultimate-px.webp?v=7823daad"
 });
 Object.assign(STYLISH_SKILL_FX.targets, {md_u:["bossDummyUlt"], mk_u:["bossGuardianUlt"], mw_u:[], mg_u:[], mb_u:[]});
 Object.assign(STYLISH_SKILL_FX.groups, {mw_u:["bossWraithUlt"], mg_u:["bossGargoyleUlt"], mb_u:["bossBrineUlt"]});
@@ -28552,6 +28556,7 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
     const img=document.createElement("img"); img.src=STYLISH_SKILL_FX.assets[kind];
     img.dataset.effect=kind; img.dataset.target=el.dataset.uid; img.alt="";
     img.style.cssText="position:absolute;max-width:none;image-rendering:auto;object-fit:fill;pointer-events:none";
+    if(/-px\.webp/.test(img.src)) img.style.imageRendering="pixelated";   // 1024 — 도트판 이펙트 (apply_sfxpx · tools/skill-fx-pixel-v1)
     img.style.opacity=kind==="bloodRitual" ? ".6" : kind==="shield" ? ".58" : kind==="beam" ? ".72" : (kind==="darkEssence"||kind==="holyEssence") ? ".66" : kind==="curseNail" ? ".65" : ".9";
     if(kind==="spotlight") img.style.opacity=".46";
     if(kind==="archerWind") img.style.opacity=".72";
@@ -28576,7 +28581,7 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
     if(kind==="chiHit" && side==="A") img.style.transform="scaleX(-1)";
     if((kind==="monkPressure" || kind==="fistRush") && side==="B") img.style.transform="scaleX(-1)";
     if(kind==="staffThrust" && side==="B") img.style.transform="scaleX(-1)";
-    if(kind==="oraText" && side==="B") img.src="assets/skill-fx/monk/du-reverse.svg?v=1";
+    if(kind==="oraText" && side==="B") img.src="assets/skill-fx/monk/du-reverse-px.webp?v=f47f542c";
     layer.append(img); entries.push({el,kind,img});
     if(kind==="gunPierce" || kind==="ninjaRipple" || kind==="fumaPassed" || kind==="waterFlower" || kind==="meteorRain") ground.append(img);
     return entries[entries.length-1];
@@ -33732,9 +33737,15 @@ window.SCEN = {list: SCEN_LIST, T: SCEN_T, sync: scenSync, done: scenDone, ready
    · 이계(이계의 지도) — 원정지 id 가 같아 기록을 같이 쓴다 (같은 장면을 이계에서 다시 보지 않는다).
    · 처음 보는 진짜 흐름에는 건너뛰기가 없다. 다시 보기(마스터 책상 모래시계의 시나리오 팝업 — 04 묶음 · SCEN)와 미리 보기에만 오른쪽 위 건너뛰기 ·
      띠 장면의 다시 보기는 띠 창을 무대로만 연다 (걷지 않는다 · 보상 없음 · BELT R.story).
+   · 공용판 (1024 · 사용자 '공용판 먼저 작업해보자' · 대본 personality-draft.json · common-draft.md → xpgn_lines.json — xpgn_build.py) — 물음 · 답:
+     전용판 조건 '대본대로 실제 파티 기준': 개교 멤버 셋 본인(학생 id)이 모두 그 원정에 나갔을 때만 셋의 대사 · 아니면 실제 파티의 성격별 대화판(XP_GEN) —
+     A 반응 · 공통 연결(보스 대사) · B 응답 · C 마무리 · 행동 마감 (장면 순번만큼 파티를 돌려 맡는다 · 둘이면 A · B · 하나면 A · 넷 이상이면 셋 · 성격은 st.pers · 모르면 평범) ·
+     말할 학생이 없으면 서술판(N 서술 · 보스 · 마스터 독백) / 기록 정리 '지금 학생 셋 대화 + 마스터 두 줄': 셋이 학원에 다 있으면 셋 · 아니면 학원의 학생 셋(학년 · 레벨 순) + 마스터 두 줄 ·
+     학생이 없으면 마스터 독백판. 본 것(seen) · 단서 · 전승은 전용판과 같이 쓴다 · 공용판으로 본 장면은 그때 배우를 적어 두고(S.xpst.gv) 다시 보기도 그 배우로.
+     기록 장면에서 쓰러진 학생은 전용판처럼 일으켜 세운다 (1024 사용자 '기절했어도 파티 멤버 조건은 충족').
    · 자동화(navigator.webdriver)에서는 띄우지 않는다 (예전 원정 시험이 그대로 돈다) — 시험은 window.__xpstForce = true */
 (() => {
-const XP_FACE = {"paladin":{"joy":"assets/fst_faces/paladin-joy.png?v=3e213740","motivated":"assets/fst_faces/paladin-motivated.png?v=9f80f84f","flustered":"assets/fst_faces/paladin-flustered.png?v=4622b965","smile":"assets/fst_faces/paladin-smile.png?v=f5c93a74","surprised":"assets/fst_faces/paladin-surprised.png?v=b0ed2bf6","sad":"assets/fst_faces/paladin-sad.png?v=b323dbd8","heroic-confidence":"assets/fst_faces/paladin-heroic-confidence.png?v=d8cf8cb0"},"darkpriest":{"smile":"assets/fst_faces/darkpriest-smile.png?v=51f67484","surprised":"assets/fst_faces/darkpriest-surprised.png?v=77ca69df","motivated":"assets/fst_faces/darkpriest-motivated.png?v=20951f88","sad":"assets/fst_faces/darkpriest-sad.png?v=36bef770","cold-empty":"assets/fst_faces/darkpriest-cold-empty.png?v=f69aa9fd"},"wizard":{"sleepy-cat":"assets/fst_faces/wizard-sleepy-cat.png?v=02b87b13","smile":"assets/fst_faces/wizard-smile.png?v=d2ae512d","tired":"assets/fst_faces/wizard-tired.png?v=8c795a66","surprised":"assets/fst_faces/wizard-surprised.png?v=79818b69","sad":"assets/fst_faces/wizard-sad.png?v=4131b3ed"}};   // apply_xpst.py — {직업: {표정: 표정 그림 + ?v=}} (학생 얼굴 — WebP 로 바꾸지 않는다)
+const XP_FACE = {"paladin":{"joy":"assets/fst_faces/paladin-joy.png?v=3e213740","motivated":"assets/fst_faces/paladin-motivated.png?v=9f80f84f","flustered":"assets/fst_faces/paladin-flustered.png?v=4622b965","smile":"assets/fst_faces/paladin-smile.png?v=f5c93a74","surprised":"assets/fst_faces/paladin-surprised.png?v=b0ed2bf6","sad":"assets/fst_faces/paladin-sad.png?v=b323dbd8","heroic-confidence":"assets/fst_faces/paladin-heroic-confidence.png?v=d8cf8cb0","pout":"assets/fst_faces/paladin-pout.png?v=0467f5b3"},"darkpriest":{"smile":"assets/fst_faces/darkpriest-smile.png?v=51f67484","surprised":"assets/fst_faces/darkpriest-surprised.png?v=77ca69df","motivated":"assets/fst_faces/darkpriest-motivated.png?v=20951f88","sad":"assets/fst_faces/darkpriest-sad.png?v=36bef770","cold-empty":"assets/fst_faces/darkpriest-cold-empty.png?v=f69aa9fd","heroic-confidence":"assets/fst_faces/darkpriest-heroic-confidence.png?v=a6082822","flustered":"assets/fst_faces/darkpriest-flustered.png?v=fb006c8c","pout":"assets/fst_faces/darkpriest-pout.png?v=9821f856","joy":"assets/fst_faces/darkpriest-joy.png?v=775cc84f"},"wizard":{"sleepy-cat":"assets/fst_faces/wizard-sleepy-cat.png?v=02b87b13","smile":"assets/fst_faces/wizard-smile.png?v=d2ae512d","tired":"assets/fst_faces/wizard-tired.png?v=8c795a66","surprised":"assets/fst_faces/wizard-surprised.png?v=79818b69","sad":"assets/fst_faces/wizard-sad.png?v=4131b3ed","motivated":"assets/fst_faces/wizard-motivated.png?v=8e324f77","heroic-confidence":"assets/fst_faces/wizard-heroic-confidence.png?v=a0778a18","flustered":"assets/fst_faces/wizard-flustered.png?v=ca94f433","pout":"assets/fst_faces/wizard-pout.png?v=8831934e","joy":"assets/fst_faces/wizard-joy.png?v=a1a0733e"},"sword":{"smile":"assets/fst_faces/sword-smile.png?v=ea79b0f4","motivated":"assets/fst_faces/sword-motivated.png?v=9e7cc7d1","sad":"assets/fst_faces/sword-sad.png?v=9d825256","heroic-confidence":"assets/fst_faces/sword-heroic-confidence.png?v=07a73091","flustered":"assets/fst_faces/sword-flustered.png?v=bc62fce0","pout":"assets/fst_faces/sword-pout.png?v=71d89d41","joy":"assets/fst_faces/sword-joy.png?v=0a1e540e","surprised":"assets/fst_faces/sword-surprised.png?v=3e9c6dd2"},"archer":{"smile":"assets/fst_faces/archer-smile.png?v=c9efbe3e","motivated":"assets/fst_faces/archer-motivated.png?v=5b8a3132","sad":"assets/fst_faces/archer-sad.png?v=7741eb67","heroic-confidence":"assets/fst_faces/archer-heroic-confidence.png?v=a9cd8e43","flustered":"assets/fst_faces/archer-flustered.png?v=75f706ca","pout":"assets/fst_faces/archer-pout.png?v=4c92bad6","joy":"assets/fst_faces/archer-joy.png?v=4a5f95f6","surprised":"assets/fst_faces/archer-surprised.png?v=081cb47b"},"gunner":{"smile":"assets/fst_faces/gunner-smile.png?v=4edc0809","motivated":"assets/fst_faces/gunner-motivated.png?v=bdaccc76","sad":"assets/fst_faces/gunner-sad.png?v=1524e5ee","heroic-confidence":"assets/fst_faces/gunner-heroic-confidence.png?v=cbb68bdb","flustered":"assets/fst_faces/gunner-flustered.png?v=36281988","pout":"assets/fst_faces/gunner-pout.png?v=bdeaaffe","joy":"assets/fst_faces/gunner-joy.png?v=8075398f","surprised":"assets/fst_faces/gunner-surprised.png?v=510fdc93"},"priest":{"smile":"assets/fst_faces/priest-smile.png?v=399f3725","motivated":"assets/fst_faces/priest-motivated.png?v=10b230b7","sad":"assets/fst_faces/priest-sad.png?v=62a9bd0e","heroic-confidence":"assets/fst_faces/priest-heroic-confidence.png?v=798d2d10","flustered":"assets/fst_faces/priest-flustered.png?v=c158bfd0","pout":"assets/fst_faces/priest-pout.png?v=7348e7a5","joy":"assets/fst_faces/priest-joy.png?v=b3e61113","surprised":"assets/fst_faces/priest-surprised.png?v=22cdd8d6"},"monk":{"smile":"assets/fst_faces/monk-smile.png?v=3e544b78","motivated":"assets/fst_faces/monk-motivated.png?v=2b734e4b","sad":"assets/fst_faces/monk-sad.png?v=ea5dccce","heroic-confidence":"assets/fst_faces/monk-heroic-confidence.png?v=f68d2d0b","flustered":"assets/fst_faces/monk-flustered.png?v=24299943","pout":"assets/fst_faces/monk-pout.png?v=c4f67f96","joy":"assets/fst_faces/monk-joy.png?v=1ca633b6","surprised":"assets/fst_faces/monk-surprised.png?v=13c5f87b"},"bard":{"smile":"assets/fst_faces/bard-smile.png?v=2427ef42","motivated":"assets/fst_faces/bard-motivated.png?v=d2a089c2","sad":"assets/fst_faces/bard-sad.png?v=9ea9d725","heroic-confidence":"assets/fst_faces/bard-heroic-confidence.png?v=4d668db7","flustered":"assets/fst_faces/bard-flustered.png?v=f5d5b1ee","pout":"assets/fst_faces/bard-pout.png?v=84ea0ced","joy":"assets/fst_faces/bard-joy.png?v=69ba5b6d","surprised":"assets/fst_faces/bard-surprised.png?v=7bc1448a"},"spellsword":{"smile":"assets/fst_faces/spellsword-smile.png?v=4b338dc8","motivated":"assets/fst_faces/spellsword-motivated.png?v=c650275f","sad":"assets/fst_faces/spellsword-sad.png?v=614e7cae","heroic-confidence":"assets/fst_faces/spellsword-heroic-confidence.png?v=5dd744dd","flustered":"assets/fst_faces/spellsword-flustered.png?v=aa23c801","pout":"assets/fst_faces/spellsword-pout.png?v=6f15f712","joy":"assets/fst_faces/spellsword-joy.png?v=b59ea346","surprised":"assets/fst_faces/spellsword-surprised.png?v=67284399"},"ninja":{"smile":"assets/fst_faces/ninja-smile.png?v=d9513fef","motivated":"assets/fst_faces/ninja-motivated.png?v=8a37a94a","sad":"assets/fst_faces/ninja-sad.png?v=61c99b50","heroic-confidence":"assets/fst_faces/ninja-heroic-confidence.png?v=dc10b59f","flustered":"assets/fst_faces/ninja-flustered.png?v=adf5124e","pout":"assets/fst_faces/ninja-pout.png?v=7bae6669","joy":"assets/fst_faces/ninja-joy.png?v=dd365e98","surprised":"assets/fst_faces/ninja-surprised.png?v=e5e89671"},"rogue":{"smile":"assets/fst_faces/rogue-smile.png?v=028bc302","motivated":"assets/fst_faces/rogue-motivated.png?v=2b01e2c1","sad":"assets/fst_faces/rogue-sad.png?v=598c2cbf","heroic-confidence":"assets/fst_faces/rogue-heroic-confidence.png?v=26ee6699","flustered":"assets/fst_faces/rogue-flustered.png?v=f64452fb","pout":"assets/fst_faces/rogue-pout.png?v=edcb410d","joy":"assets/fst_faces/rogue-joy.png?v=70608b6b","surprised":"assets/fst_faces/rogue-surprised.png?v=55459ba6"},"enchanter":{"smile":"assets/fst_faces/enchanter-smile.png?v=940e3b26","motivated":"assets/fst_faces/enchanter-motivated.png?v=a4d68f5c","sad":"assets/fst_faces/enchanter-sad.png?v=136720a3","heroic-confidence":"assets/fst_faces/enchanter-heroic-confidence.png?v=fa5bbd55","flustered":"assets/fst_faces/enchanter-flustered.png?v=de5fbc92","pout":"assets/fst_faces/enchanter-pout.png?v=2f8312e3","joy":"assets/fst_faces/enchanter-joy.png?v=37b6e29a","surprised":"assets/fst_faces/enchanter-surprised.png?v=a10d7140"},"timemage":{"smile":"assets/fst_faces/timemage-smile.png?v=d9f110c8","motivated":"assets/fst_faces/timemage-motivated.png?v=0954691c","sad":"assets/fst_faces/timemage-sad.png?v=e94ec258","heroic-confidence":"assets/fst_faces/timemage-heroic-confidence.png?v=5f884e74","flustered":"assets/fst_faces/timemage-flustered.png?v=2c336c4c","pout":"assets/fst_faces/timemage-pout.png?v=2c86cfd5","joy":"assets/fst_faces/timemage-joy.png?v=70a5f058","surprised":"assets/fst_faces/timemage-surprised.png?v=482dbc76"},"druid":{"smile":"assets/fst_faces/druid-smile.png?v=8a4972fa","motivated":"assets/fst_faces/druid-motivated.png?v=a1c08518","sad":"assets/fst_faces/druid-sad.png?v=8f0c54dd","heroic-confidence":"assets/fst_faces/druid-heroic-confidence.png?v=98d66442","flustered":"assets/fst_faces/druid-flustered.png?v=2bb2ce9b","pout":"assets/fst_faces/druid-pout.png?v=762083cc","joy":"assets/fst_faces/druid-joy.png?v=319204da","surprised":"assets/fst_faces/druid-surprised.png?v=c5d65720"},"forcemage":{"smile":"assets/fst_faces/forcemage-smile.png?v=0f0e01aa","motivated":"assets/fst_faces/forcemage-motivated.png?v=813c27e5","sad":"assets/fst_faces/forcemage-sad.png?v=4f7f0750","heroic-confidence":"assets/fst_faces/forcemage-heroic-confidence.png?v=055578f4","flustered":"assets/fst_faces/forcemage-flustered.png?v=c557c82e","pout":"assets/fst_faces/forcemage-pout.png?v=aff8e8e0","joy":"assets/fst_faces/forcemage-joy.png?v=a240c0ee","surprised":"assets/fst_faces/forcemage-surprised.png?v=26f23a8a"}};   // apply_xpst.py — {직업: {표정: 표정 그림 + ?v=}} (학생 얼굴 — WebP 로 바꾸지 않는다)
 const XP_ID = "expedition-embers-v1";
 const XP_JOBS = ["wizard", "paladin", "darkpriest"];                          // 초상화 자리 — 왼쪽부터 (02 · 03 과 같다)
 const XP_TEAM = ["paladin", "wizard", "darkpriest"];                          // 다시 보기 띠의 줄 — 맨 앞부터
@@ -33744,7 +33755,7 @@ const XP_LK = window.HS_LANG === "en" ? 1.6 : 1;
 const XP_CPS = 32 * XP_LK;                                                    // 글자 / 초 (첫 시간표 · 02 · 03 과 같다)
 const XP_QUIET = /[\s….‥]/;
 const XP_T = {skip: "건너뛰기", got: "기록을 얻었다", kept: "기록을 챙겼다", dep: "학원 · 첫 원정 출발", sum: "학원 · 기록 정리", back: "학원 · 가져온 기록",
-  title: "첫걸음과 남겨진 불씨", log: "원정 기록", first: "첫 원정", recs: "기록 정리", four: "네 기록"};
+  title: "첫걸음과 남겨진 불씨", log: "원정 기록", first: "첫 원정", recs: "기록 정리", four: "네 기록", master: "마스터"};
 const XP_DGN = {d1: "연습장", d2: "옛 성터", d3: "종탑", d4: "균열", d5: "무덤"};   // 다시 보기 목록 · 기록 정리의 짧은 이름
 const XP_KIND = {enter: "입장", camp: "모닥불", boss: "보스", win: "기록"};
 const XP_BOSS = {d2: "성터의 안개 망령", d3: "종지기 석상", d4: "소금 심연의 촉수", d5: "이름 없는 기사"};   // 대화창 이름 (전투 데이터의 이름 · id 는 그대로)
@@ -33938,6 +33949,13 @@ const XP_LORE = {
   d5: {who: "wizard", face: "smile", t: "마왕의 세 갈래 검은 불꽃 깃발은 다들 아는데, 마왕이 되기 전 이름은 들어본 적이 없네."}
 };
 const XP_LINK = {who: "darkpriest", face: "surprised", t: "이 문양… 전에 가져온 기록에도 있었어요."};   // 둘째 기록부터 (대본 — 승리 본문 뒤 한 줄)
+/* ── 공용판 대본 (1024) — {pers 성격 아홉, close 행동 마감, scenes {장면: {open, bridge [{w, t}], kind, roles {성격: {A · B · C: {e 표정, t}}}}}, noAdds, link, sumMaster,
+   narr {장면: [{w, t}]} 서술판, narrSolo 단독 파견 출발 셋째 줄, narrNoAdds 종탑 보스 동반 적 없음, narrLink} — w: N 서술 · boss 보스 · master 마스터 */
+const XP_GEN = {"v":1,"pers":["intro","hot","stone","dilig","tsun","lively","boast","plain","genius"],"close":{"depart":"원정대는 장비 확인을 마치고 출발했다.","advance":"원정대는 주변을 살피며 안쪽으로 향했다.","rest":"잠시 숨을 고른 뒤, 원정대는 다음 구간을 준비했다.","fight":"상대가 다가온다. 원정대는 전투에 들어갔다.","record":"발견한 내용을 원정 기록에 남겼다.","summary":"마스터는 기록을 정리해 보관했다. 다음에 발견할 자료와 함께 살펴보기로 했다."},"scenes":{"dep":{"open":[{"w":"N","t":"장비를 챙긴 원정대가 출발 지점에 모였다. 준비는 끝났지만, 아직 누구도 먼저 발을 떼지 않았다."}],"bridge":[{"w":"N","t":"출발 전에 준비 상태와 귀환 기준을 한 번 더 확인한다."}],"kind":"depart","roles":{"intro":{"A":{"e":"flustered","t":"…빠뜨린 건 없겠지? 몇 번을 봤는데도 걱정돼."},"B":{"e":"smile","t":"나도 다시 확인할게. 서둘러 출발하지 않아도 괜찮겠지?"},"C":{"e":"smile","t":"…준비됐어. 천천히 가 보자."}},"hot":{"A":{"e":"motivated","t":"드디어 출발이네! 배운 걸 써 볼 때가 왔어!"},"B":{"e":"smile","t":"좋아. 위험하면 멈추는 것도 약속이야. 끝까지 가려면 돌아올 힘도 남겨야지!"},"C":{"e":"smile","t":"좋아! 무사히 돌아오는 데까지 해내자!"}},"stone":{"A":{"e":"smile","t":"준비는 됐어. 실제 길은 계획과 다를 수 있겠지."},"B":{"e":"smile","t":"예상 밖의 일이 생기면 멈춰서 확인하자. 판단을 서두를 필요는 없어."},"C":{"e":"smile","t":"확인 끝났어. 출발하자."}},"dilig":{"A":{"e":"smile","t":"짐은 다 챙겼어. 출발 전에 한 번 더 보자."},"B":{"e":"smile","t":"도움이 필요하면 바로 말해 줘. 준비가 끝날 때까지 기다릴게."},"C":{"e":"smile","t":"모두 준비됐으면 가자. 빠진 건 없어."}},"tsun":{"A":{"e":"pout","t":"가방은 아까 다 확인했거든. …한 번 더 봐서 나쁠 건 없지만."},"B":{"e":"smile","t":"괜찮은 척하다가 뒤처지지나 마. 힘들면 말하고."},"C":{"e":"smile","t":"…가자. 뒤처지는 건 싫으니까."}},"lively":{"A":{"e":"joy","t":"진짜 가는구나! 괜히 두근거리는데?"},"B":{"e":"smile","t":"긴장되는 건 다 비슷할걸? 준비부터 확인하고, 씩씩하게 가자!"},"C":{"e":"smile","t":"다녀오자! 돌아와서 할 얘기도 많으면 좋겠다!"}},"boast":{"A":{"e":"heroic-confidence","t":"오늘의 원정은 훗날 전설의 첫 장이 될 테지!"},"B":{"e":"smile","t":"전설에도 준비 과정은 있는 법이지. 끈이 풀린 곳은 없는지 보자고."},"C":{"e":"smile","t":"그럼 첫 장을 시작해 볼까!"}},"plain":{"A":{"e":"smile","t":"기대되는데 조금 걱정도 되네. 잘할 수 있겠지?"},"B":{"e":"smile","t":"천천히 확인하면서 가면 될 거야. 무리해서 서두르지는 말자."},"C":{"e":"smile","t":"좋아. 가 보자."}},"genius":{"A":{"e":"smile","t":"준비한 대로만 흘러가면 싱거울 텐데. 조금은 기대되네."},"B":{"e":"smile","t":"계획이 틀리면 고치면 돼. 잘못됐다는 걸 숨기는 게 더 위험하니까."},"C":{"e":"smile","t":"준비는 충분해. 이제 실제로 확인할 차례네."}}}},"d1.enter":{"open":[{"w":"N","t":"훈련 시설 안으로 들어섰다. 바깥의 소리가 잦아들고, 발소리가 또렷해졌다."}],"bridge":[{"w":"N","t":"원정대는 움직일 공간과 장비 상태를 확인했다."}],"kind":"advance","roles":{"intro":{"A":{"e":"flustered","t":"…발소리가 이렇게 크게 났던가."},"B":{"e":"smile","t":"안쪽을 먼저 살펴볼게. 갑자기 움직이는 게 있을 수도 있으니까."},"C":{"e":"smile","t":"…발소리에 놀라지는 않을게."}},"hot":{"A":{"e":"motivated","t":"좋아! 여기서 제대로 실력을 보여 주자!"},"B":{"e":"smile","t":"몸부터 풀자. 첫 상대부터 굳은 채로 맞을 수는 없잖아!"},"C":{"e":"smile","t":"첫 상대부터 집중하자!"}},"stone":{"A":{"e":"smile","t":"시설은 익숙해도 상황은 달라. 안쪽부터 보자."},"B":{"e":"smile","t":"길과 장애물은 확인했어. 주변을 보면서 움직이면 돼."},"C":{"e":"smile","t":"간격을 확보하고 이동하자."}},"dilig":{"A":{"e":"smile","t":"장비에 걸리는 곳은 없어? 들어가기 전에 고쳐 두자."},"B":{"e":"smile","t":"나는 준비됐어. 정리가 끝나면 움직이자."},"C":{"e":"smile","t":"천천히 들어가자. 주변도 살피면서."}},"tsun":{"A":{"e":"pout","t":"연습장이라고 대충 해도 된다는 뜻은 아니잖아."},"B":{"e":"smile","t":"장비 끈부터 잘 묶어. 중간에 풀려도 안 기다려… 줄 수는 있지만."},"C":{"e":"smile","t":"앞만 보지 말고 옆도 봐."}},"lively":{"A":{"e":"joy","t":"오늘은 여기서 어디까지 갈 수 있을까?"},"B":{"e":"smile","t":"일단 첫걸음부터! 주변 확인했으면 출발하자."},"C":{"e":"smile","t":"그럼 시작! 잘해 보자!"}},"boast":{"A":{"e":"heroic-confidence","t":"이 연습장에 내 이름을 새기고 돌아가겠어!"},"B":{"e":"smile","t":"물론 시설을 망가뜨리겠다는 뜻은 아니지. 우선 제대로 준비하자고."},"C":{"e":"smile","t":"좋아. 실력으로 보여 줄 시간이군."}},"plain":{"A":{"e":"smile","t":"원정으로 들어오니까 평소랑 조금 다르네."},"B":{"e":"smile","t":"응. 익숙하다고 방심하지는 말자."},"C":{"e":"smile","t":"안쪽으로 가 보자."}},"genius":{"A":{"e":"smile","t":"익숙한 곳일수록 놓치는 게 많아. 오늘은 뭐가 다를까?"},"B":{"e":"smile","t":"먼저 관찰해 보자. 답을 안다고 생각하면 작은 변화도 놓치니까."},"C":{"e":"smile","t":"차이가 있으면 바로 확인해 보자."}}}},"d1.camp":{"open":[{"w":"N","t":"불 가까이 앉자 팽팽했던 어깨가 조금 풀렸다."}],"bridge":[{"w":"N","t":"지금은 쉬어도 되는 구간이다. 물과 장비를 확인하며 숨을 고른다."}],"kind":"rest","roles":{"intro":{"A":{"e":"flustered","t":"…앉아도 되지? 다리가 조금 떨려서."},"B":{"e":"smile","t":"잠깐 쉬면 괜찮아질 것 같아. 물부터 마실게."},"C":{"e":"smile","t":"…조금 나아졌어. 조금만 더 쉬면 될 것 같아."}},"hot":{"A":{"e":"motivated","t":"조금 더 갈 수는 있는데… 쉬는 것도 훈련이지?"},"B":{"e":"smile","t":"다음 싸움도 힘껏 해야 하잖아. 여기서 제대로 회복하자!"},"C":{"e":"smile","t":"이제 몸이 풀리는군! 숨부터 고르자."}},"stone":{"A":{"e":"smile","t":"숨이 아직 가쁘네. 서두를 이유는 없어."},"B":{"e":"smile","t":"호흡부터 가라앉히자. 급하게 움직이면 몸이 더 굳어."},"C":{"e":"smile","t":"아직 서두를 때는 아니야."}},"dilig":{"A":{"e":"smile","t":"여기서는 잠깐 쉬어 가자. 물은 챙겨 뒀지?"},"B":{"e":"smile","t":"장비도 한 번 보자. 쉬는 동안 풀린 데가 있으면 고쳐 둘게."},"C":{"e":"smile","t":"물 마시고 장비까지 확인하자."}},"tsun":{"A":{"e":"pout","t":"쉬고 싶은 건 아니고… 계속 움직이는 것도 비효율적이잖아."},"B":{"e":"smile","t":"그러니까 앉아. 물 마실 시간 정도는 있겠지."},"C":{"e":"smile","t":"앉은 김에 제대로 쉬어. 괜히 버티지 말고."}},"lively":{"A":{"e":"joy","t":"아, 앉으니까 살 것 같다! 불도 따뜻해."},"B":{"e":"smile","t":"잠깐 쉬고 다시 힘내자. 지금은 숨 돌리는 시간!"},"C":{"e":"smile","t":"쉬는 시간도 알차게 써야지!"}},"boast":{"A":{"e":"heroic-confidence","t":"영웅에게도 숨을 고를 순간은 필요하지."},"B":{"e":"smile","t":"그, 그렇다고 지친 건 아니야. 다음 활약을 위해 쉬어 두는 거지."},"C":{"e":"smile","t":"다음 활약을 위해 잠시 휴식!"}},"plain":{"A":{"e":"smile","t":"생각보다 힘이 많이 드네."},"B":{"e":"smile","t":"여기서 쉬어 두자. 나중에 쉴 수 있을지는 모르니까."},"C":{"e":"smile","t":"조금 쉬었다가 가자."}},"genius":{"A":{"e":"smile","t":"힘을 더 쓰기 전에 멈춘 건 잘한 선택이네."},"B":{"e":"smile","t":"쉴 때 제대로 쉬어야 해. 피곤한 상태에서 실수하면 더 오래 걸려."},"C":{"e":"smile","t":"회복된 뒤 움직이는 쪽이 낫겠어."}}}},"d1.boss":{"open":[{"w":"N","t":"마지막 훈련 상대가 원정대 앞을 막았다."}],"bridge":[{"w":"N","t":"상대가 움직이기 시작했다. 이제는 준비한 것을 실제로 해 볼 때다."}],"kind":"fight","roles":{"intro":{"A":{"e":"surprised","t":"…가까이서 보니까 더 큰데."},"B":{"e":"motivated","t":"움직이는 건 보고 있어. 갑자기 덤비지만 않으면… 대응할 수 있을 거야."},"C":{"e":"heroic-confidence","t":"…보고 있어. 준비됐어."}},"hot":{"A":{"e":"motivated","t":"이 녀석까지 넘어야 끝이라는 거지!"},"B":{"e":"motivated","t":"좋아! 첫 움직임부터 놓치지 말자!"},"C":{"e":"heroic-confidence","t":"좋아, 해 보자!"}},"stone":{"A":{"e":"motivated","t":"거리를 좁히기 전에 움직임을 보자."},"B":{"e":"motivated","t":"연습용이어도 맞으면 아파. 신호를 확인하고 대응하자."},"C":{"e":"heroic-confidence","t":"첫 움직임부터 확인한다."}},"dilig":{"A":{"e":"motivated","t":"마지막까지 방심하지 말자."},"B":{"e":"motivated","t":"준비됐어. 위험한 움직임이 보이면 바로 알려 줄게."},"C":{"e":"heroic-confidence","t":"끝까지 집중하자."}},"tsun":{"A":{"e":"motivated","t":"이 정도로 주눅 들 필요는 없잖아."},"B":{"e":"motivated","t":"대신 만만하게 보지도 마. 준비하고 있어."},"C":{"e":"heroic-confidence","t":"오고 있어. 정신 똑바로 차려."}},"lively":{"A":{"e":"motivated","t":"마지막 상대다! 여기까지 왔으니 잘해 보자!"},"B":{"e":"motivated","t":"응, 끝까지 집중! 움직이기 시작했어."},"C":{"e":"heroic-confidence","t":"준비됐어! 끝까지 해 보자!"}},"boast":{"A":{"e":"motivated","t":"마지막 관문이라… 내 활약을 장식하기에 어울리는군!"},"B":{"e":"motivated","t":"크기만으로 승부가 정해지진 않지. 눈은 떼지 않겠어."},"C":{"e":"heroic-confidence","t":"이제 말 대신 실력을 보여 주지!"}},"plain":{"A":{"e":"motivated","t":"연습용이라고 봐주지는 않겠지?"},"B":{"e":"motivated","t":"응. 준비한 대로 차근차근 해 보자."},"C":{"e":"heroic-confidence","t":"응, 시작하자."}},"genius":{"A":{"e":"motivated","t":"마지막에 어떤 걸 시험하려는지 보자고."},"B":{"e":"motivated","t":"먼저 패턴을 확인할게. 읽기도 전에 덤빌 필요는 없지."},"C":{"e":"heroic-confidence","t":"관찰하면서 대응하자."}}}},"d2.enter":{"open":[{"w":"N","t":"안개 속에서 성문이 드러났다. 문 안쪽에는 빗장을 거듭 덧댄 흔적이 있다."}],"bridge":[{"w":"N","t":"문을 여러 번 막으려 했다는 것은 분명하지만, 무엇 때문인지는 알 수 없다."}],"kind":"advance","roles":{"intro":{"A":{"e":"flustered","t":"…바로 앞에 올 때까지 문이 있는 줄도 몰랐어."},"B":{"e":"smile","t":"길을 놓치지 않게 천천히 가자. 흔적은 기억해 둘게."},"C":{"e":"smile","t":"…길이 보이는 쪽으로 갈게."}},"hot":{"A":{"e":"motivated","t":"이런 안개쯤이야… 그래도 앞이 너무 안 보이네."},"B":{"e":"smile","t":"문은 나중에 더 보자. 지금은 발 디딜 곳부터 확보하자!"},"C":{"e":"smile","t":"앞이 안 보여도 차근차근 가면 돼!"}},"stone":{"A":{"e":"smile","t":"빗장을 안쪽에서 덧댔어. 누군가 막으려 했겠지."},"B":{"e":"smile","t":"자국만으로 이유까지 알 수는 없어. 보이는 것부터 확인하자."},"C":{"e":"smile","t":"보이는 범위 안에서 움직이자."}},"dilig":{"A":{"e":"smile","t":"안개 때문에 떨어지기 쉽겠다. 조심해서 가자."},"B":{"e":"smile","t":"문에 남은 흔적도 적어 둘게. 나중에 다른 기록과 맞춰 볼 수 있어."},"C":{"e":"smile","t":"길을 놓치지 않게 확인할게."}},"tsun":{"A":{"e":"pout","t":"이렇게 안 보이는데 앞서가는 건 바보짓이야."},"B":{"e":"smile","t":"발밑부터 봐. 저 문이 왜 저런지는 아직 모르잖아."},"C":{"e":"smile","t":"서두르지 마. 넘어지면 더 오래 걸려."}},"lively":{"A":{"e":"joy","t":"성문이 갑자기 나타났어! 조금 놀랐네."},"B":{"e":"smile","t":"일단 천천히 가자. 여기에는 어떤 일이 있었을까?"},"C":{"e":"smile","t":"천천히 가자. 구경은 안전한 곳에서!"}},"boast":{"A":{"e":"heroic-confidence","t":"전설의 성문답게 등장도 요란하군… 안개 때문에 못 봤지만."},"B":{"e":"smile","t":"수수께끼는 차근차근 풀어야 멋있는 법이지. 먼저 길부터 보자고."},"C":{"e":"smile","t":"안개 정도에 길을 잃지는 않겠어. 확인은 하면서."}},"plain":{"A":{"e":"smile","t":"문을 여러 번 막았나 봐. 무슨 일이 있었던 걸까?"},"B":{"e":"smile","t":"지금은 알 수 없겠지. 안으로 가면 흔적이 더 있을지도 몰라."},"C":{"e":"smile","t":"발밑 조심해서 가자."}},"genius":{"A":{"e":"smile","t":"안쪽의 보강 흔적이네. 성 밖에서 보는 모습과는 다르겠어."},"B":{"e":"smile","t":"누굴 막았는지는 아직 추측이야. 흔적부터 확보하자."},"C":{"e":"smile","t":"흔적과 추측은 구분해 두자."}}}},"d2.camp":{"open":[{"w":"N","t":"눅눅해진 빵을 불 가까이에 놓았다. 조금씩 구수한 냄새가 올라온다."}],"bridge":[{"w":"N","t":"옛이야기에서는 마왕의 세 갈래 검은 불꽃 깃발이 보이면 성문을 닫아도 소용없었다고 한다."}],"kind":"rest","roles":{"intro":{"A":{"e":"flustered","t":"…빵까지 축축해. 안개가 가방 안에도 들어왔나 봐."},"B":{"e":"smile","t":"그런 이야기는 조금 무섭네. 그래도 여기서 정말 무슨 일이 있었는지는 모르니까."},"C":{"e":"smile","t":"…빵 냄새가 나니까 조금 안심돼."}},"hot":{"A":{"e":"motivated","t":"구우면 되지! 따뜻한 걸 먹으면 힘도 나고!"},"B":{"e":"smile","t":"아무 문도 못 막았다니… 그래도 문을 닫고 버틴 사람들은 있었겠지.","p":1},"C":{"e":"smile","t":"먹고 힘내자. 싸우기 전부터 굶을 순 없지!"}},"stone":{"A":{"e":"smile","t":"불에 너무 가까이 두면 겉만 탈 거야."},"B":{"e":"smile","t":"전승은 결과만 남기기도 해. 그 문을 지키던 사람 이야기는 없네.","p":1},"C":{"e":"smile","t":"식사부터 끝내고 판단하자."}},"dilig":{"A":{"e":"smile","t":"조금만 기다리자. 골고루 구워 볼게."},"B":{"e":"smile","t":"먹고 난 뒤 문 주변도 살펴보자. 이야기와 실제가 같을지는 모르잖아."},"C":{"e":"smile","t":"타지 않은 쪽부터 챙겨 두자."}},"tsun":{"A":{"e":"pout","t":"이걸 그냥 먹겠다고? 조금은 구워야지."},"B":{"e":"smile","t":"성문 이야기보다 빵부터 봐. 타기 시작했잖아."},"C":{"e":"smile","t":"그 부분 타겠다. 지금 뒤집어."}},"lively":{"A":{"e":"joy","t":"바삭해지면 아까보다 맛있을지도 몰라!"},"B":{"e":"smile","t":"무서운 얘기에는 따뜻한 빵이 필요해. 일단 먹고 생각하자!"},"C":{"e":"smile","t":"앗, 빵부터 구하자!"}},"boast":{"A":{"e":"heroic-confidence","t":"이런 야영식도 모험의 묘미지!"},"B":{"e":"smile","t":"불꽃 깃발이라… 이름부터 위압적이군. 물론 이야기만으로 겁먹지는 않아."},"C":{"e":"smile","t":"훌륭한 모험담도 빈속에는 안 떠오르지."}},"plain":{"A":{"e":"smile","t":"조금 구우면 괜찮겠다. 냄새는 좋아졌네."},"B":{"e":"smile","t":"그 이야기는 들어봤어. 이 성에도 왔던 걸까? 아직은 알 수 없겠지."},"C":{"e":"smile","t":"따뜻할 때 먹자."}},"genius":{"A":{"e":"smile","t":"축축한 빵도 가열하면 나아지네. 문제는 태우지 않는 거고."},"B":{"e":"smile","t":"문이 무너졌다는 이야기만으로 공격자를 특정할 수는 없지. 기록이 있으면 좋겠네."},"C":{"e":"smile","t":"지금 확실한 건 빵이 타기 시작했다는 거네."}}}},"d2.boss":{"open":[{"w":"N","t":"문 앞의 안개가 사람의 형상으로 모였다.","p":1}],"bridge":[{"w":"boss","t":"여기… 여기는 못 지나간다!"},{"w":"N","t":"망령은 문 앞을 떠나지 않은 채 원정대에 손을 뻗었다."}],"kind":"fight","roles":{"intro":{"A":{"e":"surprised","t":"…문 앞에서 계속 막고 있어."},"B":{"e":"motivated","t":"지키려는 걸까… 그래도 우리를 알아보지는 못하는 것 같아."},"C":{"e":"heroic-confidence","t":"…손이 다가와. 피할 준비할게."}},"hot":{"A":{"e":"motivated","t":"길을 막겠다는 거야? 잠깐, 이야기를…!"},"B":{"e":"motivated","t":"말이 통하지 않는다면 막아야지. 그렇다고 함부로 달려들지는 않을게!"},"C":{"e":"heroic-confidence","t":"여기서 다치고 끝낼 수는 없지!"}},"stone":{"A":{"e":"motivated","t":"문에서 벗어나지 않아. 저 자리를 지키는 모양이야."},"B":{"e":"motivated","t":"대상을 구분하지 못하고 있어. 움직임을 경계하자."},"C":{"e":"heroic-confidence","t":"거리를 확보한다."}},"dilig":{"A":{"e":"motivated","t":"여기서 멈추자. 먼저 다가가면 위험하겠어."},"B":{"e":"motivated","t":"무엇을 지키는지는 나중에 확인하자. 지금은 다치지 않는 게 먼저야."},"C":{"e":"heroic-confidence","t":"무리하지 말고 대응하자."}},"tsun":{"A":{"e":"motivated","t":"저쪽은 대화할 생각이 없어 보이는데."},"B":{"e":"motivated","t":"무언가를 지킨다고 해도 공격을 받아 줄 수는 없잖아. 조심해."},"C":{"e":"heroic-confidence","t":"눈 떼지 마. 아직 오고 있어."}},"lively":{"A":{"e":"motivated","t":"잠깐! 우린 그냥… 안 들리는 건가?"},"B":{"e":"motivated","t":"알겠어. 지금은 물러서서 준비하자!"},"C":{"e":"heroic-confidence","t":"준비됐어! 먼저 피하자!"}},"boast":{"A":{"e":"motivated","t":"이 몸에게 길을… 아니, 저 눈은 우리를 보고 있는 게 아닌데."},"B":{"e":"motivated","t":"경고가 통하지 않는군. 방심하지 않겠어."},"C":{"e":"heroic-confidence","t":"사정은 나중에 듣지. 지금은 맞서겠어!"}},"plain":{"A":{"e":"motivated","t":"누군가를 기다리거나 지키는 것 같아."},"B":{"e":"motivated","t":"그럴지도 몰라. 하지만 지금은 공격을 피해야겠어."},"C":{"e":"heroic-confidence","t":"알겠어. 조심하자."}},"genius":{"A":{"e":"motivated","t":"우리에게 하는 말일까, 예전의 누군가에게 반복하는 말일까?"},"B":{"e":"motivated","t":"구분할 수 없어. 다만 공격은 현실이니 먼저 대응하자."},"C":{"e":"heroic-confidence","t":"의도와 위험은 별개야. 대응하자."}}}},"d2.win":{"open":[{"w":"N","t":"문 안쪽에서 깨진 돌판을 발견했다. ‘아이들이 모두 빠져나갈 때까지…’ 그 옆에는 세 갈래 불씨 인장이 있다.","s":1}],"bridge":[{"w":"N","t":"인장은 마왕의 검은 불꽃 문양과 닮았다. 그러나 남은 글은 사람들을 지키려던 상황을 가리킨다.","s":1,"p":1}],"kind":"record","roles":{"intro":{"A":{"e":"sad","t":"…아이들이 도망갈 때까지 여기 남아 있었던 걸까."},"B":{"e":"sad","t":"그랬다면… 혼자 얼마나 무서웠을까. 글은 남겨 두고 싶어."},"C":{"e":"motivated","t":"…이 글은 잊지 않을게."}},"hot":{"A":{"e":"sad","t":"끝까지 문을 지킨 거였어? 그럼 아까 그 망령도…"},"B":{"e":"sad","t":"아직 확실하지 않겠지. 그래도 그냥 지나칠 이야기는 아니야!"},"C":{"e":"motivated","t":"남은 말이라도 가져가자!"}},"stone":{"A":{"e":"sad","t":"문양과 글의 내용이 예상과 달라.","s":1},"B":{"e":"sad","t":"같은 문양이라고 같은 인물은 아니야. 글과 모양을 함께 기록하자.","s":1},"C":{"e":"motivated","t":"해석은 보류하고 기록은 남기자."}},"dilig":{"A":{"e":"sad","t":"깨진 다음 부분도 있으면 좋을 텐데."},"B":{"e":"sad","t":"남은 글만이라도 정확히 옮길게. 나중에 찾은 기록과 이어질 수 있어."},"C":{"e":"motivated","t":"돌판의 위치도 함께 적을게."}},"tsun":{"A":{"e":"sad","t":"이런 글이 있는데 그냥 마물이었다고 끝낼 수는 없잖아."},"B":{"e":"sad","t":"…그렇다고 좋게만 해석하지도 말고. 보이는 그대로 적어."},"C":{"e":"motivated","t":"깨진 부분까지 지어내지는 말고."}},"lively":{"A":{"e":"sad","t":"아이들이 나갈 시간을 벌어 준 걸까…"},"B":{"e":"sad","t":"그 이야기, 학원에도 가져가자. 누가 읽으면 다른 걸 알아낼지도 몰라."},"C":{"e":"motivated","t":"돌아가서 다른 기록도 찾아보자."}},"boast":{"A":{"e":"sad","t":"마지막까지 자리를 지킨 사람이라… 그런 건 영웅의 몫인데.","p":1},"B":{"e":"sad","t":"문양만 보고 결론 낼 수는 없겠군. 기록을 남기는 것도 중요한 일이야.","s":1},"C":{"e":"motivated","t":"누군가 남은 말은 읽어야겠지."}},"plain":{"A":{"e":"sad","t":"마왕의 문양 옆에 이런 말이 있으니까 이상하네.","s":1},"B":{"e":"sad","t":"일단 둘 다 적어 가자. 지금 이해하지 못해도 나중에 도움이 될 거야."},"C":{"e":"motivated","t":"학원에 가져가서 살펴보자."}},"genius":{"A":{"e":"sad","t":"문양이 닮았는데 글은 보호를 말하고 있어. 흥미롭네.","s":1},"B":{"e":"sad","t":"한 가지로 설명하려 서두르지 말자. 모순되는 부분이 오히려 단서일 수 있어."},"C":{"e":"motivated","t":"문양과 문장을 한 자료로 묶어 두자.","s":1}}}},"d3.enter":{"open":[{"w":"N","t":"탑 위에서 종소리 같은 울림이 들렸다. 밖에서는 종이 보이지 않는다."}],"bridge":[{"w":"N","t":"소리의 출처는 확인되지 않았다. 부서진 계단이 안쪽으로 이어진다."}],"kind":"advance","roles":{"intro":{"A":{"e":"flustered","t":"…방금 들었지? 나만 들은 건 아니지?"},"B":{"e":"smile","t":"소리만 따라가지는 말자. 계단이 많이 부서졌어."},"C":{"e":"smile","t":"…계단 끝을 보고 걸을게."}},"hot":{"A":{"e":"motivated","t":"위에서 나는 거지? 올라가서 확인해 보자!"},"B":{"e":"smile","t":"좋아. 발판부터 확인하면서 가면 되잖아!"},"C":{"e":"smile","t":"한 계단씩 확실하게!"}},"stone":{"A":{"e":"smile","t":"종이 안 보이네. 내부에서 울리는 소리일 수도 있어."},"B":{"e":"smile","t":"반사되는 소리라면 방향도 달라져. 눈으로 길을 확인하자."},"C":{"e":"smile","t":"울림보다 발판을 우선한다."}},"dilig":{"A":{"e":"smile","t":"계단 끝이 무너져 있어. 발밑 조심해."},"B":{"e":"smile","t":"먼저 디딜 곳을 살펴볼게. 급히 올라갈 필요는 없어."},"C":{"e":"smile","t":"흔들리는 돌은 피해서 가자."}},"tsun":{"A":{"e":"pout","t":"보이지도 않는 종을 찾아 무작정 뛰어갈 건 아니지?"},"B":{"e":"smile","t":"돌이 흔들려. 거기 말고 단단한 쪽으로 가."},"C":{"e":"smile","t":"높은 곳일수록 발밑부터 보라고."}},"lively":{"A":{"e":"joy","t":"종은 안 보이는데 소리는 난다니, 신기하네."},"B":{"e":"smile","t":"가까이 가면 알 수 있겠지? 천천히 확인해 보자!"},"C":{"e":"smile","t":"가 보자. 종이 어디 있는지 궁금해!"}},"boast":{"A":{"e":"heroic-confidence","t":"보이지 않는 종이라… 모험담에 어울리는 시작이군!"},"B":{"e":"smile","t":"첫 계단에서 넘어지는 전개는 사양이야. 발밑부터 보겠어."},"C":{"e":"smile","t":"조심스럽게 오르는 것도 모험가의 품격이지."}},"plain":{"A":{"e":"smile","t":"바람 소리일 수도 있을까?"},"B":{"e":"smile","t":"그럴지도 몰라. 안쪽으로 가면서 확인하자."},"C":{"e":"smile","t":"서두르지 말고 올라가자."}},"genius":{"A":{"e":"smile","t":"보이는 것과 들리는 게 다르네. 구조가 소리를 바꾸는 걸까?"},"B":{"e":"smile","t":"직접 보기 전에는 가설이야. 계단을 확인하며 올라가자."},"C":{"e":"smile","t":"안에 들어가면 소리의 출처도 좁힐 수 있겠네."}}}},"d3.camp":{"open":[{"w":"N","t":"앉고 나니 계단을 오른 다리가 묵직하다. 불 옆에 발을 잠시 뻗었다."}],"bridge":[{"w":"N","t":"마왕이 종소리를 싫어해, 세 갈래 검은 불꽃 깃발을 세운 뒤 종부터 부쉈다는 전승이 있다."}],"kind":"rest","roles":{"intro":{"A":{"e":"flustered","t":"…내려갈 때도 저 계단을 지나야 하는 거지?"},"B":{"e":"smile","t":"왜 종을 싫어했을까… 이유를 모르면 더 무서운 것 같아."},"C":{"e":"smile","t":"…쉬고 나면 계단도 덜 무섭겠지."}},"hot":{"A":{"e":"motivated","t":"올라왔으니 내려갈 수도 있지! 일단 다리 좀 풀고!"},"B":{"e":"smile","t":"종이 그렇게 거슬렸나? 부수기 전에 무슨 일이 있었는지 궁금하네."},"C":{"e":"smile","t":"다리 힘 돌아오면 다시 가자!"}},"stone":{"A":{"e":"smile","t":"내려갈 때 더 조심해야겠어. 다리에 힘이 풀렸네."},"B":{"e":"smile","t":"부쉈다는 행동은 남았는데 이유는 없군. 기록이 짧아서 생긴 빈칸일 수도 있어."},"C":{"e":"smile","t":"휴식이 끝나면 안쪽을 확인하자."}},"dilig":{"A":{"e":"smile","t":"발목 불편한 곳은 없어? 잠깐 쉬어 가자."},"B":{"e":"smile","t":"그 이야기는 적어 두자. 탑 안에 관련된 기록이 있을지도 모르니까."},"C":{"e":"smile","t":"내려갈 힘도 남겨 두자."}},"tsun":{"A":{"e":"pout","t":"내려가는 게 편하다고 생각하면 안 돼. 무릎이 더 아플 수도 있으니까."},"B":{"e":"smile","t":"종이 싫었다는 게 이유의 전부일 리는 없잖아. 누가 그렇게 적었을까."},"C":{"e":"smile","t":"다리가 풀린 채로 나서지는 마."}},"lively":{"A":{"e":"joy","t":"계단을 세다가 포기했어. 내려갈 때는 안 셀래!"},"B":{"e":"smile","t":"왜 종이었을까? 잠 깨우는 소리가 싫어서… 는 아니겠지?"},"C":{"e":"smile","t":"잠깐만 더 쉬자. 계단은 안 도망가니까!"}},"boast":{"A":{"e":"heroic-confidence","t":"이 정도 계단은 시련이라 부르기도… 잠깐 숨만 고르자."},"B":{"e":"smile","t":"소리 하나 때문에 종을 부쉈다니. 전설에도 설명이 부족한 부분은 있군."},"C":{"e":"smile","t":"아직 휴식도 계획의 일부야."}},"plain":{"A":{"e":"smile","t":"다리가 생각보다 많이 아프네."},"B":{"e":"smile","t":"그 이야기는 이유까지 들은 적이 없어. 쉬고 나서 안쪽을 더 보자."},"C":{"e":"smile","t":"앉아 있으니 조금 낫네."}},"genius":{"A":{"e":"smile","t":"계단 수보다 돌아갈 때 남은 힘이 중요하겠네."},"B":{"e":"smile","t":"종을 싫어했다는 해석과 종을 부쉈다는 사실은 다르지. 둘 다 검증이 필요해."},"C":{"e":"smile","t":"지금 필요한 건 추측보다 회복이네."}}}},"d3.boss":{"open":[{"w":"N","t":"종지기 석상이 움직이기 시작했다. 그 뒤로 부서진 종이 보인다."}],"bridge":[{"w":"boss","t":"세 번… 돌아오실 때까지… 세 번…"},{"w":"N","t":"석상이 갑자기 종 쪽으로 향한다. 주변에서도 기존 동반 적들이 모습을 드러낸다."}],"kind":"fight","roles":{"intro":{"A":{"e":"surprised","t":"…저 석상, 방금 움직였어."},"B":{"e":"motivated","t":"종 쪽만 보다가 놓칠 뻔했어… 주변에도 있어!"},"C":{"e":"heroic-confidence","t":"…옆도 보고 있어. 놓치지 않을게."}},"hot":{"A":{"e":"motivated","t":"움직인다! 무슨 짓을 하려는 거지?"},"B":{"e":"motivated","t":"종을 치려는 건가? 우선 다가오는 상대부터 막자!"},"C":{"e":"heroic-confidence","t":"어디서 오든 대응하자!"}},"stone":{"A":{"e":"motivated","t":"석상의 시선이 종에 고정돼 있어."},"B":{"e":"motivated","t":"주변에서도 움직임이 있어. 한쪽만 경계하면 안 돼."},"C":{"e":"heroic-confidence","t":"시야를 좁히지 말자."}},"dilig":{"A":{"e":"motivated","t":"잠깐, 저쪽에 부서진 종이 있어."},"B":{"e":"motivated","t":"주변부터 확인하자. 움직일 공간을 남겨 둬야 해."},"C":{"e":"heroic-confidence","t":"움직일 자리부터 확보하자."}},"tsun":{"A":{"e":"motivated","t":"장식인 줄 알았는데 진짜 움직이잖아."},"B":{"e":"motivated","t":"종이 궁금해도 지금은 눈 돌리지 마. 주변에도 적이 있어!"},"C":{"e":"heroic-confidence","t":"그쪽만 보고 있지 마!"}},"lively":{"A":{"e":"motivated","t":"저 팔 봐! 종을 치려고 일어나는 걸까?"},"B":{"e":"motivated","t":"이야기는 나중에! 다른 쪽에서도 오고 있어!"},"C":{"e":"heroic-confidence","t":"주변도 봤어. 준비됐어!"}},"boast":{"A":{"e":"motivated","t":"종지기의 시험인가… 꽤 요란한 환영이군."},"B":{"e":"motivated","t":"사방에서 오는 건 예상 밖이지만… 대응할 수 있어!"},"C":{"e":"heroic-confidence","t":"기습에 당할 생각은 없어!"}},"plain":{"A":{"e":"motivated","t":"누가 돌아오길 기다리는 거야?"},"B":{"e":"motivated","t":"지금은 물어볼 틈이 없어. 주변부터 보자!"},"C":{"e":"heroic-confidence","t":"응. 한쪽에만 몰리지 말자."}},"genius":{"A":{"e":"motivated","t":"세 번이라는 횟수에 의미가 있겠네."},"B":{"e":"motivated","t":"해석은 뒤로 미루자. 주변 움직임에 먼저 대응해야 해."},"C":{"e":"heroic-confidence","t":"먼저 대응하고 종은 나중에 살피자."}}}},"d3.win":{"open":[{"w":"N","t":"종받침 아래에서 정비 기록을 찾았다. ‘불씨를 맡은 이가 돌아오는 날, 세 번.’ 다음 장은 비어 있다.","s":1}],"bridge":[{"w":"N","t":"기록의 인장은 마왕의 세 갈래 검은 불꽃과 닮았다. 종을 부쉈다는 전승과 누군가를 기다렸다는 기록이 나란히 놓인다.","s":1}],"kind":"record","roles":{"intro":{"A":{"e":"sad","t":"…끝내 돌아오지 않은 걸까? 다음 장에 아무것도 없어."},"B":{"e":"sad","t":"빈 장을 보고 있으니까… 기다리던 쪽이 자꾸 생각나."},"C":{"e":"motivated","t":"…빈 장도 같이 기억해 둘게."}},"hot":{"A":{"e":"sad","t":"그 석상은 계속 기다린 거였어?"},"B":{"e":"sad","t":"돌아왔는지부터 알고 싶네. 아직 기록이 끝난 이유는 모르니까!"},"C":{"e":"motivated","t":"그다음 이야기도 찾을 수 있으면 좋겠어!"}},"stone":{"A":{"e":"sad","t":"석상의 말과 기록이 맞아. 귀환을 알리는 절차였군."},"B":{"e":"sad","t":"빈 장이 미귀환의 증거는 아니야. 기록이 중단된 이유는 더 알아봐야 해."},"C":{"e":"motivated","t":"누가 기다렸는지부터 미확정으로 남겨 두자."}},"dilig":{"A":{"e":"sad","t":"석상이 하던 말을 여기에도 적어 뒀어."},"B":{"e":"sad","t":"그대로 옮기자. 기다린 사람과 돌아올 사람을 구분할 단서가 될 거야.","p":1},"C":{"e":"motivated","t":"페이지 순서를 확인해서 챙길게."}},"tsun":{"A":{"e":"sad","t":"계속 세 번이라고 한 게… 이런 뜻이었구나."},"B":{"e":"sad","t":"빈 장에 마음대로 결말을 써 넣지는 마. 아직 모르는 거잖아."},"C":{"e":"motivated","t":"없어진 건지 안 쓴 건지도 아직 모르잖아."}},"lively":{"A":{"e":"sad","t":"누군가 돌아오면 종을 울리려고 했던 거네."},"B":{"e":"sad","t":"돌아왔다는 기록도 찾을 수 있으면 좋겠다. 이것부터 챙겨 가자."},"C":{"e":"motivated","t":"돌아왔다는 기록도 언젠가 찾자."}},"boast":{"A":{"e":"sad","t":"귀환을 맞이하는 종이었다니. 개선을 기다렸던 건가…"},"B":{"e":"sad","t":"전설처럼 끝나지 않았을 수도 있겠지. 그래도 기록은 남겨야 해."},"C":{"e":"motivated","t":"기다림이 어떻게 끝났는지는 알아야겠군."}},"plain":{"A":{"e":"sad","t":"마왕은 종을 부쉈다는데, 여기서는 기다렸네."},"B":{"e":"sad","t":"누가 기다리고 누가 부쉈는지부터 알아봐야겠어."},"C":{"e":"motivated","t":"다른 기록에 이어지는 말이 있을지도 몰라."}},"genius":{"A":{"e":"sad","t":"같은 문양 아래 서로 반대되는 행동이 남았네.","s":1},"B":{"e":"sad","t":"두 주체가 같은지부터 미확정이야. 흥미롭지만 결론은 보류하자."},"C":{"e":"motivated","t":"공백도 사실이지만 그 의미는 아직 모르지."}}}},"d4.enter":{"open":[{"w":"N","t":"하얀 소금층 위로 메마른 바람이 분다. 균열 가장자리에는 같은 글자가 반복되어 있다."}],"bridge":[{"w":"N","t":"글자는 자연스러운 균열과는 다른 흔적이다. 원정대는 가장자리에서 거리를 둔다."}],"kind":"advance","roles":{"intro":{"A":{"e":"flustered","t":"…하얘서 어디가 갈라진 건지 잘 안 보여."},"B":{"e":"smile","t":"조금 떨어져서 가자. 발밑이 무너질까 봐 걱정돼."},"C":{"e":"smile","t":"…갈라진 곳은 피해 갈게."}},"hot":{"A":{"e":"motivated","t":"눈인 줄 알았는데 소금이었어? 입까지 짜네!"},"B":{"e":"smile","t":"단단한 땅부터 찾자. 떨어져서는 힘을 쓸 수도 없으니까!"},"C":{"e":"smile","t":"단단한 쪽으로 움직이자!"}},"stone":{"A":{"e":"smile","t":"가장자리에 같은 글자가 반복돼."},"B":{"e":"smile","t":"누군가 남긴 흔적이겠지. 가까이 가기 전에 지면부터 확인하자."},"C":{"e":"smile","t":"경계에서 충분히 떨어지자."}},"dilig":{"A":{"e":"smile","t":"바람이 세네. 눈에 들어가지 않게 조심해."},"B":{"e":"smile","t":"가장자리 말고 안쪽으로 가자. 흔적은 안전한 곳에서 보자."},"C":{"e":"smile","t":"발 디딜 곳을 확인할게."}},"tsun":{"A":{"e":"pout","t":"바닥이 하얗다고 눈처럼 밟아도 되는 건 아니잖아."},"B":{"e":"smile","t":"균열에 바짝 붙지 마. 거기 글자가 있어도 지금은 위험해."},"C":{"e":"smile","t":"손대지 말고 눈으로만 봐."}},"lively":{"A":{"e":"joy","t":"온통 하얘! 그런데 바람 맛은 바다 같네."},"B":{"e":"smile","t":"신기하다고 가까이 가면 안 되겠지. 단단한 길로 가자!"},"C":{"e":"smile","t":"안전한 길부터 찾자!"}},"boast":{"A":{"e":"heroic-confidence","t":"백색의 대지라… 이름에 걸맞은 풍경이군."},"B":{"e":"smile","t":"내 발자취가 균열 아래서 끝나면 곤란하지. 길부터 확인하자고."},"C":{"e":"smile","t":"대지는 살펴 가야지. 무턱대고 정복하는 게 아니라."}},"plain":{"A":{"e":"smile","t":"누가 여기까지 와서 글자를 남겼을까?"},"B":{"e":"smile","t":"모르겠네. 일단 안전한 쪽으로 돌아가자."},"C":{"e":"smile","t":"조심해서 가 보자."}},"genius":{"A":{"e":"smile","t":"같은 글자가 경계를 따라 반복돼. 용도가 있었겠네."},"B":{"e":"smile","t":"무엇을 뜻하는지와 안전한지는 별개야. 거리를 두고 관찰하자."},"C":{"e":"smile","t":"글자의 반복 간격도 기억해 두자."}}}},"d4.camp":{"open":[{"w":"N","t":"수프는 조금 싱겁다. 주변의 소금은 무엇을 머금었는지 알 수 없어 쓰지 않기로 했다."}],"bridge":[{"w":"N","t":"옛 책에서는 마왕이 세 갈래 검은 불꽃 아래서 독과 저주, 재앙까지 삼켜 힘을 얻었다고 한다."}],"kind":"rest","roles":{"intro":{"A":{"e":"flustered","t":"…여기 소금은 안 넣는 게 좋겠지?"},"B":{"e":"smile","t":"그런 걸 삼키고도 괜찮았다니… 괜찮았던 건 맞을까?"},"C":{"e":"smile","t":"…따뜻한 걸 먹으니까 좀 낫네."}},"hot":{"A":{"e":"motivated","t":"싱거워도 따뜻하니까 됐어! 먹어야 힘이 나지!"},"B":{"e":"smile","t":"재앙까지 삼켰다고? 강해지는 방법치고는 너무 위험한데."},"C":{"e":"smile","t":"먹고 나면 다시 힘낼 수 있겠지!"}},"stone":{"A":{"e":"smile","t":"정체를 모르는 소금으로 간을 맞출 이유는 없어."},"B":{"e":"smile","t":"전승에는 얻은 힘만 나와 있네. 대가가 없었다고 볼 수는 없지."},"C":{"e":"smile","t":"확실한 식량만 사용하자."}},"dilig":{"A":{"e":"smile","t":"준비해 온 것만 먹자. 탈 나면 곤란하니까."},"B":{"e":"smile","t":"마저 먹고 쉬자. 그런 이야기도 실제 기록과 비교해 봐야겠어."},"C":{"e":"smile","t":"남은 물도 확인해 둘게."}},"tsun":{"A":{"e":"pout","t":"싱겁다고 바닥의 소금을 넣지는 마. 정말로."},"B":{"e":"smile","t":"독도 삼켰다니… 아무렇지 않았다는 말까지 믿을 수는 없잖아."},"C":{"e":"smile","t":"맛없다고 굶지는 마."}},"lively":{"A":{"e":"joy","t":"소금은 이렇게 많은데 수프는 싱거워. 좀 이상하지?"},"B":{"e":"smile","t":"마왕은 맛을 느꼈을까? 난 그냥 따뜻한 수프가 좋겠어."},"C":{"e":"smile","t":"오늘은 싱거운 수프가 정답이네!"}},"boast":{"A":{"e":"heroic-confidence","t":"모험가에게 이 정도 식사는 충분하지."},"B":{"e":"smile","t":"독과 저주까지 삼킨 힘이라… 내 수련에는 넣지 않는 편이 좋겠군."},"C":{"e":"smile","t":"안전한 식사도 중요한 전략이지."}},"plain":{"A":{"e":"smile","t":"조금 싱거워도 먹을 만하네."},"B":{"e":"smile","t":"마왕이라서 괜찮았던 걸까? 어떻게 된 건지는 모르겠어."},"C":{"e":"smile","t":"잘 먹었어. 잠깐 쉬자."}},"genius":{"A":{"e":"smile","t":"먹을 수 있는 것과 소금처럼 보이는 건 다르니까."},"B":{"e":"smile","t":"힘을 얻었다는 결과만으로 과정이 안전했다고 결론 낼 수는 없지."},"C":{"e":"smile","t":"궁금한 이야기는 기록하고 식사는 안전하게 하자."}}}},"d4.boss":{"open":[{"w":"N","t":"바위처럼 보이던 것이 움직인다. 거대한 촉수가 균열 위로 솟았다."}],"bridge":[{"w":"boss","t":"그릇을… 돌려다오… 아직… 넘친다…"},{"w":"N","t":"발밑의 땅이 흔들린다."}],"kind":"fight","roles":{"intro":{"A":{"e":"surprised","t":"…저건 땅이 아니었어!"},"B":{"e":"motivated","t":"가장자리에서 떨어져야 해… 발을 디딜 곳부터 보자!"},"C":{"e":"heroic-confidence","t":"…발판 확인했어. 여기서 대응할게."}},"hot":{"A":{"e":"motivated","t":"솟아오른다! 뒤로!"},"B":{"e":"motivated","t":"나왔으면 막아야지! 하지만 균열 안으로는 쫓아가지 말자!"},"C":{"e":"heroic-confidence","t":"균열 쪽으로는 밀리지 말자!"}},"stone":{"A":{"e":"motivated","t":"본체는 아래에 있어. 규모를 알 수 없어."},"B":{"e":"motivated","t":"지면 위로 드러난 부분에 대응하자. 발밑도 계속 확인하고."},"C":{"e":"heroic-confidence","t":"지면을 확보하고 대응한다."}},"dilig":{"A":{"e":"motivated","t":"바닥이 움직여! 안전한 쪽으로 물러서자!"},"B":{"e":"motivated","t":"다칠 곳부터 피하자. 단단한 지면에서 대응해야 해."},"C":{"e":"heroic-confidence","t":"안전한 자리를 놓치지 말자."}},"tsun":{"A":{"e":"motivated","t":"멍하니 보지 마! 바닥이 흔들리잖아!"},"B":{"e":"motivated","t":"떨어지면 끝이야. 가장자리에서 멀어져!"},"C":{"e":"heroic-confidence","t":"발밑도 보라니까!"}},"lively":{"A":{"e":"motivated","t":"잠깐, 저렇게 큰 게 숨어 있었다고?!"},"B":{"e":"motivated","t":"놀랄 틈 없어! 바닥 확인하고 물러서자!"},"C":{"e":"heroic-confidence","t":"준비됐어! 아래로 떨어지지만 말자!"}},"boast":{"A":{"e":"motivated","t":"심연의 괴물이라… 상대도 거창하군!"},"B":{"e":"motivated","t":"지형까지 적이 될 줄은… 우선 안전한 발판부터 잡겠어!"},"C":{"e":"heroic-confidence","t":"땅만 버텨 준다면 나도 버틸 수 있어!"}},"plain":{"A":{"e":"motivated","t":"그릇이라니 무슨 말이야?"},"B":{"e":"motivated","t":"지금은 그 말보다 발밑이 급해! 물러나자!"},"C":{"e":"heroic-confidence","t":"알겠어. 단단한 쪽에서 막자."}},"genius":{"A":{"e":"motivated","t":"넘친다… 무언가를 가둘 용기를 찾는 건가?"},"B":{"e":"motivated","t":"지금 확인할 수는 없어. 지면 위의 위협부터 처리하자."},"C":{"e":"heroic-confidence","t":"보이는 범위에서 처리하자."}}}},"d4.win":{"open":[{"w":"N","t":"소금층에서 떨어져 나온 의식판을 발견했다. ‘그릇이 깨지면 안의 재앙이 다시 흐른다.’ 가슴에 불꽃을 품은 사람의 그림도 있다.","p":1}],"bridge":[{"w":"N","t":"세 갈래 불꽃은 마왕의 문양과 닮았다. 그러나 기록은 힘을 얻는 법보다 재앙을 가둬 버티는 법에 가까워 보인다.","s":1}],"kind":"record","roles":{"intro":{"A":{"e":"sad","t":"…사람이 그릇이었다는 뜻일까?","p":1},"B":{"e":"sad","t":"그 안에 계속 가두고 있었다면… 얼마나 힘들었을까."},"C":{"e":"motivated","t":"…그 사람이 어떤 마음이었는지 알고 싶어.","p":1}},"hot":{"A":{"e":"sad","t":"강해지려고 삼킨 게 아니라 막으려고 했다고?"},"B":{"e":"sad","t":"그랬다면 혼자 감당하게 둔 건 너무하잖아. …아직 확실한 건 아니지만."},"C":{"e":"motivated","t":"어떤 선택이었는지 끝까지 알아보자!"}},"stone":{"A":{"e":"sad","t":"몸 안에 가두는 과정을 그린 것 같아."},"B":{"e":"sad","t":"획득과 봉인은 의미가 다르지. 어느 쪽인지 판단할 기록이 더 필요해."},"C":{"e":"motivated","t":"목적은 미상이라고 적어 두자."}},"dilig":{"A":{"e":"sad","t":"아까 그 목소리가 찾던 그릇과 관련 있을까?"},"B":{"e":"sad","t":"그림까지 정확히 옮기자. 글만 남기면 중요한 부분을 놓칠 수 있어."},"C":{"e":"motivated","t":"글과 그림을 빠짐없이 옮길게."}},"tsun":{"A":{"e":"sad","t":"그런 걸 몸 안에 넣고 버틴다고…?"},"B":{"e":"sad","t":"…쉽게 대단하다고 말할 일은 아닌 것 같네. 기록이나 제대로 챙기자."},"C":{"e":"motivated","t":"혼자 멋대로 답을 정하진 말자."}},"lively":{"A":{"e":"sad","t":"강해지고 싶어서 한 일이 아닐 수도 있겠네."},"B":{"e":"sad","t":"막아야 해서 그런 거라면… 누가 도와줄 수는 없었을까?"},"C":{"e":"motivated","t":"이 기록도 학원으로 가져가자."}},"boast":{"A":{"e":"sad","t":"재앙을 몸으로 막았다면 그야말로 영웅의…"},"B":{"e":"sad","t":"…아니, 이름부터 붙일 때가 아니군. 어떤 선택이었는지 먼저 알아야겠어."},"C":{"e":"motivated","t":"영광보다 무거운 선택이었을지도 모르겠군."}},"plain":{"A":{"e":"sad","t":"이 그림대로라면 정말 사람이 가둔 걸까?","p":1},"B":{"e":"sad","t":"그럴 수도 있겠지. 하지만 이것만으로 전부 알 수는 없을 거야."},"C":{"e":"motivated","t":"다른 기록과 보면 더 알 수 있겠지."}},"genius":{"A":{"e":"sad","t":"힘을 얻는다는 해석과 버틴다는 해석. 같은 그림인데 다르네."},"B":{"e":"sad","t":"선택의 목적이 빠져 있어. 그 부분을 모르면 기원을 설명할 수 없겠어."},"C":{"e":"motivated","t":"원인과 결과를 거꾸로 읽지 않도록 주의하자."}}}},"d5.enter":{"open":[{"w":"N","t":"묘비에는 ‘용사’라는 칭호만 남아 있다. 이름이 있었을 자리는 깎여 있다."}],"bridge":[{"w":"N","t":"마모된 것과는 다른 흔적이다. 이름을 지운 이유는 아직 알 수 없다."}],"kind":"advance","roles":{"intro":{"A":{"e":"flustered","t":"…이름이 없네. 누구의 무덤인지도 모르는 거야?"},"B":{"e":"smile","t":"일부러 지웠다면… 이유가 있었겠지. 조금 더 살펴보자."},"C":{"e":"smile","t":"…이름이 남은 곳이 또 있을까?"}},"hot":{"A":{"e":"motivated","t":"용사라면서 이름은 왜 없어?"},"B":{"e":"smile","t":"그냥 지나갈 수는 없지. 남아 있는 흔적을 찾아보자!"},"C":{"e":"smile","t":"흔적을 찾아보자!"}},"stone":{"A":{"e":"smile","t":"이름 자리만 깎았어. 자연스럽게 닳은 건 아니야."},"B":{"e":"smile","t":"누가 어떤 이유로 했는지는 미확정이야. 칭호가 남은 것도 기억해 두자."},"C":{"e":"smile","t":"주변의 다른 기록을 확인하자."}},"dilig":{"A":{"e":"smile","t":"기억하려고 세운 묘비일 텐데…"},"B":{"e":"smile","t":"남은 글부터 적자. 뒤쪽에도 흔적이 있는지 살펴볼게."},"C":{"e":"smile","t":"남아 있는 글부터 챙겨 두자."}},"tsun":{"A":{"e":"pout","t":"칭호는 남기고 이름만 지웠다고? 이상하잖아."},"B":{"e":"smile","t":"모르는 이유를 꾸며 붙이지는 말고. 다른 글이 있는지 보자."},"C":{"e":"smile","t":"훼손하지 말고 살펴봐."}},"lively":{"A":{"e":"joy","t":"어떤 용사였을까 했는데… 이름부터 없네."},"B":{"e":"smile","t":"찾을 수 있으면 좋겠다. 적어도 그냥 빈칸으로 두고 싶지는 않아."},"C":{"e":"smile","t":"누구였는지 조금이라도 알 수 있으면 좋겠어."}},"boast":{"A":{"e":"heroic-confidence","t":"이름 없는 용사라… 원래부터 그런 이름은 아니었을 텐데."},"B":{"e":"smile","t":"누군가 의도했다는 건가. 제대로 알아볼 가치가 있군."},"C":{"e":"smile","t":"지워진 이름도 흔적은 남기 마련이지."}},"plain":{"A":{"e":"smile","t":"기억하려고 만든 곳에서 이름을 지우기도 하는구나."},"B":{"e":"smile","t":"왜 그랬는지는 모르겠어. 다른 기록이 남았을까?"},"C":{"e":"smile","t":"안쪽도 살펴보자."}},"genius":{"A":{"e":"smile","t":"칭호와 이름을 따로 취급했네. 지운 쪽의 의도가 있어."},"B":{"e":"smile","t":"이름 자체를 숨겼는지, 사람을 부정했는지 아직 모르지. 흔적을 더 보자.","p":1},"C":{"e":"smile","t":"지운 흔적 자체도 기록해 두자."}}}},"d5.camp":{"open":[{"w":"N","t":"불 가까이에서 젖은 장비를 말린다. 이름 없는 묘비가 자꾸 떠오른다."}],"bridge":[{"w":"N","t":"마왕의 세 갈래 검은 불꽃 깃발은 널리 알려져 있지만, 마왕이 되기 전의 이름은 좀처럼 전해지지 않는다."}],"kind":"rest","roles":{"intro":{"A":{"e":"flustered","t":"…나는 이름을 크게 남기지 않아도 괜찮을 것 같아."},"B":{"e":"smile","t":"마왕도 누군가는 다른 이름으로 불렀을까… 그랬을 것 같은데."},"C":{"e":"smile","t":"…돌아가면 불러 주는 이름이 있다는 건 좋은 것 같아."}},"hot":{"A":{"e":"motivated","t":"언젠가는 기억될 만큼 큰일을 하고 싶어!"},"B":{"e":"smile","t":"이름이 안 남은 데도 이유가 있겠지. 그런 건 직접 알아봐야겠네."},"C":{"e":"smile","t":"오늘부터 좋은 일을 해 나가면 되겠지!"}},"stone":{"A":{"e":"smile","t":"묘비를 보고 미래를 정할 필요는 없겠지."},"B":{"e":"smile","t":"칭호가 이전 삶을 가려 버린 걸까. 전승이 언제 시작됐는지도 궁금하네."},"C":{"e":"smile","t":"먼 미래보다 지금을 준비하자."}},"dilig":{"A":{"e":"smile","t":"이름보다 어떤 일을 했는지가 먼저겠지?"},"B":{"e":"smile","t":"불을 쬐고 나면 기록을 더 찾아보자. 단서가 있다면 놓치고 싶지 않아."},"C":{"e":"smile","t":"장비가 마르면 정리해 두자."}},"tsun":{"A":{"e":"pout","t":"벌써 묘비에 남을 말을 생각할 때는 아니잖아."},"B":{"e":"smile","t":"마왕이라고만 부르면 그 전에는 아무도 아니었던 게 돼? 이상하네."},"C":{"e":"smile","t":"묘비 생각은 그만하고 장비부터 말려."}},"lively":{"A":{"e":"joy","t":"이름을 남긴다면 좋은 일로 남기고 싶어!"},"B":{"e":"smile","t":"그런데 마왕도 어릴 때 불리던 이름은 있었겠지? 누가 기억할까?"},"C":{"e":"smile","t":"이야기하다 보니 조금 따뜻해졌네."}},"boast":{"A":{"e":"heroic-confidence","t":"언젠가 내 이름도… 물론 묘비 말고 멋진 기록에 말이야."},"B":{"e":"smile","t":"칭호만 전해지는 삶이라. 화려해 보여도 어딘가 허전하군."},"C":{"e":"smile","t":"우선 무사히 돌아간 기록부터 남기겠어."}},"plain":{"A":{"e":"smile","t":"이름을 기억해 주는 사람이 있으면 좋겠네.","p":1},"B":{"e":"smile","t":"마왕도 처음부터 마왕이라고 불리지는 않았을 텐데."},"C":{"e":"smile","t":"이제 장비도 좀 말랐겠다."}},"genius":{"A":{"e":"smile","t":"무엇을 했는지보다 누구였는지가 먼저 사라질 수도 있구나."},"B":{"e":"smile","t":"전승에서 이전 삶이 빠진 이유가 궁금해. 단순한 생략일 수도 있지만."},"C":{"e":"smile","t":"전승이 시작된 지점도 나중에 확인해 보자."}}}},"d5.boss":{"open":[{"w":"N","t":"이름 없는 묘 앞에서 기사가 검을 들었다."}],"bridge":[{"w":"boss","t":"주인님… 주인님!!!"},{"w":"N","t":"기사의 검끝이 원정대를 향한다."}],"kind":"fight","roles":{"intro":{"A":{"e":"surprised","t":"…아직도 주인을 기다리는 걸까?"},"B":{"e":"motivated","t":"다가가면 안 될 것 같아… 검을 보고 있어."},"C":{"e":"heroic-confidence","t":"…검끝을 보고 있을게."}},"hot":{"A":{"e":"motivated","t":"아직 지키고 있었던 거야?"},"B":{"e":"motivated","t":"마음은 알 것 같아도 그냥 맞아 줄 수는 없지. 준비하자!"},"C":{"e":"heroic-confidence","t":"맞설 준비는 됐어!"}},"stone":{"A":{"e":"motivated","t":"묘 앞을 지키고 있네. 움직임이 우리에게 향했어."},"B":{"e":"motivated","t":"대화는 어렵겠어. 검의 궤적을 먼저 확인하자."},"C":{"e":"heroic-confidence","t":"검이 움직인다. 대응하자."}},"dilig":{"A":{"e":"motivated","t":"주인이 여기 있는 거겠지…"},"B":{"e":"motivated","t":"지금은 물러서자. 다치지 않게 대응하는 게 먼저야."},"C":{"e":"heroic-confidence","t":"무리해서 접근하지 말자."}},"tsun":{"A":{"e":"motivated","t":"주인 이름도 없는데 계속 저러고 있었다고?"},"B":{"e":"motivated","t":"안쓰럽다고 다가가지 마. 검을 겨누고 있잖아."},"C":{"e":"heroic-confidence","t":"온다. 지금은 집중해."}},"lively":{"A":{"e":"motivated","t":"잠깐, 우린 무덤을 망가뜨리러 온 게…"},"B":{"e":"motivated","t":"안 들리는 것 같아. 일단 대응하자!"},"C":{"e":"heroic-confidence","t":"알겠어. 준비됐어!"}},"boast":{"A":{"e":"motivated","t":"충성을 지킨 기사인가. 상대를 가릴 수 있다면 좋았겠군."},"B":{"e":"motivated","t":"사정을 안다고 검이 멈추지는 않겠지. 준비됐어."},"C":{"e":"heroic-confidence","t":"기사를 상대로 방심하지는 않겠어."}},"plain":{"A":{"e":"motivated","t":"주인님이라고 부르는구나. 이름은 기억할까?"},"B":{"e":"motivated","t":"물어볼 수 있으면 좋겠지만… 지금은 검부터 피해야겠어."},"C":{"e":"heroic-confidence","t":"응. 다치지 않게 조심하자."}},"genius":{"A":{"e":"motivated","t":"칭호보다 주인이라는 관계가 남았네."},"B":{"e":"motivated","t":"지금 확인할 방법은 없어. 감상보다 대응이 먼저야."},"C":{"e":"heroic-confidence","t":"지금 필요한 건 전투에 대한 판단이야."}}}},"d5.win":{"open":[{"w":"N","t":"뒤편 석판을 읽었다. ‘그가 품은 것을 두려워하여, 우리는 그의 이름을 버렸다.’ 아래에는 세 갈래 불씨 인장이 있다.","s":1}],"bridge":[{"w":"N","t":"마왕의 문양과 닮은 인장이 용사의 묘에도 남아 있다. 글은 이 기록을 남긴 사람의 입장이다.","s":1,"p":1}],"kind":"record","roles":{"intro":{"A":{"e":"sad","t":"…이름까지 버려야 했을까?"},"B":{"e":"sad","t":"무슨 일이 있었는지 모르지만… 없었던 사람처럼 되지는 않았으면 좋겠어.","p":1},"C":{"e":"motivated","t":"…옮겨 적으면 완전히 사라지지는 않겠지."}},"hot":{"A":{"e":"sad","t":"지켜 준 사람을 두려워해서 지웠다는 거야?","p":1},"B":{"e":"sad","t":"화부터 내면 안 되겠지. 그래도 이유는 끝까지 알아보고 싶어."},"C":{"e":"motivated","t":"이 이름 뒤에 있던 일도 알아보자!"}},"stone":{"A":{"e":"sad","t":"그가 품은 것과 그 사람을 함께 두려워했군.","p":1},"B":{"e":"sad","t":"이 글은 한쪽의 증언이야. 다른 기록과 대조해야 해."},"C":{"e":"motivated","t":"기록자의 관점도 함께 남기자."}},"dilig":{"A":{"e":"sad","t":"누군가는 이 말이라도 남겨 두려고 했네."},"B":{"e":"sad","t":"정확히 옮기자. 빠뜨린 글 때문에 뜻이 달라지지 않게."},"C":{"e":"motivated","t":"석판에 적힌 그대로 가져갈게."}},"tsun":{"A":{"e":"sad","t":"이름을 지워 놓고 이런 글은 남겼다고…?"},"B":{"e":"sad","t":"…누가 옳았는지는 아직 몰라. 그러니까 기록을 가져가야지."},"C":{"e":"motivated","t":"판단할 자료를 먼저 모으자고."}},"lively":{"A":{"e":"sad","t":"이름을 찾아줄 수 있으면 좋겠어."},"B":{"e":"sad","t":"지금은 모르더라도 적어 가자. 나중에 이어질지도 모르니까."},"C":{"e":"motivated","t":"나중에는 빈 이름도 채울 수 있으면 좋겠어."}},"boast":{"A":{"e":"sad","t":"용사라는 칭호는 남기고 사람의 이름은 버렸다니.","p":1},"B":{"e":"sad","t":"영광만 남기면 된다고 생각한 걸까… 쉽게 말할 수 없겠군."},"C":{"e":"motivated","t":"기억할 가치가 있는지 이름만으로 정할 수는 없지."}},"plain":{"A":{"e":"sad","t":"마왕의 옛 이름을 모르는 것과 관련이 있을까?"},"B":{"e":"sad","t":"아직은 닮은 문양뿐이니까. 가능성으로만 기억하자.","s":1},"C":{"e":"motivated","t":"알아낸 것과 모르는 걸 나눠 적자."}},"genius":{"A":{"e":"sad","t":"이름을 지운 이유를 적은 기록이 남았다니. 완전한 삭제는 아니었네."},"B":{"e":"sad","t":"우연인지 의도인지 모르지. 동일 인물이라는 결론도 아직 이르니 보류하자."},"C":{"e":"motivated","t":"문양의 일치와 인물의 일치는 구분해 두자.","s":1}}}},"sum":{"open":[{"w":"N","t":"학원에 보관된 성문·종·균열·무덤의 기록을 펼쳤다. 누가 발견했든 네 기록에는 닮은 불씨 인장이 남아 있다.","s":1}],"bridge":[{"w":"N","t":"전승은 성문 파괴·종의 파괴·재앙에서 얻은 힘을 말한다. 현장의 기록은 보호·귀환의 기다림·재앙의 봉인·이름의 삭제를 말한다."}],"kind":"summary","roles":{"intro":{"A":{"e":"flustered","t":"…같은 문양인데, 전혀 다른 이야기처럼 보여.","s":1},"B":{"e":"smile","t":"기록도 틀릴 수 있겠지… 그래도 그냥 무시할 수는 없을 것 같아."},"C":{"e":"motivated","t":"…내가 못 알아내도 다음 사람이 이어 볼 수 있겠지.","p":1}},"hot":{"A":{"e":"motivated","t":"그냥 나쁜 일을 했다는 이야기만으로는 설명이 안 되잖아!"},"B":{"e":"smile","t":"알아보자! 단, 먼저 결론을 정해 놓고 찾지는 말아야겠지."},"C":{"e":"motivated","t":"다음에 찾을 단서도 놓치지 말자!"}},"stone":{"A":{"e":"smile","t":"공통점은 있지만 동일 인물이라는 증거는 없어."},"B":{"e":"smile","t":"기록의 시기와 작성자를 확인하면 비교가 더 정확해질 거야."},"C":{"e":"motivated","t":"새 증거가 나올 때 다시 검토하자."}},"dilig":{"A":{"e":"smile","t":"발견한 사람은 달라도 기록은 여기 모였네.","p":1},"B":{"e":"smile","t":"다음에 찾을 사람도 읽을 수 있게 순서와 출처를 정리하자.","p":1},"C":{"e":"motivated","t":"찾은 순서와 출처를 적어서 보관하자."}},"tsun":{"A":{"e":"pout","t":"이걸 보고도 아무 의문이 없으면 이상하지 않아?"},"B":{"e":"smile","t":"…그렇다고 반대로 전부 거짓말이었다고 정하지도 마. 아직 모르는 거니까."},"C":{"e":"motivated","t":"없던 답을 만들어 넣지는 마. 여기서부터 알아보면 되니까."}},"lively":{"A":{"e":"joy","t":"따로 봤을 때보다 같이 보니까 더 궁금해졌어."},"B":{"e":"smile","t":"다음 원정에서 다른 기록도 찾을 수 있겠지? 잘 남겨 두자!"},"C":{"e":"motivated","t":"다음 원정에도 이어지는 이야기네!"}},"boast":{"A":{"e":"heroic-confidence","t":"잊힌 진실에 다가서는 순간인가…"},"B":{"e":"smile","t":"아직 진실이라고 부르기는 이르겠군. 그래도 조사할 가치는 충분해."},"C":{"e":"motivated","t":"결론을 서두르지 않는 것도 탐구자의 자세지."}},"plain":{"A":{"e":"smile","t":"우리가 아는 마왕 이야기에서 빠진 부분이 있는 걸까?"},"B":{"e":"smile","t":"그럴 수도 있겠다. 같은 문양을 쓴 다른 사람일 수도 있고.","s":1,"p":1},"C":{"e":"motivated","t":"알아볼 이유는 생긴 것 같아."}},"genius":{"A":{"e":"smile","t":"관찰한 사실과 들은 이야기가 어긋나. 설명할 가설이 필요하네."},"B":{"e":"smile","t":"재미있는 가설과 맞는 가설은 다르니까. 반대되는 증거도 함께 찾아보자."},"C":{"e":"motivated","t":"틀릴 가능성까지 남겨 둬야 다음 발견도 보이지."}}}}},"noAdds":[{"w":"boss","t":"세 번… 돌아오실 때까지… 세 번…"},{"w":"N","t":"석상이 갑자기 종 쪽으로 향한다. 석상의 팔이 크게 움직인다. 공격이 닿는 곳에서 물러서야 한다."}],"link":"학원에 보관된 다른 원정 기록에도 이 문양이 있다. 돌아가면 이번 기록과 대조해 볼 수 있을 것이다.","sumMaster":["……우리가 아는 마왕 이야기에도, 빠진 부분이 있는 건 아닐까?","같은 인물이라는 증거는 아직 없어. 그래도 확인해 볼 이유는 생겼다."],"narr":{"dep":[{"w":"N","t":"출발 준비는 끝났다. 기대하던 순간인데, 마지막으로 장비를 확인하는 손길은 조금 더 신중하다."},{"w":"N","t":"잘해 보고 싶은 마음과, 무사히 돌아올 수 있을지에 대한 걱정. 어느 쪽도 쉽게 가라앉지 않는다."},{"w":"N","t":"원정대는 서로의 준비를 확인했다. 위험하면 멈출 것. 무리해서 혼자 앞서가지 않을 것."},{"w":"N","t":"짧게 숨을 고른 뒤, 첫걸음을 내디뎠다."}],"d1.enter":[{"w":"N","t":"학원 전투 연습장에 도착했다. 익숙한 훈련 시설도 원정의 목적지가 되니 조금 다르게 보인다."},{"w":"N","t":"원정대는 장비를 점검하고, 안쪽으로 향했다."}],"d1.camp":[{"w":"N","t":"잠시 앉으니 미처 느끼지 못했던 피로가 몰려온다."},{"w":"N","t":"물을 마시고 장비를 살핀다. 쉬어도 되는 곳에서 제대로 쉬는 것 역시 훈련의 일부다."},{"w":"N","t":"숨이 고르게 돌아올 때까지, 원정대는 서두르지 않았다."}],"d1.boss":[{"w":"N","t":"마지막 훈련 상대가 길을 막는다. 가까이서 보니 만만한 상대가 아니다."},{"w":"N","t":"연습용이라는 이유로 방심할 수는 없다. 원정대는 거리를 확보하고 상대의 첫 움직임을 살폈다."}],"d2.enter":[{"w":"N","t":"성문은 바로 앞에 이르러서야 안개 속에서 모습을 드러냈다."},{"w":"N","t":"문 안쪽에는 빗장을 거듭 덧댄 흔적이 남아 있다. 누군가는 이 문을 끝까지 닫아 두려 했던 모양이다."},{"w":"N","t":"무엇을 막으려 했는지는 알 수 없다. 원정대는 시야를 놓치지 않도록 천천히 움직였다."}],"d2.camp":[{"w":"N","t":"안개에 눅눅해진 빵을 불 가까이에 놓았다. 조금씩 구수한 냄새가 올라온다."},{"w":"N","t":"성문을 보고 있자니 오래된 이야기가 떠오른다. 마왕의 세 갈래 검은 불꽃 깃발이 보이면, 아무리 굳게 문을 닫아도 소용없었다고 했다."},{"w":"N","t":"이야기 속 문은 언제나 무너진다. 하지만 이 성문을 닫았던 사람들의 사정까지 전해지는 것은 아니다.","p":1},{"w":"N","t":"빵 끝이 검어지기 시작했다. 무서운 이야기는 잠시 접고, 먹을 것부터 구해 냈다."}],"d2.boss":[{"w":"N","t":"문 앞의 안개가 사람의 형상으로 뭉친다. 망령은 원정대가 다가가자 길을 가로막았다.","p":1},{"w":"boss","t":"여기… 여기는 못 지나간다!"},{"w":"N","t":"……무언가를 지키려는 것처럼 보인다. 하지만 지금의 망령은 다가온 이들이 누구인지 구분하지 못한다."},{"w":"N","t":"손을 뻗는 망령을 피해, 원정대는 전투 태세를 갖췄다."}],"d2.win":[{"w":"N","t":"안개가 걷힌 문 안쪽에서 깨진 돌판을 발견했다. ‘아이들이 모두 빠져나갈 때까지…’"},{"w":"N","t":"그 뒤의 문장은 남아 있지 않다. 누군가는 도망치지 못한 것이 아니라, 이곳에 남기로 했던 걸까."},{"w":"N","t":"글 옆에는 세 갈래 불씨 인장이 새겨져 있다. 마왕의 깃발에 그려진다고 전해지는 검은 불꽃과 닮은 모양이다.","s":1},{"w":"N","t":"사람들을 지키려는 기록과 마왕의 문양. 이 둘이 함께 있다는 사실을, 지금은 설명할 수 없다. 글과 인장을 함께 옮겨 적었다.","s":1,"p":1}],"d3.enter":[{"w":"N","t":"무너진 탑 위로 종소리 같은 울림이 흘렀다. 올려다보아도 종은 보이지 않는다."},{"w":"N","t":"바람인지, 탑 안에서 나는 소리인지 판단하기 어렵다."},{"w":"N","t":"원정대는 소리만 따라가지 않고, 무너진 계단의 발 디딜 곳을 확인하며 올라갔다."}],"d3.camp":[{"w":"N","t":"올라올 때는 몰랐는데, 앉고 나니 다리가 묵직하다. 내려갈 계단까지 떠올리자 한숨이 절로 난다."},{"w":"N","t":"마왕이 종소리를 싫어했다는 옛이야기가 있다. 세 갈래 검은 불꽃 깃발을 세운 뒤, 종부터 부쉈다고 한다."},{"w":"N","t":"왜 하필 종이었는지까지 전하는 이야기는 드물다. 오늘 들었던 울림도, 그 답을 알려 주지는 않는다."},{"w":"N","t":"지금만큼은 종보다 조용한 휴식이 반갑다. 충분히 다리를 쉬게 한 뒤 다시 움직이기로 했다."}],"d3.boss":[{"w":"N","t":"멈춰 있던 석상이 움직였다. 시선이 향하는 곳에는 부서진 종이 남아 있다."},{"w":"boss","t":"세 번… 돌아오실 때까지… 세 번…"},{"w":"N","t":"석상이 갑자기 종을 향해 이동하기 시작한다. 종을 치려는 걸까."},{"w":"N","t":"그 움직임에 정신을 빼앗긴 순간, 주변에서도 적들이 모습을 드러냈다. 원정대는 급히 대응했다."}],"d3.win":[{"w":"N","t":"석상이 멎은 뒤, 종받침 아래에서 낡은 정비 기록을 발견했다."},{"w":"N","t":"‘불씨를 맡은 이가 돌아오는 날, 세 번.’ 석상이 되풀이하던 말과 같다. 다음 장에는 아무것도 적혀 있지 않다.","s":1},{"w":"N","t":"기록의 인장은 마왕의 깃발에 전해지는 세 갈래 검은 불꽃과 닮아 있다.","s":1},{"w":"N","t":"전승 속 마왕은 종을 부쉈다. 이 기록에서는 같은 문양 아래 누군가가 돌아오기를 기다렸다.","s":1},{"w":"N","t":"기다리던 사람과 종을 부순 사람이 누구인지는 아직 모른다. 원정대는 기록을 챙겼다.","p":1}],"d4.enter":[{"w":"N","t":"눈처럼 하얀 바닥 위로 메마른 바람이 분다. 입술에 닿은 바람에서는 짠맛이 났다."},{"w":"N","t":"균열 가장자리에 같은 글자가 반복되어 있다. 자연스럽게 갈라진 땅에 우연히 남은 흔적은 아닌 듯하다."},{"w":"N","t":"원정대는 가장자리에서 거리를 두고 단단한 지면을 골라 나아갔다."}],"d4.camp":[{"w":"N","t":"온통 소금투성이인 곳에서 먹는 수프가 유난히 싱겁다. 그래도 바닥의 소금으로 간을 맞출 생각은 하지 않았다."},{"w":"N","t":"옛 책에서는 마왕이 세 갈래 검은 불꽃 아래서 독과 저주, 재앙까지 삼켜 힘을 얻었다고 한다."},{"w":"N","t":"그런 존재도 음식의 맛을 느꼈을까. 답을 구할 수 없는 생각이 잠깐 스쳤다."},{"w":"N","t":"조금 싱겁더라도 따뜻하고 안전한 한 끼면 충분하다. 원정대는 그릇을 비우고 쉬었다."}],"d4.boss":[{"w":"N","t":"바위라 생각했던 것이 꿈틀거린다. 균열 아래에서 거대한 촉수가 솟아올랐다."},{"w":"boss","t":"그릇을… 돌려다오… 아직… 넘친다…"},{"w":"N","t":"바닥이 흔들린다. 원정대는 균열에서 물러나, 지면 위로 드러난 위협에 대응했다."}],"d4.win":[{"w":"N","t":"촉수가 가라앉은 뒤, 소금층에서 떨어져 나온 의식판을 발견했다."},{"w":"N","t":"‘그릇이 깨지면 안의 재앙이 다시 흐른다.’ 글 옆에는 가슴에 세 갈래 불꽃을 품은 사람의 형상이 있다.","p":1},{"w":"N","t":"마왕이 재앙을 삼켜 강해졌다는 전승과 닮았다. 하지만 이 기록은 힘을 얻는 법보다, 무언가를 버티며 가둬 두는 법에 가까워 보인다."},{"w":"N","t":"그 사람은 힘을 원했던 걸까. 아니면 새어 나오는 재앙을 막고 있었을까. 의식판의 내용을 기록했다.","p":1}],"d5.enter":[{"w":"N","t":"용사의 무덤에 도착했다. 그러나 묘비에서 주인의 이름을 찾을 수 없다."},{"w":"N","t":"‘용사’라는 칭호 아래, 이름이 있었을 자리가 깎여 있다. 세월에 닳은 흔적과는 다르다."},{"w":"N","t":"누군가를 기억하려고 세운 곳에서, 누군가가 이름을 지웠다. 원정대는 묘비를 뒤로하고 안쪽으로 향했다."}],"d5.camp":[{"w":"N","t":"이름을 남길 만큼 훌륭한 용사가 된다면 어떤 기분일까. 묘비를 보고 그런 생각을 하자니 조금 이른 걱정 같기도 하다."},{"w":"N","t":"적어도 오늘 할 일은 이름을 남기는 것보다 무사히 돌아가는 것이다. 불 가까이에서 젖은 장비를 말렸다."},{"w":"N","t":"문득 마왕은 누구나 알지만, 마왕이 되기 전의 이름은 좀처럼 전해지지 않는다는 사실이 떠오른다."},{"w":"N","t":"세 갈래 검은 불꽃 깃발은 그렇게 자세히 묘사되어 있는데, 그 이전의 삶은 이야기에서 찾아보기 어렵다."}],"d5.boss":[{"w":"N","t":"이름 없는 묘 앞에서 기사가 검을 든다. 주인의 이름조차 남아 있지 않은 곳을, 아직도 지키고 있었던 걸까."},{"w":"boss","t":"주인님… 주인님!!!"},{"w":"N","t":"기사는 원정대를 향해 검을 겨눈다. 지금은 말을 걸어도 대답을 들을 수 없을 듯하다."},{"w":"N","t":"원정대는 다가오는 검끝을 경계하며 맞설 준비를 했다."}],"d5.win":[{"w":"N","t":"기사가 움직임을 멈추자 뒤편의 석판이 눈에 들어왔다."},{"w":"N","t":"‘그가 품은 것을 두려워하여, 우리는 그의 이름을 버렸다.’ 그 아래에는 마왕의 문양과 닮은 세 갈래 불씨 인장이 있다.","s":1},{"w":"N","t":"지켜 주던 사람을 두려워하게 된 걸까. 이름 없는 용사와, 이전 이름이 전해지지 않는 마왕 사이에는 무엇이 있을까.","p":1},{"w":"N","t":"이 글은 기록을 남긴 사람의 입장일 뿐이다. 문양을 공유했다고 같은 인물이라 단정할 수도 없다.","s":1,"p":1},{"w":"N","t":"다만 지워진 이름 뒤에 누군가의 삶이 있었다는 것만은 잊지 않기로 했다. 석판의 내용을 옮겨 적었다."}],"sum":[{"w":"N","t":"학원에 모인 네 원정 기록을 책상 위에 펼쳤다. 성문, 종, 균열, 무덤. 서로 다른 장소에서 같은 불씨 인장이 발견됐다.","s":1},{"w":"master","t":"마왕의 깃발에 있다는 세 갈래 검은 불꽃… 기록마다 닮은 문양이 남아 있어.","s":1},{"w":"master","t":"전해지는 이야기에서는 문을 부수고, 종을 깨고, 재앙을 삼켜 힘을 얻었다고 했지."},{"w":"master","t":"그런데 이 기록에는 사람들을 지키고, 돌아오길 기다리고… 재앙이 새지 않도록 버텼다고 적혀 있다.","p":1},{"w":"master","t":"그리고 마지막에는 그가 품은 것을 두려워해서 이름을 버렸다고 했어."},{"w":"master","t":"……우리가 아는 마왕 이야기에도, 빠진 부분이 있는 건 아닐까?"},{"w":"master","t":"아직 같은 사람이라는 증거는 없어. 같은 문양을 쓴 다른 인물일 수도 있고, 기록이 틀렸을 수도 있다.","s":1,"p":1},{"w":"master","t":"그래도 알아볼 이유는 생겼어. 이 기록은 잘 보관해 두자."}]},"narrSolo":"장비와 귀환 경로를 다시 확인했다. 위험하면 멈출 것. 무사히 돌아오는 것까지가 이번 원정이다.","narrNoAdds":"석상의 팔이 크게 움직인다. 원정대는 그 궤적을 피해 대응했다.","narrLink":"학원에 보관된 다른 원정 기록에도 이 문양이 있다. 돌아가면 새로 옮긴 글과 대조해 볼 수 있을 것이다.","linkF":1,"narrLinkF":1};
+const XP_SLOTS = ["A", "B", "C"];                                               // 공용판 초상화 자리 — 대사 순서대로 (그 학생의 직업 · 표정)
+const XP_BUSTS = XP_JOBS.concat(XP_SLOTS);
+const XP_ORDER = ["dep", "d1.enter", "d1.camp", "d1.boss"].concat(...["d2", "d3", "d4", "d5"].map(d => ["enter", "camp", "boss", "win"].map(k => d + "." + k)), ["sum"]);   // 장면 순번 (역할 돌리기)
+const XP_GFX = {"d3.enter": {sfx0: "xp_bell"}, "d2.boss": {bfx: "flash"}, "d3.boss": {bfx: "flash", bsfx: "xp_bell", move: 1}, "d4.boss": {bfx: "rumble", bsfx: "xp_rumble"}, "d5.boss": {bfx: "flash"}};   // 전용판과 같은 연출
 /* 도트 — 줄마다 같은 색을 이어 그린다 (불씨 인장 17 × 17 · 사람 그림 13 × 16) */
 function xpPix(rows, pal){
   const w = rows[0].length, h = rows.length;
@@ -33993,7 +34011,7 @@ function xpKinds(dg){ return dg === "d1" ? ["enter", "camp", "boss"] : ["enter",
 /* 이 원정지에 안 본 장면이 남았나 (첫 출발 포함) — clrXAll 의 고리: 남았으면 '빠르게 결과만' 없이 출발한다 */
 function xpPending(dg){
   if(!xpOn() || !dg || !dg.id || !XP_CUES[dg.id + ".enter"]) return false;
-  const X = xpS(); if(!X || !xpCastIds()) return false;
+  const X = xpS(); if(!X) return false;                                         // 1024 — 공용판이 있어 셋이 없어도 장면이 나온다
   if(!X.seen.dep && !X.old) return true;
   return xpKinds(dg.id).some(k => !X.seen[dg.id + "." + k]);
 }
@@ -34036,7 +34054,7 @@ function xpBuild(){
   r.innerHTML = `<div class="rv-bg"><div class="rv-img"></div><div class="rv-vig"></div></div><div class="xp-veil"></div><div class="fst-hit"></div>
     <button type="button" class="rv-skip" hidden>${esc(XP_T.skip)}</button>
     <div class="xp-recw"></div>
-    <div class="fst-cast">${XP_JOBS.map(k => `<div class="fst-bust" data-who="${k}" hidden><img alt="" draggable="false"></div>`).join("")}</div>
+    <div class="fst-cast">${XP_BUSTS.map(k => `<div class="fst-bust" data-who="${k}" hidden><img alt="" draggable="false"></div>`).join("")}</div>
     <div class="fst-talk"><div class="fst-nm"><i></i><span></span></div><div class="fst-tx"></div><div class="fst-nx">▼</div></div>
     <div class="rv-black"><div class="rv-card"><i hidden></i><b></b></div></div>`;
   document.body.appendChild(r);
@@ -34046,7 +34064,7 @@ function xpBuild(){
   hit.addEventListener("wheel", e => e.preventDefault(), {passive: false});
   hit.addEventListener("touchmove", e => e.preventDefault(), {passive: false});
   r.querySelector(".rv-skip").addEventListener("click", e => { e.stopPropagation(); xpEnd("skip"); });
-  Object.keys(XP_FACE).forEach(k => Object.keys(XP_FACE[k]).forEach(f => { const im = new Image(); im.decoding = "async"; im.src = XP_FACE[k][f]; }));   // 표정을 바꿀 때 깜빡이지 않게
+  XP_JOBS.forEach(k => Object.keys(XP_FACE[k] || {}).forEach(f => { const im = new Image(); im.decoding = "async"; im.src = XP_FACE[k][f]; }));   // 표정을 바꿀 때 깜빡이지 않게 (공용판 학생은 장면을 열 때 — xpReset)
 }
 function xpTeardown(){ if(R.root) R.root.remove(); R.root = null; }
 document.addEventListener("keydown", e => {
@@ -34076,9 +34094,13 @@ function xpPlate(who){
   const nm = xq(".fst-nm"), sp = nm.querySelector("span"), tk = xq(".fst-talk");
   let t, col;
   if(who === "boss"){ t = XP_BOSS[R.dg] || ""; col = "#c9b4ff"; }
-  else { const role = JOBS[who] && JOBS[who].role; t = xpName(who); col = role === "tank" ? "#8cc4f0" : role === "heal" ? "#86d6a4" : "#f2957d"; }   // 역할 색 네모 (02 · 03 과 같다)
+  else if(who === "master"){ t = XP_T.master; col = "#ffd36a"; }                // 공용판 — 마스터 (초상화 없이 이름표만 · 02 · 03 과 같다)
+  else if(who === "N"){ t = ""; col = "transparent"; }                         // 공용판 — 서술 (이름표 없이)
+  else { const j = xpJob(who), role = JOBS[j] && JOBS[j].role; t = xpName(who); col = role === "tank" ? "#8cc4f0" : role === "heal" ? "#86d6a4" : "#f2957d"; }   // 역할 색 네모 (02 · 03 과 같다)
   sp.textContent = t;
   nm.style.setProperty("--rc", col);
+  tk.classList.toggle("nar", who === "N");
+  tk.classList.toggle("mst", who === "master");
   tk.classList.toggle("boss", who === "boss");
   tk.classList.toggle("echo", who === "boss" && R.dg === "d4");
 }
@@ -34145,15 +34167,17 @@ function xpFit(){
 
 /* ── 초상화 ── */
 function xpBust(k){ return xq(`.fst-bust[data-who="${k}"]`); }
+function xpJob(k){ return XP_JOBS.indexOf(k) >= 0 ? k : ((R.cast && R.cast[k] && R.cast[k].job) || ""); }   // 공용판 자리 A · B · C 는 그 학생의 직업
 function xpFace(k, f){
-  if(!f || !XP_FACE[k]) return;
+  const F = XP_FACE[xpJob(k)];
+  if(!f || !F) return;
   R.faces[k] = f;
-  const b = xpBust(k), src = XP_FACE[k][f];
+  const b = xpBust(k), src = F[f] || (XP_SLOTS.indexOf(k) >= 0 ? F.smile : null);   // 공용판 — 없는 표정은 웃는 얼굴
   if(b && src){ const im = b.querySelector("img"); if(im.getAttribute("src") !== src) im.src = src; }
 }
-function xpLit(list){ XP_JOBS.forEach(k => { const e = xpBust(k); if(e) e.classList.toggle("on", !!(list && list.indexOf(k) >= 0)); }); }
+function xpLit(list){ XP_BUSTS.forEach(k => { const e = xpBust(k); if(e) e.classList.toggle("on", !!(list && list.indexOf(k) >= 0)); }); }
 function xpLayout(snap){
-  const vis = XP_JOBS.filter(k => { const e = xpBust(k); return e && !e.hidden; }), n = vis.length;
+  const vis = XP_BUSTS.filter(k => { const e = xpBust(k); return e && !e.hidden; }), n = vis.length;
   vis.forEach((k, j) => {
     const e = xpBust(k);
     if(snap) e.style.transition = "none";
@@ -34173,7 +34197,7 @@ function xpEnter(list){
 }
 /* 나간다 — 아래로(띠 장면 끝) · 오른쪽으로(출발 — 원정을 떠난다) */
 function xpExit(how){
-  const vis = XP_JOBS.filter(k => { const e = xpBust(k); return e && !e.hidden; });
+  const vis = XP_BUSTS.filter(k => { const e = xpBust(k); return e && !e.hidden; });
   xpLit(null);
   return Promise.all(vis.map((k, n) => new Promise(res => {
     const e = xpBust(k), far = innerWidth * .7;
@@ -34224,7 +34248,7 @@ function xpRecPlace(){
   const w = xq(".xp-recw"); if(!w || R.mode !== "belt") return;
   const strip = document.querySelector("#beltRoot .belt-strip"), win = document.querySelector("#beltRoot .belt-win"); if(!strip || !win) return;
   const s = strip.getBoundingClientRect(), wr = win.getBoundingClientRect();
-  const tops = XP_JOBS.map(xpBust).filter(e => e && !e.hidden).map(e => e.getBoundingClientRect().top), talk = xq(".fst-talk");
+  const tops = XP_BUSTS.map(xpBust).filter(e => e && !e.hidden).map(e => e.getBoundingClientRect().top), talk = xq(".fst-talk");
   const floor = tops.length ? Math.min.apply(null, tops) : (talk ? talk.getBoundingClientRect().top : innerHeight);
   const card = w.firstElementChild, ch = card ? card.offsetHeight : 110, free = floor - (wr.bottom + 6);
   const below = free >= ch + 12;
@@ -34284,6 +34308,59 @@ function xpList(sc, ctx){
   return out;
 }
 
+/* ── 공용판 (1024) — 배우 · 대본 ── */
+function xpPers(st){ const p = st && st.pers; return XP_GEN.pers.indexOf(p) >= 0 ? p : "plain"; }
+function xpTrioIn(ids){ const T = xpCastIds(); return !!(T && XP_JOBS.every(j => T[j] && ids.indexOf(T[j]) >= 0)); }   // 셋 본인(학생 id)이 모두 이 명단에
+function xpTrioHere(){ return xpTrioIn((S.students || []).map(s => s && s.id)); }                                       // 셋이 다 학원에
+function xpSpeak(sc, list){                                                     // 말할 학생 — 장면 순번만큼 시작점을 돌려 셋까지 (게임 난수는 쓰지 않는다)
+  const L = (list || []).filter(Boolean), n = L.length; if(!n) return [];
+  const k = Math.max(0, XP_ORDER.indexOf(sc)) % n;
+  return L.slice(k).concat(L.slice(0, k)).slice(0, 3);
+}
+function xpHome3(){                                                             // 기록 정리 — 학원의 학생 셋 (학년 · 레벨 높은 순)
+  return (S.students || []).filter(Boolean).slice().sort((a, b) => ((b.year | 0) - (a.year | 0)) || ((b.level | 0) - (a.level | 0))).slice(0, 3);
+}
+function xpGenCast(sp){ const c = {}; (sp || []).forEach((st, i) => { if(st) c[XP_SLOTS[i]] = st; }); return c; }
+function xpSnap(sp, ctx, party){                                               // 다시 보기용 (그때 이름 · 성격 · 띠에 세울 파티)
+  const one = st => ({id: st.id, name: st.name, job: st.job, pers: st.pers || "plain", uniq: st.uniq || null});
+  return {sp: (sp || []).filter(Boolean).map(one), party: (party || sp || []).filter(Boolean).slice(0, 4).map(one), ctx: Object.assign({}, ctx || {})};
+}
+function xpGenList(sc, sp, ctx){
+  ctx = ctx || {}; sp = (sp || []).filter(Boolean);
+  const dg = sc.indexOf(".") > 0 ? sc.split(".")[0] : "", kind = dg ? sc.split(".")[1] : sc, fx = XP_GFX[sc] || {};
+  const L = arr => (arr || []).map(x => ({who: x.w, t: x.t, _s: x.s, _p: x.p}));   // _s 인장 · _p 사람 그림 — xpgn_build 가 한국어 대본에서 미리 (번역된 글에서는 못 찾는다)
+  let out;
+  if(!sp.length){                                                               // 서술판 — 말할 학생이 없을 때
+    out = L(XP_GEN.narr[sc]);
+    if(sc === "dep" && ctx.solo && out[2] && XP_GEN.narrSolo) out[2].t = XP_GEN.narrSolo;
+    if(sc === "d3.boss" && ctx.noAdds && out.length && XP_GEN.narrNoAdds) out[out.length - 1].t = XP_GEN.narrNoAdds;
+    if(kind === "win" && ctx.link && XP_GEN.narrLink) out.push({who: "N", t: XP_GEN.narrLink, _s: XP_GEN.narrLinkF & 1, _p: XP_GEN.narrLinkF & 2});
+  } else {                                                                      // 성격별 대화판 — 도입 → A → 연결 → B → C → (둘째 기록) → (마스터 두 줄) → 마감
+    const G = XP_GEN.scenes[sc]; if(!G) return [];
+    const line = (i, r) => { const st = sp[i], q = st && (G.roles[xpPers(st)] || G.roles.plain || {})[r]; return q ? {who: XP_SLOTS[i], face: q.e, t: q.t, _s: q.s, _p: q.p} : null; };
+    out = L(G.open);
+    out.push(line(0, "A"));
+    out = out.concat(L(sc === "d3.boss" && ctx.noAdds && XP_GEN.noAdds && XP_GEN.noAdds.length ? XP_GEN.noAdds : G.bridge));
+    if(sp.length > 1) out.push(line(1, "B"));
+    if(sp.length > 2) out.push(line(2, "C"));
+    if(kind === "win" && ctx.link && XP_GEN.link) out.push({who: "N", t: XP_GEN.link, _s: XP_GEN.linkF & 1, _p: XP_GEN.linkF & 2});
+    if(sc === "sum") (XP_GEN.sumMaster || []).forEach(t => out.push({who: "master", t}));
+    const cl = XP_GEN.close[G.kind]; if(cl) out.push({who: "N", t: cl});
+  }
+  out = out.filter(Boolean).map((c, i) => Object.assign({id: "G" + (i + 1)}, c));
+  const first = out[0], bi = out.findIndex(c => c.who === "boss"), boss = out[bi];
+  if(first && fx.sfx0) first.sfx = fx.sfx0;
+  if(boss && fx.bfx){ boss.bfx = fx.bfx; if(fx.bsfx) boss.sfx = fx.bsfx; }
+  if(boss && fx.move && out[bi + 1]) out[bi + 1].bfx = "move";
+  if(kind === "win" && first){                                                  // 기록창 — 첫 줄에 · 인장은 '인장 · 불씨' 줄에 · 균열 사람 그림은 '사람' 줄에
+    first.rec = 1;
+    const seal = out.find(c => c._s) || out[1] || first; seal.seal = 1;
+    if(dg === "d4"){ const f = out.find(c => c._p) || seal; f.fig = 1; }
+  }
+  if(sc === "sum" && first) first.recs = 1;
+  return out;
+}
+
 /* ── 줄 하나 ── */
 async function xpRun(i){
   const sess = R.sess, c = R.list[i];
@@ -34297,6 +34374,7 @@ async function xpRun(i){
   if(c.seal) xpSealOn();
   if(c.recs) xpRecs(true);
   if(c.who === "boss"){ xpLit(null); xpBossFx(c.bfx); }
+  else if(c.who === "N" || c.who === "master"){ xpLit(null); if(c.bfx) xpBossFx(c.bfx); }   // 공용판 — 서술 · 마스터 (초상화 없음)
   else {
     xpFace(c.who, c.face); xpLit([c.who]);
     if(c.hop){ xpHop(c.who); if(R.mode === "belt") xpSdHop(c.who); }
@@ -34304,7 +34382,7 @@ async function xpRun(i){
     if(c.bfx) xpBossFx(c.bfx);
   }
   xpPlate(c.who); xpBox(true);
-  await xpType(xq(".fst-talk .fst-tx"), c.t, c.who === "boss" ? "csl_mst" : "csl_stu", sess);
+  await xpType(xq(".fst-talk .fst-tx"), c.t, c.who === "N" ? null : (c.who === "boss" || c.who === "master") ? "csl_mst" : "csl_stu", sess);
   if(sess !== R.sess) return;
   await xpWaitClick(); if(sess !== R.sess) return;
   if(c.out){ xpBox(null); await xpExit("right"); if(sess !== R.sess) return; }
@@ -34315,15 +34393,16 @@ async function xpRun(i){
 function xpReset(o){
   xpBuild();
   R.sc = o.sc; R.dg = o.dg || ""; R.kind = o.kind || ""; R.preview = !!o.preview; R.cer = !!o.cer; R.mons = o.mons || null; R.ko = o.ko || {};
-  R.cast = o.cast || {}; R.list = o.list || []; R.lore = !!o.loreAdd;
+  R.cast = o.cast || {}; R.list = o.list || []; R.lore = !!o.loreAdd; R.gen = o.gen || null;
   R.on = true; R.ending = false; R.sess++; R.i = -1; R.typing = null; R.wait = null; R.faces = {};
   const sk = xq(".rv-skip"); if(sk){ sk.hidden = !R.preview; sk.disabled = false; }   // 건너뛰기는 다시 보기 · 미리 보기에만 (처음 보는 진짜 흐름에는 없다)
   xpRecs(false); xpRec(null); xpBox(null); xpMark(false); xpLit(null);
-  XP_JOBS.forEach(k => { const e = xpBust(k); if(!e) return; e.getAnimations().forEach(a => a.cancel()); e.hidden = true;
-    const f = (R.list.find(c => c.who === k && c.face) || {}).face || XP_FACE0[k]; xpFace(k, f); });
+  XP_BUSTS.forEach(k => { const e = xpBust(k); if(!e) return; e.getAnimations().forEach(a => a.cancel()); e.hidden = true;
+    const f = (R.list.find(c => c.who === k && c.face) || {}).face || XP_FACE0[k] || "smile"; xpFace(k, f); });
+  XP_SLOTS.forEach(k => { const F = XP_FACE[xpJob(k)]; if(F) R.list.forEach(c => { if(c.who === k && F[c.face]){ const im = new Image(); im.decoding = "async"; im.src = F[c.face]; } }); });   // 공용판 — 쓸 표정만 미리
   xpSfxLoad();
 }
-function xpCastOn(){ return XP_JOBS.filter(k => R.cast[k] && !R.ko[k]); }
+function xpCastOn(){ return XP_BUSTS.filter(k => R.cast[k] && !R.ko[k]); }
 async function xpBeltScene(o){
   xpReset(o);
   R.mode = "belt";
@@ -34391,6 +34470,9 @@ async function xpEnd(how){
 function xpDone(){
   const X = xpS(); if(!X) return;
   xpCapture();
+  R.tries = 0;
+  if(R.gen){ X.gv = X.gv || {}; X.gv[R.sc.indexOf("back:") === 0 ? R.dg + ".win" : R.sc] = R.gen; }   // 1024 — 공용판으로 본 장면 — 그때 배우 (다시 보기)
+  else if(X.gv) delete X.gv[R.sc.indexOf("back:") === 0 ? R.dg + ".win" : R.sc];
   if(R.cer) delete X.at;
   if(R.sc === "dep"){ X.seen.dep = 1; R.depPend = true; return; }
   if(R.sc === "sum"){ X.seen.sum = 1; X.sum = 2; return; }
@@ -34407,13 +34489,21 @@ function xpDone(){
 function xpDgName(dg){ const d = (typeof DUNGEONS !== "undefined" ? DUNGEONS : []).find(x => x.id === dg); return d ? d.n : (XP_DGN[dg] || dg); }
 
 /* ── 고리 1 — 첫 원정 출발 (xmTravel 맨 앞 · EXMAP 블록): 이 장면을 띄웠으면 true (끝나면 cont — 다시 xmTravel 로) ── */
-function xpDepart(cont){
+function xpDepart(cont, mem){
   if(R.on && R.sc === "dep") return true;                                       // 장면 중에 다시 누른 것
   if(!xpOn() || R.on || R.ending) return false;
   const X = xpS(); if(!X || X.seen.dep || X.old) return false;
-  const cast = xpActors(); if(!cast) return false;
+  const party = Array.isArray(mem) ? mem.filter(Boolean) : null;                // 1024 — 떠나는 파티 (xmTravel 의 mem · EXMAP 고리)
+  let o;
+  if(party && party.length && !xpTrioIn(party.map(s => s.id))){                // 공용판 — 셋 본인이 모두 떠나지 않으면 그 파티의 대화
+    const sp = xpSpeak("dep", party), gx = {solo: party.length === 1};
+    o = {sc: "dep", cast: xpGenCast(sp), gen: xpSnap(sp, gx, party), list: xpGenList("dep", sp, gx)};
+  } else {
+    const cast = xpActors(); if(!cast) return false;
+    o = {sc: "dep", cast, list: xpList("dep", {})};
+  }
   if(typeof XM !== "undefined") XM.phase = "story";
-  xpStageScene({sc: "dep", cast, list: xpList("dep", {})}).then(() => {
+  xpStageScene(o).then(() => {
     if(typeof XM !== "undefined" && XM.phase === "story") XM.phase = "";
     try{ cont(); }catch(e){ errPush("xpst", e.message, e.stack); }
   }).catch(e => { errPush("xpst", e.message, e.stack); xpTeardown(); R.on = false; if(typeof XM !== "undefined") XM.phase = ""; try{ cont(); }catch(x){} });
@@ -34430,6 +34520,15 @@ async function xpBelt(kind, e, mons){
     const dg = BELT.E.dg && BELT.E.dg.id, key = dg + "." + kind;
     if(!XP_CUES[key]) return false;
     const X = xpS(); if(!X || X.seen[key]) return false;
+    if(!xpTrioIn(BELT.mem.map(m => m.sid))){                                    // 1024 — 공용판: 셋 본인이 모두 나가지 않은 원정 — 실제 파티의 성격별 대화판 (말할 학생이 없으면 서술판)
+      const party = BELT.mem.map(m => (S.students || []).find(s => s && s.id === m.sid) || m.s).filter(Boolean);
+      if(kind === "win" && BELT.mem.some(m => !m.alive)){ BELT.mem.forEach(m => xpUp(m)); await beltWait(700); }   // 쓰러진 학생도 일으켜 세우고 (전용판과 같다)
+      const alive = party.filter(st => { const m = xpMemOf(st); return !m || m.alive; });
+      const sp = xpSpeak(key, alive), gx = {solo: party.length === 1, noAdds: kind === "boss" && dg === "d3" && (mons || []).length < 2, link: kind === "win" && X.clues.some(d => d !== dg)};
+      if(kind === "camp" && BELT.fire) BELT.fire.lit = true;
+      await xpBeltScene({sc: key, dg, kind, cast: xpGenCast(sp), gen: xpSnap(sp, gx, party), ko: {}, mons: mons || null, list: xpGenList(key, sp, gx), loreAdd: kind === "win"});
+      return true;
+    }
     const cast = xpActors(); if(!cast) return false;
     const ko = {};
     XP_JOBS.forEach(j => { const m = BELT.mem.find(x => cast[j] && x.sid === cast[j].id); if((m && !m.alive) || (kind === "win" && window.__xpstKO === j)) ko[j] = 1; });   // 이 원정에 나가 쓰러진 셋 (시험 — __xpstKO: 보스전에서 쓰러진 것으로 · 승리 장면은 일으켜 세운다)
@@ -34488,7 +34587,7 @@ async function xpDiorama(){
   const st = xpStagePlace(); if(!st) return false;
   const sc = st.sc, [dg, kind] = sc.split(".");
   await beltWait(rRM() ? 100 : 600);
-  await xpBeltScene({sc, dg, kind, cast: st.cast, preview: true, mons: st.mons, list: xpList(sc, {})});
+  await xpBeltScene({sc, dg, kind, cast: st.cast, gen: st.gen || null, preview: true, mons: st.mons, list: st.gen ? xpGenList(sc, st.gen.sp, st.gen.ctx) : xpList(sc, {})});
   const done = BELT.done;
   beltAbort(); BELT.E = null; BELT.R = null; BELT.done = null;
   try{ if(done) done(); }catch(e){}
@@ -34496,8 +34595,27 @@ async function xpDiorama(){
 }
 
 /* ── 다시 보기 (SCEN — 마스터 책상 모래시계의 시나리오 팝업 04 묶음) · 미리 보기 (목업 조작판) — 세이브를 건드리지 않고 오른쪽 위 건너뛰기 ── */
+function xpReplayGen(sc, G){                                                    // 1024 — 공용판 다시 보기 · 미리 보기 (적어 둔 배우 · 성격)
+  const sp = (G.sp || []).map(x => Object.assign({}, x)), gx = G.ctx || {};
+  if(sc === "dep" || sc === "sum"){
+    xpStageScene({sc, cast: xpGenCast(sp), gen: G, preview: true, list: xpGenList(sc, sp, gx)}).then(() => { audOver(null); try{ render(); }catch(e){} });
+    return true;
+  }
+  const dg = String(sc).split(".")[0], d0 = (typeof DUNGEONS !== "undefined" ? DUNGEONS : []).find(d => d.id === dg);
+  if(!d0 || !XP_GEN.scenes[sc] || typeof beltOpen !== "function") return false;
+  const P = (G.party && G.party.length ? G.party : sp).slice(0, 4);
+  const team = (P.length ? P : [{job: "sword", name: (JOBS.sword && JOBS.sword.name) || ""}]).map((x, n) => ({id: x.id || ("xp-g" + n), job: x.job, name: x.name || ((JOBS[x.job] && JOBS[x.job].name) || ""), uniq: x.uniq || null}));
+  const E = {dg: d0, team, TM: null, res: {dg: d0, team: team.map(s => s.name), ids: team.map(s => s.id), secs: [], exp: 0, gold: 0, relics: [], stam: [100, 100]}};
+  const Rb = {ev: [], stam0: 100, loot: {gold: 0, bgold: 0, cgold: 0, items: {}}, story: {sc, cast: xpGenCast(sp), gen: G}, applied: true, end: "clear", why: "", alive: {}, st: 100};
+  beltOpen(E, Rb, () => { try{ render(); }catch(e){} });
+  xpStagePlace();
+  return true;
+}
 function xpReplay(sc, cast){
-  if(R.on || R.ending || (typeof BELT !== "undefined" && BELT.on) || !cast) return false;
+  if(R.on || R.ending || (typeof BELT !== "undefined" && BELT.on)) return false;
+  const G = S && S.xpst && S.xpst.gv && S.xpst.gv[sc];
+  if(G && G.sp) return xpReplayGen(sc, G);                                      // 1024 — 공용판으로 본 장면은 그때 배우로
+  if(!cast) return false;
   if(sc === "dep" || sc === "sum"){
     xpStageScene({sc, cast, preview: true, list: xpList(sc, {})}).then(() => { audOver(null); try{ render(); }catch(e){} });
     return true;
@@ -34514,6 +34632,7 @@ function xpReplay(sc, cast){
   return true;
 }
 function xpPreview(sc){ const a = xpActors(); return a ? xpReplay(sc, a) : false; }
+function xpPreviewGen(sc, sp, ctx){ if(R.on || R.ending || (typeof BELT !== "undefined" && BELT.on)) return false; return xpReplayGen(sc, xpSnap(sp || [], ctx || {}, sp || [])); }   // 목업 — 공용판 미리 보기
 /* 다시 보기 목록 — 본 장면만 (첫 원정 · 원정지마다 · 기록 정리) */
 function xpReplayList(){
   const X = S && S.xpst; if(!X) return [];
@@ -34532,7 +34651,7 @@ function xpAnySeen(){ const X = S && S.xpst; return !!(X && X.seen && Object.key
 function xpQueued(){ return (UI.ceremonies || []).some(c => c && c.type === "xpst"); }
 function xpWeekEnd(){
   if(!xpOn() || !S.xpst || xpQueued() || R.live) return;
-  if(!xpActors()) return;                                                       // 1024 — 셋을 찾을 수 없는 세이브(개교 멤버가 다 떠난 예전 세이브)는 줄에 넣지 않는다 — 넣으면 xpPlay 가 바로 넘기고 render 끝 xpAfter 가 다시 넣어 끝없이 다시 그렸다 (사용자 1024 '패치 후 버튼들이 먹통')
+  /* 1024 — 예전: 셋을 찾을 수 없는 세이브는 xpPlay 가 바로 넘기고 render 끝 xpAfter 가 다시 넣어 끝없이 다시 그렸다 (사용자 '패치 후 버튼들이 먹통') — 이제 공용판이 늘 띄운다 · xpAfter 는 세 번까지만 */
   const X = S.xpst;
   X.defer.forEach(dg => queueCeremony({type: "xpst", k: "back:" + dg}));
   if(X.sum === 1) queueCeremony({type: "xpst", k: "sum"});
@@ -34542,12 +34661,13 @@ function xpPlay(c){
   const X = S && S.xpst, k = (c && c.k) || "";
   const next = () => { R.live = false; showCeremony(); };
   if(!xpOn() || !X){ next(); return; }
-  const cast = xpActors();
-  if(!cast){ next(); return; }
+  const cast = xpTrioHere() ? xpActors() : null;                               // 1024 — 셋이 다 학원에 있으면 셋 · 아니면 공용판 (학원의 학생 셋 · 없으면 서술판)
+  const home = cast ? null : xpHome3();
   if(k === "sum"){
     if(X.sum !== 1){ next(); return; }
     R.live = true;
-    xpStageScene({sc: "sum", cast, cer: true, list: xpList("sum", {})}).then(() => next()).catch(e => { errPush("xpst", e.message, e.stack); xpTeardown(); R.on = false; next(); });
+    const o = cast ? {sc: "sum", cast, cer: true, list: xpList("sum", {})} : {sc: "sum", cast: xpGenCast(home), gen: xpSnap(home, {}), cer: true, list: xpGenList("sum", home, {})};
+    xpStageScene(o).then(() => next()).catch(e => { errPush("xpst", e.message, e.stack); xpTeardown(); R.on = false; X.sum = 2; next(); });   // 1024 — 실패하면 다시 줄에 넣지 않는다
     return;
   }
   if(k.indexOf("back:") === 0){
@@ -34555,11 +34675,13 @@ function xpPlay(c){
     if(X.defer.indexOf(dg) < 0 || X.seen[dg + ".win"]){ X.defer = X.defer.filter(d => d !== dg); next(); return; }
     R.live = true;
     const ctx = {lore: !!X.lore[dg], link: X.clues.some(d => d !== dg)};
-    xpStageScene({sc: "back:" + dg, dg, kind: "win", cast, cer: true, list: xpList("back:" + dg, ctx), loreAdd: !ctx.lore}).then(() => {
+    const o = cast ? {sc: "back:" + dg, dg, kind: "win", cast, cer: true, list: xpList("back:" + dg, ctx), loreAdd: !ctx.lore}
+      : {sc: "back:" + dg, dg, kind: "win", cast: xpGenCast(home), gen: xpSnap(home, ctx), cer: true, list: xpGenList(dg + ".win", home, ctx), loreAdd: true};
+    xpStageScene(o).then(() => {
       if(X.sum === 1 && !xpQueued()) (UI.ceremonies = UI.ceremonies || []).unshift({type: "xpst", k: "sum"});   // 넷째 기록이었다 — 기록 정리가 바로 다음
       try{ save(); }catch(e){}
       next();
-    }).catch(e => { errPush("xpst", e.message, e.stack); xpTeardown(); R.on = false; next(); });
+    }).catch(e => { errPush("xpst", e.message, e.stack); xpTeardown(); R.on = false; X.defer = X.defer.filter(d => d !== dg); next(); });
     return;
   }
   next();
@@ -34569,7 +34691,7 @@ function xpAfter(){
   if(!S || !xpOn() || !Array.isArray(S.students) || !S.students.length) return;
   const X = xpS(); if(!X) return;                                               // 1023 — 세이브를 열면 바로 (예전 세이브는 클리어 상황대로 — xpMigrate)
   if(!(X.sum === 1 || X.defer.length) || R.on || R.live || R.pend || xpQueued()) return;
-  if(!xpActors()) return;                                                       // 1024 — 배우가 없으면 띄울 수 없다 (끝없는 다시 그리기 막기 — xpWeekEnd)
+  if((R.tries | 0) >= 3) return;                                                // 1024 — 이 창에서 세 번 넣어도 끝나지 않으면 그만 (끝없는 다시 그리기 막기)
   const idle = () => {
     const mr = document.getElementById("modalRoot");
     return !(UI.wrun || UI.battle || UI.pendingTour || (UI.ceremonies || []).length || (mr && mr.innerHTML.trim()) || document.getElementById("bootLoader")
@@ -34583,11 +34705,12 @@ function xpAfter(){
     R.pend = false;
     if(!S || !S.xpst || R.on || R.live || xpQueued() || !idle()) return;
     xpWeekEnd();
-    if(xpQueued()) showCeremony();
+    if(xpQueued()){ R.tries = (R.tries | 0) + 1; showCeremony(); }
   }, 0);
 }
 function xpResetAll(){ R.sess++; R.on = false; R.ending = false; R.live = false; R.pend = false; R.preview = false; R.typing = null; R.wait = null; R.depPend = false; R.depGen = -1; xpShift(false); xpTeardown(); }
 window.XPST = {depart: xpDepart, belt: xpBelt, pending: xpPending, weekEnd: xpWeekEnd, play: xpPlay, after: xpAfter, replay: xpReplay, preview: xpPreview,
+  previewGen: xpPreviewGen, genList: xpGenList, gen: XP_GEN, speak: xpSpeak, trioIn: xpTrioIn, home3: xpHome3,
   replayList: xpReplayList, anySeen: xpAnySeen, actors: xpActors, castIds: xpCastIds, list: xpList, reset: xpResetAll, end: xpEnd, advance: xpAdvance,
   state: R, cues: XP_CUES, rec: XP_REC, lore: XP_LORE, link: XP_LINK, boss: XP_BOSS, dgn: XP_DGN, kind: XP_KIND, face: XP_FACE, seal: XP_SEAL, fig: XP_FIG, T: XP_T, s: xpS};
 })();
@@ -36855,7 +36978,7 @@ window.SPST = {play: spPlay, after: spAfter, replay: spReplay, preview: spPrevie
    · 졸업생 3인 · 5인 리그도 (opt.tcom league3 · league5 — 캐스터 + 해설 · 관중 .6 · .75 · 내 학원이 B 편이면 opt.tcomUs 'B' 로 편을 바꿔 읽는다) · 이계 대회(차원 포탈)는 같은 대회 단계라 그대로 나온다.
    · 자동화(navigator.webdriver)에서는 말하지 않는다 — 시험은 window.__tcomForce = true (소리 없이 시험하려면 window.__tcomMute = true) */
 (() => {
-const TC_ASSET = {"face":{"caster-cool":"assets/commentary/caster-cool.png?v=c7fdb7c1","caster-focused":"assets/commentary/caster-focused.png?v=e093c0c1","caster-excited":"assets/commentary/caster-excited.png?v=0432037d","analyst-calm":"assets/commentary/analyst-calm.png?v=7e7b1291","analyst-analysis":"assets/commentary/analyst-analysis.png?v=3d3c989f","analyst-surprised":"assets/commentary/analyst-surprised.png?v=824803b6","burst-back":"assets/commentary/burst-back.png?v=a41b7646","burst-front":"assets/commentary/burst-front.png?v=a62cb247"},"snd":{"C01":"bgm/tc_C01.mp3?v=abedb1d9","C02":"bgm/tc_C02.mp3?v=d6a8c10d","C03":"bgm/tc_C03.mp3?v=01fc9b62","C04":"bgm/tc_C04.mp3?v=1d687bc5","C05":"bgm/tc_C05.mp3?v=7dc3e1c7","C06":"bgm/tc_C06.mp3?v=2aecd8f0","C07":"bgm/tc_C07.mp3?v=844ea583","C08":"bgm/tc_C08.mp3?v=94080e7b","C09":"bgm/tc_C09.mp3?v=5c86b0d4","A01":"bgm/tc_A01.mp3?v=aa6be19d","A02":"bgm/tc_A02.mp3?v=f36ce971","A03":"bgm/tc_A03.mp3?v=a81bc624","A04":"bgm/tc_A04.mp3?v=8ed67cf8","A05":"bgm/tc_A05.mp3?v=27b32d1f","C01A":"bgm/tc_C01A.mp3?v=ef7c545e","C02A":"bgm/tc_C02A.mp3?v=903097c7","C03A":"bgm/tc_C03A.mp3?v=ba653adc","C04A":"bgm/tc_C04A.mp3?v=5251e73e","C05A":"bgm/tc_C05A.mp3?v=f794dca5","C06A":"bgm/tc_C06A.mp3?v=5e295a4f","C07A":"bgm/tc_C07A.mp3?v=b6a78484","C08A":"bgm/tc_C08A.mp3?v=d2dd82e5","C09A":"bgm/tc_C09A.mp3?v=3e30ebcb","C10":"bgm/tc_C10.mp3?v=0f63871e","C10A":"bgm/tc_C10A.mp3?v=4ef0ef5a","C11":"bgm/tc_C11.mp3?v=6332e987","C12":"bgm/tc_C12.mp3?v=ce98eff8","C15":"bgm/tc_C15.mp3?v=be3b51f4","A06":"bgm/tc_A06.mp3?v=aed996a2","A07":"bgm/tc_A07.mp3?v=ad25a486","A08":"bgm/tc_A08.mp3?v=84c5064d","A09":"bgm/tc_A09.mp3?v=f7c10e8f"},"crowd":{"amb":"bgm/crowd_amb.ogg?v=0729693b","cheer":"bgm/crowd_cheer.ogg?v=0f05102c","groan":"bgm/crowd_groan.ogg?v=d759ec20","clap":"bgm/crowd_clap.ogg?v=5f721627"}};   // apply_tcom.py — {face: {키: 그림 경로?v=}, snd: {대사 ID: 음원 경로}, crowd: {amb · cheer · groan · clap: 관중 소리}} (목업은 자료 폴더 그대로)
+const TC_ASSET = {"face":{"caster-cool":"assets/commentary/caster-cool.png?v=c7fdb7c1","caster-focused":"assets/commentary/caster-focused.png?v=e093c0c1","caster-excited":"assets/commentary/caster-excited.png?v=0432037d","analyst-calm":"assets/commentary/analyst-calm.png?v=7e7b1291","analyst-analysis":"assets/commentary/analyst-analysis.png?v=3d3c989f","analyst-surprised":"assets/commentary/analyst-surprised.png?v=824803b6","burst-back":"assets/commentary/burst-back.png?v=a41b7646","burst-front":"assets/commentary/burst-front.png?v=a62cb247"},"snd":{"C01":"bgm/tc_C01.ogg?v=cbc6f1dc","C02":"bgm/tc_C02.ogg?v=f4330d46","C03":"bgm/tc_C03.ogg?v=90eb4d42","C04":"bgm/tc_C04.ogg?v=0510d120","C05":"bgm/tc_C05.ogg?v=fa848865","C06":"bgm/tc_C06.ogg?v=c76c1635","C07":"bgm/tc_C07.ogg?v=010b5a53","C08":"bgm/tc_C08.ogg?v=1a7ea595","C09":"bgm/tc_C09.ogg?v=f22c01e3","A01":"bgm/tc_A01.ogg?v=db9466d2","A02":"bgm/tc_A02.ogg?v=cdc9e278","A03":"bgm/tc_A03.ogg?v=31e63516","A04":"bgm/tc_A04.ogg?v=ec8701d9","A05":"bgm/tc_A05.ogg?v=2dc4b2ee","C01A":"bgm/tc_C01A.ogg?v=5a8cd9fc","C02A":"bgm/tc_C02A.ogg?v=baa7dcca","C03A":"bgm/tc_C03A.ogg?v=a71add29","C04A":"bgm/tc_C04A.ogg?v=17e82aff","C05A":"bgm/tc_C05A.ogg?v=660ac2ab","C06A":"bgm/tc_C06A.ogg?v=dce346ca","C07A":"bgm/tc_C07A.ogg?v=6df1226a","C08A":"bgm/tc_C08A.ogg?v=cac58544","C09A":"bgm/tc_C09A.ogg?v=d335058e","C10":"bgm/tc_C10.ogg?v=430ae3ae","C10A":"bgm/tc_C10A.ogg?v=9be56df9","C11":"bgm/tc_C11.ogg?v=77662bf3","C12":"bgm/tc_C12.ogg?v=4d31ab4d","C15":"bgm/tc_C15.ogg?v=2947d075","A06":"bgm/tc_A06.ogg?v=f4e45382","A07":"bgm/tc_A07.ogg?v=aa16af42","A08":"bgm/tc_A08.ogg?v=7b5b1f17","A09":"bgm/tc_A09.ogg?v=eac6bf81"},"crowd":{"amb":"bgm/crowd_amb.ogg?v=0729693b","cheer":"bgm/crowd_cheer.ogg?v=0f05102c","groan":"bgm/crowd_groan.ogg?v=d759ec20","clap":"bgm/crowd_clap.ogg?v=5f721627"}};   // apply_tcom.py — {face: {키: 그림 경로?v=}, snd: {대사 ID: 음원 경로}, crowd: {amb · cheer · groan · clap: 관중 소리}} (목업은 자료 폴더 그대로)
 const TC_T = {caster: "실황", analyst: "해설"};
 /* 대사 — who caster · analyst / tone 0 차분 · 1 긴장 · 2 흥분 / face / pr 우선순위(클수록 먼저) / fast 0 — ×2 · ×3 에서 생략 / cd 1 — 말한 뒤 TC_RULE.cd 지나면 다시 / first 1 — 처음 한 번 / ja 음성 원문 · ko 자막 */
 const TC_CUES = {
@@ -36967,6 +37090,8 @@ function duck(on){
     if(B) B.ducked = on ? ANOW : null;
   }catch(e){}
 }
+/* 소리 경로 — 'bgm/…' 은 BGM_DIR 기준으로 (1024 고침: 배포본 site/index.html 은 한 칸 아래 폴더라 BGM_DIR 가 '../bgm/' — 그대로 쓰면 site/bgm/ 을 찾아 소리가 안 났다 · 목업의 '../../' 경로는 그대로) */
+function tcSrc(p){ try{ return p && p.indexOf("bgm/") === 0 && typeof BGM_DIR === "string" ? BGM_DIR + p.slice(4) : p; }catch(e){ return p; } }
 function vgain(){ try{ return typeof sfxGain === "function" ? sfxGain() : 1; }catch(e){ return 1; } }
 
 /* ── 관중 (사용자 1024 '함성도 같이 추가해볼까' · '경기 등급(시내/광역/본선/일반/파이널) 기준으로 볼륨 차이') ──
@@ -36981,7 +37106,7 @@ function fadeEl(a, to, sec, end){
   a._fi = setInterval(() => { const k = Math.min(1, (now() - t0) / (sec * 1000 || 1)); try{ a.volume = Math.max(0, Math.min(1, v0 + (to - v0) * k)); }catch(e){} if(k >= 1){ clearInterval(a._fi); if(end) end(); } }, 30);
 }
 function ambStart(b){
-  const src = TC_ASSET.crowd.amb; if(!src || !b.crowd || vgain() <= 0) return;
+  const src = tcSrc(TC_ASSET.crowd.amb); if(!src || !b.crowd || vgain() <= 0) return;
   const a = new Audio(src); a.loop = true; a.volume = 0; b.amb = a;
   const p = a.play(); if(p && p.catch) p.catch(() => {});
   fadeEl(a, crVol(b, "amb"), TC_CR.fadeIn);
@@ -36997,7 +37122,7 @@ function react(k, why, force){
   const t = now(); if(!force && t - b.lastReact < TC_CR.cd) return;
   b.lastReact = t;
   b.log.push({id: k, at: Math.round(t - b.t0), k: "crowd", why});
-  const src = TC_ASSET.crowd[k === "ult" ? "cheer" : k]; if(!src || vgain() <= 0) return;
+  const src = tcSrc(TC_ASSET.crowd[k === "ult" ? "cheer" : k]); if(!src || vgain() <= 0) return;
   const a = new Audio(src); a.volume = crVol(b, k) * (b.speaking ? TC_CR.duck : 1);
   const p = a.play(); if(p && p.catch) p.catch(() => {});
   b.fx = (b.fx || []).filter(x => !x.ended).concat(a);
@@ -37017,7 +37142,7 @@ function say(id){
     else if(!b.pendA) fire(id + "A", "link");
   }
   const done = () => { if(B !== b || !b.speaking || b.speaking.id !== id) return; b.speaking = null; b.el = null; b.lastEnd = now(); b.lastWho = c.who; capHide(); if(!b.pendC && !b.pendA) duck(false); pump(); };
-  const src = TC_ASSET.snd[id];
+  const src = tcSrc(TC_ASSET.snd[id]);
   if(window.__tcomMute || tcMode() === "sub" || !src || vgain() <= 0){ b.timer = setTimeout(done, Math.max(1600, [...lineText(c)].length * 110)); return; }   // 소리 없이 — 글자 수만큼
   const a = new Audio(src); a.volume = Math.min(1, vgain()); b.el = a;
   a.onended = done; a.onerror = () => { b.timer = setTimeout(done, 1600); };
@@ -37218,7 +37343,7 @@ function tcStop(){
   const el = document.getElementById("tcomCap"); if(el){ el.hidden = true; clearTimeout(el._t); }
 }
 function tcClose(btId){ if(B && B.btId === btId) tcStop(); }
-window.TCOM = {prefPanel: tcPrefPanel, prefBind: tcPrefBind, mode: tcMode, see: tcSee, hit: tcHit, out: tcOut, skip: tcSkip, close: tcClose, stop: tcStop, cues: TC_CUES, rule: TC_RULE, tier: TC_TIER, crowd: TC_CROWD, cr: TC_CR, T: TC_T, asset: TC_ASSET,
+window.TCOM = {prefPanel: tcPrefPanel, prefBind: tcPrefBind, mode: tcMode, see: tcSee, hit: tcHit, out: tcOut, skip: tcSkip, close: tcClose, stop: tcStop, cues: TC_CUES, rule: TC_RULE, tier: TC_TIER, crowd: TC_CROWD, cr: TC_CR, T: TC_T, asset: TC_ASSET, src: tcSrc,
   state: () => B, last: () => TC_LAST, idlePick,
   peek: (id, ms) => { if(!TC_CUES[id]) return; capShow(id); capHide(ms == null ? 2600 : ms); }};   // 목업 · 시험 — 그 대사의 자막 띠만 잠깐
 })();
