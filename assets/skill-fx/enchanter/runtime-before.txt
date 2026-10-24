@@ -1,0 +1,513 @@
+/* One still image per effect. Routing is independent of character sprite sheets. */
+const STYLISH_SKILL_FX = {
+  assets: {
+    rogueSlash:"assets/skill-fx/rogue/basic-slash.svg?v=1",
+    rogueSignal:"assets/skill-fx/rogue/caster-signal.svg?v=1",
+    staffThrust:"assets/skill-fx/forcemage/staff-thrust-px.webp?v=2ea18da1",
+    unseal0:"assets/skill-fx/rogue/shadow.webp?v=w90",
+    unseal1:"assets/skill-fx/rogue/shadow.webp?v=w90",
+    unseal2:"assets/skill-fx/rogue/shadow.webp?v=w90",
+    unseal3:"assets/skill-fx/rogue/shadow.webp?v=w90",
+    unseal4:"assets/skill-fx/rogue/shadow.webp?v=w90",
+    unseal5:"assets/skill-fx/rogue/shadow.webp?v=w90",
+    unseal6:"assets/skill-fx/rogue/shadow.webp?v=w90",
+
+    druidCircle:"assets/skill-fx/druid/hand-circle-px.webp?v=6e56d33e",
+    regenSeed:"assets/skill-fx/druid/regen.svg?v=1",
+    bearSign:"assets/skill-fx/druid/bear-outline-px.webp?v=85883aba",
+    natureRoots:"assets/skill-fx/druid/roots-long-px.webp?v=df3f4d67",
+    monkPressure:"assets/skill-fx/monk/pressure-px.webp?v=e63d07d3",
+    chiHit:"assets/skill-fx/monk/chi-px.webp?v=a730e174",
+    fistRush:"assets/skill-fx/monk/fists-oval-px.webp?v=62a0e447",
+    oraText:"assets/skill-fx/monk/du-px.webp?v=e30beea1",
+    swordSwing:"assets/skill-fx/sword/swing-px.webp?v=8facdf4f",
+    tauntCall:"assets/skill-fx/sword/taunt-call-px.webp?v=ef94e9c1",
+    tauntAnger:"assets/skill-fx/sword/taunt-anger-px.webp?v=26c2f3b5",
+    earthWave:"assets/skill-fx/sword/earth-wave-px.webp?v=2908ed87",
+    trail: "assets/skill-fx/paladin/trail-particles.webp?v=w90",
+    impact: "assets/skill-fx/paladin/impact-px.webp?v=77fd81ce",
+    shield: "assets/skill-fx/paladin/shield-px.webp?v=7ab693b2",
+    beam: "assets/skill-fx/paladin/beam-particles.webp?v=w90",
+    darkEssence: "assets/skill-fx/darkpriest/essence-px.webp?v=3b1fdd05",
+    darkHit: "assets/skill-fx/darkpriest/hit-px.webp?v=7a383d1a",
+    redDrain: "assets/skill-fx/darkpriest/drain-px.webp?v=c3643b66",
+    curseNail: "assets/skill-fx/darkpriest/nail-px.webp?v=182b0f5e",
+    bloodRitual: "assets/skill-fx/darkpriest/ritual-px.webp?v=96f9bbd9",
+    gunMuzzle: "assets/skill-fx/gunner/muzzle-px.webp?v=5db34668",
+    gunHit: "assets/skill-fx/gunner/hit-px.webp?v=946cbf49",
+    gunPierce: "assets/skill-fx/gunner/pierce-px.webp?v=5dd0c591",
+    poisonDagger: "assets/skill-fx/rogue/dagger-embedded-px.webp?v=f5ccd5a0",
+    shadowStep: "assets/skill-fx/rogue/shadow.webp?v=w90",
+    assassination: "assets/skill-fx/rogue/assassinate-px.webp?v=d97b0952",
+    holyEssence: "assets/skill-fx/priest/essence-px.webp?v=6b20717d",
+    greaterHeal: "assets/skill-fx/priest/heal.webp?v=w90",
+    blessing: "assets/skill-fx/priest/blessing-px.webp?v=5cf13c57",
+    revival: "assets/skill-fx/priest/revival.webp?v=w90",
+    bardMelody: "assets/skill-fx/bard/melody-px.webp?v=ee455f76",
+    dissonance: "assets/skill-fx/bard/dissonance-px.webp?v=1576a490",
+    ensemble: "assets/skill-fx/bard/ensemble-px.webp?v=a6bea858",
+    spotlight: "assets/skill-fx/bard/spotlight.webp?v=w90",
+    ninjaRipple: "assets/skill-fx/ninja/ripple-px.webp?v=57787849",
+    waterSwamp: "assets/skill-fx/ninja/swamp-px.webp?v=8d707625",
+    waterDragon: "assets/skill-fx/ninja/dragon-px.webp?v=6353f9c6",
+    fumaWave: "assets/skill-fx/ninja/fuma-px.webp?v=469a124a",
+    boundaryWave: "assets/skill-fx/ninja/boundary-wave-px.webp?v=c36cc5c8",
+    fumaPassed: "assets/skill-fx/ninja/fuma-water-spin-px.webp?v=58726af7",
+    waterFlower: "assets/skill-fx/ninja/water-flower-px.webp?v=7619ad1e",
+    archerWind: "assets/skill-fx/archer/wind-px.webp?v=e9112c21",
+    greenPierce: "assets/skill-fx/archer/pierce-offscreen-px.webp?v=ea547754",
+    hawkEye: "assets/skill-fx/archer/hawk-outline-px.webp?v=a991c8b2",
+    meteorRain: "assets/skill-fx/archer/meteor-perspective-back-px.webp?v=cd6dfddc",
+    meteorFront: "assets/skill-fx/archer/meteor-perspective-front-px.webp?v=ef8cf1c0",
+    meteorImpact: "assets/skill-fx/archer/meteor-impact-px.webp?v=c36662d4",
+    wizardCircles: "assets/skill-fx/wizard/triple-circle-px.webp?v=19472eed",
+    fireExplosion: "assets/skill-fx/wizard/fire-explosion-px.webp?v=56ea6a8d",
+    blizzardBack: "assets/skill-fx/wizard/blizzard-back.svg?v=1",
+    blizzardFront: "assets/skill-fx/wizard/blizzard-front-px.webp?v=826dc6c0",
+    gravityCircle: "assets/skill-fx/wizard/gravity-circle-px.webp?v=3014576f",
+    gravityBeam: "assets/skill-fx/wizard/gravity-beam-px.webp?v=e40cba90",
+    gravityFoot: "assets/skill-fx/wizard/gravity-foot-px.webp?v=c692e10b"
+  },
+  casters: {timemage:["tmGears"],spellsword:["ssFlame"],rogue:["rogueSignal"],forcemage:["staffThrust"],druid:["druidCircle"], monk:["monkPressure"], sword:["swordSwing"], paladin: ["trail"], darkpriest: ["darkEssence"], gunner:["gunMuzzle"], priest:["holyEssence"], bard:["bardMelody"], ninja:["ninjaRipple"], archer:["archerWind"], wizard:["wizardCircles"]},
+  targets: {tm_b:["tmRift"],tm_1:["tmHaste"],tm_2:["tmDelay"],tm_u:[],ss_b:["ssBasic"],ss_1:["ssBlue","ssPurple","ssPink"],ss_2:[],ss_u:[],fm_b:[],fm_1:[],fm_2:["shadowStep"],fm_u:["unseal0","unseal1","unseal2","unseal3","unseal4","unseal5","unseal6"],dr_b:[],dr_1:["regenSeed"],dr_2:["bearSign"],dr_u:[],mo_b:[], mo_1:["chiHit"], mo_2:["shadowStep"], mo_u:["fistRush","oraText"], sw_b:[], sw_1:["tauntAnger"], sw_2:["shadowStep"], sw_u:[], pa_b: ["impact"], pa_1: ["shield"], pa_2: ["beam"], pa_u: ["beam", "shield"],
+    dp_b:["darkHit"], dp_1:["redDrain"], dp_2:["curseNail"], dp_u:["redDrain"],
+    gn_b:["gunHit"], gn_1:["gunHit"], gn_2:["gunPierce"], gn_u:["gunPierce"],
+    ro_b:["rogueSlash"], ro_1:["poisonDagger"], ro_2:["shadowStep"], ro_u:["assassination"],
+    pr_b:["impact"], pr_1:["greaterHeal"], pr_2:["blessing"], pr_u:["revival"],
+    bd_1:["shadowStep"], bd_2:["dissonance"], bd_u:["spotlight"],
+    nj_1:["dissonance"], nj_2:["boundaryWave","waterDragon"], nj_u:["fumaPassed","waterFlower"],
+    ar_1:[], ar_2:["hawkEye"], ar_u:["meteorRain","meteorFront","meteorImpact"],
+    wz_1:["fireExplosion"], wz_2:[], wz_u:[]},
+  skillCasters: {ss_2:["ssAwakeBack","ssAwakeFront"],ss_u:["ssTenCuts"],sw_1:["tauntCall"]},
+  groups: {tm_u:["tmStop"],dr_u:["natureRoots"],sw_u:["earthWave"], dp_u:["bloodRitual"], bd_u:["ensemble"], nj_1:["waterSwamp"], ar_1:["greenPierce"], wz_2:["blizzardBack","blizzardFront"], wz_u:["gravityBeam","gravityFoot","gravityCircle"]}
+};
+Object.assign(STYLISH_SKILL_FX.assets, {
+ ssFlame:"assets/skill-fx/spellsword/blade-flame.svg?v=1",
+ ssAwakeBack:"assets/skill-fx/spellsword/awakening-back.svg?v=1",
+ ssAwakeFront:"assets/skill-fx/spellsword/awakening-front.svg?v=1",
+ ssTenCuts:"assets/skill-fx/spellsword/ten-cuts.svg?v=1",
+ ssBasic:"assets/skill-fx/spellsword/slash-blue.png?v=1",
+ ssBlue:"assets/skill-fx/spellsword/slash-blue.png?v=1",
+ ssPurple:"assets/skill-fx/spellsword/slash-purple.png?v=1",
+ ssPink:"assets/skill-fx/spellsword/slash-pink.png?v=1"
+});
+Object.assign(STYLISH_SKILL_FX.assets, {
+ tmGears:"assets/skill-fx/timemage/gears.svg?v=1",
+ tmRift:"assets/skill-fx/timemage/rift.svg?v=1",
+ tmStop:"assets/skill-fx/timemage/time-stop.svg?v=1"
+});
+/* 원정 보스 필살기 (1021 넷째 — 사용자 'newmonsterimage/ultimate-fx-v1 에 각 보스 필살기 효과를 넣어놨으니 그것도 webp로 적용') — 원정지 주인 다섯의 필살기 그림
+   (원본 1536 × 1024 PNG → skill-fx/boss 폴더의 WebP · tools/gen/patch/bossult_art.py). 스타일리시 줌인에서만 (학생 스킬 그림과 같다 · 심플 모드는 예전 효과).
+   한 장짜리 그림을 목업(ultimate-fx-v1/preview.html)처럼 움직인다 — burst: 작게 나타나 커지며 사라짐 · barrage: 주먹 잔상이 0.11초마다 앞뒤로(백열권 소리와 같은 박자) · slash: 오른쪽 위에서 내리긋고 왼쪽 아래로.
+   과부하 연타 · 영웅 살해는 대상 하나(targets), 나머지 셋은 대상 무리 전체(groups). 소용돌이만 유닛 아래(바닥)에 깐다.
+   w — 대상 도트 칸 높이 h 의 몇 배 · span — 무리 폭의 몇 배(min — 그래도 h 의 몇 배) · ax · ay — 그림의 어느 점(폭 · 높이 비율)을 대상(무리) 가운데 · at(body 몸 가운데 / foot 발)에 맞추나 */
+const BOSS_ULT_FX = {
+  bossDummyUlt:    {job:"mon_dummy",    w:3.6, ax:.28, ay:.5,  at:"body", anim:"barrage", front:true},   // 주먹 사이에 대상 (주먹은 오른쪽 → 왼쪽)
+  bossGuardianUlt: {job:"mon_guardian", w:3.4, ax:.2,  ay:.75, at:"body", anim:"slash",   front:true},   // 오른쪽 위에서 내리그어 대상 왼쪽 아래에서 터진다
+  bossWraithUlt:   {job:"mon_wraith",   span:1.9, min:3.4, ax:.5, ay:.94, at:"foot", anim:"burst", front:true},
+  bossGargoyleUlt: {job:"mon_gargoyle", span:1.9, min:3.4, ax:.5, ay:.94, at:"foot", anim:"burst", front:true},
+  bossBrineUlt:    {job:"mon_brine",    span:2.0, min:3.6, ax:.5, ay:.6,  at:"foot", anim:"burst", front:false}   // 소용돌이 — 발밑 (유닛 아래)
+};
+Object.assign(STYLISH_SKILL_FX.assets, {
+  bossDummyUlt: "assets/skill-fx/boss/dummy-ultimate-px.webp?v=d4977f93",
+  bossWraithUlt: "assets/skill-fx/boss/wraith-ultimate-px.webp?v=e99931f2",
+  bossGargoyleUlt: "assets/skill-fx/boss/gargoyle-ultimate-px.webp?v=c19d4df6",
+  bossBrineUlt: "assets/skill-fx/boss/brine-ultimate-px.webp?v=b643d3b3",
+  bossGuardianUlt: "assets/skill-fx/boss/guardian-ultimate-px.webp?v=7823daad"
+});
+Object.assign(STYLISH_SKILL_FX.targets, {md_u:["bossDummyUlt"], mk_u:["bossGuardianUlt"], mw_u:[], mg_u:[], mb_u:[]});
+Object.assign(STYLISH_SKILL_FX.groups, {mw_u:["bossWraithUlt"], mg_u:["bossGargoyleUlt"], mb_u:["bossBrineUlt"]});
+/* 그 순간의 투명도 · 변형 — t: 효과가 보이는 동안(0 ~ 1) · beat: 한 박자(0 ~ 1 비율) · 진영 B(오른쪽 보스)가 그림 그대로, A 는 좌우 반전 */
+function bossUltFxAt(B, t, beat, side){
+  t = clamp(t, 0, 1);
+  let o = 1, tf = "";
+  if(B.anim === "barrage"){
+    let dx = 0;
+    if(t < .06){ o = t/.06; dx = .1*(1 - t/.06); }
+    else if(t < .8){ const ph = Math.floor((t - .06)/Math.max(.01, beat)) % 2; o = ph ? .75 : 1; dx = ph ? .01 : -.02; }
+    else { const k = (t - .8)/.2; o = 1 - k; dx = -.02 - .04*k; }
+    tf = `translateX(${(dx*100).toFixed(2)}%)`;
+  } else if(B.anim === "slash"){
+    let dx = 0, dy = 0, s = 1;
+    if(t < .1){ const k = t/.1; o = k; dx = .07*(1 - k); dy = -.07*(1 - k); s = .8 + .2*k; }
+    else if(t >= .55){ const k = (t - .55)/.45; o = 1 - k; dx = -.04*k; dy = .04*k; }
+    tf = `translate(${(dx*100).toFixed(2)}%, ${(dy*100).toFixed(2)}%) scale(${s.toFixed(3)})`;
+  } else {
+    let s;
+    if(t < .1){ const k = t/.1; o = k; s = .45 + .49*k; }
+    else if(t < .6){ s = .94 + .06*(t - .1)/.5; }
+    else { const k = (t - .6)/.4; o = 1 - k; s = 1 + .12*k; }
+    tf = `scale(${s.toFixed(3)})`;
+  }
+  return {o: clamp(o, 0, 1), tf: (side === "A" ? "scaleX(-1) " : "") + tf};
+}
+function stylishSkillFxPlan(job, skillId){
+  return {caster: [...(STYLISH_SKILL_FX.casters[job] || []), ...(STYLISH_SKILL_FX.skillCasters[skillId] || [])], target: STYLISH_SKILL_FX.targets[skillId] || [], group: STYLISH_SKILL_FX.groups[skillId] || []};
+}
+function stylishFormation(actor, allies, enemies, side, skillId){   // 1024 — 숫자는 STYLISH_TUNE (STLAB · 편집 툴 tools/stylish_lab.html)
+  const T=stT(), positions=[], mirror=x=>side==="B"?100-x:x;
+  const lane=(list,[left,right])=>list.forEach((uid,i)=>positions.push({uid,
+    x:mirror(list.length===1?(left+right)/2:left+(right-left)*i/(list.length-1)),
+    y:T.y, scale:T.scale}));
+  const sk=stSkillLane(skillId, enemies.length);
+  if(sk){lane([actor,...allies],sk.ally);lane(enemies,sk.enemy);}
+  else if(enemies.length){lane([actor,...allies],T.ally);lane(enemies,T.enemy);}
+  else {lane([actor,...allies],T.solo);}
+  return positions;
+}
+function stylishSkillFxPreload(res){
+  const jobs = new Set(((res && res.names) || []).map(n=> n.job));
+  Object.entries(STYLISH_SKILL_FX.assets).forEach(([k, src])=>{
+    if(BOSS_ULT_FX[k] && !jobs.has(BOSS_ULT_FX[k].job)) return;   // 1021 넷째 — 원정 보스 필살기 그림은 그 보스가 나오는 전투에서만 미리 받는다
+    const img=new Image(); img.src=src; });
+}
+function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, groupTargets=[], timing={}){
+  const plan=stylishSkillFxPlan(job, skillId), entries=[];
+  const mono=skillId==="gn_u", inverted=skillId==="ro_u", shots=skillId==="gn_1"?(timing.shots||[]):skillId==="ss_1"?(timing.shots||Array.from({length:3},(_,i)=>targets[i%Math.max(1,targets.length)]?.dataset.uid).filter(Boolean)):[];
+  const started=performance.now(), duration=timing.duration||1500;
+  const shotStep=skillId==="ss_1"?duration*.28:Math.min(duration/Math.max(1,shots.length),duration*.16);
+  const layer=document.createElement("div");
+  layer.className="stylish-skill-fx"; layer.setAttribute("aria-hidden","true");
+  layer.style.cssText="position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:325";
+  const ground=layer.cloneNode();ground.className="stylish-group-fx";ground.style.zIndex="0";
+  if(skillId==="ar_u"){
+    const shade=document.createElement("div");shade.dataset.effect="meteorShade";
+    shade.style.cssText="position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,24,15,.78),rgba(0,31,18,.6));pointer-events:none";
+    ground.append(shade);
+  }
+  const group=[...new Set(skillId==="bd_u"?[caster,...targets]:groupTargets)].filter(Boolean);
+  const add=(el, kind, echoIndex=2)=>{
+    if(!el) return;
+    const isEcho=kind==="tmHaste"||kind==="tmDelay";
+    const img=document.createElement(isEcho?"canvas":"img");if(!isEcho)img.src=STYLISH_SKILL_FX.assets[kind];
+    img.dataset.effect=kind; img.dataset.target=el.dataset.uid; img.alt="";
+    img.style.cssText="position:absolute;max-width:none;image-rendering:auto;object-fit:fill;pointer-events:none";
+    if(/-px\.webp/.test(img.src)) img.style.imageRendering="pixelated";   // 1024 — 도트판 이펙트 (apply_sfxpx · tools/skill-fx-pixel-v1)
+    img.style.opacity=kind==="bloodRitual" ? ".6" : kind==="shield" ? ".58" : kind==="beam" ? ".72" : (kind==="darkEssence"||kind==="holyEssence") ? ".66" : kind==="curseNail" ? ".65" : ".9";
+    if(kind==="spotlight") img.style.opacity=".46";
+    if(kind==="archerWind") img.style.opacity=".72";
+    if(kind==="blizzardBack") img.style.opacity=".66";
+    if(kind==="blizzardFront") img.style.opacity=".82";
+    if(kind==="gravityBeam" || kind==="gravityFoot") img.style.zIndex="1";
+    if(kind==="wizardCircles" && side==="B") img.style.transform="scaleX(-1)";
+    if((kind==="blizzardBack" || kind==="blizzardFront") && side==="B") img.style.transform="scaleX(-1)";
+    if(kind==="meteorRain") img.style.opacity=".85";
+    if((kind==="meteorRain" || kind==="meteorFront") && side==="B") img.style.transform="scaleX(-1)";
+    if(kind==="greenPierce" && side==="B") img.style.transform="scaleX(-1)";
+    if(kind==="waterSwamp") img.style.opacity=".64";
+    if(kind==="ninjaRipple") img.style.opacity=".8";
+    if(kind==="waterDragon") img.style.maskImage="linear-gradient(to right,transparent 0%,black 16%,black 100%)";
+    if((kind==="waterDragon"||kind==="fumaWave") && side==="B") img.style.transform="scaleX(-1)";
+    if(kind==="waterFlower" && side==="B") img.style.transform="scaleX(-1)";
+    if(BOSS_ULT_FX[kind]){ img.style.opacity="0"; img.style.transformOrigin="50% 70%"; img.style.willChange="transform, opacity"; }   // 1021 넷째 — 원정 보스 필살기 (update 가 움직인다)
+    if(kind==="bardMelody" && side==="B") img.style.transform="scaleX(-1)";
+    if((kind==="trail" || kind==="darkEssence" || kind==="holyEssence" || kind==="redDrain" || kind==="gunMuzzle" || kind==="gunPierce" || kind==="poisonDagger" || kind==="assassination") && side==="B") img.style.transform="scaleX(-1)";
+    if(kind==="gunPierce" && mono) img.style.filter="brightness(.08)";
+    if((kind==="swordSwing" || kind==="tauntCall" || kind==="earthWave") && side==="B") img.style.transform="scaleX(-1)";
+    if(kind==="chiHit" && side==="A") img.style.transform="scaleX(-1)";
+    if((kind==="monkPressure" || kind==="fistRush") && side==="B") img.style.transform="scaleX(-1)";
+    if(kind==="staffThrust" && side==="B") img.style.transform="scaleX(-1)";
+    if(kind==="oraText" && side==="B") img.src="assets/skill-fx/monk/du-reverse-px.webp?v=f47f542c";
+    layer.append(img); const entry={el,kind,img,echoIndex};entries.push(entry);
+    if(isEcho || kind==="ssAwakeBack" || kind==="rogueSignal" || kind==="gunPierce" || kind==="ninjaRipple" || kind==="fumaPassed" || kind==="waterFlower" || kind==="meteorRain") ground.append(img);
+    if(isEcho&&echoIndex===2)add(el,kind,1);
+    return entry;
+  };
+  plan.caster.forEach(kind=>add(caster,kind));
+  if(skillId==='tm_u'){
+    const allies=timing.allies||[...stage.querySelectorAll(`.bf-unit.team-${side}:not(.dead)`)];
+    [...new Set([caster,...allies])].filter(Boolean).forEach(el=>add(el,'tmHaste'));
+  }
+  if(shots.length) shots.forEach((uid,shot)=>{
+    const el=targets.find(t=>t.dataset.uid===uid);if(!el)return;
+    (skillId==="ss_1"?[plan.target[shot%3]]:plan.target).forEach(kind=>{const entry=add(el,kind);entry.shot=shot;entry.img.dataset.shot=shot;});
+  });
+  else [...new Set(skillId==="bd_u"?[caster,...targets]:targets)].forEach(el=>plan.target.forEach(kind=>add(el,kind)));
+  if(group.length) plan.group.forEach(kind=>{
+    add(group[0],kind);const entry=entries[entries.length-1];entry.group=group;
+    entry.img.dataset.targets=group.map(el=>el.dataset.uid).join(",");
+    if(!["tmStop","ensemble","greenPierce","meteorRain","blizzardFront","gravityBeam","gravityFoot","earthWave","natureRoots"].includes(kind) && !(BOSS_ULT_FX[kind] && BOSS_ULT_FX[kind].front)) ground.append(entry.img);
+  });
+  if(!entries.length) return ()=>{};
+  // Field background is z=-1; the transformed camera is an auto/0 stacking context.
+  // Put the ground effect before that context, below all units, labels and foreground FX.
+  stage.insertBefore(ground,stage.querySelector(".bf-cam"));
+  stage.append(layer);
+  const oldFilter=stage.style.filter;
+  if(mono){stage.style.filter=(oldFilter?oldFilter+" ":"")+"grayscale(1) contrast(1.12)";stage.dataset.skillMonochrome=skillId;}
+  if(inverted){stage.style.filter=(oldFilter?oldFilter+" ":"")+"invert(1)";stage.dataset.skillInverted=skillId;}
+  // Only sprite graphics receive filters; nameplates and health bars stay intact.
+  const filterEntries=[];
+  const remember=(el,role)=>{const node=el && (el.querySelector('.spr-anchor')||el.querySelector('.sprwrap'));if(node&&!filterEntries.some(e=>e.node===node))filterEntries.push({node,role,old:node.style.filter,last:node.style.filter});};
+  if(job==='rogue')remember(caster,'caster');
+  if(skillId==='ro_b')targets.forEach(el=>remember(el,'target'));
+  let raf=0, disposed=false, unsealSoundPhase=-1;
+  const stop=()=>{disposed=true;cancelAnimationFrame(raf);filterEntries.forEach(e=>{if(e.node.style.filter===e.last)e.node.style.filter=e.old;});layer.remove();ground.remove();if(mono||inverted){stage.style.filter=oldFilter;delete stage.dataset.skillMonochrome;delete stage.dataset.skillInverted;}};
+  const update=()=>{
+    if(disposed || !stage.isConnected || !active()){stop();return;}
+    const sr=stage.getBoundingClientRect(), sx=stage.clientWidth/sr.width, sy=stage.clientHeight/sr.height;
+    const boundary=stage.querySelector(".cam-fx .cb.t");
+    const top=boundary ? (boundary.getBoundingClientRect().bottom-sr.top)*sy : stage.clientHeight*.24;
+    const lower=stage.querySelector(".cam-fx .cb.b");
+    const bottom=lower ? (lower.getBoundingClientRect().top-sr.top)*sy : stage.clientHeight*.86;
+    layer.style.clipPath=`inset(${top}px 0 ${Math.max(0,stage.clientHeight-bottom)}px 0)`;
+    ground.style.clipPath=layer.style.clipPath;
+    const elapsed=performance.now()-started;
+    const flashTime=duration*160/1500;
+    filterEntries.forEach(e=>{
+      if(e.node.style.filter!==e.last)return; // A newer effect owns the filter now.
+      const extra=e.role==='caster'?'drop-shadow(1px 0 0 #fff1b966) drop-shadow(-1px 0 0 #fff1b966)':elapsed<flashTime?'brightness(0) invert(1)':'';
+      e.last=(e.old+(e.old&&extra?' ':'')+extra);e.node.style.filter=e.last;
+    });
+    const unsealPhase=Math.min(6,Math.floor(elapsed/(duration/7)));
+    if(skillId==="fm_u" && unsealPhase!==unsealSoundPhase){unsealSoundPhase=unsealPhase;if(typeof sfxPlay==="function")sfxPlay("unseal"+unsealPhase);}
+    entries.forEach(entry=>{
+      const {el,kind,img,group,shot,echoIndex}=entry;
+      if(shot!=null){
+        const end=skillId==="ss_1"||shot===shots.length-1?duration:(shot+.6)*shotStep;
+        img.style.visibility=elapsed>=shot*shotStep && elapsed<end?"visible":"hidden";
+      }
+      if(kind==="gunMuzzle" && shots.length){
+        const index=Math.min(shots.length-1,Math.floor(elapsed/shotStep));
+        img.style.visibility=index===shots.length-1 || elapsed-index*shotStep<shotStep*.6?"visible":"hidden";
+      }
+      const sprite=el.querySelector(".spr-anchor") || el.querySelector(".sprwrap") || el;
+      const r=sprite.getBoundingClientRect(), h=r.height*sy, w=r.width*sx;
+      const cx=(r.left+r.width/2-sr.left)*sx, cy=(r.top-sr.top)*sy+h*.55;
+      const throwSize=Math.min(h,Math.max(1,(side==="B"?cx:stage.clientWidth-cx)-12)/3.6);
+      let width=h*1.05, height=width, x=cx-width/2, y=cy-height/2;
+      if(kind==='tmGears'){
+        width=w*2;height=h*2;x=(r.left-sr.left)*sx-w/2;y=(r.top-sr.top)*sy-h/2;
+        img.style.opacity='1';img.style.transform=side==='B'?'scaleX(-1)':'';img.style.imageRendering='pixelated';
+      }
+      if(kind==='tmRift'){
+        width=h*2;height=width;x=cx-width/2;y=cy-height/2;img.style.opacity='1';img.style.imageRendering='pixelated';
+        img.style.transform=side==='B'?'scaleX(-1)':'';
+      }
+      if(kind==='tmStop'){
+        const bounds=(group||[el]).map(u=>(u.querySelector('.spr-anchor')||u).getBoundingClientRect());
+        const left=Math.min(...bounds.map(b=>b.left)),right=Math.max(...bounds.map(b=>b.right));
+        width=Math.max(h*2.5,(right-left)*sx+h*.8);height=width*232/270;
+        x=((left+right)/2-sr.left)*sx-width/2;y=cy-height/2;img.style.opacity='1';img.style.imageRendering='pixelated';
+      }
+      if(kind==='tmHaste'||kind==='tmDelay'){
+        const src=el.querySelector('canvas.spr');
+        if(!src){img.style.visibility='hidden';return;}
+        if(!entry.maskReady){
+          img.width=src.width;img.height=src.height;const ctx=img.getContext('2d');
+          ctx.drawImage(src,0,0);ctx.globalCompositeOperation='source-in';
+          const gradient=ctx.createLinearGradient(0,0,img.width,img.height);
+          const colors=kind==='tmDelay'?['#f5e8ff','#d6b9f4','#9b7acb']:['#e8ffd0','#b5f7a2','#4cbd90'];
+          colors.forEach((v,i)=>gradient.addColorStop(i/2,v));ctx.fillStyle=gradient;ctx.fillRect(0,0,img.width,img.height);entry.maskReady=true;
+        }
+        const br=src.getBoundingClientRect(),p0=clamp(elapsed/duration,0,1),p=p0*p0*(3-2*p0),slow=kind==='tmDelay';
+        const facing=src.classList.contains('flip')?-1:1,baseWidth=br.width*sx;
+        const stretch=slow?1+.13*echoIndex*(1-p):1+.08*echoIndex+.06*p;
+        const offset=echoIndex*(slow?32*(1-p)+3:24+12*p)*h/100;
+        width=baseWidth*stretch;height=br.height*sy;x=(br.left-sr.left)*sx+(baseWidth-width)/2-facing*offset;y=(br.top-sr.top)*sy;
+        img.style.transform=facing<0?'scaleX(-1)':'';
+        img.style.opacity=String((echoIndex===2?.21:.43)*(slow?1-.65*p:1));img.style.imageRendering='pixelated';
+      }
+      if(kind==='ssFlame'||kind==='ssAwakeBack'||kind==='ssAwakeFront'){
+        // Frame canvas is 256px inside the 128px anchor, offset -64 on each axis.
+        width=w*2;height=h*2;x=(r.left-sr.left)*sx-w/2;y=(r.top-sr.top)*sy-h/2;
+        img.style.opacity='1';img.style.transform=side==='B'?'scaleX(-1)':'';
+        img.style.imageRendering='pixelated';
+      }
+      if(kind==='ssTenCuts'){
+        width=stage.clientWidth;height=bottom-top;x=0;y=top;
+        img.style.opacity='1';img.style.transform=side==='B'?'scaleX(-1)':'';
+        img.style.imageRendering='pixelated';
+      }
+      if(['ssBasic','ssBlue','ssPurple','ssPink'].includes(kind)){
+        width=h*(kind==='ssBasic'?1.05:1.3);height=width;x=cx-width/2;y=cy-height/2;
+        const index=Math.max(0,['ssBlue','ssPurple','ssPink'].indexOf(kind));
+        const angle=kind==='ssBasic'?-.55:[-.65,.55,.1][index];
+        img.style.transform=(side==='B'?'scaleX(-1) ':'')+`rotate(${angle}rad) scaleX(-1)`;
+        const age=elapsed-(shot==null?0:shot*shotStep);
+        img.style.opacity=String((kind==='ssBasic'?.6:.5)+(kind==='ssBasic'?.4:.5)*Math.max(0,1-age/(duration*.13)));
+        img.style.imageRendering='pixelated';
+      }
+      if(kind==='rogueSlash'){
+        width=h*1.22;height=width;x=cx-width/2;y=cy-height/2;
+        img.style.opacity=String(.48+.52*Math.max(0,1-elapsed/(duration*160/1500)));
+        img.style.transform=side==='B'?'scaleX(-1)':'';img.style.imageRendering='pixelated';
+      }
+      if(kind==='rogueSignal'){
+        width=h*.76;height=width*.75;x=cx-width/2;y=(r.top-sr.top)*sy+h*.8-height*75/96;
+        img.style.opacity='.8';img.style.imageRendering='pixelated';
+      }
+      if(kind==="staffThrust") {width=h*1.3;height=width*.5;x=cx-width*(side==="B"?.86:.14);y=(r.top-sr.top)*sy+h*.53-height*.5;}
+      if(kind.startsWith("unseal")){width=h*1.05;height=width;x=cx-width/2;y=(r.top-sr.top)*sy+h*.8-height*.97;img.style.filter=`hue-rotate(${[155,185,215,280,0,35,75][Number(kind.slice(6))]}deg)`;img.style.visibility=Number(kind.slice(6))===unsealPhase?"visible":"hidden";}
+      if(kind==="druidCircle") {width=h*.48;height=width;x=cx+(side==="B"?-1:1)*w*.37-width*.5;y=(r.top-sr.top)*sy+h*.38-height*.5;}
+      if(kind==="regenSeed") {width=h*1.05;height=width;x=cx-width/2;y=(r.top-sr.top)*sy+h*.47-height*.5;}
+      if(kind==="bearSign") {width=h*.58;height=width;x=cx-width/2;y=Math.max(top+4,(r.top-sr.top)*sy+h*.12-height);}
+      if(kind==="bearSign"){const speech=el.querySelector(".bf-speech");if(speech)y=Math.max(top+4,Math.min(y,(speech.getBoundingClientRect().top-sr.top)*sy-height-5));}
+      if(kind==="monkPressure") {width=h*.95;height=width*.55;x=cx-width*(side==="B"?.85:.15);y=(r.top-sr.top)*sy+h*.57-height*.5;}
+      if(kind==="chiHit") {width=h*.9;height=width;x=cx-width*(side==="B"?.28:.72);y=(r.top-sr.top)*sy+h*.57-height*.5;}
+      if(kind==="fistRush") {width=h*1.65;height=width*2/3;x=cx-width*(side==="B"?.12:.88)+(side==="B"?1:-1)*h*.35;y=(r.top-sr.top)*sy+h*.5-height*.5;}
+      if(kind==="oraText") {width=h*1.95;height=width*200/700;x=cx-width*(side==="B"?.12:.88)+(side==="B"?1:-1)*h*.35;y=Math.max(top+4,(r.top-sr.top)*sy+h*.02-height*.6);}
+      if(kind==="swordSwing") {width=h*1.18;height=width;x=cx-width/2+(side==="B"?-1:1)*w*.2;y=cy-height*.61;}
+      if(kind==="tauntCall") {width=h*.43;height=width;x=cx+(side==="B"?-1:1)*w*.59-width*(side==="B"?1:0);y=(r.top-sr.top)*sy+h*.43-height*.45;}
+      if(kind==="tauntAnger") {width=h*.36;height=width;x=cx-width/2;y=Math.max(top+4,(r.top-sr.top)*sy+h*.12-height);}
+      if(kind==="wizardCircles"){
+        height=h*1.15;width=height*550/570;
+        const tipX=cx+(side==="B"?-1:1)*w*.34;
+        x=tipX-width*(side==="B"?.87:.13);y=(r.top-sr.top)*sy+h*.39-height*.52;
+      }
+      if(kind==="fireExplosion"){width=h*.92;height=width;x=cx-width/2;y=(r.top-sr.top)*sy+h*.55-height/2;}
+      if(kind==="archerWind"){width=h*1.12;height=width;x=cx-width/2;y=cy-height*.5;}
+      if(kind==="meteorRain" || kind==="meteorFront"){
+        width=Math.max(h*4.4,stage.clientWidth*.54);y=top-4;height=Math.max(1,bottom-top+8);
+        x=cx-width*(side==="B"?.45:.55);
+      }
+      if(kind==="meteorImpact"){width=h*.48;height=width;x=cx-width/2;y=(r.top-sr.top)*sy+h*.62-height/2;}
+      if(kind==="hawkEye"){
+        width=h*.46;height=width;x=cx-width/2;y=(r.top-sr.top)*sy+h*.12-height;
+        const speech=el.querySelector(".bf-speech");
+        if(speech)y=Math.min(y,(speech.getBoundingClientRect().top-sr.top)*sy-height-6);
+        y=Math.max(top+4,y);
+      }
+      if(kind==="trail") {width=h*1.35;height=width;x=cx-width/2+(side==="B"?-1:1)*w*.12;y=cy-height*.82;}
+      if(kind==="shield") {width=h*.88;height=width;x=cx-width/2;y=cy-height/2;}
+      if(kind==="darkHit") {width=h*.9;height=width/1.5;x=cx-width*.51;y=cy-height*.58;}
+      if(kind==="curseNail") {width=h*.53;height=width/1.2;x=cx-width*.28;y=cy-height*.86;}
+      if(kind==="redDrain") {width=h*.95;height=width/1.5;x=cx-width*(side==="B"?.33:.67);y=cy-height*.72;}
+      if(kind==="poisonDagger") {width=h*.34;height=width;x=cx-width*(side==="B"?.26:.74);y=(r.top-sr.top)*sy+h*.65-height*.5;}
+      if(kind==="shadowStep" || kind==="dissonance") {width=h*1.05;height=width;x=cx-width/2;y=cy-height/2;}
+      if(kind==="dissonance" || (kind==="shadowStep" && (skillId==="sw_2" || skillId==="mo_2" || skillId==="fm_2"))) y=(r.top-sr.top)*sy+h*.8-height*.97;
+      if(kind==="ninjaRipple") {
+        width=h*1.12;height=width/2;x=cx-width/2;y=(r.top-sr.top)*sy+h*.8-height*.5;
+      }
+      if(kind==="waterDragon" || kind==="boundaryWave") {
+        const dir=side==="B"?-1:1, sourceX=cx-dir*h*.95;
+        if(kind==="boundaryWave"){
+          width=h*1.45;height=width/2;x=sourceX-width/2;y=bottom-height*.98;
+        }else{
+          const dx=cx-sourceX,dy=cy-bottom;
+          width=Math.hypot(dx,dy)/.7;height=width/2;x=sourceX;y=bottom-height/2;
+          img.style.transformOrigin="0 50%";
+          img.style.transform=`rotate(${Math.atan2(dy,dx)*180/Math.PI}deg)${side==="B"?" scaleY(-1)":""}`;
+        }
+      }
+      if(kind==="fumaPassed") {
+        width=throwSize*1.8;height=width;
+        const dir=side==="B"?-1:1;
+        x=cx+dir*throwSize*2.6-width/2;y=cy-h*.2-height/2;
+        img.style.transform=`rotate(${-dir*18}deg) scaleY(.65) rotate(${dir*elapsed*.7}deg)`;
+      }
+      if(kind==="waterFlower"){
+        width=throwSize*1.6;height=width/2;
+        x=side==="B"?cx-w*.15-width:cx+w*.15;
+        y=(r.top-sr.top)*sy+h*.62-height*.5;
+      }
+      if(kind==="fumaWave") {width=h*1.25;height=width;x=cx-width/2;y=cy-height*.55;}
+      if(kind==="bardMelody") {
+        width=h*1.1;height=width*.5;
+        x=cx+(side==="B"?-1:1)*w*.24-width*(side==="B"?.9:.1);
+        y=(r.top-sr.top)*sy+h*.59-height*.7;
+      }
+      if(kind==="spotlight") {
+        width=h*.88;height=Math.max(1,(r.top-sr.top)*sy+h*.84-top);
+        x=cx-width/2;y=top;
+      }
+      if(kind==="greaterHeal" || kind==="blessing") {width=h; height=h; x=cx-width/2;y=cy-height/2;}
+      if(kind==="revival") {
+        height=h*1.2;width=height*.5;x=cx-width/2;
+        y=(r.top-sr.top)*sy+h*.82-height*.92;
+      }
+      if(kind==="assassination") {width=h*.8;height=width;x=cx-width*(side==="B"?.84:.16);y=(r.top-sr.top)*sy+h*.56-height*.66;}
+      if(kind==="gunHit") {
+        width=h*.48;height=width;x=cx-width/2;y=cy-height/2;
+        if(shot!=null){x+=([-.06,.05,-.02,.04][shot%4])*h;y+=([-.03,.03,.05,-.05][shot%4])*h;}
+      }
+      if(kind==="gunMuzzle") {
+        width=h*.36;height=width;
+        const muzzleX=cx+(side==="B"?-1:1)*w*.32,muzzleY=(r.top-sr.top)*sy+h*.42;
+        x=muzzleX-width*(side==="B"?.85:.15);y=muzzleY-height*.5;
+      }
+      if(kind==="gunPierce") {
+        const room=side==="B"?cx:stage.clientWidth-cx;
+        width=Math.min(h*1.4,Math.max(20,room-8)/.88);height=width*.5;
+        x=cx-width*(side==="B"?.88:.12);y=cy-height*.5;
+      }
+      if(group){
+        const rs=group.map(u=>(u.querySelector(".spr-anchor")||u.querySelector(".sprwrap")||u).getBoundingClientRect());
+        const left=Math.min(...rs.map(b=>b.left+b.width*.2)),right=Math.max(...rs.map(b=>b.right-b.width*.2));
+        const foot=Math.max(...rs.map(b=>b.top+b.height*.8));
+        width=Math.max(h*1.15,(right-left)*sx+h*.35);height=width*.5;
+        x=((left+right)/2-sr.left)*sx-width/2;y=(foot-sr.top)*sy-height*.72;
+        if(kind==="blizzardBack" || kind==="blizzardFront"){
+          width=(right-left)*sx+h*1.15;x=((left+right)/2-sr.left)*sx-width/2;
+          y=top-4;height=Math.max(1,bottom-top+8);
+          img.style.maskImage="linear-gradient(to right,transparent,black 7%,black 93%,transparent)";
+        }
+        if(kind==="gravityBeam" || kind==="gravityCircle" || kind==="gravityFoot"){
+          width=(right-left)*sx+h*.7;x=((left+right)/2-sr.left)*sx-width/2;
+          const base=(foot-sr.top)*sy;
+          if(kind==="gravityCircle"){height=width*240/640;y=base-height/2;}
+          else if(kind==="gravityFoot"){height=width*110/640;y=base-.5;}
+          else {y=top-4;height=Math.max(1,base-y);}
+        }
+        if(kind==="natureRoots"){
+          // Extend beyond both screen edges; steeper vertical aspect and boundary clipping hide all strand ends.
+          const center=((left+right)/2-sr.left)*sx;
+          width=Math.max(stage.clientWidth*1.12,2*Math.max(center,stage.clientWidth-center)+h*.4);
+          height=Math.max((bottom-top)*1.8,width*.92);
+          x=center-width/2;y=(top+bottom)/2-height*.55;
+        }
+        if(kind==="earthWave"){
+          width=Math.max(h*1.6,(right-left)*sx+h*.8);height=Math.min(h*1.2,width*2/3);
+          x=((left+right)/2-sr.left)*sx-width/2;y=(foot-sr.top)*sy-height*.85+h*.08;
+        }
+        if(kind==="greenPierce"){
+          // Begin just ahead of the first target on the caster-facing side.
+          const start=((side==="B"?right:left)-sr.left)*sx+(side==="B"?1:-1)*h*.08;
+          // Keep the arrowhead (last 25% of the artwork) beyond either screen edge.
+          const visibleLength=side==="B"?start:stage.clientWidth-start;
+          width=(visibleLength+32)/.70;height=h*.65;
+          x=side==="B"?start-width:start;
+          y=(rs.reduce((sum,b)=>sum+b.top+b.height*.57,0)/rs.length-sr.top)*sy-height/2;
+        }
+        if(kind==="ensemble") {
+          // Repeat proportionally scaled phrases instead of stretching the notes.
+          const span=width, start=x, ratio=img.naturalWidth/img.naturalHeight || 3;
+          const count=Math.max(1,Math.ceil(span/(h*.95*ratio)));
+          width=span/(count-(count-1)*.08);height=width/ratio;
+          const heads=Math.min(...rs.map(b=>b.top+b.height*.15));
+          y=Math.max(top,(heads-sr.top)*sy-height*.9);
+          const tiles=img._ensembleTiles||(img._ensembleTiles=[]);
+          while(tiles.length<count-1){const tile=img.cloneNode();layer.append(tile);tiles.push(tile);}
+          while(tiles.length>count-1)tiles.pop().remove();
+          [img,...tiles].forEach((tile,i)=>{
+            Object.assign(tile.style,{left:(start+i*width*.92)+"px",top:y+"px",width:width+"px",height:height+"px"});
+            tile.style.maskImage=count===1?"none":`linear-gradient(to right,${i?"transparent 0%,black 8%":"black 0%"},${i<count-1?"black 92%,transparent 100%":"black 100%"})`;
+          });
+        }
+      }
+      if(kind==="darkEssence" || kind==="holyEssence") {
+        // Artwork focus (88%,48%) meets the outstretched staff tip; mirror for side B.
+        width=h*1.15;height=width;
+        const tipX=cx+(side==="B"?-1:1)*w*.46, tipY=(r.top-sr.top)*sy+h*.38;
+        x=tipX-width*(side==="B"?.12:.88);y=tipY-height*.48;
+      }
+      if(kind==="beam") {
+        width=h*.8; height=Math.max(1,((r.top-sr.top)*sy+h*.3-top)/.9);
+        x=cx-width/2;y=top;
+      }
+      const BU = BOSS_ULT_FX[kind];
+      if(BU){   // 1021 넷째 — 원정 보스 필살기: 대상(하나) · 대상 무리(그룹)의 발 · 가운데에 그림의 (ax, ay) 를 맞추고 목업처럼 움직인다
+        const bs = (group || [el]).map(u=>(u.querySelector(".spr-anchor")||u.querySelector(".sprwrap")||u).getBoundingClientRect());
+        const gl = Math.min(...bs.map(b=>b.left+b.width*.2)), gr = Math.max(...bs.map(b=>b.right-b.width*.2));
+        const gx = ((gl+gr)/2-sr.left)*sx, gf = (Math.max(...bs.map(b=>b.top+b.height*.8))-sr.top)*sy;
+        width = BU.span ? Math.max(h*BU.min, (gr-gl)*sx*BU.span) : h*BU.w; height = width*2/3;
+        x = (BU.span ? gx : cx) - width*(side==="A" ? 1-BU.ax : BU.ax); y = (BU.at === "body" ? cy : gf) - height*BU.ay;
+        const a = bossUltFxAt(BU, elapsed/duration, 110/1500, side);
+        img.style.opacity = a.o.toFixed(3); img.style.transform = a.tf;
+      }
+      Object.assign(img.style,{left:x+"px",top:y+"px",width:width+"px",height:height+"px"});
+    });
+    raf=requestAnimationFrame(update); // Anchor tracking only; the effect artwork stays on one frame.
+  };
+  update(); return stop;
+}

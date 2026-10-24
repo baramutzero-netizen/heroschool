@@ -20877,8 +20877,8 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1024-1928";
-const BUILD_TS = 1792837685654;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
+const BUILD = "1024-2013";
+const BUILD_TS = 1792840393004;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -28075,8 +28075,8 @@ const STYLISH_SKILL_FX = {
     gravityBeam: "../assets/skill-fx/wizard/gravity-beam-px.webp?v=e40cba90",
     gravityFoot: "../assets/skill-fx/wizard/gravity-foot-px.webp?v=c692e10b"
   },
-  casters: {timemage:["tmGears"],spellsword:["ssFlame"],rogue:["rogueSignal"],forcemage:["staffThrust"],druid:["druidCircle"], monk:["monkPressure"], sword:["swordSwing"], paladin: ["trail"], darkpriest: ["darkEssence"], gunner:["gunMuzzle"], priest:["holyEssence"], bard:["bardMelody"], ninja:["ninjaRipple"], archer:["archerWind"], wizard:["wizardCircles"]},
-  targets: {tm_b:["tmRift"],tm_1:["tmHaste"],tm_2:["tmDelay"],tm_u:[],ss_b:["ssBasic"],ss_1:["ssBlue","ssPurple","ssPink"],ss_2:[],ss_u:[],fm_b:[],fm_1:[],fm_2:["shadowStep"],fm_u:["unseal0","unseal1","unseal2","unseal3","unseal4","unseal5","unseal6"],dr_b:[],dr_1:["regenSeed"],dr_2:["bearSign"],dr_u:[],mo_b:[], mo_1:["chiHit"], mo_2:["shadowStep"], mo_u:["fistRush","oraText"], sw_b:[], sw_1:["tauntAnger"], sw_2:["shadowStep"], sw_u:[], pa_b: ["impact"], pa_1: ["shield"], pa_2: ["beam"], pa_u: ["beam", "shield"],
+  casters: {enchanter:["enOrb"],timemage:["tmGears"],spellsword:["ssFlame"],rogue:["rogueSignal"],forcemage:["staffThrust"],druid:["druidCircle"], monk:["monkPressure"], sword:["swordSwing"], paladin: ["trail"], darkpriest: ["darkEssence"], gunner:["gunMuzzle"], priest:["holyEssence"], bard:["bardMelody"], ninja:["ninjaRipple"], archer:["archerWind"], wizard:["wizardCircles"]},
+  targets: {en_b:["enFire"],en_1:["enStr"],en_2:["enWeak"],en_u:["enAll"],tm_b:["tmRift"],tm_1:["tmHaste"],tm_2:["tmDelay"],tm_u:[],ss_b:["ssBasic"],ss_1:["ssBlue","ssPurple","ssPink"],ss_2:[],ss_u:[],fm_b:[],fm_1:[],fm_2:["shadowStep"],fm_u:["unseal0","unseal1","unseal2","unseal3","unseal4","unseal5","unseal6"],dr_b:[],dr_1:["regenSeed"],dr_2:["bearSign"],dr_u:[],mo_b:[], mo_1:["chiHit"], mo_2:["shadowStep"], mo_u:["fistRush","oraText"], sw_b:[], sw_1:["tauntAnger"], sw_2:["shadowStep"], sw_u:[], pa_b: ["impact"], pa_1: ["shield"], pa_2: ["beam"], pa_u: ["beam", "shield"],
     dp_b:["darkHit"], dp_1:["redDrain"], dp_2:["curseNail"], dp_u:["redDrain"],
     gn_b:["gunHit"], gn_1:["gunHit"], gn_2:["gunPierce"], gn_u:["gunPierce"],
     ro_b:["rogueSlash"], ro_1:["poisonDagger"], ro_2:["shadowStep"], ro_u:["assassination"],
@@ -28103,6 +28103,31 @@ Object.assign(STYLISH_SKILL_FX.assets, {
  tmRift:"../assets/skill-fx/timemage/rift.svg?v=1",
  tmStop:"../assets/skill-fx/timemage/time-stop.svg?v=1"
 });
+const ENCHANTER_RUNES={enFire:'fire',enStr:'str',enWeak:'weak',enAll:'all'};
+const enchanterRuneImages={};
+Object.assign(STYLISH_SKILL_FX.assets,{enOrb:'../assets/skill-fx/enchanter/orb.png?v=1',enFire:'../assets/skill-fx/enchanter/fire.png?v=1',enStr:'../assets/skill-fx/enchanter/str.png?v=1',enWeak:'../assets/skill-fx/enchanter/weak.png?v=1',enAll:'../assets/skill-fx/enchanter/all.png?v=1'});
+function enchanterRuneDraw(canvas,kind,age){
+ const key=ENCHANTER_RUNES[kind];
+ let im=enchanterRuneImages[kind];
+ if(!im){im=new Image();im.src=STYLISH_SKILL_FX.assets[kind];enchanterRuneImages[kind]=im;}
+ const f=canvas.getContext('2d');f.clearRect(0,0,160,128);
+ if(!im.complete||!im.naturalWidth)return;
+ const ease=x=>{x=clamp(x,0,1);return x*x*(3-2*x)};
+ const enter=ease(age/.18),sink=ease((age-.50)/.62),fade=1-ease((age-1.02)/.42);
+ const size=.64*(.92+.08*enter)*(1-.76*sink),w=Math.round(im.naturalWidth*size),h=Math.round(im.naturalHeight*size);
+ const cy=Math.round(64-7*(1-sink)),col=key==='str'?[255,162,56]:key==='weak'?[180,108,255]:[64,182,255];
+ f.save();f.imageSmoothingEnabled=false;f.translate(80,cy);
+ const rx=w/2+9,ry=h/2+8,energy=enter*fade*(.65+.35*sink);
+ for(let gy=-Math.ceil(ry*1.6);gy<=ry*1.6;gy+=2)for(let gx=-Math.ceil(rx*1.6);gx<=rx*1.6;gx+=2){
+ const d=Math.sqrt((gx/rx)**2+(gy/ry)**2),alpha=d<.65?.30:d<1?.22:d<1.3?.12:d<1.6?.05:0;
+ if(alpha){f.fillStyle=`rgba(${col.join(',')},${alpha*energy})`;f.fillRect(gx,gy,2,2)}
+ }
+ for(let i=0;i<12;i++){const angle=i*Math.PI/6+.16*age,r=(22+(i%3)*4)*(1-sink);f.globalAlpha=energy*(1-sink);f.fillStyle=`rgb(${col.map(v=>Math.min(255,v+65)).join(',')})`;f.fillRect(Math.round(Math.cos(angle)*r),Math.round(Math.sin(angle)*r*.75),2,2)}
+ f.globalAlpha=enter*fade;f.drawImage(im,-Math.floor(w/2),-Math.floor(h/2),w,h);
+ const pulse=Math.max(0,1-Math.abs(age-1.04)/.15);
+ if(pulse>0){f.globalAlpha=pulse*.7;f.fillStyle='#eeffff';f.fillRect(-4,-1,8,2);f.fillRect(-1,-4,2,8)}
+ f.restore();
+}
 /* 원정 보스 필살기 (1021 넷째 — 사용자 'newmonsterimage/ultimate-fx-v1 에 각 보스 필살기 효과를 넣어놨으니 그것도 webp로 적용') — 원정지 주인 다섯의 필살기 그림
    (원본 1536 × 1024 PNG → skill-fx/boss 폴더의 WebP · tools/gen/patch/bossult_art.py). 스타일리시 줌인에서만 (학생 스킬 그림과 같다 · 심플 모드는 예전 효과).
    한 장짜리 그림을 목업(ultimate-fx-v1/preview.html)처럼 움직인다 — burst: 작게 나타나 커지며 사라짐 · barrage: 주먹 잔상이 0.11초마다 앞뒤로(백열권 소리와 같은 박자) · slash: 오른쪽 위에서 내리긋고 왼쪽 아래로.
@@ -28186,7 +28211,9 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
   const add=(el, kind, echoIndex=2)=>{
     if(!el) return;
     const isEcho=kind==="tmHaste"||kind==="tmDelay";
-    const img=document.createElement(isEcho?"canvas":"img");if(!isEcho)img.src=STYLISH_SKILL_FX.assets[kind];
+    const isRune=!!ENCHANTER_RUNES[kind];
+    const img=document.createElement(isEcho||isRune?"canvas":"img");if(!isEcho&&!isRune)img.src=STYLISH_SKILL_FX.assets[kind];
+    if(isRune){img.width=160;img.height=128;}
     img.dataset.effect=kind; img.dataset.target=el.dataset.uid; img.alt="";
     img.style.cssText="position:absolute;max-width:none;image-rendering:auto;object-fit:fill;pointer-events:none";
     if(/-px\.webp/.test(img.src)) img.style.imageRendering="pixelated";   // 1024 — 도트판 이펙트 (apply_sfxpx · tools/skill-fx-pixel-v1)
@@ -28283,6 +28310,17 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
       const cx=(r.left+r.width/2-sr.left)*sx, cy=(r.top-sr.top)*sy+h*.55;
       const throwSize=Math.min(h,Math.max(1,(side==="B"?cx:stage.clientWidth-cx)-12)/3.6);
       let width=h*1.05, height=width, x=cx-width/2, y=cy-height/2;
+      if(kind==='enOrb'){
+        width=h*.94;height=width;x=cx+(side==='B'?-1:1)*w*.45-width/2;y=cy-height*.55;
+        img.style.opacity='.85';img.style.imageRendering='pixelated';
+      }
+      if(ENCHANTER_RUNES[kind]){
+        enchanterRuneDraw(img,kind,elapsed/duration*1.5);
+        width=h*2.5;height=h*2;x=cx-width/2;y=cy-height/2;
+        img.style.opacity='1';img.style.imageRendering='pixelated';
+        // Text stays readable on either team. Only its anchor follows the camera.
+        img.style.transform='';
+      }
       if(kind==='tmGears'){
         width=w*2;height=h*2;x=(r.left-sr.left)*sx-w/2;y=(r.top-sr.top)*sy-h/2;
         img.style.opacity='1';img.style.transform=side==='B'?'scaleX(-1)':'';img.style.imageRendering='pixelated';
