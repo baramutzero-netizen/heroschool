@@ -20868,7 +20868,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1024-1731";
+const BUILD = "1024-1809";
 const BUILD_TS = 0;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
@@ -27999,6 +27999,8 @@ window.addEventListener('resize',alignDemonField);
 /* One still image per effect. Routing is independent of character sprite sheets. */
 const STYLISH_SKILL_FX = {
   assets: {
+    rogueSlash:"assets/skill-fx/rogue/basic-slash.svg?v=1",
+    rogueSignal:"assets/skill-fx/rogue/caster-signal.svg?v=1",
     staffThrust:"assets/skill-fx/forcemage/staff-thrust-px.webp?v=2ea18da1",
     unseal0:"assets/skill-fx/rogue/shadow.webp?v=w90",
     unseal1:"assets/skill-fx/rogue/shadow.webp?v=w90",
@@ -28064,11 +28066,11 @@ const STYLISH_SKILL_FX = {
     gravityBeam: "assets/skill-fx/wizard/gravity-beam-px.webp?v=e40cba90",
     gravityFoot: "assets/skill-fx/wizard/gravity-foot-px.webp?v=c692e10b"
   },
-  casters: {forcemage:["staffThrust"],druid:["druidCircle"], monk:["monkPressure"], sword:["swordSwing"], paladin: ["trail"], darkpriest: ["darkEssence"], gunner:["gunMuzzle"], priest:["holyEssence"], bard:["bardMelody"], ninja:["ninjaRipple"], archer:["archerWind"], wizard:["wizardCircles"]},
+  casters: {rogue:["rogueSignal"],forcemage:["staffThrust"],druid:["druidCircle"], monk:["monkPressure"], sword:["swordSwing"], paladin: ["trail"], darkpriest: ["darkEssence"], gunner:["gunMuzzle"], priest:["holyEssence"], bard:["bardMelody"], ninja:["ninjaRipple"], archer:["archerWind"], wizard:["wizardCircles"]},
   targets: {fm_b:[],fm_1:[],fm_2:["shadowStep"],fm_u:["unseal0","unseal1","unseal2","unseal3","unseal4","unseal5","unseal6"],dr_b:[],dr_1:["regenSeed"],dr_2:["bearSign"],dr_u:[],mo_b:[], mo_1:["chiHit"], mo_2:["shadowStep"], mo_u:["fistRush","oraText"], sw_b:[], sw_1:["tauntAnger"], sw_2:["shadowStep"], sw_u:[], pa_b: ["impact"], pa_1: ["shield"], pa_2: ["beam"], pa_u: ["beam", "shield"],
     dp_b:["darkHit"], dp_1:["redDrain"], dp_2:["curseNail"], dp_u:["redDrain"],
     gn_b:["gunHit"], gn_1:["gunHit"], gn_2:["gunPierce"], gn_u:["gunPierce"],
-    ro_1:["poisonDagger"], ro_2:["shadowStep"], ro_u:["assassination"],
+    ro_b:["rogueSlash"], ro_1:["poisonDagger"], ro_2:["shadowStep"], ro_u:["assassination"],
     pr_b:["impact"], pr_1:["greaterHeal"], pr_2:["blessing"], pr_u:["revival"],
     bd_1:["shadowStep"], bd_2:["dissonance"], bd_u:["spotlight"],
     nj_1:["dissonance"], nj_2:["boundaryWave","waterDragon"], nj_u:["fumaPassed","waterFlower"],
@@ -28189,7 +28191,7 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
     if(kind==="staffThrust" && side==="B") img.style.transform="scaleX(-1)";
     if(kind==="oraText" && side==="B") img.src="assets/skill-fx/monk/du-reverse-px.webp?v=f47f542c";
     layer.append(img); entries.push({el,kind,img});
-    if(kind==="gunPierce" || kind==="ninjaRipple" || kind==="fumaPassed" || kind==="waterFlower" || kind==="meteorRain") ground.append(img);
+    if(kind==="rogueSignal" || kind==="gunPierce" || kind==="ninjaRipple" || kind==="fumaPassed" || kind==="waterFlower" || kind==="meteorRain") ground.append(img);
     return entries[entries.length-1];
   };
   plan.caster.forEach(kind=>add(caster,kind));
@@ -28211,8 +28213,13 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
   const oldFilter=stage.style.filter;
   if(mono){stage.style.filter=(oldFilter?oldFilter+" ":"")+"grayscale(1) contrast(1.12)";stage.dataset.skillMonochrome=skillId;}
   if(inverted){stage.style.filter=(oldFilter?oldFilter+" ":"")+"invert(1)";stage.dataset.skillInverted=skillId;}
+  // Only sprite graphics receive filters; nameplates and health bars stay intact.
+  const filterEntries=[];
+  const remember=(el,role)=>{const node=el && (el.querySelector('.spr-anchor')||el.querySelector('.sprwrap'));if(node&&!filterEntries.some(e=>e.node===node))filterEntries.push({node,role,old:node.style.filter,last:node.style.filter});};
+  if(job==='rogue')remember(caster,'caster');
+  if(skillId==='ro_b')targets.forEach(el=>remember(el,'target'));
   let raf=0, disposed=false, unsealSoundPhase=-1;
-  const stop=()=>{disposed=true;cancelAnimationFrame(raf);layer.remove();ground.remove();if(mono||inverted){stage.style.filter=oldFilter;delete stage.dataset.skillMonochrome;delete stage.dataset.skillInverted;}};
+  const stop=()=>{disposed=true;cancelAnimationFrame(raf);filterEntries.forEach(e=>{if(e.node.style.filter===e.last)e.node.style.filter=e.old;});layer.remove();ground.remove();if(mono||inverted){stage.style.filter=oldFilter;delete stage.dataset.skillMonochrome;delete stage.dataset.skillInverted;}};
   const update=()=>{
     if(disposed || !stage.isConnected || !active()){stop();return;}
     const sr=stage.getBoundingClientRect(), sx=stage.clientWidth/sr.width, sy=stage.clientHeight/sr.height;
@@ -28223,6 +28230,12 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
     layer.style.clipPath=`inset(${top}px 0 ${Math.max(0,stage.clientHeight-bottom)}px 0)`;
     ground.style.clipPath=layer.style.clipPath;
     const elapsed=performance.now()-started;
+    const flashTime=duration*160/1500;
+    filterEntries.forEach(e=>{
+      if(e.node.style.filter!==e.last)return; // A newer effect owns the filter now.
+      const extra=e.role==='caster'?'drop-shadow(1px 0 0 #fff1b966) drop-shadow(-1px 0 0 #fff1b966)':elapsed<flashTime?'brightness(0) invert(1)':'';
+      e.last=(e.old+(e.old&&extra?' ':'')+extra);e.node.style.filter=e.last;
+    });
     const unsealPhase=Math.min(6,Math.floor(elapsed/(duration/7)));
     if(skillId==="fm_u" && unsealPhase!==unsealSoundPhase){unsealSoundPhase=unsealPhase;if(typeof sfxPlay==="function")sfxPlay("unseal"+unsealPhase);}
     entries.forEach(({el,kind,img,group,shot})=>{
@@ -28239,6 +28252,15 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
       const cx=(r.left+r.width/2-sr.left)*sx, cy=(r.top-sr.top)*sy+h*.55;
       const throwSize=Math.min(h,Math.max(1,(side==="B"?cx:stage.clientWidth-cx)-12)/3.6);
       let width=h*1.05, height=width, x=cx-width/2, y=cy-height/2;
+      if(kind==='rogueSlash'){
+        width=h*1.22;height=width;x=cx-width/2;y=cy-height/2;
+        img.style.opacity=String(.48+.52*Math.max(0,1-elapsed/(duration*160/1500)));
+        img.style.transform=side==='B'?'scaleX(-1)':'';img.style.imageRendering='pixelated';
+      }
+      if(kind==='rogueSignal'){
+        width=h*.76;height=width*.75;x=cx-width/2;y=(r.top-sr.top)*sy+h*.8-height*75/96;
+        img.style.opacity='.8';img.style.imageRendering='pixelated';
+      }
       if(kind==="staffThrust") {width=h*1.3;height=width*.5;x=cx-width*(side==="B"?.86:.14);y=(r.top-sr.top)*sy+h*.53-height*.5;}
       if(kind.startsWith("unseal")){width=h*1.05;height=width;x=cx-width/2;y=(r.top-sr.top)*sy+h*.8-height*.97;img.style.filter=`hue-rotate(${[155,185,215,280,0,35,75][Number(kind.slice(6))]}deg)`;img.style.visibility=Number(kind.slice(6))===unsealPhase?"visible":"hidden";}
       if(kind==="druidCircle") {width=h*.48;height=width;x=cx+(side==="B"?-1:1)*w*.37-width*.5;y=(r.top-sr.top)*sy+h*.38-height*.5;}
