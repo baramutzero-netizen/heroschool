@@ -2012,6 +2012,10 @@ html[lang="ja"] .crec-bub,html[lang^="zh"] .crec-bub{word-break:normal}   /* 일
 .tcom-cap.an .tcom-body,.tcom-cap.an .tcom-nm{border-color:#7fa3c9}
 .tcom-cap.an .tcom-nm{color:#bcd6f2}
 .tcom-cap.an .tcom-nm::before{background:#9cc0e6}
+/* 1024 사용자 '해설을 화면에 맞춰 같이 축소' — 전장이 줄어든 화면(쿼터뷰 대회 — 전투판째 scale)이면 띠를 같은 배율로 (capPlace 가 --tc-k · .fit · 폭은 줄이기 전 크기).
+   들고 나는 움직임(.tcom-cap 의 transform)과 겹치지 않게 띠(.tcom-body)를 왼쪽 아래 기준으로 줄인다 · 글은 큰 화면 크기(18px) 그대로 줄인다 (vw 로 한 번 더 작아지지 않게) */
+.tcom-cap.fit .tcom-body{transform:scale(var(--tc-k,1));transform-origin:0 100%}
+.tcom-cap.fit .tcom-tx{font-size:18px}
 @keyframes tcomIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 @keyframes tcomOut{to{opacity:0;transform:translateY(6px)}}
 @media (max-width:640px){
@@ -20860,7 +20864,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1024-1217";
+const BUILD = "1024-1333";
 const BUILD_TS = 0;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
@@ -28117,15 +28121,15 @@ function bossUltFxAt(B, t, beat, side){
 function stylishSkillFxPlan(job, skillId){
   return {caster: [...(STYLISH_SKILL_FX.casters[job] || []), ...(STYLISH_SKILL_FX.skillCasters[skillId] || [])], target: STYLISH_SKILL_FX.targets[skillId] || [], group: STYLISH_SKILL_FX.groups[skillId] || []};
 }
-function stylishFormation(actor, allies, enemies, side, skillId){
-  const positions=[], mirror=x=>side==="B"?100-x:x;
-  const lane=(list,left,right)=>list.forEach((uid,i)=>positions.push({uid,
+function stylishFormation(actor, allies, enemies, side, skillId){   // 1024 — 숫자는 STYLISH_TUNE (STLAB · 편집 툴 tools/stylish_lab.html)
+  const T=stT(), positions=[], mirror=x=>side==="B"?100-x:x;
+  const lane=(list,[left,right])=>list.forEach((uid,i)=>positions.push({uid,
     x:mirror(list.length===1?(left+right)/2:left+(right-left)*i/(list.length-1)),
-    y:58, scale:1.3}));
-  if(skillId==="nj_u" && enemies.length===1){lane([actor,...allies],15,25);lane(enemies,43,43);}
-  else if(skillId==="ar_1"){lane([actor,...allies],18,30);lane(enemies,50,82);}
-  else if(enemies.length){lane([actor,...allies],18,43);lane(enemies,57,82);}
-  else {lane([actor,...allies],28,78);}
+    y:T.y, scale:T.scale}));
+  const sk=stSkillLane(skillId, enemies.length);
+  if(sk){lane([actor,...allies],sk.ally);lane(enemies,sk.enemy);}
+  else if(enemies.length){lane([actor,...allies],T.ally);lane(enemies,T.enemy);}
+  else {lane([actor,...allies],T.solo);}
   return positions;
 }
 function stylishSkillFxPreload(res){
@@ -28635,7 +28639,7 @@ const TQ_ZOOM = 1.3 * 1.2, TQ_FEET = -5, TQ_GAP = 19.5, TQ_STEP = 10, TQ_OUT = 4
 function tqCloseup(stage){
   const M = stage && stage.isConnected && stage._tqMark; if(!M) return null;
   const sw = stage.clientWidth, sh = stage.clientHeight; if(!sw || !sh) return null;
-  const z = TQ_ZOOM, tx = -z * (M.x - sw/2), ty = -z * (M.y - sh/2);      // 문장이 전투판 가운데로 (카메라 가운데 = 전투판 가운데)
+  const z = stT().q.zoom, tx = -z * (M.x - sw/2), ty = -z * (M.y - sh/2);   // 1024 — STYLISH_TUNE.q (STLAB)      // 문장이 전투판 가운데로 (카메라 가운데 = 전투판 가운데)
   return {z, pre: `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) `, mx: M.x / sw * 100, my: M.y / sh * 100};
 }
 /* 예전 클로즈업 자리(stylishFormation · 판 %) → 문장 둘레 자리. 가운데를 기준으로 왼쪽 · 오른쪽 무리로 나눠
@@ -28648,8 +28652,8 @@ function tqFormation(T, list, actor){
   const out = [];
   [-1, 1].forEach(s=>{
     const g = list.filter(p=> sideOf(p) === s).sort((a,b)=> Math.abs(a.x - 50) - Math.abs(b.x - 50));
-    const step = g.length > 1 ? Math.min(TQ_STEP, (TQ_OUT - TQ_GAP) / (g.length - 1)) : 0;
-    g.forEach((p,i)=> out.push({uid: p.uid, scale: 1, x: T.mx + s * (TQ_GAP + step * i) / T.z, y: T.my + TQ_FEET / T.z}));
+    const Q = stT().q, step = g.length > 1 ? Math.min(Q.step, (Q.out - Q.gap) / (g.length - 1)) : 0;   // 1024 — STYLISH_TUNE.q (STLAB)
+    g.forEach((p,i)=> out.push({uid: p.uid, scale: Q.scale, x: T.mx + s * (Q.gap + step * i) / T.z, y: T.my + Q.feet / T.z}));
   });
   return out;
 }
@@ -29705,7 +29709,7 @@ function openBattle(res, opt, onDone){
     const hit = new Set(pops.filter(x=> HIT.includes(x.k)).map(x=> x.u));
     const attack = tg.some(u=> sideOf(u) !== side);
     const L = side === "A" ? 1 : -1;                                    // 우리 편은 왼쪽에서, 상대 편은 오른쪽에서
-    const sw = stage.clientWidth, sh = stage.clientHeight, TQ = tqCloseup(stage), CS = TQ ? TQ.z : 1.2, CP = TQ ? TQ.pre : "";   // 1007 — 대회 쿼터뷰: 바닥 문장을 가운데로 · 지도와 유닛을 같은 배율로
+    const sw = stage.clientWidth, sh = stage.clientHeight, TQ = tqCloseup(stage), CS = TQ ? TQ.z : stT().zoom, CP = TQ ? TQ.pre : "";   // 1007 — 대회 쿼터뷰: 바닥 문장을 가운데로 · 지도와 유닛을 같은 배율로
     const cs = getComputedStyle(stage);
     const fl = parseFloat(cs.getPropertyValue("--field-left")) || 0, ft = parseFloat(cs.getPropertyValue("--field-top")) || 0;
     stage.style.setProperty("--cam-o", `${-fl + sw/2}px ${-ft + sh/2}px`);
@@ -29745,7 +29749,7 @@ function openBattle(res, opt, onDone){
     /* 1.5초 멈춤 — 카메라가 천천히 흐른다 (0930 — 우리 편 기준 공격은 오른쪽 + 3도, 보조는 왼쪽. 상대 편은 반대) */
     const dir = attack ? L : -L;
     stage.style.setProperty("--cam-t", T(1.5)); stage.style.setProperty("--cam-e", "linear");
-    stage.style.setProperty("--cam", `${CP}scale(${CS}) translateX(${Math.round(dir*.03*sw*1.2/CS)}px)${attack ? ` rotate(${dir*3}deg)` : ""}`);   // 흐르는 폭은 화면에서 예전과 같게
+    stage.style.setProperty("--cam", `${CP}scale(${CS}) translateX(${Math.round(dir*stT().drift/100*sw*1.2/CS)}px)${attack ? ` rotate(${dir*stT().tilt}deg)` : ""}`);   // 1024 — STYLISH_TUNE.drift · tilt (STLAB)   // 흐르는 폭은 화면에서 예전과 같게
     const held = await camW(tok, 1500);
     stopSkillFx();
     if(!held) return false;
@@ -34134,6 +34138,7 @@ function xpAnySeen(){ const X = S && S.xpst; return !!(X && X.seen && Object.key
 function xpQueued(){ return (UI.ceremonies || []).some(c => c && c.type === "xpst"); }
 function xpWeekEnd(){
   if(!xpOn() || !S.xpst || xpQueued() || R.live) return;
+  if(!xpActors()) return;                                                       // 1024 — 셋을 찾을 수 없는 세이브(개교 멤버가 다 떠난 예전 세이브)는 줄에 넣지 않는다 — 넣으면 xpPlay 가 바로 넘기고 render 끝 xpAfter 가 다시 넣어 끝없이 다시 그렸다 (사용자 1024 '패치 후 버튼들이 먹통')
   const X = S.xpst;
   X.defer.forEach(dg => queueCeremony({type: "xpst", k: "back:" + dg}));
   if(X.sum === 1) queueCeremony({type: "xpst", k: "sum"});
@@ -34170,6 +34175,7 @@ function xpAfter(){
   if(!S || !xpOn() || !Array.isArray(S.students) || !S.students.length) return;
   const X = xpS(); if(!X) return;                                               // 1023 — 세이브를 열면 바로 (예전 세이브는 클리어 상황대로 — xpMigrate)
   if(!(X.sum === 1 || X.defer.length) || R.on || R.live || R.pend || xpQueued()) return;
+  if(!xpActors()) return;                                                       // 1024 — 배우가 없으면 띄울 수 없다 (끝없는 다시 그리기 막기 — xpWeekEnd)
   const idle = () => {
     const mr = document.getElementById("modalRoot");
     return !(UI.wrun || UI.battle || UI.pendingTour || (UI.ceremonies || []).length || (mr && mr.innerHTML.trim()) || document.getElementById("bootLoader")
@@ -36455,7 +36461,7 @@ window.SPST = {play: spPlay, after: spAfter, replay: spReplay, preview: spPrevie
    · 졸업생 3인 · 5인 리그도 (opt.tcom league3 · league5 — 캐스터 + 해설 · 관중 .6 · .75 · 내 학원이 B 편이면 opt.tcomUs 'B' 로 편을 바꿔 읽는다) · 이계 대회(차원 포탈)는 같은 대회 단계라 그대로 나온다.
    · 자동화(navigator.webdriver)에서는 말하지 않는다 — 시험은 window.__tcomForce = true (소리 없이 시험하려면 window.__tcomMute = true) */
 (() => {
-const TC_ASSET = {"face":{"caster-cool":"assets/commentary/caster-cool.png?v=c7fdb7c1","caster-focused":"assets/commentary/caster-focused.png?v=e093c0c1","caster-excited":"assets/commentary/caster-excited.png?v=0432037d","analyst-calm":"assets/commentary/analyst-calm.png?v=7e7b1291","analyst-analysis":"assets/commentary/analyst-analysis.png?v=3d3c989f","analyst-surprised":"assets/commentary/analyst-surprised.png?v=824803b6","burst-back":"assets/commentary/burst-back.png?v=a41b7646","burst-front":"assets/commentary/burst-front.png?v=a62cb247"},"snd":{"C01":"bgm/tc_C01.mp3?v=abedb1d9","C02":"bgm/tc_C02.mp3?v=d6a8c10d","C03":"bgm/tc_C03.mp3?v=01fc9b62","C04":"bgm/tc_C04.mp3?v=1d687bc5","C05":"bgm/tc_C05.mp3?v=7dc3e1c7","C06":"bgm/tc_C06.mp3?v=2aecd8f0","C07":"bgm/tc_C07.mp3?v=844ea583","C08":"bgm/tc_C08.mp3?v=94080e7b","C09":"bgm/tc_C09.mp3?v=5c86b0d4","A01":"bgm/tc_A01.mp3?v=aa6be19d","A02":"bgm/tc_A02.mp3?v=f36ce971","A03":"bgm/tc_A03.mp3?v=a81bc624","A04":"bgm/tc_A04.mp3?v=8ed67cf8","A05":"bgm/tc_A05.mp3?v=27b32d1f","C01A":"bgm/tc_C01A.mp3?v=ef7c545e","C02A":"bgm/tc_C02A.mp3?v=903097c7","C03A":"bgm/tc_C03A.mp3?v=ba653adc","C04A":"bgm/tc_C04A.mp3?v=5251e73e","C05A":"bgm/tc_C05A.mp3?v=f794dca5","C06A":"bgm/tc_C06A.mp3?v=5e295a4f","C07A":"bgm/tc_C07A.mp3?v=b6a78484","C08A":"bgm/tc_C08A.mp3?v=d2dd82e5","C09A":"bgm/tc_C09A.mp3?v=3e30ebcb","C10":"bgm/tc_C10.mp3?v=0f63871e","C10A":"bgm/tc_C10A.mp3?v=4ef0ef5a","C11":"bgm/tc_C11.mp3?v=ec09ca27","C12":"bgm/tc_C12.mp3?v=8eab72f2","C15":"bgm/tc_C15.mp3?v=9ced8794","A06":"bgm/tc_A06.mp3?v=34f4b693","A07":"bgm/tc_A07.mp3?v=3ad65a05","A08":"bgm/tc_A08.mp3?v=f52d63ee","A09":"bgm/tc_A09.mp3?v=2a3b1fd2"},"crowd":{"amb":"bgm/crowd_amb.ogg?v=0729693b","cheer":"bgm/crowd_cheer.ogg?v=0f05102c","groan":"bgm/crowd_groan.ogg?v=d759ec20","clap":"bgm/crowd_clap.ogg?v=5f721627"}};   // apply_tcom.py — {face: {키: 그림 경로?v=}, snd: {대사 ID: 음원 경로}, crowd: {amb · cheer · groan · clap: 관중 소리}} (목업은 자료 폴더 그대로)
+const TC_ASSET = {"face":{"caster-cool":"assets/commentary/caster-cool.png?v=c7fdb7c1","caster-focused":"assets/commentary/caster-focused.png?v=e093c0c1","caster-excited":"assets/commentary/caster-excited.png?v=0432037d","analyst-calm":"assets/commentary/analyst-calm.png?v=7e7b1291","analyst-analysis":"assets/commentary/analyst-analysis.png?v=3d3c989f","analyst-surprised":"assets/commentary/analyst-surprised.png?v=824803b6","burst-back":"assets/commentary/burst-back.png?v=a41b7646","burst-front":"assets/commentary/burst-front.png?v=a62cb247"},"snd":{"C01":"bgm/tc_C01.mp3?v=abedb1d9","C02":"bgm/tc_C02.mp3?v=d6a8c10d","C03":"bgm/tc_C03.mp3?v=01fc9b62","C04":"bgm/tc_C04.mp3?v=1d687bc5","C05":"bgm/tc_C05.mp3?v=7dc3e1c7","C06":"bgm/tc_C06.mp3?v=2aecd8f0","C07":"bgm/tc_C07.mp3?v=844ea583","C08":"bgm/tc_C08.mp3?v=94080e7b","C09":"bgm/tc_C09.mp3?v=5c86b0d4","A01":"bgm/tc_A01.mp3?v=aa6be19d","A02":"bgm/tc_A02.mp3?v=f36ce971","A03":"bgm/tc_A03.mp3?v=a81bc624","A04":"bgm/tc_A04.mp3?v=8ed67cf8","A05":"bgm/tc_A05.mp3?v=27b32d1f","C01A":"bgm/tc_C01A.mp3?v=ef7c545e","C02A":"bgm/tc_C02A.mp3?v=903097c7","C03A":"bgm/tc_C03A.mp3?v=ba653adc","C04A":"bgm/tc_C04A.mp3?v=5251e73e","C05A":"bgm/tc_C05A.mp3?v=f794dca5","C06A":"bgm/tc_C06A.mp3?v=5e295a4f","C07A":"bgm/tc_C07A.mp3?v=b6a78484","C08A":"bgm/tc_C08A.mp3?v=d2dd82e5","C09A":"bgm/tc_C09A.mp3?v=3e30ebcb","C10":"bgm/tc_C10.mp3?v=0f63871e","C10A":"bgm/tc_C10A.mp3?v=4ef0ef5a","C11":"bgm/tc_C11.mp3?v=6332e987","C12":"bgm/tc_C12.mp3?v=ce98eff8","C15":"bgm/tc_C15.mp3?v=be3b51f4","A06":"bgm/tc_A06.mp3?v=aed996a2","A07":"bgm/tc_A07.mp3?v=ad25a486","A08":"bgm/tc_A08.mp3?v=84c5064d","A09":"bgm/tc_A09.mp3?v=f7c10e8f"},"crowd":{"amb":"bgm/crowd_amb.ogg?v=0729693b","cheer":"bgm/crowd_cheer.ogg?v=0f05102c","groan":"bgm/crowd_groan.ogg?v=d759ec20","clap":"bgm/crowd_clap.ogg?v=5f721627"}};   // apply_tcom.py — {face: {키: 그림 경로?v=}, snd: {대사 ID: 음원 경로}, crowd: {amb · cheer · groan · clap: 관중 소리}} (목업은 자료 폴더 그대로)
 const TC_T = {caster: _T("실황"), analyst: _T("해설")};
 /* 대사 — who caster · analyst / tone 0 차분 · 1 긴장 · 2 흥분 / face / pr 우선순위(클수록 먼저) / fast 0 — ×2 · ×3 에서 생략 / cd 1 — 말한 뒤 TC_RULE.cd 지나면 다시 / first 1 — 처음 한 번 / ja 음성 원문 · ko 자막 */
 const TC_CUES = {
@@ -36530,7 +36536,9 @@ function capEl(){
 function capPlace(){                                                           // 우리 학원 이름표 오른쪽 · 아랫변을 맞춘다 (사용자 1024 '학원 이름 오른쪽으로 가로를 맞춰서') — 없으면 전장 왼쪽 아래 · 그것도 없으면 화면 왼쪽 아래 (CSS)
   const el = document.getElementById("tcomCap"); if(!el || el.hidden) return;
   const m = B && document.querySelector(`#modalRoot .modal[data-bt="${B.btId}"]`), st = m && m.querySelector(".bf-stage"), r = st && st.getBoundingClientRect();
-  if(!r || r.width < 200 || r.height < 120){ el.style.left = el.style.bottom = el.style.width = ""; return; }
+  if(!r || r.width < 200 || r.height < 120){ el.style.left = el.style.bottom = el.style.width = ""; el.style.removeProperty("--tc-k"); el.classList.remove("fit"); return; }
+  const k = st.offsetWidth ? Math.min(1, r.width / st.offsetWidth) : 1, fit = k < .98;   // 1024 사용자 '해설을 화면에 맞춰 같이 축소' — 전장이 줄어든 만큼(쿼터뷰 대회 tournamentLayoutFit) 띠 · 얼굴 · 글도 같이
+  el.classList.toggle("fit", fit); if(fit) el.style.setProperty("--tc-k", k.toFixed(3)); else el.style.removeProperty("--tc-k");
   const lab = m.querySelector(".bf-school.ally"), q = lab && lab.getBoundingClientRect(), okL = q && q.width > 0 && q.top > r.top + r.height * .4;
   const nar = okL && r.right - 10 - (q.right + 8) < 260;                        // 좁은 화면 — 이름표 오른쪽이 좁으면(폰 · 진형 이름이 길 때) 이름표 바로 위로 · 왼쪽 끝을 맞춘다
   const left = !okL ? r.left + 12 : nar ? Math.max(r.left + 6, q.left) : q.right + 8, bot = !okL ? innerHeight - r.bottom + 12 : nar ? innerHeight - q.top + 6 : innerHeight - q.bottom;
@@ -36538,7 +36546,7 @@ function capPlace(){                                                           /
   el.style.bottom = Math.max(8, Math.round(bot)) + "px";
   const bar = m.querySelector(".btbar"), w = bar && bar.getBoundingClientRect();   // 재생 · 배속 단추 판이 같은 높이에 있으면 그 앞까지
   const right = w && w.width > 0 && w.left > left + 200 && w.top < innerHeight - bot && w.bottom > innerHeight - bot - 90 ? w.left - 10 : r.right - 10;
-  el.style.width = Math.round(Math.max(200, Math.min(820, right - left))) + "px";
+  el.style.width = Math.round(Math.max(200 * (fit ? k : 1), Math.min(820 * (fit ? k : 1), right - left)) / (fit ? k : 1)) + "px";   // 줄였으면 줄이기 전 크기로 (보이는 폭은 같다)
 }
 function capShow(id){
   const c = TC_CUES[id], el = capEl();
@@ -37255,6 +37263,183 @@ function wzvAfter(){
 }
 window.WZV = {voice: UNIQ_VOICE, key: voiceKey, callout: wzvCallout, after: wzvAfter, install: wzvInstall};
 /* WZV_END */
+/* STLAB_START — 스타일리시 클로즈업 값 (1024 · apply_stlab.py · 편집 툴 tools/stylish_lab.html) ─ 사용자 1024: '스타일리시 화면에서 위치하고 사이즈, 카메라 줌 편집할 수 있는 툴 하나 만들어줄래?'
+   예전에는 숫자가 코드 여기저기에 박혀 있었다 (stylishFormation 의 줄 · 크기 1.3 · 카메라 1.2 · 흐름 3% · 3도 · 쿼터뷰 TQ_ZOOM · TQ_FEET · TQ_GAP · TQ_STEP · TQ_OUT) → 한 표 STYLISH_TUNE.
+   값은 예전 그대로 (보이는 것은 바뀌지 않는다). 편집 툴이 보낸 값을 받으면 여기 숫자만 바꾼다.
+   · 보통 필드 (판 %) — zoom 카메라 배율 · scale 유닛 크기 · y 세로(유닛 기준점) · ally 행동하는 쪽 줄 [안쪽 끝, 바깥 끝이 아니라 왼쪽 → 오른쪽 — 우리 편 기준] ·
+     enemy 상대 줄 · solo 상대가 없을 때(보조) 줄 · skill 기술마다 따로 (nj_u 닌자 필살기 — 상대가 하나일 때만 · ar_1 아처 1번) · 상대 편이 행동하면 좌우를 뒤집는다
+   · drift · tilt — 맞은 뒤 1.5초 멈춤에서 카메라가 흐르는 폭(화면 %) · 기울기(도 — 공격일 때만)
+   · q 쿼터뷰 (화면 %) — zoom 카메라 · feet 문장 가운데부터 유닛 기준점 · gap 가장 안쪽 유닛 · step 유닛 사이 · out 바깥 한도 · scale 유닛 크기
+   편집 툴: game.html?fieldlab=1&stylish=1 (필드 배치 실험실 위에 — 아무것도 저장하지 않는다) · 틀(tools/stylish_lab.html)과 postMessage {lab:"stylish"} */
+var STYLISH_TUNE = {
+  zoom: 1.2, scale: 1.3, y: 58, ally: [18, 43], enemy: [57, 82], solo: [28, 78], drift: 3, tilt: 3,
+  skill: {nj_u: {ally: [15, 25], enemy: [43, 43]}, ar_1: {ally: [18, 30], enemy: [50, 82]}},
+  q: {zoom: 1.56, feet: -5, gap: 19.5, step: 10, out: 40, scale: 1}
+};
+function stT(){ return (window.STLAB && STLAB.tune) || STYLISH_TUNE; }
+/* 기술마다 따로 둔 줄 — nj_u 는 상대가 하나일 때만 (예전 그대로) */
+function stSkillLane(skillId, nEnemy){
+  const s = (stT().skill || {})[skillId];
+  if(!s || (skillId === "nj_u" && nEnemy !== 1)) return null;
+  return s;
+}
+
+/* ── 편집 툴 (?fieldlab=1&stylish=1) — 필드 배치 실험실 전투판 위에 클로즈업을 멈춘 채로 보여 준다 ── */
+(function(){
+  if(!/[?&]fieldlab\b/.test(location.search) || !/[?&]stylish\b/.test(location.search)) return;
+  const L = window.STLAB = {tune: JSON.parse(JSON.stringify(STYLISH_TUNE)), def: JSON.parse(JSON.stringify(STYLISH_TUNE)),
+    scene: {on: true, side: "A", nAlly: 1, nEnemy: 2, skill: "", phase: "zoom", pers: "plain", say: true, fx: true, loop: true, seed: 0}, list: [], drag: null, fxTok: 0};
+  const post = m => { try{ parent.postMessage(Object.assign({lab: "stylish"}, m), "*"); }catch(e){} };
+  const stageEl = () => document.querySelector("#modalRoot .bf-stage");
+  const units = (st, side) => [...st.querySelectorAll(`.bf-unit[data-slot^="${side}-"]`)]
+    .sort((a, b) => { const k = s => (s.includes("front") ? 0 : 10) + (+s.slice(-1)); return k(a.dataset.slot) - k(b.dataset.slot); });
+  function reset(st){
+    st.querySelectorAll(".cam-say").forEach(e => e.remove());
+    st.querySelectorAll(".bf-unit.cam-in").forEach(el => {
+      if(el.dataset.ox != null){ el.style.left = el.dataset.ox; el.style.top = el.dataset.oy; }
+      delete el.dataset.ox; delete el.dataset.oy; el.classList.remove("cam-in", "cam-actor", "st-lab"); el.style.setProperty("--cs", 1);
+    });
+    st.style.setProperty("--cam", "none"); st.classList.remove("cam-focus");
+  }
+  /* 클로즈업 — openBattle 의 camTurn 앞부분과 같은 셈 (자리 · 크기 · 카메라 · 멈춤의 흐름) */
+  function show(){
+    const st = stageEl(), cam = st && st.querySelector(".bf-cam"); if(!st || !cam) return;
+    reset(st);
+    const S0 = L.scene; L.list = [];
+    if(!S0.on) return;
+    const side = S0.side === "B" ? "B" : "A", other = side === "A" ? "B" : "A";
+    const mine = units(st, side), theirs = units(st, other);
+    const actor = mine[0]; if(!actor) return;
+    const allies = mine.slice(1, 1 + Math.max(0, S0.nAlly | 0)), enemies = theirs.slice(0, Math.max(0, S0.nEnemy | 0));
+    const id = el => el.dataset.uid, byId = {};
+    [actor, ...allies, ...enemies].forEach(el => { byId[id(el)] = el; });
+    const sw = st.clientWidth, sh = st.clientHeight, TQ = tqCloseup(st), CS = TQ ? TQ.z : stT().zoom, CP = TQ ? TQ.pre : "";
+    const cs = getComputedStyle(st);
+    const fl = parseFloat(cs.getPropertyValue("--field-left")) || 0, ft = parseFloat(cs.getPropertyValue("--field-top")) || 0;
+    st.style.setProperty("--cam-o", `${-fl + sw/2}px ${-ft + sh/2}px`);
+    st.style.setProperty("--cam-t", ".25s"); st.style.setProperty("--cam-u", ".25s"); st.style.setProperty("--cam-e", "ease");
+    st.dataset.camSide = side;
+    cam.classList.add("cam-anim"); st.classList.add("cam-focus");
+    const pos = tqFormation(TQ, stylishFormation(id(actor), allies.map(id), enemies.map(id), side, S0.skill || null), id(actor));
+    pos.forEach(p => {
+      const el = byId[p.uid]; if(!el) return;
+      el.dataset.ox = el.style.left; el.dataset.oy = el.style.top;
+      el.classList.add("cam-in", "st-lab"); el.style.left = p.x + "%"; el.style.top = p.y + "%"; el.style.setProperty("--cs", p.scale);
+      const grp = (el === actor || allies.includes(el)) ? "ally" : "enemy", g = grp === "ally" ? [actor, ...allies] : enemies;
+      L.list.push({uid: p.uid, grp, i: g.indexOf(el), n: g.length, x: p.x});
+    });
+    actor.classList.add("cam-actor");
+    /* 기술 · 대사 (1024 둘째 — 사용자 '편집 툴에 대사 나오는것하고 이펙트 효과도 보고싶어') — 행동하는 학생의 직업 · 고른 기술 · 성격으로 camTurn 과 같은 말풍선 */
+    const job = ((FIELD_LAB && FIELD_LAB.jobs) || LAB_JOBS0)[actor.dataset.slot] || "paladin", sks = (JOBS[job] && JOBS[job].skills) || [];
+    const sk = sks.find(x => x.id === S0.skill) || sks.find(x => x.kind === "basic") || sks[0] || null;
+    if(S0.say && sk){
+      const call = {name: sk.name, kind: sk.kind === "ult" ? "ult" : sk.kind, pers: S0.pers || "plain"}, say = battleCallout(call, S0.seed | 0);
+      actor.insertAdjacentHTML("beforeend", `<div class="bf-speech cam-say ${say.tone} ${call.kind === "ult" ? "ultimate" : ""}${call.pers === "intro" ? " timid" : call.pers === "boast" ? " boast" : ""}">${esc(say.text)}</div>`);
+    }
+    L.cur = {st, actor, allies, enemies, side, job, sk};
+    const attack = enemies.length > 0, dir = (attack ? 1 : -1) * (side === "A" ? 1 : -1);
+    const T = stT();
+    st.style.setProperty("--cam", S0.phase === "hold"
+      ? `${CP}scale(${CS}) translateX(${Math.round(dir * T.drift / 100 * sw * 1.2 / CS)}px)${attack ? ` rotate(${dir * T.tilt}deg)` : ""}`
+      : `${CP}scale(${CS})`);
+    L.quarter = !!TQ; L.mx = TQ ? TQ.mx : 50; L.cs = CS;
+    post({type: "shown", quarter: !!TQ, n: L.list.length});
+  }
+  L.show = show;
+  /* 이펙트 — camTurn 의 맞는 순간과 같은 셈 (stylishSkillFxShow · 전용 그림이 없는 기술은 예전 스프라이트 이펙트) · 1.5초 · 반복이면 다시 */
+  function stopFx(){
+    L.fxTok++; clearTimeout(L.fxT);
+    if(L.stopFx){ try{ L.stopFx(); }catch(e){} L.stopFx = null; }
+    document.querySelectorAll("#modalRoot .bf-stage .st-fxspr").forEach(e => e.remove());
+  }
+  function playFx(){
+    stopFx();
+    const S0 = L.scene, C = L.cur; if(!S0.on || !S0.fx || !C || !C.sk || !C.st.isConnected) return;
+    const tok = L.fxTok, sk = C.sk, tgt = sk.target || "";
+    const targets = tgt === "self" ? [C.actor] : /^ally/.test(tgt) ? [C.actor, ...C.allies] : C.enemies;
+    const shots = sk.id === "gn_1" ? [0, 1, 2, 3].map(i => targets[i % Math.max(1, targets.length)]).filter(Boolean).map(e => e.dataset.uid) : undefined;
+    try{
+      L.stopFx = stylishSkillFxShow(C.st, C.actor, targets, C.job, sk.id, C.side, () => L.fxTok === tok && C.st.classList.contains("cam-focus"),
+        targets.filter(e => C.enemies.includes(e)), {shots, duration: 1500});
+    }catch(e){ console.warn("stlab fx", e); }
+    if(!STYLISH_SKILL_FX.targets[sk.id] && sk.fx) targets.forEach(el => {
+      el.insertAdjacentHTML("beforeend", fxHTML(sk.fx, sk.el || "phys", Math.max(18, Math.round(280 / (typeof FX_N !== "undefined" ? FX_N : 8))) / SPR_PLAYBACK_RATE, sk.kind === "ult" ? 1.16 : 1, performance.now()));
+      const f = el.lastElementChild; if(f && !f.classList.contains("cam-say")) f.classList.add("st-fxspr");
+    });
+    L.fxT = setTimeout(() => {
+      if(L.fxTok !== tok) return;
+      if(L.stopFx){ try{ L.stopFx(); }catch(e){} L.stopFx = null; }
+      document.querySelectorAll("#modalRoot .bf-stage .st-fxspr").forEach(e => e.remove());
+      if(L.scene.loop) L.fxT = setTimeout(() => { if(L.fxTok === tok) playFx(); }, 700);
+    }, 1600);
+  }
+  L.play = playFx; L.stop = stopFx;
+  /* 끌기 — 보통 필드: 줄 끝(맨 앞 · 맨 뒤 유닛)을 옮긴다 · 하나뿐이면 줄째로 · 세로는 모두 / 쿼터뷰: 맨 안쪽은 gap · 나머지는 step · 세로는 feet. 휠 — 카메라 배율 */
+  const r2 = v => Math.round(v * 10) / 10;
+  function laneOf(grp){
+    const T = stT(), S0 = L.scene, nE = L.list.filter(p => p.grp === "enemy").length;
+    const sk = S0.skill && stSkillLane(S0.skill, nE);
+    if(sk) return sk[grp];
+    if(grp === "ally" && !nE) return T.solo;
+    return T[grp];
+  }
+  function drag(ev){
+    const el = ev.target.closest && ev.target.closest(".bf-unit.st-lab"); if(!el) return;
+    const p = L.list.find(q => q.uid === el.dataset.uid); if(!p) return;
+    ev.preventDefault(); ev.stopPropagation();
+    const st = stageEl(), R = st.getBoundingClientRect(), x0 = ev.clientX, y0 = ev.clientY;
+    const T = stT(), mirror = L.scene.side === "B" ? -1 : 1;
+    const lane = L.quarter ? null : laneOf(p.grp), lane0 = lane ? lane.slice() : null;
+    const y00 = T.y, q0 = Object.assign({}, T.q), sgn = p.x >= L.mx ? 1 : -1;
+    const mv = e => {
+      const dx = (e.clientX - x0) / R.width * 100, dy = (e.clientY - y0) / R.height * 100;
+      if(L.quarter){
+        if(p.i <= 0 || p.n <= 1) T.q.gap = r2(q0.gap + sgn * dx); else T.q.step = r2(Math.max(0, q0.step + sgn * dx / p.i));
+        T.q.feet = r2(q0.feet + dy);
+      } else {
+        const d = dx / L.cs * mirror;
+        if(p.n <= 1){ lane[0] = r2(lane0[0] + d); lane[1] = r2(lane0[1] + d); }
+        else if(p.i === 0) lane[0] = r2(lane0[0] + d);
+        else if(p.i === p.n - 1) lane[1] = r2(lane0[1] + d);
+        else { lane[0] = r2(lane0[0] + d); lane[1] = r2(lane0[1] + d); }
+        T.y = r2(y00 + dy / L.cs);
+      }
+      show(); post({type: "tune", tune: T});
+    };
+    const up = () => { removeEventListener("pointermove", mv, true); removeEventListener("pointerup", up, true); post({type: "tune", tune: T, end: true}); };
+    addEventListener("pointermove", mv, true); addEventListener("pointerup", up, true);
+  }
+  document.addEventListener("pointerdown", drag, true);
+  document.addEventListener("wheel", ev => {
+    if(!ev.target.closest || !ev.target.closest("#modalRoot .bf-stage")) return;
+    ev.preventDefault();
+    const T = stT(), k = ev.deltaY < 0 ? .02 : -.02;
+    if(L.quarter) T.q.zoom = Math.max(.5, Math.round((T.q.zoom + k) * 100) / 100); else T.zoom = Math.max(.5, Math.round((T.zoom + k) * 100) / 100);
+    show(); post({type: "tune", tune: T, end: true});
+  }, {passive: false, capture: true});
+  addEventListener("message", e => {
+    const d = e.data || {};
+    if(d.lab !== "stylish" || d.type !== "set") return;
+    if(d.tune) L.tune = d.tune;
+    if(d.scene) Object.assign(L.scene, d.scene);
+    show();
+    if(d.play || (d.scene && !L.stopFx && L.scene.fx)) playFx(); else if(!L.scene.fx) stopFx();
+  });
+  /* 필드 배치 실험실이 전투판을 다시 그리면 클로즈업도 다시 (labDecorate 뒤) */
+  const hook = () => {
+    if(typeof labDecorate !== "function"){ setTimeout(hook, 200); return; }
+    const ld = labDecorate;
+    labDecorate = function(){ ld.apply(this, arguments); setTimeout(() => { show(); if(L.scene.fx) playFx(); }, 30); };
+    const st = document.createElement("style");
+    st.textContent = ".bf-stage .bf-unit.st-lab{cursor:grab}.bf-stage .bf-unit.st-lab .sprwrap{outline:1px dashed #ffd84a99;outline-offset:2px}";
+    document.head.appendChild(st);
+    const skills = {};
+    Object.keys(JOBS).forEach(j => { skills[j] = (JOBS[j].skills || []).map(x => ({id: x.id, n: x.name, kind: x.kind || "", target: x.target || "", fx: !!STYLISH_SKILL_FX.targets[x.id] || !!(STYLISH_SKILL_FX.skillCasters || {})[x.id]})); });
+    post({type: "ready", tune: L.tune, def: L.def, skills});
+  };
+  hook();
+})();
+/* STLAB_END */
 /* TFWIN_START — 대회 편성 창 (1019 · apply_tfwin.py) ─ mockups/tour-formation 목업 그대로. '대진 확정'(scout 단계) 자리에 뜬다:
    가을 대회 컵(시내 · 광역 · 본선 — 라운드마다 · 1팀 대회도) · 친선전(경기 전에 한 번) · 봄 신인전(경기마다 — 상대가 경기마다 다르다) ·
    예선 리그(1019 ③ — 라운드마다 · 조 순위 · 우리 일정) · 본선 결승(1019 ③ — 세트마다 · 세트판 · 세트를 진 상대가 바꾼 진형은 맞붙기 전까지 숨김).
