@@ -1979,6 +1979,27 @@ html[lang="ja"] .crec-bub,html[lang^="zh"] .crec-bub{word-break:normal}   /* 일
 .rxal.sl{margin-right:6px}
 .opt.locked .od.rxod{color:#b0412c}
 /* RXAL_CSS_END */
+/* SHVS_CSS_START — 도구상 · 목수 첫 방문 08b '다시 오래 쓸 것들' (1024 목업 · apply_shvs.py) ─ 무대는 02(.rvst) · 첫 시간표(.fst) · 08(.ctst) 그대로 쓰고 더한 것만:
+   배경(마을 건물 안 그림 — 작은 그림이라 흐리게) · 초상화 넷(왼쪽 도구상 · 목수 — 마을 NPC 128px 도트 얼굴 · npcDot) · 마스터 금빛 이름표 · 안내 잿빛 이름표 ·
+   보관고 단계(.peek — 무대 바탕 · 초상화를 내리고 대화창만 · 처분 단추 금빛 테두리가 계속 숨쉰다) · 목수 장면의 무거운 침묵(.hush — 조금 어둡게) */
+.fst.shvs{z-index:907}
+.shvs .rv-skip[hidden]{display:none}
+.rvst.shvs .fst-cast{left:0;right:0;width:auto;margin-left:0;translate:none}
+.shvs .fst-bust{right:auto;transition:left .42s cubic-bezier(.3,.8,.3,1),filter .18s,translate .36s cubic-bezier(.25,.9,.3,1.3)}
+.shvs .rv-img{filter:blur(2px) saturate(.95) brightness(.78);transform:scale(1.03);background-size:cover;background-position:50% 45%;image-rendering:auto;transition:filter .9s ease}
+.shvs.hush .rv-img{filter:blur(2px) saturate(.75) brightness(.55)}
+.shvs.hush .fst-bust:not([data-who="npc"]){filter:drop-shadow(1.5px 0 0 #140a0c) drop-shadow(-1.5px 0 0 #140a0c) drop-shadow(0 -1.5px 0 #140a0c) brightness(.4) saturate(.7)}
+.shvs .fst-talk.mst .fst-tx{color:#fff1cf}
+.shvs .fst-talk.mst .fst-nm span{color:#ffd36a}
+.shvs .fst-talk.ann .fst-nm span{color:#d8d3e6}
+.shvs .fst-talk.ann .fst-tx{color:#ece6f6;letter-spacing:.02em}
+.shvs .rv-bg{opacity:1;transition:opacity .35s ease}
+.shvs.peek .rv-bg{opacity:0}
+.shvs.peek .fst-hit{background:rgba(10,8,18,.18)}
+.shvs .shvs-hl{animation:shvsHl 1.2s ease-in-out infinite both;border-radius:4px;border-width:4px}
+@keyframes shvsHl{0%,100%{opacity:.6}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.shvs .shvs-hl{animation:none;opacity:1}}
+/* SHVS_CSS_END */
 /* FLST_CSS_START — 첫 친선전 신청 이야기 (1023 목업 · apply_flst.py) ─ 무대는 첫 시간표(.fst — 대화창 · 생각 창 · 초상화 · 원 · 손가락 · 강조 테두리) 그대로 · 배경 없음 (책상이 보인다).
    더한 것만: 신청 창(.overlay) 위 · 마스터 대화창(초상화 없이 금빛 이름표 — 05 와 같다) · 다시 보기 건너뛰기 자리(게임 화면 위 — 첫 시간표처럼 왼쪽 위) · 안내 문구 줄바꿈(좁은 화면) */
 .fst.flst{z-index:906;--rv-top:12px}
@@ -5990,7 +6011,7 @@ const JOBS = {
       {id:"wz_2",fx:"aura",el:"frost",name:"서리 결계",type:"debuff",target:"enemy_all",power:.25,proc:.18,dur:2,stat:"spd",txt:"적 전체의 속도를 25% 떨어뜨린다"},
       {id:"wz_u",fx:"burst",el:"arcane",kind:"ult",name:"중력 반전",type:"ult_aoe",target:"enemy_all",power:2.2,proc:1,dur:2,txt:"중력을 뒤집는 마력으로 적 전체를 압도한다"}
     ]},
-  druid:{ name:"숲지기", role:"tank", sub:"서브 딜러 · 서브 힐러", tone:"tank",
+  druid:{ name:"드루이드", role:"tank", sub:"서브 딜러 · 서브 힐러", tone:"tank",
     desc:"유지력이 높은 숲의 수호자.",
     base:{hp:1220,atk:100,def:88,spd:94,crit:.08,critDmg:1.55,acc:.95,eva:.07,skAcc:.92,skRes:.2,ultGain:1.0,leech:.05},
     grow:{hp:66,atk:5.4,def:5.0,spd:2.2},
@@ -6956,7 +6977,7 @@ const RELIC_DB = {
     {"id":"eagle-sight","n":"독수리의 조준경","ko":/*no-i18n*/"독수리의 조준경","job":"gunner","home":"d1","f":["acc","crit","critDmg","skAcc"],"res":"'무례한 노크' 피해 +25%","rx":{"sk":"gn_2","mul":{"power":1.25}},"lore":"졸업한 마총사가 놓고 간 조준경. 들여다보면 과녁이 먼저 다가온다."},
     {"id":"hawk-feather","n":"매의 깃털","ko":/*no-i18n*/"매의 깃털","job":"archer","home":"hunt","f":["spd","acc","crit","critDmg"],"res":"'매의 눈' 지속 +1턴","rx":{"sk":"ar_2","add":{"dur":1}},"lore":"사냥꾼이 아끼던 매가 남긴 깃털. 활줄 옆에 꽂으면 바람이 보인다."},
     {"id":"wind-bracer","n":"바람의 팔찌","ko":/*no-i18n*/"바람의 팔찌","job":"archer","home":"hunt","f":["spd","atk","eva","acc"],"res":"'관통 화살' 피해 +20%","rx":{"sk":"ar_1","mul":{"power":1.2}},"lore":"사냥꾼이 젊을 때 차던 가죽 팔찌. 시위를 놓는 순간 바람이 한 번 더 민다."},
-    {"id":"worldseed","n":"세계수의 씨앗","ko":/*no-i18n*/"세계수의 씨앗","job":"druid","home":"farm","f":["hp","leech","def","skAcc"],"res":"'재생의 씨앗' 회복 +30%","rx":{"sk":"dr_1","mul":{"power":1.3}},"lore":"할아버지네 밭에서 백 년째 싹을 틔우지 않는 씨앗. 숲지기의 손에서만 따뜻해진다."},
+    {"id":"worldseed","n":"세계수의 씨앗","ko":/*no-i18n*/"세계수의 씨앗","job":"druid","home":"farm","f":["hp","leech","def","skAcc"],"res":"'재생의 씨앗' 회복 +30%","rx":{"sk":"dr_1","mul":{"power":1.3}},"lore":"할아버지네 밭에서 백 년째 싹을 틔우지 않는 씨앗. 드루이드의 손에서만 따뜻해진다."},
     {"id":"antler-talisman","n":"숲지기의 부적","ko":/*no-i18n*/"숲지기의 부적","job":"druid","home":"hunt","f":["def","hp","spd","skRes"],"res":"'야수화' 회복 +30%","rx":{"sk":"dr_2","mul":{"regen":1.3}},"lore":"숲지기 사슴의 뿔로 엮은 부적. 사냥꾼은 이걸 쏘지 않은 사슴에게서 받았다고 한다."},
   ]
 };
@@ -8924,7 +8945,19 @@ function tauntTarget(actor, pool){
    후보 = 살아 있는 상대 (전열 · 후열 기술은 그 줄 — 그 줄이 비었으면 모두). 그 학생이 후보가 아니면 · 상대가 혼자면 · 도발에 걸렸으면 · 봉인 해제로 전체가 됐으면 원래대로 */
 const TGT_W = 2;
 const TGT_ONE = ["enemy_rand","enemy_front","enemy_back","enemy_low"], TGT_ATK = ["dmg","dmg_multi","dot","ult_single","drain"];
+/* 1025 — 대회 중계 A10 (대상 선택 실패 · TCOM): 공격 스킬 · 한 명 대상에서 침착성 판정에 실패해 무작위로 고른 적이 '똑똑하게 골랐을 적'보다 체력 비율이 20%p 넘게 높으면 PT_MISS
+   (판정 · RNG 는 그대로 — 고른 뒤에 견주기만 한다 · resolve 가 그 장에 tmiss 를 적는다) */
+let PT_MISS = false;
+function ptMiss(actor, pool, sk, r){
+  if(!sk || !r || !TGT_ATK.includes(sk.type) || pool.length < 2) return false;
+  let P = freshFirst(pool, actor, sk);
+  if(sk.target==="enemy_front"){ const f=P.filter(u=>u.row==="front"); if(f.length) P=f; }
+  if(sk.target==="enemy_back"){ const f=P.filter(u=>u.row==="back"); if(f.length) P=f; }
+  const best = P.slice().sort((a,b)=> sk.target==="enemy_low" ? a.hp-b.hp : (a.hp/a.maxHp)-(b.hp/b.maxHp))[0];
+  return !!best && best !== r && r.hp/r.maxHp - best.hp/best.maxHp >= .2;
+}
 function pickTarget(actor, foes, allies, sk){
+  PT_MISS = false;
   if(sk && TGT_ONE.includes(sk.target) && TGT_ATK.includes(sk.type)){
     const pool = aliveOf(foes), f = pool.find(u=> u.tgtW > 1);
     if(f && pool.length > 1 && !tauntTarget(actor, pool) && !(UNSEAL_AOE.includes(sk.type) && (actor.fx||[]).some(x=> x.allT))){
@@ -8964,7 +8997,7 @@ function pickTarget(actor, foes, allies, sk){
     if(t==="enemy_low") return [pool.slice().sort((a,b)=>a.hp-b.hp)[0]];
     return [pool.slice().sort((a,b)=> (a.hp/a.maxHp) - (b.hp/b.maxHp))[0]];
   }
-  return [pick(pool)];
+  { const r = pick(pool); PT_MISS = ptMiss(actor, pool, sk, r); return [r]; }   // 1025 — 대회 중계 A10 (고른 뒤에 견주기만)
 }
 
 let DMG_K = 1.8, DEF_K = 290;
@@ -9541,6 +9574,7 @@ function runBattle(teamA, teamB, opt){
     push(label, isUlt?"ult":"", u.uid,
       {skillId:sk.id, n:sk.fx||null, e:sk.el||"phys", u:!!isUlt, s:sfxOf(u, sk), t:tg.filter(t=>t && t.alive).map(t=>t.uid)});
     frames[frames.length-1].call = {name:sk.name,kind:isUlt?"ult":sk.kind,pers:u.pers||"plain"};
+    if(PT_MISS) frames[frames.length-1].tmiss = 1;   // 1025 — 대회 중계 A10 (대상 선택 실패 · TCOM)
     const actionFx = frames[frames.length-1].fx;
     switch(sk.type){
       case "dmg": { tg.forEach(t=>{ if(!t.alive) return;
@@ -13908,7 +13942,7 @@ function ladderRun(t, quick){
   const after = ()=> ladderRecord(t, b, foe.name, ids);
   if(quick) after();
   else openBattle(b, {titleA:S.acadName, titleB:foe.name, field:t.step, bgm:ladderBgm(t), jingle:true, victory:true, defeat:true,
-    cheer: t.step==="final", noSkip:!clrHas(clrLadKey(t)),
+    cheer: t.step==="final", noSkip:!clrHas(clrLadKey(t)), tcomOpen:(window.TCOM ? TCOM.openOf(t) : ""), tcomCtx:(window.TCOM ? TCOM.openCtx(t) : null), tcomMood:L.mood,   /* 1025 — 대회 중계 시작 대사 · 그 상황(각오 한마디 PRTK) */
     head:`${t.title} — ${ladderMatchLabel(t)}`, doneLabel:"결과 확정"}, after);
 }
 /* 대회 단계별 전투곡 — 컵의 마지막 라운드는 결승 전용 곡 */
@@ -18418,6 +18452,7 @@ function render(){
   if(window.SPST) SPST.after();   // 1023 — 학원제 개막식의 밤 07 (SPST) — 장면 중에 나갔으면 (그 여름 동안) 첫 쪽 차례를 다시 만든다 (S.spst)
   if(window.CTST) CTST.after();   // 1024 — 첫 시내 대회 이야기 08 (CTST) — 결말 중에 다시 열었으면 남은 장면부터 (S.ctst)
   if(window.RKST) RKST.after();   // 1024 — 첫 봄 신인전 이야기 09 (RKST) — 결말 중에 다시 열었으면 그 장면부터 (S.rkst)
+  if(window.SHVS) SHVS.after();   // 1024 — 도구상 · 목수 첫 방문 08b (SHVS) — 처분 세이브(S.shvs) · 책 처분 단추 · 장면 중에 나갔으면 그 단락부터
   if(window.RXAL) RXAL.after();   // 1024 — 유물 장착 알림 (RXAL) — 책상 학생 명부 책 · 학생 명부 책 안(얼굴 · 유물 칸) 표식
   if(window.WZV) WZV.after();   // 1024 — 개교 마법사 전용 대사 (WZV) — 예전 세이브의 개교 멤버 마법사에게 표식 wz1 (한 번)
   if(window.PRST) PRST.after();   // 1024 — 프롤로그 00 (PRST) — 이름을 정한 뒤 PR22 전에 나갔으면 PR21 부터 → 첫 시간표 (S.story.prologue)
@@ -24318,7 +24353,7 @@ function viewRelic(){
     <div class="panel-h"><h2>유물 보관고</h2><span class="hint">${pool.length}개 보관 · 학생을 선택해 장착한다</span>
       ${pool.length? sortSelect("rlsort", RELIC_SORT, rMode) : ""}</div>
     ${(()=>{ const P=RELIC_SELL;
-      const rows = !shopUnlocked()? [] : ["C","B","A"].map(g=>{ const n=pool.filter(r=>r.grade===g && !relicUnique(r)).length;   // 유물 처분 — 도구 상점(구매 탭)이 열린 뒤 (0929)
+      const rows = !relicSellOn()? [] : ["C","B","A"].map(g=>{ const n=pool.filter(r=>r.grade===g && !relicUnique(r)).length;   // 유물 처분 — 도구 상점(구매 탭)이 열린 뒤 (0929)
         return n? `<button class="btn sm ${g==="A"?"":""}" data-sellgrade="${g}" style="${g==="A"?"border-color:var(--bad)":""}">${g}급 ${n}개 일괄 처분 <span style="color:var(--brass)">+${fmt(n*relicSellPrice({grade:g}))} G</span></button>` : ""; }).filter(Boolean);
       const bare = S.students.filter(st=> (st.relics||[]).filter(Boolean).length < relicSlots(st)).length;
       const rec = pool.length && bare ? `<button class="btn sm primary" id="btnRelicAuto" title="유물 칸이 비어 있는 학생에게 역할에 맞는 유물을 골라 빈 칸을 채운다 (이미 찬 유물은 그대로)">추천 장착 <span style="opacity:.8">(빈 칸 ${bare}명)</span></button>` : "";
@@ -24338,7 +24373,7 @@ function viewRelic(){
           </select>
           <button class="btn sm" data-equip="${i}">장착</button>
           ${r.grade==="S" && !r.kind && synthOn() ? `<button class="btn sm" data-synth="${i}" style="border-color:var(--brass);color:var(--brass)">합성</button>` : ""}
-          ${!shopUnlocked()? "" : relicUnique(r) ? `<span class="hint" style="font-size:11px;color:var(--dim)">유일 유물은 처분하지 않는다</span>` : RELIC_SELL[r.grade] ? `<button class="btn sm ghost" data-sell="${i}">처분 (+${fmt(relicSellPrice(r))}G)</button>`
+          ${!relicSellOn()? "" : relicUnique(r) ? `<span class="hint" style="font-size:11px;color:var(--dim)">유일 유물은 처분하지 않는다</span>` : RELIC_SELL[r.grade] ? `<button class="btn sm ghost" data-sell="${i}">처분 (+${fmt(relicSellPrice(r))}G)</button>`
             : `<span class="hint" style="font-size:11px;color:var(--dim)">SP 로 얻은 유물은 처분할 수 없다</span>`}
         </div>
         ${S.students.length? `<div class="od reqpw" data-eqpw="${i}" style="margin-top:5px">${relicEquipPreview(r, S.students[0])}</div>` : ""}
@@ -24568,7 +24603,7 @@ function shopOpenCeremony(c){
     ${window.CTST && CTST.facSeen(c) ? "" /* 1024 — 첫 시내 대회 이야기(CTST) 시설 안내를 봤으면 독백은 빼고 해금 문구만 (사용자) */ : `<div class="opt" style="cursor:default;margin-top:12px;padding:16px 20px">
       <div style="font-size:14px;line-height:1.9;color:var(--text)">${esc(SHOP_OPEN_TEXT)}</div></div>`}
     <div class="opt" style="cursor:default;margin-top:10px;border-color:var(--brass);padding:14px 20px">
-      <div style="font-size:14px;line-height:2"><b>건설 기능이 해금되었다!</b><br><b>도구 기능이 해금되었다!</b></div></div>
+      <div style="font-size:14px;line-height:2"><b>건설 기능이 해금되었다!</b><br><b>도구 기능이 해금되었다!</b></div>${window.SHVS ? `<div style="font-size:14px;line-height:2"><b>${esc(SHVS.sellLine())}</b></div>` : ""}</div>
     <div class="btnrow" style="margin-top:16px"><button class="btn primary" id="cerOk">확인</button></div>`;
 }
 function guildCeremony(c){
@@ -26738,7 +26773,7 @@ function bindView(){
     teachCompare(i, sel? sel.value : null);
   });
   v.querySelectorAll("[data-sellgrade]").forEach(b=> b.onclick=()=>{
-    if(!shopUnlocked()) return;
+    if(!relicSellOn()) return;
     const g = b.dataset.sellgrade, P=RELIC_SELL;
     const n = (S.relicPool||[]).filter(r=>r.grade===g && !relicUnique(r)).length;
     if(!n) return;
@@ -26807,7 +26842,7 @@ function bindView(){
   });
   v.querySelectorAll("[data-sell]").forEach(b=> b.onclick=()=>{
     const i=+b.dataset.sell, r=S.relicPool[i];
-    if(!r || !shopUnlocked()) return;
+    if(!r || !relicSellOn()) return;
     if(!RELIC_SELL[r.grade]){ toast("SP 로 얻은 유물은 처분할 수 없다."); return; }
     if(relicUnique(r)){ toast("유일 유물은 처분하지 않는다."); return; }
     const doSell = ()=>{
@@ -27025,6 +27060,7 @@ function showCeremony(){
   if(window.RVST && (c.type==="rvst" || (c.type==="tut" && (String(c.page)==="2" || String(c.page)==="5")))) return RVST.play(c);   // 1022 — 초반 스토리 02 '한 번만 더' (대화 장면 → 라이벌 팝업 → 개인 행동 안내 — 곡은 RVST 가) · 예전 운영 안내 2 · 5 는 띄우지 않는다 (2 자리에 안내 한 장)
   if(window.RQST && c.type==="rqst") return RQST.play(c);   // 1022 — 초반 스토리 03 (대화 장면 → 요약 팝업 — 곡은 RQST 가 · 확인하면 마을이 열린다)
   if(window.XPST && c.type==="xpst") return XPST.play(c);   // 1023 — 원정 이야기 (기록 정리 · 가져온 기록 — 곡은 XPST 가)
+  if(window.SHVS && c.type==="shopopen" && SHVS.play(c)) return;   // 1024 — 도구상 · 목수 첫 방문 08b (SHVS) — 셋이 모두 재학 중이면 '대회의 문턱' 팝업 대신 장면 (끝나면 다음 의식)
   if(window.SPST && c.type==="sparkler" && SPST.play(c)) return;   // 1023 — 학원제 개막식의 밤 07 (SPST) — 상대역이 팔라딘이면 네 쪽 대신 장면 (끝나면 다음 의식)
   if(window.SMST && c.type==="camp" && SMST.play(c)) return;   // 1023 — 첫 여름 합숙 이야기 06 (SMST) — 첫해 여름 합숙 안내 앞에 장면 (끝나면 안내를 이어 띄운다)
   if(window.XPST && c.type==="xpst") return XPST.play(c);   // 1023 — 원정 이야기 (기록 정리 · 가져온 기록 — 곡은 XPST 가)
@@ -30518,7 +30554,7 @@ function openBattle(res, opt, onDone){
       pe.classList.remove("pick"); void pe.offsetWidth; pe.classList.add("wobble");
       if(!await W(TM.wob)) return false;
       if(P.res){
-        pe.classList.add("resist"); sfxPlay("pick_resist");
+        pe.classList.add("resist"); sfxPlay("pick_resist"); if(window.TCOM && P.vf) TCOM.resist(btId, j);   /* 1025 — 대회 중계 C19 (저항에 막힘) */
         if(!await W(TM.resist)) return false;
         setHL(iFin); sfxPlay("pick_hop"); els[iFin].classList.add("pick"); sfxPlay("pick_choose");
         if(!await W(TM.move)) return false;
@@ -30553,7 +30589,7 @@ function openBattle(res, opt, onDone){
   };
   /* BATTLE START · 등장 연출을 트는 동안 — 재생 · 일시정지 · 결과로 건너뛰기를 누르면 배너를 걷고 유닛을 제자리에 세운 뒤 바로 그쪽으로 (1003 · 1018) */
   let introOn = false, ent = null;
-  const introStop = ()=>{ if(introOn){ introOn = false; battleBannerClear(); } if(ent){ const e = ent; ent = null; e.stop(); } };
+  const introStop = ()=>{ if(introOn){ introOn = false; battleBannerClear(); } if(ent){ const e = ent; ent = null; e.stop(); } if(window.PRTK) PRTK.stop(); };   // 1025 — 각오 한마디(PRTK)도
   const play = ()=>{ introStop(); if(timer) return;
     if(camOn()){ timer = {cam:true}; const tok = ++camRun; draw(); camLoop(tok); return; }
     timer = setInterval(step, speed/SPR_PLAYBACK_RATE); draw(); };
@@ -30569,8 +30605,10 @@ function openBattle(res, opt, onDone){
   introOn = true;
   Promise.all([opt.intro === false ? true : battleBanner("start", 1500), ent ? ent.done : true]).then(()=>{
     if(!introOn) return;
-    introOn = false; ent = null;
-    if(document.querySelector(`#modalRoot .modal[data-bt="${btId}"]`)) play();
+    ent = null;
+    const go = ()=>{ if(!introOn) return; introOn = false; if(document.querySelector(`#modalRoot .modal[data-bt="${btId}"]`)) play(); };
+    const pk = window.PRTK && document.querySelector(`#modalRoot .modal[data-bt="${btId}"]`) ? PRTK.start(btId, res, opt, uids, speed) : null;   // 1025 — 대회 전투 시작 각오 한마디 (PRTK · 중계 있는 경기 · 끝나면 전투)
+    if(pk) pk.done.then(go); else go();
   });
 }
 
@@ -33813,11 +33851,12 @@ const SCEN_LIST = [
   {k: "smst", n: "06", t: "석양을 향해서!"},                                 // 1023 — 첫 여름 합숙 (SMST — 적어 둔 봄 기록의 분기 그대로)
   {k: "spst", n: "07", t: "작은 불꽃"},                                      // 1023 — 학원제 개막식의 밤 (SPST — 팔라딘과 본 경우만)
   {k: "ctst", n: "08", t: "이번에는, 함께", bundle: true},                 // 1024 — 첫 시내 대회 (CTST — 출전 · 첫 승리 · 우승 · 탈락 · 시설 안내 — 본 장면만 · 공용판은 그때 학생 그대로)
+  {k: "shvs", n: "08b", t: "다시 오래 쓸 것들"},                             // 1024 — 도구상 · 목수 첫 방문 (SHVS — 셋과 본 경우만 · 보관고 단계는 보여 주기만)
   {k: "rkst", n: "09", t: "한 경기로 끝나는 이야기가 아니니까", bundle: true}   // 1024 — 첫 봄 신인전 (RKST — 첫 참가 · 첫 경기 뒤 · 우승 · 미우승 — 본 장면만)
 ];
 const SCEN_T = {title: "시나리오", none: "아직 다시 볼 시나리오가 없다.", close: "닫기"};
 const SCEN_JOBS = ["paladin", "darkpriest", "wizard"];
-function scenApi(k){ const a = k === "prst" ? window.PRST : k === "fst" ? window.FST : k === "rvst" ? window.RVST : k === "rqst" ? window.RQST : k === "xpst" ? window.XPST : k === "fris" ? window.FRIS : k === "rost" ? window.RSTO : k === "smst" ? window.SMST : k === "spst" ? window.SPST : k === "ctst" ? window.CTST : k === "rkst" ? window.RKST : null; return a && typeof a.replay === "function" ? a : null; }
+function scenApi(k){ const a = k === "prst" ? window.PRST : k === "fst" ? window.FST : k === "rvst" ? window.RVST : k === "rqst" ? window.RQST : k === "xpst" ? window.XPST : k === "fris" ? window.FRIS : k === "rost" ? window.RSTO : k === "smst" ? window.SMST : k === "spst" ? window.SPST : k === "ctst" ? window.CTST : k === "rkst" ? window.RKST : k === "shvs" ? window.SHVS : null; return a && typeof a.replay === "function" ? a : null; }
 /* 처음 끝냈는가 — 장면이 끝난 때 (요약 · 팝업이 남아 있어도) · 04 묶음은 한 장면이라도 보면 */
 function scenDone(k){
   if(!S) return false;
@@ -33826,6 +33865,7 @@ function scenDone(k){
   if(k === "rost") return !!(window.RSTO && RSTO.done());
   if(k === "smst") return !!(window.SMST && SMST.done());
   if(k === "spst") return !!(window.SPST && SPST.done());
+  if(k === "shvs") return !!(window.SHVS && SHVS.done());                  // 1024 — 08b (셋과 끝까지 본 경우)
   if(k === "rvst") return !!(S.rvst && (S.rvst.step | 0) >= 1);
   if(k === "rqst") return !!(S.rqst && (S.rqst.step | 0) >= 1);
   if(k === "xpst") return !!(window.XPST && XPST.anySeen());
@@ -33836,7 +33876,7 @@ function scenDone(k){
 }
 /* 배우 — 02 · 03 은 이야기에 든 학생 id · 04 는 XPST 가 처음 장면 때 적어 둔 셋(그때 이름) · 01 은 첫 시간표처럼 직업으로 (암흑 사제는 개교 멤버 dp1 먼저) */
 function scenCast(k){
-  const XC = k === "xpst" ? S.xpst : k === "fris" ? ((S.fris && S.fris.cast) ? S.fris : S.flst) : k === "smst" ? S.smst : k === "spst" ? S.spst : k === "ctst" ? S.ctst : k === "rkst" ? S.rkst : null;
+  const XC = k === "xpst" ? S.xpst : k === "fris" ? ((S.fris && S.fris.cast) ? S.fris : S.flst) : k === "smst" ? S.smst : k === "spst" ? S.spst : k === "ctst" ? S.ctst : k === "rkst" ? S.rkst : k === "shvs" ? S.shvs : null;
   if(XC && XC.cast){ const o = {}; SCEN_JOBS.forEach(j => { const x = XC.cast[j]; if(x) o[j] = {id: x.id, name: x.name, uniq: x.uniq || null}; }); return o; }
   const L = S.students || [], ids = k === "rvst" ? (S.rvst && S.rvst.cast) : k === "rqst" ? (S.rqst && S.rqst.cast) : null, out = {};
   SCEN_JOBS.forEach(j => {
@@ -36918,6 +36958,483 @@ function rxAfter(){
 window.RXAL = {can: rxCan, any: rxAny, badge: rxBadge, mark: rxMark, tabs: rxTabs, after: rxAfter, book: rxBook, tip: rxTip};
 })();
 /* RXAL_END */
+/* SHVS_START — 도구상 · 목수 첫 방문 08b '다시 오래 쓸 것들' (1024 목업 · apply_shvs.py · mockups/toolshop-visit) ─ 대본 scenario-08b-first-toolshop-carpenter-draft.md (초안 v1 · TS01 ~ 20 · CP01 ~ 29 · CT01 ~ 02).
+   사용자 1024: '대회의 문턱 해금 안내를 대체하고, 처분 기능을 기본적으로 숨기고 도구상이 열린 시점부터 유물을 유물 보관고에서 처분 기능이 열리도록하자.
+     딴말로 도구상 방문 도중에 유물 보관고를 한번 열고 처분 버튼 위치를 보여주자' · '그렇게 목업을 진행'.
+   · 언제 — 첫 시내 대회가 끝나 건설 · 도구가 열릴 때의 '대회의 문턱' 의식(shopopen) 차례(showCeremony) — 08 결말 · 시설 안내 · 결과 상세 창 뒤.
+     개교 셋이 모두 재학 중이면 그 의식 대신 이 장면 (대회의 문턱 팝업은 없다) · 아니면(공용판 없음 — 대본 규칙) 예전 팝업 + '유물 처분 기능이 해금되었다!' 한 줄.
+   · 무대 — 02 무대(.rvst) · 배경은 마을 건물 안 그림(TIN_ART.room — 도구상 · 목수 작업장 · 흐리게) · 초상화 넷(왼쪽 도구상 또는 목수 — 마을 NPC 128px 도트 얼굴 npcDot(NPC_IMG) · 셋) ·
+     마스터 금빛 이름표 · 독백은 생각 창 · 안내(잿빛 이름표) · 연출 줄(CP04 · CP10 · CP23)은 글 없이 쉼 · 어둡게 · 시선.
+     A 도구상 TS01 ~ 20 — TS13 다음에 유물 보관고를 연다(넓은 화면은 명부 책의 보관고 · 좁은 화면은 유물 화면) · 처분이 이때 열린다 · 처분 단추(일괄 처분 · 넓은 화면)에 금빛 테두리 ·
+       TS14 ~ 16 은 보관고 위에서 → 닫고 도구상으로 · TS20 뒤 암전 → B 목수 CP01 ~ 29 → C 증축 CT01 · CT02(안내) → 끝나면 마을 목수 창(건설 — 예전 확인 단추와 같다).
+   · 처분 — 기본으로 숨긴다 (유물 보관고의 '처분' 단추 · 살펴보기의 처분 · 좁은 화면 유물 화면의 일괄 · 낱개 처분). relicSellOn() 이 연다:
+     S.shvs.sell (이 장면의 보관고 단계 · 공용판 팝업) · S.shvs 가 없으면 예전 그대로 shopUnlocked(). 새 세이브는 render 끝에 S.shvs 를 적어 둔다
+     (건설 · 도구가 아직이면 sell 0 · 이미 열린 예전 세이브는 sell 1 · 장면도 본 것으로).
+     명부 책(그림자 DOM · ROSTERBK 블록은 그대로) — 책에 CSS 를 넣고 책 바깥 상자(#rbHost)에 shvs-nosell 을 붙였다 뗀다.
+   · 세이브 S.shvs = {id, st: "wait" · "tool" · "carp" · "build" · "done", sell, year, cast {paladin · darkpriest · wizard: {id, name, uniq}}, old} — 단락마다 저장 · 다시 열면 그 단락 처음부터.
+     보상 · 수치 없음 (건설 · 도구 해금은 예전 그대로 finishLadder 가 한다 · 이 장면은 다시 하지 않는다).
+   · 처음 보는 진짜 흐름에는 건너뛰기가 없다 · 다시 보기(SCEN '08b')는 오른쪽 위 건너뛰기 · 세이브를 건드리지 않는다 (보관고 단계도 보여 주기만).
+   · 자동화(navigator.webdriver)에서는 띄우지 않는다 (예전 팝업 + 처분 한 줄) — 시험은 window.__shvsForce = true */
+function relicSellOn(){ return window.SHVS ? SHVS.sellOn() : (typeof shopUnlocked === "function" && shopUnlocked()); }   // 유물 처분이 열렸나 (게임 곳곳 — 좁은 화면 유물 화면)
+(() => {
+const SH_FACE = {"paladin":{"smile":"assets/fst_faces/paladin-smile.png?v=f5c93a74","joy":"assets/fst_faces/paladin-joy.png?v=3e213740","flustered":"assets/fst_faces/paladin-flustered.png?v=4622b965","motivated":"assets/fst_faces/paladin-motivated.png?v=9f80f84f"},"darkpriest":{"smile":"assets/fst_faces/darkpriest-smile.png?v=51f67484","cold-empty":"assets/fst_faces/darkpriest-cold-empty.png?v=f69aa9fd"},"wizard":{"smile":"assets/fst_faces/wizard-smile.png?v=d2ae512d","surprised":"assets/fst_faces/wizard-surprised.png?v=79818b69","sleepy-cat":"assets/fst_faces/wizard-sleepy-cat.png?v=02b87b13","flustered":"assets/fst_faces/wizard-flustered.png?v=ca94f433","glasses":"assets/fst_faces/wizard-glasses.png?v=359e79c5"}};   // apply_shvs.py — {직업: {표정: 표정 그림 + ?v=}} (fst_faces 그대로)
+const SH_ID = "toolshop-carpenter-v1";
+const SH_LK = window.HS_LANG === "en" ? 1.6 : 1;
+const SH_CPS = 30 * SH_LK;
+const SH_QUIET = /[\s….‥]/;
+const SH_JOBS = ["paladin", "darkpriest", "wizard"];
+const SH_BUSTS = ["npc", "wizard", "paladin", "darkpriest"];                   // 왼쪽부터 — 도구상 · 목수는 맨 왼쪽
+const SH_T = {skip: "건너뛰기", master: "마스터", sys: "안내", tool: "도구상", carp: "목수", title: "다시 오래 쓸 것들",
+  cap: {tool: "시장 · 도구상", carp: "목수의 작업장"}, sc: {tool: "도구상", carp: "목수의 작업장", build: "증축 안내"},
+  sell: "유물 처분 기능이 해금되었다!"};
+const SH_ORDER = ["tool", "carp", "build", "done"];
+/* 대본 — k say(말 · who master · paladin · wizard · darkpriest · npc) · think(독백) · sys(안내 — 잿빛 이름표) · fx(연출 — 글 없이) /
+   face 표정 · hop 콩 · shake 흔들 · glint 안경 반짝(챠킹 — 01 첫 시간표 줄 17 과 같은 소리 fs_glint · 반짝이 둘) / act vault 보관고 열기(처분이 열린다) · unvault 닫기 · flip 책장 소리 / ms 연출 쉼 / dim 어둡게 · look 셋을 차례로 밝게 */
+const SH_CUES = {
+  tool: [
+    {id: "TS01", k: "say", who: "npc", t: "어서 와요! 찾는 게 있나요? 없으면 구경하다가 찾아도 되고!"},
+    {id: "TS02", k: "say", who: "master", t: "학원에서 쓸 만한 물건이 있을까 해서요. 학생들하고 같이 왔습니다."},
+    {id: "TS03", k: "say", who: "npc", t: "아, 그 학원! 다시 북적거린다는 얘기는 들었어요."},
+    {id: "TS04", k: "say", who: "npc", t: "훈련할 때 쓰는 도구부터 원정에 챙길 물건까지, 이것저것 있어요. 필요한 게 있으면 물어봐요!"},
+    {id: "TS05", k: "say", who: "paladin", face: "joy", hop: 1, t: "우와! 마스터, 저쪽도 봐도 돼요?"},
+    {id: "TS06", k: "say", who: "master", t: "그래. 깨뜨리지만 말고."},
+    {id: "TS07", k: "say", who: "darkpriest", face: "smile", t: "먼저 가격표부터 보는 게 좋겠네요."},
+    {id: "TS08", k: "say", who: "wizard", face: "surprised", t: "……어라아. 저 구석에 있는 것도 파는 거예요?"},
+    {id: "TS09", k: "say", who: "npc", t: "오. 그게 눈에 들어왔어요?"},
+    {id: "TS10", k: "say", who: "wizard", face: "smile", t: "저렇게 생긴 건 책에서만 봤는데에. 실제로 보면 더 이상하게 생겼네요."},
+    {id: "TS11", k: "say", who: "npc", t: "그렇죠? 바로 그게 좋은 거라니까! 처음 들어왔을 때 나도 한참 들여다봤어요."},
+    {id: "TS12", k: "say", who: "wizard", face: "glasses", glint: 1, t: "역시이. 마니아끼리는 통하는 게 있구나아."},
+    {id: "TS13", k: "say", who: "paladin", face: "flustered", shake: 1, t: "……어느 부분에서 통한 거예요?"},
+    {id: "TSv", k: "fx", act: "vault"},
+    {id: "TS14", k: "say", who: "npc", t: "참, 원정에서 얻은 유물도 가져와요. 필요 없어진 유물은 내가 사들이거든요."},
+    {id: "TS15", k: "say", who: "npc", t: "여러분한테는 쓸모없어도, 찾는 사람이 있을 수 있으니까."},
+    {id: "TS16", k: "say", who: "master", t: "유물도 매입하시는군요. 기억해 둘게요."},
+    {id: "TSu", k: "fx", act: "unvault"},
+    {id: "TS17", k: "say", who: "wizard", face: "sleepy-cat", t: "팔러 왔다가 다른 걸 사서 나갈 것 같은데에."},
+    {id: "TS18", k: "say", who: "darkpriest", face: "cold-empty", t: "그러면 자금은 그대로겠네요."},
+    {id: "TS19", k: "say", who: "npc", t: "하하! 오늘은 얼굴 익힌 걸로 됐어요. 다음에도 편하게 들러요!"},
+    {id: "TS20", k: "say", who: "master", t: "그럼, 다음은 목수 작업장이네."}
+  ],
+  carp: [
+    {id: "CP01", k: "say", who: "master", t: "……안녕하세요."},
+    {id: "CP02", k: "say", who: "npc", t: "왔나."},
+    {id: "CP03", k: "say", who: "master", t: "학원 시설 때문에 상담을 좀 드리려고요."},
+    {id: "CP04", k: "fx", ms: 900, light: "npc"},
+    {id: "CP05", k: "say", who: "npc", t: "전에 만든 것들은."},
+    {id: "CP06", k: "say", who: "master", t: "……네?"},
+    {id: "CP07", k: "say", who: "npc", t: "책상하고 의자. 책장도 있었지. 내가 만들었던 것들."},
+    {id: "CP08", k: "say", who: "master", t: "……팔았습니다."},
+    {id: "CP09", k: "say", who: "npc", t: "알고 있다. 중고 가구상에 나와 있더군."},
+    {id: "CP10", k: "fx", ms: 1100, dim: 1},
+    {id: "CP11", k: "say", who: "master", t: "겨울에 빚을 감당할 수가 없어서…… 당장 돈이 되는 건 처분해야 했습니다."},
+    {id: "CP12", k: "say", who: "npc", t: "사정은 들었어."},
+    {id: "CP13", k: "say", who: "npc", t: "그래도 그 책상은 오래 쓰라고 만든 거다. 학생들이 흠집 좀 낸다고 망가질 물건도 아니었고."},
+    {id: "CP14", k: "say", who: "master", t: "……죄송합니다."},
+    {id: "CP15", k: "say", who: "master", t: "그때는 당장 막아야 할 돈만 보였습니다. 여기서 다시 학생들을 가르칠 생각까지는…… 못 했어요."},
+    {id: "CP16", k: "say", who: "npc", t: "지금은 다르고?"},
+    {id: "CP17", k: "say", who: "master", t: "빚이 없어진 건 아닙니다. 아직 형편도 좋지 않고요."},
+    {id: "CP18", k: "say", who: "master", undim: 1, t: "그래도 이번에는, 이 학생들이 계속 배울 수 있는 학원으로 만들고 싶습니다."},
+    {id: "CP19", k: "say", who: "paladin", face: "motivated", hop: 1, t: "저희도 오래 다닐 거예요! 책상도 소중히 쓸게요!"},
+    {id: "CP20", k: "say", who: "wizard", face: "smile", t: "저는 책상 앞에 오래 앉아 있는 건 자신 있는데에."},
+    {id: "CP21", k: "say", who: "darkpriest", face: "cold-empty", t: "……자는 시간도 포함해서요?"},
+    {id: "CP22", k: "say", who: "wizard", face: "flustered", shake: 1, t: "지금 그 얘기는 안 해도 되잖아아."},
+    {id: "CP23", k: "fx", look: 1},
+    {id: "CP24", k: "say", who: "npc", t: "……학생은 제대로 받았군."},
+    {id: "CP25", k: "say", who: "npc", t: "한 번만 더 믿어보지."},
+    {id: "CP26", k: "say", who: "master", t: "감사합니다."},
+    {id: "CP27", k: "say", who: "npc", act: "flip", t: "감사는 됐고. 뭘 고칠 건지부터 말해."},
+    {id: "CP28", k: "say", who: "npc", t: "가구든 증축이든, 먼저 보고 견적을 낼 거다. 한꺼번에 벌이지 말고 필요한 것부터 해."},
+    {id: "CP29", k: "think", t: "……이번에는 오래 쓰자. 저 아이들이 졸업하고 난 뒤에도 남아 있도록."}
+  ],
+  build: [
+    {id: "CT01", k: "say", who: "npc", act: "flip", t: "자. 지금 학원에 필요한 게 뭔가."},
+    {id: "CT02", k: "sys", t: "필요한 시설과 비용을 확인해 보세요."}
+  ]
+};
+const SH_NPC = {tool: "tool", carp: "carpenter", build: "carpenter"};          // 단락마다 왼쪽 초상화 · 배경 (NPC_IMG · TIN_ART.room 열쇠)
+const R = {on: false, sess: 0, i: -1, typing: null, wait: null, root: null, sc: "", cast: {}, preview: false, live: false, pend: false, ending: false,
+  peek: null, hl: null, view0: null};
+const xq = s => R.root ? R.root.querySelector(s) : null;
+const rsleep = ms => new Promise(r => setTimeout(r, ms));
+const rRM = () => !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+/* ── 세이브 · 처분 ── */
+function shOn(){ return !!S && !((navigator.webdriver && !window.__shvsForce) || window.__shvsOff); }
+function shS(){
+  if(!S) return null;
+  if(!S.shvs || typeof S.shvs !== "object"){
+    const old = typeof shopUnlocked === "function" && shopUnlocked() ? 1 : 0;   // 건설 · 도구가 이미 열린 예전 세이브 — 처분 열림 · 장면은 본 것으로
+    S.shvs = {id: SH_ID, st: old ? "done" : "wait", sell: old, year: null, cast: null, old};
+  }
+  return S.shvs;
+}
+function shSet(st){ const X = shS(); if(!X || R.preview) return; X.st = st; try{ save(); }catch(e){} }
+function shSellOn(){ const X = S && S.shvs; return X && typeof X === "object" ? !!X.sell : (typeof shopUnlocked === "function" && shopUnlocked()); }
+function shOpenSell(){ const X = shS(); if(!X || R.preview || X.sell) return; X.sell = 1; try{ save(); }catch(e){} shBookFlag(); }
+function shLive(id){ return (S.students || []).find(s => s && s.id === id) || null; }
+function shCastIds(){
+  if(window.CTST && typeof CTST.castIds === "function"){ const c = CTST.castIds(); if(c && c.paladin && c.darkpriest && c.wizard) return c; }
+  const c = (S.rqst && S.rqst.cast) || (S.rvst && S.rvst.cast);
+  if(c && c.paladin && c.darkpriest && c.wizard) return {paladin: c.paladin, darkpriest: c.darkpriest, wizard: c.wizard};
+  const L = S.students || [], d = L.find(s => s && s.uniq === "dp1"); if(!d) return null;
+  const p = L.find(s => s && s.job === "paladin" && s.year === d.year), w = L.find(s => s && s.job === "wizard" && s.year === d.year);
+  return p && w ? {paladin: p.id, darkpriest: d.id, wizard: w.id} : null;
+}
+function shTrio(){                                                             // 개교 셋이 모두 재학 중 — {직업: {id, name, uniq}} 또는 null
+  const ids = shCastIds(); if(!ids) return null;
+  const out = {};
+  for(const j of SH_JOBS){ const st = shLive(ids[j]); if(!st) return null; out[j] = {id: st.id, name: st.name, uniq: st.uniq || null}; }
+  return out;
+}
+
+/* ── 명부 책(그림자 DOM) — 처분이 닫혀 있으면 처분 단추 둘을 숨긴다 (책 블록은 그대로) ── */
+const SH_BOOK_CSS = `:host(.shvs-nosell) #vsell,:host(.shvs-nosell) [data-vact="sell"]{display:none!important}`;
+function shBookFlag(){
+  const B = window.RBK && RBK.state, host = B && B.host, root = B && B.root;
+  if(!host || !root) return;
+  if(!root.querySelector("#shvsCss")){ const st = document.createElement("style"); st.id = "shvsCss"; st.textContent = SH_BOOK_CSS; root.appendChild(st); }
+  host.classList.toggle("shvs-nosell", !shSellOn());
+}
+
+function shBookWatch(){                                                        // 책이 처음 만들어질 때 (#rbHost — render 밖에서 열려도) 처분 단추를 맞춘다
+  if(!document.body || typeof MutationObserver !== "function") return;
+  new MutationObserver(() => { const B = window.RBK && RBK.state; if(B && B.root && !B.root.querySelector("#shvsCss")) shBookFlag(); }).observe(document.body, {childList: true});
+}
+if(document.body) shBookWatch(); else document.addEventListener("DOMContentLoaded", shBookWatch);
+
+/* ── 무대 (02 무대 .rvst · 08 처럼 초상화 여럿) ── */
+function shBuild(){
+  if(R.root) return;
+  const r = document.createElement("div");
+  r.id = "shvsRoot"; r.className = "fst rvst shvs on";
+  r.innerHTML = `<div class="rv-bg"><div class="rv-img"></div><div class="rv-vig"></div></div><div class="fst-fx"></div><div class="fst-hit"></div>
+    <button type="button" class="rv-skip" hidden>${esc(SH_T.skip)}</button>
+    <div class="fst-cast">${SH_BUSTS.map(k => `<div class="fst-bust" data-who="${k}" hidden><img alt="" draggable="false"></div>`).join("")}</div>
+    <div class="fst-talk"><div class="fst-nm"><i></i><span></span></div><div class="fst-tx"></div><div class="fst-nx">▼</div></div>
+    <div class="fst-think"><div class="fst-tx"></div><div class="fst-nx">▼</div></div>
+    <div class="rv-black"><div class="rv-card"><b></b></div></div>`;
+  document.body.appendChild(r);
+  R.root = r;
+  const hit = r.querySelector(".fst-hit");
+  hit.addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); shAdvance(); });
+  hit.addEventListener("wheel", e => e.preventDefault(), {passive: false});
+  hit.addEventListener("touchmove", e => e.preventDefault(), {passive: false});
+  r.querySelector(".rv-skip").addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); shEnd(false); });
+  SH_JOBS.forEach(j => Object.keys(SH_FACE[j] || {}).forEach(f => { const im = new Image(); im.src = SH_FACE[j][f]; }));
+  ["tool", "carpenter"].forEach(k => { const a = shNpcImg(k), b = shRoom(k); [a, b].forEach(s => { if(s){ const im = new Image(); im.src = s; } }); });
+}
+function shTeardown(){ shUnHl(); if(R.root) R.root.remove(); R.root = null; }
+document.addEventListener("keydown", e => {
+  if(!R.root || !R.on) return;
+  if(e.key === " " || e.key === "Enter"){ e.preventDefault(); e.stopPropagation(); shAdvance(); }
+  else if(e.key === "Escape"){ e.preventDefault(); e.stopPropagation(); }        // 장면 중 — 명부 책의 Esc(닫기)가 먹지 않게
+}, true);
+function shFade(el, to, ms){
+  return new Promise(res => {
+    if(!el){ res(); return; }
+    const from = +getComputedStyle(el).opacity;
+    el.getAnimations().forEach(a => a.cancel());
+    el.style.opacity = to;
+    if(rRM()) ms = Math.min(ms, 140);
+    const a = el.animate([{opacity: from}, {opacity: to}], {duration: Math.max(1, ms), easing: "ease"});
+    a.onfinish = a.oncancel = () => res();
+  });
+}
+function shNpcImg(k){ const s = (typeof NPC_IMG !== "undefined" && NPC_IMG[k]) || ""; return typeof npcDot === "function" ? npcDot(s) : s; }   // 128px 도트 얼굴 (TIN_ART.face128 — 셋 표정 그림과 같은 도트)
+function shRoom(k){ return (typeof TIN_ART !== "undefined" && TIN_ART.room && TIN_ART.room[k]) || ""; }
+function shStage(sc){                                                          // 단락의 배경 · 왼쪽 초상화
+  const k = SH_NPC[sc] || "tool", img = xq(".rv-img"), src = shRoom(k);
+  if(img){ img.style.backgroundImage = src ? `url("${src}")` : "none"; }
+  const b = shBust("npc"); if(b){ const im = b.querySelector("img"), s = shNpcImg(k); if(im.getAttribute("src") !== s) im.src = s; b.dataset.npc = k; }
+}
+function shBox(kind){ const a = xq(".fst-think"), b = xq(".fst-talk"); if(a) a.classList.toggle("show", kind === "think"); if(b) b.classList.toggle("show", kind === "talk"); }
+function shMark(on){ R.root && R.root.querySelectorAll(".fst-nx").forEach(e => e.classList.toggle("on", on)); }
+function shName(who){
+  if(who === "master") return SH_T.master;
+  if(who === "sys") return SH_T.sys;
+  if(who === "npc") return R.sc === "tool" ? SH_T.tool : SH_T.carp;
+  const x = R.cast[who]; if(!x) return (JOBS[who] && JOBS[who].name) || "";
+  const st = shLive(x.id);
+  return st && typeof dn === "function" ? dn(st) : (x.name || "");
+}
+function shPlate(who){
+  const nm = xq(".fst-nm"), sp = nm.querySelector("span"), tk = xq(".fst-talk");
+  let col = "#ffd36a";
+  if(who === "sys") col = "#b9b4c8";
+  else if(who === "npc") col = R.sc === "tool" ? "#9fd18b" : "#d9a066";       // 도구상 초록 모자 · 목수 나무색
+  else if(who !== "master"){ const role = JOBS[who] && JOBS[who].role; col = role === "tank" ? "#8cc4f0" : role === "heal" ? "#86d6a4" : "#f2957d"; }
+  sp.textContent = shName(who);
+  nm.style.setProperty("--rc", col);
+  tk.classList.toggle("mst", who === "master");
+  tk.classList.toggle("ann", who === "sys");
+}
+function shLine(c){
+  const t = String(c.t || ""), x = SH_JOBS.indexOf(c.who) >= 0 ? R.cast[c.who] : null, st = x ? shLive(x.id) : null;
+  return st && typeof masterQ === "function" ? masterQ(t, st) : t;
+}
+function shType(el, text, voice, sess){
+  return new Promise(res => {
+    if(R.typing) R.typing();
+    const ch = [...String(text || "")]; let n = 0, tm = 0;
+    const done = () => { clearTimeout(tm); if(R.typing === done) R.typing = null; if(el) el.textContent = text; res(); };
+    if(!el || !ch.length){ if(el) el.textContent = ""; res(); return; }
+    const step = () => {
+      if(sess !== R.sess){ if(R.typing === done) R.typing = null; res(); return; }
+      n++; el.textContent = ch.slice(0, n).join("");
+      if(voice && !SH_QUIET.test(ch[n - 1]) && typeof cwBlip === "function") cwBlip(voice);
+      if(n >= ch.length){ done(); return; }
+      let d = 1000 / SH_CPS;
+      if(ch[n - 1] === "…" && ch[n] !== "…") d += 320;
+      tm = setTimeout(step, d);
+    };
+    el.textContent = ""; R.typing = done;
+    tm = setTimeout(step, 1000 / SH_CPS);
+  });
+}
+function shWaitClick(){ return new Promise(r => { R.wait = r; shMark(true); }); }
+function shAdvance(){
+  if(!R.on || R.ending) return;
+  if(R.typing){ R.typing(); return; }
+  if(R.wait){ const r = R.wait; R.wait = null; shMark(false); r(); }
+}
+/* 초상화 — 도구상 · 목수(왼쪽) + 셋 · 가운데 맞춤 (08 ctLayout 그대로) */
+function shBust(k){ return xq(`.fst-bust[data-who="${k}"]`); }
+function shFace(k, f){
+  if(!f || SH_JOBS.indexOf(k) < 0) return;
+  const set = SH_FACE[k], src = set && (set[f] || set.smile), b = shBust(k);
+  if(b && src){ const im = b.querySelector("img"); if(im.getAttribute("src") !== src) im.src = src; }
+}
+function shLit(list){ SH_BUSTS.forEach(k => { const e = shBust(k); if(e) e.classList.toggle("on", !!(list && list.indexOf(k) >= 0)); }); }
+function shLayout(snap){
+  const vis = SH_BUSTS.filter(k => { const e = shBust(k); return e && !e.hidden; });
+  const mid = (vis.length - 1) / 2, box = R.root && R.root.querySelector(".fst-cast"), e0 = vis.length && shBust(vis[0]);
+  const W = box ? box.clientWidth : 0, bw = e0 ? e0.offsetWidth : 0, span = vis.length - 1;
+  const room = span > 0 && W && bw ? (W - 16 - bw) / span : 0;
+  const step = room ? `min(var(--fst-step), ${room.toFixed(1)}px)` : "var(--fst-step)";
+  vis.forEach((k, j) => {
+    const e = shBust(k);
+    if(snap) e.style.transition = "none";
+    e.style.left = `calc(50% + ${step} * ${(j - mid).toFixed(2)} - var(--fst-bust) / 2)`;
+    if(snap){ void e.offsetWidth; e.style.transition = ""; }
+  });
+}
+function shShowCast(on){ SH_BUSTS.forEach(k => { const e = shBust(k); if(e) e.hidden = !on || (k !== "npc" && !R.cast[k]); }); shLayout(true); }
+function shSparkle(k){                                                        // 안경 반짝 — 01 첫 시간표 fSparkle 과 같은 자리 (마법사 glasses 표정 그림)
+  try{ if(typeof sfxPlay === "function") sfxPlay("fs_glint"); }catch(e){}
+  const b = shBust(k); if(!b || b.hidden) return;
+  [[.535, .585, 0], [.69, .57, 140]].forEach(([fx, fy, d]) => setTimeout(() => {
+    if(!b.isConnected) return;
+    const s = document.createElement("i"); s.className = "fst-spark"; s.style.left = (fx * 100) + "%"; s.style.top = (fy * 100) + "%";
+    b.appendChild(s); setTimeout(() => s.remove(), 700);
+  }, d));
+}
+function shHop(k){ if(rRM()) return; const e = shBust(k); if(e && !e.hidden) e.animate([{transform: "none"}, {transform: "translateY(-9px)", offset: .35}, {transform: "none"}], {duration: 300, easing: "ease-out"}); }
+function shShake(k){ if(rRM()) return; const e = shBust(k); if(e && !e.hidden) e.animate([{translate: "0 0"}, {translate: "-5px 0"}, {translate: "5px 0"}, {translate: "-3px 0"}, {translate: "0 0"}], {duration: 320, easing: "ease-out"}); }
+/* 암전 · 자막 */
+async function shCard(text, mid, sess){
+  const bk = xq(".rv-black"), card = xq(".rv-card");
+  shBox(null); shMark(false);
+  await shFade(bk, 1, 420); if(sess !== R.sess) return false;
+  if(text && card){ card.querySelector("b").textContent = text; await shFade(card, 1, 260); if(sess !== R.sess) return false; }
+  if(mid) mid();
+  await rsleep(rRM() ? 400 : 1200); if(sess !== R.sess) return false;
+  if(text && card){ await shFade(card, 0, 260); if(sess !== R.sess) return false; }
+  await shFade(bk, 0, 600);
+  return sess === R.sess;
+}
+
+/* ── 유물 보관고 단계 — 보관고를 열고 처분 단추에 금빛 테두리 (무대는 반투명 · 초상화는 내린다) ── */
+function shWide(){ return !!(window.RBK && RBK.on && RBK.on()); }
+function shSellEls(){
+  if(shWide()){ const r = RBK.state && RBK.state.root; return r ? [r.querySelector("#vsell"), r.querySelector('#vdb [data-vact="sell"]')].filter(Boolean) : []; }   // 일괄 처분 · 고른 유물의 처분
+  const v = document.getElementById("view"); if(!v) return [];
+  const g = [...v.querySelectorAll("[data-sellgrade]")]; if(g.length) return g;                    // 등급마다 일괄 처분 단추
+  const one = v.querySelector("[data-sell]"); if(one) return [one];
+  const p = v.querySelector(".panel"); return p ? [p] : [];
+}
+function shHl(){
+  shUnHl();
+  const fx = xq(".fst-fx"); if(!fx) return;
+  const els = shSellEls(); if(!els.length) return;
+  if(!shWide()){                                                               // 좁은 화면 — 대화창 위로 보이게 한 번 굴린다
+    const tb = document.querySelector("#app>.topbar"), top0 = tb ? Math.max(0, tb.getBoundingClientRect().bottom) : 0, r0 = els[0].getBoundingClientRect();
+    const box = xq(".fst-talk"), bot0 = box ? box.getBoundingClientRect().top : innerHeight;
+    if(r0.top < top0 + 8 || r0.bottom > bot0 - 8) window.scrollBy(0, r0.top - (top0 + 16));
+  }
+  requestAnimationFrame(() => {
+    if(!R.root) return;
+    R.hl = els.map(el => {
+      const r = el.getBoundingClientRect(); if(!r.width) return null;
+      const d = document.createElement("i"); d.className = "fst-hl shvs-hl";
+      d.style.left = (r.left - 5) + "px"; d.style.top = (r.top - 5) + "px"; d.style.width = (r.width + 10) + "px"; d.style.height = (r.height + 10) + "px";
+      fx.appendChild(d); return d;
+    }).filter(Boolean);
+  });
+}
+function shUnHl(){ (R.hl || []).forEach(d => d.remove()); R.hl = null; }
+async function shVault(sess){
+  shBox(null); shMark(false);
+  R.view0 = {view: UI.view, sel: UI.sel};
+  shOpenSell();                                                                // 처분이 이때 열린다 (다시 보기는 보여 주기만)
+  const T = R.cast.paladin, sel = T && shLive(T.id) ? T.id : ((S.students || [])[0] || {}).id;
+  if(typeof bookFlipSfx === "function") try{ bookFlipSfx(); }catch(e){}
+  R.root.classList.add("peek"); shShowCast(false);
+  if(shWide()){
+    RBK.open({mode: "detail", sel, vault: true}); shBookFlag();
+    const V = RBK.vault, r0 = (S.relicPool || []).find(r => r && RELIC_SELL[r.grade] && !(typeof relicUnique === "function" && relicUnique(r)));
+    if(V && r0) try{ V.select(V.vid(r0)); }catch(e){}                           // 처분할 수 있는 유물 하나를 골라 살펴보기의 처분 단추도 보인다
+  }
+  else { UI.view = "relic"; try{ render(); }catch(e){} window.scrollTo(0, 0); }
+  await rsleep(rRM() ? 150 : 520); if(sess !== R.sess) return false;
+  shHl();
+  return true;
+}
+async function shUnvault(sess){
+  shUnHl(); shBox(null); shMark(false);
+  if(shWide() && RBK.isOpen()) RBK.close(true);
+  const v0 = R.view0 || {view: "home"}; R.view0 = null;
+  UI.view = v0.view === "relic" ? "home" : v0.view; UI.sel = v0.sel;
+  try{ render(); }catch(e){}
+  if(typeof bookFlipSfx === "function") try{ bookFlipSfx(); }catch(e){}
+  R.root.classList.remove("peek"); shShowCast(true);
+  await rsleep(rRM() ? 120 : 380);
+  return sess === R.sess;
+}
+
+/* ── 장면 ── */
+async function shLines(sc){
+  const sess = R.sess, list = (SH_CUES[sc] || []).map(c => Object.assign({}, c));
+  R.sc = sc;
+  for(let i = 0; i < list.length; i++){
+    const c = list[i]; if(sess !== R.sess) return false;
+    R.i = i;
+    if(c.k === "fx"){
+      if(c.act === "vault"){ if(!await shVault(sess)) return false; continue; }
+      if(c.act === "unvault"){ if(!await shUnvault(sess)) return false; continue; }
+      shBox(null); shMark(false);
+      if(c.light) shLit([c.light]);
+      if(c.dim) R.root.classList.add("hush");
+      if(c.look){ for(const k of ["wizard", "paladin", "darkpriest"]){ shLit(["npc", k]); await rsleep(rRM() ? 120 : 420); if(sess !== R.sess) return false; } shLit(["npc"]); }
+      await rsleep(rRM() ? 200 : (c.ms || 500)); if(sess !== R.sess) return false;
+      continue;
+    }
+    if(c.undim) R.root.classList.remove("hush");
+    if(c.act === "flip" && typeof bookFlipSfx === "function") try{ bookFlipSfx(); }catch(e){}
+    const peek = R.root.classList.contains("peek");
+    if(!peek){
+      if(SH_JOBS.indexOf(c.who) >= 0){ shFace(c.who, c.face); shLit([c.who]); if(c.hop) shHop(c.who); if(c.shake) shShake(c.who); if(c.glint) shSparkle(c.who); }
+      else if(c.who === "npc") shLit(["npc"]);
+      else shLit([]);
+    }
+    let el;
+    if(c.k === "think"){ shBox("think"); el = xq(".fst-think .fst-tx"); }
+    else { shPlate(c.k === "sys" ? "sys" : c.who); shBox("talk"); el = xq(".fst-talk .fst-tx"); }
+    const voice = c.k === "sys" ? null : (c.k === "think" || c.who === "master" || (c.who === "npc" && sc !== "tool")) ? "csl_mst" : "csl_stu";
+    await shType(el, shLine(c), voice, sess);
+    if(sess !== R.sess) return false;
+    await shWaitClick(); if(sess !== R.sess) return false;
+  }
+  return true;
+}
+/* 흐름 — from 단락부터 (다시 열면 그 단락 처음부터) */
+async function shFlow(from){
+  const sess = R.sess, ok = () => sess === R.sess, at = s => SH_ORDER.indexOf(from) <= SH_ORDER.indexOf(s);
+  shBuild(); R.on = true; R.ending = false;
+  const sk = xq(".rv-skip"); if(sk) sk.hidden = !R.preview;
+  const bk = xq(".rv-black"); if(bk){ bk.getAnimations().forEach(a => a.cancel()); bk.style.opacity = 1; }
+  shStage(from); shShowCast(true); shLit([]);
+  SH_JOBS.forEach(j => shFace(j, "smile"));
+  for(const sc of ["tool", "carp", "build"]){
+    if(!at(sc)) continue;
+    if(sc !== "build"){
+      if(!await shCard(SH_T.cap[sc], () => { R.root.classList.remove("hush"); shStage(sc); shShowCast(true); shLit([]); SH_JOBS.forEach(j => shFace(j, "smile")); }, sess) || !ok()) return;
+    } else if(from === "build"){ await shFade(bk, 0, 600); if(!ok()) return; }
+    shSet(sc);
+    if(!await shLines(sc) || !ok()) return;
+  }
+  await shClose();
+}
+async function shClose(){
+  const sess = R.sess;
+  R.ending = true; shBox(null); shUnHl();
+  await shFade(xq(".rv-black"), 1, 600); if(sess !== R.sess) return;
+  await rsleep(rRM() ? 80 : 240); if(sess !== R.sess) return;
+  shEnd(true);
+}
+function shEnd(fin){
+  const was = R.preview;
+  if(R.view0){ if(shWide() && RBK.isOpen()) RBK.close(true); UI.view = R.view0.view === "relic" ? "home" : R.view0.view; UI.sel = R.view0.sel; R.view0 = null; }
+  R.sess++; R.on = false; R.ending = false; R.typing = null; R.wait = null;
+  shTeardown();
+  R.preview = false; R.live = false;
+  if(was){ try{ render(); }catch(e){} return; }
+  if(fin){ shSet("done"); UI.view = "facil"; UI.facTab = "fac"; }             // 예전 '대회의 문턱' 확인 단추와 같다 — 마을 목수 창(건설)
+  showCeremony();
+  if(fin) setTimeout(() => {                                                   // CT02 — 목수 창이면 바로 건설 목록 (넓은 화면 · 남은 의식이 없을 때)
+    try{
+      const mr = document.getElementById("modalRoot");
+      if(typeof TIN !== "undefined" && TIN.k === "fac" && TIN.step !== "shop" && UI.view === "facil" && !(UI.ceremonies || []).length && !(mr && mr.innerHTML.trim()) && typeof tinChoose === "function"){ TIN.typed = true; tinChoose("go"); }   // 인사말은 다 찍힌 채로 (찍는 중에 넘기면 빈 칸)
+    }catch(e){}
+  }, 60);
+}
+function shStart(from, cast, preview){
+  R.cast = cast || {}; R.preview = !!preview; R.live = true; R.sess++;
+  shFlow(from).catch(e => { try{ errPush("shvs", e.message, e.stack); }catch(x){} shTeardown(); R.on = false; R.live = false; if(!preview) try{ showCeremony(); }catch(x){} });
+}
+
+/* showCeremony — '대회의 문턱'(shopopen) 차례: 셋이 모두 재학 중이면 이 장면 (true — 장면이 다음 의식을 이어 띄운다) · 아니면 예전 팝업 + 처분 한 줄 (처분은 이때 열린다) */
+function shPlay(c){
+  if(!c || c.type !== "shopopen" || R.on || R.live) return false;
+  const X = shS(); if(!X) return false;
+  const T = shOn() && X.st !== "done" ? shTrio() : null;
+  if(!T){ X.sell = 1; if(X.st !== "done"){ X.st = "done"; } try{ save(); }catch(e){} shBookFlag(); return false; }
+  if(X.st === "wait"){ X.st = "tool"; X.year = c.year; X.cast = T; }
+  UI.ceremonies = (UI.ceremonies || []).filter(x => !(x && x.type === "shopopen"));
+  try{ save(); }catch(e){}
+  shStart(SH_ORDER.indexOf(X.st) >= 0 && X.st !== "done" ? X.st : "tool", X.cast || T, false);
+  return true;
+}
+/* 예전 팝업의 처분 한 줄 — 이 장면을 띄우지 않은 학원 (shopOpenCeremony) */
+function shSellLine(){ return SH_T.sell; }
+/* render 끝 — 세이브 적어 두기 · 책 처분 단추 · 장면 중에 나갔다가 다시 열면 그 단락부터 */
+function shIdle(){
+  const mr = document.getElementById("modalRoot");
+  return !(UI.wrun || UI.battle || UI.tour || UI.pendingTour || (UI.ceremonies || []).length || (mr && mr.innerHTML.trim()) || document.getElementById("bootLoader")
+    || (typeof OP !== "undefined" && OP) || (typeof BELT !== "undefined" && BELT.on) || (window.FST && FST.state && FST.state.on)
+    || ["RVST", "RQST", "XPST", "FRIS", "FLST", "RSTO", "SMST", "SPST", "CTST", "RKST"].some(k => window[k] && window[k].state && (window[k].state.on || window[k].state.live || window[k].state.pend))
+    || document.documentElement.classList.contains("modal-open"));
+}
+function shAfter(){
+  if(!S || !Array.isArray(S.students) || !S.students.length) return;
+  const X = shS();
+  shBookFlag();
+  if(!X || ["tool", "carp", "build"].indexOf(X.st) < 0 || !shOn() || R.on || R.live || R.pend || !shIdle()) return;
+  R.pend = true;
+  setTimeout(() => {
+    R.pend = false;
+    const Y = S && S.shvs;
+    if(!Y || ["tool", "carp", "build"].indexOf(Y.st) < 0 || R.on || R.live || !shIdle()) return;
+    queueCeremony({type: "shopopen", year: Y.year || S.year});
+    showCeremony();
+  }, 0);
+}
+
+/* ── 다시 보기 (SCEN 08b) · 미리 보기 (목업) — 세이브를 건드리지 않고 오른쪽 위 건너뛰기 ── */
+function shReplay(cast, from){
+  if(R.on || R.live) return false;
+  const X = S && S.shvs, c = cast && cast.paladin ? cast : (X && X.cast) || shTrio();
+  if(!c || !c.paladin) return false;
+  const o = {}; SH_JOBS.forEach(j => { const x = c[j]; if(x) o[j] = {id: x.id, name: x.name, uniq: x.uniq || null}; });
+  shStart(SH_ORDER.indexOf(from) >= 0 && from !== "done" ? from : "tool", o, true);
+  return true;
+}
+function shPreview(from){ const T = shTrio(); return T ? shReplay(T, from) : false; }
+function shDone(){ const X = S && S.shvs; return !!(X && X.st === "done" && X.cast); }
+function shResetAll(){ R.sess++; R.on = false; R.live = false; R.pend = false; R.preview = false; R.typing = null; R.wait = null; R.view0 = null; shTeardown(); }
+window.SHVS = {play: shPlay, after: shAfter, replay: shReplay, preview: shPreview, done: shDone, reset: shResetAll, advance: shAdvance, sellOn: shSellOn, sellLine: shSellLine,
+  trio: shTrio, bookFlag: shBookFlag, state: R, cues: SH_CUES, order: SH_ORDER, face: SH_FACE, T: SH_T, s: shS};
+})();
+/* SHVS_END */
 /* FLST_START — 첫 친선전 신청 이야기 '우리 학원 앞으로 온 편지' (1023 목업 · apply_flst.py · mockups/friendly-letter) ─ 대본 scenario-05a-first-friendly-letter-draft.md (초안 v1).
    사용자 1023: 'ㅇㅋ 친선전 신청 시나리오 목업 해보자'. 물음 · 답: 운영 안내 7 '띄우지 않고 본 것으로' · 셋이 없으면 '대본의 공용판대로' · 선택 반응 '대본 규칙대로' · 다시 보기 '05 묶음에 함께'.
    · A 도착 — 첫 유효한 신청 편지가 남아 있는 채 마스터 화면(UI.view home — 넓은 화면 책상 · 좁은 화면 마스터 노트)이 한가할 때 한 번 (다른 이야기 · 팝업 · 주 진행 중이면 기다린다).
@@ -38690,7 +39207,14 @@ window.SPST = {play: spPlay, after: spAfter, replay: spReplay, preview: spPrevie
    · C10 연속 행동 (사용자 1024): 한 편이 차례를 두 번 연달아 가져감 (기술 외침이 있는 장 = 차례) · 말한 뒤 40초 · ×2 · ×3 생략 · 해설 C10A 가 이어서 (음성 사용자 1024).
    · 1024 더한 대사 (사용자 — C13 · C14 · C16 은 뺐다): C11 영웅의 기상 · C12 기절 (정신력 시험 · 어느 편이든 · 스타일리시는 줌아웃에) · A06 회피 두 번 연달아 ·
      빈 틈(말이 6초 넘게 없을 때 — idleTick): A09 한 명 남음 > A07 체력 차 > A08 보호막 > C15 팽팽함 (60초에 한 번).
-   · 이어 말하는 해설 C01A ~ C09A (C01A 는 쉰다 — off · 사용자 1024 'C01A 를 재생 안 하게') — 그 실황 뒤에 0.6초 (조건 해설이 기다리고 있으면 그쪽이 먼저 · 자막만 · 사용자 1024).
+   · 1025 더한 대사 (사용자 — 음성 스물): 상황형 · 대회 시작 · 그 이어 말하는 해설.
+     상황형(말이 6초 넘게 없을 때 지금 장면을 보고 — idleTick · 60초): C16 한쪽이 한 명만 남음 · C14 누군가 필살기 게이지 80% 이상 · C17 우리 편 인원이 더 적음 · C18 상대 편 인원이 더 적음 (빈 틈 차례 안에).
+     상황형이지만 그 순간에 (quiet — 말이 6초 넘게 없을 때만 · 아니면 버림 · 늦게 말하지 않는다 · 60초): C19 저항에 막힘 (스타일리시는 기술 선택 연출의 RESIST 딱지가 찍힐 때 — TCOM.resist · 심플은 그 장) ·
+       A10 대상 선택 실패 (침착성 판정에 실패해 무작위로 고른 적이 '골랐어야 할 적'보다 체력 비율 20%p 넘게 높을 때 — runBattle 이 그 장에 tmiss · 해설 · 스타일리시는 줌아웃에).
+     대회 시작(C01 대신 하나 — TCOM.openOf · ladderRun 이 opt.tcomOpen 으로): C24 이기면 우승(본선 결승 세트 · 예선 리그 마지막 라운드에서 이기면 조 1위 확정) > C23 1:1 결정전(광역 · 본선) >
+       C25 지면 끝(어느 한쪽이 이 경기를 지면 탈락 · 준우승) > C22 결승(첫 경기) > C21 준결승(첫 경기) > C26 예선 리그 마지막 라운드(첫 경기) > C20 대회 첫 경기 > C01.
+       예선 · 본선은 해설 C20A ~ C26A 가 이어서 (광역은 캐스터 혼자라 실황만).
+   · 이어 말하는 해설 C01A ~ C09A (C01A 는 1024 에 쉬게 했다가 1025 사용자 'C01A도 다시 나오도록' — 다시 말한다) — 그 실황 뒤에 0.6초 (조건 해설이 기다리고 있으면 그쪽이 먼저 · 자막만 · 사용자 1024).
    · 해설 — A01 전열 버티기: 상대 공격에 우리 딜러가 아닌 학생만 맞았고 우리 딜러가 살아 있다 · A02 화력 집중: 상대가 쓰러졌고 상대가 아직 남았다 ·
      A03 지원: 우리 힐러가 아군에게 회복 · 보호막 · 그 아군이 살아 있다 · A04 보조 필살기: 우리 편 필살기인데 상대 편 피해가 없다 · A05 전세: 살아 있는 인원이 적던 편이 많아질 때.
    · 몇 번 — C03 · C04 · 해설은 말한 뒤 50초가 지나면 다시 (cd) · C02 · C07 은 처음 한 번 (사건이 생기면 소비) · C01 · C05 · C06 은 말하면 끝 (못 말했으면 다음 사건에 다시).
@@ -38707,7 +39231,7 @@ window.SPST = {play: spPlay, after: spAfter, replay: spReplay, preview: spPrevie
    · 졸업생 3인 · 5인 리그도 (opt.tcom league3 · league5 — 캐스터 + 해설 · 관중 .6 · .75 · 내 학원이 B 편이면 opt.tcomUs 'B' 로 편을 바꿔 읽는다) · 이계 대회(차원 포탈)는 같은 대회 단계라 그대로 나온다.
    · 자동화(navigator.webdriver)에서는 말하지 않는다 — 시험은 window.__tcomForce = true (소리 없이 시험하려면 window.__tcomMute = true) */
 (() => {
-const TC_ASSET = {"face":{"caster-cool":"assets/commentary/caster-cool.png?v=c7fdb7c1","caster-focused":"assets/commentary/caster-focused.png?v=e093c0c1","caster-excited":"assets/commentary/caster-excited.png?v=0432037d","analyst-calm":"assets/commentary/analyst-calm.png?v=7e7b1291","analyst-analysis":"assets/commentary/analyst-analysis.png?v=3d3c989f","analyst-surprised":"assets/commentary/analyst-surprised.png?v=824803b6","burst-back":"assets/commentary/burst-back.png?v=a41b7646","burst-front":"assets/commentary/burst-front.png?v=a62cb247"},"snd":{"C01":"bgm/tc_C01.ogg?v=cbc6f1dc","C02":"bgm/tc_C02.ogg?v=f4330d46","C03":"bgm/tc_C03.ogg?v=90eb4d42","C04":"bgm/tc_C04.ogg?v=0510d120","C05":"bgm/tc_C05.ogg?v=fa848865","C06":"bgm/tc_C06.ogg?v=c76c1635","C07":"bgm/tc_C07.ogg?v=010b5a53","C08":"bgm/tc_C08.ogg?v=1a7ea595","C09":"bgm/tc_C09.ogg?v=f22c01e3","A01":"bgm/tc_A01.ogg?v=db9466d2","A02":"bgm/tc_A02.ogg?v=cdc9e278","A03":"bgm/tc_A03.ogg?v=31e63516","A04":"bgm/tc_A04.ogg?v=ec8701d9","A05":"bgm/tc_A05.ogg?v=2dc4b2ee","C01A":"bgm/tc_C01A.ogg?v=5a8cd9fc","C02A":"bgm/tc_C02A.ogg?v=baa7dcca","C03A":"bgm/tc_C03A.ogg?v=a71add29","C04A":"bgm/tc_C04A.ogg?v=17e82aff","C05A":"bgm/tc_C05A.ogg?v=660ac2ab","C06A":"bgm/tc_C06A.ogg?v=dce346ca","C07A":"bgm/tc_C07A.ogg?v=6df1226a","C08A":"bgm/tc_C08A.ogg?v=cac58544","C09A":"bgm/tc_C09A.ogg?v=d335058e","C10":"bgm/tc_C10.ogg?v=430ae3ae","C10A":"bgm/tc_C10A.ogg?v=9be56df9","C11":"bgm/tc_C11.ogg?v=77662bf3","C12":"bgm/tc_C12.ogg?v=4d31ab4d","C15":"bgm/tc_C15.ogg?v=2947d075","A06":"bgm/tc_A06.ogg?v=f4e45382","A07":"bgm/tc_A07.ogg?v=aa16af42","A08":"bgm/tc_A08.ogg?v=7b5b1f17","A09":"bgm/tc_A09.ogg?v=eac6bf81"},"crowd":{"amb":"bgm/crowd_amb.ogg?v=0729693b","cheer":"bgm/crowd_cheer.ogg?v=0f05102c","groan":"bgm/crowd_groan.ogg?v=d759ec20","clap":"bgm/crowd_clap.ogg?v=5f721627"}};   // apply_tcom.py — {face: {키: 그림 경로?v=}, snd: {대사 ID: 음원 경로}, crowd: {amb · cheer · groan · clap: 관중 소리}} (목업은 자료 폴더 그대로)
+const TC_ASSET = {"face":{"caster-cool":"assets/commentary/caster-cool.png?v=c7fdb7c1","caster-focused":"assets/commentary/caster-focused.png?v=e093c0c1","caster-excited":"assets/commentary/caster-excited.png?v=0432037d","analyst-calm":"assets/commentary/analyst-calm.png?v=7e7b1291","analyst-analysis":"assets/commentary/analyst-analysis.png?v=3d3c989f","analyst-surprised":"assets/commentary/analyst-surprised.png?v=824803b6","burst-back":"assets/commentary/burst-back.png?v=a41b7646","burst-front":"assets/commentary/burst-front.png?v=a62cb247"},"snd":{"C01":"bgm/tc_C01.ogg?v=cbc6f1dc","C02":"bgm/tc_C02.ogg?v=f4330d46","C03":"bgm/tc_C03.ogg?v=90eb4d42","C04":"bgm/tc_C04.ogg?v=0510d120","C05":"bgm/tc_C05.ogg?v=fa848865","C06":"bgm/tc_C06.ogg?v=c76c1635","C07":"bgm/tc_C07.ogg?v=010b5a53","C08":"bgm/tc_C08.ogg?v=1a7ea595","C09":"bgm/tc_C09.ogg?v=f22c01e3","A01":"bgm/tc_A01.ogg?v=db9466d2","A02":"bgm/tc_A02.ogg?v=cdc9e278","A03":"bgm/tc_A03.ogg?v=31e63516","A04":"bgm/tc_A04.ogg?v=ec8701d9","A05":"bgm/tc_A05.ogg?v=2dc4b2ee","C01A":"bgm/tc_C01A.ogg?v=5a8cd9fc","C02A":"bgm/tc_C02A.ogg?v=baa7dcca","C03A":"bgm/tc_C03A.ogg?v=a71add29","C04A":"bgm/tc_C04A.ogg?v=17e82aff","C05A":"bgm/tc_C05A.ogg?v=660ac2ab","C06A":"bgm/tc_C06A.ogg?v=dce346ca","C07A":"bgm/tc_C07A.ogg?v=6df1226a","C08A":"bgm/tc_C08A.ogg?v=cac58544","C09A":"bgm/tc_C09A.ogg?v=d335058e","C10":"bgm/tc_C10.ogg?v=430ae3ae","C10A":"bgm/tc_C10A.ogg?v=9be56df9","C11":"bgm/tc_C11.ogg?v=77662bf3","C12":"bgm/tc_C12.ogg?v=4d31ab4d","C15":"bgm/tc_C15.ogg?v=2947d075","A06":"bgm/tc_A06.ogg?v=f4e45382","A07":"bgm/tc_A07.ogg?v=aa16af42","A08":"bgm/tc_A08.ogg?v=7b5b1f17","A09":"bgm/tc_A09.ogg?v=eac6bf81","C14":"bgm/tc_C14.ogg?v=1e190954","C16":"bgm/tc_C16.ogg?v=26d8200b","C17":"bgm/tc_C17.ogg?v=0615bc0b","C18":"bgm/tc_C18.ogg?v=433207e1","C19":"bgm/tc_C19.ogg?v=19ed3cfa","A10":"bgm/tc_A10.ogg?v=2edc8174","C20":"bgm/tc_C20.ogg?v=24ba7def","C21":"bgm/tc_C21.ogg?v=ec59e197","C22":"bgm/tc_C22.ogg?v=7b464c2b","C23":"bgm/tc_C23.ogg?v=1bfc542d","C24":"bgm/tc_C24.ogg?v=fab9e762","C25":"bgm/tc_C25.ogg?v=dac4f29c","C26":"bgm/tc_C26.ogg?v=e0f111d2","C20A":"bgm/tc_C20A.ogg?v=32168f60","C21A":"bgm/tc_C21A.ogg?v=b80b8031","C22A":"bgm/tc_C22A.ogg?v=9d8d1eb4","C23A":"bgm/tc_C23A.ogg?v=5e916c4b","C24A":"bgm/tc_C24A.ogg?v=02ca88e1","C25A":"bgm/tc_C25A.ogg?v=3cc044cd","C26A":"bgm/tc_C26A.ogg?v=27048dc7"},"crowd":{"amb":"bgm/crowd_amb.ogg?v=0729693b","cheer":"bgm/crowd_cheer.ogg?v=0f05102c","groan":"bgm/crowd_groan.ogg?v=d759ec20","clap":"bgm/crowd_clap.ogg?v=5f721627"}};   // apply_tcom.py — {face: {키: 그림 경로?v=}, snd: {대사 ID: 음원 경로}, crowd: {amb · cheer · groan · clap: 관중 소리}} (목업은 자료 폴더 그대로)
 const TC_T = {caster: "실황", analyst: "해설"};
 /* 대사 — who caster · analyst / tone 0 차분 · 1 긴장 · 2 흥분 / face / pr 우선순위(클수록 먼저) / fast 0 — ×2 · ×3 에서 생략 / cd 1 — 말한 뒤 TC_RULE.cd 지나면 다시 / first 1 — 처음 한 번 / ja 음성 원문 · ko 자막 */
 const TC_CUES = {
@@ -38725,6 +39249,20 @@ const TC_CUES = {
   C11: {who: "caster", tone: 2, pr: 80, face: "excited", cd: 1, ja: "立ち上がった！ これが…これが英雄です！", ko: "일어섰습니다! 이것이… 이것이 영웅입니다!"},   // 정신력 시험 — 영웅의 기상 (어느 편이든 · 줌아웃에 · 사용자 '이것이 영웅입니다! 느낌으로')
   C12: {who: "caster", tone: 1, pr: 65, face: "focused", cd: 1, ja: "ああっ、耐えきれない！ 意識を失いました！", ko: "아, 버티지 못했습니다! 의식을 잃습니다!"},   // 정신력 시험 — 기절 (어느 편이든 · 줌아웃에)
   C15: {who: "caster", tone: 1, pr: 3, face: "focused", cd: 60000, idle: 1, ja: "互角です！ どちらも一歩も引きません！", ko: "팽팽합니다! 어느 쪽도 물러서지 않습니다!"},   // 빈 틈 — 다운 없이 30초 넘게
+  /* 1025 사용자 — 상황형 (음성 사용자 1025) */
+  C14: {who: "caster", tone: 1, pr: 6, face: "focused", cd: 60000, idle: 1, ja: "空気が変わりました！ 大技が来るか！？", ko: "분위기가 달라졌습니다! 큰 기술이 나올까요?!"},   // 빈 틈 — 누군가(어느 편이든) 필살기 게이지 80% 이상
+  C16: {who: "caster", tone: 1, pr: 7, face: "focused", cd: 60000, idle: 1, ja: "残るは一人！ 最後の踏ん張りです！", ko: "이제 한 명 남았습니다! 마지막 버티기입니다!"},   // 빈 틈 — 한쪽이 한 명만 남음
+  C17: {who: "caster", tone: 1, pr: 5, face: "focused", cd: 60000, idle: 1, ja: "数では劣っていますが、まだまだ粘ります！ 勝負はここからです！", ko: "수에서는 밀리지만, 아직 끈질기게 버팁니다! 승부는 지금부터예요!"},   // 빈 틈 — 우리 편 인원이 더 적음
+  C18: {who: "caster", tone: 1, pr: 5, face: "focused", cd: 60000, idle: 1, ja: "数の有利を生かして、じわじわと追い詰めていきます！", ko: "수적 우위를 살려, 조금씩 몰아붙여 갑니다!"},   // 빈 틈 — 상대 편 인원이 더 적음
+  C19: {who: "caster", tone: 1, pr: 25, face: "focused", cd: 60000, quiet: 1, ja: "弾かれた！ 抵抗されて、技が不発です！", ko: "막혔습니다! 저항에 걸려 기술이 불발됩니다!"},   // 그 순간 — 적에게 거는 스킬이 저항에 막힘 (말이 6초 넘게 없을 때만)
+  /* 1025 사용자 — 대회 시작 (C01 대신 · openOf) · 예선 · 본선은 해설 C20A ~ C26A 가 이어서 */
+  C20: {who: "caster", tone: 1, pr: 10, face: "excited", ja: "いよいよ開幕です！ 初戦、始まります！", ko: "드디어 막이 오릅니다! 첫 경기, 시작합니다!"},   // 그 대회의 우리 첫 경기
+  C21: {who: "caster", tone: 1, pr: 10, face: "focused", ja: "決勝まであと一歩！ 準決勝です！", ko: "결승까지 한 걸음! 준결승입니다!"},   // 준결승 첫 경기
+  C22: {who: "caster", tone: 2, pr: 10, face: "excited", ja: "最後の舞台、決勝戦です！", ko: "마지막 무대, 결승전입니다!"},   // 결승 첫 경기 (본선 결승은 첫 세트 첫 경기)
+  C23: {who: "caster", tone: 2, pr: 10, face: "excited", ja: "一勝一敗！ 勝負はこの一戦で決まります！", ko: "1 대 1! 승부는 이 한 판에서 갈립니다!"},   // 1:1 결정전 (광역 · 본선 — 예선 리그는 빼고)
+  C24: {who: "caster", tone: 2, pr: 10, face: "excited", ja: "この一戦を取れば優勝です！", ko: "이 경기를 잡으면 우승입니다!"},   // 본선 결승 세트 · 예선 리그 마지막 라운드 — 이 경기를 이기면 우승(조 1위) 확정
+  C25: {who: "caster", tone: 1, pr: 10, face: "focused", ja: "もう後がありません！ 崖っぷちの勝負！", ko: "물러설 곳이 없습니다! 벼랑 끝 승부!"},   // 어느 한쪽이 이 경기를 지면 탈락 · 준우승
+  C26: {who: "caster", tone: 1, pr: 10, face: "focused", ja: "予選リーグも、いよいよ最終ラウンドです！", ko: "예선 리그도 드디어 마지막 라운드입니다!"},   // 예선 리그 마지막 라운드 첫 경기
   A01: {who: "analyst", cd: 1, pr: 5, face: "calm", fast: 0, ja: "前衛が持ちこたえたことで、後衛に攻撃の時間が生まれました。", ko: "전열이 버텨 준 덕분에, 후열이 공격할 시간을 벌었습니다."},
   A02: {who: "analyst", cd: 1, pr: 5, face: "analysis", fast: 0, ja: "攻撃を妨げる相手がいませんね。今こそ、火力を集中させる好機です。", ko: "공격을 방해할 상대가 없군요. 지금이 화력을 집중할 기회입니다."},
   A03: {who: "analyst", cd: 1, pr: 5, face: "analysis", fast: 0, ja: "いい支援です。崩れかけた前衛を、見事に立て直しました。", ko: "좋은 지원입니다. 무너지려던 전열을 다시 붙잡았어요."},
@@ -38734,9 +39272,10 @@ const TC_CUES = {
   A07: {who: "analyst", cd: 60000, pr: 4, face: "analysis", fast: 0, idle: 1, ja: "人数は同じですが、体力差が開いてきました。じきに表れますよ。", ko: "인원은 같지만 체력 차이가 벌어지고 있어요. 이 차이가 곧 드러날 겁니다."},   // 빈 틈 — 인원 같고 체력 비율 30% 넘게 차이
   A08: {who: "analyst", cd: 60000, pr: 3, face: "calm", fast: 0, idle: 1, ja: "防御壁が厚く重なっています。並の攻撃では崩せないでしょう。", ko: "보호막이 두텁게 쌓였습니다. 웬만한 공격으로는 뚫기 어렵겠네요."},   // 빈 틈 — 한 편 보호막 합이 살아 있는 최대 체력 합의 25% 이상
   A09: {who: "analyst", cd: 60000, pr: 5, face: "analysis", fast: 0, idle: 1, ja: "まだ終わっていません。一人でも十分ひっくり返せます。", ko: "아직 끝난 게 아닙니다. 한 명이라도 충분히 뒤집을 수 있어요."},   // 빈 틈 — 우리 편이 한 명 남았고 그 학생 체력 50% 이상
+  A10: {who: "analyst", cd: 60000, pr: 5, face: "analysis", fast: 0, quiet: 1, ja: "今のは、狙いを絞りきれませんでしたね。 少し判断が揺らぎました。", ko: "방금은 노릴 대상을 좁히지 못했네요. 판단이 조금 흔들렸습니다."},   // 그 순간 — 대상 선택 실패 (tmiss · 말이 6초 넘게 없을 때만 · 1025 사용자)
   /* 이어 말하는 해설 (사용자 1024 '각 실황 대사에 연계할 해설' → '흐름 확인해보자 텍스트 준비할께') — 그 실황을 말하기 시작할 때 해설 대기에 넣는다 (조건 해설이 기다리고 있으면 그쪽이 먼저 · 우선 4).
      음성 — 사용자 1024 아홉 (자료 폴더 manual-v1/C01A ~ C09A.mp3 · 문구는 추천 문구 그대로 녹음). C08A · C09A 는 결과 대사 뒤에 늘 (배속 · 건너뛰기에도) · 나머지는 말한 뒤 50초 · ×2 · ×3 생략 */
-  C01A: {who: "analyst", off: 1, link: 1, cd: 1, pr: 4, face: "calm", fast: 0, ja: "最初の一手をどちらが取るか。そこが今日の流れを決めるでしょう。", ko: "첫 수를 누가 잡느냐가 오늘 흐름을 정할 겁니다."},
+  C01A: {who: "analyst", link: 1, cd: 1, pr: 4, face: "calm", fast: 0, ja: "最初の一手をどちらが取るか。そこが今日の流れを決めるでしょう。", ko: "첫 수를 누가 잡느냐가 오늘 흐름을 정할 겁니다."},
   C02A: {who: "analyst", link: 1, cd: 1, pr: 4, face: "analysis", fast: 0, ja: "先手は勢いを生みます。ただ、相手もここから対応してくるでしょう。", ko: "선공은 기세를 줍니다. 다만 상대도 이제 대응해 오겠죠."},
   C03A: {who: "analyst", link: 1, cd: 1, pr: 4, face: "analysis", fast: 0, ja: "守りが崩れた一瞬を正確に狙いましたね。いい集中力です。", ko: "방어가 풀린 순간을 정확히 노렸네요. 집중력이 좋습니다."},
   C04A: {who: "analyst", link: 1, cd: 1, pr: 4, face: "analysis", fast: 0, ja: "今が勝負所です。この流れを続けられるかが鍵ですね。", ko: "지금이 승부처입니다. 이 흐름을 이어 갈 수 있느냐가 관건이죠."},
@@ -38745,11 +39284,19 @@ const TC_CUES = {
   C07A: {who: "analyst", link: 1, cd: 1, pr: 4, face: "analysis", fast: 0, ja: "一人欠けると、陣形全体が揺らぎます。残った生徒たちの対応に注目です。", ko: "한 명이 빠지면 진형 전체가 흔들립니다. 남은 학생들의 대응에 주목하죠."},
   C08A: {who: "analyst", link: 1, pr: 4, face: "calm", ja: "最後まで役割を守り抜いた結果です。いい試合でした。", ko: "마지막까지 각자의 역할을 지킨 결과입니다. 좋은 경기였어요."},
   C10A: {who: "analyst", link: 1, cd: 40000, pr: 4, face: "analysis", fast: 0, ja: "行動が続くと、相手は立て直す隙がありません。今、流れを完全につかんでいます。", ko: "행동이 이어지면 상대는 정비할 틈이 없습니다. 지금 흐름을 완전히 잡았어요."},
-  C09A: {who: "analyst", link: 1, pr: 4, face: "calm", ja: "結果は惜しいですが、今日見えた課題は次の試合の武器になるはずです。", ko: "결과는 아쉽지만, 오늘 드러난 과제는 다음 경기의 무기가 될 겁니다."}
+  C09A: {who: "analyst", link: 1, pr: 4, face: "calm", ja: "結果は惜しいですが、今日見えた課題は次の試合の武器になるはずです。", ko: "결과는 아쉽지만, 오늘 드러난 과제는 다음 경기의 무기가 될 겁니다."},
+  /* 대회 시작의 이어 말하는 해설 (1025 사용자 — 예선 · 본선 · 음성 사용자 1025) */
+  C20A: {who: "analyst", link: 1, pr: 4, face: "calm", fast: 0, ja: "初戦は体が硬くなりがちです。まずは普段どおりの形を出せるかが鍵ですね。", ko: "첫 경기는 몸이 굳기 쉽습니다. 우선 평소 하던 대로 풀어 갈 수 있느냐가 관건이죠."},
+  C21A: {who: "analyst", link: 1, pr: 4, face: "analysis", fast: 0, ja: "ここまで来たチームに弱点はほとんどありません。小さなミスが命取りになりますよ。", ko: "여기까지 온 팀에게 약점은 거의 없습니다. 작은 실수 하나가 치명적일 거예요."},
+  C22A: {who: "analyst", link: 1, pr: 4, face: "calm", fast: 0, ja: "積み重ねてきたものが、すべて試される一戦です。", ko: "지금까지 쌓아 온 모든 것이 시험받는 한 판입니다."},
+  C23A: {who: "analyst", link: 1, pr: 4, face: "analysis", fast: 0, ja: "前の試合の結果は、もう関係ありません。気持ちを切り替えた方が勝ちます。", ko: "앞 경기 결과는 이제 상관없습니다. 먼저 마음을 다잡는 쪽이 이깁니다."},
+  C24A: {who: "analyst", link: 1, pr: 4, face: "calm", fast: 0, ja: "勝利を意識しすぎると、動きが固くなります。最後まで平常心ですね。", ko: "우승을 너무 의식하면 움직임이 굳습니다. 끝까지 평정심이 중요하죠."},
+  C25A: {who: "analyst", link: 1, pr: 4, face: "analysis", fast: 0, ja: "追い込まれた側の方が、思い切りのいい動きを見せることもありますよ。", ko: "몰린 쪽이 오히려 과감한 움직임을 보여 주기도 하죠."},
+  C26A: {who: "analyst", link: 1, pr: 4, face: "analysis", fast: 0, ja: "順位表を気にするより、目の前の一戦に集中できるかどうかです。", ko: "순위표보다 눈앞의 한 판에 집중할 수 있느냐가 중요합니다."}
 };
 const TC_TIER = {region: "solo", qual: "duo", final: "duo", league3: "duo", league5: "duo"};   // league3 · league5 — 졸업생 3인 · 5인 리그 (opt.tcom · 사용자 1024 '졸업생 3인 리그하고 5인 리그에도') · 이계 대회(차원 포탈)는 같은 단계 그대로   // 대회 단계 → 말하는 사람 (광역 대회 캐스터 혼자 · 학원제 예선부터 해설 함께)
 const TC_RULE = {gap: 2000, analystAfter: 600, afterAnalyst: 2000, expire: 4000, bigPr: 40, bigExpire: 8000, anExpire: 8000, cd: 50000,
-  endDelay: 300, cutFade: 150, duck: .5, duckIn: .15, duckOut: .4, danger: .5, fastSpeed: 120, idleMs: 6000, idleCalm: 30000, idleHp: .3, idleShield: .25, idleLast: .5, missRun: 2};
+  endDelay: 300, cutFade: 150, duck: .5, duckIn: .15, duckOut: .4, danger: .5, fastSpeed: 120, idleMs: 6000, idleCalm: 30000, idleHp: .3, idleShield: .25, idleLast: .5, missRun: 2, idleUlt: 80};
 let B = null, TC_LAST = null;                   // 지금 중계하는 전투 하나 · 마지막 전투(기록 — 목업 · 시험)
 const now = () => (typeof performance !== "undefined" ? performance.now() : Date.now());
 function tcOn(){ return !((navigator.webdriver && !window.__tcomForce) || window.__tcomOff); }
@@ -38897,6 +39444,7 @@ function pump(){
   if(t < at){ b.pumpT = setTimeout(pump, at - t + 5); return; }
   b[slot] = null; say(p.id);
 }
+function quietOK(t){ const b = B; return !!b && !b.speaking && !b.pendC && !b.pendA && (t == null ? now() : t) - Math.max(b.lastEnd || 0, b.t0) >= TC_RULE.idleMs; }   // 말하는 사람도 · 기다리는 대사도 없고 마지막 대사가 끝난 지 6초 (빈 틈과 같은 셈)
 /* 사건 → 대기 (실황 · 해설 따로 하나씩) */
 function fire(id, why){
   const b = B; if(!b || !b.tier || b.ended) return;
@@ -38907,6 +39455,7 @@ function fire(id, why){
   const drop = k => b.log.push({id, at: Math.round(t - b.t0), k, why});
   if(c.who === "analyst" && b.tier !== "duo") return drop("no-analyst");
   if(c.fast === 0 && b.speed <= TC_RULE.fastSpeed) return drop("fast");
+  if(c.quiet && !quietOK(t)) return drop("not-quiet");                           // 1025 사용자 — 상황형이지만 그 순간에: 말이 6초 넘게 없을 때만 (늦게 말하지 않는다 · 재사용 대기도 없다)
   if(id === "C02" && b.speaking && b.speaking.id === "C01") return drop("start-talking");
   if(b.speaking && b.speaking.id === id) return;                                 // 지금 그 대사를 말하는 중
   if(!c.link && (b.speaking || b.pendC || b.pendA)) return drop("busy");         // 1024 사용자 — 누가 말하는 중(또는 차례를 기다리는 대사가 있으면) 기다리지 않고 버린다 · 말하지 않았으니 재사용 대기(50 · 40초)도 없다 → 다음에 조건이 오면 그때
@@ -38967,6 +39516,9 @@ function scan(j, cam){
     if((F.pop || []).some(x => x.k === "miss" && sideOf(x.u) !== aside)){ b.miss = (b.miss | 0) + 1; if(b.miss >= TC_RULE.missRun){ an.push("A06"); b.miss = 0; } }
     else if(hitFoe(F, aside)) b.miss = 0;
   }
+  // 1025 — 저항에 막힘 (C19 · 적에게 거는 스킬 · 스타일리시는 RESIST 딱지 때 TCOM.resist 가 먼저 말했으면 넘어간다) · 대상 선택 실패 (A10 · runBattle 의 tmiss) — 둘 다 말이 6초 넘게 없을 때만 (quiet)
+  if(F.pick && F.pick.res && F.pick.vf && actor && !b.resSeen.has(j)) evs.push("C19");
+  if(F.tmiss && actor) an.push("A10");
   // 선공 · 크리티컬
   const hits = !!actor && hitFoe(F, aside);
   if(hits) evs.push("C02");
@@ -39001,7 +39553,8 @@ function scan(j, cam){
 }
 
 /* ── 빈 틈 (사용자 1024 '비어있는 타이밍에 넣을만한 해설이나 실황') — 말이 6초 넘게 없고 기다리는 대사도 없을 때, 지금 장면의 상황을 보고 하나 ──
-   우선: A09 한 명 남음(우리 편 · 체력 50% 이상) > A07 체력 차(인원 같고 체력 비율 30% 넘게) > A08 보호막(한 편 보호막 합 ≥ 살아 있는 최대 체력 합 25%) > C15 팽팽함(다운 없이 30초)
+   우선: A09 한 명 남음(우리 편 · 체력 50% 이상) > C16 한쪽이 한 명만 남음 > C14 필살기 게이지 80% 이상(어느 편이든 · 100 미만) > C17 우리 편이 적음 > C18 상대 편이 적음 (1025 사용자) >
+         A07 체력 차(인원 같고 체력 비율 30% 넘게) > A08 보호막(한 편 보호막 합 ≥ 살아 있는 최대 체력 합 25%) > C15 팽팽함(다운 없이 30초)
    같은 대사는 60초에 한 번 · 해설은 해설이 있는 경기 · ×2 · ×3 이면 해설 생략 (실황 C15 는 그대로) */
 function idlePick(){
   const b = B; if(!b || !b.res || b.last < 1) return [];
@@ -39010,6 +39563,10 @@ function idlePick(){
   const hpR = s => { const L = live(s), mx = L.reduce((a, u) => a + (u.maxHp || 0), 0); return mx ? L.reduce((a, u) => a + Math.max(0, u.hp), 0) / mx : 0; };
   const C = [], us = live(b.us), th = live(b.them);
   if(us.length === 1 && th.length >= 1 && ratio(us[0]) >= TC_RULE.idleLast) C.push("A09");
+  if(us.length && th.length && (us.length === 1 || th.length === 1)) C.push("C16");
+  if(us.length && th.length && U.some(u => u.alive && u.ult >= TC_RULE.idleUlt && u.ult < 100)) C.push("C14");
+  if(us.length && th.length && us.length < th.length) C.push("C17");
+  if(us.length && th.length && us.length > th.length) C.push("C18");
   if(us.length && us.length === th.length && Math.abs(hpR(b.us) - hpR(b.them)) >= TC_RULE.idleHp) C.push("A07");
   if([b.us, b.them].some(s => { const L = live(s), mx = L.reduce((a, u) => a + (u.maxHp || 0), 0), sh = L.reduce((a, u) => a + Math.max(0, u.sh || 0), 0); return mx && sh >= mx * TC_RULE.idleShield; })) C.push("A08");
   if(now() - (b.lastDownT || b.t0) >= TC_RULE.idleCalm && us.length && th.length) C.push("C15");
@@ -39034,12 +39591,12 @@ function tcSee(btId, res, i, opt){
     if(!(tier || crowd) || !tcOn() || !res || !res.frames || !res.names) return;
     let a = 0, c = 0;
     B = {btId, res, tier, crowd, us: opt.tcomUs === "B" ? "B" : "A", them: opt.tcomUs === "B" ? "A" : "B", lastReact: -1e9, fx: [], amb: null, field: opt.field, last: -1, used: {}, said: {}, danger: {}, downs: new Set(), behind: "", turnSide: "", turnA: [], turnC: [],
-      t0: now(), log: [], speaking: null, pendC: null, pendA: null, lastEnd: 0, lastWho: "", lastDownT: now(), miss: 0, ended: false, speed: 280, cam: false,
+      t0: now(), log: [], speaking: null, pendC: null, pendA: null, lastEnd: 0, lastWho: "", lastDownT: now(), miss: 0, ended: false, speed: 280, cam: false, resSeen: new Set(), open: (opt.tcomOpen && TC_CUES[opt.tcomOpen]) ? opt.tcomOpen : "",
       uids: res.names.map(n => n.side === "A" ? "A" + (a++) : "B" + (c++))};
     TC_LAST = B;
     B.watch = setInterval(() => { if(!B) return; capPlace(); idleTick(); if(!document.querySelector(`#modalRoot .modal[data-bt="${B.btId}"]`)) tcStop(); }, 300);
     ambStart(B); react("clap", "start", true);
-    fire("C01", "start");
+    fire(B.open || "C01", "start");                                              // 1025 — 대회 시작 대사(C20 ~ C26)가 맞으면 C01 대신
   }
   const b = B;
   try{ b.speed = typeof bspeedNow === "function" ? bspeedNow() : 280; }catch(e){}
@@ -39065,6 +39622,45 @@ function tcOut(btId){                                                           
   const L = b.turnA.slice().sort((x, y) => TC_CUES[y].pr - TC_CUES[x].pr); b.turnA = [];
   L.forEach(id => fire(id, "out"));
 }
+function tcResist(btId, j){                                                     // 스타일리시 — 기술 선택 연출에서 RESIST 딱지가 찍힐 때 (적에게 거는 스킬이 저항에 막힘 · 1025 사용자 'resist 타이밍 맞춰서')
+  const b = B; if(!b || b.btId !== btId || b.ended || b.resSeen.has(j)) return;
+  b.resSeen.add(j);
+  try{ b.speed = typeof bspeedNow === "function" ? bspeedNow() : 280; }catch(x){}
+  fire("C19", "f" + j);
+}
+/* ── 대회 시작 대사 (1025 사용자) — ladderRun 이 경기를 열 때 지금 대회 상태(UI.tour — 경기 전)로 하나를 고른다 (opt.tcomOpen · 없으면 C01)
+   C24 이기면 우승: 본선 결승 세트에서 이 경기를 이기면 2세트째 · 예선 리그 마지막 라운드에서 이 경기로 라운드를 가져가면 다른 경기 결과와 상관없이 조 1위
+   > C23 1:1 결정전: 광역(2팀 — 1:1 뒤 한 판) · 본선(3판 2선승제 1:1 · 결승 세트 안도) — 예선 리그는 빼고 (사용자 '예선은 C26 이 있어서')
+   > C25 지면 끝: 어느 한쪽이 이 경기를 지면 탈락 · 준우승 (양쪽 다면 위 둘) > C22 결승 첫 경기 (본선 결승은 첫 세트) > C21 준결승 첫 경기 > C26 예선 리그 마지막 라운드 첫 경기 > C20 대회 첫 경기 */
+function lgClinch(t){
+  try{
+    const pr = typeof LG_OTHER !== "undefined" && LG_OTHER[t.round]; if(!pr) return false;
+    for(const [wa, wb] of [[2, 0], [2, 1], [1, 2], [0, 2]]){
+      const T = {lg: JSON.parse(JSON.stringify(t.lg)), foes: t.foes};
+      lgPut(T, 0, t.round + 1, 2, t.rl | 0); lgPut(T, pr[0], pr[1], wa, wb);
+      if(lgRank(T)[0].i !== 0) return false;
+    }
+    return true;
+  }catch(e){ return false; }
+}
+function openOf(t){ const c = openCtx(t); return c ? c.id : ""; }
+function openCtx(t){                                                            // {id: 시작 대사 (없으면 ""), we: 우리가 지면 끝, they: 상대가 지면 끝} — 각오 한마디(PRTK)가 상황을 읽는다
+  try{
+    if(!t || t.kind !== "ladder" || !t.cfg || !TC_TIER[t.step]) return null;
+    const cup = t.cfg.kind === "cup", lg = t.cfg.kind === "league", U = ladderUse(t.step), last = t.round === t.maxRound - 1, rw = t.rw | 0, rl = t.rl | 0;
+    const tie = cup && ladderTie(t), sets = cup && ladderSets(t);
+    let title = false, weEnd = false, theyEnd = false, dec = false;
+    if(cup){
+      const winTakes = U === 1 || tie || rw + 1 >= 2, loseDrops = U === 1 || tie || rl + 1 >= 2;   // 이기면 라운드(세트)를 가져간다 · 지면 내준다
+      dec = tie || (U === 3 && rw === 1 && rl === 1);
+      if(sets){ title = winTakes && (t.sw | 0) === 1; weEnd = loseDrops && (t.sl | 0) === 1; theyEnd = title; }
+      else { weEnd = loseDrops; theyEnd = winTakes; }
+    } else if(lg && last && rw + 1 >= 2) title = lgClinch(t);
+    const id = title ? "C24" : dec ? "C23" : (weEnd || theyEnd) ? "C25" : (cup && last && !(t.slot | 0) && !(t.set | 0)) ? "C22"
+      : (cup && t.round === t.maxRound - 2 && !(t.slot | 0)) ? "C21" : (lg && last && !(t.slot | 0)) ? "C26" : !(t.results || []).length ? "C20" : "";
+    return {id, we: !!weEnd, they: !!theyEnd, title: !!title};
+  }catch(e){ return null; }
+}
 function tcSkip(btId){ if(!B || B.btId !== btId || B.ended) return; B.log.push({id: "skip", at: Math.round(now() - B.t0), k: "skip"}); B.last = B.res.frames.length - 1; finish(B.res.winner === B.us); }
 function tcStop(){
   const b = B; if(!b) return;
@@ -39072,11 +39668,163 @@ function tcStop(){
   const el = document.getElementById("tcomCap"); if(el){ el.hidden = true; clearTimeout(el._t); }
 }
 function tcClose(btId){ if(B && B.btId === btId) tcStop(); }
-window.TCOM = {prefPanel: tcPrefPanel, prefBind: tcPrefBind, mode: tcMode, see: tcSee, hit: tcHit, out: tcOut, skip: tcSkip, close: tcClose, stop: tcStop, cues: TC_CUES, rule: TC_RULE, tier: TC_TIER, crowd: TC_CROWD, cr: TC_CR, T: TC_T, asset: TC_ASSET, src: tcSrc,
+window.TCOM = {prefPanel: tcPrefPanel, prefBind: tcPrefBind, mode: tcMode, see: tcSee, hit: tcHit, out: tcOut, skip: tcSkip, resist: tcResist, openOf, openCtx, close: tcClose, stop: tcStop, cues: TC_CUES, rule: TC_RULE, tier: TC_TIER, crowd: TC_CROWD, cr: TC_CR, T: TC_T, asset: TC_ASSET, src: tcSrc,
   state: () => B, last: () => TC_LAST, idlePick,
   peek: (id, ms) => { if(!TC_CUES[id]) return; capShow(id); capHide(ms == null ? 2600 : ms); }};   // 목업 · 시험 — 그 대사의 자막 띠만 잠깐
 })();
 /* TCOM_END */
+/* PRTK_START — 대회 전투 시작 각오 한마디 (1025 목업 · apply_prtk.py · mockups/tournament-commentary)
+   사용자 1025: '대회 전투 시작하고 해설진에게 말할 시간을 주게 바로 에너지를 채우지 않고 학생마다 각오 한마디씩 한다음에 에너지 차기 시작하면 어떨까?'
+   → 답: 양 팀 6명 · 중계 있는 경기 전부 · 카메라는 전체 화면 그대로 · 대사는 '성격 + 상황 + 직업 + 락커룸 기분 상태 별' · '영웅의 기상처럼 연달아 나오는 방식으로'.
+   · 언제 — 중계가 있는 대회 경기(TCOM.tier — 광역 · 예선 리그 · 본선 · 졸업생 3인 · 5인 리그 · 이계 대회)에서 BATTLE START · 등장 연출이 끝난 뒤 · 전투(게이지)가 돌기 전.
+     설정 '대회 중계'가 숨김이면 하지 않는다 · 필드 실험실 · 자동화(navigator.webdriver — 시험은 window.__tcomForce)는 없음.
+   · 판정에 손대지 않는다 — runBattle 은 이미 끝났고 재생만 늦춘다 (게임 RNG 를 쓰지 않는다 — 고르는 건 해시).
+   · 흐름 — 영웅의 기상 반응처럼 말풍선이 연달아 (hrSay): 우리 편 앞줄부터 셋 → 잠깐 → 상대 편 셋 · 한 사람 2.3초 · 다음 사람은 0.85초 뒤 (겹쳐 뜬다) ·
+     마지막 말풍선이 걷히면 전투 시작. 배속을 따른다 (×2 · ×3 이면 짧게). 재생 · 일시정지 · 결과로 건너뛰기를 누르면 바로 걷고 그쪽으로 (openBattle introStop).
+     그동안 캐스터의 시작 대사(C01 · C20 ~ C26)와 이어 말하는 해설이 흐른다.
+   · 대사 고르기 (학생마다 하나) — 기분(우리 편 · 락커룸 L.mood): 불만(20 이하) · 불안(21 ~ 44)이면 기분 대사 >
+       상황(그 학생 편에서 — TCOM.openCtx): 벼랑 끝(지면 끝 · 1:1 결정전) · 한 판 남음(이기면 우승 · 상대가 지면 끝) · 큰 무대(준결승 · 결승 · 예선 마지막 라운드) · 첫 경기 → 상황 대사 >
+       기분 좋음(70 이상)이면 반은 기분 대사 · 반은 직업 대사 > 직업 대사 (직업 × 성격).
+     상대 편은 기분이 없다(보통) · 같은 학생이 같은 줄을 연달아 · 한 경기에서 두 학생이 같은 줄을 말하지 않는다 (직업 줄은 하나뿐이라 같은 직업 · 성격이면 겹칠 수 있다) · 성격은 voiceKey (wz1 같은 고유 목소리는 따로 · 없으면 plain). 몬스터 · 마왕은 말하지 않는다. */
+(() => {
+const PK_SIT = {
+  intro:  {first: ["처, 첫 경기… 떨리지만 해 볼게요…!", "여, 연습한 만큼만… 꼭 보여 드릴게요…"], big: ["크, 큰 무대지만… 도망 안 칠게요…!", "여, 여기까지 왔으니까… 끝까지 할게요…!"],
+           edge: ["지, 지면 끝이에요… 그러니까 안 질래요…!", "무, 무서워도… 이번만큼은 버틸게요…!"], chance: ["하, 한 판만 더 이기면… 해낼 수 있어요…!", "조, 조금만 더… 힘낼게요…!"]},
+  hot:    {first: ["첫 경기다!! 처음부터 전력으로 간다!!", "기다리고 기다렸다!! 불태우자!!"], big: ["이 무대를 기다렸다!! 전부 쏟아붓는다!!", "큰 무대일수록 더 뜨거워진다!!"],
+           edge: ["벼랑 끝? 오히려 좋다!! 여기서 뒤집는다!!", "지면 끝이라고? 그럼 이기면 되잖아!!"], chance: ["한 판만 더!! 끝까지 밀어붙인다!!", "여기서 끝낸다!! 숨 돌릴 틈은 없다!!"]},
+  stone:  {first: ["…시작이다.", "…첫 판이군. 평소대로 한다."], big: ["…무대가 커도 할 일은 같다.", "…여기까지 왔다. 흔들릴 이유는 없다."],
+           edge: ["…물러설 곳은 없다. 그럼 나아갈 뿐.", "…지지 않는다. 그것뿐이다."], chance: ["…한 걸음 남았다.", "…끝을 낸다."]},
+  dilig:  {first: ["첫 경기입니다! 연습한 대로 하겠습니다!", "준비는 끝났습니다! 잘 부탁드립니다!"], big: ["이 무대에 맞게 최선을 다하겠습니다!", "지금까지의 훈련, 전부 보여 드리겠습니다!"],
+           edge: ["마지막이라는 각오로 하겠습니다!", "여기서 무너지지 않겠습니다! 끝까지 갑니다!"], chance: ["방심하지 않겠습니다! 끝까지 집중합니다!", "마지막 한 걸음, 확실하게 내딛겠습니다!"]},
+  tsun:   {first: ["흥, 첫 경기라고 긴장한 거 아니거든.", "처음부터 이겨 줄게. 딱히 너희 때문은 아니야."], big: ["흥, 큰 무대라고 다를 거 없어.", "이 정도 무대쯤… 따, 딱히 떨리지 않아!"],
+           edge: ["흥, 여기서 질 생각 없거든.", "벼, 벼랑 끝이라니… 그래도 안 져!"], chance: ["흥, 이제 한 판이면 끝이네.", "끝내 줄게. 놓칠 리가 없잖아."]},
+  lively: {first: ["첫 경기다~! 두근두근해~!", "자자, 신나게 시작해 보자~!"], big: ["우와~ 관중 엄청 많다~! 신난다~!", "큰 무대다~! 제일 재밌게 놀아야지~!"],
+           edge: ["헤헤, 아슬아슬한 게 더 재밌잖아~!", "지면 끝? 그럼 이기면 되지~!"], chance: ["한 판만 더~! 거의 다 왔어~!", "이대로 쭉~ 가 보자~!"]},
+  boast:  {first: ["‘크큭… 전설의 첫 장이 열린다’", "‘이 몸의 이름을 새길 첫 무대인가…’"], big: ["‘크큭… 이 무대야말로 이 몸에게 어울린다’", "‘관중이여, 똑똑히 보아라…’"],
+           edge: ["‘벼랑 끝이야말로 영웅이 깨어나는 곳…’", "‘크큭… 이 몸은 결코 무릎 꿇지 않는다’"], chance: ["‘마지막 봉인을 풀 때가 왔다…’", "‘크큭… 이걸로 대단원이다’"]},
+  plain:  {first: ["첫 경기다. 차근차근 가 보자!", "좋아, 시작해 볼까!"], big: ["큰 무대네. 그래도 하던 대로 하자!", "여기까지 왔다. 후회 없이 가자!"],
+           edge: ["지면 끝이야. 다들 집중하자!", "물러설 곳은 없어. 끝까지 버티자!"], chance: ["한 판만 더! 이대로 가자!", "거의 다 왔다. 마지막까지 집중!"]},
+  genius: {first: ["첫 경기요? 계산은 이미 끝났어요.", "시작해 볼까요. 예상대로 흘러갈 거예요."], big: ["무대가 커져도 계산은 똑같아요.", "여기까지는 예상대로예요."],
+           edge: ["불리한 판일수록 계산이 재밌어지죠.", "지면 끝이라… 그럼 지지 않으면 되죠."], chance: ["한 판 남았네요. 이미 답은 나왔어요.", "마무리만 남았어요. 실수할 리 없죠."]},
+  wz1:    {first: ["흐아암…… 첫 경기구나. 금방 끝내자.", "벌써 시작이야……? 응, 할게."], big: ["사람 많다…… 시끄러워도 안 졸게.", "큰 무대네…… 오늘은 좀 일찍 깼어."],
+           edge: ["지면 끝……? 그럼 안 잘게.", "……이번엔 진짜로 눈 뜨고 할게."], chance: ["한 판만 더…… 끝나면 잘 거야.", "거의 다 왔다…… 조금만 더 깨어 있을게."]}
+};
+const PK_MOOD = {
+  intro:  {good: ["오, 오늘은… 왠지 잘될 것 같아요…!", "모, 몸이 가벼워요… 해 볼게요…!"], uneasy: ["소, 손이 떨려요… 괜찮을까요…", "자, 잘할 수 있을지… 모르겠어요…"],
+           upset: ["저, 저도 할 말은 있지만… 일단 할게요…", "…지, 지금은 말 걸지 말아 주세요…"]},
+  hot:    {good: ["컨디션 최고다!! 오늘은 뭐든 된다!!", "피가 끓는다!! 빨리 싸우고 싶다!!"], uneasy: ["크윽… 몸이 안 풀린다…! 그래도 간다!", "가슴이 답답하다…! 이럴 땐 그냥 부딪친다!!"],
+           upset: ["으아아, 짜증 나!! 전부 상대한테 푼다!!", "기분 최악이다!! 건드리지 마라!!"]},
+  stone:  {good: ["…몸이 가볍다.", "…오늘은 잘 보인다."], uneasy: ["…조금 마음이 쓰인다.", "…흔들린다. 하지만 한다."], upset: ["…말 걸지 마.", "…지금은 싸우기만 하겠다."]},
+  dilig:  {good: ["컨디션 좋습니다! 기대해 주십시오!", "오늘은 자신 있습니다! 꼭 보답하겠습니다!"], uneasy: ["긴장되지만… 준비한 대로 하겠습니다!", "실수하지 않도록… 최대한 집중하겠습니다!"],
+           upset: ["…납득은 안 되지만, 할 일은 하겠습니다.", "불만은 나중에 말씀드리겠습니다."]},
+  tsun:   {good: ["흥, 오늘은 기분 좋으니까… 아니, 안 봐줘!", "따, 딱히 들뜬 거 아니거든!"], uneasy: ["따, 딱히 떨리는 거 아니야…!", "흐, 흥… 이 정도로 불안할 리 없잖아."],
+           upset: ["흥, 오늘은 말 걸지 마.", "기분 별로야. 빨리 끝내고 갈래."]},
+  lively: {good: ["오늘 기분 최고~! 다 잘될 거야~!", "몸이 근질근질해~! 빨리 하자~!"], uneasy: ["어라… 오늘은 왠지 좀 무섭네…", "헤헤… 웃고는 있는데 좀 떨려…"],
+           upset: ["치, 오늘은 별로 재미없어…", "기분 꿀꿀해~ 빨리 끝내자…"]},
+  boast:  {good: ["‘크큭… 오늘 이 몸의 힘이 넘쳐흐른다’", "‘봉인이 저절로 풀릴 것 같군…’"], uneasy: ["‘이 떨림은… 봉인이 날뛰는 것뿐이다…’", "‘크, 크큭… 긴장 따위 하지 않는다…’"],
+           upset: ["‘…지금의 이 몸에게 다가오지 마라’", "‘어둠이 이 몸을 잠식하는군…’"]},
+  plain:  {good: ["오늘 컨디션 좋다! 잘될 것 같아!", "몸이 가볍네. 해 보자!"], uneasy: ["좀 긴장되네… 그래도 해 보자.", "괜찮을까… 아니, 괜찮을 거야."],
+           upset: ["솔직히 기분은 별로야. 그래도 한다.", "…그냥 빨리 끝내자."]},
+  genius: {good: ["오늘은 계산이 잘 맞는 날이에요.", "컨디션까지 완벽하네요. 질 이유가 없어요."], uneasy: ["변수가 좀 많네요… 다시 계산해 볼게요.", "…이상하네요. 확신이 안 서요."],
+           upset: ["지금은 기분이 별로예요. 결과로 말할게요.", "…말 시키지 마세요. 집중할게요."]},
+  wz1:    {good: ["오늘은 잘 잤어…… 좀 해 볼게.", "기분 좋다…… 낮잠 같은 경기 하자."], uneasy: ["……좀 불안해. 졸린 거랑 다른 느낌이야.", "괜찮겠지……? 응, 아마도."],
+           upset: ["……깨우지 말랬는데.", "기분 별로야…… 빨리 끝내고 잘래."]}
+};
+/* 직업 × 성격 — 한 줄씩 (wz1 은 마법사만) */
+const PK_JOB = {
+  sword:      {intro: "거, 검은… 제대로 쥐었어요…!", hot: "이 검으로 전부 베어 주마!!", stone: "…검은 거짓말하지 않는다.", dilig: "검술 연습, 오늘도 그대로 하겠습니다!", tsun: "흥, 내 검을 얕보지 마.", lively: "검 휘두를 시간이다~!", boast: "‘크큭… 이 검이 피를 원한다’", plain: "검 상태 좋다. 가자!", genius: "검 궤도는 이미 다 그려 뒀어요."},
+  paladin:    {intro: "비, 빛이… 지켜 줄 거예요…", hot: "정의의 방패다!! 다 막아 주마!!", stone: "…맹세는 깨지지 않는다.", dilig: "동료들은 제가 지키겠습니다!", tsun: "흥, 지켜 주는 건 이번뿐이야.", lively: "반짝반짝~ 다 지켜 줄게~!", boast: "‘빛의 맹세가 이 몸을 부른다…’", plain: "앞은 내가 맡을게!", genius: "막을 각도는 계산해 뒀어요."},
+  monk:       {intro: "수, 수련한 대로… 해 볼게요…", hot: "주먹이 근질근질하다!! 간다!!", stone: "…단련은 끝났다.", dilig: "매일의 수련, 오늘 보여 드리겠습니다!", tsun: "흥, 주먹 하나면 충분해.", lively: "주먹 준비 완료~! 퍽퍽~!", boast: "‘크큭… 천 번 단련한 주먹이 운다’", plain: "몸 풀렸다. 붙어 보자!", genius: "급소 위치는 다 외워 왔어요."},
+  archer:     {intro: "화, 화살은… 꼭 맞힐게요…", hot: "한 발 한 발 전부 꽂아 주마!!", stone: "…한 발이면 된다.", dilig: "조준은 흔들리지 않겠습니다!", tsun: "흥, 내 화살 피할 수 있을까?", lively: "과녁 맞히기 놀이다~!", boast: "‘크큭… 이 화살은 운명을 꿰뚫는다’", plain: "시위는 팽팽하다. 쏴 보자!", genius: "바람 계산까지 끝났어요."},
+  rogue:      {intro: "그, 그림자에… 숨어 있을게요…", hot: "빈틈이 보이면 바로 찌른다!!", stone: "…약점은 이미 봤다.", dilig: "급소를 정확히 노리겠습니다!", tsun: "흥, 등 뒤 조심하라고.", lively: "살금살금~ 몰래 간다~!", boast: "‘크큭… 그림자가 이 몸의 칼이다’", plain: "기회 오면 바로 간다.", genius: "빈틈은 셋, 다 찾아 뒀어요."},
+  priest:     {intro: "모, 모두 다치지 않게… 기도할게요…", hot: "다쳐도 걱정 마라!! 내가 다 고친다!!", stone: "…신께서 지켜보신다.", dilig: "회복은 제게 맡겨 주십시오!", tsun: "흥, 다치면 고쳐 줄게. 이번만이야.", lively: "아프면 말해~ 바로 낫게 해 줄게~!", boast: "‘신의 축복이 이 몸에게 깃든다…’", plain: "뒤는 내가 받칠게!", genius: "회복 타이밍은 다 계산했어요."},
+  timemage:   {intro: "시, 시간이… 제 편이면 좋겠어요…", hot: "시간 따위 내가 앞당겨 주마!!", stone: "…때가 왔다.", dilig: "한 박자도 놓치지 않겠습니다!", tsun: "흥, 시간은 원래 내 편이야.", lively: "째깍째깍~ 시작이다~!", boast: "‘크큭… 시간의 톱니가 돈다’", plain: "타이밍 잘 맞춰 보자!", genius: "흐름은 다 봤어요. 세 수 앞까지."},
+  wizard:     {intro: "주, 주문은… 다 외워 왔어요…", hot: "마력이 넘친다!! 전부 날려 주마!!", stone: "…술식은 준비됐다.", dilig: "주문 하나하나 정확히 쓰겠습니다!", tsun: "흥, 마법을 우습게 보지 마.", lively: "펑펑~ 마법 쇼 시작~!", boast: "‘금단의 주문이 이 몸의 입에 맴돈다…’", plain: "주문 준비 끝. 가 보자!", genius: "마력 배분까지 다 계산했어요.", wz1: "주문은…… 자면서도 외울 수 있어."},
+  druid:      {intro: "수, 숲이… 도와줄 거예요…", hot: "대지의 힘이다!! 전부 휩쓸어 주마!!", stone: "…숲은 서두르지 않는다.", dilig: "자연의 힘을 빌려 끝까지 버티겠습니다!", tsun: "흥, 숲을 화나게 하지 마.", lively: "풀냄새 좋다~! 힘이 난다~!", boast: "‘크큭… 대지가 이 몸에게 속삭인다’", plain: "버티는 건 맡겨!", genius: "뿌리가 닿는 범위는 다 재 뒀어요."},
+  forcemage:  {intro: "마, 마력을… 주먹에 실을게요…", hot: "마력 주먹으로 부숴 주마!!", stone: "…마력은 실었다.", dilig: "마력 전환, 완벽하게 하겠습니다!", tsun: "흥, 마법사가 때리면 아프다고.", lively: "마력 충전 완료~! 쾅쾅~!", boast: "‘크큭… 전장의 마력이 이 몸을 부른다’", plain: "마력 꽉 찼다. 간다!", genius: "마력 효율은 최적으로 맞췄어요."},
+  enchanter:  {intro: "루, 룬은… 제대로 새겼어요…", hot: "룬이 불타오른다!! 간다!!", stone: "…새긴 대로 된다.", dilig: "각인 점검, 모두 마쳤습니다!", tsun: "흥, 내 룬이 실패할 리 없잖아.", lively: "룬 반짝반짝~ 준비 완료~!", boast: "‘크큭… 고대의 룬이 깨어난다’", plain: "룬 준비 끝. 가 보자!", genius: "각인 순서까지 다 짜 뒀어요."},
+  darkpriest: {intro: "어, 어둠이… 조용히 도와줄 거예요…", hot: "어둠아, 전부 삼켜 버려라!!", stone: "…어둠은 이미 곁에 있다.", dilig: "의식은 정확히 치르겠습니다!", tsun: "흥, 어둠을 얕보면 후회할걸.", lively: "히히~ 어둠 놀이 시간이다~!", boast: "‘크큭… 심연이 이 몸을 축복한다’", plain: "약화는 내가 맡을게.", genius: "저주 걸 순서, 다 정해 뒀어요."},
+  bard:       {intro: "노, 노래로… 힘이 됐으면 좋겠어요…", hot: "최고의 무대다!! 크게 울려 주마!!", stone: "…첫 음은 정해졌다.", dilig: "박자 하나 틀리지 않겠습니다!", tsun: "흥, 내 노래 듣는 걸 영광으로 알아.", lively: "자~ 다 같이 노래하자~!", boast: "‘크큭… 영혼을 울리는 선율을 들어라’", plain: "응원가 간다! 힘내자!", genius: "템포는 이미 다 맞춰 뒀어요."},
+  spellsword: {intro: "거, 검이랑 주문… 둘 다 준비했어요…", hot: "검과 마법, 둘 다 불태운다!!", stone: "…검에 주문을 실었다.", dilig: "검과 주문, 완벽하게 맞추겠습니다!", tsun: "흥, 검도 마법도 내가 최고야.", lively: "번쩍번쩍~ 마검 준비 완료~!", boast: "‘크큭… 마검이 이 몸을 부른다’", plain: "검도 주문도 준비 끝!", genius: "검과 주문의 순서, 계산 끝났어요."},
+  gunner:     {intro: "타, 탄환은… 잘 채웠어요…", hot: "전탄 장전!! 다 쏴 버린다!!", stone: "…조준은 끝났다.", dilig: "탄환 점검, 이상 없습니다!", tsun: "흥, 내 총구 앞에 서지 마.", lively: "탕탕~ 오늘도 화려하게~!", boast: "‘크큭… 마탄의 사수가 깨어난다’", plain: "장전 끝. 가 보자!", genius: "탄도는 다 계산해 뒀어요."},
+  ninja:      {intro: "소, 소리 없이… 다녀올게요…", hot: "그림자보다 빠르게 간다!!", stone: "…그림자도 남기지 않는다.", dilig: "기척을 지우고 임무를 다하겠습니다!", tsun: "흥, 날 찾을 수 있으면 찾아봐.", lively: "숨바꼭질 시작~! 못 찾지롱~!", boast: "‘크큭… 그림자조차 이 몸을 못 따른다’", plain: "조용히 다녀올게.", genius: "들킬 확률은 0이에요."}
+};
+const PK_T = {life: 2300, gap: 850, side: 500, tail: 400};   // ×1 ms — 말풍선 하나 · 다음 사람 · 편이 바뀔 때 더 · 마지막 말풍선이 걷힌 뒤
+const PK_LAST = new Map();                                       // 학생(이름 · 직업) → 지난번에 한 말 — 같은 줄을 연달아 말하지 않게
+let CUR = null;
+
+function hash(s){ let h = 2166136261; for(let i = 0; i < s.length; i++){ h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function band(v){ return v == null ? "" : v >= 70 ? "good" : v >= 45 ? "" : v >= 21 ? "uneasy" : "upset"; }
+function sitOf(ctx, us){                                         // 그 학생 편에서 본 상황 — us: 우리 학원 편인가
+  if(!ctx || !ctx.id) return "";
+  const id = ctx.id;
+  if(id === "C23") return "edge";
+  if(id === "C24") return us ? "chance" : (ctx.they ? "edge" : "big");
+  if(id === "C25") return ctx.we ? (us ? "edge" : "chance") : (us ? "chance" : "edge");
+  if(id === "C21" || id === "C22" || id === "C26") return "big";
+  if(id === "C20") return "first";
+  return "";
+}
+/* 한 학생의 각오 — {pers, job, mood(0 ~ 100 · 없으면 null), sit, seed} → {t: 대사, k: 고른 갈래} */
+function pick(o){
+  const P = PK_SIT[o.pers] ? o.pers : "plain", b = band(o.mood), h = hash(String(o.seed || ""));
+  const two = (a, k) => {                                        // 같은 학생이 지난번 줄을 · 같은 경기에서 다른 학생이 이미 한 줄을 피한다 (o.used)
+    const key = o.key || "", U = o.used, i = h % a.length, C = a.map((_, q) => a[(i + q) % a.length]);
+    const t = C.find(x => PK_LAST.get(key) !== x && !(U && U.has(x))) || C.find(x => !(U && U.has(x))) || C[0];
+    return {t, k};
+  };
+  if(b === "upset" || b === "uneasy") return two(PK_MOOD[P][b], "mood-" + b);
+  if(o.sit && PK_SIT[P][o.sit]) return two(PK_SIT[P][o.sit], "sit-" + o.sit);
+  const J = PK_JOB[o.job] || {}, jt = J[P] || J.plain;
+  if(b === "good" && (!jt || (h >> 3) % 2 === 0)) return two(PK_MOOD[P].good, "mood-good");
+  if(jt) return {t: jt, k: "job"};
+  return two(PK_SIT[P].first, "sit-first");
+}
+function on(opt){
+  if(!opt || opt.lab || window.__prtkOff || !window.TCOM) return false;
+  if(!TCOM.tier[opt.tcom || opt.field] || TCOM.mode() === "off") return false;
+  if(navigator.webdriver && !window.__tcomForce) return false;
+  return true;
+}
+/* openBattle — BATTLE START · 등장 연출이 끝난 뒤. 말할 학생이 없거나 중계가 없는 경기면 null (바로 전투) */
+function start(btId, res, opt, uids, speed){
+  stop();
+  if(!on(opt) || !res || !res.names) return null;
+  const stage = document.querySelector(`#modalRoot .modal[data-bt="${btId}"] .bf-stage`); if(!stage) return null;
+  const units = (res.A || []).concat(res.B || []), usSide = opt.tcomUs === "B" ? "B" : "A", ctx = opt.tcomCtx || null, mood = opt.tcomMood || null;
+  const L = [], used = new Set();
+  ["A", "B"].forEach(sd => res.names.forEach((n, k) => {
+    if(n.side !== sd) return;
+    const J = JOBS[n.job], u = units[k] || {};
+    if(!J || J.mon || J.fixed) return;
+    const us = sd === usSide, key = n.name + "|" + n.job;
+    const r = pick({pers: u.pers || "plain", job: n.job, mood: us && sd === "A" && mood && u.ref != null ? mood[u.ref] : null, sit: sitOf(ctx, us), seed: btId + ":" + key, key, used});
+    PK_LAST.set(key, r.t); used.add(r.t);
+    L.push({uid: uids[k], job: n.job, pers: u.pers || "plain", side: sd, t: r.t, k: r.k});
+  }));
+  if(!L.length) return null;
+  const sf = Math.max(1, 280 / Math.max(60, speed || 280)), tm = [];
+  let at = 0, done;
+  const p = new Promise(r => done = r);
+  L.forEach((x, i) => {
+    if(i && L[i - 1].side !== x.side) at += PK_T.side / sf;
+    tm.push(setTimeout(() => { if(CUR && CUR.btId === btId) hrSay(stage, x.uid, x.job, x.t, "prtk", PK_T.life, x.pers, sf); }, at));
+    if(i < L.length - 1) at += PK_T.gap / sf;
+  });
+  const end = at + Math.max(PK_T.life / sf, 1300) + PK_T.tail / sf;
+  tm.push(setTimeout(() => { if(CUR && CUR.btId === btId){ CUR = null; done(true); } }, end));
+  CUR = {btId, tm, stage, done, list: L, ms: Math.round(end)};
+  return {done: p, list: L, ms: Math.round(end)};
+}
+function stop(){
+  const c = CUR; if(!c) return;
+  CUR = null; c.tm.forEach(clearTimeout);
+  if(c.stage) c.stage.querySelectorAll(".hr-say").forEach(el => { if(el.querySelector(".prtk")) el.remove(); });
+  c.done(false);
+}
+window.PRTK = {start, stop, pick, band, sitOf, lines: {sit: PK_SIT, mood: PK_MOOD, job: PK_JOB}, T: PK_T, state: () => CUR};
+})();
+/* PRTK_END */
 /* PRST_START — 프롤로그 00 '그래서, 검을 내려놓았다' (1024 목업 · apply_prst.py · mockups/prologue) ─ 대본 scenario-00-prologue-draft.md (초안 v2 · PR01 ~ 23).
    사용자 1024: '일단은 이거부터 목업하자'. 예전 프롤로그 두 쪽(PROLOGUE 2 · 3 — 글 팝업)을 이 장면으로 바꾼다.
    · 언제 — 오프닝 끝(아버지의 마지막 → opToPrologue · 건너뛰기 go) 이 부르는 showPrologue(PROL_FROM) 맨 앞의 고리. 학원 이름 창의 '뒤로'(showPrologue 마지막 쪽)는 C 단락(PR17)부터.
