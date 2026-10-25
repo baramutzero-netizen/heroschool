@@ -19019,8 +19019,8 @@ function mdeskGo(){
    · 책상 말린 지도(act tut) — 누르는 자리(MDESK_GEO.hit)에서 뺀다 (단추 · 반짝임은 QOL25_CSS 가 숨긴다) */
 (function(){
 const SIDE_ART = {
-  l: {darkpriest: "assets/ui-riso/darkpriest-new-left.webp?v=5a2a76cc", wizard: "assets/ui-riso/wizard-new-left.webp?v=0394d137"},
-  r: {paladin: "assets/ui-riso/paladin-new-right.webp?v=b5eba344", rogue: "assets/ui-riso/rogue-new-right.webp?v=3f2666fd"}
+  l: {darkpriest: "assets/ui-riso/darkpriest-new-left.webp?v=5a2a76cc"},   // 1025 넷째(사용자) — 일단 암흑 사제 · 팔라딘만 (마법사 · 도적 그림은 assets/ui-riso 에 있다 — 다시 넣으려면 한 줄씩)
+  r: {paladin: "assets/ui-riso/paladin-new-right.webp?v=b5eba344"}
 };
 const SIDE_DEF = {l: "darkpriest", r: "paladin"};
 let sideDone = false;
@@ -26962,7 +26962,7 @@ window.NTW = {bond: ntBond, tour: ntTour, info: ntInfo, play: ntPlay, stop: ntSt
    '소지품 팝업 창 및 버튼을 우측 메뉴에 추가(아이콘은 기존 유물 아이콘) · 보유한 쿠키 등 상점에서 구매 가능한 소모품 또는 사용 가능한 아이템들이 보유 중일 때 표시 및 보유 수량 표시'
    (답: 쓸 수 있는 건 '사용' 단추) · '스케줄 버튼에 일정 잡힌 대회가 존재할 경우 3주 전부터 해당 대회가 발생한다는 내용 박스 표시'.
    · 소지품 — 쿠키(상담에서) · 신비한 성수(사용 — 전원 컨디션) · 예지의 서(사용 — 일과 새로) · 이국의 부채(스킬 강화에서) · 규율의 서약서(사용). 가진 것만 · ×개수 ·
-     메뉴 '소지품' 단추(가로 화면 사이드 — 유물 그림 · 개수 표식) · 폰은 더보기 안
+     메뉴 '소지품' 단추(가로 화면 사이드 — 유물 그림 · 1025 셋째부터 개수 표식 없음) · 폰은 더보기 안
    · 규율의 서약서(S.items.oath) — 쓰면 S.oathW += 12. 주를 시작할 때마다 하나씩 줄고, 남아 있는 동안 그 주의 지침 무시를 굴리지 않는다
      (이미 상담 탭에 걸린 일은 그대로 · 상담하지 않아 또 무시하는 것도 그 동안은 쉰다). 아이콘은 건물 안 아이콘 시트의 붉은 인장 문서 칸(repay)
    · 스케줄 대회 안내 — 사다리 대회(가을 · 지금 차례 · 살아 있을 때) · 봄 신인전(겨울 끝) · 친선전(잡힌 주) 중 가장 가까운 것이 3주 안이면
@@ -27035,11 +27035,10 @@ function ivOpen(){
     });
   });
 }
-function ivSideBtn(){
-  const n = ivTotal();
-  return `<button type="button" class="side-only side-bag" data-act="bag" aria-haspopup="dialog" title="${"소지품"}">${menuArt("relic")}<span class="nl">${"소지품"}</span><span class="ns">${"소지품"}</span>${n ? `<span class="badge">${n}</span>` : ""}</button>`;
+function ivSideBtn(){                                           // 1025 셋째(사용자) — 개수 표식은 달지 않는다
+  return `<button type="button" class="side-only side-bag" data-act="bag" aria-haspopup="dialog" title="${"소지품"}">${menuArt("relic")}<span class="nl">${"소지품"}</span><span class="ns">${"소지품"}</span></button>`;
 }
-function ivMoreBtn(){ const n = ivTotal(); return `<button type="button" data-bag="1">${"소지품"}${n ? `<span class="badge">${n}</span>` : ""}</button>`; }
+function ivMoreBtn(){ return `<button type="button" data-bag="1">${"소지품"}</button>`; }
 function ivBindMore(nm){ if(nm) nm.querySelectorAll("[data-bag]").forEach(b => b.onclick = () => { UI.navMore = false; render(); ivOpen(); }); }
 
 /* ── 스케줄 대회 안내 — 3주 안의 가장 가까운 대회 ── */
@@ -33149,7 +33148,7 @@ const B = {el: null, sp: null, face: null, u: null, text: "", t0: 0, n: -1, raf:
 
 const rm = () => !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
 const modal = () => document.documentElement.classList.contains("modal-open") || !!(window.RBK && RBK.isOpen && RBK.isOpen()) || !!(typeof OP !== "undefined" && OP);
-const fstOn = () => !!(window.FST && FST.state && FST.state.on);
+const fstOn = () => !!(window.FST && FST.state && FST.state.on) || [...document.querySelectorAll("body > .fst")].some(e => { const c = getComputedStyle(e); return c.display !== "none" && c.visibility !== "hidden"; });   // 1025 셋째(사용자) — 이야기 장면(02 ~ 10 · 다시 보기)이 떠 있는 동안 뒤의 스케줄에서 카드가 쾅쾅 날아오지 않게 — 장면이 끝난 뒤에
 function same(){ if(D.S !== S){ D.S = S; D.fresh.clear(); D.sess++; D.busy = 0; } }
 
 /* ── 추천 학생 ── */
@@ -44419,6 +44418,7 @@ function renderLadder(){
     }, true);
     return;
   }
+  if(t.stage==="result" && window.NTW){ finishLadder(t); return; }   // 1025 둘째 (QOL25) 셋째 — 모든 대회 결과는 안내 화면 창(NTW) 하나로 (예전 결과 팝업은 숨긴다 · 봄 신인전은 원래 바로 결과 창)
   if(t.stage==="result"){
     const champ = cfg.kind==="cup" && t.advanced;
     const head = cfg.kind==="league"
