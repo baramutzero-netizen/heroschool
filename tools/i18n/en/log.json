@@ -474,5 +474,8 @@
  "완주": "Cleared",
  "{0}% 지점에서 철수": "Retreated at {0}%",
  "그뉵이용 {0}회 격파!": "Defeated Musclime {0} {0|time|times}!",
- "원정 — <b>{0}</b> {1}.{2} 경험 {3}{4}{5}{6} · 유물 {7}개{8}{9}{10}{11}": "Expedition — <b>{0}</b>: {1}.{2} EXP {3}{4}{5}{6} · {7} {7|relic|relics}{8}{9}{10}{11}"
+ "원정 — <b>{0}</b> {1}.{2} 경험 {3}{4}{5}{6} · 유물 {7}개{8}{9}{10}{11}": "Expedition — <b>{0}</b>: {1}.{2} EXP {3}{4}{5}{6} · {7} {7|relic|relics}{8}{9}{10}{11}",
+ "_scuq (1025 — 학원에 같은 직업은 하나 · apply_scuq · scout_block — 드래프트 홀 '재학 중' · 같은 직업 후보는 다른 학원으로)": "",
+ "{0}의 입학 소식에 같은 직업({1}) 후보 {2}명이 다른 학원으로 발길을 돌렸다 — {3}.": "Hearing that {0} will enroll, {2} {2|candidate|candidates} of the same class ({1}) turned to other academies — {3}.",
+ "재학 중인 직업이라 다음 겨울 후보로 나오지 않는다.": "That class is still enrolled, so it won't appear next winter."
 }
