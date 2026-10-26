@@ -5681,25 +5681,13 @@ html.ffop-on #modalRoot .modal[data-bt]{cursor:pointer}
 @keyframes ffTalkIn{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translateX(-50%)}}
 /* 말풍선 — 행동 뒤 한마디 */
 .hr-say .bf-speech.ffop-say{white-space:normal;max-width:260px}
-/* 마스터 컷인 — 화면 가로 띠 · 빌린 직업 기술 그림이 차례로 · 이름 · 한 줄 · 직업 이름 */
-.ffop-cut{position:fixed;inset:0;z-index:97;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 50%,#ffffff12,#0000 60%),#05030acc;cursor:pointer;animation:ffCutIn .22s ease-out both}
-.ffop-cut.out{animation:ffCutOut .3s ease-in both}
-.ffc-band{position:relative;width:100%;padding:22px 16px 26px;box-sizing:border-box;text-align:center;color:#fff6e2;
-  background:linear-gradient(90deg,#0000,#2b1640ee 18%,#3a1d52f2 50%,#2b1640ee 82%,#0000);border-top:2px solid #e9c46a99;border-bottom:2px solid #e9c46a99;box-shadow:0 0 40px #b07cff40;
-  animation:ffBand .5s cubic-bezier(.2,.9,.3,1) both}
-.ffc-icons{display:flex;justify-content:center;gap:10px;margin-bottom:10px;min-height:48px}
-.ffc-icons img{width:48px;height:48px;image-rendering:pixelated;opacity:0;transform:translateY(10px) scale(.7);animation:ffIcon .32s ease-out both;animation-delay:calc(.12s + var(--i) * .16s);filter:drop-shadow(0 0 6px #ffd98a88)}
-.ffc-name{font-size:clamp(26px,4.4vw,46px);font-weight:700;letter-spacing:.18em;text-shadow:0 0 14px #ffd27a,0 2px 0 #000;opacity:0;animation:ffTxt .4s ease-out 1.05s both}
-.ffc-lead{margin-top:4px;font-size:clamp(14px,1.8vw,18px);letter-spacing:.12em;color:#ffe3a3;opacity:0;animation:ffTxt .4s ease-out 1.3s both}
-.ffc-jobs{margin-top:8px;font-size:clamp(11px,1.3vw,13px);letter-spacing:.06em;color:#cdbdf2;opacity:0;animation:ffTxt .4s ease-out 1.5s both;word-break:keep-all}
-@media (max-width:600px){ .ffc-icons{gap:6px;min-height:36px} .ffc-icons img{width:36px;height:36px} }
-@keyframes ffCutIn{from{opacity:0}to{opacity:1}}
-@keyframes ffCutOut{from{opacity:1}to{opacity:0}}
-@keyframes ffBand{from{transform:scaleY(0);opacity:.2}to{transform:none;opacity:1}}
-@keyframes ffIcon{to{opacity:1;transform:none}}
-@keyframes ffTxt{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* 마스터 — 기술 아이콘 서른 가지가 몸 위에 떴다가 몸 안으로 (1026 여덟째 · 예전 가로 띠 컷인 대신) · 누르기는 뒤 화면(ffTap)이 받는다 */
+.ffop-cut.ffop-absorb{position:fixed;inset:0;z-index:97;pointer-events:none}
+.ffop-absorb img{position:absolute;image-rendering:pixelated;opacity:0;filter:drop-shadow(0 0 4px #ffd98acc) drop-shadow(0 1px 0 #000);will-change:transform,opacity}
+.ffop-absorb .ffab-glow{position:absolute;border-radius:50%;opacity:0;background:radial-gradient(circle,#fff8dd 0%,#ffd77acc 28%,#ffb84a55 52%,#0000 72%);mix-blend-mode:screen}
+.ffop-absorb.out{opacity:0;transition:opacity .3s ease}
 @media (prefers-reduced-motion:reduce){
-  .ffc-band,.ffc-icons img,.ffc-name,.ffc-lead,.ffc-jobs,.op-talk.ffop-talk,.ffop-cut{animation-duration:.01s!important;animation-delay:0s!important}
+  .op-talk.ffop-talk{animation-duration:.01s!important;animation-delay:0s!important}
   .ffop-cap{transition-duration:.2s}
 }
 /* FFOP_CSS_END */
@@ -19330,7 +19318,11 @@ function pcCss(){
     + ".title-settings.pc2 h3{margin-top:10px!important}"
     + ".title-settings.pc2 label{padding:3px 0!important}"
     + ".title-settings.pc2 header{padding-bottom:8px!important}"
-    + ".title-settings.pc2 footer{margin-top:10px!important;padding-top:8px!important}";
+    + ".title-settings.pc2 footer{margin-top:10px!important;padding-top:8px!important}"
+    /* 1026 일곱째 — 사용자 'PC 판 화면에서 드래그가 가능한데' → 끌어서 글 · 그림을 고르지 못하게 (파란 선택 표시 · 그림 끌기). 입력 칸은 그대로 */
+    + "html,body{-webkit-user-select:none;user-select:none}"
+    + "input,textarea,select,[contenteditable]:not([contenteditable=false]){-webkit-user-select:text;user-select:text}"
+    + "img,a{-webkit-user-drag:none}";
   document.head.appendChild(st);
 }
 function pcTitle(){                                                           // 시작 화면 메뉴 — EXIT · 시작 화면부터 배경 음악
@@ -19398,11 +19390,11 @@ const FF_T = {
   cap1: "왕국력 231년, 가을.", cap2: "학원제 본선 — 결승",
   head: "왕국력 231년 가을 · 학원제 본선 결승", capEnd: "그리고, 5년 뒤.",
   teamA: () => FF.acad.A, teamB: () => FF.acad.B,                                   // 학원 이름 — A 엘리트 학원(무작위) · B 아버지 학원(학원 이름 창의 첫 이름 — 회귀 뒤 망해 간판이 내려갔다가 다시 걸린다) · 대사의 {A} · {B}
-  done: "계속", cutLead: "터득한 건, 전부 쓴다", cutJobs: "검투사 · 궁수 · 신성 사제 · 암살자 · 시마도사 · 마법검사"
+  done: "계속"
 };
 /* 유닛 — A 편(왼쪽) 마스터 · 암흑 사제 / B 편 팔라딘 · 마법사. pers 는 기술 외침 말투 (battleCallout) */
 const FF_UNITS = [
-  {uid: "A0", side: "A", job: "master", key: "master", row: "front", lv: 31, hp: 2400, pers: "stone", ult: "천검 난무"},
+  {uid: "A0", side: "A", job: "master", key: "master", row: "front", lv: 31, hp: 2400, pers: "stone", ult: "암살"},
   {uid: "A1", side: "A", job: "darkpriest", key: "dp", row: "back", lv: 30, hp: 1500, pers: "genius", ult: "어둠의 성찬"},
   {uid: "A2", side: "A", job: "archer", key: "ar", row: "back", lv: 29, hp: 1000, pers: "plain", ult: "유성 화살"},           // 대사 없음
   {uid: "B0", side: "B", job: "paladin", key: "pal", row: "front", lv: 31, hp: 2600, pers: "hot", ult: "성역 선포"},
@@ -19481,8 +19473,8 @@ const FF_SCRIPT = [
   {c: [{k: "cap", v: "C16"}]},
   {a: "B0", sk: "pa_u", ult: true, heal: [["B0", 520]], sh: [["B0", 600]], st: [["B0", "성역", "b"]], unst: [["B0", "시간 정지"], ["B0", "저주"], ["B0", "도발"]],
     say: "아직이다! 이 성역이 있는 한, 나는 쓰러지지 않아!"},
-  {c: [{k: "cap", v: "A08"}, {k: "cut"}]},
-  {a: "A0", sk: "ss_u", from: "spellsword", ult: true, hit: [["B0", 760, "crit"]], absorb: [["B0", 600]], shout: "천검 난무!!"},
+  {c: [{k: "cap", v: "A08"}, {k: "cut"}, {k: "talk", who: "master", t: "아직 내 턴은..."}, {k: "say", u: "A0", t: "끝나지 않았어!!!", ms: 1800}]},   // 1026 여덟째 사용자 — 기술 서른 가지를 흡수 → 대화창 · 외침
+  {a: "A0", sk: "ro_u", from: "rogue", ult: true, hit: [["B0", 760, "crit"]], absorb: [["B0", 600]], shout: "암살!!"},   // 1026 여섯째 사용자 — 천검 난무 대신 암살
   {a: "A0", sk: "sw_u", from: "sword", ult: true, hit: [["B0", 1980, "crit"]], shout: "——대지 가르기!!"},
   {end: [
     {k: "wait", ms: 2600},
@@ -19518,7 +19510,7 @@ function ffJobOn(){
   if(!JOBS.master){
     const b = JOBS.spellsword;
     JOBS.master = {name: FF_T.master, role: "dps", sub: "만능", tone: "dps", desc: "", base: b.base, grow: b.grow, ffop: 1,   // 1026 둘째 — 학생 도트(SPR_JOB.master)라 보통 학생 칸
-      skills: [ffSkill("sw_b"), ffSkill("sw_1"), ffSkill("pr_1"), ffSkill("ss_u")].filter(Boolean).map((s, i) => i === 3 ? Object.assign({}, s, {kind: "ult"}) : s)};
+      skills: [ffSkill("sw_b"), ffSkill("sw_1"), ffSkill("pr_1"), ffSkill("ro_u")].filter(Boolean).map((s, i) => i === 3 ? Object.assign({}, s, {kind: "ult"}) : s)};
   }
   try{ ffSprite(); }catch(e){}
 }
@@ -19661,17 +19653,58 @@ async function ffSayCue(c){
   if(st && u) hrSay(st, c.u, u.job, c.t, "ffop-say", c.ms || 1900, (FF_UNITS.find(x => x.uid === c.u) || {}).pers, 1);
   return ffClickWait(c.ms || 1900);
 }
+/* 마스터 — 터득한 기술 서른 가지(기술 아이콘)가 몸 위로 떠올라 맴돌다가(4초) 몸 안으로 빨려 들며 사라진다 → '아직 내 턴은...' (대화창) → '끝나지 않았어!!!' (외침)
+   1026 여덟째 사용자 — 예전 가로 띠 팝업(마스터 · 터득한 건, 전부 쓴다 · 직업 이름) 대신. 누르면 건너뛴다 · 움직임 줄이기면 짧게 */
+const FF_ICON_FIRST = ["sw_b", "ar_1", "pr_1", "ro_2", "tm_u", "ss_1", "ro_u", "sw_u"];   // 이 장면에서 빌린 기술부터
+function ffIcons(n){
+  const A = typeof SKILL_ICON_ART !== "undefined" ? SKILL_ICON_ART : {};
+  const job = /^(ar|bd|dp|dr|en|fm|gn|mo|nj|pa|pr|ro|ss|sw|tm|wz)_[b12u]$/;
+  const h = k => { let x = 7; for(const c of k) x = (x * 31 + c.charCodeAt(0)) >>> 0; return x; };
+  const rest = Object.keys(A).filter(k => job.test(k) && FF_ICON_FIRST.indexOf(k) < 0).sort((a, b) => h(a) - h(b));
+  return FF_ICON_FIRST.filter(k => A[k]).concat(rest).slice(0, n).map(k => A[k]);
+}
 async function ffCut(){
-  const icons = ["sw_b", "ar_1", "pr_1", "ro_2", "tm_u", "ss_1"].map(id => (typeof SKILL_ICON_ART !== "undefined" && SKILL_ICON_ART[id]) || "").filter(Boolean);
-  const el = document.createElement("div"); el.className = "ffop-cut"; el.setAttribute("aria-live", "polite");
-  el.innerHTML = `<div class="ffc-band"><div class="ffc-icons">${icons.map((s, i) => `<img src="${s}" alt="" style="--i:${i}">`).join("")}</div>
-    <div class="ffc-name">${esc(FF_T.master)}</div><div class="ffc-lead">${esc(FF_T.cutLead)}</div><div class="ffc-jobs">${esc(FF_T.cutJobs)}</div></div>`;
-  el.onclick = e => { e.stopPropagation(); if(FF.adv) FF.adv(); };
-  document.body.appendChild(el);
+  const st = ffStage(), el = st && st.querySelector('.bf-unit[data-uid="A0"]'), cv = el && el.querySelector("canvas.spr");
+  const RM = typeof rRM === "function" ? rRM() : !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const T = RM ? 1400 : 4000;
+  const r = cv ? cv.getBoundingClientRect() : (el ? el.getBoundingClientRect() : {left: innerWidth / 2 - 60, top: innerHeight / 2 - 90, width: 120, height: 120});
+  let hb = {hy: .3, fy: .66, cx: .5}; try{ if(cv && typeof sprBox === "function") hb = sprBox("master"); }catch(e){}
+  const bh = Math.max(40, r.height * ((hb.fy || .66) - (hb.hy || .3)));             // 화면에 보이는 몸 키
+  const cx = r.left + r.width * (hb.cx || .5), cy = r.top + r.height * (((hb.hy || .3) + (hb.fy || .66)) / 2);   // 몸 가운데 — 여기로 빨려 든다
+  const ox = cx, oy = cy - bh * .95;                                                 // 아이콘 고리의 가운데 — 머리 위
+  const sz = Math.round(Math.max(26, Math.min(48, bh * .36)));
+  const wrap = document.createElement("div"); wrap.className = "ffop-cut ffop-absorb"; wrap.setAttribute("aria-hidden", "true");
+  document.body.appendChild(wrap);
+  const icons = ffIcons(30), rings = [[8, .62], [10, .95], [12, 1.28]];
+  let n = 0;
+  rings.forEach(([cnt, k], ri) => {
+    for(let q = 0; q < cnt && n < icons.length; q++, n++){
+      const a = -Math.PI / 2 + (q + (ri % 2 ? .5 : 0)) / cnt * Math.PI * 2;
+      const px = ox + Math.cos(a) * bh * k * 1.3, py = oy + Math.sin(a) * bh * k * .82;   // 납작한 고리 셋
+      const im = document.createElement("img"); im.src = icons[n]; im.alt = ""; im.draggable = false;
+      im.style.cssText = `left:${(cx - sz / 2).toFixed(1)}px;top:${(cy - sz / 2).toFixed(1)}px;width:${sz}px;height:${sz}px`;
+      wrap.appendChild(im);
+      const dx = px - cx, dy = py - cy, bob = (q % 2 ? 1 : -1) * sz * .12, show = Math.min(.42, .08 + n * .011), tw = (n * 37 % 18) - 9;
+      im.animate(RM ? [{opacity: 0, transform: `translate(${dx}px,${dy}px)`}, {opacity: 1, offset: .2, transform: `translate(${dx}px,${dy}px)`},
+          {opacity: 1, offset: .7, transform: `translate(${dx}px,${dy}px)`}, {opacity: 0, transform: "translate(0,0) scale(.2)"}]
+        : [{opacity: 0, transform: "translate(0,0) scale(.2)"},
+           {opacity: 1, offset: show, transform: `translate(${dx}px,${dy}px) scale(1.12) rotate(${tw}deg)`, easing: "ease-out"},
+           {opacity: 1, offset: Math.min(.55, show + .12), transform: `translate(${dx}px,${dy + bob}px) scale(1) rotate(0deg)`, easing: "ease-in-out"},
+           {opacity: 1, offset: .74, transform: `translate(${dx * 1.04}px,${dy * 1.04 - bob}px) scale(1)`, easing: "cubic-bezier(.55,0,.85,.35)"},
+           {opacity: 0, transform: "translate(0,0) scale(.12)"}],
+        {duration: T, fill: "forwards"});
+    }
+  });
+  const glow = document.createElement("i"); glow.className = "ffab-glow";            // 다 빨려 든 순간 — 몸에서 금빛이 번진다
+  glow.style.cssText = `left:${cx}px;top:${cy}px;width:${bh * 1.6}px;height:${bh * 1.6}px`;
+  wrap.appendChild(glow);
+  glow.animate([{opacity: 0, transform: "translate(-50%,-50%) scale(.3)"}, {opacity: 0, offset: .8, transform: "translate(-50%,-50%) scale(.3)"},
+    {opacity: .9, offset: .93, transform: "translate(-50%,-50%) scale(1)"}, {opacity: 0, transform: "translate(-50%,-50%) scale(1.35)"}], {duration: T, fill: "forwards"});
+  if(cv) cv.animate([{filter: "none"}, {filter: "none", offset: .78}, {filter: "brightness(1.9) drop-shadow(0 0 6px #ffe39a)", offset: .94}, {filter: "none"}], {duration: T});
   try{ sfxPlay("ult"); }catch(e){}
-  const ok = await ffClickWait(2900);
-  el.classList.add("out"); setTimeout(() => el.remove(), 320);
-  return ok && ffWait(280);
+  const ok = await ffClickWait(T + 120);
+  wrap.classList.add("out"); setTimeout(() => wrap.remove(), 320);
+  return ok && ffWait(200);
 }
 async function ffRun(list){
   for(const c of list){
@@ -30765,7 +30798,7 @@ function stylishSkillFxPreload(res){
 }
 function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, groupTargets=[], timing={}){
   const plan=stylishSkillFxPlan(job, skillId), entries=[];
-  const mono=skillId==="gn_u"||skillId==="ss_u", inverted=skillId==="ro_u", shots=skillId==="gn_1"?(timing.shots||[]):skillId==="ss_1"?(timing.shots||Array.from({length:3},(_,i)=>targets[i%Math.max(1,targets.length)]?.dataset.uid).filter(Boolean)):[];
+  const mono=skillId==="gn_u"||skillId==="tm_u", inverted=skillId==="ro_u", shots=skillId==="gn_1"?(timing.shots||[]):skillId==="ss_1"?(timing.shots||Array.from({length:3},(_,i)=>targets[i%Math.max(1,targets.length)]?.dataset.uid).filter(Boolean)):[];
   const started=performance.now(), duration=timing.duration||1500;
   const shotStep=skillId==="ss_1"?duration*.28:Math.min(duration/Math.max(1,shots.length),duration*.16);
   const layer=document.createElement("div");
@@ -30800,6 +30833,7 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
     if(kind==="greenPierce" && side==="B") img.style.transform="scaleX(-1)";
     if(kind==="waterSwamp") img.style.opacity=".64";
     if(kind==="ninjaRipple") img.style.opacity=".8";
+    if(kind==="blessing") img.style.opacity=".55";
     if(kind==="waterDragon") img.style.maskImage="linear-gradient(to right,transparent 0%,black 16%,black 100%)";
     if((kind==="waterDragon"||kind==="fumaWave") && side==="B") img.style.transform="scaleX(-1)";
     if(kind==="waterFlower" && side==="B") img.style.transform="scaleX(-1)";

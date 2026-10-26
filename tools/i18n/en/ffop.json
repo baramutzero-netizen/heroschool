@@ -4,8 +4,6 @@
  "학원제 본선 — 결승": "Academy Festival Finals — The Final",
  "왕국력 231년 가을 · 학원제 본선 결승": "Fall of Kingdom Year 231 · Academy Festival Final",
  "그리고, 5년 뒤.": "And then, five years later.",
- "터득한 건, 전부 쓴다": "Everything I've mastered, I'll use",
- "검투사 · 궁수 · 신성 사제 · 암살자 · 시마도사 · 마법검사": "Swordsman · Archer · Priest · Rogue · Time Mage · Spellsword",
  "마스터 아드님이라고 봐드리지 않을 거예요, 선배! 정정당당하게 가요!": "I won't go easy on you just because you're the Master's son, senior! Let's keep it fair!",
  "……마스터도 보고 계시니까아. 대충은 못 하겠네에.": "…The Master's watching too~. Guess I can't slack off~.",
  "……선배. 등 뒤는 제가 맡을게요.": "…Senior. I'll watch your back.",
@@ -27,7 +25,7 @@
  "회복?! 마스터 선수, 이번엔 사제의 치유 마법입니다!": "A heal?! Now Master's using a priest's healing magic!",
  "시간이…… 멈췄습니다?! 시마도사의 필살기입니다!": "Time has…… stopped?! That's a Time Mage's ultimate!",
  "아직이다! 이 성역이 있는 한, 나는 쓰러지지 않아!": "Not yet! As long as this sanctuary stands, I won't fall!",
- "천검 난무!!": "Blade Storm!!",
+ "암살!!": "Assassination!!",
  "——대지 가르기!!": "——Earthsplitter!!",
  "혼자 남아 셋을 뒤집었습니다…… 왕국력 231년 학원제 우승은 {A}, ‘마스터’입니다!": "One against three, and they turned it around…… The Kingdom Year 231 Academy Festival champion is {A}'s ‘Master’!",
  "하하……! 졌다, 졌어요! 다음엔 꼭 이길 거예요, 선배!": "Haha……! I lost, I lost! I'll definitely win next time, senior!",
@@ -35,5 +33,7 @@
  "고마워. 네가 버텨 준 덕분이야.": "Thanks. We won because you held on.",
  "……네. 선배 덕분이죠. 늘 그렇듯이.": "…Yes. It's all thanks to you, senior. As always.",
  "만능": "All-round",
- "<b>{0}</b> 보호막 {1}": "<b>{0}</b> gains a {1} shield"
+ "<b>{0}</b> 보호막 {1}": "<b>{0}</b> gains a {1} shield",
+ "아직 내 턴은...": "My turn isn't...",
+ "끝나지 않았어!!!": "...over yet!!!"
 }
