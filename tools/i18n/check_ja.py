@@ -27,7 +27,7 @@ PROBE = r"""async () => {
   const faces = []; document.fonts.forEach(f => { if(/^(Mulmaru|Mulmaru Mono|HsBombaram21)$/.test(f.family)) faces.push([f.family, f.status, String(f.unicodeRange)]); });
   const cs = id => getComputedStyle(document.getElementById(id));
   return {lang: document.documentElement.lang, jaFonts: !!jaf, after: !!(late && jaf && (late.compareDocumentPosition(jaf) & Node.DOCUMENT_POSITION_FOLLOWING)),
-          jaCss: !!document.getElementById('i18nJaCss'), enCss: !!document.getElementById('i18nCss'), faces,
+          jaCss: !!document.getElementById('i18nJaCss'), enCss: !!document.getElementById('i18nCss'), faces, koGal: !!document.getElementById('koGalmuri'),
           wrapWB: cs('jaWrap').wordBreak, wrapLB: cs('jaWrap').lineBreak,
           side: (document.getElementById('app') || document.body).innerText.slice(0, 1500)};
 }"""
@@ -93,7 +93,8 @@ def main():
                     ' · '.join('%s %s' % (f[0], f[1]) for f in ja_faces), ink, mid, n['body'].split(',')[0], n['h2'].split(',')[0]))
             else:
                 need(r['lang'] == lang, 'html lang %r' % r['lang'])
-                need(not r['jaFonts'] and not ja_faces and not r['jaCss'], '일본어 글꼴 · CSS 가 붙었다')
+                kana = [f for f in ja_faces if not (r.get('koGal') and f[0] in ('Mulmaru', 'Mulmaru Mono'))]   # 1026 — 한국어판 기본 글꼴 갈무리11(koGalmuri)도 Mulmaru · Mulmaru Mono 이름에 범위를 붙여 쓴다 — 그것은 뺀다
+                need(not r['jaFonts'] and not kana and not r['jaCss'], '일본어 글꼴 · CSS 가 붙었다 %s' % [f[0] + ' ' + f[2][:40] for f in kana])
                 need(r['wrapWB'] == 'keep-all', 'keep-all 이 바뀌었다 (%s)' % r['wrapWB'])
                 need(r['enCss'] == (lang == 'en'), '영어 화면 CSS %s' % r['enCss'])
                 print('%s — 일본어 글꼴 · CSS 없음 · keep-all 그대로' % ('한국어' if lang == 'ko' else '영어'))

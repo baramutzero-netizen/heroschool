@@ -25,7 +25,7 @@ import check_i18n as C
 
 # 화면 목록 — 이름: 띄우는 코드 (UI.sel = 첫 학생). 없는 화면(아직 열리지 않은 서브탭 등)은 건너뛴다
 SCENES = r"""(() => {
-  const RBC = () => { if (window.RBK && RBK.isOpen()) RBK.close(true); };
+  const RBC = () => { if (window.RBK && RBK.isOpen()) RBK.close(true); if (window.FSZ && FSZ.k() !== 1) FSZ.set('normal', true); };   // 1026 — 글자 크기 장면 뒤에는 보통으로
   const V = v => () => { RBC(); closeModal(); UI.view = v; render(); };
   /* 1016 — 넓은 화면 마을은 건물 안 창(TOWNIN) — facil_* 는 상품 단계로 넘겨 잰다 (글자 찍기 · 효과 기다림 없이) */
   const tinGo = step => { if (typeof TIN === 'undefined' || !document.querySelector('#view .tin')) return; tinStop(); TIN.typed = true; TIN.rwdOn = !!TIN.rwd; TIN.step = step; render(); };
@@ -51,6 +51,19 @@ SCENES = r"""(() => {
       if (tinOn()) { tinOpen('tavern'); tinGo('menu'); } };
   }
   sc['mission'] = () => { RBC(); closeModal(); UI.view = 'home'; render(); missionModal(); };
+  /* 1026 — 글자 크기 아주 크게(FONTSZ — 창째로) · PC 판 화면 설정 줄(PCAPP — 가짜 hsDesk · 이 장면부터 채팅은 꺼진다) */
+  if (window.FSZ) {
+    sc['xl_opt'] = () => { RBC(); closeModal(); FSZ.set('xlarge', true); UI.view = 'opt'; render(); };
+    sc['xl_log'] = () => { RBC(); closeModal(); FSZ.set('xlarge', true); UI.view = 'log'; render(); };
+    sc['xl_mission'] = () => { RBC(); closeModal(); FSZ.set('xlarge', true); UI.view = 'home'; render(); missionModal(); };
+  }
+  if (window.PCAPP) sc['opt_desk'] = () => { RBC(); closeModal();
+    if (!window.hsDesk) { const SZ = [[1280, 720], [1600, 900], [1920, 1080], [2560, 1440]];
+      window.hsDesk = {platform: 'layout', on: () => {}, quit: async () => {}, set: async () => window.hsDesk.__st, get: async () => window.hsDesk.__st,
+        __st: {mode: 'window', size: {w: 1600, h: 900}, display: {w: 1920, h: 1080, scale: 1}, max: false, version: '0',
+          sizes: SZ.map(p => ({k: p.join('x'), w: p[0], h: p[1], fits: p[1] <= 1000, on: p[0] === 1600}))}};
+      PCAPP.state.st = window.hsDesk.__st; PCAPP.init(); }
+    UI.view = 'opt'; render(); };
   sc['newscen'] = () => { RBC(); closeModal(); UI.view = 'home'; render(); askAcademyName(); };   // 새 시나리오 — 학원 이름 · 난이도 · 시작 빚 (1011)
   [1,2,3,4,5,6,7,8,9,10,11,12,13,14].forEach(k => sc['tut' + k] = () => { RBC(); closeModal(); showModal(tutGuideHTML(k)); });
   sc['skillup'] = () => { RBC(); closeModal(); const s = S.students.find(x => (x.sp|0) > 0) || S.students[0]; skillUpModal(s.id); };   // 강화 포인트 = st.sp (1013 재작업 — 말풍선이 나오는 1.5초 기다림)

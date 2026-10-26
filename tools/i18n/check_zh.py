@@ -38,7 +38,7 @@ PROBE = r"""async (L) => {
   const cs = id => getComputedStyle(document.getElementById(id)), has = id => !!document.getElementById(id);
   const tail = ['i18nJaFonts', 'i18nZhFonts', 'i18nZhtFonts'].filter(has), css = ['i18nCss', 'i18nJaCss', 'i18nZhCss', 'i18nZhtCss'].filter(has);
   const t = tail[0] && document.getElementById(tail[0]);
-  return {lang: document.documentElement.lang, tail, css, faces,
+  return {lang: document.documentElement.lang, tail, css, faces, koGal: !!document.getElementById('koGalmuri'),
           after: !!(late && t && (late.compareDocumentPosition(t) & Node.DOCUMENT_POSITION_FOLLOWING)),
           wrapWB: cs('zhWrap').wordBreak, wrapLB: cs('zhWrap').lineBreak,
           side: (document.getElementById('app') || document.body).innerText.slice(0, 1500)};
@@ -199,7 +199,8 @@ def main():
                     need(r['tail'] == ['i18nJaFonts'] and r['css'] == ['i18nJaCss'], '일본어 글꼴 · CSS 가 빠졌다 (%s · %s)' % (r['tail'], r['css']))
                     need(r['wrapWB'] == 'normal', '일본어 keep-all → normal 아님 (%s)' % r['wrapWB'])
                 else:
-                    need(not lang_faces and not r['tail'], '다른 언어 글꼴이 붙었다 %s' % [f[0] for f in lang_faces])
+                    other = [f for f in lang_faces if not (r.get('koGal') and f[0] in ('Mulmaru', 'Mulmaru Mono'))]   # 1026 — 한국어판 기본 글꼴 갈무리11(koGalmuri)은 뺀다
+                    need(not other and not r['tail'], '다른 언어 글꼴이 붙었다 %s' % [f[0] for f in other])
                     need(r['wrapWB'] == 'keep-all', 'keep-all 이 바뀌었다 (%s)' % r['wrapWB'])
                     need(r['css'] == (['i18nCss'] if lang == 'en' else []), '화면 CSS %s' % r['css'])
                 print('%s — 중국어 글꼴 · CSS 없음%s' % ({'ko': '한국어', 'en': '영어', 'ja': '일본어'}[lang], ' · 일본어 글꼴 · CSS 그대로' if lang == 'ja' else ' · keep-all 그대로'))

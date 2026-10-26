@@ -1,0 +1,34 @@
+{
+  "name": "heroschool-desktop",
+  "productName": "용사 학원 키우기",
+  "version": "0.1.0",
+  "description": "용사 학원 키우기 — PC 판 (Electron · STOVE)",
+  "main": "main.js",
+  "private": true,
+  "author": "Bad Beans",
+  "scripts": {
+    "prepare-app": "node tools/prepare.mjs",
+    "start": "node tools/prepare.mjs && electron .",
+    "dev": "electron .",
+    "dist": "node tools/prepare.mjs && electron-builder --win dir",
+    "dist:zip": "node tools/prepare.mjs && electron-builder --win zip"
+  },
+  "devDependencies": {
+    "electron": "^44.9.3",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "dev.badbeans.heroschool",
+    "productName": "용사 학원 키우기",
+    "executableName": "HeroSchool",
+    "copyright": "© Bad Beans",
+    "directories": {"output": "dist", "buildResources": "build"},
+    "files": ["main.js", "display.js", "preload.js", "package.json", "app/**/*"],
+    "asar": true,
+    "win": {
+      "target": [{"target": "dir", "arch": ["x64"]}],
+      "icon": "build/icon.png",
+      "artifactName": "HeroSchool-${version}-win-${arch}.${ext}"
+    }
+  }
+}

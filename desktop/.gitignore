@@ -1,0 +1,5 @@
+# PC 판 (Electron) — 만들어지는 것은 git 에 올리지 않는다
+node_modules/
+app/
+dist/
+prepare-skipped.txt

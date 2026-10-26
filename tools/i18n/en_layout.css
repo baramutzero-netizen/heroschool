@@ -52,3 +52,13 @@ html[lang=en] .tfw-hints li{grid-template-columns:76px minmax(0,1fr)}
 html[lang=en] .tfw-mc .tfw-tl{white-space:normal}
 /* 1020 — 예상이 전투력 상자 안 한 줄이 되며 'Forecast' 표가 붙었다 → 'Unfavored 14%' 옆 막대가 30px 까지 좁아진다. 영어는 표 없이 (Favored · Unfavored 가 곧 예상) */
 html[lang=en] .tfw-odds .lb{display:none}
+/* 1026 영어판 점검 — 대회 진형 판 카드: 좁힌 카드(.sq)에서도 Battlemage · Spellsword 가 3~5px 넘쳐 … 였다 (도트 글꼴은 글자 사이를 줄일 수 없다 — pixelFontApply 가 letter-spacing 을 0 으로)
+   → 영어 좁힌 카드는 등급을 상자 없는 글자로 (사이 2 그대로) · 직업 상자 안쪽 여백 1 · 0 */
+html[lang=en] .tfw-un.sq .tfw-g{box-shadow:none;padding:2px 0 0}
+html[lang=en] .tfw-un.sq .tfw-job{padding-left:1px;padding-right:0}
+/* 1026 — 폰 경과 보고 요일 칸: Self-Train · Fitness · Meditate 가 … (요일 칸 ~60px) → 두 줄까지 · 앞 점(훈련 색)은 글 위 짧은 막대로 · 안쪽 여백을 줄인다 */
+@media(max-width:600px){
+  html[lang=en] .dr-days button{padding:7px 3px}
+  html[lang=en] .dr-days strong{white-space:normal;overflow-wrap:anywhere;text-overflow:clip;line-height:12px;max-height:30px}
+  html[lang=en] .dr-days strong:before{display:block;width:12px;height:3px;border-radius:0;margin:0 0 3px}
+}
