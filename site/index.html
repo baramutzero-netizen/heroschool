@@ -3474,6 +3474,9 @@ html[data-ui-concept="journal"] .prepbar .pb-t{color:#4a3a2a}
 html:not([data-bf-grid="on"]) .bf-slot{opacity:0}
 .bf-stage .bf-unit,.bf-stage .bf-slot{margin-top:20px}
 .bf-stage .bf-unit{scale:calc(var(--us,1) * var(--cs,1))}   /* 직업별 크기 — BATTLE_TUNE.job (0930) · --cs 스타일리시 연출 확대 */
+/* 1027 — 이름표 · 상태(버프/디버프) 줄은 유닛 크기와 상관없이 모두 같은 크기 (사용자 '버프/디버프 아이콘과 이름 태그의 크기는 대상의 스케일과 관계 없이 전부 통일시키자').
+   --uz = 기준 배율 BF_UI ÷ 그 유닛의 직업 배율(--us) — unitOne 이 유닛마다 넣는다 · zoom 이라 이름표 · 상태 줄의 자리(높이)도 같이 맞는다. 카메라 확대(--cs)는 그대로 따라간다 */
+.bf-stage .bf-unit > .bf-name,.bf-stage .bf-unit > .bf-status{zoom:var(--uz,1)}
 /* ── 스타일리시 전투 연출 (0930) — 카메라(.bf-cam · 배경)를 같은 변형으로 움직인다 ── */
 .bf-cam{position:absolute;inset:0;transform:var(--cam,none);transform-origin:50% 50%;transition:transform var(--cam-t,.45s) var(--cam-e,ease)}
 .modal.btm .bf-stage::before{transform:var(--cam,none);transform-origin:var(--cam-o,50% 50%);transition:transform var(--cam-t,.45s) var(--cam-e,ease)}
@@ -3726,7 +3729,7 @@ html:not([data-bf-grid="on"]) .bf-slot{opacity:0}
 .bf-stage .bf-big .sprwrap{height:156px}
 .bf-stage .bf-big .sprwrap .spr-anchor{margin-bottom:-28px}
 .bf-stage .bf-big .bf-gauges{top:52px;height:100px}
-.bf-stage .bf-big .bf-name{font-size:12px;margin-top:22px}
+.bf-stage .bf-big .bf-name{margin-top:calc(22px / var(--uz,1))}   /* 1027 — 글자 크기도 다른 이름표와 같게 (예전 12px) · 여백은 zoom(--uz)을 빼고 예전 자리 */
 /* 원정 잡몹 — 보스보다 작게, 학생 자리에 선다 */
 .bf-stage .bf-mob{width:130px;height:140px}
 .bf-stage .bf-mob .sprwrap.mon{min-height:0;height:112px;margin:0;display:flex;align-items:flex-end;justify-content:center}
@@ -3747,6 +3750,7 @@ html:not([data-bf-grid="on"]) .bf-slot{opacity:0}
  .bf-legend{left:8px;top:12px;font-size:8px;gap:2px;max-width:45%;flex-wrap:wrap}
  .bf-slot{width:55px;height:20px;transform:translate(-50%,26px) skewX(-20deg)}
  .bf-stage .bf-boss{transform:translate(-50%,-50%) scale(.68)}
+ .bf-stage .bf-boss > .bf-name,.bf-stage .bf-boss > .bf-status{zoom:calc(var(--uz,1) * .6 / .68)}   /* 1027 — 이름표 · 상태 줄은 다른 유닛(.6)과 같은 크기 */
  .bf-stage .bf-speech{font-size:16px;max-width:170px}
  .bf-stage .bf-speech.intro{font-size:14px}
  .bf-stage .bf-name{font-size:14px}.bf-name small{font-size:12px}
@@ -5401,6 +5405,42 @@ html.ffop-on #modalRoot .modal[data-bt]{cursor:pointer}
   .ffop-cap{transition-duration:.2s}
 }
 /* FFOP_CSS_END */
+/* STICON_CSS_START — 상태 효과 아이콘 (1026 목업 · apply_sticon.py — 1027 셋째 게임에 넣음) ─ 칩 = 도트 아이콘 한 장(.sti-sym) + (고르면) 덧그리는 단색 테두리(::after)
+   1027 — 아이콘 v5 (status-icons-v5 · 24px): 그림마다 바탕 · 1px 단색 테두리(#C4AC78)가 그림 안에 있다 — 사용자 '이제부터 + - 쓰지 않고 + - 에 따라서 개별적인 아이콘' ·
+   '테두리도 심플 단색을 사용'. 예전 박스(은테 · 남색 받침 그림 — sticon_box.py)와 +/− 부호는 뺐다.
+   구성 요소마다 크기 · 위치(x 오른쪽 + · y 아래 +) · 켜기/끄기를 :root 변수로 — 목업 '조정 툴'(mockups/status-icons)이 이 값을 바꾸고 복사해 준다. 정한 값은 여기 기본값으로 옮긴다.
+   넓은 화면 --sti-* · 좁은 화면(640 이하 · 전투판) --sti-m-* · 아이콘은 칩 가운데 기준 · …-d 는 block / none
+   덧그리는 테두리(--sti-bd-*) — 그림 바깥 한 줄(그림 안 테두리) 위에 CSS 단색 테두리를 덧그린다(색 · 두께를 바꿔 보려고) · 처음엔 끔(그림 테두리 그대로)
+   그림 24 면 1:1 (확대는 2 · 3배가 깔끔) · 사용자 '캐릭터의 버프/디버프는 한 줄에 나열' → 상태 줄 줄바꿈 없음 (넘치면 가운데에서 양쪽으로)
+   1027 셋째 — 사용자 값(조정 툴 값 복사): 칩 27 · 칩 사이 1 · 아이콘 26 · 덧그리는 테두리 켬(1px #C4AC78) — 넓은 화면 (폰은 그대로) · 그리고 '아이콘 목업도 게임에 적용' */
+:root{
+  --sti-size:27px;--sti-gap:1px;
+  --sti-sym-s:26px;--sti-sym-x:0px;--sti-sym-y:0px;--sti-sym-d:block;
+  --sti-bd-w:1px;--sti-bd-c:#C4AC78;--sti-bd-d:block;
+  --sti-m-size:24px;--sti-m-gap:3px;
+  --sti-m-sym-s:24px;--sti-m-sym-x:0px;--sti-m-sym-y:0px;--sti-m-sym-d:block;
+  --sti-m-bd-w:1px;--sti-m-bd-c:#c4ac78;--sti-m-bd-d:none;
+}
+.bf-status:has(> .bf-effect.sti){gap:var(--sti-gap);flex-wrap:nowrap}   /* 한 줄에 나열 — 유닛(110)보다 길면 가운데에서 양쪽으로 넘친다 */
+.bf-effect.sti{display:block;width:var(--sti-size);height:var(--sti-size);padding:0;border:0;border-radius:0;box-shadow:none;background:none;overflow:visible}
+.bf-effect.sti.negative,.bf-effect.sti.hero{background:none;border:0}
+/* 1026 셋째 — 칩 뒤 상자 하나 더 숨김 (사용자 '아이콘 박스 뒤에 보면 다른 박스가 하나 더 있자나 — 이거부터 숨김'). 게임 도트 마감
+   html[data-ui-finish=pixel] :is(button,…) 가 모든 단추에 2px 테두리 · 안쪽 빛/그늘 · 아래 그림자(!important · 누르면 :active 그늘)를 그려 칩 뒤에 상자가 하나 더 보였다.
+   칩은 아이콘(+ 덧그리는 테두리)만 — :not(#_sti) 는 우선순위를 올리려고 (도트 마감의 !important · :active 보다 높게) */
+.bf-effect.sti:not(#_sti),.bf-effect.sti:not(#_sti):active,.bf-effect.sti:not(#_sti):focus{background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:0!important;
+  width:var(--sti-size)!important;height:var(--sti-size)!important;min-width:0!important;min-height:0!important}
+.bf-effect.sti .sti-sym{position:absolute;z-index:1;left:50%;top:50%;width:var(--sti-sym-s);height:var(--sti-sym-s);max-width:none;display:var(--sti-sym-d);
+  transform:translate(calc(-50% + var(--sti-sym-x)),calc(-50% + var(--sti-sym-y)));image-rendering:pixelated;pointer-events:none}
+/* 덧그리는 단색 테두리 — 아이콘과 같은 자리 · 크기 (안쪽으로) */
+.bf-effect.sti::after{content:"";position:absolute;z-index:2;left:50%;top:50%;width:var(--sti-sym-s);height:var(--sti-sym-s);box-sizing:border-box;display:var(--sti-bd-d);pointer-events:none;
+  border:var(--sti-bd-w) solid var(--sti-bd-c);transform:translate(calc(-50% + var(--sti-sym-x)),calc(-50% + var(--sti-sym-y)))}
+.bf-effect.sti:focus-visible,.bf-effect.sti:hover{outline:2px solid #ffd36a;outline-offset:0}
+@media(max-width:640px){
+  .bf-stage .bf-status:has(> .bf-effect.sti){gap:var(--sti-m-gap)}
+  .bf-stage .bf-effect.sti{--sti-size:var(--sti-m-size);--sti-sym-s:var(--sti-m-sym-s);--sti-sym-x:var(--sti-m-sym-x);--sti-sym-y:var(--sti-m-sym-y);--sti-sym-d:var(--sti-m-sym-d);
+    --sti-bd-w:var(--sti-m-bd-w);--sti-bd-c:var(--sti-m-bd-c);--sti-bd-d:var(--sti-m-bd-d)}
+}
+/* STICON_CSS_END */
 </style>
 
 <link rel="stylesheet" href="../assets/title-art/title-screen.css?v=7">
@@ -6306,6 +6346,7 @@ function sprCellCv(ji, pi, m, f){
   if(SPR_CACHE.size > SPR_CAP) SPR_CACHE.delete(SPR_CACHE.keys().next().value);
   return cv;
 }
+let sprCellBattle = null;   // 1027 — 전투판(.bf-stage) 도트 장 (MIXAA 블록 — 믹셀 AA · 그린 칸만 잘라 __ox · __oy 자리에) · 없으면 sprCellCv 그대로
 function sprTick(){
   SPR_RAF = requestAnimationFrame(sprTick);
   if(!SPR_READY) return;
@@ -6320,13 +6361,14 @@ function sprTick(){
     const f = el.dataset.f != null ? Math.min(+el.dataset.f, ((SPR_META[SPR_KEYS[j]]||[])[m]||[1]).length-1)   // 스타일리시 연출 — 장을 직접 고른다
       : el.dataset.still ? sprStillAt(j, m) : sprFrameAt(j, m, loop ? now : now-t0, ms, !t0, loop);
     if(el.__f===f && el.__key===j+"|"+pi+"|"+m) continue;
-    const cell = sprCellCv(j, pi, m, f);
+    const bf = sprCellBattle && (el.__bf ?? (el.__bf = !!el.closest(".bf-stage")));   // 1027 — 전투판 도트만 AA 장 (MIXAA)
+    const cell = bf ? sprCellBattle(j, pi, m, f) : sprCellCv(j, pi, m, f);
     if(!cell) continue;
     el.__f=f; el.__key=j+"|"+pi+"|"+m;
     const cx = el.__cx || (el.__cx = el.getContext("2d"));
     cx.imageSmoothingEnabled = false;
     cx.clearRect(0,0,SPR_CELL,SPR_CELL);
-    cx.drawImage(cell, 0, 0);
+    cx.drawImage(cell, cell.__ox || 0, cell.__oy || 0);
   }
   fxTick(now);
   tournamentCharacterTick(now);
@@ -19768,6 +19810,22 @@ function ffJobOff(){
   try{ delete STYLISH_SKILL_FX.casters.master; }catch(e){}
 }
 
+/* ── 상태 칩 (1026 — 사용자 '결승 전투에서 만능 아이콘 제외 모든 버프/디버프 아이콘이 기타 강화, 기타 약화로 떨어진다 — 이렇게 바꾸자') ──
+   대본의 상태(st)는 이름 · 종류(b · d)만 있어 칩이 능력치를 몰랐다. 그 상태를 건 기술 id → 칩 (능력치 · 종류) — 한 상태가 칩 여럿.
+   저주 → 흡혈 − · 지속 피해 / 축복 → 공격 + · 방어 + / 서리 결계 → 속도 − / 그림자 밟기 → 속도 + · 회피 + / 시간 정지 → 속도 − /
+   성역(성역 선포) → 방어 + (보호막 k:s 는 상태 줄 칩이 아니라 보호막 게이지 — 대본의 sh 가 그대로 준다). 기술 id 로 찾으므로 번역판에서도 같다 */
+const FF_FX = {
+  dp_2: [{k: "d", stat: "leech"}, {k: "dot"}],
+  pr_2: [{k: "b", stat: "atk"}, {k: "b", stat: "def"}],
+  wz_2: [{k: "d", stat: "spd"}],
+  ro_2: [{k: "b", stat: "spd"}, {k: "b", stat: "eva"}],
+  tm_u: [{k: "d", stat: "spd"}],
+  pa_u: [{k: "b", stat: "def"}]
+};
+function ffChips(f){
+  return (FF_FX[f.sk] || [{}]).map(x => ({n: f.n, k: x.k || f.k, stat: x.stat || null, regen: false, mir: false, taunt: !!f.taunt, allT: false, hero: f.hero || null}));
+}
+
 /* ── 대본 → 전투 기록 (runBattle 의 장과 같은 모양) ── */
 function ffBuild(){
   const U = FF_UNITS.map((u, k) => ({...u, name: ffName(u.key), maxHp: u.hp, sh: 0, gauge: 0, atb: .15 + k * .12, alive: true, dd: 0, dh: 0, dt: 0, fx: []}));
@@ -19775,7 +19833,7 @@ function ffBuild(){
   const F = [];
   let pend = null;
   const snap = () => U.map(u => ({hp: u.hp, maxHp: u.maxHp, sh: u.sh, ult: u.gauge, atb: Math.min(1, u.atb), alive: u.alive, cs: 0, dd: u.dd, dh: u.dh, dt: u.dt,
-    fx: u.fx.map(f => ({n: f.n, k: f.k, stat: null, regen: false, mir: false, taunt: !!f.taunt, allT: false, hero: f.hero || null}))}));
+    fx: u.fx.flatMap(ffChips)}));   // 1026 — 상태 하나가 칩 여럿 (FF_FX)
   const push = (line, cls, actor, fx, pop) => {
     const fr = {line, cls: cls || "", actor: actor || null, fx: fx || null, pop: pop && pop.length ? pop : null, units: snap()};
     if(pend){ fr.ff = pend; pend = null; }
@@ -19811,7 +19869,7 @@ function ffBuild(){
     (st.sh || []).forEach(([id, v]) => { const t = by(id); t.sh += v; push(`${_L`<b>${esc(t.name)}</b> 보호막 ${fmt(v)}`}`, "heal", a.uid, null, [{u: t.uid, v, k: "shield"}]); });
     (st.heal || []).forEach(([id, v]) => { const t = by(id); const h = Math.min(v, t.maxHp - t.hp); t.hp += h; a.dh += h; push(`${_L`<b>${esc(t.name)}</b> 회복 ${fmt(h)}`}`, "heal", a.uid, null, [{u: t.uid, v: h, k: "heal"}]); });
     (st.unst || []).forEach(([id, n]) => { const t = by(id); t.fx = t.fx.filter(f => f.n !== n); });
-    (st.st || []).forEach(([id, n, kd, tau]) => { const t = by(id); if(!t.alive) return; t.fx = t.fx.filter(f => f.n !== n).concat({n, k: kd, taunt: !!tau});
+    (st.st || []).forEach(([id, n, kd, tau]) => { const t = by(id); if(!t.alive) return; t.fx = t.fx.filter(f => f.n !== n).concat({n, k: kd, taunt: !!tau, sk: st.sk});
       push(`<b>${esc(t.name)}</b> ${esc(n)}`, "", a.uid); });
     (st.miss || []).forEach(id => push(`${_L`<b>${esc(by(id).name)}</b> 회피`}`, "", a.uid, null, [{u: id, k: "miss"}]));
     const ab = new Map((st.absorb || []).map(([id, v]) => [id, v]));
@@ -20119,6 +20177,47 @@ function ffTake(k){ const H = FF.handoff; if(!H || !H[k]) return ""; const n = H
 window.FFOP = {takeName: ffTake, acadName: ffAcad, start: ffStart, gate: ffGate, hold: ffHold, see: ffSee, on: ffOn, skip: ffSkip, build: ffBuild, script: FF_SCRIPT, units: FF_UNITS, T: FF_T, state: FF};
 })();
 /* FFOP_END */
+/* STICON_START — 상태 효과 아이콘 (1026 목업 · apply_sticon.py · mockups/status-icons — 1027 셋째 게임에 넣음 · 사용자 '아이콘 목업도 게임에 적용') ─ 사용자 'tools/status-icons-v1 에 상태 효과 아이콘들하고 해당 아이콘의 테두리, 부호들까지 다 작업해뒀어'.
+   전투 유닛 아래 상태 줄(.bf-status)의 칩 battleStatusIcon 을 바꿔 끼운다 — 선으로 그린 SVG 대신 도트 아이콘.
+   · 1027 — 아이콘 v5 (tools/status-icons-v5/icons/<id>-24.png · 24px · 사용자 'status-icons-v5 폴더 확인하고 목업에 적용. 이제부터 + - 쓰지 않고 + - 에 따라서
+     개별적인 아이콘을 사용하는 개념' · '테두리도 심플 단색을 사용'): 그림마다 바탕 · 1px 단색 테두리(#C4AC78)가 그림 안에 들어 있다 →
+     박스(테두리 · 받침 그림)와 +/− 부호는 쓰지 않는다. 능력치(atk · def · spd · crit · critDmg · acc · eva · leech · all)는 강화면 <id> · 약화면 <id>-down 그림.
+   · 어떤 그림인가 — 예전과 같은 차례(자료 폴더 integration-notes): 영웅의 기상(hero) → 의식 흐림 · 혼미(mind) → 물그림자(mir) → 도발(taunt) → 보호막(k=s → def) → 지속 피해(dot) →
+     지속 회복(regen → heal) → 전 능력(allT → all) → 그 능력치 → 그 밖: 약화면 debuff · 아니면 buff. 능력치 · 전 능력이 약화면 -down.
+   · 약화(negative) 판정 · 이름 · 툴팁 · aria-label 은 예전 그대로 (k=d · dot · mind) — 도발을 이름만 보고 약화로 바꾸지 않는다.
+   · 크기 — 넓은 화면 칩 27 · 그림 26 · 덧그리는 테두리 1px (1027 셋째 사용자 값) · 폰 칩 · 그림 24 — CSS 변수(sticon_block.css :root — 목업 조정 툴).
+   · html.sti-off 면 예전 칩 (목업의 비교 단추) */
+(() => {
+const STI = {"icon":{"atk":"../assets/status_icons/atk.png?v=45ee43dd","def":"../assets/status_icons/def.png?v=5a1dd0b8","spd":"../assets/status_icons/spd.png?v=71035a74","crit":"../assets/status_icons/crit.png?v=fb557789","critDmg":"../assets/status_icons/critDmg.png?v=7c6390c9","acc":"../assets/status_icons/acc.png?v=0d1d73ad","eva":"../assets/status_icons/eva.png?v=2fb50244","leech":"../assets/status_icons/leech.png?v=b869ccc2","heal":"../assets/status_icons/heal.png?v=e062d6b7","dot":"../assets/status_icons/dot.png?v=1dd9c54d","mir":"../assets/status_icons/mir.png?v=9efe6c50","taunt":"../assets/status_icons/taunt.png?v=cf6b2cff","mind":"../assets/status_icons/mind.png?v=afd0a277","all":"../assets/status_icons/all.png?v=0c8ba4f3","buff":"../assets/status_icons/buff.png?v=f877c1d7","debuff":"../assets/status_icons/debuff.png?v=3ccdca45","hero":"../assets/status_icons/hero.png?v=dfc28b3e","atk-down":"../assets/status_icons/atk-down.png?v=2362ef89","def-down":"../assets/status_icons/def-down.png?v=57eed113","spd-down":"../assets/status_icons/spd-down.png?v=679b994f","crit-down":"../assets/status_icons/crit-down.png?v=ed58780e","critDmg-down":"../assets/status_icons/critDmg-down.png?v=f4ec4e62","acc-down":"../assets/status_icons/acc-down.png?v=e6624eb7","eva-down":"../assets/status_icons/eva-down.png?v=c7753ccd","leech-down":"../assets/status_icons/leech-down.png?v=8b35bf4f","all-down":"../assets/status_icons/all-down.png?v=8776468e"}};   // apply_sticon.py — {icon: {id: 그림}} (?v=내용 해시) — id 는 강화 · 상태 그림, <id>-down 은 약화 그림
+const STI_STAT = ["atk", "def", "spd", "crit", "critDmg", "acc", "eva", "leech", "all"];
+const sti0 = typeof battleStatusIcon === "function" ? battleStatusIcon : null;
+function stiKey(e, negative){
+  if(e.k === "mind") return "mind";
+  if(e.mir) return "mir";
+  if(e.taunt) return "taunt";
+  if(e.k === "s") return "def";
+  if(e.k === "dot") return "dot";
+  if(e.regen) return "heal";
+  let k = null;
+  if(e.allT) k = "all";
+  else if(e.stat && STI.icon[e.stat] && STI_STAT.indexOf(e.stat) >= 0) k = e.stat;
+  if(k) return negative && STI.icon[k + "-down"] ? k + "-down" : k;   // 약화 — 그 능력치의 약화 그림
+  return negative ? "debuff" : "buff";
+}
+function stiImg(src, cls){ return `<img class="${cls}" src="${src}" alt="" draggable="false" aria-hidden="true">`; }
+function stiIcon(effect){
+  const e = effect || {};
+  if(document.documentElement.classList.contains("sti-off") && sti0) return sti0(e);
+  if(e.hero) return `<button type="button" class="bf-effect positive hero sti" data-sti="hero" title="${esc(e.n)}" aria-label="${esc(e.n)}" data-effect-label="${esc(e.n)}">${stiImg(STI.icon.hero, "sti-sym")}</button>`;   // 영웅의 기상 — 이름만
+  const negative = e.k === "d" || e.k === "dot" || e.k === "mind";
+  const key = stiKey(e, negative);
+  const label = (e.k === "mind" ? _T("상태") : negative ? _T("디버프") : _T("버프")) + " · " + e.n;
+  return `<button type="button" class="bf-effect sti ${negative ? "negative" : "positive"}" data-sti="${key}" title="${esc(label)}" aria-label="${esc(label)}" data-effect-label="${esc(label)}">${stiImg(STI.icon[key] || STI.icon.buff, "sti-sym")}</button>`;
+}
+if(sti0) battleStatusIcon = stiIcon;   // 전투 화면 · 실험실 · 다시 보기가 모두 이 이름으로 부른다
+window.STICON = {art: STI, key: stiKey, icon: stiIcon, old: sti0, stat: STI_STAT};
+})();
+/* STICON_END */
 /* FONTSZ_START — 글자 크기 설정 (1026 목업 · apply_fontsz.py · mockups/font-size) ─ 사용자 1026 '폰트 크기 설정 한번 추가해볼까. 현재가 보통이면 지금보다 전체적으로 한 50% 정도 큰 폰트 사이즈로'
    (답: 읽는 글 위주 · 보통 · 크게 · 아주 크게 (100 · 125 · 150%) · 목업 먼저)
    · PREF.fontSize "normal" · "large" · "xlarge" → html[data-font-size] · --fszk 1.25 · 1.5 (보통이면 아무것도 붙이지 않는다 — 지금 그대로)
@@ -22328,8 +22427,8 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1026-1703";
-const BUILD_TS = 1793001816183;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
+const BUILD = "1027-0223";
+const BUILD_TS = 1793035437550;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
    시즌 문서는 명단만 얼릴 뿐, 전투는 각자의 브라우저가 같은 시드로 다시 돌려서 맞춘다.
@@ -30205,6 +30304,11 @@ function bfOrient(){ return townMode() ? "landscape" : "portrait"; }
 function bfTune(){ return (FIELD_LAB && FIELD_LAB.tune) || BATTLE_TUNE; }
 function bfSlotDefault(side, row, col){ return {x:24+col*26, y:(side==='A'?(row==='front'?50:66):(row==='front'?32:16))+col*2}; }
 function bfJobScale(job){ const v = (((bfTune().job)||{})[bfOrient()]||{})[job]; return v ? +v : 1; }
+/* 1027 — 이름표 · 상태(버프/디버프) 줄의 크기는 유닛 크기와 상관없이 모두 같게 (사용자 '대상의 스케일과 관계 없이 전부 통일') —
+   기준 BF_UI: 가로 전투 0.8 (성기사 · 신성 사제 · 마검사 — 학생 가운데 가장 큰 배율 · 예전 그들의 크기 그대로) · 세로 전투 1 (학생 대부분).
+   유닛마다 --uz = 기준 ÷ 직업 배율 → CSS 가 이름표 · 상태 줄을 zoom (마스터 · 몬스터 · 보스는 배율 1 이라 0.8 배로 줄고 · 0.65 ~ 0.75 학생은 조금 커진다) */
+const BF_UI = {landscape: .8, portrait: 1};
+function bfUiZoom(job){ return +((BF_UI[bfOrient()] || 1) / bfJobScale(job)).toFixed(4); }
 function bfSlotPos(side, row, col){
   const d = bfSlotDefault(side, row, col), o = (((bfTune().slot)||{})[bfOrient()]||{})[`${side}-${row}-${col}`];
   return o ? Object.assign({}, d, o) : d;
@@ -31084,7 +31188,7 @@ function tournamentLayoutApply(fk){
  const Q=tqTune(),head=modal.querySelector('.panel-h');let title=null;if(head){title=head.querySelector('h2');title.classList.add('tq-title');title.removeAttribute('style');title.dataset.tq='title';title.dataset.text=title.textContent;stage.append(title);head.remove();
   /* 1007 — 경기 이름: BATTLE START 가 도는 동안만 보인다 (물마루 · 검은 테두리 · CSS .tq-title). 자리 · 크기는 BATTLE_TUNE.quarter.title (글 가운데) */
   set(title,'position','absolute');set(title,'width','max-content');set(title,'height','auto');set(title,'right','auto');set(title,'bottom','auto');tqPlace(title,'title',Q.title);tqTitleSync(title);}
- let bg=stage.querySelector('.tq-map');if(!bg){bg=document.createElement('div');bg.className='tq-map';const im=document.createElement('img');im.src='../assets/battle-fields/quarter/'+TQ_MAPS[qk].src;bg.append(im);stage.prepend(bg);place(im,M,F);set(im,'transform-origin',(F.w/2-(M.x-F.x))+'px '+(F.h/2-(M.y-F.y))+'px');}   // 1007 — 줌 가운데 = 전투판 가운데 (카메라와 같은 점) · tqCamSync
+ let bg=stage.querySelector('.tq-map');if(!bg){bg=document.createElement('div');bg.className='tq-map';const im=document.createElement('img');im.src='../assets/battle-fields/quarter/'+(TQ_MAPS[qk].battleSrc||TQ_MAPS[qk].src);bg.append(im);stage.prepend(bg);place(im,M,F);set(im,'transform-origin',(F.w/2-(M.x-F.x))+'px '+(F.h/2-(M.y-F.y))+'px');}   // 1007 — 줌 가운데 = 전투판 가운데 (카메라와 같은 점) · tqCamSync
  {const mk=TQ_MAPS[qk];stage._tqMark={x:M.x-F.x+mk.mx*M.w/1536,y:M.y-F.y+mk.my*M.h/1024};}   // 1007 — 바닥 문장 자리 (판 px) · 클로즈업 가운데
  if(!stage.querySelector('.tq-frame')){const im=document.createElement('img');im.className='tq-frame';im.src='../assets/battle-fields/quarter/frame.webp?v=396708bb';stage.append(im);place(im,L.frame,F);}
  /* 1007 — 범례는 숨김 · 진영 칸은 진형(배치) 정보 없이 이름만 (CSS). 칸 뒤에 버튼 박스와 같은 나무판을 9칸으로 늘여 깐다 (.bf-school::before) —
@@ -31734,7 +31838,7 @@ function openBattle(res, opt, onDone){
       const heroOn = u.alive && u.fx.some(x=> x.hero);                                     // 1015 — 영웅의 기상 상태
       const rd = !!(DROP && dropAt && k === DROP.k);                                      // 1018 — 유물을 떨어뜨리는 마지막 상대 (시체가 사라지고 유물이 뿅)
       return `<div class="unit bf-unit team-${side} ${boss?'bf-boss':''} ${big?'bf-big':''} ${mobU?'bf-mob':''} ${u.alive?'':'dead'} ${act?'act':''} ${heroOn?'hr-buff':''}${rd?' rdrop':''}${ent ? ent.cls(uids[k]) : ''}"
-        style="left:${x}%;top:${y}%;z-index:${rd ? 140 : Math.round(y)};--us:${bfJobScale(n.job)}${rd ? `;--rd-out:${Math.round(RD_OUT - (performance.now() - dropAt))}ms` : ""}${ent ? ent.css(uids[k]) : ""}" data-slot="${soloBoss?'boss':`${side}-${row}-${col}`}" data-uid="${uids[k]}"${isMon ? ` data-mon="${esc(n.job)}"` : ""} tabindex="0"
+        style="left:${x}%;top:${y}%;z-index:${rd ? 140 : Math.round(y)};--us:${bfJobScale(n.job)};--uz:${bfUiZoom(n.job)}${rd ? `;--rd-out:${Math.round(RD_OUT - (performance.now() - dropAt))}ms` : ""}${ent ? ent.css(uids[k]) : ""}" data-slot="${soloBoss?'boss':`${side}-${row}-${col}`}" data-uid="${uids[k]}"${isMon ? ` data-mon="${esc(n.job)}"` : ""} tabindex="0"
         aria-label="${_L`${esc(n.name)} 체력 ${hideHp? "???" : `${Math.round(u.hp)} / ${u.maxHp}`}, 행동 ${Math.round(u.atb*100)}%, 필살기 ${Math.round(u.ult)}%`}"
         title="${_L`${esc(n.name)} · ${JOBS[n.job].name} · ${row==='front'?_T('전열'):_T('후열')} / 체력 ${hideHp? "???" : `${fmt(u.hp)} / ${fmt(u.maxHp)}`}${u.sh>0?_T(' · 보호막 ')+fmt(u.sh):''} / 행동 ${Math.round(u.atb*100)}% · ${esc(n.ult||ultName(n.job))} ${Math.round(u.ult)}%`}">
         ${popHtml}${fxc}${spr}${ultFX}${heroOn ? HR_SPARK : ""}${rd ? dropHtml() : ""}
@@ -33163,6 +33267,167 @@ function lkwFit(){
   }
 }
 /* LKWIN_END */
+/* MIXAA_START — 1027 믹셀 AA (게임 · apply_mixaa.py) ─ 사용자 '외각+안쪽 세기 75%로 맵도 AA킨 상태로 게임 적용 · 외각선 끔 · 믹셀 자체는 원본 유지'
+   (mockups/mixel 의 '원본' 기준 + AA 외곽+안쪽 · 세기 75% · 맵 AA · 외곽선 끔 그대로 — 셀 크기는 바꾸지 않는다). 전투 화면만.
+   · 학생 — 전투판(.bf-stage) 도트 캔버스: sprTick 이 sprCellBattle(ji, pi, m, f) 로 장을 받는다 → sprCellCv 장(옷 색을 바꾼 뒤) 에 aaCells
+     (외곽 + 안쪽 · 밝기 차 48 · 세기 .75) → 그림이 있는 칸만 잘라 둔다(__ox · __oy — sprTick 이 그 자리에 그린다 · 메모리 1/4). 처음 쓰는 장은 그 자리에서 ·
+     같은 학생(직업 · 옷 색)의 나머지 장은 쉬는 틈에 미리(warm). 반투명이 많은 장(마스터 · 마왕 효과 — 보이는 칸의 5% 넘게)은 그대로.
+   · 몬스터(대기 · 공격) · 쿼터뷰 맵 — tools/gen/patch/mixaa_assets.py 가 같은 aaCells 로 미리 가공한 그림(../assets/mon_img/aa · assets/battle-fields/quarter/aa)으로 —
+     몬스터는 MON_IMG 주소를 바꾸고(전투에서만 쓴다) · 맵은 TQ_MAPS[k].battleSrc (전투판만 — 락커룸 · 친선전 배경은 원래 그림). 맵은 원래 셀(1.5 px)로 찍고 안쪽 AA(밝기 차 24) · ×2.
+   · 학생 둘레 검은 외곽선(쿼터뷰 TOURNAMENT_LAYOUT.map.outline) 끔.
+   · window.__MIXAA_OFF 면 아무것도 안 한다 (mockups/mixel — 원본과 견주는 목업) */
+(() => {
+if(window.__MIXAA_OFF) return;
+const ART = {"mon":{"mon_bellcrab":{"a":"../assets/mon_img/aa/mon_bellcrab-attack.webp?v=7f66c17b","src":"../assets/mon_img/aa/mon_bellcrab-pixel.webp?v=2919154a"},"mon_blade":{"a":"../assets/mon_img/aa/mon_blade-attack.webp?v=bef6507a","src":"../assets/mon_img/aa/mon_blade-pixel.webp?v=95eef886"},"mon_brine":{"a":"../assets/mon_img/aa/mon_brine-attack.webp?v=5fc1a603","src":"../assets/mon_img/aa/mon_brine-pixel.webp?v=6527d664"},"mon_choir":{"a":"../assets/mon_img/aa/mon_choir-attack.webp?v=7367fbdc","src":"../assets/mon_img/aa/mon_choir-pixel.webp?v=4b6f522c"},"mon_clockcrow":{"a":"../assets/mon_img/aa/mon_clockcrow-attack.webp?v=de8d4cbe","src":"../assets/mon_img/aa/mon_clockcrow-pixel.webp?v=e2494eca"},"mon_diver":{"a":"../assets/mon_img/aa/mon_diver-attack.webp?v=1e85a14e","src":"../assets/mon_img/aa/mon_diver-pixel.webp?v=acf7a7e4"},"mon_dummy":{"a":"../assets/mon_img/aa/mon_dummy-attack.webp?v=44295a09","src":"../assets/mon_img/aa/mon_dummy-pixel.webp?v=792d6b0e"},"mon_foghound":{"a":"../assets/mon_img/aa/mon_foghound-attack.webp?v=0db75669","src":"../assets/mon_img/aa/mon_foghound-pixel.webp?v=acf68ea0"},"mon_gargoyle":{"a":"../assets/mon_img/aa/mon_gargoyle-attack.webp?v=ef73c458","src":"../assets/mon_img/aa/mon_gargoyle-pixel.webp?v=0c89d3bf"},"mon_guardian":{"a":"../assets/mon_img/aa/mon_guardian-attack.webp?v=546177a3","src":"../assets/mon_img/aa/mon_guardian-pixel.webp?v=883047f3"},"mon_jelly":{"a":"../assets/mon_img/aa/mon_jelly-attack.webp?v=dc86091e","src":"../assets/mon_img/aa/mon_jelly-pixel.webp?v=baaffa9b"},"mon_lantern":{"a":"../assets/mon_img/aa/mon_lantern-attack.webp?v=a71fbb26","src":"../assets/mon_img/aa/mon_lantern-pixel.webp?v=6e00a73c"},"mon_muscle":{"a":"../assets/mon_img/aa/mon_muscle-attack.webp?v=660f2901","src":"../assets/mon_img/aa/mon_muscle-pixel.webp?v=4feaddf7"},"mon_oath":{"a":"../assets/mon_img/aa/mon_oath-attack.webp?v=c4f8591a","src":"../assets/mon_img/aa/mon_oath-pixel.webp?v=2366738c"},"mon_saltcrab":{"a":"../assets/mon_img/aa/mon_saltcrab-attack.webp?v=ddd593e7","src":"../assets/mon_img/aa/mon_saltcrab-pixel.webp?v=7a989248"},"mon_scribe":{"a":"../assets/mon_img/aa/mon_scribe-attack.webp?v=6e993436","src":"../assets/mon_img/aa/mon_scribe-pixel.webp?v=0bc296ce"},"mon_sentry":{"a":"../assets/mon_img/aa/mon_sentry-attack.webp?v=c9594b00","src":"../assets/mon_img/aa/mon_sentry-pixel.webp?v=3eaa9c07"},"mon_target":{"a":"../assets/mon_img/aa/mon_target-attack.webp?v=836ee838","src":"../assets/mon_img/aa/mon_target-pixel.webp?v=730c9693"},"mon_wood":{"a":"../assets/mon_img/aa/mon_wood-attack.webp?v=e771fac5","src":"../assets/mon_img/aa/mon_wood-pixel.webp?v=3ce51a23"},"mon_wraith":{"a":"../assets/mon_img/aa/mon_wraith-attack.webp?v=82bae4e0","src":"../assets/mon_img/aa/mon_wraith-pixel.webp?v=c84a8173"}},"map":{"academy-summer":"../assets/battle-fields/quarter/aa/academy.webp?v=d1e2e639","brine":"../assets/battle-fields/quarter/aa/brine.webp?v=2d2a8afd","city":"../assets/battle-fields/quarter/aa/city.webp?v=d79dc5d0","academy-fall":"../assets/battle-fields/quarter/aa/fall.webp?v=8bbcfc08","final":"../assets/battle-fields/quarter/aa/final.webp?v=8ac79542","gargoyle":"../assets/battle-fields/quarter/aa/gargoyle.webp?v=35b383d7","guardian":"../assets/battle-fields/quarter/aa/guardian.webp?v=f7b2159d","regional":"../assets/battle-fields/quarter/aa/regional.webp?v=9efb723e","academy-spring":"../assets/battle-fields/quarter/aa/spring.webp?v=4e6effe5","academy-winter":"../assets/battle-fields/quarter/aa/winter.webp?v=90a47918","wraith":"../assets/battle-fields/quarter/aa/wraith.webp?v=6179e67e"}};   // apply_mixaa.py — {mon: {job: {src, a}}, map: {key: 주소}} (?v= 내용 해시)
+/* 믹셀 AA 핵심 (1027) — mockups/mixel/src/mock_panel.js 의 aaCells 와 같은 것 (목업에서 고치면 여기도 · 게임 블록 MIXAA · tools/gen/patch/mixaa_assets.py 가 같이 쓴다)
+   d: RGBA (1 px = 1 셀) · w · h · opt {outer(기본 true), inner, T, k, span, minU, maxW} → 새 Uint8ClampedArray (.n = 바뀐 셀 수) */
+/* ── AA (1027) — 셀 격자(1 px = 1 셀) d 에서 계단 모서리에 중간색 ──
+   경계: 이웃 두 셀이 불투명 ↔ 투명(외곽 — opt.outer) · 또는 둘 다 불투명이고 밝기 차 T 이상(안쪽 — opt.inner) — 두 종류는 따로 찾는다(pass).
+   가로 경계가 이어진 한 조각(길이 n — 위 · 아래 칸 짝이 바뀌는 자리에서 끊는다)의 양 끝에서 경계가 위 · 아래(세로 경계면 왼 · 오른)로 한 칸 꺾이면 계단 —
+   꺾인 칸 가운데(±0.5)에서 조각 쪽으로 경계선을 곧게 이어(양 끝이 다 꺾이면 반씩 · 끝에서 SPAN 셀까지) 셀마다 그 선이 넘어온 넓이만큼 건너편 색을 섞는다
+   (미리 곱한 알파 — 투명 칸이 불투명 이웃을 섞으면 반투명 그 색 · 불투명 칸이 투명을 섞으면 알파만 준다). 양 끝이 같은 쪽으로 꺾인 짧은 조각(MINU 셀 미만 — 혹 · 홈)은 그대로.
+   한 셀 두께 선(맵 타일 줄눈 등)은 꺾인 자리 양쪽에 다 경계가 생겨 — 경계가 실제로 이어지는 쪽으로 정한다 (1027 넷째 — 예전에는 선이 통째로 옅어졌다).
+   한 셀에 섞이는 양은 maxW(0.5) 까지 · 한 셀 두께(선 · 점)는 그 반 · k 는 세기 */
+function aaCells(d, w, h, opt){
+  const N = w * h, inner = !!opt.inner, outer = opt.outer !== false, T = opt.T == null ? 48 : opt.T, k = opt.k == null ? 1 : opt.k, maxW = opt.maxW == null ? .5 : opt.maxW;
+  const SPAN = opt.span == null ? 4 : opt.span, MINU = opt.minU == null ? 3 : opt.minU, SUB = 8;
+  const op = new Uint8Array(N), L = new Float32Array(N);
+  for(let i = 0, j = 0; i < N; i++, j += 4){ op[i] = d[j + 3] >= 128 ? 1 : 0; L[i] = .299 * d[j] + .587 * d[j + 1] + .114 * d[j + 2]; }
+  const WS = new Float32Array(N), AC = new Float32Array(N * 4);
+  function add(p, q, wt){   // p 를 q 쪽으로 wt 만큼
+    if(wt <= 1e-4) return;
+    WS[p] += wt;
+    const a = d[q * 4 + 3] / 255, o = p * 4, s = q * 4;
+    AC[o] += wt * d[s] * a; AC[o + 1] += wt * d[s + 1] * a; AC[o + 2] += wt * d[s + 2] * a; AC[o + 3] += wt * a;
+  }
+  function run(a, b, sL, sR, cb){   // 조각 a..b · 양 끝 꺾임 sL · sR (−1 · +1 · 0) → cb(칸, 앞쪽으로 넘어온 넓이, 뒤쪽으로 넘어온 넓이)
+    const n = b - a + 1;
+    if(!sL && !sR) return;
+    if(sL && sR && sL === sR && n < MINU) return;
+    const DL = sL ? Math.min(SPAN, sR ? n / 2 : n) : 0, DR = sR ? Math.min(SPAN, sL ? n / 2 : n) : 0;
+    const hAt = X => (DL ? sL * .5 * Math.max(0, 1 - X / DL) : 0) + (DR ? sR * .5 * Math.max(0, 1 - (n - X) / DR) : 0);
+    const lo = DL ? 0 : n - DR, hi = DR ? n : DL;
+    for(let t = Math.max(0, Math.floor(lo)); t < Math.min(n, Math.ceil(hi)); t++){
+      let neg = 0, pos = 0;
+      for(let s = 0; s < SUB; s++){ const hv = hAt(t + (s + .5) / SUB); if(hv < 0) neg -= hv; else pos += hv; }
+      cb(a + t, neg / SUB, pos / SUB);
+    }
+  }
+  const THIN = new Uint8Array(N);   // 한 셀 두께(위 · 아래 또는 왼 · 오른 양쪽이 다 경계 — 선 · 점) — 반만 섞는다 (통째로 옅어지지 않게)
+  function pass(edge){
+    const H = new Uint8Array(N), V = new Uint8Array(N);   // H[i] — (x,y)·(x,y+1) 사이 · V[i] — (x,y)·(x+1,y) 사이
+    for(let y = 0; y < h - 1; y++) for(let x = 0, i = y * w; x < w; x++, i++) H[i] = edge(i, i + w) ? 1 : 0;
+    for(let y = 0; y < h; y++) for(let x = 0, i = y * w; x < w - 1; x++, i++) V[i] = edge(i, i + 1) ? 1 : 0;
+    for(let y = 0; y < h; y++) for(let x = 0, i = y * w; x < w; x++, i++)
+      if((y > 0 && y < h - 1 && H[i - w] && H[i]) || (x > 0 && x < w - 1 && V[i - 1] && V[i])) THIN[i] = 1;
+    /* 가로 조각(윗줄 y · 아랫줄 y+1)의 끝 바깥 열 c (조각 쪽 열 c0) — 세로 경계가 윗줄에만 있으면 위(−1) · 아랫줄에만 있으면 아래(+1) ·
+       둘 다면(한 셀 두께 선) c 열에서 경계가 한 줄 위로 이어지면 위 · 한 줄 아래로 이어지면 아래 */
+    const stepH = (y, c, c0) => {
+      if(c < 0 || c >= w) return 0;
+      const vx = Math.min(c, c0);
+      let up = V[y * w + vx], dn = V[(y + 1) * w + vx];
+      if(up && dn){ const cu = y > 0 && H[(y - 1) * w + c], cd = y + 2 < h && H[(y + 1) * w + c]; up = cu && !cd; dn = cd && !cu; }
+      return up ? -1 : dn ? 1 : 0;
+    };
+    const stepV = (x, r, r0) => {   // 세로 조각(왼칸 x · 오른칸 x+1)의 끝 바깥 줄 r — 같은 방법으로 왼(−1) · 오른(+1)
+      if(r < 0 || r >= h) return 0;
+      const hy = Math.min(r, r0);
+      let lf = H[hy * w + x], rt = H[hy * w + x + 1];
+      if(lf && rt){ const cl = x > 0 && V[r * w + x - 1], cr = x + 2 < w && V[r * w + x + 1]; lf = cl && !cr; rt = cr && !cl; }
+      return lf ? -1 : rt ? 1 : 0;
+    };
+    for(let y = 0; y < h - 1; y++){
+      for(let x = 0; x < w;){
+        if(!H[y * w + x]){ x++; continue; }
+        const a = x; x++;
+        while(x < w && H[y * w + x] && !V[y * w + x - 1] && !V[(y + 1) * w + x - 1]) x++;   // 위 · 아래 칸 짝이 바뀌면 끊는다
+        const b = x - 1;
+        run(a, b, stepH(y, a - 1, a), stepH(y, b + 1, b), (xx, up, dn) => { const t = y * w + xx; add(t, t + w, k * up); add(t + w, t, k * dn); });
+      }
+    }
+    for(let x = 0; x < w - 1; x++){
+      for(let y = 0; y < h;){
+        if(!V[y * w + x]){ y++; continue; }
+        const a = y; y++;
+        while(y < h && V[y * w + x] && !H[(y - 1) * w + x] && !H[(y - 1) * w + x + 1]) y++;
+        const b = y - 1;
+        run(a, b, stepV(x, a - 1, a), stepV(x, b + 1, b), (yy, lf, rt) => { const t = yy * w + x; add(t, t + 1, k * lf); add(t + 1, t, k * rt); });
+      }
+    }
+  }
+  if(outer) pass((i, j) => op[i] !== op[j]);                                       // 외곽 — 불투명 ↔ 투명
+  if(inner) pass((i, j) => op[i] && op[j] && Math.abs(L[i] - L[j]) >= T);          // 안쪽 — 둘 다 불투명 · 밝기 차 T 이상
+  const out = new Uint8ClampedArray(d);
+  let n = 0;
+  for(let p = 0; p < N; p++){
+    const ws = WS[p]; if(!ws) continue;
+    const W = Math.min(ws, THIN[p] ? maxW / 2 : maxW), sc = W / ws, o = p * 4, a0 = d[o + 3] / 255, A = a0 * (1 - W) + AC[o + 3] * sc;
+    if(A <= 1e-4){ out[o + 3] = 0; continue; }
+    for(let c = 0; c < 3; c++) out[o + c] = (d[o + c] * a0 * (1 - W) + AC[o + c] * sc) / A;
+    out[o + 3] = Math.round(A * 255); n++;
+  }
+  out.n = n;   // 바뀐 셀 수
+  return out;
+}
+const OPT = {inner: true, T: 48, k: .75, span: 4, minU: 3, maxW: .5};   // mixaa_assets.py SPRITE 와 같게
+Object.keys(ART.mon).forEach(j => { const m = MON_IMG[j], v = ART.mon[j]; if(!m) return; if(v.src) m.src = v.src; if(v.a && m.a) m.a.src = v.a; });
+Object.keys(ART.map).forEach(k => { if(TQ_MAPS[k]) TQ_MAPS[k].battleSrc = ART.map[k].replace(/^.*battle-fields\/quarter\//, ""); });
+try{ TOURNAMENT_LAYOUT.map.outline.enabled = false; }catch(e){}
+const CACHE = new Map(), CAP = 420, Q = [], WARM = new Set();
+let busy = false;
+function make(base){
+  const W = base.width, H = base.height, src = base.getContext("2d", {willReadFrequently: true}).getImageData(0, 0, W, H).data;
+  let x0 = W, y0 = H, x1 = -1, y1 = -1, vis = 0, part = 0;
+  for(let y = 0, i = 3; y < H; y++) for(let x = 0; x < W; x++, i += 4){
+    const a = src[i]; if(!a) continue;
+    vis++; if(a < 255) part++;
+    if(x < x0) x0 = x; if(x > x1) x1 = x; if(y < y0) y0 = y; if(y > y1) y1 = y;
+  }
+  if(x1 < 0 || part > vis * .05) return base;   // 빈 장 · 반투명이 많은 장(효과) — 그대로
+  x0 = Math.max(0, x0 - 1); y0 = Math.max(0, y0 - 1); x1 = Math.min(W - 1, x1 + 1); y1 = Math.min(H - 1, y1 + 1);   // AA 는 바깥 한 칸에도 반투명을 놓는다
+  const w = x1 - x0 + 1, h = y1 - y0 + 1, d = new Uint8ClampedArray(w * h * 4);
+  for(let y = 0; y < h; y++) d.set(src.subarray(((y + y0) * W + x0) * 4, ((y + y0) * W + x1 + 1) * 4), y * w * 4);
+  const out = aaCells(d, w, h, OPT), c = document.createElement("canvas");
+  c.width = w; c.height = h; c.getContext("2d").putImageData(new ImageData(out, w, h), 0, 0);
+  c.__ox = x0; c.__oy = y0;
+  return c;
+}
+function put(key, c){ CACHE.set(key, c); if(CACHE.size > CAP) CACHE.delete(CACHE.keys().next().value); }
+function cell(ji, pi, m, f){
+  const key = ji + "|" + pi + "|" + m + "|" + f;
+  let c = CACHE.get(key);
+  if(c){ CACHE.delete(key); CACHE.set(key, c); return c; }   // 최근에 쓴 것을 뒤로
+  const base = sprCellCv(ji, pi, m, f);
+  if(!base) return null;
+  c = make(base); put(key, c); warm(ji, pi);
+  return c;
+}
+/* 같은 학생의 다른 장 — 쉬는 틈에 6ms 씩 (공격 · 맞음 장이 처음 나올 때 멈칫하지 않게) */
+function warm(ji, pi){
+  const wk = ji + "|" + pi; if(WARM.has(wk)) return; WARM.add(wk);
+  ((SPR_META[SPR_KEYS[ji]]) || []).forEach((fr, m) => (fr || []).forEach((_, f) => Q.push([ji, pi, m, f])));
+  pump();
+}
+function pump(){
+  if(busy || !Q.length) return;
+  busy = true;
+  const go = () => {
+    busy = false;
+    const t0 = performance.now();
+    while(Q.length && performance.now() - t0 < 6){
+      const [ji, pi, m, f] = Q.shift(), key = ji + "|" + pi + "|" + m + "|" + f;
+      if(CACHE.has(key)) continue;
+      const base = sprCellCv(ji, pi, m, f);
+      if(base) put(key, make(base));
+    }
+    pump();
+  };
+  if(window.requestIdleCallback) requestIdleCallback(go, {timeout: 300}); else setTimeout(go, 30);
+}
+sprCellBattle = cell;
+window.MIXAA = {art: ART, opt: OPT, cache: CACHE, aaCells, make};
+})();
+/* MIXAA_END */
 /* FSTUT_START — 첫 시간표 튜토리얼 (1022 · apply_fstut.py) ─ 초반 스토리 튜토리얼 01 '첫 번째 시간표'. mockups/first-schedule 목업 그대로
    (대본 scenario-01-schedule-draft.md 01 ~ 31 · 사용자가 고친 줄 08 '첫 날인데' · 18 앞 '그 안경은 어디서…… 아니,' 뺌).
    · 새 시나리오를 열면(newScenarioStart) 이것이 시작한다 — 예전 운영 안내(1 · 3 · 4장)는 처음에 띄우지 않고 운영 안내 목록에만 (1022 사용자).
