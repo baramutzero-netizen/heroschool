@@ -5659,6 +5659,50 @@ html body #app>.topbar nav#navm .navm-grid button .badge.l{left:2px;right:auto}
 #view .fl-nbtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:0 0 12px}
 #view .fl-nbtn svg{display:block;flex:none;width:18px;height:14px;shape-rendering:crispEdges}
 /* FLETTER_CSS_END */
+/* FFOP_CSS_START — 새 게임 첫 장면 '왕국력 231년 가을 · 학원제 본선 결승' (1026 목업 · apply_ffop.py) ─ 대화창은 오프닝의 .op-talk 그대로 (몸에 붙여 position:fixed) */
+.ffop-black{position:fixed;inset:0;z-index:100;background:#000;color:#f3ede4;display:flex;align-items:center;justify-content:center;user-select:none;-webkit-user-select:none;animation:opIn .45s ease both;cursor:pointer}
+.ffop-black.fin{cursor:default;animation:none}
+.ffop-cap{margin:0;padding:0 24px;text-align:center;font-family:"Gowun Batang","Nanum Myeongjo",serif;font-weight:700;font-size:clamp(22px,3.4vw,38px);letter-spacing:.06em;line-height:1.4;opacity:0;transform:translateY(6px);transition:opacity .9s ease,transform .9s ease;word-break:keep-all}
+.ffop-cap.on{opacity:1;transform:none}
+.ffop-cap.out{opacity:0;transition-duration:.55s}
+html[data-font="pixel"] .ffop-cap{font-synthesis:weight}
+.ffop-skip{position:fixed;z-index:130}
+/* 전투 화면 — 장면 동안 재생 · 배속 · 기록 단추와 장 번호를 숨긴다 (대사는 화면을 누르거나 Enter · Space 로 넘긴다) */
+html.ffop-on #modalRoot .modal[data-bt] .btbar{display:none!important}   /* 대회 쿼터뷰(.tournament-quarter)는 display:block!important 로 띄운다 */
+html.ffop-on #modalRoot .modal[data-bt] .panel-h .hint{visibility:hidden}
+html.ffop-on #modalRoot .modal[data-bt]{cursor:pointer}
+/* 대화창 — 오프닝 대화창(.op-talk — 1026 OPTALK: 다른 시나리오와 같은 대화창 · 얼굴은 창 위 오른쪽)을 전투 화면 위 아래쪽에 · 마스터 생각은 이름 없는 생각 창(.fst-think 모양) */
+.op-talk.ffop-talk{position:fixed;z-index:96;text-align:left;cursor:pointer;animation:ffTalkIn .2s ease-out both}
+.op-talk.ffop-talk[hidden]{display:none}
+.op-talk.ffop-talk.think{background:#2a1418;border-color:var(--fst-edge);box-shadow:0 0 0 2px var(--fst-dark),3px 4px 0 2px rgba(0,0,0,.4)}
+.op-talk.ffop-talk.think::before{content:"";position:absolute;inset:5px;border:1px dashed rgba(185,143,132,.53);pointer-events:none}
+.op-talk.ffop-talk.think .op-name{display:none}
+.op-talk.ffop-talk.think .op-text{color:#e2c2b6}
+@keyframes ffTalkIn{from{opacity:0;transform:translate(-50%,8px)}to{opacity:1;transform:translateX(-50%)}}
+/* 말풍선 — 행동 뒤 한마디 */
+.hr-say .bf-speech.ffop-say{white-space:normal;max-width:260px}
+/* 마스터 컷인 — 화면 가로 띠 · 빌린 직업 기술 그림이 차례로 · 이름 · 한 줄 · 직업 이름 */
+.ffop-cut{position:fixed;inset:0;z-index:97;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 50%,#ffffff12,#0000 60%),#05030acc;cursor:pointer;animation:ffCutIn .22s ease-out both}
+.ffop-cut.out{animation:ffCutOut .3s ease-in both}
+.ffc-band{position:relative;width:100%;padding:22px 16px 26px;box-sizing:border-box;text-align:center;color:#fff6e2;
+  background:linear-gradient(90deg,#0000,#2b1640ee 18%,#3a1d52f2 50%,#2b1640ee 82%,#0000);border-top:2px solid #e9c46a99;border-bottom:2px solid #e9c46a99;box-shadow:0 0 40px #b07cff40;
+  animation:ffBand .5s cubic-bezier(.2,.9,.3,1) both}
+.ffc-icons{display:flex;justify-content:center;gap:10px;margin-bottom:10px;min-height:48px}
+.ffc-icons img{width:48px;height:48px;image-rendering:pixelated;opacity:0;transform:translateY(10px) scale(.7);animation:ffIcon .32s ease-out both;animation-delay:calc(.12s + var(--i) * .16s);filter:drop-shadow(0 0 6px #ffd98a88)}
+.ffc-name{font-size:clamp(26px,4.4vw,46px);font-weight:700;letter-spacing:.18em;text-shadow:0 0 14px #ffd27a,0 2px 0 #000;opacity:0;animation:ffTxt .4s ease-out 1.05s both}
+.ffc-lead{margin-top:4px;font-size:clamp(14px,1.8vw,18px);letter-spacing:.12em;color:#ffe3a3;opacity:0;animation:ffTxt .4s ease-out 1.3s both}
+.ffc-jobs{margin-top:8px;font-size:clamp(11px,1.3vw,13px);letter-spacing:.06em;color:#cdbdf2;opacity:0;animation:ffTxt .4s ease-out 1.5s both;word-break:keep-all}
+@media (max-width:600px){ .ffc-icons{gap:6px;min-height:36px} .ffc-icons img{width:36px;height:36px} }
+@keyframes ffCutIn{from{opacity:0}to{opacity:1}}
+@keyframes ffCutOut{from{opacity:1}to{opacity:0}}
+@keyframes ffBand{from{transform:scaleY(0);opacity:.2}to{transform:none;opacity:1}}
+@keyframes ffIcon{to{opacity:1;transform:none}}
+@keyframes ffTxt{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .ffc-band,.ffc-icons img,.ffc-name,.ffc-lead,.ffc-jobs,.op-talk.ffop-talk,.ffop-cut{animation-duration:.01s!important;animation-delay:0s!important}
+  .ffop-cap{transition-duration:.2s}
+}
+/* FFOP_CSS_END */
 </style>
 
 <link rel="stylesheet" href="assets/title-art/title-screen.css?v=7">
@@ -5742,6 +5786,7 @@ html body #app>.topbar nav#navm .navm-grid button .badge.l{left:2px;right:auto}
 <script src="assets/counsel-cookie/ninja.png.js?v=a4ea53c5"></script>
 <script src="assets/counsel-cookie/sword.png.js?v=19f6d36f"></script>
 <script src="assets/counsel-cookie/paladin.png.js?v=e61e9c94"></script>
+<script src="assets/spr_x_img/master.png.js?v=1cbc469b"></script>
 <!-- ASSET_SCRIPTS_END -->
 <script>
 /* ══════ 도트 스프라이트 ══════ */
@@ -19327,6 +19372,471 @@ if(document.readyState === "loading") document.addEventListener("DOMContentLoade
 window.PCAPP = {resume: pcResume, row: pcRow, titleRow: pcTitleRow, bind: pcBind, title: pcTitle, set: pcSet, paint: pcPaint, state: PC, init: pcInit};
 })();
 /* PCAPP_END */
+/* FFOP_START — 새 게임 첫 장면 '왕국력 231년 가을 · 학원제 본선 결승' (1026 목업 · apply_ffop.py · mockups/festival-final) ─ 대본 mockups/festival-final/scenario-00a-festival-final-draft.md
+   사용자 1026: '뉴게임 누르면 231년 가을 학원제 본선 결승 — 주인공은 마스터하고 암흑 사제 팀, 팔라딘하고 마법사 팀이 대결. 마스터는 스킬이 여러 가지 있고 밀리다가 암흑 사제가 다운되고
+   마스터의 능력으로 상대 팀을 이기면서 결승을 우승' → 답: 새 게임 누르면 바로 · 보는 연출 전투 · 마스터 그림은 새로(사용자 원화 대기 · 공격 두 장 — 마물처럼 그림 두 장 · mockups/festival-final/src/master_sprite.py) · 여러 직업 스킬을 빌려 쓰기.
+   · 흐름 — NEW GAME → 검은 화면 자막 두 장(관중 소리) → 전투 화면(본선 결승 필드 · 결승곡 · BATTLE START · 걸어 나오기) → 대본대로 만든 전투 기록을 게임의 전투 화면(openBattle)이 그대로 재생 →
+     끝 장면(VICTORY) 위에 뒷이야기 → 검은 화면 → 지금 오프닝(openingPlay — 236년 마왕전부터 그대로).
+   · 전투 기록 — 판정(runBattle)을 쓰지 않고 FF_SCRIPT 의 행동을 차례로 장(frame)으로 만든다 (runBattle 의 장과 같은 모양 — 체력 · 보호막 · 필살 · 행동 게이지 · 상태 · 머리 위 숫자 · 기술 외침).
+     마스터는 다른 직업의 기술 id 를 그대로 써서 스타일리시 연출 · 효과음 · 맞는 쪽 이펙트가 그 직업 것으로 나온다 (시전 쪽 이펙트도 — 행동 앞에 STYLISH_SKILL_FX.casters.master 를 그 직업 것으로).
+   · 멈춤 — 장에 붙은 ff(대사 묶음)는 그 장을 재생하기 전에 전투를 세우고 차례로 보인다 (apply_ffop 의 고리 — 스타일리시 camLoop · 심플 step):
+     cap  실황 · 해설 자막 띠 (TCOM 의 띠 그대로 · v 가 있으면 그 대사의 일본어 음성 · 글 — 없으면 글만 · 글자 수만큼 기다린다)
+     say  유닛 머리 위 말풍선 (hrSay) · talk 대화창(오프닝의 .op-talk — 얼굴 · 이름 · 한 글자씩 · 누르면 넘김) · cut 마스터 컷인(빌린 직업들이 지나가고 기술 이름) · wait
+   · 관중 — TCOM 의 관중만 (opt.tcom "ffop" — 중계 등급은 없어 자동 실황은 나오지 않는다 · 크기 본선 결승 .95). 자막 띠 자리도 TCOM 이 잡는다.
+   · 화면 — 재생 · 배속 · 건너뛰기 단추는 숨긴다 (배속은 장면 동안 ×1). 오른쪽 위 '건너뛰기 ▸' — 언제든 지금 오프닝으로.
+   · 설정 (사용자 1026) — 회귀 전의 삶. 아버지는 건강하게 학원을 운영하고, 마스터는 다른 엘리트 학원(이름은 무작위)에서 용사 코스를 밟는다 · 230년 광역 대회 우승.
+     암흑 사제는 마스터의 1년 후배 · 같은 팀(훗날 마왕 — 마스터의 재능에 자존감이 무너져 힘을 얻으려 마왕이 된다) · 팔라딘 · 마법사는 아버지 학원의 제자 — 아버지 학원의 이름은 학원 이름 창의 첫 이름(같은 간판을 다시 건다 — FFOP.acadName · apply_ffop 고리).
+     231년 결승에서 마스터가 우승 → 236년 마왕 침공 → 마스터가 마왕을 베는 순간 망설이고 → 모두 시공에 휩쓸려 230년의 몸으로 (기억은 봉인 · 마왕만 기억을 가졌다).
+     그래서 암흑 사제는 마스터를 '선배', 팔라딘은 '선배'(마스터 — 아버지 — 의 아드님)라 부르고, 중계의 '마스터 선수'는 여러 직업을 다 쓰는 데서 붙은 별명이다 (236년 마왕의 '과연 선배.... 아니, ‘마스터’라 불릴 만한').
+   · 3 대 3 (사용자 1026 '두 진영에 한 명씩 더 — 대사는 없이') — 왕립 쪽 궁수 · 아버지 학원 쪽 신성 사제 (이름은 무작위 · 진형 쐐기진).
+   · 이름 — 암흑 사제 · 팔라딘 · 마법사는 장면을 열 때 뽑고 끝나면 개교 멤버에게 넘긴다 (같은 사람 — 회귀 뒤의 개교 멤버) — 오프닝의 팔라딘 · 마법사(FFOP.takeName — apply_ffop 고리) · 프롤로그의 암흑 사제(UI.openDp).
+   · 세이브 — 없다 (S 를 건드리지 않는다). 마스터 직업(JOBS.master)은 장면 동안만 있다.
+   · 자동화(navigator.webdriver)에서는 하지 않는다 (예전 새 게임 그대로) — 시험은 window.__ffopForce = true. 꺼 두려면 window.__ffopOff = true. */
+(function(){
+const FF_T = {
+  skip: "건너뛰기 ▸", master: "마스터", plate: "‘마스터’", think: "마스터 (생각)",   // plate — 이름표 · 유닛 이름 (1026 다섯째 사용자 '처음 이름표를 마스터에서 ‘마스터’로' — 별명)
+  cap1: "왕국력 231년, 가을.", cap2: "학원제 본선 — 결승",
+  head: "왕국력 231년 가을 · 학원제 본선 결승", capEnd: "그리고, 5년 뒤.",
+  teamA: () => FF.acad.A, teamB: () => FF.acad.B,                                   // 학원 이름 — A 엘리트 학원(무작위) · B 아버지 학원(학원 이름 창의 첫 이름 — 회귀 뒤 망해 간판이 내려갔다가 다시 걸린다) · 대사의 {A} · {B}
+  done: "계속", cutLead: "터득한 건, 전부 쓴다", cutJobs: "검투사 · 궁수 · 신성 사제 · 암살자 · 시마도사 · 마법검사"
+};
+/* 유닛 — A 편(왼쪽) 마스터 · 암흑 사제 / B 편 팔라딘 · 마법사. pers 는 기술 외침 말투 (battleCallout) */
+const FF_UNITS = [
+  {uid: "A0", side: "A", job: "master", key: "master", row: "front", lv: 31, hp: 2400, pers: "stone", ult: "천검 난무"},
+  {uid: "A1", side: "A", job: "darkpriest", key: "dp", row: "back", lv: 30, hp: 1500, pers: "genius", ult: "어둠의 성찬"},
+  {uid: "A2", side: "A", job: "archer", key: "ar", row: "back", lv: 29, hp: 1000, pers: "plain", ult: "유성 화살"},           // 대사 없음
+  {uid: "B0", side: "B", job: "paladin", key: "pal", row: "front", lv: 31, hp: 2600, pers: "hot", ult: "성역 선포"},
+  {uid: "B1", side: "B", job: "wizard", key: "wiz", row: "back", lv: 30, hp: 1450, pers: "plain", ult: "중력 반전"},
+  {uid: "B2", side: "B", job: "priest", key: "pr", row: "back", lv: 29, hp: 1250, pers: "plain", ult: "부활의 기도"}           // 대사 없음
+];
+const FF_FROM = {sword: "검투사", archer: "궁수", priest: "신성 사제", rogue: "암살자", timemage: "시마도사", spellsword: "마법검사"};
+SPR_X_IMG.master = HS_A["spr_x_img/master.png"];   // 마스터 시트 (data: — 빌드(split_assets)가 학생 시트처럼 HS_A 스크립트로 뺀다: 이 줄 머리가 SPR_X_IMG 라야 file:// 에서도 getImageData 가 막히지 않는다)
+const FF_SPR = {"meta":[[{"rect":[0,0,256,256],"duration":180},{"rect":[256,0,256,256],"duration":180},{"rect":[512,0,256,256],"duration":180},{"rect":[768,0,256,256],"duration":180}],[{"rect":[0,256,256,256],"duration":100},{"rect":[256,256,256,256],"duration":100},{"rect":[512,256,256,256],"duration":100},{"rect":[768,256,256,256],"duration":100}],[{"rect":[0,512,256,256],"duration":100},{"rect":[256,512,256,256],"duration":100},{"rect":[512,512,256,256],"duration":100},{"rect":[768,512,256,256],"duration":100}],[{"rect":[0,0,256,256],"duration":180},{"rect":[256,0,256,256],"duration":180},{"rect":[512,0,256,256],"duration":180},{"rect":[768,0,256,256],"duration":180}],[{"rect":[0,0,256,256],"duration":180},{"rect":[256,0,256,256],"duration":180},{"rect":[512,0,256,256],"duration":180},{"rect":[768,0,256,256],"duration":180}],[{"rect":[0,0,256,256],"duration":220},{"rect":[256,0,256,256],"duration":220},{"rect":[512,0,256,256],"duration":220},{"rect":[768,0,256,256],"duration":220}],[{"rect":[0,0,256,256],"duration":200},{"rect":[256,0,256,256],"duration":200},{"rect":[512,0,256,256],"duration":200},{"rect":[768,0,256,256],"duration":200}],[{"rect":[0,0,256,256],"duration":220},{"rect":[256,0,256,256],"duration":220},{"rect":[512,0,256,256],"duration":220},{"rect":[768,0,256,256],"duration":220}],[{"rect":[0,0,256,256],"duration":180},{"rect":[256,0,256,256],"duration":180},{"rect":[512,0,256,256],"duration":180},{"rect":[768,0,256,256],"duration":180}],[{"rect":[0,0,256,256],"duration":400},{"rect":[256,0,256,256],"duration":400},{"rect":[512,0,256,256],"duration":400},{"rect":[768,0,256,256],"duration":400}],[{"rect":[0,0,256,256],"duration":300},{"rect":[256,0,256,256],"duration":300},{"rect":[512,0,256,256],"duration":300},{"rect":[768,0,256,256],"duration":300}]]};   // apply_ffop.py — 마스터 전투 도트 v2 {src: 시트(4 × 11 · 칸 256 — 학생 도트와 같은 모양), meta: SPR_META 모양} (1026 둘째 — 사용자 tools/master-battle-v2-remake: 숨쉬기 네 장 · 공격 한 장 · 무지갯빛 검풍)
+/* 대본 — 차례대로. {c: [...]} 는 다음 행동 앞에 멈추고 보일 것 · 행동은 a(누가) · sk(기술 id — 마스터는 다른 직업 것 · from 그 직업) ·
+   hit [[누구, 피해, "crit"?]] · sh [[누구, 보호막]] · heal [[누구, 회복]] · miss [누구] · st [[누구, 상태 이름, "b"|"d", taunt?]] · ult 필살기 · shout 외침 글 바꾸기 · dot [[누구, 피해]](차례 사이 지속 피해) ·
+   hero [누구] 기운(빛나는 테두리 — 기상 상태 그림) · end 끝 장면 뒤 */
+const FF_SCRIPT = [
+  {c: [
+    {k: "cap", v: "C22"},
+    {k: "cap", v: "C22A"},
+    {k: "talk", who: "pal", f: "heroic-confidence", t: "마스터 아드님이라고 봐드리지 않을 거예요, 선배! 정정당당하게 가요!"},
+    {k: "talk", who: "wiz", f: "sleepy-cat", t: "……마스터도 보고 계시니까아. 대충은 못 하겠네에."},
+    {k: "talk", who: "dp", f: "cold-empty", t: "……선배. 등 뒤는 제가 맡을게요."},
+    {k: "talk", who: "master", t: "그래. ——가자."}
+  ]},
+  {a: "B1", sk: "wz_1", hit: [["A0", 310], ["A1", 280], ["A2", 260]]},
+  {c: [{k: "cap", v: "C02"}]},
+  {a: "A2", sk: "ar_b", hit: [["B1", 180]]},
+  {a: "A0", sk: "sw_b", from: "sword", hit: [["B0", 180]]},
+  {a: "B0", sk: "pa_1", sh: [["B0", 300], ["B1", 300]]},
+  {c: [{k: "cap", v: "A08"}]},
+  {a: "A1", sk: "dp_2", st: [["B0", "저주", "d"], ["B1", "저주", "d"], ["B2", "저주", "d"]], say: "……천천히, 갉아먹어."},
+  {dot: [["B0", 60], ["B1", 60], ["B2", 60]]},
+  {a: "B1", sk: "wz_2", st: [["A0", "서리 결계", "d"], ["A1", "서리 결계", "d"], ["A2", "서리 결계", "d"]]},
+  {c: [{k: "cap", who: "caster", face: "focused", t: "서리 결계! {A}, 발이 묶였습니다!", v: "FF01", ja: "氷結の結界！ 足を止められました！"}]},
+  {a: "B2", sk: "pr_2", st: [["B0", "축복", "b"], ["B1", "축복", "b"], ["B2", "축복", "b"]]},
+  {a: "A0", sk: "ar_1", from: "archer", hit: [["B0", 40], ["B1", 60], ["B2", 90]], absorb: [["B0", 300], ["B1", 300]]},
+  {c: [
+    {k: "cap", who: "analyst", face: "surprised", t: "검 다음에 활……? 어떤 직업의 기술이든 다 쓴다고 해서 ‘마스터’라는 별명이 붙었다더니, 정말이군요.", v: "FF02", ja: "剣の次は弓……？ どんな職業の技でも使いこなすから「マスター」と呼ばれていると聞きましたが、本当ですね。"},
+    {k: "cap", who: "caster", face: "focused", t: "하지만 보호막에 막힙니다!", v: "FF03", ja: "しかし防御壁に阻まれた！"}
+  ]},
+  {dot: [["B0", 60], ["B1", 60], ["B2", 60]]},
+  {a: "B0", sk: "pa_b", hit: [["A0", 420, "crit"]]},
+  {c: [{k: "cap", v: "C03"}]},
+  {a: "B1", sk: "wz_u", ult: true, hit: [["A0", 680], ["A1", 720], ["A2", 760]]},
+  {c: [{k: "cap", v: "C04"}, {k: "cap", v: "C07"}]},
+  {a: "A1", sk: "dp_1", hit: [["B1", 230]], heal: [["A1", 230]], say: "……아직이야."},
+  {a: "A0", sk: "sw_1", from: "sword", st: [["B0", "도발", "d", 1]], shout: "이쪽이다!"},
+  {a: "B0", sk: "pa_b", hit: [["A0", 350]]},
+  {c: [{k: "cap", v: "C05"}]},
+  {a: "B1", sk: "wz_1", hit: [["A0", 260], ["A1", 730]]},
+  {c: [
+    {k: "cap", who: "caster", face: "focused", t: "연달아 쓰러집니다! {A}, 이제 ‘마스터’ 혼자입니다!", v: "FF04", ja: "続けて倒れた！ 残るは「マスター」ただ一人です！"},
+    {k: "talk", who: "dp", f: "sad", t: "……미안해요, 선배. 역시 저는……"},
+    {k: "talk", who: "master", think: 1, t: "……!"},
+    {k: "talk", who: "pal", f: "motivated", t: "미안하지만 결승이에요. 끝까지 가요!"},
+    {k: "talk", who: "wiz", f: "smile", t: "……이제 혼자네, 선배에."},
+    {k: "cap", who: "caster", face: "focused", t: "3 대 1! 이대로 승부가 기우는 걸까요?!", v: "FF05", ja: "三対一！ このまま勝負は決まってしまうのか！？"},
+    {k: "cap", who: "analyst", face: "calm", t: "체력도 얼마 안 남았습니다. 사실상 끝났다고 봐야겠죠.", v: "FF06", ja: "体力もほとんど残っていません。事実上、決着と見ていいでしょう。"},
+    {k: "talk", who: "master", think: 1, t: "검으로 안 되면 방패로. 방패로 안 되면 마법으로."},
+    {k: "talk", who: "master", think: 1, t: "——터득한 건, 전부 쓴다."}
+  ]},
+  {hero: ["A0"]},
+  {a: "A0", sk: "pr_1", from: "priest", heal: [["A0", 900]]},
+  {c: [
+    {k: "cap", who: "caster", face: "excited", t: "회복?! 마스터 선수, 이번엔 사제의 치유 마법입니다!", v: "FF07", ja: "回復！？ マスター選手、今度は司祭の治癒魔法です！"},
+    {k: "cap", v: "A09"}
+  ]},
+  {dot: [["B0", 60], ["B1", 60], ["B2", 60]]},
+  {a: "A0", sk: "ro_2", from: "rogue", st: [["A0", "그림자 밟기", "b"]]},
+  {a: "B1", sk: "wz_b", miss: ["A0"]},
+  {a: "B0", sk: "pa_b", miss: ["A0"]},
+  {a: "B2", sk: "pr_b", miss: ["A0"]},
+  {c: [{k: "cap", v: "A06"}]},
+  {a: "A0", sk: "tm_u", from: "timemage", ult: true, st: [["B0", "시간 정지", "d"], ["B1", "시간 정지", "d"], ["B2", "시간 정지", "d"]]},
+  {c: [{k: "cap", who: "caster", face: "excited", t: "시간이…… 멈췄습니다?! 시마도사의 필살기입니다!", v: "FF08", ja: "時間が……止まった！？ 時魔導士の必殺技です！"}]},
+  {a: "A0", sk: "ss_1", from: "spellsword", hit: [["B1", 380], ["B2", 520], ["B1", 420, "crit"]]},
+  {c: [{k: "cap", v: "A05"}]},
+  {a: "A0", sk: "ro_b", from: "rogue", hit: [["B2", 480, "crit"]]},
+  {c: [{k: "cap", v: "C16"}]},
+  {a: "B0", sk: "pa_u", ult: true, heal: [["B0", 520]], sh: [["B0", 600]], st: [["B0", "성역", "b"]], unst: [["B0", "시간 정지"], ["B0", "저주"], ["B0", "도발"]],
+    say: "아직이다! 이 성역이 있는 한, 나는 쓰러지지 않아!"},
+  {c: [{k: "cap", v: "A08"}, {k: "cut"}]},
+  {a: "A0", sk: "ss_u", from: "spellsword", ult: true, hit: [["B0", 760, "crit"]], absorb: [["B0", 600]], shout: "천검 난무!!"},
+  {a: "A0", sk: "sw_u", from: "sword", ult: true, hit: [["B0", 1980, "crit"]], shout: "——대지 가르기!!"},
+  {end: [
+    {k: "wait", ms: 2600},
+    {k: "cap", v: "C08"},
+    {k: "cap", who: "analyst", face: "surprised", t: "혼자 남아 셋을 뒤집었습니다…… 왕국력 231년 학원제 우승은 {A}, ‘마스터’입니다!", v: "FF09", ja: "たった一人で三人をひっくり返しました……王国暦231年、学園祭の優勝は「マスター」です！"},
+    {k: "talk", who: "pal", f: "joy", t: "하하……! 졌다, 졌어요! 다음엔 꼭 이길 거예요, 선배!"},
+    {k: "talk", who: "wiz", f: "sleepy-cat", t: "……마스터한테 한 소리 듣겠네에. 이제 자도 되지?"},
+    {k: "talk", who: "master", t: "고마워. 네가 버텨 준 덕분이야."},
+    {k: "talk", who: "dp", f: "cold-empty", t: "……네. 선배 덕분이죠. 늘 그렇듯이."}
+  ]}
+];
+const FF = {acad: {A: "", B: ""}, on: false, dead: false, btId: 0, res: null, names: null, gone: new Set(), endDone: false, cont: null, key: null, busy: null, adv: null, prev: {}, amb: null, cueN: 0};
+function ffLive(){ return FF.on && !FF.dead; }
+function ffWait(ms){ return new Promise(r => setTimeout(r, ms)).then(ffLive); }
+function ffName(k){ return k === "master" ? FF_T.plate : (FF.names && FF.names[k]) || ""; }
+function ffSkill(id){ for(const j in JOBS){ const s = (JOBS[j].skills || []).find(x => x.id === id); if(s) return s; } return null; }
+const FF_FACE = {"darkpriest":{"cold-empty":"assets/fst_faces/darkpriest-cold-empty.png?v=f69aa9fd","sad":"assets/fst_faces/darkpriest-sad.png?v=36bef770","smile":"assets/fst_faces/darkpriest-smile.png?v=51f67484"},"paladin":{"heroic-confidence":"assets/fst_faces/paladin-heroic-confidence.png?v=d8cf8cb0","joy":"assets/fst_faces/paladin-joy.png?v=3e213740","motivated":"assets/fst_faces/paladin-motivated.png?v=9f80f84f","smile":"assets/fst_faces/paladin-smile.png?v=f5c93a74"},"wizard":{"sleepy-cat":"assets/fst_faces/wizard-sleepy-cat.png?v=02b87b13","smile":"assets/fst_faces/wizard-smile.png?v=d2ae512d"}};   // apply_ffop.py — {직업: {표정: assets/fst_faces 그림?v=}} (대본에 나오는 표정만 · 없으면 smile)
+function ffFace(job, f){ const J = FF_FACE[job]; return (J && (J[f] || J.smile)) || ""; }
+const FF_VOICE = {"FF01":"bgm/tc_FF01.ogg?v=16e86a2b","FF02":"bgm/tc_FF02.ogg?v=8a16fa3f","FF03":"bgm/tc_FF03.ogg?v=182ec053","FF04":"bgm/tc_FF04.ogg?v=230dc0dc","FF05":"bgm/tc_FF05.ogg?v=0deafb1a","FF06":"bgm/tc_FF06.ogg?v=10fd7bf6","FF07":"bgm/tc_FF07.ogg?v=38d1fd86","FF08":"bgm/tc_FF08.ogg?v=34851c44","FF09":"bgm/tc_FF09.ogg?v=759459b5"};   // apply_ffop.py — 결승 장면 중계 음성 {FF01 ~ 09: bgm/tc_FFxx.ogg?v=} (1026 다섯째 — 사용자가 녹음해 준 아홉 줄 · 원본 mockups/festival-final/voice/FFxx.mp3 · 학원 이름 {A} 는 음성에 없다 — 자막만)
+const FF_JOB = {dp: "darkpriest", pal: "paladin", wiz: "wizard"};
+function ffTx(t){ return String(t || "").replace(/\{A\}/g, (FF.acad && FF.acad.A) || "").replace(/\{B\}/g, (FF.acad && FF.acad.B) || ""); }
+
+/* ── 마스터 직업(장면 동안만) · 전투 도트 v2 — 학생 도트처럼 시트 한 장 (1026 둘째 · 사용자 '새로운 마스터 스프라이트와 모션, 고유 이펙트' — 숨쉬기 네 장 ·
+   공격 장 + 무지갯빛 검풍(시트에 구웠다) · mockups/festival-final/src/master_sprite_v2.py). SPR_JOB · SPR_META · SPR_X_IMG 에 한 번 붙이면 그대로 둔다 (SPR_KEYS 끝에 더한다) ── */
+function ffSprite(){
+  if(!FF_SPR || !SPR_X_IMG.master || SPR_JOB.master) return;
+  SPR_JOB.master = FF_SPR.meta.map(r => r.length);
+  SPR_META.master = FF_SPR.meta;
+  const im = new Image(); im.src = SPR_X_IMG.master; SPR_XB.master = im;
+  SPR_KEYS.push("master"); SPR_IDX.master = SPR_KEYS.length - 1;
+}
+function ffJobOn(){
+  if(!JOBS.master){
+    const b = JOBS.spellsword;
+    JOBS.master = {name: FF_T.master, role: "dps", sub: "만능", tone: "dps", desc: "", base: b.base, grow: b.grow, ffop: 1,   // 1026 둘째 — 학생 도트(SPR_JOB.master)라 보통 학생 칸
+      skills: [ffSkill("sw_b"), ffSkill("sw_1"), ffSkill("pr_1"), ffSkill("ss_u")].filter(Boolean).map((s, i) => i === 3 ? Object.assign({}, s, {kind: "ult"}) : s)};
+  }
+  try{ ffSprite(); }catch(e){}
+}
+function ffJobOff(){
+  if(JOBS.master && JOBS.master.ffop) delete JOBS.master;
+  try{ delete STYLISH_SKILL_FX.casters.master; }catch(e){}
+}
+
+/* ── 대본 → 전투 기록 (runBattle 의 장과 같은 모양) ── */
+function ffBuild(){
+  const U = FF_UNITS.map((u, k) => ({...u, name: ffName(u.key), maxHp: u.hp, sh: 0, gauge: 0, atb: .15 + k * .12, alive: true, dd: 0, dh: 0, dt: 0, fx: []}));
+  const by = id => U.find(u => u.uid === id);
+  const F = [];
+  let pend = null;
+  const snap = () => U.map(u => ({hp: u.hp, maxHp: u.maxHp, sh: u.sh, ult: u.gauge, atb: Math.min(1, u.atb), alive: u.alive, cs: 0, dd: u.dd, dh: u.dh, dt: u.dt,
+    fx: u.fx.map(f => ({n: f.n, k: f.k, stat: null, regen: false, mir: false, taunt: !!f.taunt, allT: false, hero: f.hero || null}))}));
+  const push = (line, cls, actor, fx, pop) => {
+    const fr = {line, cls: cls || "", actor: actor || null, fx: fx || null, pop: pop && pop.length ? pop : null, units: snap()};
+    if(pend){ fr.ff = pend; pend = null; }
+    F.push(fr); return fr;
+  };
+  const down = (src, t) => { t.alive = false; t.hp = 0; t.fx = []; t.gauge = 0; t.atb = 0; push(`<b>${esc(t.name)}</b> 전투 불능`, "die", src.uid, null, [{u: t.uid, k: "die"}]); };
+  push(`<b>${esc(FF_T.teamA())}</b> 대 <b>${esc(FF_T.teamB())}</b> — 전투 개시`, "sec");
+  let acts = 0;
+  FF_SCRIPT.forEach(st => {
+    if(st.c){ pend = (pend || []).concat(st.c); return; }
+    if(st.end){ F.ffEnd = st.end; return; }
+    if(st.hero){ st.hero.forEach(id => { const u = by(id); u.fx.push({n: "만능", k: "b", hero: "ffop"}); }); return; }
+    if(st.dot){
+      st.dot.forEach(([id, v]) => { const t = by(id); if(!t.alive) return; t.hp = Math.max(0, t.hp - v); t.dt += v;
+        push(`<b>${esc(t.name)}</b> 지속 피해 ${fmt(v)}`, "", t.uid, null, [{u: t.uid, v, k: "dmg"}]); if(t.hp <= 0) down(t, t); });
+      return;
+    }
+    const a = by(st.a), sk = ffSkill(st.sk); if(!a || !sk) return;
+    acts++;
+    U.forEach(u => { if(u.alive && u !== a) u.atb = Math.min(.92, u.atb + .22 + ((u.uid.charCodeAt(1) + acts) % 3) * .07); });
+    a.atb = 1;
+    if(st.ult){ a.gauge = 100; push(`<b>${esc(a.name)}</b> — 필살 게이지 개방`, "ult", a.uid); }
+    const from = st.from ? FF_FROM[st.from] : "";
+    const label = `<b>${esc(a.name)}</b> — ${from ? `〔${esc(from)}〕 ` : ""}${esc(sk.name)}`;
+    const tg = [...new Set([...(st.hit || []), ...(st.absorb || []), ...(st.sh || []), ...(st.heal || []), ...(st.st || [])].map(x => x[0]).concat(st.miss || []))].filter(id => by(id).alive);
+    const fr = push(label, st.ult ? "ult" : "", a.uid,
+      {skillId: sk.id, n: sk.fx || null, e: sk.el || "phys", u: !!st.ult, s: sfxOf({job: st.from || a.job}, sk), t: tg});
+    fr.call = {name: sk.name, kind: st.ult ? "ult" : (sk.kind || "skill"), pers: a.pers};
+    if(st.shout) fr.call.text = st.shout;
+    if(st.from) fr.ffFrom = st.from;
+    a.atb = 0;
+    a.gauge = st.ult ? 0 : Math.min(95, a.gauge + (sk.kind === "basic" ? 14 : 20));
+    (st.sh || []).forEach(([id, v]) => { const t = by(id); t.sh += v; push(`<b>${esc(t.name)}</b> 보호막 ${fmt(v)}`, "heal", a.uid, null, [{u: t.uid, v, k: "shield"}]); });
+    (st.heal || []).forEach(([id, v]) => { const t = by(id); const h = Math.min(v, t.maxHp - t.hp); t.hp += h; a.dh += h; push(`<b>${esc(t.name)}</b> 회복 ${fmt(h)}`, "heal", a.uid, null, [{u: t.uid, v: h, k: "heal"}]); });
+    (st.unst || []).forEach(([id, n]) => { const t = by(id); t.fx = t.fx.filter(f => f.n !== n); });
+    (st.st || []).forEach(([id, n, kd, tau]) => { const t = by(id); if(!t.alive) return; t.fx = t.fx.filter(f => f.n !== n).concat({n, k: kd, taunt: !!tau});
+      push(`<b>${esc(t.name)}</b> ${esc(n)}`, "", a.uid); });
+    (st.miss || []).forEach(id => push(`<b>${esc(by(id).name)}</b> 회피`, "", a.uid, null, [{u: id, k: "miss"}]));
+    const ab = new Map((st.absorb || []).map(([id, v]) => [id, v]));
+    (st.hit || []).forEach(([id, v, crit]) => {
+      const t = by(id); if(!t.alive) return;
+      const pop = [];
+      const s = Math.min(t.sh, ab.get(id) || 0); if(s){ t.sh -= s; ab.delete(id); pop.push({u: id, v: s, k: "absorb"}); }
+      t.hp = Math.max(0, t.hp - v); t.dt += v; a.dd += v;
+      t.gauge = Math.min(95, t.gauge + 9);
+      pop.push({u: id, v, k: crit ? "crit" : "dmg"});
+      push(`<b>${esc(t.name)}</b>에게 ${fmt(v)}${s ? ` (보호막 ${fmt(s)} 흡수)` : ""}${crit ? " — 치명타!" : ""}`, crit ? "crit" : "", a.uid, null, pop);
+      if(t.hp <= 0) down(a, t);
+    });
+    if(st.say) fr.ffSay = st.say;
+  });
+  push(`<b>${esc(FF_T.teamA())}</b> 승리`, "sec");
+  const unit = u => ({name: u.name, job: u.job, side: u.side, lv: u.lv, row: u.row, pers: u.pers, ref: "ffop-" + u.key, uid: u.uid, alive: u.alive, skills: (JOBS[u.job] || {}).skills, hp: u.hp, maxHp: u.maxHp});
+  return {winner: "A", frames: F, acts, A: U.filter(u => u.side === "A").map(unit), B: U.filter(u => u.side === "B").map(unit), stam: null,
+    formA: "wedge", formB: "wedge", plusA: false, plusB: false, slotsB: null, ffop: 1,   // 진형 — 쐐기진(앞 한 명 · 뒤 둘 — 3 대 3) (없으면 '진형 없음')
+    names: U.map(u => ({name: u.name, job: u.job, side: u.side, lv: u.lv, row: u.row, ult: u.ult}))};
+}
+
+/* ── 멈춤 동안 보이는 것 ── */
+function ffModal(){ return document.querySelector(`#modalRoot .modal[data-bt="${FF.btId}"]`); }
+function ffStage(){ const m = ffModal(); return m && m.querySelector(".bf-stage"); }
+function ffClickWait(ms){                                                       // ms 가 지나거나 누르면 (ms 가 없으면 누를 때까지)
+  return new Promise(r => {
+    let t = 0;
+    const go = () => { clearTimeout(t); if(FF.adv === go) FF.adv = null; r(ffLive()); };
+    FF.adv = go;
+    if(ms) t = setTimeout(go, ms);
+  });
+}
+function ffVoice(id){
+  try{
+    if(!window.TCOM || (typeof TCOM.mode === "function" && TCOM.mode() !== "both") || window.__tcomMute) return null;
+    const p = FF_VOICE[id] || (TCOM.asset && TCOM.asset.snd && TCOM.asset.snd[id]); if(!p) return null;   // 1026 다섯째 — 결승 장면 음성 먼저
+    const a = new Audio(TCOM.src(p)); a.volume = Math.min(1, typeof sfxGain === "function" ? sfxGain() : 1);
+    const q = a.play(); if(q && q.catch) q.catch(() => {});
+    return a;
+  }catch(e){ return null; }
+}
+async function ffCap(c){
+  if(!window.TCOM || !TCOM.cues) return true;
+  let id = c.v;
+  if(id && c.t){ TCOM.cues[id] = {who: c.who || "caster", tone: c.face === "excited" ? 2 : 1, face: c.face || "focused", ko: ffTx(c.t), ja: c.ja || ffTx(c.t), pr: 0}; }   // 1026 다섯째 — 결승 장면 전용 음성(FF01 ~ 09) · 자막은 그때 학원 이름으로
+  if(!id || !TCOM.cues[id]){ id = "FFT" + (++FF.cueN); TCOM.cues[id] = {who: c.who || "caster", tone: c.face === "excited" ? 2 : 1, face: c.face || "focused", ko: ffTx(c.t), ja: ffTx(c.t), pr: 0}; }
+  const cue = TCOM.cues[id], text = (window.HS_LANG === "ja" ? cue.ja : cue.ko) || "";
+  TCOM.peek(id, 600000);
+  const a = c.v ? ffVoice(c.v) : null;
+  const read = Math.max(1700, [...text].length * 95 + 900);
+  let ok;
+  if(a){ ok = await Promise.race([new Promise(r => { a.onended = () => r(ffLive()); a.onerror = () => setTimeout(() => r(ffLive()), read); }), ffClickWait(0)]); try{ a.pause(); }catch(e){} }
+  else ok = await ffClickWait(read);
+  const el = document.getElementById("tcomCap"); if(el){ el.classList.add("out"); setTimeout(() => { if(el.classList.contains("out")){ el.hidden = true; el.classList.remove("out"); } }, 220); }
+  return ok && ffWait(260);
+}
+async function ffTalk(c){
+  let box = document.getElementById("ffopTalk");                                // 몸(body)에 — 전투 화면은 처음 · 크기가 바뀔 때 통째로 다시 그린다
+  if(!box){
+    box = document.createElement("div"); box.className = "op-talk ffop-talk"; box.id = "ffopTalk";
+    box.innerHTML = `<div class="op-face"><img alt="" draggable="false"></div><div class="op-body"><div class="op-name"></div><div class="op-text" aria-live="polite"></div><span class="op-next" aria-hidden="true">▼</span></div>`;
+    box.onclick = e => { e.stopPropagation(); if(FF.adv) FF.adv(); };
+    document.body.appendChild(box);
+  }
+  const job = FF_JOB[c.who], face = box.querySelector(".op-face"), img = face.querySelector("img"), nm = box.querySelector(".op-name"), tx = box.querySelector(".op-text");
+  const src = job ? ffFace(job, c.f) : "";
+  face.hidden = !src; if(src) img.src = src;
+  nm.textContent = c.who === "master" ? (c.think ? FF_T.think : FF_T.plate) : ffName(c.who);
+  nm.className = "op-name" + (c.who === "master" ? " you" : c.who === "pal" ? " pal" : c.who === "wiz" ? " wiz" : " ffdp");
+  box.classList.toggle("think", !!c.think);
+  box.classList.remove("done"); box.hidden = false; tx.textContent = "";
+  const line = ffTx(c.t), chars = [...line];
+  let n = 0, full = false;
+  await new Promise(r => {
+    const tick = () => { if(!ffLive()){ r(); return; } if(full || n >= chars.length){ tx.textContent = line; r(); return; } n++; tx.textContent = chars.slice(0, n).join(""); FF.typer = setTimeout(tick, 34); };
+    FF.adv = () => { full = true; };
+    tick();
+  });
+  clearTimeout(FF.typer);
+  box.classList.add("done");
+  const ok = await ffClickWait(0);
+  box.hidden = true;
+  return ok;
+}
+async function ffSayCue(c){
+  const st = ffStage(), u = FF.res && FF.res.names[FF_UNITS.findIndex(x => x.uid === c.u)];
+  if(st && u) hrSay(st, c.u, u.job, c.t, "ffop-say", c.ms || 1900, (FF_UNITS.find(x => x.uid === c.u) || {}).pers, 1);
+  return ffClickWait(c.ms || 1900);
+}
+async function ffCut(){
+  const icons = ["sw_b", "ar_1", "pr_1", "ro_2", "tm_u", "ss_1"].map(id => (typeof SKILL_ICON_ART !== "undefined" && SKILL_ICON_ART[id]) || "").filter(Boolean);
+  const el = document.createElement("div"); el.className = "ffop-cut"; el.setAttribute("aria-live", "polite");
+  el.innerHTML = `<div class="ffc-band"><div class="ffc-icons">${icons.map((s, i) => `<img src="${s}" alt="" style="--i:${i}">`).join("")}</div>
+    <div class="ffc-name">${esc(FF_T.master)}</div><div class="ffc-lead">${esc(FF_T.cutLead)}</div><div class="ffc-jobs">${esc(FF_T.cutJobs)}</div></div>`;
+  el.onclick = e => { e.stopPropagation(); if(FF.adv) FF.adv(); };
+  document.body.appendChild(el);
+  try{ sfxPlay("ult"); }catch(e){}
+  const ok = await ffClickWait(2900);
+  el.classList.add("out"); setTimeout(() => el.remove(), 320);
+  return ok && ffWait(280);
+}
+async function ffRun(list){
+  for(const c of list){
+    if(!ffLive()) return false;
+    const ok = c.k === "cap" ? await ffCap(c) : c.k === "talk" ? await ffTalk(c) : c.k === "say" ? await ffSayCue(c) : c.k === "cut" ? await ffCut() : await ffWait(c.ms || 500);
+    if(!ok) return false;
+  }
+  return ffLive();
+}
+
+/* ── 전투 화면 고리 (apply_ffop) ── */
+function ffOn(btId){ return FF.on && FF.btId === btId; }
+function ffCaster(fr){                                                          // 마스터 — 빌린 직업의 시전 이펙트
+  try{
+    if(!fr || !fr.call || !fr.ffFrom) return;
+    const C = STYLISH_SKILL_FX.casters; C.master = (C[fr.ffFrom] || []).filter(k => k !== "swordSwing");   // 1026 둘째 — 검투사 베기 궤적은 숨김 (사용자 — 마스터는 공격 장의 무지갯빛 검풍이 대신)
+  }catch(e){}
+}
+/* 스타일리시 camLoop — (from ~ to] 사이 장에 대사가 남아 있으면 Promise(끝나면 true · 멈추면 false) · 없으면 null */
+function ffGate(btId, from, to){
+  if(!ffOn(btId)) return null;
+  if(FF.dead) return Promise.resolve(false);
+  const F = FF.res.frames;
+  for(let q = from; q <= to && q < F.length; q++){
+    const fr = F[q];
+    if(fr.ff && !FF.gone.has(q)){ FF.gone.add(q); return FF.busy = ffRun(fr.ff).then(ok => { FF.busy = null; return ok; }); }
+    if(fr.call) ffCaster(fr);
+  }
+  return null;
+}
+/* 심플 step — 다음 장에 대사가 있으면 세우고 끝나면 다시 재생 */
+function ffHold(btId, next, pause, play){
+  if(!ffOn(btId)) return false;
+  if(FF.dead) return true;
+  const g = ffGate(btId, next, next); if(!g) return false;
+  pause(); FF.paused = true;
+  g.then(ok => { FF.paused = false; if(ok) play(); });
+  return true;
+}
+/* 장을 그릴 때 — 외침 대신 말(ffSay) · 끝 장면에 뒷이야기 */
+function ffSee(btId, res, i){
+  if(!ffOn(btId)) return;
+  for(let q = (FF.seen | 0) + 1; q <= i; q++){                                  // 스타일리시는 한 차례를 다 보인 뒤에야 그 끝 장을 그린다 — 지나간 장의 말을 모아서
+    const fr = res.frames[q];
+    if(fr && fr.ffSay){ const k = FF_UNITS.findIndex(x => x.uid === fr.actor);
+      setTimeout(() => { const st = ffStage(); if(st && ffLive()) hrSay(st, fr.actor, res.names[k].job, fr.ffSay, "ffop-say", 2400, FF_UNITS[k].pers, 1); }, 250); }
+  }
+  FF.seen = Math.max(FF.seen | 0, i);
+  if(i >= res.frames.length - 1 && !FF.endDone){
+    FF.endDone = true;
+    (FF.busy || Promise.resolve(true)).then(() => ffRun(res.frames.ffEnd || [])).then(ok => { if(ok) ffClose(); });
+  }
+}
+
+/* ── 시작 · 끝 ── */
+function ffKey(e){
+  if(!ffLive() || e.repeat) return;
+  if(e.key === "Enter" || e.key === " "){ if(FF.adv){ e.preventDefault(); e.stopPropagation(); FF.adv(); } }
+}
+function ffTap(e){ if(FF.adv && ffLive() && !(e.target.closest && e.target.closest("button,a,input,select"))) FF.adv(); }
+function ffStart(cont, o){
+  o = o || {};
+  if(FF.on || window.__ffopOff || (navigator.webdriver && !window.__ffopForce)) return false;
+  if(typeof openBattle !== "function" || typeof JOBS === "undefined") return false;
+  FF.on = true; FF.dead = false; FF.cont = cont; FF.gone = new Set(); FF.endDone = false; FF.busy = null; FF.adv = null; FF.cueN = 0;
+  FF.names = {dp: freshName("darkpriest"), pal: freshName("paladin"), wiz: freshName("wizard"), ar: freshName("archer"), pr: freshName("priest")};
+  { const B = pick(ACAD) + " 용사 학원"; let A = B; for(let q = 0; q < 20 && A === B; q++) A = pick(ACAD) + " 용사 학원"; FF.acad = {A, B}; }   // B 아버지 학원 = 학원 이름 창의 첫 이름
+  FF.prev.bspeed = UI.bspeed; UI.bspeed = 280;                                  // 장면 동안 ×1
+  ffJobOn();
+  try{ if(window.TCOM && TCOM.crowd) TCOM.crowd.ffop = TCOM.crowd.finale || .95; }catch(e){}
+  FF.res = ffBuild();
+  document.addEventListener("keydown", ffKey, true);
+  document.documentElement.classList.add("ffop-on");                             // 전투 화면의 재생 · 배속 · 기록 단추를 숨긴다 (CSS)
+  $("#modalRoot").addEventListener("click", ffTap);
+  /* 1. 검은 화면 자막 두 장 — 시작 화면은 검은 막이 다 덮을 때까지 밑에 둔다 (openingPlay 와 같게) */
+  const mr = $("#modalRoot"), under = mr.querySelector(":scope > .overlay > .title-screen") ? mr.querySelector(":scope > .overlay") : null;
+  if(under) [...mr.childNodes].forEach(n => { if(n !== under) n.remove(); }); else mr.replaceChildren();
+  mr.insertAdjacentHTML("beforeend", `<div class="ffop-black" id="ffopBlack" role="dialog" aria-modal="true" aria-label="${esc(FF_T.head)}"><p class="ffop-cap" id="ffopCap"></p></div>`);
+  try{ modalLockSync(); }catch(e){}
+  if(under) setTimeout(() => under.remove(), 600);
+  ffSkipBtn();
+  audOver(BGM_NONE);
+  const blk = $("#ffopBlack"), cap = $("#ffopCap");
+  try{ const s = window.TCOM && TCOM.asset && TCOM.asset.crowd && TCOM.asset.crowd.amb; if(s){ const a = new Audio(TCOM.src(s)); a.loop = true; a.volume = 0; FF.amb = a; const p = a.play(); if(p && p.catch) p.catch(() => {});
+    let v = 0; const tgt = .5 * (typeof sfxGain === "function" ? sfxGain() : 1); FF.ambT = setInterval(() => { v = Math.min(tgt, v + tgt / 20); a.volume = v; if(v >= tgt) clearInterval(FF.ambT); }, 80); } }catch(e){}
+  (async () => {
+    for(const t of o.noCap ? [] : [FF_T.cap1, FF_T.cap2]){
+      if(!await ffWait(500)) return;
+      cap.textContent = t; cap.classList.remove("out"); cap.classList.add("on");
+      if(!await ffClickWait(2300)) return;
+      cap.classList.add("out");
+      if(!await ffWait(600)) return;
+      cap.classList.remove("on");
+    }
+    ffAmbStop();
+    if(!ffLive()) return;
+    ffBattle();
+  })();
+  return true;
+}
+function ffAmbStop(){ clearInterval(FF.ambT); const a = FF.amb; FF.amb = null; if(a){ let v = a.volume; const t = setInterval(() => { v -= .05; if(v <= 0){ clearInterval(t); try{ a.pause(); }catch(e){} } else a.volume = v; }, 60); } }
+function ffSkipBtn(){
+  document.getElementById("ffopSkip")?.remove();
+  const b = document.createElement("button"); b.type = "button"; b.id = "ffopSkip"; b.className = "op-skip ffop-skip"; b.textContent = FF_T.skip;
+  b.onclick = e => { e.stopPropagation(); ffSkip(); };
+  document.body.appendChild(b);
+}
+function ffBattle(){
+  FF.btId = (typeof BT_SEQ === "number" ? BT_SEQ : 0) + 1;                       // openBattle 이 ++BT_SEQ 로 쓸 번호 (첫 draw 부터 알아보게)
+  FF.seen = 0;
+  openBattle(FF.res, {titleA: FF_T.teamA(), titleB: FF_T.teamB(), field: "final", bgm: "festFinal", jingle: true, victory: true, defeat: false, cheer: true,
+    noSkip: true, tcom: "ffop", head: FF_T.head, doneLabel: FF_T.done}, () => ffDone(false));
+  ffSkipBtn();
+}
+function ffClose(){                                                             // 뒷이야기 끝 — 전투 화면의 '계속' 그대로 (재생 멈춤 · 중계 닫기 · 곡)
+  const m = ffModal(), bd = m && m.querySelector("#bDone");
+  if(bd){ bd.hidden = false; bd.click(); } else ffDone(false);
+}
+function ffSkip(){
+  if(!FF.on) return;
+  FF.dead = true;
+  if(FF.adv){ const a = FF.adv; FF.adv = null; try{ a(); }catch(e){} }
+  const m = ffModal();
+  if(m){
+    const bp = m.querySelector("#bPlay");
+    const PAUSE = "일시정지";                                                    // 게임에 넣을 때 — 번역판에서는 이 글이 그 언어로 바뀐다 (정규식은 바뀌지 않는다)
+    if(bp && !FF.paused && bp.textContent.indexOf(PAUSE) >= 0) bp.click();   // 재생 중이면 멈춘다 (camLoop · 타이머가 끝난다)
+    try{ if(window.TCOM) TCOM.close(FF.btId); }catch(e){}
+    try{ closeModal(); }catch(e){}
+  }
+  ffDone(true);
+}
+function ffDone(skip){
+  if(!FF.on) return;
+  const cont = FF.cont;
+  FF.on = false; FF.dead = true; FF.adv = null; FF.res = null;
+  clearTimeout(FF.typer); ffAmbStop();
+  document.removeEventListener("keydown", ffKey, true);
+  document.documentElement.classList.remove("ffop-on");
+  $("#modalRoot").removeEventListener("click", ffTap);
+  ["ffopTalk"].forEach(id => document.getElementById(id)?.remove()); document.querySelectorAll(".ffop-cut").forEach(e => e.remove());
+  document.getElementById("ffopSkip")?.remove();
+  const cap = document.getElementById("tcomCap"); if(cap) cap.hidden = true;
+  try{ if(window.TCOM && TCOM.cues) Object.keys(TCOM.cues).forEach(k => { if(/^FFT?\d+$/.test(k)) delete TCOM.cues[k]; }); }catch(e){}
+  UI.bspeed = FF.prev.bspeed;
+  ffJobOff();
+  /* 이름 — 같은 사람이 회귀 뒤의 개교 멤버 (오프닝의 팔라딘 · 마법사는 takeName · 프롤로그의 암흑 사제는 UI.openDp — PRST 가 비어 있을 때만 뽑는다) */
+  if(FF.names){ FF.handoff = {pal: FF.names.pal, wiz: FF.names.wiz}; UI.openDp = FF.names.dp; }
+  if(FF.acad) FF.fatherAcad = FF.acad.B;                                          // 학원 이름 창이 첫 이름으로 (FFOP.acadName — 다시 열어도 같다)
+  /* 검은 화면 '그리고, 5년 뒤.' — 그다음 지금 오프닝 ('왕국력 236년—' · 그 오프닝이 다시 검은 화면부터 연다) · 건너뛰면 자막 없이 */
+  const mr = $("#modalRoot");
+  mr.replaceChildren();
+  mr.insertAdjacentHTML("beforeend", `<div class="ffop-black fin" aria-hidden="true"><p class="ffop-cap" id="ffopCapEnd">${skip ? "" : esc(FF_T.capEnd)}</p></div>`);
+  try{ modalLockSync(); audOver(BGM_NONE); }catch(e){}
+  if(skip){ setTimeout(() => { if(typeof cont === "function") cont(); }, 200); return; }
+  const c = document.getElementById("ffopCapEnd");
+  setTimeout(() => { if(c) c.classList.add("on"); }, 700);
+  setTimeout(() => { if(c) c.classList.add("out"); }, 3100);
+  setTimeout(() => { if(typeof cont === "function") cont(); }, 3800);
+}
+function ffAcad(){ return FF.fatherAcad || ""; }
+function ffTake(k){ const H = FF.handoff; if(!H || !H[k]) return ""; const n = H[k]; delete H[k]; return n; }   // 오프닝이 한 번 가져간다
+window.FFOP = {takeName: ffTake, acadName: ffAcad, start: ffStart, gate: ffGate, hold: ffHold, see: ffSee, on: ffOn, skip: ffSkip, build: ffBuild, script: FF_SCRIPT, units: FF_UNITS, T: FF_T, state: FF};
+})();
+/* FFOP_END */
 /* FONTSZ_START — 글자 크기 설정 (1026 목업 · apply_fontsz.py · mockups/font-size) ─ 사용자 1026 '폰트 크기 설정 한번 추가해볼까. 현재가 보통이면 지금보다 전체적으로 한 50% 정도 큰 폰트 사이즈로'
    (답: 읽는 글 위주 · 보통 · 크게 · 아주 크게 (100 · 125 · 150%) · 목업 먼저)
    · PREF.fontSize "normal" · "large" · "xlarge" → html[data-font-size] · --fszk 1.25 · 1.5 (보통이면 아무것도 붙이지 않는다 — 지금 그대로)
@@ -31713,6 +32223,7 @@ function openBattle(res, opt, onDone){
   const drawerHtml = (f, logs)=> battlePanel==='stats'?`${statBox(f, "B", opt.titleB||"상대", true)}${statBox(f, "A", opt.titleA||"우리 팀", false)}`: `<div class="blog" id="blog">${logs.map(x=>`<div class="ln ${x.cls}">${x.line}</div>`).join("")}</div>`;
   const draw = ()=>{
     drawnPrev = drawnI; drawnI = i;
+    if(window.FFOP) FFOP.see(btId, res, i, opt);   // 1026 (FFOP) — 학원제 결승 장면: 행동 뒤 한마디 · 끝 장면 뒷이야기
     if(window.TCOM) TCOM.see(btId, res, i, opt);   // 1024 — 대회 중계 · 해설 (TCOM) — 우리 학원의 광역 대회 · 예선 리그 · 본선 경기만
     if(DROP && !dropAt && i >= res.frames.length-1){   // 1018 — 끝 장면을 처음 그린다: 유물 떨어뜨리기 시작 · 뿅 소리 (그새 전투 화면이 닫혔으면 울리지 않는다)
       dropAt = performance.now();
@@ -31790,7 +32301,8 @@ function openBattle(res, opt, onDone){
     $("#modalRoot").querySelectorAll("[data-sp]").forEach(b=> b.onclick=()=>{ bspeedSet(+b.dataset.sp); speed=bspeedNow(); if(timer){pause();play();} draw(); });
     if(window.__btDrawHook) window.__btDrawHook(i, false);              // 시험용 (tools/gen/sim/btpatch_check.py)
   };
-  const step = ()=>{ if(i<res.frames.length-1){ i++; sfxFrame(res.frames[i]); if(i>=res.frames.length-1) bgmEnd(); draw(); } else { pause(); draw(); } };
+  /* 1026 (FFOP) — 학원제 결승 장면: 다음 장에 대사가 있으면 세우고 끝나면 다시 재생 */
+  const step = ()=>{ if(window.FFOP && i<res.frames.length-1 && FFOP.hold(btId, i+1, pause, play)) return; if(i<res.frames.length-1){ i++; sfxFrame(res.frames[i]); if(i>=res.frames.length-1) bgmEnd(); draw(); } else { pause(); draw(); } };
   /* ══ 스타일리시 연출 (0930) — 가로 화면 + 설정이 스타일리시일 때 ══
      행동 게이지 1000 을 0.1초에 100씩 채운다 → 차례가 온 학생과 스킬 대상을 가운데로 모아 줌인 →
      공격 1장(줌인 동안) · 2 · 3장(스킬명 외침) → 3장에서 피해 · 회복 숫자, 맞은 쪽은 피격 1 · 2장 뒤 멈춤 · 도움받은 쪽은 대기 1장 →
@@ -32164,6 +32676,7 @@ function openBattle(res, opt, onDone){
       if(i >= res.frames.length-1){ bgmEnd(); timer = null; draw(); return; }
       if(!camOn()){ timer = null; draw(); play(); return; }                 // 세로로 바뀌면 심플 모드로
       let j = i+1; while(j < res.frames.length && !res.frames[j].call) j++;
+      if(window.FFOP){ const g = FFOP.gate(btId, i+1, j); if(g){ if(!await g || camRun !== tok) return; continue; } }   // 1026 (FFOP) — 학원제 결승 장면: 다음 차례 앞 대사
       if(j >= res.frames.length){ i++; sfxFrame(res.frames[i]); if(i >= res.frames.length-1) bgmEnd(); draw(); if(!await camW(tok, speed)) return; continue; }
       const a = res.frames[j].actor;
       let p = j; while(p-1 > i && res.frames[p-1].actor === a && !res.frames[p-1].call && res.frames[p-1].cls !== "sec") p--;
@@ -46468,8 +46981,8 @@ const OPTX = (()=>{
 function opReduced(){ try{ return matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){ return false; } }
 function openingPlay(){
   if(OP) return;
-  UI.openPal = freshName("paladin");
-  UI.openWiz = freshName("wizard");   // 마법사 — 개교 멤버 마법사의 이름 (1003)
+  UI.openPal = (window.FFOP && FFOP.takeName("pal")) || freshName("paladin");   // 1026 (FFOP) — 결승 장면의 팔라딘 이름
+  UI.openWiz = (window.FFOP && FFOP.takeName("wiz")) || freshName("wizard");   // 마법사 — 개교 멤버 마법사의 이름 (1003)
   ["op_slash","op_drip","op_magic","op_rift","op_rewind","op_type","op_run","op_door","op_hand"].forEach(k=>{ if(SFX[k]) sfxLoad(SFX[k].f); });
   OPTX.prep();                        // 오프닝 글 글꼴 (1010 — 예전엔 APNG 아홉 장을 미리 받았다)
   [...Object.values(OPENING.face), OPENING.pal, OPENING.wiz, OPENING.hands, OPENING.grave, ...(typeof OP_BLOOD_PX !== "undefined" ? Object.values(OP_BLOOD_PX) : [])].forEach(u=>{ const im = new Image(); im.src = u; });   // 얼굴 · 그림이 바뀌는 순간 빈 칸이 보이지 않게
@@ -46963,7 +47476,7 @@ function showTitle(canContinue){
   modalLockSync();
   titleReveal();
   audOver(BGM_NONE);
-  $("#tNew").onclick = ()=> openingPlay();
+  $("#tNew").onclick = ()=>{ if(!(window.FFOP && FFOP.start(openingPlay))) openingPlay(); };   // 1026 (FFOP) — 새 게임 첫 장면(학원제 본선 결승) → 끝나면 오프닝
   if(canContinue) $("#tCont").onclick = ()=>{ audOver(null); closeModal(); UI.view="home"; render(); };
   $("#tSettings").onclick = titleSettingsOpen;
   if(window.PCAPP) PCAPP.title();   // 1026 (PCAPP) — PC 판 EXIT
@@ -47021,7 +47534,7 @@ function titleSettingsOpen(){
 }
 
 function askAcademyName(){
-  let nm = pick(ACAD)+" 용사 학원";
+  let nm = (window.FFOP && FFOP.acadName()) || (pick(ACAD)+" 용사 학원");   // 1026 (FFOP) — 결승 장면의 아버지 학원 이름 (사용자 '처음에 이름 정할 때 보여 주는 랜덤 학원 이름')
   UI.newDiff = UI.newDiff && DIFFS[UI.newDiff] ? UI.newDiff : "normal";
   const draw = ()=> showModal(`<div class="cerhead"><div class="eyebrow">새 시나리오</div>
       <h2 style="font-size:24px;margin-top:2px">학원의 이름</h2>
