@@ -9,6 +9,7 @@
 ## 처음 한 번
 
 Node.js 20 이상이 필요하다 (https://nodejs.org).
+앱을 고친 뒤에는 열려 있는 창을 모두 닫고 `npm start` 만 다시 (npm install 은 처음 한 번 — 한 번만 실행되게 해 두어서 창이 남아 있으면 새로 띄우지 않고 그 창을 앞으로 가져온다).
 PowerShell 이 `npm` 을 막으면(스크립트 실행 정책) `npm.cmd install` · `npm.cmd start` 처럼 `.cmd` 를 붙인다. `Electron failed to install correctly` 가 나오면 `node node_modules/electron/install.js` 한 번.
 
 ```
@@ -48,7 +49,7 @@ npm run dist:zip        → dist/HeroSchool-0.1.0-win-x64.zip
 | 단축키 | F11 · Alt+Enter — 창 ↔ 전체 화면 |
 | 끝내기 | 설정 화면 '게임 끝내기' · 시작 화면 EXIT (저장하고 닫는다) |
 | 테두리 없음 | 이 모드로 · 에서 바꾸면 창을 새로 연다 — 새 창의 게임이 보던 곳(시작 화면 설정 창 · 게임 설정 화면)을 다시 연다 (1026 · main.js resume) |
-| 시작 화면 | 배경 음악(title)이 바로 나온다 (PC 판은 자동 재생 허용) · 메뉴 단추에 마우스를 올리면 소리 |
+| 시작 화면 | 배경 음악(title)이 바로 나온다 (PC 판은 자동 재생 허용) · 메뉴 단추에 마우스를 올리면 소리 · 선택지를 누르면 title_pick · 설정 창 안을 누르면 menu_pick (사용자 소리 — bgm/) |
 | 설정 | 시작 화면 설정 창은 두 줄 (글자 아주 크게에서도 스크롤 없음) · 전투 재생 속도는 ×1 · ×2 · 전투 배치 격자 줄은 숨김 (1026 사용자 — PC 판만) |
 | 채팅 | PC 판에서는 숨긴다 (채팅 단추 · 창 · 읽기 · 보내기 — 1026 사용자 '채팅은 PC 빌드에서 숨김') · 리그는 그대로 |
 
@@ -60,7 +61,7 @@ npm run dist:zip        → dist/HeroSchool-0.1.0-win-x64.zip
 |---|---|
 | `main.js` | 창 · `app://heroschool/` (app/ 를 정해진 주소로 — 저장이 이 주소에 남는다) · 키 · 새 창 링크는 기본 브라우저 · 한 번만 실행 |
 | `display.js` | 화면 모드 · 창 크기 프리셋 · 자리 기억 (`display.json`) |
-| `preload.js` | 게임에 `window.hsDesk` (get · set · quit · on) — 게임은 화면 맞춤 iframe 안에서 돌아서 모든 프레임에 연다 |
+| `preload.js` | 게임에 `window.hsDesk` (get · set · quit · on) — 게임은 화면 맞춤 iframe 안에서 돌아서 모든 프레임에 연다. preload 가 게임 프레임에 닿지 않아도 게임(PCAPP)이 `app://heroschool/__desk/get · set · quit` 주소로 같은 일을 한다 (1026 — main.js deskHttp) |
 | `tools/prepare.mjs` | `app/` 에 게임 모으기 — heroschool.html 과 그 안에 이름이 적힌 그림 · 소리만 (원본 png · 프롬프트 json · 큰 wav 는 뺀다 · 글꼴 사용 허락 글은 같이). 넣지 않은 파일은 `prepare-skipped.txt` — 게임에서 빠진 그림이 보이면 `KEEP` 에 |
 | `tools/test_electron.cjs` | (선택) 리눅스 클라우드 시험 — playwright `_electron` · xvfb + openbox |
 | `tools/check_pc2.cjs` | (선택) 1026 둘째 — 설정 창 두 줄 · 속도 · 격자 · 시작 화면 음악 · 메뉴 소리 · 테두리 없음 뒤 다시 열기 |

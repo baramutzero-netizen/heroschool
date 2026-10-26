@@ -17,6 +17,12 @@ const sz = (app, w, h) => app.evaluate(({BrowserWindow}, [w, h]) => BrowserWindo
   await fr.evaluate(() => { window.__sfx = []; const f0 = sfxPlay; window.sfxPlay = function(k){ window.__sfx.push(k); return f0.apply(this, arguments); }; });
   for(const id of ["#tNew", "#tSettings", "#tQuit"]){ const b = await fr.$(id); await b.hover(); await win.waitForTimeout(150); }
   ok(await fr.evaluate(() => window.__sfx.filter(k => k === "xm_hover").length >= 3), "메뉴 마우스 소리 " + await fr.evaluate(() => window.__sfx.join(",")));
+  await fr.click("#tSettings"); await win.waitForTimeout(500);
+  await fr.click('.title-settings [data-title-pref="lvPopup"]'); await win.waitForTimeout(200);
+  await fr.click('.title-settings [data-title-pref="lvPopup"]'); await win.waitForTimeout(200);
+  ok(await fr.evaluate(() => window.__sfx.includes("title_pick") && window.__sfx.filter(k => k === "menu_pick").length >= 2), "누르는 소리 — 선택지 title_pick · 설정 창 안 menu_pick " + await fr.evaluate(() => window.__sfx.join(",")));
+  ok(await fr.evaluate(() => window.hsDesk && window.hsDesk.platform), "다리 " + await fr.evaluate(() => window.hsDesk && window.hsDesk.platform));
+  await fr.evaluate(() => document.querySelector(".title-settings")?.close());
   for(const [w, h] of [[1280, 720], [1600, 900], [1920, 1080]]){
     await sz(app, w, h); await win.waitForTimeout(900);
     for(const f of ["normal", "xlarge"]){

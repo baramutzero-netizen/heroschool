@@ -26,6 +26,7 @@ app.on("second-instance", () => { if(win){ if(win.isMinimized()) win.restore(); 
 function serve(){
   protocol.handle("app", req => {
     const u = new URL(req.url);
+    if(u.pathname.startsWith("/__desk/")) return deskHttp(u);
     const p = path.normalize(path.join(ROOT, decodeURIComponent(u.pathname)));
     if(!p.startsWith(ROOT + path.sep)) return new Response("not found", {status: 404});
     return net.fetch(pathToFileURL(p).toString()).catch(() => new Response("not found", {status: 404}));
@@ -46,7 +47,8 @@ function tell(){                                                              //
 
 function open(){
   const base = {title: TITLE, backgroundColor: "#F6F3E9", show: false, autoHideMenuBar: true, icon: path.join(__dirname, "build", "icon.png"),
-    webPreferences: {preload: path.join(__dirname, "preload.js"), contextIsolation: true, sandbox: true, nodeIntegrationInSubFrames: true, backgroundThrottling: false, spellcheck: false}};
+    webPreferences: {preload: process.env.HS_NO_PRELOAD ? undefined : path.join(__dirname, "preload.js"),   // HS_NO_PRELOAD — 시험용 (preload 없이 __desk 다리만)
+      contextIsolation: true, sandbox: true, nodeIntegrationInSubFrames: true, backgroundThrottling: false, spellcheck: false}};
   const w = new BrowserWindow(D.windowOptions(S, base));
   w.webContents.setWindowOpenHandler(({url}) => { if(/^https?:/i.test(url)) shell.openExternal(url); return {action: "deny"}; });
   w.webContents.on("will-navigate", (e, url) => { if(!url.startsWith("app://")){ e.preventDefault(); if(/^https?:/i.test(url)) shell.openExternal(url); } });
@@ -94,18 +96,30 @@ function setSize(k){
   win.setContentSize(q.w, q.h); win.center(); remember(); tell();
 }
 
-ipcMain.handle("desk:get", e => {
+/* 게임 ↔ 창 — preload 의 hsDesk(IPC) 와 같은 일을 app://heroschool/__desk/ 주소로도 (1026 — preload 가 게임 프레임에 닿지 않는 PC 에서도 화면 설정이 보이게 · 게임 PCAPP 의 대신 다리) */
+function deskGet(fromNew){
   const st = D.state(win, S);
-  if(resume && win && e.sender === win.webContents){ st.resume = resume; resume = null; }   // 1026 — 테두리 없는 전체 화면으로 · 에서 바꾸면 창을 새로 연다: 새 창이 보던 설정을 다시 연다
+  if(resume && fromNew){ st.resume = resume; resume = null; }   // 1026 — 테두리 없는 전체 화면으로 · 에서 바꾸면 창을 새로 연다: 새 창이 보던 설정을 다시 연다
   return st;
-});
-ipcMain.handle("desk:set", (e, o) => {
+}
+function deskSet(o){
   o = o || {};
   if(o.mode){ const m = String(o.mode); if(m !== S.mode && (m === "borderless" || S.mode === "borderless")) resume = (o.resume === "opt" || o.resume === "title") ? o.resume : null; setMode(m); }
   if(o.size) setSize(String(o.size));
   setTimeout(tell, 200);
   return D.state(win, S);
-});
+}
+function deskHttp(u){
+  const op = u.pathname.slice("/__desk/".length), J = o => new Response(JSON.stringify(o), {headers: {"content-type": "application/json", "cache-control": "no-store"}});
+  try{
+    if(op === "get") return J(deskGet(u.searchParams.get("first") === "1"));
+    if(op === "set"){ let o = {}; try{ o = JSON.parse(u.searchParams.get("o") || "{}"); }catch(e){} return J(deskSet(o)); }
+    if(op === "quit"){ quitting = true; setTimeout(() => app.quit(), 50); return J({ok: true}); }
+  }catch(e){ return J({error: String(e && e.message || e)}); }
+  return new Response("not found", {status: 404});
+}
+ipcMain.handle("desk:get", e => deskGet(!!(win && e.sender === win.webContents)));
+ipcMain.handle("desk:set", (e, o) => deskSet(o));
 ipcMain.handle("desk:quit", () => { quitting = true; app.quit(); });
 
 app.whenReady().then(() => {

@@ -956,6 +956,46 @@ html[data-font="pixel"] .prol .ptitle{font-synthesis:weight;font-weight:700}   /
 body.op-veiled .overlay{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}
 @media (prefers-reduced-motion:reduce){.op-veil::before,.op-veil::after,.op-wisp i,.op-wisp::before,.op-wisp::after{animation:none}.op-wisp::before,.op-wisp::after{opacity:.6}}
 @media(max-width:600px){.op-talk{gap:12px;padding:12px 14px 16px}.op-face{width:84px;height:84px}.op-body{min-height:72px}.op-name{font-size:13px;margin-bottom:6px}.op-text{font-size:15px}.op-text.big{font-size:min(30px,6.8vw)}.op-still{bottom:calc(max(5vh,22px) + 150px)}}
+/* OPTALK_CSS_START — 오프닝 · 아버지의 마지막 대화창을 다른 시나리오(.fst 대화창)와 같은 모양으로 (1026 · apply_optalk.py)
+   사용자 1026 '프롤로그에서 나오는 모든 텍스트 스타일을 다른 시나리오들에서 사용하는 텍스트 스타일로 — 텍스트바하고 텍스트바 위에 캐릭터 프로필이 들어가는 방식'.
+   마크업 · opSay 는 그대로 (.op-talk · .op-face · .op-name · .op-text · .op-next) — 모양만: 화면 아래 가로로 긴 대화창(게임 팝업 상자 색 · 도트 글꼴) ·
+   왼쪽 위 이름표(색 점) · 오른쪽 아래 ▼ · 얼굴(512 초상화 — 마왕 · 팔라딘 · 마법사)은 상자 밖 대화창 위 오른쪽에 선다 (당신 · 여신 · 아버지는 얼굴 없이).
+   글자 크기 설정(FONTSZ — 크게 · 아주 크게)은 --fszk 로 글자만 키우고 대화창이 그만큼 늘어난다. 학원제 결승 목업(FFOP)의 대화창도 같은 클래스라 같이 바뀐다. */
+.op-talk{--fst-ink:#fff4e6;--fst-line:#e9cdbf;--fst-edge:#b98f84;--fst-win:#2a1418;--fst-panel:#42191f;--fst-gold:#ffd36a;--fst-name:#ffd8c8;--fst-dark:#140a0c;
+  --fst-side:8px;--fst-bot:8px;--fst-h:104px;--fst-fs:16px;--fst-lh:24px;--fst-pad:12px 16px 10px;--fst-bust:128px;--fst-over:12px;--rc:#ffd36a;
+  display:block;gap:0;left:50%;right:auto;bottom:calc(var(--fst-bot) + env(safe-area-inset-bottom,0px));width:calc(100vw - var(--fst-side) * 2);min-height:var(--fst-h);
+  padding:var(--fst-pad);border-radius:0;background:var(--fst-panel);border:2px solid var(--fst-line);
+  box-shadow:inset 0 0 0 2px var(--fst-panel),inset 0 0 0 3px var(--fst-edge),0 0 0 2px var(--fst-dark),4px 5px 0 2px rgba(0,0,0,.44);
+  font-family:"Mulmaru",sans-serif;color:var(--fst-ink);-webkit-font-smoothing:none;font-synthesis:none}
+@media (min-width:600px){.op-talk{--fst-side:16px;--fst-h:92px;--fst-fs:20px;--fst-lh:28px;--fst-pad:14px 24px 10px;--fst-bust:192px;--fst-over:16px}}
+@media (min-width:1100px){.op-talk{--fst-side:max(40px,calc(50vw - 600px));--fst-h:96px;--fst-fs:24px;--fst-lh:32px;--fst-pad:16px 34px 12px;--fst-bust:256px;--fst-over:20px}}
+.op-talk .op-body{position:static;min-height:0}
+/* 이름표 — 대화창 왼쪽 위에 걸친다 (.fst-nm) */
+.op-talk .op-name{position:absolute;left:20px;top:-36px;height:38px;margin:0;padding:0 16px 0 12px;display:flex;align-items:center;gap:10px;white-space:nowrap;
+  background:var(--fst-win);border:2px solid var(--fst-line);box-shadow:0 0 0 2px var(--fst-dark),3px 3px 0 1px rgba(0,0,0,.4);
+  font-family:inherit;font-weight:400;font-size:calc(var(--fst-fs) * var(--fszk,1));line-height:1;letter-spacing:0;color:var(--fst-name)}
+.op-talk .op-name::before{content:"";width:12px;height:12px;flex:none;background:var(--rc);box-shadow:0 0 0 2px var(--fst-dark)}
+.op-talk .op-name:empty{display:none}
+.op-talk .op-name.demon{--rc:#c58cf2}.op-talk .op-name.pal{--rc:#8cc4f0}.op-talk .op-name.wiz{--rc:#c9a4f2}.op-talk .op-name.you{--rc:#ffd36a;color:#ffd36a}
+.op-talk .op-name.goddess{--rc:#9fd8ff}.op-talk .op-name.dad{--rc:#f1cf9a}.op-talk .op-name.ffdp{--rc:#e07a8a}
+@media (max-width:599px){.op-talk .op-name{left:12px;top:-30px;height:32px;padding:0 12px 0 10px;gap:8px}.op-talk .op-name::before{width:10px;height:10px}}
+/* 글 — 도트 글꼴 · 대화창 글 크기 (크하하하… 처럼 큰 줄은 1.5배) */
+.op-talk .op-text{font-size:calc(var(--fst-fs) * var(--fszk,1));line-height:calc(var(--fst-lh) * var(--fszk,1));min-height:0;font-weight:400;letter-spacing:0;
+  white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere;padding-right:18px}
+.op-talk .op-text.big{font-size:calc(var(--fst-fs) * 1.5 * var(--fszk,1));line-height:calc(var(--fst-lh) * 1.5 * var(--fszk,1));font-weight:400;letter-spacing:.02em}
+.op-talk .op-next{right:16px;bottom:8px;font-size:var(--fst-fs);line-height:1;color:var(--fst-gold)}
+.op-talk.done .op-next{animation:fstNx .8s steps(2) infinite}
+/* 얼굴 — 대화창 위 오른쪽에 선 초상화 (상자 · 테두리 없이 · 아래는 대화창 쪽으로 흐려진다 — .fst-bust) */
+.op-talk .op-face{position:absolute;right:18px;bottom:calc(100% - var(--fst-over));width:var(--fst-bust);height:var(--fst-bust);border:0;border-radius:0;overflow:visible;
+  background:none;box-shadow:none;pointer-events:none;filter:drop-shadow(1.5px 0 0 #140a0c) drop-shadow(-1.5px 0 0 #140a0c) drop-shadow(0 -1.5px 0 #140a0c)}
+.op-talk .op-face img{width:100%;height:100%;object-fit:contain;transform:none;filter:none;image-rendering:pixelated;
+  -webkit-mask-image:linear-gradient(#000 80%,transparent 98%);mask-image:linear-gradient(#000 80%,transparent 98%)}
+.op-talk .op-face.demon{filter:drop-shadow(1.5px 0 0 #140a0c) drop-shadow(-1.5px 0 0 #140a0c) drop-shadow(0 -1.5px 0 #140a0c) drop-shadow(0 0 10px rgba(165,101,255,.55))}
+.op-talk.goddess{border-color:#cfe6ff;box-shadow:inset 0 0 0 2px var(--fst-panel),inset 0 0 0 3px #8fb8e0,0 0 0 2px var(--fst-dark),4px 5px 0 2px rgba(0,0,0,.44),0 0 34px rgba(120,190,255,.18)}
+/* 아버지의 마지막 — 그림(맞잡은 손 · 무덤)은 대화창 · 이름표 위까지 */
+.op-father .op-still{bottom:calc(var(--fst-bot,8px) + 96px * var(--fszk,1) + 66px)}
+@media (max-width:599px){.op-father .op-still{bottom:calc(8px + 104px * var(--fszk,1) + 52px)}}
+/* OPTALK_CSS_END */
 .missionbox{background:var(--surface);border:1px solid var(--brass);border-radius:4px;padding:12px;margin-bottom:14px}
 .mtitle{font-family:"Gowun Batang",serif;font-size:17px;font-weight:700;color:var(--brass);line-height:1.3}
 .mdesc{font-size:12.5px;color:var(--text);margin-top:4px}
@@ -2165,6 +2205,11 @@ html[lang="ja"] .crec-bub,html[lang^="zh"] .crec-bub{word-break:normal}   /* 일
 .prst.nm .fst-hit,.prst.out .fst-hit{pointer-events:none}
 .prst.nm .fst-cast,.prst.nm .fst-talk,.prst.nm .fst-think{display:none}
 .prst .rv-skip[hidden]{display:none}
+/* 1026 — B 단락 셋 (사용자 '학생들의 웃는 얼굴 3개') · 02 무대처럼 가운데 셋 (마법사 · 팔라딘 · 암흑 사제) — 학생이 말하면 그 학생만 밝게 */
+.fst.prst.trio .fst-cast{left:50%;right:auto;width:calc(var(--fst-bust) + var(--fst-step) * 2);margin-left:calc((var(--fst-bust) + var(--fst-step) * 2) / -2)}
+.prst.trio .fst-bust[data-who="darkpriest"]{right:0}
+.prst.trio .fst-bust[data-who="paladin"]{right:var(--fst-step)}
+.prst.trio .fst-bust[data-who="wizard"]{right:calc(var(--fst-step) * 2)}
 @media (prefers-reduced-motion:reduce){.prst .pr-warm,.prst .rv-img{transition:none}}
 /* PRST_CSS_END */
 /* MONSH_CSS_START — 마물 바닥 그림자 (1024 · apply_monsh.py) ─ 사용자 1024 '몬스터 npc한테도 바닥에 타원형 그림자 옅은거 추가해주자'.
@@ -8479,7 +8524,7 @@ const OPT_FIELD_PASTEL = false;     // 전투 배경 파스텔 필터 켜고 끄
 const OPT_XFER_FILE    = false;     // 이어하기 — 파일로 내보내기 · 파일에서 불러오기
 const OPT_PIXEL_FONT   = false;     // 도트 폰트 켜고 끄기 (1004 — 숨긴 동안은 모두 기본값: 켬)
 const OPT_BATTLE_CAM   = true;      // 전투 연출 심플 · 스타일리시 (1004 숨김 → 1022 다시 보임 — 사용자 · 기본값은 스타일리시)
-const PREF = {bspeed: 280, reportSpeed: 2, chronicleTest: false, uiConcept: "riso-pixel", uiV: 4, lvPopup: true, fieldPastel: false, pixelFont: true, bfGrid: false, battleCam: "stylish", schedScroll: true, skillPick: "all", koFont: "galmuri", koV: 2, fontSize: "normal", tcom: "both"};   // 1025 둘째 (QOL25) — 기본 한국어 글꼴 갈무리11 (koV 2)
+const PREF = {bspeed: 280, reportSpeed: 2, chronicleTest: false, uiConcept: "riso-pixel", uiV: 4, lvPopup: true, fieldPastel: false, pixelFont: true, bfGrid: false, battleCam: "stylish", schedScroll: true, skillPick: "all", koFont: "galmuri", koV: 2, fontSize: "large", fszV: 1, tcom: "both"};   // 1025 둘째 (QOL25) — 기본 한국어 글꼴 갈무리11 (koV 2)
 /* uiV 4 — 삽화를 기본으로 적용하고 이전 화면 분위기 선택은 숨긴다. */
 try{
   const j = JSON.parse(localStorage.getItem(PREF_KEY) || "null");
@@ -8496,7 +8541,7 @@ try{
   if(j && typeof j.schedScroll === "boolean") PREF.schedScroll = j.schedScroll;   // 두루마리 스케줄 (1006)
   if(j && ["all","mine","foe","off"].includes(j.skillPick)) PREF.skillPick = j.skillPick;   // 기술 선택 연출 (1015 — 기본은 모든 학생)
   if(j && ["mulmaru","galmuri"].includes(j.koFont) && (j.koFont === "galmuri" || (j.koV|0) >= 2)) PREF.koFont = j.koFont;
-  if(j && ["normal","large","xlarge"].includes(j.fontSize)) PREF.fontSize = j.fontSize;   // 1026 (FONTSZ) — 글자 크기   // 1025 둘째 (QOL25) — 예전 저장값 물마루는 기본값이었다 (koV 2 뒤에 고른 것만)
+  if(j && (j.fszV|0) >= 1 && ["normal","large","xlarge"].includes(j.fontSize)) PREF.fontSize = j.fontSize;   // 1026 (FONTSZ) — 글자 크기 (기본 크게 — fszV 1 전에 저장된 값(그때 기본 보통)은 읽지 않는다)   // 1025 둘째 (QOL25) — 예전 저장값 물마루는 기본값이었다 (koV 2 뒤에 고른 것만)
   if(j && ["both","sub","off"].includes(j.tcom)) PREF.tcom = j.tcom;   // 1024 — 대회 중계 (TCOM) — 음성 + 자막 · 음성 숨김 · 숨김                  // 한국어 글꼴 — 물마루 · 갈무리11 (1017)
   if(j && j.sign && Array.isArray(j.sign.s) && j.sign.s.length) PREF.sign = j.sign;          // 결재 서명 — 이 브라우저에 남는다 (1006)
   if(j && ["simple","stylish"].includes(j.battleCam) && OPT_BATTLE_CAM) PREF.battleCam = j.battleCam;   // 0930 — 스타일리시가 기본. 예전 "basic" 저장값은 한 번 무시한다 · 설정을 숨긴 동안은 모두 기본값(1004)
@@ -18665,6 +18710,7 @@ function renderPrepBar(){
   };
 }
 function render(){
+  if(!S) return;   // 1026 — 세이브가 없는 시작 화면에서 불리면(창 크기 바뀜 등) 아무것도 하지 않는다
   if(window.RSTO) RSTO.gate();   // 1023 — 초반 스토리 01B (RSTO) — 첫 주를 마치기 전에는 학생 명부 · 팀 편성으로 가지 않고 안내 (명부 책보다 먼저)
   if(window.RBK) RBK.intercept();   // 1009 — 가로 넓은 화면: 학생 명부 · 팀 편성은 책 팝업 (apply_roster)
   { const fb = $("#btnFeed");
@@ -18810,6 +18856,7 @@ function render(){
   if(window.RSTO) RSTO.after();   // 1023 — 초반 스토리 01B (RSTO) — 첫 주를 마치면 첫 학생 명부 · 중간에 나갔으면 그 단락부터 (S.rost)
   if(window.SMST) SMST.after();   // 1023 — 첫 여름 합숙 이야기 06 (SMST) — 장면 중에 나갔으면 (여름 동안) 합숙 안내 차례를 다시 만든다 (S.smst)
   if(window.SPST) SPST.after();   // 1023 — 학원제 개막식의 밤 07 (SPST) — 장면 중에 나갔으면 (그 여름 동안) 첫 쪽 차례를 다시 만든다 (S.spst)
+  if(window.PRST) PRST.after();   // 1024 — 프롤로그 00 (PRST) — 이름을 정한 뒤 PR22 전에 나갔으면 PR21 부터 → 첫 시간표 (S.story.prologue)
   if(window.CTST) CTST.after();   // 1024 — 첫 시내 대회 이야기 08 (CTST) — 결말 중에 다시 열었으면 남은 장면부터 (S.ctst)
   if(window.RKST) RKST.after();   // 1024 — 첫 봄 신인전 이야기 09 (RKST) — 결말 중에 다시 열었으면 그 장면부터 (S.rkst)
   if(window.SHVS) SHVS.after();   // 1024 — 도구상 · 목수 첫 방문 08b (SHVS) — 처분 세이브(S.shvs) · 책 처분 단추 · 장면 중에 나갔으면 그 단락부터
@@ -19147,6 +19194,22 @@ window.QOL25 = {after: () => sideArt(false), sideArt, art: SIDE_ART};
      전투 재생 속도는 ×1 · ×2 만 (BSPEEDS — 전투 화면 단추 · 설정 모두) · 전투 배치 격자 줄은 숨김(꺼 둔다) · 시작 화면부터 배경 음악(title — PC 판은 자동 재생이 된다) ·
      설정 창 꼬리글은 첫 줄만 ('음악은 게임을 시작하면 재생됩니다'는 PC 판에 맞지 않는다) */
 (function(){
+/* 1026 셋째 — preload(window.hsDesk)가 게임 프레임에 닿지 않는 PC 가 있었다 (사용자 화면: 화면 모드 · 창 크기 줄 · 두 줄 설정 · 시작 화면 음악이 모두 없음).
+   PC 판 주소(app://heroschool/)면 main.js 의 __desk 주소로 같은 일을 하는 대신 다리를 놓는다 — get · set · quit · on(1.5초마다 상태를 읽어 바뀌면) */
+if(!window.hsDesk && location.protocol === "app:"){
+  const base = location.origin + "/__desk/", q = (op, p) => fetch(base + op + (p ? "?" + p : ""), {cache: "no-store"}).then(r => r.json());
+  const key = st => JSON.stringify(Object.assign({}, st, {resume: undefined}));
+  let first = true, last = "", tick = 0;
+  const fns = [];
+  const poll = () => q("get").then(st => { const k = key(st); if(k === last) return; const was = last; last = k; if(was) fns.forEach(f => { try{ f(st); }catch(e){} }); }).catch(() => {});
+  try{
+    window.hsDesk = {platform: "electron-fetch",
+      get: () => { const p = q("get", first ? "first=1" : ""); first = false; return p.then(st => { last = key(st); return st; }); },
+      set: o => q("set", "o=" + encodeURIComponent(JSON.stringify(o || {}))).then(st => { last = key(st); return st; }),
+      quit: () => q("quit"),
+      on: fn => { if(typeof fn !== "function") return; fns.push(fn); if(!tick) tick = setInterval(poll, 1500); }};
+  }catch(e){}
+}
 const PC_MODE = [["window", "창"], ["fullscreen", "전체 화면"], ["borderless", "테두리 없는 전체 화면"]];
 const PC = {st: null, on: false};
 function pcD(){ return window.hsDesk && typeof window.hsDesk.get === "function" ? window.hsDesk : null; }
@@ -19306,6 +19369,7 @@ const FSZ_ZOOM = [                                                            //
 const FSZ_FIT = [["cslwFit", () => typeof CSLW !== "undefined" && CSLW.el], ["scwFit", () => typeof SCW !== "undefined" && SCW.el], ["lkwFit", () => typeof LKW !== "undefined" && LKW.el]];
 const FSZ_EXTRA = [                                                           // 덧붙임 — 커진 글자로 넘치는 줄
   `.optctl .btnpair:not(#fsz){flex:0 1 auto;flex-wrap:wrap;max-width:100%}`,     // 설정의 단추 줄 — 커진 글자로 폭이 넘치면 다음 줄로 (폰)
+  `body > .fst .fst-cast{bottom:calc((var(--fst-bot) + var(--fst-h)) * var(--fst-tz, 1) + env(safe-area-inset-bottom,0px) - var(--fst-over))}`,   // 1026 — 이야기 초상화: 커진 대화창(zoom — 아래 여백도 같이 커진다) 위에 같은 만큼만 걸친다
   `.title-settings[data-fszz]{width:min(560px, calc((100vw - 32px) / var(--fszz)))!important;max-height:calc(85dvh / var(--fszz))!important}`   // 시작 화면 설정 창 — title-screen.css(<link> · file:// 로 열면 읽을 수 없다)의 vw · dvh 를 ÷ 배율
 ];
 const FSZ = {el: null, sig: "", t: 0, n: 0, mo: null, q: 0, rs: 0};
@@ -19390,6 +19454,7 @@ function fszSetZ(el, z, k){                                                   //
   const t = k / z;
   el.style.setProperty("zoom", z.toFixed(3)); el.style.setProperty("--fszz", z.toFixed(3));
   el.style.setProperty("--fszk", t.toFixed(3)); el.style.setProperty("--fszk2", (1 + (t - 1) / 2).toFixed(3));
+  if(el.classList.contains("fst-talk") && el.parentElement) el.parentElement.style.setProperty("--fst-tz", z.toFixed(3));   // 1026 — 이야기 대화창이 커진 만큼 초상화도 위로 (FSZ_EXTRA)
 }
 function fszFit(el, Z, k){
   let z = Math.min(k, Math.max(1, window.innerWidth / FSZ_MINW));
@@ -19419,7 +19484,7 @@ function fszMark(){
     seen.add(el);
     if(!el.hasAttribute("data-fszz") || FSZ.rs){ el.setAttribute("data-fszz", ""); fszFit(el, Z, k); }
   });
-  document.querySelectorAll("[data-fszz]").forEach(el => { if(!seen.has(el)){ el.removeAttribute("data-fszz"); ["zoom", "--fszz", "--fszk", "--fszk2"].forEach(x => el.style.removeProperty(x)); } });
+  document.querySelectorAll("[data-fszz]").forEach(el => { if(!seen.has(el)){ el.removeAttribute("data-fszz"); ["zoom", "--fszz", "--fszk", "--fszk2"].forEach(x => el.style.removeProperty(x)); if(el.classList.contains("fst-talk") && el.parentElement) el.parentElement.style.removeProperty("--fst-tz"); } });
   FSZ.rs = 0;
   fszTin(k);
 }
@@ -23828,7 +23893,7 @@ function facTabView(tab){ return tab==="item" ? viewItemShop() : tab==="draft" ?
    1013 — 넓은 화면 = 폭 1100 이상 (예전: 1100 이상 · 가로). 마을 · 마스터 노트 책상 · 명부 책 · 두루마리 스케줄 · 전투 방향(bfOrient)이 이 판정(townMode)을 쓴다 */
 const TOWN_MQ = (typeof matchMedia === "function") ? matchMedia("(min-width:1100px)") : null;
 function townMode(){ return !TOWN_MQ || TOWN_MQ.matches; }
-if(TOWN_MQ){ const h = ()=>{ if(typeof UI !== "undefined" && (UI.view === "facil" || UI.view === "home" || UI.view === "master")) render(); };   // 1006 — 마스터 노트 책상도
+if(TOWN_MQ){ const h = ()=>{ if(typeof S !== "undefined" && S && typeof UI !== "undefined" && (UI.view === "facil" || UI.view === "home" || UI.view === "master")) render(); };   // 1006 — 마스터 노트 책상도 · 1026 — 시작 화면(S 없음)에서는 그리지 않는다 (PC 판 다시 켤 때 창 크기가 바뀌며 오류)
   if(TOWN_MQ.addEventListener) TOWN_MQ.addEventListener("change", h); else if(TOWN_MQ.addListener) TOWN_MQ.addListener(h); }
 function viewFacil(){
   const TB = facTabs();
@@ -43034,7 +43099,9 @@ window.PRTK = {start, stop, pick, band, sitOf, lines: {sit: PK_SIT, mood: PK_MOO
    · 언제 — 오프닝 끝(아버지의 마지막 → opToPrologue · 건너뛰기 go) 이 부르는 showPrologue(PROL_FROM) 맨 앞의 고리. 학원 이름 창의 '뒤로'(showPrologue 마지막 쪽)는 C 단락(PR17)부터.
    · 무대 — 02 무대(.rvst) 그대로 · 배경은 예전 프롤로그 CG 두 장을 도트화(정문 — 문 사이 마을만 잘라 · 책상 — 전체 · PR_ART) · 마스터 생각은 이름 없는 생각 창 · 말은 금빛 이름표 '마스터'.
      생각 · 마스터 말에는 초상화를 숨기고, 학생이 말할 때만 그 학생의 작은 초상화 하나 (대화창 위 오른쪽).
-     A 정문 PR01 ~ 10 (PR01 암전 자막 '왕국력 231년 봄.' → 확인하면 정문 CG 0.8초 · PR10 확인하면 0.5초 암전 → 책상 CG) → B 책상 PR11 ~ 16 (PR13 조금 따뜻한 빛) →
+     A 정문 PR01 ~ 10 (PR01 암전 자막 '왕국력 231년 봄.' → 확인하면 정문 CG 0.8초 · PR10 확인하면 0.5초 암전 → 마스터 책상) → B 책상 PR11 ~ 16 (PR13 조금 따뜻한 빛) →
+     1026 — B 는 마스터 노트 책상 그림(MDESK_ART.ext)에 세 학생의 웃는 얼굴(가운데 셋 · PR11 에 들어온다 · 학생이 말하면 그 학생만 밝게) — 사용자 '이 타이밍에 해당 부분 삽화를
+     마스터 노트 화면으로 바꾸고, 학생들의 웃는 얼굴 3개를 띄우자' · C 부터는 예전처럼 책상 CG(PR_ART 3) — 0.5초 암전.
      C 장부 PR17 ~ 19 (PR18 검을 세우는 소리 → 종이를 펼치는 소리) → PR20 예전 학원 이름 창(askAcademyName — 무대는 창 뒤에 깔린다) →
      이름을 정하면(newScenarioStart — 새 게임 · 저장) PR21 '{학원 이름}. ……좋아. 시작해 보자.' → PR22 0.5초 암전 · 자막 '첫 수업일 아침' → 확인하면 마스터 화면 → PR23 첫 시간표(FST.start · 01 의 01번부터).
    · 이름 — 팔라딘 · 마법사는 오프닝에서 불린 이름(UI.openPal · openWiz) · 암흑 사제는 여기서 정해(UI.openDp) newScenarioStart 가 학생에게 붙인다.
@@ -43143,7 +43210,7 @@ function prBuild(){
   hit.addEventListener("touchmove", e => e.preventDefault(), {passive: false});
   r.querySelector(".rv-skip").addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); prSkip(); });
   PR_JOBS.forEach(j => Object.keys(PR_FACE[j] || {}).forEach(f => { const im = new Image(); im.src = PR_FACE[j][f]; }));
-  ["2", "3"].forEach(k => { const u = prArtSrc(k); if(u){ const im = new Image(); im.src = u; } });
+  ["2", "m", "3"].forEach(k => { const u = prArtSrc(k); if(u){ const im = new Image(); im.src = u; } });
 }
 function prTeardown(){ if(R.root) R.root.remove(); R.root = null; }
 document.addEventListener("keydown", e => {
@@ -43162,12 +43229,15 @@ function prFade(el, to, ms){
     a.onfinish = a.oncancel = () => res();
   });
 }
-function prArtSrc(k){ return PR_ART[k] || (typeof PROL_IMG !== "undefined" ? PROL_IMG[k] : ""); }
+function prArtSrc(k){
+  if(k === "m") return (typeof MDESK_ART !== "undefined" && MDESK_ART.ext) || PR_ART["3"] || "";   // 1026 — B 단락 · 마스터 노트 책상 그림
+  return PR_ART[k] || (typeof PROL_IMG !== "undefined" ? PROL_IMG[k] : "");
+}
 function prArt(k){
   const img = xq(".rv-img"); if(!img) return;
   const src = prArtSrc(k);
   img.style.backgroundImage = src ? `url("${src}")` : "none";
-  img.style.backgroundPosition = k === "3" ? "50% 40%" : "50% 50%";   // 정문 — 문 사이 마을만 (학생은 빠졌다 · 말할 때 작은 초상화)
+  img.style.backgroundPosition = k === "m" ? "42% 46%" : k === "3" ? "50% 40%" : "50% 50%";   // 마스터 책상 — 다른 장면과 같은 자리(f .42 · .46)   // 정문 — 문 사이 마을만 (학생은 빠졌다 · 말할 때 작은 초상화)
   R.root.dataset.cg = k;
 }
 function prBox(kind){ const a = xq(".fst-think"), b = xq(".fst-talk"); if(a) a.classList.toggle("show", kind === "think"); if(b) b.classList.toggle("show", kind === "talk"); }
@@ -43178,9 +43248,38 @@ function prPlate(who){
   nm.style.setProperty("--rc", who === "master" ? "#ffd36a" : who === "paladin" ? "#8cc4f0" : who === "wizard" ? "#c9a4f2" : "#e07a8a");
   tk.classList.toggle("mst", who === "master");
 }
+/* 1026 — B 단락: 세 학생의 웃는 얼굴 (가운데 셋 · 생각 · 마스터 말에는 셋 다 밝게 · 학생이 말하면 그 학생만 밝게 · 표정은 그 줄 것) */
+const PR_SMILE = {paladin: "joy", wizard: "smile", darkpriest: "smile"};
+function prTrioFace(who, face){
+  const b = R.root && R.root.querySelector(`.fst-bust[data-who="${who}"]`); if(!b) return;
+  const set = PR_FACE[who] || {}, src = set[face] || set[PR_SMILE[who]] || set.smile;
+  const im = b.querySelector("img"); if(src && im.getAttribute("src") !== src) im.src = src;
+}
+function prTrio(on){
+  if(!R.root) return;
+  const was = R.root.classList.contains("trio");
+  R.root.classList.toggle("trio", !!on);
+  R.root.querySelectorAll(".fst-bust").forEach((b, i) => {
+    b.getAnimations().forEach(a => a.cancel());
+    if(!on){ b.hidden = true; b.classList.remove("on"); return; }
+    prTrioFace(b.dataset.who);
+    b.hidden = false; b.classList.add("on");
+    if(!was) b.animate(rRM() ? [{opacity: 0}, {opacity: 1}] : [{transform: "translateY(22px)", opacity: 0}, {transform: "none", opacity: 1}],
+      {duration: rRM() ? 140 : 420, delay: rRM() ? 0 : i * 110, easing: "cubic-bezier(.2,.85,.3,1.1)", fill: "backwards"});
+  });
+  prLog("trio", on ? 1 : 0);
+}
+function prTrioLit(who, face){
+  R.root.querySelectorAll(".fst-bust").forEach(b => {
+    const k = b.dataset.who, me = !who || k === who;
+    if(k === who) prTrioFace(k, face);
+    b.classList.toggle("on", me);
+  });
+}
 /* 작은 초상화 — 말하는 학생 하나만 (생각 · 마스터 말에는 숨긴다) */
 function prBust(who, face){
   if(!R.root) return;
+  if(R.root.classList.contains("trio")){ prTrioLit(who, face); return; }   // 1026 — B 단락은 셋이 그대로 (말하는 학생만 밝게)
   R.root.querySelectorAll(".fst-bust").forEach(b => {
     const me = b.dataset.who === who;
     if(!me){ b.hidden = true; b.classList.remove("on"); return; }
@@ -43250,6 +43349,7 @@ async function prLines(sc){
       continue;
     }
     if(c.id === "PR02") prBgm(PR_BGM);
+    if(c.id === "PR11") prTrio(true);                                          // 1026 — 세 학생의 웃는 얼굴
     if(c.warm){ R.root.classList.add("warm"); prLog("warm", 1); }
     if(c.sfx) c.sfx.forEach(([k, ms]) => { if(!ms) prSfx(k); else setTimeout(() => { if(sess === R.sess) prSfx(k); }, rRM() ? Math.min(ms, 500) : ms); });
     let el;
@@ -43265,11 +43365,12 @@ async function prLines(sc){
   }
   return true;
 }
-/* 정문 → 책상 — 0.5초 암전 */
-async function prToDesk(sess){
+/* 정문 → 마스터 책상 (1026 — B 는 마스터 노트 책상 그림) · B → C 책상 CG — 0.5초 암전 */
+async function prToDesk(sess, k){
   prBox(null); prBust(null);
   await prFade(xq(".rv-black"), 1, 250); if(sess !== R.sess) return false;
-  prArt("3");
+  if(k === "3") prTrio(false);
+  prArt(k || "m");
   await rsleep(rRM() ? 100 : 500); if(sess !== R.sess) return false;
   await prFade(xq(".rv-black"), 0, 700);
   return sess === R.sess;
@@ -43277,6 +43378,7 @@ async function prToDesk(sess){
 function prStage(cg, black){
   prBuild(); R.on = true;
   R.root.classList.remove("nm", "out");
+  if(R.root.classList.contains("trio")) prTrio(false);
   R.root.classList.toggle("warm", cg === "3" && R.sc !== "a" && R.sc !== "b");
   prArt(cg);
   const bk = xq(".rv-black"); if(bk){ bk.getAnimations().forEach(a => a.cancel()); bk.style.opacity = black ? 1 : 0; }
@@ -43290,13 +43392,14 @@ async function prFlow(from){
   try{ closeModal(); }catch(e){}
   try{ opVeil(false); }catch(e){}
   if(from === "a"){ prBgm(PR_BGM); prStage("2", true); }
-  else { prBgm(PR_BGM); prStage("3", true); R.sc = from; await prFade(xq(".rv-black"), 0, 600); if(!ok()) return; }
+  else { prBgm(PR_BGM); prStage(from === "b" ? "m" : "3", true); R.sc = from; await prFade(xq(".rv-black"), 0, 600); if(!ok()) return; }
   if(from === "a"){
     if(!await prLines("a") || !ok()) return;
     if(!await prToDesk(sess) || !ok()) return;
   }
   if(from === "a" || from === "b"){
     if(!await prLines("b") || !ok()) return;
+    if(!await prToDesk(sess, "3") || !ok()) return;                            // 1026 — 셋을 내리고 예전 책상 CG (장부 · 검)
   }
   if(!await prLines("c") || !ok()) return;
   if(R.rp){ prD(false).catch(prFail); return; }                               // 다시 보기 — 이름 창 없이 PR21 (지금 학원 이름) · PR22
@@ -45574,6 +45677,9 @@ const SFX = {
   csl_mst: {f:"counsel_type_master.ogg", v:.8},
   /* 메뉴 단추 (1009) — 사이드 메뉴 · 큰 스케줄 단추 · 폰 메뉴 · 더보기 · 서브탭을 누를 때 (MENU_SFX_SEL). 원본 menu_click.mp3 — 끝의 무음을 잘라 0.25초 */
   menu:    {f:"menu_click.ogg"},
+  /* 시작 화면 (1026 · 사용자 소리 두 개 — 원본 mp3 는 tools/gen/sfx/src · 앞뒤 무음을 잘라 Ogg) — 선택지 셋(NEW GAME · CONTINUE · SETTINGS)을 누를 때 · 설정 창 안의 단추 · 칸을 누를 때 */
+  title_pick:{f:"title_pick.ogg"},
+  menu_pick: {f:"menu_pick.ogg"},
   /* 스킬 강화 창 (1013) — 나중에 단추 · 스킬 말풍선과 이국의 부채에 마우스 · 전구가 뜰 때(창을 열 때 · 부채를 맞고 다시 생각할 때) · 부채로 칠 때 ·
      제안이 하나씩 나올 때(진화 · 각성은 음을 올린다 — SK_CHOICE_SFX_RATE). 끝의 무음을 잘라 Ogg 로 (원본 mp3 도 bgm/ 에) */
   suc_later:{f:"skillup_later.ogg"},
@@ -46062,6 +46168,18 @@ const OPTX = (()=>{
   };
   const OPTX_LANG = typeof I18N !== "undefined" ? I18N.lang : "ko";
   const SCX = OPTX_LANG === "en" ? SC_EN : (OPTX_LANG === "ja" && I18N.tab) ? SC_JA : (OPTX_LANG === "zh-Hans" && I18N.tab) ? SC_ZH : (OPTX_LANG === "zh-Hant" && I18N.tab) ? SC_ZHT : SC;   // 일본어 · 중국어 표가 없으면(빈 빌드) 한국어 그대로
+  /* 1026 — 사용자 '236년 오프닝 글 · 글꼴을 다른 장면 자막(가는 선 사이 흰 도트 글)처럼' → '글꼴 · 배치만 통일'(효과는 그대로):
+     글꼴은 게임 도트 글꼴(Mulmaru — 한국어는 갈무리11 이 덧씌운다 · 굵게 덧칠 없음 · 48 = 12 도트의 4배) · 해설 글(intro · date · winter)은 연마다 위아래 가는 선(.rv-card 와 같은 색).
+     타자기 제목(typer)은 게임 제목 그림이라 그대로. 줄이 화면 폭을 넘으면 그 줄만 글자를 줄인다 (build) */
+  const PIX = '"Mulmaru", "Mulmaru Mono", sans-serif';
+  const PIX_LS = OPTX_LANG === "en" ? 1 : 2;
+  const pixOf = f=> [PIX, 400, f[2] >= 52 ? 60 : 48, PIX_LS, 0];
+  Object.keys(SCX).forEach(k=>{
+    if(k === "typer") return;
+    const sc = SCX[k];
+    if(sc.font) sc.font = pixOf(sc.font);
+    if(k === "intro" || k === "date" || k === "winter") sc.card = 1;
+  });
   const meas = document.createElement("canvas").getContext("2d");
   const FILTER_OK = (()=>{ try{ const c = document.createElement("canvas").getContext("2d"); if(!("filter" in c)) return false; c.filter = "blur(2px)"; return c.filter === "blur(2px)"; }catch(e){ return false; } })();
   const isSpace = c=> c === " " || c === "　";
@@ -46108,7 +46226,9 @@ const OPTX = (()=>{
     return sc.st.map((sp, si)=>{
       const lines = sp.t.map((s, li)=>{
         const f = ((sp.fonts && sp.fonts[li]) || sc.font).slice(), look = LOOK[(sp.looks && sp.looks[li]) || sc.look];
-        const lay = layout(s, f), yc = sp.y[li], base = yc + (lay.asc - lay.desc) / 2, x0 = W / 2 - lay.w / 2;
+        let lay = layout(s, f);
+        if(f[0] === PIX && lay.w > W - 120){ f[2] = Math.max(24, Math.floor(f[2] * (W - 120) / lay.w)); lay = layout(s, f); }   // 1026 — 도트 글꼴이 넓은 줄
+        const yc = sp.y[li], base = yc + (lay.asc - lay.desc) / 2, x0 = W / 2 - lay.w / 2;
         let starts;
         if(sp.at){ let k = 0; starts = lay.chars.map(c=> isSpace(c) ? null : sp.at[li][k++]); }
         else starts = spread(weights(lay.chars), sp.ln[li][0], sp.ln[li][1]);
@@ -46195,12 +46315,14 @@ const OPTX = (()=>{
     const bands = [], tick = Math.floor(t / 50); let mal = null;
     for(const st of I.S){
       const sp = st.sp;
+      st.ca = 0;
       if(t < st.t0) continue;
       let mul = 1;
       if(sp.fade){ if(t >= sp.fade[1]) continue; if(t > sp.fade[0]) mul = 1 - Math.pow((t - sp.fade[0]) / (sp.fade[1] - sp.fade[0]), 2.2); }
       if(sp.cut){ if(t >= sp.cut[1]) continue; if(t > sp.cut[0]) mul *= 1 - (t - sp.cut[0]) / (sp.cut[1] - sp.cut[0]); }
       if(sp.end && t >= sp.end) continue;
       if(st.mal && t >= sp.mal.t0){ const k = Math.floor((t - sp.mal.t0) / 50); if(k >= st.mal.length) continue; mal = st.mal[k]; mul *= mal.a; }
+      st.ca = mul * Math.min(1, (t - st.t0) / REVEAL);                  // 1026 — 해설 글의 위아래 가는 선 (cardLines)
       const flash = sp.flash && t >= sp.flash && t < sp.flash + 50;
       for(const ln of st.lines){
         let any = false, vx0 = 1e9, vx1 = -1e9;
@@ -46235,6 +46357,21 @@ const OPTX = (()=>{
       glitch(I, R, bands, mal.b, mal.s ? 2 + Math.floor(R() * 2) : 0, mal.s);
     } else M.drawImage(I.lc, 0, 0);
     for(const st of I.S) rule(I, st.sp.rule, t);
+    if(sc.card) cardLines(I);
+  }
+  /* 1026 — 해설 글 연마다 위아래 가는 선 (다른 장면 자막 .rv-card 의 border-top · bottom 과 같은 색 · 연과 함께 나타나고 흐려진다) */
+  function cardLines(I){
+    const M = I.M, light = I.sc.light;
+    M.setTransform(I.scale, 0, 0, I.scale, 0, 0);
+    for(const st of I.S){
+      if(!(st.ca > 0.004)) continue;
+      let top = 1e9, bot = -1e9, w = 0;
+      for(const ln of st.lines){ top = Math.min(top, ln.yc - ln.font[2] * .62); bot = Math.max(bot, ln.yc + ln.font[2] * .62); w = Math.max(w, ln.w); }
+      const pad = 22, half = Math.min(W / 2 - 24, w / 2 + 56), y0 = top - pad, y1 = bot + pad;
+      M.globalAlpha = st.ca; M.fillStyle = light ? "rgba(60,44,40,.62)" : "#b98f84";
+      M.fillRect(W / 2 - half, y0 - 3, half * 2, 3); M.fillRect(W / 2 - half, y1, half * 2, 3);
+    }
+    M.globalAlpha = 1; M.setTransform(1, 0, 0, 1, 0, 0);
   }
   /* 지지직 — 청록 잔상(밝은 바탕의 제목은 반대쪽에 분홍도) · 가로로 밀린 띠 · 검은 줄 · 옆으로 번진 선 */
   function glitch(I, R, bands, ghost, n, smear){
@@ -46279,7 +46416,7 @@ const OPTX = (()=>{
     const all = Object.values(SCX).flatMap(sc=> sc.st.flatMap(sp=> sp.t)).join("");
     const load = (document.fonts && document.fonts.load)
       ? Promise.all((SCX === SC_JA ? ["800 46px OpTxSerifJa", "400 46px OpTxSansJa"] : SCX === SC_ZH ? ["800 46px OpTxSerifZh", "400 46px OpTxSansZh"] : SCX === SC_ZHT ? ["800 46px OpTxSerifZhT", "400 46px OpTxSansZhT"] : [SCX === SC_EN ? "800 46px OpTxSerifEn" : "800 46px OpTxSerif", "400 46px OpTxSans"])
-          .map(f=> document.fonts.load(f, all))).catch(()=>{})
+          .concat(["400 48px Mulmaru"]).map(f=> document.fonts.load(f, all))).catch(()=>{})   // 1026 — 도트 글꼴
       : Promise.resolve();
     fontP = Promise.race([load, new Promise(r=> setTimeout(r, (SCX === SC_JA || SCX === SC_ZH || SCX === SC_ZHT) ? 5000 : 2500))]);   // 일본어 · 중국어 조각은 파일로 받는다 (data: 가 아니다)
     return fontP;
@@ -46832,13 +46969,15 @@ function showTitle(canContinue){
   titleHoverSfx(document.querySelector(".title-menu"));   // 1026 — 메뉴 단추(NEW GAME · CONTINUE · SETTINGS · PC 판 EXIT)에 마우스를 올리면 소리 (사용자 '마우스 오버 사운드')
   if(window.PCAPP) PCAPP.title();   // 1026 (PCAPP) — PC 판 EXIT
 }
-/* 시작 화면 메뉴 — 마우스를 올리면 짧은 소리 (1026 · 원정 지도 핀과 같은 소리 xm_hover · 단추 안에서 움직일 때는 다시 내지 않는다 · 웹판은 첫 클릭 전에는 브라우저가 소리를 막는다) */
+/* 시작 화면 메뉴 — 마우스를 올리면 짧은 소리 (1026 · 원정 지도 핀과 같은 소리 xm_hover · 단추 안에서 움직일 때는 다시 내지 않는다 · 웹판은 첫 클릭 전에는 브라우저가 소리를 막는다) · 누르면 title_pick (EXIT 는 빼고) */
 function titleHoverSfx(nav){
   if(!nav || nav.__hov) return;
   nav.__hov = 1; let last = null;
   nav.addEventListener("pointerover", e=>{ const b = e.target.closest && e.target.closest("button"); if(b === last) return; last = b;
     if(!b || b.disabled || e.pointerType !== "mouse") return; try{ sfxPlay("xm_hover"); }catch(x){} });
   nav.addEventListener("pointerleave", ()=>{ last = null; });
+  nav.addEventListener("click", e=>{ const b = e.target.closest && e.target.closest("button"); if(b && !b.disabled && b.id !== "tQuit") try{ sfxPlay("title_pick"); }catch(x){} }, true);   // 1026 — 선택지 셋을 누르면 (사용자 소리)
+  if(location.protocol !== "file:") ["xm_hover", "title_pick", "menu_pick"].forEach(k=>{ try{ if(SFX[k]) sfxLoad(SFX[k].f); }catch(x){} });   // 처음 누를 때 늦지 않게 미리 받는다 (file:// 은 소리를 fetch 로 못 읽는다 — 누를 때 읽는 길 그대로)
 }
 function titleSettingsOpen(){
   if(document.querySelector('.title-settings')) return;
@@ -46865,6 +47004,8 @@ function titleSettingsOpen(){
     <footer>설정은 자동으로 저장됩니다.<br>음악은 게임을 시작하면 재생됩니다.${OPT_BATTLE_CAM?' 스타일리시 전투는 넓은 화면에서 적용됩니다.':''}</footer>`;
   document.querySelector('.title-screen').appendChild(dlg);
   dlg.querySelector('#titleSettingsClose').onclick=()=>dlg.close();
+  dlg.addEventListener('click',e=>{const t=e.target;if((t.closest&&t.closest('button'))||(t.matches&&t.matches('input[type=checkbox]')))try{sfxPlay('menu_pick');}catch(x){}},true);   // 1026 — 설정 창 안의 단추 · 체크 칸 · 고르기 칸을 누르면 소리 (사용자 소리 · 소리 막대는 빼고)
+  dlg.addEventListener('change',e=>{if(e.target.tagName==='SELECT')try{sfxPlay('menu_pick');}catch(x){}},true);
   dlg.addEventListener('close',()=>{dlg.remove(); $('#tSettings')?.focus();});
   dlg.addEventListener('click',e=>{if(e.target!==dlg)return;const r=dlg.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dlg.close();});
   dlg.querySelector('#titleMusic').onchange=e=>{AUD.on=e.target.checked;audSave();audRefresh();};
