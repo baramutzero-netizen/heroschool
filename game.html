@@ -971,18 +971,19 @@ body.op-veiled .overlay{background:transparent;backdrop-filter:none;-webkit-back
 @media (min-width:1100px){.op-talk{--fst-side:max(40px,calc(50vw - 600px));--fst-h:96px;--fst-fs:24px;--fst-lh:32px;--fst-pad:16px 34px 12px;--fst-bust:256px;--fst-over:20px}}
 .op-talk .op-body{position:static;min-height:0}
 /* 이름표 — 대화창 왼쪽 위에 걸친다 (.fst-nm) */
-.op-talk .op-name{position:absolute;left:20px;top:-36px;height:38px;margin:0;padding:0 16px 0 12px;display:flex;align-items:center;gap:10px;white-space:nowrap;
+.op-talk .op-name{position:absolute;left:20px;top:auto;bottom:calc(100% - 2px);height:auto;min-height:38px;margin:0;padding:4px 16px 4px 12px;display:flex;align-items:center;gap:10px;white-space:nowrap;
   background:var(--fst-win);border:2px solid var(--fst-line);box-shadow:0 0 0 2px var(--fst-dark),3px 3px 0 1px rgba(0,0,0,.4);
-  font-family:inherit;font-weight:400;font-size:calc(var(--fst-fs) * var(--fszk,1));line-height:1;letter-spacing:0;color:var(--fst-name)}
+  font-family:inherit;font-weight:400;font-size:calc(var(--fst-fs) * var(--fszk,1));line-height:1.2;letter-spacing:0;color:var(--fst-name)}   /* 1026 둘째 — 높이는 글에 맞춰 (사용자 '이름 텍스트가 박스를 침범') */
 .op-talk .op-name::before{content:"";width:12px;height:12px;flex:none;background:var(--rc);box-shadow:0 0 0 2px var(--fst-dark)}
 .op-talk .op-name:empty{display:none}
 .op-talk .op-name.demon{--rc:#c58cf2}.op-talk .op-name.pal{--rc:#8cc4f0}.op-talk .op-name.wiz{--rc:#c9a4f2}.op-talk .op-name.you{--rc:#ffd36a;color:#ffd36a}
 .op-talk .op-name.goddess{--rc:#9fd8ff}.op-talk .op-name.dad{--rc:#f1cf9a}.op-talk .op-name.ffdp{--rc:#e07a8a}
-@media (max-width:599px){.op-talk .op-name{left:12px;top:-30px;height:32px;padding:0 12px 0 10px;gap:8px}.op-talk .op-name::before{width:10px;height:10px}}
+@media (max-width:599px){.op-talk .op-name{left:12px;min-height:32px;padding:3px 12px 3px 10px;gap:8px}.op-talk .op-name::before{width:10px;height:10px}}
 /* 글 — 도트 글꼴 · 대화창 글 크기 (크하하하… 처럼 큰 줄은 1.5배) */
 .op-talk .op-text{font-size:calc(var(--fst-fs) * var(--fszk,1));line-height:calc(var(--fst-lh) * var(--fszk,1));min-height:0;font-weight:400;letter-spacing:0;
   white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere;padding-right:18px}
 .op-talk .op-text.big{font-size:calc(var(--fst-fs) * 1.5 * var(--fszk,1));line-height:calc(var(--fst-lh) * 1.5 * var(--fszk,1));font-weight:400;letter-spacing:.02em}
+.op-talk .op-text.red{color:#ff3b3b;text-shadow:0 0 8px rgba(255,40,40,.45)}   /* 1026 둘째 — 마왕 '물러물러…' (사용자 '빨간색 텍스트') */
 .op-talk .op-next{right:16px;bottom:8px;font-size:var(--fst-fs);line-height:1;color:var(--fst-gold)}
 .op-talk.done .op-next{animation:fstNx .8s steps(2) infinite}
 /* 얼굴 — 대화창 위 오른쪽에 선 초상화 (상자 · 테두리 없이 · 아래는 대화창 쪽으로 흐려진다 — .fst-bust) */
@@ -30151,7 +30152,7 @@ Object.assign(STYLISH_SKILL_FX.assets, {
  ssFlame:"assets/skill-fx/spellsword/blade-flame.svg?v=1",
  ssAwakeBack:"assets/skill-fx/spellsword/awakening-back.svg?v=1",
  ssAwakeFront:"assets/skill-fx/spellsword/awakening-front.svg?v=1",
- ssTenCuts:"assets/skill-fx/spellsword/ten-cuts.svg?v=1",
+ ssTenCuts:"assets/skill-fx/spellsword/ten-cuts.svg?v=2",
  ssBasic:"assets/skill-fx/spellsword/slash-blue.png?v=1",
  ssBlue:"assets/skill-fx/spellsword/slash-blue.png?v=1",
  ssPurple:"assets/skill-fx/spellsword/slash-purple.png?v=1",
@@ -30160,7 +30161,7 @@ Object.assign(STYLISH_SKILL_FX.assets, {
 Object.assign(STYLISH_SKILL_FX.assets, {
  tmGears:"assets/skill-fx/timemage/gears.svg?v=1",
  tmRift:"assets/skill-fx/timemage/rift.svg?v=1",
- tmStop:"assets/skill-fx/timemage/time-stop.svg?v=1"
+ tmStop:"assets/skill-fx/timemage/time-stop.svg?v=2"
 });
 const ENCHANTER_RUNES={enFire:'fire',enStr:'str',enWeak:'weak',enAll:'all'};
 const enchanterRuneImages={};
@@ -30254,7 +30255,7 @@ function stylishSkillFxPreload(res){
 }
 function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, groupTargets=[], timing={}){
   const plan=stylishSkillFxPlan(job, skillId), entries=[];
-  const mono=skillId==="gn_u", inverted=skillId==="ro_u", shots=skillId==="gn_1"?(timing.shots||[]):skillId==="ss_1"?(timing.shots||Array.from({length:3},(_,i)=>targets[i%Math.max(1,targets.length)]?.dataset.uid).filter(Boolean)):[];
+  const mono=skillId==="gn_u"||skillId==="ss_u", inverted=skillId==="ro_u", shots=skillId==="gn_1"?(timing.shots||[]):skillId==="ss_1"?(timing.shots||Array.from({length:3},(_,i)=>targets[i%Math.max(1,targets.length)]?.dataset.uid).filter(Boolean)):[];
   const started=performance.now(), duration=timing.duration||1500;
   const shotStep=skillId==="ss_1"?duration*.28:Math.min(duration/Math.max(1,shots.length),duration*.16);
   const layer=document.createElement("div");
@@ -45944,18 +45945,18 @@ let OP = null;                       // 진행 중인 오프닝 — 건너뛰거
 function opLines(){
   return [
     {who:"demon", face:"calm", t:"대단하군... 과연 선배.... 아니, ‘마스터’라 불릴 만한 능력이야."},   // 1026 사용자 — 마왕은 마스터의 1년 후배 (회귀 전 231년 학원제 결승의 같은 팀) · 선배라 부르다 고쳐 부른다
-    {who:"demon", face:"calm", t:"죽여라."},
-    {who:"pal",   t:"이대로 끝내야 해요, 마스터!"},
+    {who:"demon", face:"calm", t:"죽이세요."},   // 1026 사용자 — 후배라 높여 말한다
+    {who:"pal",   t:"이대로 끝내야 해요, 선배!"},   // 1026 사용자 — 첫 번째 삶의 호칭 (231 결승과 같다)
     {who:"wiz",   t:"마력 전부 쥐어짰어~ 더 이상은 못 버텨~"},
-    {who:"you",   t:"...이미 끝났어. 목숨은 살려주겠다. 마왕군을 전선에서 전부 철수시켜라."},
-    {who:"demon", face:"calm", t:"내게 수치를 줄 셈이냐? 크크크..."},
+    {who:"you",   t:"...이미 끝났어. 더 이상은... 마왕군을 전선에서 전부 철수시켜줘."},   // 1026 사용자
+    {who:"demon", face:"calm", t:"내게 수치를 줄 셈인가요? 크크크..."},   // 1026 사용자
     {who:"demon", face:"mad", t:"크하하하하하하!", big:true},
-    {who:"demon", face:"mad", t:"이걸로 끝났다고 생각하나?", then:"magic"},
+    {who:"demon", face:"mad", t:"물러물러물러물러물러물러물러물러물러!!!!!", red:true, then:"magic"},   // 1026 사용자 — 빨간 글 (red)
     {who:"you",   t:"뭘 하려는 거지!"},
     {who:"demon", face:"mad", t:"이번에는 패배했지만, 기필코 네놈의 파멸에 도달하겠다."},
     {who:"demon", face:"mad", t:"언젠가는, 꼭!"},
     {who:"wiz",   t:"엄청난 중력장이 생겨나고 있어...이건!\n시공간을 뒤흔드는 마력이 느껴져!!"},
-    {who:"pal",   t:"마스터! 위험..", then:"void"},                        // 검은 빛 → 시공이 휘몰아치는 글 → 작은 푸른 빛
+    {who:"pal",   t:"선배! 위험..", then:"void"},   // 1026 사용자                        // 검은 빛 → 시공이 휘몰아치는 글 → 작은 푸른 빛
     {who:"goddess", t:"마왕의 군세를 물리친 용사여.\n운명의 커다란 뒤틀림을 느끼고 찾아왔습니다."},
     {who:"goddess", t:"......그렇군요.\n이래선...지금의 제 힘으로는......."},
     {who:"goddess", t:"조그마한 가능성을 열어둘 수밖에 없군요."},
@@ -46548,7 +46549,7 @@ function opSay(tok, L){
     im.alt = "";                                                   // 말하는 이는 이름 칸이 알려 준다
     nm.className = "op-name " + who;
     nm.textContent = who === "demon" ? "마왕" : who === "pal" ? (UI.openPal || "성기사") : who === "wiz" ? (UI.openWiz || "마법사") : who === "goddess" ? "???" : who === "dad" ? "아버지" : "당신";   // 1004 — 여신은 이름을 밝히지 않는다
-    tx.className = "op-text" + (L.big ? " big" : "");
+    tx.className = "op-text" + (L.big ? " big" : "") + (L.red ? " red" : "");   // 1026 — 빨간 글 (마왕 '물러물러…')
     tx.textContent = "";
     box.classList.remove("done");
     if(box.hidden){
