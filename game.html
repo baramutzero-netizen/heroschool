@@ -5805,6 +5805,58 @@ html.ffop-on #modalRoot .modal[data-bt]{cursor:pointer}
 .bf-legend .hp:not(.pxg-off *){background:var(--pxg-hp)}.bf-legend .atb:not(.pxg-off *){background:var(--pxg-atb)}
 .bf-legend .ult:not(.pxg-off *){background:var(--pxg-ult-on);border-radius:0;width:10px;height:10px}
 /* PXGAUGE_CSS_END */
+/* PXBUB_CSS_START — 1027 열아홉째 대사창 픽셀 마감 (apply_pxbub.py) ─ 사용자 1027: '요 대사창들도 테두리를 픽셀 마감처리하고 싶어'
+   (스크린샷 셋 — 대회 해설 띠 · 전투 대사 '먼저 간다!' · 스타일리시 기술 외침 '우오옷, 수호의 맹세!!!')
+   · 대상 — 전투판 말풍선 .bf-stage .bf-speech (기술 외침 · 심플 외침 · 전투 대사 .hr-say · 학원제 결승 대사) · 대회 중계 띠 .tcom-body
+   · 도트 마감(html[data-ui-finish="pixel"] — 리소 · 민트 · 저널 도트)일 때만. html.pxb-off 면 예전 둥근 모양 (견줘 보기)
+   · 모양 — 둥근 모서리(border-radius) · 1px 선 · 흐린 그림자 대신: 한 점(--pxb-u) 두께 테 · 모서리는 두 계단(한 점 깎고 안쪽 한 점을 테 색으로) ·
+     흐림 없는 그림자(오른쪽 아래로 한 점) · 빛나던 것(필살기 · 선공 · 막타 · 치명타 · 기상 · 흥분한 실황)은 테 바깥 한 겹 빛 테(--pxb-glow).
+     테는 상자 바깥 그림자(box-shadow)로 그린다 — 글 자리(padding)는 그대로 · 바깥으로 한 점씩 커진다
+   · 꼬리 — 돌린 네모 대신 계단 세모(점 그림 — ::after 한 점 + 그림자 점들): 몸 아랫테를 뚫고 세 줄 내려온다 (가운데 45% 자리 그대로)
+   · 색 — 말풍선 몸 · 글은 그대로, 테는 원래 색을 진하게(밝은 회색 선은 두꺼워지면 흐려 보여서). 성격 · 대사 종류 색은 원래 색 그대로
+   · 값은 :root 변수 — 한 점 --pxb-u · 기본 테 --pxb-edge · 그림자 --pxb-drop · 중계 띠 --pxb-tc-* */
+:root{
+  --pxb-u:2px;
+  --pxb-fill:#fffdf6;--pxb-edge:#5d554c;--pxb-drop:#0000002e;
+  --pxb-tc-fill:rgba(33,27,32,.94);--pxb-tc-edge:#c9a36a;--pxb-tc-drop:#00000066;
+}
+/* ── 공통 모양 — 테 넷 · 빛 테 여덟(테 넷 + 모서리 셋씩) · 그림자 셋 · 안쪽 모서리 네 점 ── */
+html[data-ui-finish="pixel"]:not(.pxb-off) :is(.bf-stage .bf-speech,.tcom-body){
+  --u:var(--pxb-u);--e:var(--pxb-edge);--g:var(--pxb-glow,transparent);--d:var(--pxb-drop);
+  border:0!important;border-radius:0!important;
+  background:linear-gradient(var(--e) 0 0) left top/var(--u) var(--u) no-repeat,linear-gradient(var(--e) 0 0) right top/var(--u) var(--u) no-repeat,
+    linear-gradient(var(--e) 0 0) left bottom/var(--u) var(--u) no-repeat,linear-gradient(var(--e) 0 0) right bottom/var(--u) var(--u) no-repeat,var(--f,var(--pxb-fill))!important;
+  box-shadow:
+    0 calc(var(--u) * -2) 0 calc(var(--u) * -1) var(--e),0 calc(var(--u) * 2) 0 calc(var(--u) * -1) var(--e),
+    calc(var(--u) * -2) 0 0 calc(var(--u) * -1) var(--e),calc(var(--u) * 2) 0 0 calc(var(--u) * -1) var(--e),
+    0 calc(var(--u) * -3) 0 calc(var(--u) * -1) var(--g),0 calc(var(--u) * 3) 0 calc(var(--u) * -1) var(--g),
+    calc(var(--u) * -3) 0 0 calc(var(--u) * -1) var(--g),calc(var(--u) * 3) 0 0 calc(var(--u) * -1) var(--g),
+    calc(var(--u) * -1) calc(var(--u) * -1) 0 0 var(--g),var(--u) calc(var(--u) * -1) 0 0 var(--g),
+    calc(var(--u) * -1) var(--u) 0 0 var(--g),var(--u) var(--u) 0 0 var(--g),
+    var(--u) calc(var(--u) * 3) 0 calc(var(--u) * -1) var(--d),calc(var(--u) * 3) var(--u) 0 calc(var(--u) * -1) var(--d),
+    calc(var(--u) * 2) calc(var(--u) * 2) 0 calc(var(--u) * -1) var(--d)!important;
+}
+/* ── 말풍선 색 — 몸 · 테 (성격 · 대사 종류) ── */
+html[data-ui-finish="pixel"]:not(.pxb-off) .bf-stage .bf-speech.hot{--pxb-edge:#d9772e}
+html[data-ui-finish="pixel"]:not(.pxb-off) .bf-stage .bf-speech.ultimate{--pxb-edge:#b58a22;--pxb-glow:#ffd86799}
+html[data-ui-finish="pixel"]:not(.pxb-off) .bf-stage .bf-speech.hr-hero{--pxb-edge:#c8922a;--pxb-glow:#ffd867aa;--f:#fffdf3}
+html[data-ui-finish="pixel"]:not(.pxb-off) .bf-stage .bf-speech.hr-faint{--pxb-edge:#8d89a0;--f:#ecebf1}
+html[data-ui-finish="pixel"]:not(.pxb-off) .bf-stage .bf-speech.bl-first{--pxb-edge:#3f8fe6;--pxb-glow:#5aa9ff77}
+html[data-ui-finish="pixel"]:not(.pxb-off) .bf-stage .bf-speech.bl-last{--pxb-edge:#e8513c;--pxb-glow:#ff6a5577}
+html[data-ui-finish="pixel"]:not(.pxb-off) .bf-stage .bf-speech.bl-crit{--pxb-edge:#d29f1f;--pxb-glow:#f2b20077}
+/* ── 꼬리 — 계단 세모 (45도 · 몸 아랫테 아래로 네 줄) ── ::before = 테 모양 · ::after = 안쪽 몸 (둘 다 한 덩어리 clip-path — 점을 따로 찍으면
+   배율이 소수일 때 점 사이에 흰 틈이 보였다). 줄 0 은 몸 아랫테 자리(테를 뚫는다) · 가운데 45% 자리 그대로 · 아홉 점 폭 · 다섯 점 높이
+   테: 줄 r 은 r … 9-r / 몸: 줄 0 은 1 … 8 · 줄 r 은 r+1 … 8-r (줄 3 까지) */
+html[data-ui-finish="pixel"]:not(.pxb-off) .bf-stage .bf-speech::before,html[data-ui-finish="pixel"]:not(.pxb-off) .bf-stage .bf-speech::after{
+  --u:var(--pxb-u);content:"";position:absolute;left:calc(45% - var(--u) * 4.5);top:100%;bottom:auto;right:auto;width:calc(var(--u) * 9);height:calc(var(--u) * 5);
+  margin:0;border:0;transform:none;box-shadow:none;pointer-events:none}
+html[data-ui-finish="pixel"]:not(.pxb-off) .bf-stage .bf-speech::before{background:var(--pxb-edge);clip-path:polygon(0 0,calc(var(--u) * 9) calc(var(--u) * 0),calc(var(--u) * 9) calc(var(--u) * 1),calc(var(--u) * 8) calc(var(--u) * 1),calc(var(--u) * 8) calc(var(--u) * 2),calc(var(--u) * 7) calc(var(--u) * 2),calc(var(--u) * 7) calc(var(--u) * 3),calc(var(--u) * 6) calc(var(--u) * 3),calc(var(--u) * 6) calc(var(--u) * 4),calc(var(--u) * 5) calc(var(--u) * 4),calc(var(--u) * 5) calc(var(--u) * 5),calc(var(--u) * 4) calc(var(--u) * 5),calc(var(--u) * 4) calc(var(--u) * 4),calc(var(--u) * 3) calc(var(--u) * 4),calc(var(--u) * 3) calc(var(--u) * 3),calc(var(--u) * 2) calc(var(--u) * 3),calc(var(--u) * 2) calc(var(--u) * 2),calc(var(--u) * 1) calc(var(--u) * 2),calc(var(--u) * 1) calc(var(--u) * 1),calc(var(--u) * 0) calc(var(--u) * 1))}
+html[data-ui-finish="pixel"]:not(.pxb-off) .bf-stage .bf-speech::after{background:var(--f,var(--pxb-fill));clip-path:polygon(calc(var(--u) * 1) calc(var(--u) * 0),calc(var(--u) * 8) calc(var(--u) * 0),calc(var(--u) * 8) calc(var(--u) * 1),calc(var(--u) * 7) calc(var(--u) * 1),calc(var(--u) * 7) calc(var(--u) * 2),calc(var(--u) * 6) calc(var(--u) * 2),calc(var(--u) * 6) calc(var(--u) * 3),calc(var(--u) * 5) calc(var(--u) * 3),calc(var(--u) * 5) calc(var(--u) * 4),calc(var(--u) * 4) calc(var(--u) * 4),calc(var(--u) * 4) calc(var(--u) * 3),calc(var(--u) * 3) calc(var(--u) * 3),calc(var(--u) * 3) calc(var(--u) * 2),calc(var(--u) * 2) calc(var(--u) * 2),calc(var(--u) * 2) calc(var(--u) * 1),calc(var(--u) * 1) calc(var(--u) * 1))}
+/* ── 대회 중계 띠 — 어두운 띠 · 금빛 테(해설은 푸른 테 · 흥분한 실황은 밝은 금빛 + 빛 테) ── */
+html[data-ui-finish="pixel"]:not(.pxb-off) .tcom-body{--pxb-edge:var(--pxb-tc-edge);--f:var(--pxb-tc-fill);--pxb-drop:var(--pxb-tc-drop)}
+html[data-ui-finish="pixel"]:not(.pxb-off) .tcom-cap.hot .tcom-body{--pxb-edge:#ffc86d;--pxb-glow:rgba(255,200,109,.35)}
+html[data-ui-finish="pixel"]:not(.pxb-off) .tcom-cap.an .tcom-body{--pxb-edge:#7fa3c9}
+/* PXBUB_CSS_END */
 </style>
 
 <link rel="stylesheet" href="assets/title-art/title-screen.css?v=7">
@@ -6196,6 +6248,7 @@ function sprTick(){
     cx.drawImage(cell, cell.__ox || 0, cell.__oy || 0);
   }
   fxTick(now);
+  if(window.HITFX) HITFX.tick(now);   // 1027 열여덟째 — 타격 반짝임 · 흰 도트 파티클 (HITFX · 도트 캔버스를 다 그린 뒤라 실루엣이 이 프레임 장)
   tournamentCharacterTick(now);
   reportShadowTick(now);   // 1021 — 경과 보고 무대 그림자 (apply_report)
   tqCamSync();   // 1007 — 대회 쿼터뷰 지도도 카메라를 따라 줌
@@ -8674,7 +8727,7 @@ const OPT_FIELD_PASTEL = false;     // 전투 배경 파스텔 필터 켜고 끄
 const OPT_XFER_FILE    = false;     // 이어하기 — 파일로 내보내기 · 파일에서 불러오기
 const OPT_PIXEL_FONT   = false;     // 도트 폰트 켜고 끄기 (1004 — 숨긴 동안은 모두 기본값: 켬)
 const OPT_BATTLE_CAM   = true;      // 전투 연출 심플 · 스타일리시 (1004 숨김 → 1022 다시 보임 — 사용자 · 기본값은 스타일리시)
-const PREF = {bspeed: 280, reportSpeed: 2, chronicleTest: false, uiConcept: "riso-pixel", uiV: 4, lvPopup: true, fieldPastel: false, pixelFont: true, bfGrid: false, battleCam: "stylish", schedScroll: true, skillPick: "all", koFont: "galmuri", koV: 2, fontSize: "large", fszV: 1, tcom: "both"};   // 1025 둘째 (QOL25) — 기본 한국어 글꼴 갈무리11 (koV 2)
+const PREF = {bspeed: 280, reportSpeed: 2, chronicleTest: false, uiConcept: "riso-pixel", uiV: 4, lvPopup: true, fieldPastel: false, pixelFont: true, bfGrid: false, battleCam: "stylish", camTilt: true, schedScroll: true, skillPick: "all", koFont: "galmuri", koV: 2, fontSize: "large", fszV: 1, tcom: "both"};   // 1025 둘째 (QOL25) — 기본 한국어 글꼴 갈무리11 (koV 2)
 /* uiV 4 — 삽화를 기본으로 적용하고 이전 화면 분위기 선택은 숨긴다. */
 try{
   const j = JSON.parse(localStorage.getItem(PREF_KEY) || "null");
@@ -8694,6 +8747,7 @@ try{
   if(j && (j.fszV|0) >= 1 && ["normal","large","xlarge"].includes(j.fontSize)) PREF.fontSize = j.fontSize;   // 1026 (FONTSZ) — 글자 크기 (기본 크게 — fszV 1 전에 저장된 값(그때 기본 보통)은 읽지 않는다)   // 1025 둘째 (QOL25) — 예전 저장값 물마루는 기본값이었다 (koV 2 뒤에 고른 것만)
   if(j && ["both","sub","off"].includes(j.tcom)) PREF.tcom = j.tcom;   // 1024 — 대회 중계 (TCOM) — 음성 + 자막 · 음성 숨김 · 숨김                  // 한국어 글꼴 — 물마루 · 갈무리11 (1017)
   if(j && j.sign && Array.isArray(j.sign.s) && j.sign.s.length) PREF.sign = j.sign;          // 결재 서명 — 이 브라우저에 남는다 (1006)
+  if(j && typeof j.camTilt === "boolean") PREF.camTilt = j.camTilt;   // 1027 열일곱째 — 스타일리시 공격 때 화면 기울임 (기본 켬)
   if(j && ["simple","stylish"].includes(j.battleCam) && OPT_BATTLE_CAM) PREF.battleCam = j.battleCam;   // 0930 — 스타일리시가 기본. 예전 "basic" 저장값은 한 번 무시한다 · 설정을 숨긴 동안은 모두 기본값(1004)
 }catch(e){}
 function applyUiConcept(){
@@ -20081,6 +20135,171 @@ window.STICON = {art: STI, key: stiKey, icon: stiIcon, old: sti0, stat: STI_STAT
   requestAnimationFrame(step);
 })();
 /* PXGAUGE_END */
+/* HITFX_START — 1027 열여덟째 타격 반짝임 · 흰 도트 파티클 (apply_hitfx.py)
+   사용자 1027: '타격 시점에 타격 대상이 하얀색으로 잠시 반짝이게 하고 주변에 하얀색 도트 파티클을 흩뿌리게 하는건 어떨까'
+   · 언제 — 피해(dmg · crit) · 보호막 흡수(absorb) 숫자가 뜨는 순간. 심플 모드는 그 장을 처음 그릴 때(openBattle draw → hitFxFrame) ·
+     스타일리시는 맞는 순간(camTurn). 회피 · 지속 피해(숫자 없음) · 회복은 없다
+   · 반짝임 — 그 순간 보이는 도트 그림(학생 canvas.spr · 마물 img.monspr)을 떠서 흰 실루엣으로 겹친다: 70ms 하양 → 70ms 동안 걷힌다
+     (실루엣은 프레임마다 다시 떠서 피격 장이 바뀌어도 맞는다 · AA 반투명 테두리는 그 투명도 그대로 · 그림이 숨겨져 있으면 안 뜬다)
+   · 파티클 — 몸 가운데(가슴께) 둘레에서 흰 네모 점이 사방으로 튀고(맞아서 밀려나는 쪽으로 조금 더 · 처음엔 위로) 떨어지며 작아지다 사라진다.
+     도트 칸에 맞춘다 — 겹친 캔버스 한 점 = 그 유닛 그림 한 점 (마물은 학생 점 크기에 가깝게 · 큰 마물은 몸 크기만큼 멀리). 치명타는 더 많이 · 조금 크게.
+     화면에서 너무 작으면(심플 모드 — 그림 한 점이 화면 0.5px 쯤) 가장 작은 점이 minPx(2.5px) 가 되게 다 같이 키운다 · 둘레에 옅은 짙은 테 한 겹(화면 1px 쯤 — 밝은 바닥에서도 보이게)
+   · 그리는 곳 — 그림 바로 위 캔버스 canvas.hitfx (학생은 .spr-anchor · 마물은 .sprwrap.mon 안 — 그림과 같은 칸 · 같은 배율). sprTick 이 매 프레임 HITFX.tick —
+     유닛은 같은 전투 창(.modal data-bt)에서 uid 로 다시 찾아 그린다 (심플 모드가 장마다 고쳐 그리거나 통째로 다시 그려도 이어진다). 다 끝나면 캔버스를 걷는다
+   · 배속 — 빠를수록 조금 빨리 (×1 기준 0.8 ~ 1.6배) · 움직임 줄이기(prefers-reduced-motion)면 하지 않는다 · window.__HITFX_OFF 면 끈다
+   · window.HITFX = {hit(유닛, {from: 때린 유닛, crit, sf: 배속, seed}), tick(now), on(), opt, hold(시험용 — 이 ms 에 멈춰 그린다), live} */
+(() => {
+if(typeof window === "undefined" || typeof document === "undefined") return;
+const OPT = {
+  hold: 70, fade: 70,                                    // 반짝임 ms — 하양 · 걷힘 (걷히는 동안은 회색으로 보여 짧게)
+  n: 16, nCrit: 24,                                      // 파티클 수
+  life: [380, 560], stagger: 50,                         // ms — 한 점의 수명 · 처음 나오는 때의 흩어짐
+  speed: [300, 560], drag: 5.5, grav: 300, up: 80,       // 학생 그림 점 기준 — 점/초 · 감속(/초) · 떨어짐(점/초²) · 처음 위로(점/초)
+  bias: .3, spread: 1.5,                                 // 밀려나는 쪽으로 가는 몫 · 그 둘레(라디안 ±)
+  ring: [8, 16],                                         // 몸 가운데에서 이만큼 떨어진 곳에서 나온다 (점)
+  size: [4, 6], sizeCrit: [5, 7],                        // 처음 크기(점) — 끝으로 갈수록 작아진다
+  minPx: 2.5,                                            // 화면에서 적어도 이만큼(px) — 심플 모드처럼 그림이 작게 보일 때
+  rim: "rgba(28,14,6,.45)", rimSh: 0,                    // 짙은 테(화면 1px 쯤) — 밝은 바닥에서도 흰 점이 보이게 · "" 면 없음 · rimSh 1 이면 둘레 대신 오른쪽 아래 그림자
+  cx: 128, cy: 114,                                      // 학생 256 칸 — 몸 가운데(가슴께)
+  body: 90, bodyMax: 1.8, reach: 112, padS: 24           // 학생 몸 너비(점) — 큰 마물은 너비 비율의 제곱근만큼 멀리(최대 bodyMax 배) · 마물 겹친 캔버스 여백(점) · 학생 여백(점)
+};
+const ST = new Map();                                    // '전투 창|uid' → {uid, bt, el, f0, sf, bs: [터짐], cv}
+const on = () => !window.__HITFX_OFF && !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+const sprOf = u => u.querySelector(".sprwrap canvas.spr") || u.querySelector(".sprwrap.mon > img.monspr");
+const midOf = el => { const r = el.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
+function rng(seed){ let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+const flashA = t => t < 0 ? 0 : t < OPT.hold ? 1 : t < OPT.hold + OPT.fade ? Math.pow(1 - (t - OPT.hold) / OPT.fade, 1.5) : 0;
+/* 맞았다 — el: .bf-unit · o.from: 때린 유닛(밀려나는 쪽) · o.crit · o.sf: 배속(280 / speed) · o.seed: 같은 장면이면 같은 모양 */
+function hit(el, o){
+  if(!el || !el.dataset || !el.dataset.uid || !on()) return false;
+  o = o || {};
+  const uid = el.dataset.uid, now = performance.now(), sf = Math.min(1.6, Math.max(.8, +o.sf || 1));
+  const m = el.closest(".modal[data-bt]"), bt = m ? m.dataset.bt : "", key = bt + "|" + uid;   // 전투 창마다 따로 (uid A0 · B1 … 은 다음 전투에서도 같다)
+  let s = ST.get(key);
+  if(!s){ s = {uid, bt, el, bs: [], cv: null}; ST.set(key, s); }
+  s.el = el; s.f0 = now; s.sf = sf;
+  let dir = null;
+  const fr = o.from && o.from !== el && o.from.isConnected ? o.from : null;
+  if(fr){
+    const a = midOf(sprOf(fr) || fr), c = midOf(sprOf(el) || el), dx = c[0] - a[0], dy = c[1] - a[1], d = Math.hypot(dx, dy);
+    if(d > 1) dir = [dx / d, dy / d];
+  }
+  s.bs.push({t0: now, sf, seed: (o.seed != null ? o.seed : Math.random() * 4294967296) >>> 0, crit: !!o.crit, dir, ps: null});
+  if(s.bs.length > 4) s.bs.shift();
+  return true;
+}
+/* 한 번 터질 점들 — 밀려나는 쪽 몫(bias)은 그 방향 ± spread, 나머지는 둘레에 고르게(흔들어서) */
+function parts(b){
+  const R = rng(b.seed), n = b.crit ? OPT.nCrit : OPT.n, sz = b.crit ? OPT.sizeCrit : OPT.size, P = [];
+  const base = b.dir ? Math.atan2(b.dir[1], b.dir[0]) : 0, rot = R() * Math.PI * 2;
+  for(let i = 0; i < n; i++){
+    const a = b.dir && R() < OPT.bias ? base + (R() * 2 - 1) * OPT.spread : rot + (i + R() * .8) / n * Math.PI * 2;
+    P.push({a, v: OPT.speed[0] + R() * (OPT.speed[1] - OPT.speed[0]), r: OPT.ring[0] + R() * (OPT.ring[1] - OPT.ring[0]),
+      d: R() * OPT.stagger, life: OPT.life[0] + R() * (OPT.life[1] - OPT.life[0]), s: sz[0] + Math.floor(R() * (sz[1] - sz[0] + 1))});
+  }
+  return P;
+}
+/* t(ms)의 점들 → out [x, y, 크기, 투명도]… — 학생 점 기준 움직임 × 몸 배율(bs) → 이 캔버스 점(q) · 자리는 정수 칸 · 크기 × zs(화면에서 너무 작을 때 키움) */
+function dots(out, b, t, ox, oy, q, bs, zs){
+  for(const p of b.ps){
+    const tt = t - p.d;
+    if(tt < 0 || tt > p.life) continue;
+    const ts = tt / 1000, e = (1 - Math.exp(-OPT.drag * ts)) / OPT.drag, c = Math.cos(p.a), sn = Math.sin(p.a), v = p.v * bs;
+    const x = ox + (c * p.r * bs + c * v * e) * q;
+    const y = oy + (sn * p.r * bs + (sn * v - OPT.up * bs) * e + .5 * OPT.grav * bs * ts * ts) * q;
+    const u = tt / p.life, s = Math.max(1, Math.round(p.s * q * zs * (1 - .5 * u)));
+    out.push(Math.round(x - s / 2), Math.round(y - s / 2), s, u < .62 ? 1 : Math.max(0, (1 - u) / .38));
+  }
+}
+function drop(s){ if(s.cv) s.cv.remove(); s.cv = null; }
+function paint(s, sp, T){
+  const mon = sp.tagName === "IMG", host = sp.parentNode;
+  let W, H, k, x0, y0, bw;
+  if(mon){                                               // 마물 — object-fit:contain 그림 칸 (monAtkFit 과 같은 셈)
+    W = sp.naturalWidth; H = sp.naturalHeight;
+    if(!W || !H) return;
+    /* 그림 상자 — 크기는 소수까지(offset* 은 정수로 반올림돼 칸이 어긋난다) · 자리는 처음 그릴 때 한 번 화면 사각형으로 재 둔다
+       (맞는 순간엔 카메라가 아직 기울지 않았다 — 기운 뒤의 사각형은 둘레 상자라 못 쓴다 · 그림이 바뀌면 새 그림에서 다시) */
+    let bx = sp.__hfbox;
+    if(!bx){
+      const cs = getComputedStyle(sp), w = parseFloat(cs.width), h = parseFloat(cs.height), ri = sp.getBoundingClientRect(), rh = host.getBoundingClientRect(), z = ri.width / w;
+      if(!(w > 0) || !(h > 0) || !(z > 0)) return;
+      bx = sp.__hfbox = {w, h, x: (ri.left - rh.left) / z - host.clientLeft, y: (ri.top - rh.top) / z - host.clientTop, op: String(cs.objectPosition || "50% 50%").split(" ")};
+    }
+    bw = bx.w; k = Math.min(bx.w / W, bx.h / H);
+    const at = (v, free) => /%$/.test(v || "") ? parseFloat(v) / 100 * free : (parseFloat(v) || 0);
+    x0 = bx.x + at(bx.op[0] || "50%", bx.w - W * k);
+    y0 = bx.y + at(bx.op[1] || "50%", bx.h - H * k);
+  } else {                                               // 학생 — 256 칸 캔버스 그대로 (자리 · 크기는 sprHTML 의 정수 style)
+    W = sp.width; H = sp.height;
+    if(!W || !H || !sp.offsetWidth) return;
+    bw = sp.offsetWidth; k = bw / W; x0 = sp.offsetLeft; y0 = sp.offsetTop;
+  }
+  const q = mon ? 1 / Math.max(.25, k) : 1;              // 학생 점 → 이 그림 점 (마물 점은 화면에서 학생 점과 비슷한 크기로)
+  const bs = mon ? Math.min(OPT.bodyMax, Math.max(1, Math.sqrt(W * k / OPT.body))) : 1;
+  const P = mon ? Math.ceil(OPT.reach * bs * q) : OPT.padS, cw = W + 2 * P, ch = H + 2 * P;   // 그림 둘레 여백 (점)
+  const rc = sp.getBoundingClientRect();
+  const dev = Math.max(.05, rc.width / bw * k * (window.devicePixelRatio || 1));   // 화면 px / 이 캔버스 점 (배율 · 카메라 포함 — 기울면 조금 크게 잡힌다)
+  const zs = Math.max(1, OPT.minPx / (OPT.size[0] * q * dev)), rim = OPT.rim ? Math.max(1, Math.round(1 / dev)) : 0;
+  let cv = s.cv;
+  if(!cv || cv.parentNode !== host){
+    if(cv) cv.remove();
+    cv = host.querySelector(":scope > canvas.hitfx");
+    if(!cv){ cv = document.createElement("canvas"); cv.className = "hitfx"; cv.setAttribute("aria-hidden", "true"); host.appendChild(cv); }
+    s.cv = cv;
+  }
+  if(cv.width !== cw) cv.width = cw;
+  if(cv.height !== ch) cv.height = ch;
+  const css = `position:absolute;left:${(x0 - P * k).toFixed(3)}px;top:${(y0 - P * k).toFixed(3)}px;width:${(cw * k).toFixed(3)}px;height:${(ch * k).toFixed(3)}px;`
+    + "margin:0;max-width:none;max-height:none;image-rendering:pixelated;pointer-events:none;z-index:2";
+  if(cv.__css !== css){ cv.style.cssText = css; cv.__css = css; }
+  const cx = cv.getContext("2d");
+  cx.setTransform(1, 0, 0, 1, 0, 0); cx.globalAlpha = 1; cx.globalCompositeOperation = "source-over"; cx.imageSmoothingEnabled = false;
+  cx.clearRect(0, 0, cw, ch);
+  /* 반짝임 — 지금 그림을 떠서 흰색으로 (투명도는 그림 그대로) */
+  const fa = flashA(T(s.f0, s.sf));
+  if(fa > 0 && getComputedStyle(sp).visibility !== "hidden"){        // 숨긴 그림(기상 연출 · 마물 공격 자세 뒤 대기 그림)은 뜨지 않는다
+    cx.globalAlpha = fa;
+    if(!mon && sp.classList.contains("flip")){ cx.setTransform(-1, 0, 0, 1, P + W, P); cx.drawImage(sp, 0, 0, W, H); cx.setTransform(1, 0, 0, 1, 0, 0); }
+    else cx.drawImage(sp, P, P, W, H);
+    cx.globalAlpha = 1;
+    cx.globalCompositeOperation = "source-in"; cx.fillStyle = "#fff"; cx.fillRect(0, 0, cw, ch);
+    cx.globalCompositeOperation = "source-over";
+  }
+  /* 흰 도트 파티클 — 반짝이는 실루엣 뒤로 깐다 (destination-over: 몸 안의 점은 하얀 몸에 묻히고 몸 밖으로 나오며 보인다 · 테가 하얀 몸 위에 앉지 않게).
+     뒤로 까니 흰 점을 먼저, 짙은 테를 나중에 (테가 흰 점 뒤로 간다) */
+  const ox = P + (mon ? W / 2 : OPT.cx), oy = P + (mon ? H * .52 : OPT.cy), D = [];
+  for(const b of s.bs){
+    if(!b.ps) b.ps = parts(b);
+    dots(D, b, T(b.t0, b.sf), ox, oy, q, bs, zs);
+  }
+  cx.globalCompositeOperation = "destination-over";
+  cx.fillStyle = "#fff";
+  for(let i = 0; i < D.length; i += 4){ cx.globalAlpha = D[i + 3]; cx.fillRect(D[i], D[i + 1], D[i + 2], D[i + 2]); }
+  if(rim){ cx.fillStyle = OPT.rim; const sh = !!OPT.rimSh; for(let i = 0; i < D.length; i += 4){ cx.globalAlpha = D[i + 3];
+    if(sh) cx.fillRect(D[i] + rim, D[i + 1] + rim, D[i + 2], D[i + 2]); else cx.fillRect(D[i] - rim, D[i + 1] - rim, D[i + 2] + 2 * rim, D[i + 2] + 2 * rim); } }
+  cx.globalCompositeOperation = "source-over"; cx.globalAlpha = 1;
+}
+/* 매 프레임 (sprTick — 도트 캔버스를 다 그린 뒤) */
+function tick(now){
+  if(!ST.size) return;
+  const T = (t0, sf) => HX.hold != null ? HX.hold : (now - t0) * sf;
+  for(const [key, s] of ST){
+    let live = T(s.f0, s.sf) < OPT.hold + OPT.fade;
+    for(const b of s.bs) if(T(b.t0, b.sf) < OPT.stagger + OPT.life[1]) live = true;
+    if(!live){ drop(s); ST.delete(key); continue; }
+    let u = s.el;
+    if((!u || !u.isConnected) && s.bt){                  // 전투판을 통째로 다시 그렸다 — 같은 전투 창에서 같은 유닛을 다시 찾는다
+      u = document.querySelector(`#modalRoot .modal[data-bt="${CSS.escape(s.bt)}"] .bf-unit[data-uid="${CSS.escape(s.uid)}"]`);
+      if(u) s.el = u;
+    }
+    const sp = u && u.isConnected ? sprOf(u) : null;
+    if(sp) paint(s, sp, T);
+  }
+}
+const HX = window.HITFX = {hit, tick, on, opt: OPT, hold: null, live: ST};
+})();
+/* HITFX_END */
 /* FONTSZ_START — 글자 크기 설정 (1026 목업 · apply_fontsz.py · mockups/font-size) ─ 사용자 1026 '폰트 크기 설정 한번 추가해볼까. 현재가 보통이면 지금보다 전체적으로 한 50% 정도 큰 폰트 사이즈로'
    (답: 읽는 글 위주 · 보통 · 크게 · 아주 크게 (100 · 125 · 150%) · 목업 먼저)
    · PREF.fontSize "normal" · "large" · "xlarge" → html[data-font-size] · --fszk 1.25 · 1.5 (보통이면 아무것도 붙이지 않는다 — 지금 그대로)
@@ -24266,7 +24485,7 @@ function viewOpt(){
   const fpPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>전투 배경 파스텔 필터</b><span>전투 배경을 채도를 낮춘 파스텔 톤과 옅은 종이 결로 보여 준다. 끄면 원본 그림으로 싸운다.</span></div><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="optFieldPastel" ${PREF.fieldPastel!==false?"checked":""}> 사용</label></div></section>`;
   const pxPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>도트 폰트</b><span>글자를 도트 폰트(물마루)로 보여 준다. 또렷하게 찍히도록 글자 크기를 12 · 24px 로 맞춘다. 끄면 원래 글꼴로 돌아간다.</span></div><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="optPixelFont" ${PREF.pixelFont!==false?"checked":""}> 사용</label></div></section>`;
   const gridPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>전투 배치 격자</b><span>전투 화면 바닥에 학생이 설 자리(격자)를 표시한다. 기본은 표시하지 않는다.</span></div><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="optBfGrid" ${PREF.bfGrid?"checked":""}> 표시</label></div></section>`;
-  const camPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>전투 연출</b><span>스타일리시 모드는 넓은 화면에서만 — 행동 게이지가 차오르고, 차례가 온 학생과 스킬 대상을 카메라가 가까이 잡아 보여 준다. 좁은 화면에서는 심플 모드로 돈다.</span></div><div class="ui-concept-picker" role="group" aria-label="전투 연출"><button type="button" class="btn" data-battle-cam="simple" aria-pressed="${PREF.battleCam!=="stylish"}">심플 모드</button><button type="button" class="btn" data-battle-cam="stylish" aria-pressed="${PREF.battleCam==="stylish"}">스타일리시 모드</button></div></div></section>`;
+  const camPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>전투 연출</b><span>스타일리시 모드는 넓은 화면에서만 — 행동 게이지가 차오르고, 차례가 온 학생과 스킬 대상을 카메라가 가까이 잡아 보여 준다. 좁은 화면에서는 심플 모드로 돈다.</span></div><div class="ui-concept-picker" role="group" aria-label="전투 연출"><button type="button" class="btn" data-battle-cam="simple" aria-pressed="${PREF.battleCam!=="stylish"}">심플 모드</button><button type="button" class="btn" data-battle-cam="stylish" aria-pressed="${PREF.battleCam==="stylish"}">스타일리시 모드</button></div></div><div class="optrow" style="margin-top:8px"><div class="optlab"><b>공격 화면 기울임</b><span>스타일리시 모드에서 공격하는 순간 카메라가 흐르며 화면을 살짝 기울인다. 끄면 기울이지 않고 흐르기만 한다.</span></div><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="optCamTilt" ${PREF.camTilt!==false?"checked":""}> 사용</label></div></section>`;   // 1027 열일곱째 — 공격 화면 기울임 (PREF.camTilt)
   const skPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>두루마리 스케줄</b><span>넓은 화면의 스케줄을 책상 위 두루마리로 보여 준다. 결재는 깃펜을 잉크 단지에 찍어 서명한다. 끄면 예전 스케줄 화면.</span></div><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="optSchedScroll" ${PREF.schedScroll!==false?"checked":""}> 켜기</label></div>${PREF.sign? `<div class="optrow" style="margin-top:8px"><div class="optlab"><b>저장된 서명</b><span>결재 때 쓰는 서명. 지우면 다음 결재 때 새로 그린다 — 서명줄에 새로 그어도 바뀐다.</span></div><button class="btn sm" id="optSignClear">서명 지우기</button></div>` : ""}</section>`;   // 두루마리 스케줄 (1006)
   return langPanel() + (window.PCAPP ? PCAPP.row() : "") + scalePanel() + conceptPanel + koFontRow() + (window.FSZ ? FSZ.row() : "") + (OPT_PIXEL_FONT ? pxPanel : "") + skPanel + lvPanel + (OPT_FIELD_PASTEL ? fpPanel : "") + gridPanel + (OPT_BATTLE_CAM ? camPanel : "") + (window.TCOM ? TCOM.prefPanel() : "") + errPanel() + xferPanel() + `<section class="panel"><div class="optrow"><div class="optlab"><b>애니메이션 테스트</b><span>공통 몸체와 부위별 착용 레이어의 동작을 확인합니다.</span></div><button class="btn" id="avatarLabOpen">테스트 열기</button></div></section><section class="panel"><div class="optrow"><div class="optlab"><b>진행 페이지 테스트 모드</b><span>양피지 책으로 일정과 학생 집중 훈련을 기록합니다. 기본은 꺼짐이며 다른 페이지는 유지됩니다.</span></div><label><input type="checkbox" id="chronicleToggle" ${PREF.chronicleTest?"checked":""}> 사용</label></div></section><section class="panel">
     <div class="panel-h"><h2>설정</h2><span class="hint">빌드 ${esc(BUILD)} · 규칙 ${RULES_VER} · 전투 연출과 화면 표시를 조절한다</span></div>
@@ -28593,6 +28812,7 @@ function bindView(){
   document.querySelectorAll("[data-battle-cam]").forEach(b=> b.onclick = ()=>{ PREF.battleCam = b.dataset.battleCam; prefSave();
     document.querySelectorAll("[data-battle-cam]").forEach(x=> x.setAttribute("aria-pressed", String(x.dataset.battleCam === PREF.battleCam)));
     toast(PREF.battleCam==="stylish"? "스타일리시 모드 — 넓은 화면의 전투에서 카메라 연출이 켜진다." : "심플 모드로 전투를 본다."); });
+  { const ct = $("#optCamTilt"); if(ct) ct.onchange = ()=>{ PREF.camTilt = ct.checked; prefSave(); toast(ct.checked? "공격 때 화면을 살짝 기울인다." : "공격 때 화면을 기울이지 않는다."); }; }   // 1027 열일곱째 — 사용자 '스타일리시 전투 공격 시점에 화면 살짝 돌리는 효과 설정에서 키고 끌 수 있게'
   if(window.TCOM) TCOM.prefBind();   // 1024 — 대회 중계 설정
   { const bg = $("#optBfGrid"); if(bg) bg.onchange = ()=>{ PREF.bfGrid = bg.checked; prefSave(); bfGridApply(); toast(bg.checked? "전투 배치 격자를 표시한다." : "전투 배치 격자를 숨겼다."); }; }
   if(window.PCAPP) PCAPP.bind(document.getElementById("view"));   // 1026 (PCAPP) — PC 판 화면 모드 · 창 크기 · 끝내기
@@ -31050,6 +31270,7 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
     if(kind==="waterSwamp") img.style.opacity=".64";
     if(kind==="ninjaRipple") img.style.opacity=".8";
     if(kind==="blessing") img.style.opacity=".55";
+    if(kind==="impact" || kind==="fireExplosion" || kind==="greenPierce") img.style.opacity=".55";   // 1027 열여섯째 — 사용자 '성스러운 일격, 화염 폭발 반투명화 하자' · '신성파동도 같이' (impact 는 팔라딘 pa_b · 프리스트 pr_b) · '관통 화살도' (궁수 ar_1 무리 그림)
     if(kind==="waterDragon") img.style.maskImage="linear-gradient(to right,transparent 0%,black 16%,black 100%)";
     if((kind==="waterDragon"||kind==="fumaWave") && side==="B") img.style.transform="scaleX(-1)";
     if(kind==="waterFlower" && side==="B") img.style.transform="scaleX(-1)";
@@ -32301,7 +32522,7 @@ function openBattle(res, opt, onDone){
       if(monHas(n.job)){
         const [mo] = sprMot(f,k);
         const atk = mo==="attack" && monAtkHas(n.job);                 // 1021 — 공격 자세 그림 (대기 그림 자리에 겹친다 · monAtkFit)
-        const over = atk ? "" : (mo==="attack"||mo==="win") ? "flash" : (mo==="hit" ? "redflash" : "");
+        const over = atk ? "" : (mo==="attack"||mo==="win") ? "flash" : (mo==="hit" && !hitFxOn(f, k) ? "redflash" : "");   // 1027 열여덟째 — 직접 맞은 장은 흰 반짝임(HITFX)이 대신 · 지속 피해 등은 예전처럼 붉게
         spr = `<div class="sprwrap mon ${mo}${atk ? " matk" : ""}">${monHTML(n.job, mo)}${over? monHTML(n.job, over) : ""}${monAtkHTML(n.job)}</div>`;
       } else if(sprHas(n.job)){
         const [mo,t0] = sprMot(f,k);
@@ -32471,6 +32692,17 @@ function openBattle(res, opt, onDone){
     return true;
   };
   const drawerHtml = (f, logs)=> battlePanel==='stats'?`${statBox(f, "B", opt.titleB||"상대", true)}${statBox(f, "A", opt.titleA||"우리 팀", false)}`: `<div class="blog" id="blog">${logs.map(x=>`<div class="ln ${x.cls}">${x.line}</div>`).join("")}</div>`;
+  /* 1027 열여덟째 — 타격 반짝임 · 흰 도트 파티클 (HITFX · tools/gen/patch/hitfx_block.js) ─ 사용자 '타격 시점에 타격 대상이 하얀색으로 잠시 반짝이게 하고 주변에 하얀색 도트 파티클을 흩뿌리게'.
+     심플 모드 — 새 장을 그린 뒤 피해 · 치명타 · 흡수 숫자가 뜨는 유닛 (회피 · 지속 피해는 숫자가 없어 빠진다 · 같은 장을 다시 그릴 때 · 줌아웃 뒤 다시 그리는 장(camQuiet)은 건너뛴다).
+     스타일리시는 camTurn 의 맞는 순간에. 마물이 직접 맞은 장은 붉은 번쩍임 대신 흰 반짝임 (hitFxOn — unitOne) */
+  const HIT_K = ["dmg", "crit", "absorb"];
+  const hitFxOn = (f, k)=> !opt.lab && !!window.HITFX && HITFX.on() && (f.pop||[]).some(x=> x.u === uids[k] && HIT_K.includes(x.k));
+  const hitFxFrame = f=>{
+    if(opt.lab || !window.HITFX || camQuiet || drawnI === drawnPrev || !f.pop) return;
+    const by = new Map();
+    f.pop.forEach(x=>{ if(HIT_K.includes(x.k)) by.set(x.u, !!by.get(x.u) || x.k === "crit"); });
+    by.forEach((crit, u)=>{ const k = uids.indexOf(u); if(k >= 0) HITFX.hit(uEl(u), {from: f.actor && f.actor !== u ? uEl(f.actor) : null, crit, sf: camSf(), seed: i * 131 + k}); });
+  };
   const draw = ()=>{
     drawnPrev = drawnI; drawnI = i;
     if(window.FFOP) FFOP.see(btId, res, i, opt);   // 1026 (FFOP) — 학원제 결승 장면: 행동 뒤 한마디 · 끝 장면 뒷이야기
@@ -32501,6 +32733,7 @@ function openBattle(res, opt, onDone){
       monAtkFit($("#modalRoot"));                                         // 1021 — 마물 공격 자세 자리
       $("#modalRoot").querySelectorAll('[data-effect-label]').forEach(el=>el.onclick=ev=>{ev.stopPropagation();toast(el.dataset.effectLabel);});
       if(battlePanel === "log"){ const bl = $("#blog"); if(bl) bl.scrollTop = bl.scrollHeight; }
+      hitFxFrame(f);                                                      // 1027 열여덟째 — 타격 반짝임 · 흰 도트 파티클 (HITFX)
       if(window.__btDrawHook) window.__btDrawHook(i, true);              // 시험용 (tools/gen/sim/btpatch_check.py)
       return;
     }
@@ -32549,6 +32782,7 @@ function openBattle(res, opt, onDone){
       pause(); if(window.TCOM) TCOM.close(btId); audOver(opt.bgmAfter || null); closeModal(); onDone && onDone(res);   // bgmAfter — 닫은 뒤 이어질 곡 (원정 지역곡 · 1021) · 없으면 밑바닥 곡(계절)
     };
     $("#modalRoot").querySelectorAll("[data-sp]").forEach(b=> b.onclick=()=>{ bspeedSet(+b.dataset.sp); speed=bspeedNow(); if(timer){pause();play();} draw(); });
+    hitFxFrame(f);                                                        // 1027 열여덟째 — 타격 반짝임 · 흰 도트 파티클 (HITFX)
     if(window.__btDrawHook) window.__btDrawHook(i, false);              // 시험용 (tools/gen/sim/btpatch_check.py)
   };
   /* 1026 (FFOP) — 학원제 결승 장면: 다음 장에 대사가 있으면 세우고 끝나면 다시 재생 */
@@ -32702,6 +32936,7 @@ function openBattle(res, opt, onDone){
     /* 맞는 순간 */
     for(let q=j; q<=e; q++) sfxFrame(res.frames[q], camSf(), ()=>camRun===tok && stage.classList.contains("cam-focus"));
     tg.forEach(u=> setMot(uEl(u), hit.has(u) ? "hit" : "idle", 0));
+    if(window.HITFX) hit.forEach(u=> HITFX.hit(uEl(u), {from: u !== a ? ae : null, crit: pops.some(x=> x.u === u && x.k === "crit"), sf: camSf(), seed: j * 131 + uids.indexOf(u)}));   // 1027 열여덟째 — 맞는 순간 흰 반짝임 · 흰 도트 파티클 (HITFX · 반격을 맞은 쪽도)
     setTimeout(()=>{ if(camRun === tok) tg.forEach(u=>{ if(hit.has(u)) setMot(uEl(u), "hit", 1); }); }, 110 / camSf());   // 맞은 쪽 — 피격 1 · 2장 뒤 멈춤
     const skillId = F.fx && F.fx.skillId;
     const stopSkillFx = stylishSkillFxShow(stage, ae, ((F.fx && F.fx.t)||[]).map(uEl).filter(Boolean), names[ka].job, skillId, side, ()=>camRun===tok && stage.classList.contains("cam-focus"), ((F.fx && F.fx.t)||[]).filter(u=>sideOf(u)!==side).map(uEl).filter(Boolean), {shots:F.fx && F.fx.shots, duration:1500/camSf()});
@@ -32719,7 +32954,7 @@ function openBattle(res, opt, onDone){
     /* 1.5초 멈춤 — 카메라가 천천히 흐른다 (0930 — 우리 편 기준 공격은 오른쪽 + 3도, 보조는 왼쪽. 상대 편은 반대) */
     const dir = attack ? L : -L;
     stage.style.setProperty("--cam-t", T(1.5)); stage.style.setProperty("--cam-e", "linear");
-    stage.style.setProperty("--cam", `${CP}scale(${CS}) translateX(${Math.round(dir*stT().drift/100*sw*1.2/CS)}px)${attack ? ` rotate(${dir*stT().tilt}deg)` : ""}`);   // 1024 — STYLISH_TUNE.drift · tilt (STLAB)   // 흐르는 폭은 화면에서 예전과 같게
+    stage.style.setProperty("--cam", `${CP}scale(${CS}) translateX(${Math.round(dir*stT().drift/100*sw*1.2/CS)}px)${attack && PREF.camTilt !== false ? ` rotate(${dir*stT().tilt}deg)` : ""}`);   /* 1027 열일곱째 — 설정 '공격 화면 기울임' 을 끄면 흐르기만 */   // 1024 — STYLISH_TUNE.drift · tilt (STLAB)   // 흐르는 폭은 화면에서 예전과 같게
     const held = await camW(tok, 1500);
     stopSkillFx();
     if(!held) return false;

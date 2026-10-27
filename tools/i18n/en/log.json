@@ -380,6 +380,8 @@
  "_bindView()": "",
  "스타일리시 모드 — 넓은 화면의 전투에서 카메라 연출이 켜진다.": "Stylish Mode — camera effects turn on in wide-screen battles.",
  "심플 모드로 전투를 본다.": "Watching battles in Simple Mode.",
+ "공격 때 화면을 살짝 기울인다.": "The screen tilts slightly on attacks.",
+ "공격 때 화면을 기울이지 않는다.": "The screen no longer tilts on attacks.",
  "전투 배치 격자를 표시한다.": "Showing the battle position grid.",
  "전투 배치 격자를 숨겼다.": "Hid the battle position grid.",
  "도트 폰트를 켰다.": "Pixel font on.",

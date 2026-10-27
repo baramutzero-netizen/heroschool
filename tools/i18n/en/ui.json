@@ -1114,6 +1114,8 @@
  "스타일리시 모드는 넓은 화면에서만 — 행동 게이지가 차오르고, 차례가 온 학생과 스킬 대상을 카메라가 가까이 잡아 보여 준다. 좁은 화면에서는 심플 모드로 돈다.": "Stylish Mode is wide-screen only — the action gauge fills up, and the camera zooms in on whoever's turn it is and on skill targets. Narrow screens use Simple Mode.",
  "심플 모드": "Simple Mode",
  "스타일리시 모드": "Stylish Mode",
+ "공격 화면 기울임": "Tilt on Attack",
+ "스타일리시 모드에서 공격하는 순간 카메라가 흐르며 화면을 살짝 기울인다. 끄면 기울이지 않고 흐르기만 한다.": "In Stylish Mode, the screen tilts slightly as the camera drifts at the moment of an attack. Turn it off to keep the drift without the tilt.",
  "저장된 서명": "Saved Signature",
  "결재 때 쓰는 서명. 지우면 다음 결재 때 새로 그린다 — 서명줄에 새로 그어도 바뀐다.": "The signature used for sign-offs. Clear it to draw a new one at the next sign-off — drawing on the signature line also replaces it.",
  "서명 지우기": "Clear Signature",
