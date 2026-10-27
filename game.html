@@ -910,6 +910,7 @@ html[data-font="pixel"] .prol .ptitle{font-synthesis:weight;font-weight:700}   /
 .op-text.big{font-size:36px;line-height:1.25;font-weight:700;letter-spacing:.02em}
 .op-next{position:absolute;right:0;bottom:-8px;font-size:12px;color:#e9d9b4;opacity:0;transition:opacity .2s}
 .op-talk.done .op-next{opacity:1;animation:opNext 1s ease-in-out infinite}
+.op-talk.auto .op-next{visibility:hidden}   /* 1027 열셋째 — 저절로 넘어가는 마왕 대사 (opLines auto) */
 @keyframes opNext{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
 /* 1003 — 검은 빛 (가운데서 검은 구가 번져 화면을 삼킨다 · 가장자리에 보랏빛 · 푸른빛이 휘몰아친다) */
 .opening{box-shadow:0 0 0 28px #000}   /* 흔들릴 때 가장자리 틈을 가린다 */
@@ -4627,7 +4628,7 @@ html body nav button .lki svg{display:block;width:100%;height:100%}
 .tournament-quarter .bf-school{background:none!important;border:0!important;border-radius:0!important;padding:0 14px!important;gap:0!important;max-width:none!important;justify-content:center!important;align-items:center!important;text-align:center!important;overflow:visible!important}
 .tournament-quarter .bf-school::before{content:"";position:absolute;z-index:-1;pointer-events:none;box-sizing:border-box;
   top:calc(var(--tq-ot,19px) * -1);right:calc(var(--tq-or,12px) * -1);bottom:calc(var(--tq-ob,22px) * -1);left:calc(var(--tq-ol,12px) * -1);
-  border:1px solid transparent;border-image-source:url(assets/battle-fields/quarter/controls.webp?v=d31f4ada);border-image-slice:290 320 292 320 fill;border-image-width:var(--tq-bw,50px 43px 51px 43px);border-image-repeat:stretch}
+  border:1px solid transparent;border-image-source:url(assets/battle-fields/quarter/controls-v2.webp?v=3d4b3448);border-image-slice:84 92 84 92 fill;border-image-width:var(--tq-bw,50.3px 55.2px 50.3px 55.2px);border-image-repeat:stretch}   /* 1027 열다섯째 — 버튼 박스 v2 픽셀 맞춤 + AA (440×232 · 9칸 84 92 84 92 · mockups/wood-frame-v2) */
 .tournament-quarter .bf-school>b{font-size:var(--tq-fs,18px)!important;line-height:1.25!important;max-width:100%;color:#ffe9b5!important;word-break:keep-all;overflow-wrap:anywhere;
   text-shadow:1px 0 0 #2a1506,-1px 0 0 #2a1506,0 1px 0 #2a1506,0 -1px 0 #2a1506,1px 1px 0 #2a1506,-1px 1px 0 #2a1506,1px -1px 0 #2a1506,-1px -1px 0 #2a1506,0 2px 3px #000b!important}
 .tq-title{position:absolute;transform:translate(-50%,-50%);margin:0!important;padding:0!important;background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;
@@ -5731,6 +5732,79 @@ html.ffop-on #modalRoot .modal[data-bt]{cursor:pointer}
     --sti-bd-w:var(--sti-m-bd-w);--sti-bd-c:var(--sti-m-bd-c);--sti-bd-d:var(--sti-m-bd-d)}
 }
 /* STICON_CSS_END */
+/* PXGAUGE_CSS_START — 픽셀 게이지 (1027 · apply_pxgauge.py · mockups/pixel-gauges · 1027 열한째 게임에 넣음) ─ 사용자 '체력바/행동게이지바/필살기 게이지바 픽셀버전 제작 및 목업'.
+   전투 유닛 옆 게이지(.bf-gauges — 체력 .bf-meter.hp · 행동 .bf-meter.atb · 필살기 .bf-ult)를 도트 모양으로 — 마크업 · 값(높이 % · --charge)은 게임 그대로.
+   · 막대 — 모서리 각지게 · 바깥 1px 어두운 외곽선(outline) · 안쪽 단색 테두리(::after · 상태 아이콘 테두리와 같은 #c4ac78) · 칠은 단색 + 왼쪽 1px 밝은 줄 · 오른쪽 1px 어두운 줄 ·
+     맨 위 1px 밝은 줄 · 칸 나눔(::before — --pxg-seg px 마다 어두운 줄) · 그림자는 흐림 없이 1px
+   · 칸 나눔 줄 두께 (1027 열째 — 사용자 '일부 바 위치에서 눈금이 표시가 안 되고 있어') — 전투판은 화면 맞춤 × 직업 배율 × 카메라로 0.5 ~ 0.9 배라
+     CSS 1 px 띠가 화면 픽셀 한 칸보다 가늘어진다. 그라디언트는 화면 픽셀 가운데에서만 색을 집어서 띠가 가운데를 비껴가면 그 줄이 통째로 안 찍혔다
+     (막대 자리마다 다름 · 칸 간격이 정수 픽셀에 가까우면 그 막대의 줄이 전부 사라짐). → 게임 JS 블록(pxgauge_block.js)이 게이지마다 잰 배율
+     --pxg-k(화면 픽셀 ÷ CSS px)로 띠 두께 --pxg-t = 화면 픽셀 max(1, round(k)) 칸 — 어느 자리에서도 같은 두께로 찍힌다
+     (+ 0.002 칸 — 딱 1 칸이면 계산 오차로 픽셀 가운데 둘 사이에 끼어 빠지는 줄이 생겼다 · 넘치는 쪽은 0.2% 확률로 한 칸 두꺼워질 뿐) ·
+     띠를 화면 픽셀 0.36875 칸(--pxg-o) 아래로 — 배율 · 자리가 딱 떨어지는 수(0.8 배 · 1/64 px)면 띠 끝이 픽셀 가운데에 맞물려 늘 두 칸이 되던 것을 피한다
+     (0.36875 = 0.5 − 10.5/80 — 1/80 · 1/64 격자에서 가운데까지 0.006 칸 넘게 떨어진다) · 막대 맨 아래 칸에는 띠 꼬리가 안 묻는다.
+     맨 위 경계의 줄(높이가 간격의 배수일 때 — 66 ÷ 11)은 테두리 밑이라 뺀다(::before 위쪽을 띠 두께 + 0.37 + 반 칸 비운다 — 경계가 딱 맞물리면 한 줄이 새어 나왔다)
+   · 보호막 (1027 열째 — 사용자 '보호막 눈금은 줄을 여러 번 긋지 말고 깔끔하게 채우자') — 가로 줄무늬 대신 단색 칠(밝은 · 어두운 줄은 체력과 같은 모양) ·
+     체력 위에 이어 쌓는다(체력 막대를 flex 세로 역순 — 단색으로 아래부터 겹치면 체력이 가려진다 · 넘치면 위에서 잘림) ·
+     .pxg-shover 안이면 예전 자리처럼 아래부터 겹친다(목업 비교 단추)
+   · 필살기 — '링'(기본): 14 × 14 칸 도트 원(pxgauge_art.py — 그림 SVG · crispEdges) · 링 칸이 위에서 시계 방향으로 5% 씩 켜진다
+     (마스크 21장 세로 — mask-position 0 round(down, var(--charge), 5%)) · 다 차면 금색 바깥 외곽선이 깜빡(steps) ·
+     '타일'(.pxg-tile 안): 상태 아이콘 칩처럼 네모 타일 · 아래에서 5% 씩 차오른다 · 다 차면 테두리가 금색으로 깜빡
+   · 숫자 — 도트 글꼴(Mulmaru) · 사방 1px 외곽선 · 범례(.bf-legend)의 점도 네모 칩
+   · 값은 :root 변수(--pxg-*) — 목업 조정 툴이 바꾸고 복사해 준다 (1027 열째 — 사용자 값: 폭 11 · 높이 66 · 사이 4 · 칸 11 · 보호막 #00b3ff ·
+     1027 열한째 숫자 12 — '게이지 목업 폰트 사이즈만 수정하고 게임에 적용' · 게임에 넣음) · 비교(목업)는 .pxg-off 안이면 예전 게이지 (:not(.pxg-off *)) */
+:root{
+  --pxg-w:11px;--pxg-h:66px;--pxg-gap:4px;
+  --pxg-out:#1b1218;--pxg-frame:#c4ac78;--pxg-frame-w:1px;--pxg-bg:#2b2029;--pxg-seg:11px;--pxg-seg-d:block;--pxg-tick:#00000066;--pxg-shadow:#00000099;
+  --pxg-hp:#3ec46a;--pxg-hp-hi:#a2f5b8;--pxg-hp-lo:#238a4b;
+  --pxg-atb:#2f9be8;--pxg-atb-hi:#a6e3ff;--pxg-atb-lo:#1b5fa3;
+  --pxg-fog:#e2b02a;--pxg-fog-hi:#fff08c;--pxg-fog-lo:#9f7110;
+  --pxg-stu:#e1434f;--pxg-stu-hi:#ff9da3;--pxg-stu-lo:#962430;
+  --pxg-sh:#00b3ff;--pxg-sh-hi:#a8ecff;--pxg-sh-lo:#0074b4;
+  --pxg-ult-s:28px;--pxg-ult-on:#ff6a3d;--pxg-ult-ready:#ffd84a;--pxg-ult-fs:12px;--pxg-ult-num:#ffffff;
+}
+/* 막대 */
+.bf-gauges:not(.pxg-off *){filter:drop-shadow(1px 1px 0 var(--pxg-shadow));gap:var(--pxg-gap)}
+.bf-meter:not(.pxg-off *){width:var(--pxg-w);height:var(--pxg-h);border-radius:0;background:var(--pxg-bg);box-shadow:none;outline:1px solid var(--pxg-out);outline-offset:0;overflow:hidden}
+.bf-meter:not(.pxg-off *)::before{content:"";--pxg-t:calc((max(1, round(var(--pxg-k, 1), 1)) + .002) * 1px / var(--pxg-k, 1));--pxg-o:calc(.36875px / var(--pxg-k, 1));
+  position:absolute;inset:calc(max(var(--pxg-frame-w), var(--pxg-t)) + var(--pxg-o) + var(--pxg-t) / 2) 0 0;z-index:2;display:var(--pxg-seg-d);pointer-events:none;
+  background:repeating-linear-gradient(to top,transparent 0 calc(var(--pxg-seg) - var(--pxg-t) - var(--pxg-o)),var(--pxg-tick) calc(var(--pxg-seg) - var(--pxg-t) - var(--pxg-o)) calc(var(--pxg-seg) - var(--pxg-o)),transparent calc(var(--pxg-seg) - var(--pxg-o)) var(--pxg-seg))}
+.bf-meter:not(.pxg-off *)::after{content:"";position:absolute;inset:0;z-index:3;border:var(--pxg-frame-w) solid var(--pxg-frame);pointer-events:none}
+.bf-meter:not(.pxg-off *):is(.hp,.atb) i,.bf-meter:not(.pxg-off *) .bf-shield{border-radius:0;z-index:1;
+  background:linear-gradient(90deg,var(--hi) 0 calc(var(--pxg-frame-w) + 1px),var(--c) calc(var(--pxg-frame-w) + 1px) calc(100% - var(--pxg-frame-w) - 1px),var(--lo) calc(100% - var(--pxg-frame-w) - 1px));
+  box-shadow:inset 0 1px 0 var(--hi)}
+.bf-meter.hp:not(.pxg-off *) i{--c:var(--pxg-hp);--hi:var(--pxg-hp-hi);--lo:var(--pxg-hp-lo)}
+.bf-meter.hp.foggy:not(.pxg-off *) i{--c:var(--pxg-fog);--hi:var(--pxg-fog-hi);--lo:var(--pxg-fog-lo)}
+.bf-meter.hp.stupor:not(.pxg-off *) i{--c:var(--pxg-stu);--hi:var(--pxg-stu-hi);--lo:var(--pxg-stu-lo)}
+.bf-meter.atb:not(.pxg-off *) i{--c:var(--pxg-atb);--hi:var(--pxg-atb-hi);--lo:var(--pxg-atb-lo)}
+/* 보호막 — 단색 · 체력 위에 쌓기 (.pxg-shover 면 아래부터 겹치기) */
+.bf-meter:not(.pxg-off *) .bf-shield{--c:var(--pxg-sh);--hi:var(--pxg-sh-hi);--lo:var(--pxg-sh-lo);opacity:1}
+.bf-meter.hp:not(.pxg-off *){display:flex;flex-direction:column-reverse}
+.bf-meter.hp:not(.pxg-off *) > :is(i,.bf-shield){position:relative;bottom:auto;left:auto;width:auto;flex:none}
+.pxg-shover .bf-meter.hp:not(.pxg-off *) > .bf-shield{position:absolute;bottom:0;left:0;right:0}
+.bf-meter.hp.shielded:not(.pxg-off *){outline-color:var(--pxg-sh);box-shadow:none}
+.bf-meter.hp.shielded:not(.pxg-off *)::after{border-color:var(--pxg-sh)}
+/* 필살기 — 링 (도트 원) */
+.bf-ult:not(.pxg-off *){width:var(--pxg-ult-s);height:var(--pxg-ult-s);border:0;border-radius:0;box-shadow:none;background:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 14 14%22 width=%2214%22 height=%2214%22 shape-rendering=%22crispEdges%22%3E%3Cpath fill=%22%231b1218%22 d=%22M3 0h8v1h-8zM2 1h2v1h-2zM10 1h2v1h-2zM1 2h1v1h-1zM12 2h1v1h-1zM0 3h2v1h-2zM4 3h6v1h-6zM12 3h2v1h-2zM0 4h1v1h-1zM3 4h2v1h-2zM9 4h2v1h-2zM13 4h1v1h-1zM0 5h1v1h-1zM3 5h1v1h-1zM10 5h1v1h-1zM13 5h1v1h-1zM0 6h1v1h-1zM3 6h1v1h-1zM10 6h1v1h-1zM13 6h1v1h-1zM0 7h1v1h-1zM3 7h1v1h-1zM10 7h1v1h-1zM13 7h1v1h-1zM0 8h1v1h-1zM3 8h1v1h-1zM10 8h1v1h-1zM13 8h1v1h-1zM0 9h1v1h-1zM3 9h2v1h-2zM9 9h2v1h-2zM13 9h1v1h-1zM0 10h2v1h-2zM4 10h6v1h-6zM12 10h2v1h-2zM1 11h1v1h-1zM12 11h1v1h-1zM2 12h2v1h-2zM10 12h2v1h-2zM3 13h8v1h-8z%22/%3E%3Cpath fill=%22%2343303a%22 d=%22M4 1h6v1h-6zM2 2h10v1h-10zM2 3h2v1h-2zM10 3h2v1h-2zM1 4h2v1h-2zM11 4h2v1h-2zM1 5h2v1h-2zM11 5h2v1h-2zM1 6h2v1h-2zM11 6h2v1h-2zM1 7h2v1h-2zM11 7h2v1h-2zM1 8h2v1h-2zM11 8h2v1h-2zM1 9h2v1h-2zM11 9h2v1h-2zM2 10h2v1h-2zM10 10h2v1h-2zM2 11h10v1h-10zM4 12h6v1h-6z%22/%3E%3Cpath fill=%22%232a1d24%22 d=%22M5 4h4v1h-4zM4 5h6v1h-6zM4 6h6v1h-6zM4 7h6v1h-6zM4 8h6v1h-6zM5 9h4v1h-4z%22/%3E%3C/svg%3E") center/100% 100% no-repeat}
+.bf-ult:not(.pxg-off *)::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;background:var(--pxg-ult-on);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 14 294%22 width=%2214%22 height=%22294%22 shape-rendering=%22crispEdges%22%3E%3Cpath fill=%22%23000%22 d=%22M7 15h2v1h-2zM7 16h1v1h-1zM7 29h3v1h-3zM7 30h3v1h-3zM7 43h3v1h-3zM7 44h5v1h-5zM10 45h2v1h-2zM7 57h3v1h-3zM7 58h5v1h-5zM10 59h2v1h-2zM11 60h2v1h-2zM11 61h1v1h-1zM7 71h3v1h-3zM7 72h5v1h-5zM10 73h2v1h-2zM11 74h2v1h-2zM11 75h2v1h-2zM11 76h2v1h-2zM7 85h3v1h-3zM7 86h5v1h-5zM10 87h2v1h-2zM11 88h2v1h-2zM11 89h2v1h-2zM11 90h2v1h-2zM11 91h2v1h-2zM12 92h1v1h-1zM7 99h3v1h-3zM7 100h5v1h-5zM10 101h2v1h-2zM11 102h2v1h-2zM11 103h2v1h-2zM11 104h2v1h-2zM11 105h2v1h-2zM11 106h2v1h-2zM11 107h2v1h-2zM7 113h3v1h-3zM7 114h5v1h-5zM10 115h2v1h-2zM11 116h2v1h-2zM11 117h2v1h-2zM11 118h2v1h-2zM11 119h2v1h-2zM11 120h2v1h-2zM11 121h2v1h-2zM10 122h2v1h-2zM10 123h2v1h-2zM7 127h3v1h-3zM7 128h5v1h-5zM10 129h2v1h-2zM11 130h2v1h-2zM11 131h2v1h-2zM11 132h2v1h-2zM11 133h2v1h-2zM11 134h2v1h-2zM11 135h2v1h-2zM10 136h2v1h-2zM8 137h4v1h-4zM9 138h1v1h-1zM7 141h3v1h-3zM7 142h5v1h-5zM10 143h2v1h-2zM11 144h2v1h-2zM11 145h2v1h-2zM11 146h2v1h-2zM11 147h2v1h-2zM11 148h2v1h-2zM11 149h2v1h-2zM10 150h2v1h-2zM7 151h5v1h-5zM7 152h3v1h-3zM7 155h3v1h-3zM7 156h5v1h-5zM10 157h2v1h-2zM11 158h2v1h-2zM11 159h2v1h-2zM11 160h2v1h-2zM11 161h2v1h-2zM11 162h2v1h-2zM11 163h2v1h-2zM10 164h2v1h-2zM6 165h6v1h-6zM5 166h5v1h-5zM7 169h3v1h-3zM7 170h5v1h-5zM10 171h2v1h-2zM11 172h2v1h-2zM11 173h2v1h-2zM11 174h2v1h-2zM11 175h2v1h-2zM11 176h2v1h-2zM11 177h2v1h-2zM10 178h2v1h-2zM4 179h8v1h-8zM4 180h6v1h-6zM7 183h3v1h-3zM7 184h5v1h-5zM10 185h2v1h-2zM11 186h2v1h-2zM11 187h2v1h-2zM11 188h2v1h-2zM11 189h2v1h-2zM11 190h2v1h-2zM11 191h2v1h-2zM2 192h2v1h-2zM10 192h2v1h-2zM2 193h10v1h-10zM4 194h6v1h-6zM7 197h3v1h-3zM7 198h5v1h-5zM10 199h2v1h-2zM11 200h2v1h-2zM11 201h2v1h-2zM11 202h2v1h-2zM11 203h2v1h-2zM2 204h1v1h-1zM11 204h2v1h-2zM1 205h2v1h-2zM11 205h2v1h-2zM2 206h2v1h-2zM10 206h2v1h-2zM2 207h10v1h-10zM4 208h6v1h-6zM7 211h3v1h-3zM7 212h5v1h-5zM10 213h2v1h-2zM11 214h2v1h-2zM11 215h2v1h-2zM11 216h2v1h-2zM1 217h2v1h-2zM11 217h2v1h-2zM1 218h2v1h-2zM11 218h2v1h-2zM1 219h2v1h-2zM11 219h2v1h-2zM2 220h2v1h-2zM10 220h2v1h-2zM2 221h10v1h-10zM4 222h6v1h-6zM7 225h3v1h-3zM7 226h5v1h-5zM10 227h2v1h-2zM11 228h2v1h-2zM1 229h1v1h-1zM11 229h2v1h-2zM1 230h2v1h-2zM11 230h2v1h-2zM1 231h2v1h-2zM11 231h2v1h-2zM1 232h2v1h-2zM11 232h2v1h-2zM1 233h2v1h-2zM11 233h2v1h-2zM2 234h2v1h-2zM10 234h2v1h-2zM2 235h10v1h-10zM4 236h6v1h-6zM7 239h3v1h-3zM7 240h5v1h-5zM10 241h2v1h-2zM1 242h2v1h-2zM11 242h2v1h-2zM1 243h2v1h-2zM11 243h2v1h-2zM1 244h2v1h-2zM11 244h2v1h-2zM1 245h2v1h-2zM11 245h2v1h-2zM1 246h2v1h-2zM11 246h2v1h-2zM1 247h2v1h-2zM11 247h2v1h-2zM2 248h2v1h-2zM10 248h2v1h-2zM2 249h10v1h-10zM4 250h6v1h-6zM7 253h3v1h-3zM2 254h2v1h-2zM7 254h5v1h-5zM2 255h2v1h-2zM10 255h2v1h-2zM1 256h2v1h-2zM11 256h2v1h-2zM1 257h2v1h-2zM11 257h2v1h-2zM1 258h2v1h-2zM11 258h2v1h-2zM1 259h2v1h-2zM11 259h2v1h-2zM1 260h2v1h-2zM11 260h2v1h-2zM1 261h2v1h-2zM11 261h2v1h-2zM2 262h2v1h-2zM10 262h2v1h-2zM2 263h10v1h-10zM4 264h6v1h-6zM4 267h1v1h-1zM7 267h3v1h-3zM2 268h4v1h-4zM7 268h5v1h-5zM2 269h2v1h-2zM10 269h2v1h-2zM1 270h2v1h-2zM11 270h2v1h-2zM1 271h2v1h-2zM11 271h2v1h-2zM1 272h2v1h-2zM11 272h2v1h-2zM1 273h2v1h-2zM11 273h2v1h-2zM1 274h2v1h-2zM11 274h2v1h-2zM1 275h2v1h-2zM11 275h2v1h-2zM2 276h2v1h-2zM10 276h2v1h-2zM2 277h10v1h-10zM4 278h6v1h-6zM4 281h6v1h-6zM2 282h10v1h-10zM2 283h2v1h-2zM10 283h2v1h-2zM1 284h2v1h-2zM11 284h2v1h-2zM1 285h2v1h-2zM11 285h2v1h-2zM1 286h2v1h-2zM11 286h2v1h-2zM1 287h2v1h-2zM11 287h2v1h-2zM1 288h2v1h-2zM11 288h2v1h-2zM1 289h2v1h-2zM11 289h2v1h-2zM2 290h2v1h-2zM10 290h2v1h-2zM2 291h10v1h-10zM4 292h6v1h-6z%22/%3E%3C/svg%3E") 0 round(down,var(--charge,0%),5%)/100% 2100% no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 14 294%22 width=%2214%22 height=%22294%22 shape-rendering=%22crispEdges%22%3E%3Cpath fill=%22%23000%22 d=%22M7 15h2v1h-2zM7 16h1v1h-1zM7 29h3v1h-3zM7 30h3v1h-3zM7 43h3v1h-3zM7 44h5v1h-5zM10 45h2v1h-2zM7 57h3v1h-3zM7 58h5v1h-5zM10 59h2v1h-2zM11 60h2v1h-2zM11 61h1v1h-1zM7 71h3v1h-3zM7 72h5v1h-5zM10 73h2v1h-2zM11 74h2v1h-2zM11 75h2v1h-2zM11 76h2v1h-2zM7 85h3v1h-3zM7 86h5v1h-5zM10 87h2v1h-2zM11 88h2v1h-2zM11 89h2v1h-2zM11 90h2v1h-2zM11 91h2v1h-2zM12 92h1v1h-1zM7 99h3v1h-3zM7 100h5v1h-5zM10 101h2v1h-2zM11 102h2v1h-2zM11 103h2v1h-2zM11 104h2v1h-2zM11 105h2v1h-2zM11 106h2v1h-2zM11 107h2v1h-2zM7 113h3v1h-3zM7 114h5v1h-5zM10 115h2v1h-2zM11 116h2v1h-2zM11 117h2v1h-2zM11 118h2v1h-2zM11 119h2v1h-2zM11 120h2v1h-2zM11 121h2v1h-2zM10 122h2v1h-2zM10 123h2v1h-2zM7 127h3v1h-3zM7 128h5v1h-5zM10 129h2v1h-2zM11 130h2v1h-2zM11 131h2v1h-2zM11 132h2v1h-2zM11 133h2v1h-2zM11 134h2v1h-2zM11 135h2v1h-2zM10 136h2v1h-2zM8 137h4v1h-4zM9 138h1v1h-1zM7 141h3v1h-3zM7 142h5v1h-5zM10 143h2v1h-2zM11 144h2v1h-2zM11 145h2v1h-2zM11 146h2v1h-2zM11 147h2v1h-2zM11 148h2v1h-2zM11 149h2v1h-2zM10 150h2v1h-2zM7 151h5v1h-5zM7 152h3v1h-3zM7 155h3v1h-3zM7 156h5v1h-5zM10 157h2v1h-2zM11 158h2v1h-2zM11 159h2v1h-2zM11 160h2v1h-2zM11 161h2v1h-2zM11 162h2v1h-2zM11 163h2v1h-2zM10 164h2v1h-2zM6 165h6v1h-6zM5 166h5v1h-5zM7 169h3v1h-3zM7 170h5v1h-5zM10 171h2v1h-2zM11 172h2v1h-2zM11 173h2v1h-2zM11 174h2v1h-2zM11 175h2v1h-2zM11 176h2v1h-2zM11 177h2v1h-2zM10 178h2v1h-2zM4 179h8v1h-8zM4 180h6v1h-6zM7 183h3v1h-3zM7 184h5v1h-5zM10 185h2v1h-2zM11 186h2v1h-2zM11 187h2v1h-2zM11 188h2v1h-2zM11 189h2v1h-2zM11 190h2v1h-2zM11 191h2v1h-2zM2 192h2v1h-2zM10 192h2v1h-2zM2 193h10v1h-10zM4 194h6v1h-6zM7 197h3v1h-3zM7 198h5v1h-5zM10 199h2v1h-2zM11 200h2v1h-2zM11 201h2v1h-2zM11 202h2v1h-2zM11 203h2v1h-2zM2 204h1v1h-1zM11 204h2v1h-2zM1 205h2v1h-2zM11 205h2v1h-2zM2 206h2v1h-2zM10 206h2v1h-2zM2 207h10v1h-10zM4 208h6v1h-6zM7 211h3v1h-3zM7 212h5v1h-5zM10 213h2v1h-2zM11 214h2v1h-2zM11 215h2v1h-2zM11 216h2v1h-2zM1 217h2v1h-2zM11 217h2v1h-2zM1 218h2v1h-2zM11 218h2v1h-2zM1 219h2v1h-2zM11 219h2v1h-2zM2 220h2v1h-2zM10 220h2v1h-2zM2 221h10v1h-10zM4 222h6v1h-6zM7 225h3v1h-3zM7 226h5v1h-5zM10 227h2v1h-2zM11 228h2v1h-2zM1 229h1v1h-1zM11 229h2v1h-2zM1 230h2v1h-2zM11 230h2v1h-2zM1 231h2v1h-2zM11 231h2v1h-2zM1 232h2v1h-2zM11 232h2v1h-2zM1 233h2v1h-2zM11 233h2v1h-2zM2 234h2v1h-2zM10 234h2v1h-2zM2 235h10v1h-10zM4 236h6v1h-6zM7 239h3v1h-3zM7 240h5v1h-5zM10 241h2v1h-2zM1 242h2v1h-2zM11 242h2v1h-2zM1 243h2v1h-2zM11 243h2v1h-2zM1 244h2v1h-2zM11 244h2v1h-2zM1 245h2v1h-2zM11 245h2v1h-2zM1 246h2v1h-2zM11 246h2v1h-2zM1 247h2v1h-2zM11 247h2v1h-2zM2 248h2v1h-2zM10 248h2v1h-2zM2 249h10v1h-10zM4 250h6v1h-6zM7 253h3v1h-3zM2 254h2v1h-2zM7 254h5v1h-5zM2 255h2v1h-2zM10 255h2v1h-2zM1 256h2v1h-2zM11 256h2v1h-2zM1 257h2v1h-2zM11 257h2v1h-2zM1 258h2v1h-2zM11 258h2v1h-2zM1 259h2v1h-2zM11 259h2v1h-2zM1 260h2v1h-2zM11 260h2v1h-2zM1 261h2v1h-2zM11 261h2v1h-2zM2 262h2v1h-2zM10 262h2v1h-2zM2 263h10v1h-10zM4 264h6v1h-6zM4 267h1v1h-1zM7 267h3v1h-3zM2 268h4v1h-4zM7 268h5v1h-5zM2 269h2v1h-2zM10 269h2v1h-2zM1 270h2v1h-2zM11 270h2v1h-2zM1 271h2v1h-2zM11 271h2v1h-2zM1 272h2v1h-2zM11 272h2v1h-2zM1 273h2v1h-2zM11 273h2v1h-2zM1 274h2v1h-2zM11 274h2v1h-2zM1 275h2v1h-2zM11 275h2v1h-2zM2 276h2v1h-2zM10 276h2v1h-2zM2 277h10v1h-10zM4 278h6v1h-6zM4 281h6v1h-6zM2 282h10v1h-10zM2 283h2v1h-2zM10 283h2v1h-2zM1 284h2v1h-2zM11 284h2v1h-2zM1 285h2v1h-2zM11 285h2v1h-2zM1 286h2v1h-2zM11 286h2v1h-2zM1 287h2v1h-2zM11 287h2v1h-2zM1 288h2v1h-2zM11 288h2v1h-2zM1 289h2v1h-2zM11 289h2v1h-2zM2 290h2v1h-2zM10 290h2v1h-2zM2 291h10v1h-10zM4 292h6v1h-6z%22/%3E%3C/svg%3E") 0 round(down,var(--charge,0%),5%)/100% 2100% no-repeat}
+.bf-ult.ready:not(.pxg-off *){box-shadow:none}
+.bf-ult.ready:not(.pxg-off *)::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:var(--pxg-ult-ready);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 14 14%22 width=%2214%22 height=%2214%22 shape-rendering=%22crispEdges%22%3E%3Cpath fill=%22%23000%22 d=%22M3 0h8v1h-8zM2 1h2v1h-2zM10 1h2v1h-2zM1 2h1v1h-1zM12 2h1v1h-1zM0 3h2v1h-2zM12 3h2v1h-2zM0 4h1v1h-1zM13 4h1v1h-1zM0 5h1v1h-1zM13 5h1v1h-1zM0 6h1v1h-1zM13 6h1v1h-1zM0 7h1v1h-1zM13 7h1v1h-1zM0 8h1v1h-1zM13 8h1v1h-1zM0 9h1v1h-1zM13 9h1v1h-1zM0 10h2v1h-2zM12 10h2v1h-2zM1 11h1v1h-1zM12 11h1v1h-1zM2 12h2v1h-2zM10 12h2v1h-2zM3 13h8v1h-8z%22/%3E%3C/svg%3E") center/100% 100% no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 14 14%22 width=%2214%22 height=%2214%22 shape-rendering=%22crispEdges%22%3E%3Cpath fill=%22%23000%22 d=%22M3 0h8v1h-8zM2 1h2v1h-2zM10 1h2v1h-2zM1 2h1v1h-1zM12 2h1v1h-1zM0 3h2v1h-2zM12 3h2v1h-2zM0 4h1v1h-1zM13 4h1v1h-1zM0 5h1v1h-1zM13 5h1v1h-1zM0 6h1v1h-1zM13 6h1v1h-1zM0 7h1v1h-1zM13 7h1v1h-1zM0 8h1v1h-1zM13 8h1v1h-1zM0 9h1v1h-1zM13 9h1v1h-1zM0 10h2v1h-2zM12 10h2v1h-2zM1 11h1v1h-1zM12 11h1v1h-1zM2 12h2v1h-2zM10 12h2v1h-2zM3 13h8v1h-8z%22/%3E%3C/svg%3E") center/100% 100% no-repeat;animation:pxgBlink .7s steps(2,jump-none) infinite}
+.bf-ult:not(.pxg-off *) span{position:relative;z-index:3;width:auto;height:auto;border-radius:0;background:none;color:var(--pxg-ult-num);font:400 var(--pxg-ult-fs)/1 "Mulmaru",sans-serif;
+  -webkit-font-smoothing:none;font-synthesis:none;letter-spacing:0;text-shadow:1px 0 0 var(--pxg-out),-1px 0 0 var(--pxg-out),0 1px 0 var(--pxg-out),0 -1px 0 var(--pxg-out)}
+@keyframes pxgBlink{0%{opacity:1}100%{opacity:.3}}
+/* 필살기 — 타일 (.pxg-tile 안) */
+.pxg-tile .bf-ult:not(.pxg-off *){width:calc(var(--pxg-ult-s) - 4px);height:calc(var(--pxg-ult-s) - 4px);outline:1px solid var(--pxg-out);
+  background:linear-gradient(to top,var(--pxg-ult-on) 0 round(down,var(--charge,0%),5%),var(--pxg-bg) 0);box-shadow:inset 0 0 0 var(--pxg-frame-w) var(--pxg-frame)}
+.pxg-tile .bf-ult:not(.pxg-off *)::after{content:none}
+.pxg-tile .bf-ult.ready:not(.pxg-off *)::before{background:none;-webkit-mask:none;mask:none;box-shadow:inset 0 0 0 var(--pxg-frame-w) var(--pxg-ult-ready)}
+@media(prefers-reduced-motion:reduce){.bf-ult.ready:not(.pxg-off *)::before{animation:none}}
+/* 범례(체력 · 행동 · 필살기) — 둥근 점 대신 같은 색 네모 칩 */
+.bf-legend i:not(.pxg-off *){border-radius:0;outline:1px solid var(--pxg-out);box-shadow:inset 0 0 0 1px var(--pxg-frame)}
+.bf-legend .hp:not(.pxg-off *){background:var(--pxg-hp)}.bf-legend .atb:not(.pxg-off *){background:var(--pxg-atb)}
+.bf-legend .ult:not(.pxg-off *){background:var(--pxg-ult-on);border-radius:0;width:10px;height:10px}
+/* PXGAUGE_CSS_END */
 </style>
 
 <link rel="stylesheet" href="assets/title-art/title-screen.css?v=7">
@@ -19969,6 +20043,44 @@ if(sti0) battleStatusIcon = stiIcon;   // 전투 화면 · 실험실 · 다시 �
 window.STICON = {art: STI, key: stiKey, icon: stiIcon, old: sti0, stat: STI_STAT};
 })();
 /* STICON_END */
+/* PXGAUGE_START — 픽셀 게이지 눈금 배율 (1027 열째 · apply_pxgauge.py — 모양은 pxgauge_block.css · 1027 열한째 게임에 넣음) ─ 사용자 '일부 바 위치에서 눈금이 표시가 안 되고 있어'.
+   막대의 칸 나눔 줄(.bf-meter::before — repeating-linear-gradient 띠)은 CSS 1 px 인데 전투판은 화면 맞춤(.tournament-quarter 의 transform) × 직업 배율(--us) ×
+   카메라(--cs)로 0.5 ~ 0.9 배가 된다. 그라디언트는 화면 픽셀 가운데에서만 색을 집어서 한 칸보다 가는 띠는 가운데를 비껴가면 그 줄이 통째로 안 찍힌다
+   (막대 자리마다 다르고 · 칸 간격이 정수 픽셀에 가까우면 그 막대의 줄이 전부 사라진다 — 1600×900 실험 전투에서 막대 12 개 중 10 개가 2 ~ 3 줄만).
+   → 게이지(.bf-gauges)마다 실제 배율 k = 화면 픽셀 ÷ CSS px 를 잰다
+     (getBoundingClientRect ÷ offsetHeight × devicePixelRatio — 화면 맞춤 · 직업 배율 · 카메라 · 폰 배율 · zoom 다 들어간다 · 크롬 141 은 offsetHeight 가 zoom 전 값).
+     CSS 는 띠 두께를 화면 픽셀 max(1, round(k)) 칸 = 칸 수 ÷ k CSS px 로 잡는다 → 어느 자리에서도 정확히 그 칸 수만큼 찍힌다.
+   · 전투 유닛(.bf-unit[data-uid])의 게이지는 <style id="pxgK"> 의 유닛별 규칙으로 --pxg-k 를 준다 — 유닛 DOM 은 건드리지 않는다
+     (전투 장을 다시 그려 게이지가 새로 생겨도 바로 맞는 값 · btpatch_check 의 '장마다 같은 DOM' 그대로). 유닛 밖 게이지(목업 표 · 툴)는 그 요소에 직접.
+   · 화면에 게이지가 있을 때만 프레임마다(카메라 확대 · 줄이기 중에도 따라간다) · 없으면 0.5 초마다 한 번 찾는다 · 바뀐 때만 쓴다 · 숨은 게이지(높이 0)는 건너뛴다 */
+(function(){
+  if(typeof document === "undefined" || typeof requestAnimationFrame !== "function") return;
+  const K = new WeakMap();
+  let css = null, last = "";
+  const step = ()=>{
+    const gs = document.querySelectorAll(".bf-gauges");
+    if(!gs.length){ setTimeout(()=> requestAnimationFrame(step), 500); return; }
+    const dpr = window.devicePixelRatio || 1, rules = [];
+    for(const g of gs){
+      const m = g.querySelector(".bf-meter"), h = m && m.offsetHeight;
+      if(!h) continue;
+      const k = Math.round(m.getBoundingClientRect().height / h * dpr * 1e5) / 1e5;   // 소수 다섯째 자리까지 (셋째에서 자르면 띠가 1 칸보다 얇아져 빠지는 줄이 생겼다)
+      if(k < .05) continue;
+      const u = g.parentElement, id = u && u.classList.contains("bf-unit") && u.dataset.uid;
+      if(id) rules.push(`.bf-unit[data-uid="${CSS.escape(id)}"]>.bf-gauges{--pxg-k:${k}}`);
+      else if(K.get(g) !== k){ K.set(g, k); g.style.setProperty("--pxg-k", String(k)); }
+    }
+    const txt = rules.join("\n");
+    if(txt !== last){
+      last = txt;
+      if(!css || !css.isConnected){ css = document.createElement("style"); css.id = "pxgK"; document.head.appendChild(css); }
+      css.textContent = txt;
+    }
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+})();
+/* PXGAUGE_END */
 /* FONTSZ_START — 글자 크기 설정 (1026 목업 · apply_fontsz.py · mockups/font-size) ─ 사용자 1026 '폰트 크기 설정 한번 추가해볼까. 현재가 보통이면 지금보다 전체적으로 한 50% 정도 큰 폰트 사이즈로'
    (답: 읽는 글 위주 · 보통 · 크게 · 아주 크게 (100 · 125 · 150%) · 목업 먼저)
    · PREF.fontSize "normal" · "large" · "xlarge" → html[data-font-size] · --fszk 1.25 · 1.5 (보통이면 아무것도 붙이지 않는다 — 지금 그대로)
@@ -30949,7 +31061,7 @@ function stylishSkillFxShow(stage, caster, targets, job, skillId, side, active, 
     if(kind==="chiHit" && side==="A") img.style.transform="scaleX(-1)";
     if((kind==="monkPressure" || kind==="fistRush") && side==="B") img.style.transform="scaleX(-1)";
     if(kind==="staffThrust" && side==="B") img.style.transform="scaleX(-1)";
-    if(kind==="oraText" && side==="B") img.src="assets/skill-fx/monk/du-reverse-px.webp?v=f47f542c";
+    if(kind==="oraText" && side==="B") img.src=(STYLISH_SKILL_FX.alt&&STYLISH_SKILL_FX.alt.oraTextB)||"assets/skill-fx/monk/du-reverse-px.webp?v=f47f542c";   // 1027 열둘째 — MIXAA 가 AA 판을 STYLISH_SKILL_FX.alt.oraTextB 에
     layer.append(img); const entry={el,kind,img,echoIndex};entries.push(entry);
     if(isEcho || kind==="ssAwakeBack" || kind==="rogueSignal" || kind==="gunPierce" || kind==="ninjaRipple" || kind==="fumaPassed" || kind==="waterFlower" || kind==="meteorRain") ground.append(img);
     if(isEcho&&echoIndex===2)add(el,kind,1);
@@ -31516,7 +31628,7 @@ function tqFormation(T, list, actor){
 /* 1007 — 대회 쿼터뷰 경기 이름 · 진영 칸 (apply_tqui). 자리 · 크기는 BATTLE_TUNE.quarter — 편집기 좌표 px (TOURNAMENT_LAYOUT 과 같은 판).
    필드 배치 실험실(tools/field_lab.html)에서 끌어 옮기거나 크기를 바꾼다 (실험실 값이 기본값 위에 얹힌다).
    title — 글 가운데 x · y 와 글자 크기 · enemy / ally — 칸(나무판 안쪽) x · y · w · h 와 이름 글자 크기 */
-const TQ_SKIN = {w:1960, h:802, t:290, r:320, b:292, l:320};   // controls.png 크기와 9칸 자르는 선 (CSS border-image-slice 와 같게)
+const TQ_SKIN = {w:440, h:232, t:84, r:92, b:84, l:92};   // 버튼 박스 그림 크기와 9칸 자르는 선 (CSS border-image-slice 와 같게) — 1027 열다섯째 controls-v2.webp (v2 픽셀 맞춤 + AA · 110×58 칸 × 4) · 예전 controls.webp 는 {w:1960, h:802, t:290, r:320, b:292, l:320}
 function tqTune(){
   const d = BATTLE_TUNE.quarter || {}, t = bfTune().quarter || {}, o = {};
   ["title","enemy","ally"].forEach(k=> o[k] = Object.assign({}, d[k], t[k]));
@@ -31575,7 +31687,7 @@ function tournamentLayoutApply(fk){
   set(title,'position','absolute');set(title,'width','max-content');set(title,'height','auto');set(title,'right','auto');set(title,'bottom','auto');tqPlace(title,'title',Q.title);tqTitleSync(title);}
  let bg=stage.querySelector('.tq-map');if(!bg){bg=document.createElement('div');bg.className='tq-map';const im=document.createElement('img');im.src='assets/battle-fields/quarter/'+(TQ_MAPS[qk].battleSrc||TQ_MAPS[qk].src);bg.append(im);stage.prepend(bg);place(im,M,F);set(im,'transform-origin',(F.w/2-(M.x-F.x))+'px '+(F.h/2-(M.y-F.y))+'px');}   // 1007 — 줌 가운데 = 전투판 가운데 (카메라와 같은 점) · tqCamSync
  {const mk=TQ_MAPS[qk];stage._tqMark={x:M.x-F.x+mk.mx*M.w/1536,y:M.y-F.y+mk.my*M.h/1024};}   // 1007 — 바닥 문장 자리 (판 px) · 클로즈업 가운데
- if(!stage.querySelector('.tq-frame')){const im=document.createElement('img');im.className='tq-frame';im.src='assets/battle-fields/quarter/frame.webp?v=396708bb';stage.append(im);place(im,L.frame,F);}
+ if(!stage.querySelector('.tq-frame')){const im=document.createElement('img');im.className='tq-frame';im.src='assets/battle-fields/quarter/frame-v2.webp?v=15738db8';stage.append(im);place(im,L.frame,F);}
  /* 1007 — 범례는 숨김 · 진영 칸은 진형(배치) 정보 없이 이름만 (CSS). 칸 뒤에 버튼 박스와 같은 나무판을 9칸으로 늘여 깐다 (.bf-school::before) —
     모서리 배율 · 칸 밖으로 나오는 만큼은 버튼 박스(controls → controlSkin)와 같게. 자리 · 크기는 BATTLE_TUNE.quarter.enemy · ally */
  {const C=L.controls,K=L.controlSkin,sx=K.w/TQ_SKIN.w,sy=K.h/TQ_SKIN.h,px=v=>(+v).toFixed(1)+'px';
@@ -31588,7 +31700,7 @@ function tournamentLayoutApply(fk){
  const log=bar.querySelector('[data-bpanel="log"]');log.textContent='로그 '+(log.getAttribute('aria-expanded')==='true'?'▾':'▴');
  bar.querySelector('[data-bpanel="stats"]').hidden=true;
  const buttons=[bar.querySelector('#bPlay'),bar.querySelector('[data-sp="280"]'),bar.querySelector('[data-sp="120"]'),log,bar.querySelector('[data-bpanel="stats"]'),bar.querySelector('#bDone')];buttons.forEach((e,i)=>place(e,L['button'+i],L.controls));
- if(!bar.querySelector('.tq-control-skin')){const im=document.createElement('img');im.className='tq-control-skin';im.src='assets/battle-fields/quarter/controls.webp?v=d31f4ada';bar.prepend(im);place(im,L.controlSkin,L.controls);}
+ if(!bar.querySelector('.tq-control-skin')){const im=document.createElement('img');im.className='tq-control-skin';im.src='assets/battle-fields/quarter/controls-v2.webp?v=3d4b3448';bar.prepend(im);place(im,L.controlSkin,L.controls);}
  tournamentLayoutFit();
  tournamentCharacterSetup(stage,L.map);
 }
@@ -33660,10 +33772,16 @@ function lkwFit(){
    · 몬스터(대기 · 공격) · 쿼터뷰 맵 — tools/gen/patch/mixaa_assets.py 가 같은 aaCells 로 미리 가공한 그림(assets/mon_img/aa · assets/battle-fields/quarter/aa)으로 —
      몬스터는 MON_IMG 주소를 바꾸고(전투에서만 쓴다) · 맵은 TQ_MAPS[k].battleSrc (전투판만 — 락커룸 · 친선전 배경은 원래 그림). 맵은 원래 셀(1.5 px)로 찍고 안쪽 AA(밝기 차 24) · ×2.
    · 학생 둘레 검은 외곽선(쿼터뷰 TOURNAMENT_LAYOUT.map.outline) 끔.
+   · 스킬 이펙트 (1027 열둘째 — 사용자 '스킬 이펙트에도 AA를 걸어보자. 파티클 형식은 걸지말고 도트 형식의 스킬 이펙트/고유 이펙트') —
+     도트판(assets/skill-fx/<직업>/<이름>-px.webp — 스타일리시 연출의 시전 · 대상 · 무리 그림 · 보스 필살기)은 mixaa_assets.py 가 같은 aaCells 로 만든
+     assets/skill-fx/<직업>/aa/<이름>-px.webp 로 STYLISH_SKILL_FX.assets 를 바꾼다 (몽크 '두' 반대쪽은 STYLISH_SKILL_FX.alt.oraTextB — 본문이 본다).
+     파티클 형식(유성 빗줄기 앞 · 뒤 · 드루이드 점선 원과 잎 · 눈발)과 도트판이 아닌 그림(svg · 파티클 webp · 인챈터 룬)은 그대로.
+     기본 이펙트 시트(FX_IMG — 단순 연출 · 전용 그림이 없는 기술)는 색을 입힌 줄 캔버스(fxSheet)를 처음 만들 때 AA — 도트 줄(베기 · 찌르기 · 타격 · 폭발)만 ·
+     오라 · 회복(흩뿌린 점 — 파티클)은 그대로. 고유 이펙트 — 마스터 시트의 무지갯빛 검풍(반투명이 많아 학생 규칙이면 건너뛰던 장)도 AA (FORCE).
    · window.__MIXAA_OFF 면 아무것도 안 한다 (mockups/mixel — 원본과 견주는 목업) */
 (() => {
 if(window.__MIXAA_OFF) return;
-const ART = {"mon":{"mon_bellcrab":{"a":"assets/mon_img/aa/mon_bellcrab-attack.webp?v=7f66c17b","src":"assets/mon_img/aa/mon_bellcrab-pixel.webp?v=2919154a"},"mon_blade":{"a":"assets/mon_img/aa/mon_blade-attack.webp?v=bef6507a","src":"assets/mon_img/aa/mon_blade-pixel.webp?v=95eef886"},"mon_brine":{"a":"assets/mon_img/aa/mon_brine-attack.webp?v=5fc1a603","src":"assets/mon_img/aa/mon_brine-pixel.webp?v=6527d664"},"mon_choir":{"a":"assets/mon_img/aa/mon_choir-attack.webp?v=7367fbdc","src":"assets/mon_img/aa/mon_choir-pixel.webp?v=4b6f522c"},"mon_clockcrow":{"a":"assets/mon_img/aa/mon_clockcrow-attack.webp?v=de8d4cbe","src":"assets/mon_img/aa/mon_clockcrow-pixel.webp?v=e2494eca"},"mon_diver":{"a":"assets/mon_img/aa/mon_diver-attack.webp?v=1e85a14e","src":"assets/mon_img/aa/mon_diver-pixel.webp?v=acf7a7e4"},"mon_dummy":{"a":"assets/mon_img/aa/mon_dummy-attack.webp?v=44295a09","src":"assets/mon_img/aa/mon_dummy-pixel.webp?v=792d6b0e"},"mon_foghound":{"a":"assets/mon_img/aa/mon_foghound-attack.webp?v=0db75669","src":"assets/mon_img/aa/mon_foghound-pixel.webp?v=acf68ea0"},"mon_gargoyle":{"a":"assets/mon_img/aa/mon_gargoyle-attack.webp?v=ef73c458","src":"assets/mon_img/aa/mon_gargoyle-pixel.webp?v=0c89d3bf"},"mon_guardian":{"a":"assets/mon_img/aa/mon_guardian-attack.webp?v=546177a3","src":"assets/mon_img/aa/mon_guardian-pixel.webp?v=883047f3"},"mon_jelly":{"a":"assets/mon_img/aa/mon_jelly-attack.webp?v=dc86091e","src":"assets/mon_img/aa/mon_jelly-pixel.webp?v=baaffa9b"},"mon_lantern":{"a":"assets/mon_img/aa/mon_lantern-attack.webp?v=a71fbb26","src":"assets/mon_img/aa/mon_lantern-pixel.webp?v=6e00a73c"},"mon_muscle":{"a":"assets/mon_img/aa/mon_muscle-attack.webp?v=660f2901","src":"assets/mon_img/aa/mon_muscle-pixel.webp?v=4feaddf7"},"mon_oath":{"a":"assets/mon_img/aa/mon_oath-attack.webp?v=c4f8591a","src":"assets/mon_img/aa/mon_oath-pixel.webp?v=2366738c"},"mon_saltcrab":{"a":"assets/mon_img/aa/mon_saltcrab-attack.webp?v=ddd593e7","src":"assets/mon_img/aa/mon_saltcrab-pixel.webp?v=7a989248"},"mon_scribe":{"a":"assets/mon_img/aa/mon_scribe-attack.webp?v=6e993436","src":"assets/mon_img/aa/mon_scribe-pixel.webp?v=0bc296ce"},"mon_sentry":{"a":"assets/mon_img/aa/mon_sentry-attack.webp?v=c9594b00","src":"assets/mon_img/aa/mon_sentry-pixel.webp?v=3eaa9c07"},"mon_target":{"a":"assets/mon_img/aa/mon_target-attack.webp?v=836ee838","src":"assets/mon_img/aa/mon_target-pixel.webp?v=730c9693"},"mon_wood":{"a":"assets/mon_img/aa/mon_wood-attack.webp?v=e771fac5","src":"assets/mon_img/aa/mon_wood-pixel.webp?v=3ce51a23"},"mon_wraith":{"a":"assets/mon_img/aa/mon_wraith-attack.webp?v=82bae4e0","src":"assets/mon_img/aa/mon_wraith-pixel.webp?v=c84a8173"}},"map":{"academy-summer":"assets/battle-fields/quarter/aa/academy.webp?v=d1e2e639","brine":"assets/battle-fields/quarter/aa/brine.webp?v=2d2a8afd","city":"assets/battle-fields/quarter/aa/city.webp?v=d79dc5d0","academy-fall":"assets/battle-fields/quarter/aa/fall.webp?v=8bbcfc08","final":"assets/battle-fields/quarter/aa/final.webp?v=8ac79542","gargoyle":"assets/battle-fields/quarter/aa/gargoyle.webp?v=35b383d7","guardian":"assets/battle-fields/quarter/aa/guardian.webp?v=f7b2159d","regional":"assets/battle-fields/quarter/aa/regional.webp?v=9efb723e","academy-spring":"assets/battle-fields/quarter/aa/spring.webp?v=4e6effe5","academy-winter":"assets/battle-fields/quarter/aa/winter.webp?v=90a47918","wraith":"assets/battle-fields/quarter/aa/wraith.webp?v=6179e67e"}};   // apply_mixaa.py — {mon: {job: {src, a}}, map: {key: 주소}} (?v= 내용 해시)
+const ART = {"mon":{"mon_bellcrab":{"a":"assets/mon_img/aa/mon_bellcrab-attack.webp?v=7f66c17b","src":"assets/mon_img/aa/mon_bellcrab-pixel.webp?v=2919154a"},"mon_blade":{"a":"assets/mon_img/aa/mon_blade-attack.webp?v=bef6507a","src":"assets/mon_img/aa/mon_blade-pixel.webp?v=95eef886"},"mon_brine":{"a":"assets/mon_img/aa/mon_brine-attack.webp?v=5fc1a603","src":"assets/mon_img/aa/mon_brine-pixel.webp?v=6527d664"},"mon_choir":{"a":"assets/mon_img/aa/mon_choir-attack.webp?v=7367fbdc","src":"assets/mon_img/aa/mon_choir-pixel.webp?v=4b6f522c"},"mon_clockcrow":{"a":"assets/mon_img/aa/mon_clockcrow-attack.webp?v=de8d4cbe","src":"assets/mon_img/aa/mon_clockcrow-pixel.webp?v=e2494eca"},"mon_diver":{"a":"assets/mon_img/aa/mon_diver-attack.webp?v=1e85a14e","src":"assets/mon_img/aa/mon_diver-pixel.webp?v=acf7a7e4"},"mon_dummy":{"a":"assets/mon_img/aa/mon_dummy-attack.webp?v=44295a09","src":"assets/mon_img/aa/mon_dummy-pixel.webp?v=792d6b0e"},"mon_foghound":{"a":"assets/mon_img/aa/mon_foghound-attack.webp?v=0db75669","src":"assets/mon_img/aa/mon_foghound-pixel.webp?v=acf68ea0"},"mon_gargoyle":{"a":"assets/mon_img/aa/mon_gargoyle-attack.webp?v=ef73c458","src":"assets/mon_img/aa/mon_gargoyle-pixel.webp?v=0c89d3bf"},"mon_guardian":{"a":"assets/mon_img/aa/mon_guardian-attack.webp?v=546177a3","src":"assets/mon_img/aa/mon_guardian-pixel.webp?v=883047f3"},"mon_jelly":{"a":"assets/mon_img/aa/mon_jelly-attack.webp?v=dc86091e","src":"assets/mon_img/aa/mon_jelly-pixel.webp?v=baaffa9b"},"mon_lantern":{"a":"assets/mon_img/aa/mon_lantern-attack.webp?v=a71fbb26","src":"assets/mon_img/aa/mon_lantern-pixel.webp?v=6e00a73c"},"mon_muscle":{"a":"assets/mon_img/aa/mon_muscle-attack.webp?v=660f2901","src":"assets/mon_img/aa/mon_muscle-pixel.webp?v=4feaddf7"},"mon_oath":{"a":"assets/mon_img/aa/mon_oath-attack.webp?v=c4f8591a","src":"assets/mon_img/aa/mon_oath-pixel.webp?v=2366738c"},"mon_saltcrab":{"a":"assets/mon_img/aa/mon_saltcrab-attack.webp?v=ddd593e7","src":"assets/mon_img/aa/mon_saltcrab-pixel.webp?v=7a989248"},"mon_scribe":{"a":"assets/mon_img/aa/mon_scribe-attack.webp?v=6e993436","src":"assets/mon_img/aa/mon_scribe-pixel.webp?v=0bc296ce"},"mon_sentry":{"a":"assets/mon_img/aa/mon_sentry-attack.webp?v=c9594b00","src":"assets/mon_img/aa/mon_sentry-pixel.webp?v=3eaa9c07"},"mon_target":{"a":"assets/mon_img/aa/mon_target-attack.webp?v=836ee838","src":"assets/mon_img/aa/mon_target-pixel.webp?v=730c9693"},"mon_wood":{"a":"assets/mon_img/aa/mon_wood-attack.webp?v=e771fac5","src":"assets/mon_img/aa/mon_wood-pixel.webp?v=3ce51a23"},"mon_wraith":{"a":"assets/mon_img/aa/mon_wraith-attack.webp?v=82bae4e0","src":"assets/mon_img/aa/mon_wraith-pixel.webp?v=c84a8173"}},"map":{"academy-summer":"assets/battle-fields/quarter/aa/academy.webp?v=d1e2e639","brine":"assets/battle-fields/quarter/aa/brine.webp?v=2d2a8afd","city":"assets/battle-fields/quarter/aa/city.webp?v=d79dc5d0","academy-fall":"assets/battle-fields/quarter/aa/fall.webp?v=8bbcfc08","final":"assets/battle-fields/quarter/aa/final.webp?v=8ac79542","gargoyle":"assets/battle-fields/quarter/aa/gargoyle.webp?v=35b383d7","guardian":"assets/battle-fields/quarter/aa/guardian.webp?v=f7b2159d","regional":"assets/battle-fields/quarter/aa/regional.webp?v=9efb723e","academy-spring":"assets/battle-fields/quarter/aa/spring.webp?v=4e6effe5","academy-winter":"assets/battle-fields/quarter/aa/winter.webp?v=90a47918","wraith":"assets/battle-fields/quarter/aa/wraith.webp?v=6179e67e"},"fx":{"assets/skill-fx/archer/hawk-outline-px.webp":"assets/skill-fx/archer/aa/hawk-outline-px.webp?v=64df14d8","assets/skill-fx/archer/meteor-impact-px.webp":"assets/skill-fx/archer/aa/meteor-impact-px.webp?v=ca58adc6","assets/skill-fx/archer/pierce-offscreen-px.webp":"assets/skill-fx/archer/aa/pierce-offscreen-px.webp?v=b81d32eb","assets/skill-fx/archer/wind-px.webp":"assets/skill-fx/archer/aa/wind-px.webp?v=0d9adb82","assets/skill-fx/bard/dissonance-px.webp":"assets/skill-fx/bard/aa/dissonance-px.webp?v=2385650a","assets/skill-fx/bard/ensemble-px.webp":"assets/skill-fx/bard/aa/ensemble-px.webp?v=46e36198","assets/skill-fx/bard/melody-px.webp":"assets/skill-fx/bard/aa/melody-px.webp?v=a6f0d15e","assets/skill-fx/boss/brine-ultimate-px.webp":"assets/skill-fx/boss/aa/brine-ultimate-px.webp?v=f88a684b","assets/skill-fx/boss/dummy-ultimate-px.webp":"assets/skill-fx/boss/aa/dummy-ultimate-px.webp?v=024586ae","assets/skill-fx/boss/gargoyle-ultimate-px.webp":"assets/skill-fx/boss/aa/gargoyle-ultimate-px.webp?v=5cd91b4f","assets/skill-fx/boss/guardian-ultimate-px.webp":"assets/skill-fx/boss/aa/guardian-ultimate-px.webp?v=78809eda","assets/skill-fx/boss/wraith-ultimate-px.webp":"assets/skill-fx/boss/aa/wraith-ultimate-px.webp?v=46133020","assets/skill-fx/darkpriest/drain-px.webp":"assets/skill-fx/darkpriest/aa/drain-px.webp?v=b0d3ab90","assets/skill-fx/darkpriest/essence-px.webp":"assets/skill-fx/darkpriest/aa/essence-px.webp?v=c0f95a87","assets/skill-fx/darkpriest/hit-px.webp":"assets/skill-fx/darkpriest/aa/hit-px.webp?v=1822732c","assets/skill-fx/darkpriest/nail-px.webp":"assets/skill-fx/darkpriest/aa/nail-px.webp?v=53ee7add","assets/skill-fx/darkpriest/ritual-px.webp":"assets/skill-fx/darkpriest/aa/ritual-px.webp?v=24126585","assets/skill-fx/druid/bear-outline-px.webp":"assets/skill-fx/druid/aa/bear-outline-px.webp?v=e5622501","assets/skill-fx/druid/roots-long-px.webp":"assets/skill-fx/druid/aa/roots-long-px.webp?v=dc889d6e","assets/skill-fx/forcemage/staff-thrust-px.webp":"assets/skill-fx/forcemage/aa/staff-thrust-px.webp?v=1445da22","assets/skill-fx/gunner/hit-px.webp":"assets/skill-fx/gunner/aa/hit-px.webp?v=5df4e071","assets/skill-fx/gunner/muzzle-px.webp":"assets/skill-fx/gunner/aa/muzzle-px.webp?v=692d2290","assets/skill-fx/gunner/pierce-px.webp":"assets/skill-fx/gunner/aa/pierce-px.webp?v=1077c04b","assets/skill-fx/monk/chi-px.webp":"assets/skill-fx/monk/aa/chi-px.webp?v=75ee5c1a","assets/skill-fx/monk/du-px.webp":"assets/skill-fx/monk/aa/du-px.webp?v=f611eee9","assets/skill-fx/monk/du-reverse-px.webp":"assets/skill-fx/monk/aa/du-reverse-px.webp?v=25172f59","assets/skill-fx/monk/fists-oval-px.webp":"assets/skill-fx/monk/aa/fists-oval-px.webp?v=7ad0c39e","assets/skill-fx/monk/pressure-px.webp":"assets/skill-fx/monk/aa/pressure-px.webp?v=984afda2","assets/skill-fx/ninja/boundary-wave-px.webp":"assets/skill-fx/ninja/aa/boundary-wave-px.webp?v=ad4a5cf7","assets/skill-fx/ninja/dragon-px.webp":"assets/skill-fx/ninja/aa/dragon-px.webp?v=5127bdb4","assets/skill-fx/ninja/fuma-px.webp":"assets/skill-fx/ninja/aa/fuma-px.webp?v=1d680ef6","assets/skill-fx/ninja/fuma-water-spin-px.webp":"assets/skill-fx/ninja/aa/fuma-water-spin-px.webp?v=409dcfa3","assets/skill-fx/ninja/ripple-px.webp":"assets/skill-fx/ninja/aa/ripple-px.webp?v=1140a485","assets/skill-fx/ninja/swamp-px.webp":"assets/skill-fx/ninja/aa/swamp-px.webp?v=ead4d927","assets/skill-fx/ninja/water-flower-px.webp":"assets/skill-fx/ninja/aa/water-flower-px.webp?v=f11c4427","assets/skill-fx/paladin/impact-px.webp":"assets/skill-fx/paladin/aa/impact-px.webp?v=bed089ac","assets/skill-fx/paladin/shield-px.webp":"assets/skill-fx/paladin/aa/shield-px.webp?v=6407e441","assets/skill-fx/priest/blessing-px.webp":"assets/skill-fx/priest/aa/blessing-px.webp?v=f47bb1dd","assets/skill-fx/priest/essence-px.webp":"assets/skill-fx/priest/aa/essence-px.webp?v=28f022c1","assets/skill-fx/rogue/assassinate-px.webp":"assets/skill-fx/rogue/aa/assassinate-px.webp?v=d69849c6","assets/skill-fx/rogue/dagger-embedded-px.webp":"assets/skill-fx/rogue/aa/dagger-embedded-px.webp?v=3383760e","assets/skill-fx/sword/earth-wave-px.webp":"assets/skill-fx/sword/aa/earth-wave-px.webp?v=a4c71d24","assets/skill-fx/sword/swing-px.webp":"assets/skill-fx/sword/aa/swing-px.webp?v=d221a829","assets/skill-fx/sword/taunt-anger-px.webp":"assets/skill-fx/sword/aa/taunt-anger-px.webp?v=9863b30a","assets/skill-fx/sword/taunt-call-px.webp":"assets/skill-fx/sword/aa/taunt-call-px.webp?v=3bb39275","assets/skill-fx/wizard/fire-explosion-px.webp":"assets/skill-fx/wizard/aa/fire-explosion-px.webp?v=bc1c4297","assets/skill-fx/wizard/gravity-beam-px.webp":"assets/skill-fx/wizard/aa/gravity-beam-px.webp?v=e40cba90","assets/skill-fx/wizard/gravity-circle-px.webp":"assets/skill-fx/wizard/aa/gravity-circle-px.webp?v=687de104","assets/skill-fx/wizard/gravity-foot-px.webp":"assets/skill-fx/wizard/aa/gravity-foot-px.webp?v=0b8a7a6b","assets/skill-fx/wizard/triple-circle-px.webp":"assets/skill-fx/wizard/aa/triple-circle-px.webp?v=8a5726a4"}};   // apply_mixaa.py — {mon: {job: {src, a}}, map: {key: 주소}, fx: {원래 도트판 경로: AA 판}} (?v= 내용 해시)
 /* 믹셀 AA 핵심 (1027) — mockups/mixel/src/mock_panel.js 의 aaCells 와 같은 것 (목업에서 고치면 여기도 · 게임 블록 MIXAA · tools/gen/patch/mixaa_assets.py 가 같이 쓴다)
    d: RGBA (1 px = 1 셀) · w · h · opt {outer(기본 true), inner, T, k, span, minU, maxW} → 새 Uint8ClampedArray (.n = 바뀐 셀 수) */
 /* ── AA (1027) — 셀 격자(1 px = 1 셀) d 에서 계단 모서리에 중간색 ──
@@ -33758,9 +33876,34 @@ const OPT = {inner: true, T: 48, k: .75, span: 4, minU: 3, maxW: .5};   // mixaa
 Object.keys(ART.mon).forEach(j => { const m = MON_IMG[j], v = ART.mon[j]; if(!m) return; if(v.src) m.src = v.src; if(v.a && m.a) m.a.src = v.a; });
 Object.keys(ART.map).forEach(k => { if(TQ_MAPS[k]) TQ_MAPS[k].battleSrc = ART.map[k].replace(/^.*battle-fields\/quarter\//, ""); });
 try{ TOURNAMENT_LAYOUT.map.outline.enabled = false; }catch(e){}
+/* 스킬 이펙트 도트판 → AA 판 */
+const FXA = ART.fx || {};
+try{
+  Object.keys(STYLISH_SKILL_FX.assets).forEach(k => { const p = String(STYLISH_SKILL_FX.assets[k]).split("?")[0]; if(FXA[p]) STYLISH_SKILL_FX.assets[k] = FXA[p]; });
+  const du = FXA["assets/skill-fx/monk/du-reverse-px.webp"];
+  if(du) STYLISH_SKILL_FX.alt = Object.assign(STYLISH_SKILL_FX.alt || {}, {oraTextB: du});
+}catch(e){}
+/* 기본 이펙트 시트 — 도트 줄만 (색을 입힌 줄 캔버스를 처음 만들 때 한 번 · fxSheet 의 캐시가 그대로 들고 있다) */
+try{
+  if(typeof fxSheet === "function" && typeof FX_IDX !== "undefined"){
+    const ROWS = new Set(["slash", "pierce", "blunt", "burst"].map(k => FX_IDX[k]).filter(v => v != null)), sheet0 = fxSheet;
+    fxSheet = function(fi, el){
+      const cv = sheet0(fi, el);
+      if(cv && !cv.__aa && ROWS.has(fi)){
+        cv.__aa = 1;
+        try{
+          const cx = cv.getContext("2d", {willReadFrequently: true}), im = cx.getImageData(0, 0, cv.width, cv.height);
+          cx.putImageData(new ImageData(aaCells(im.data, cv.width, cv.height, OPT), cv.width, cv.height), 0, 0);
+        }catch(e){}
+      }
+      return cv;
+    };
+  }
+}catch(e){}
+const FORCE = new Set(["master"]);   // 고유 이펙트를 시트에 구운 장 — 반투명이 많아도 AA
 const CACHE = new Map(), CAP = 420, Q = [], WARM = new Set();
 let busy = false;
-function make(base){
+function make(base, force){
   const W = base.width, H = base.height, src = base.getContext("2d", {willReadFrequently: true}).getImageData(0, 0, W, H).data;
   let x0 = W, y0 = H, x1 = -1, y1 = -1, vis = 0, part = 0;
   for(let y = 0, i = 3; y < H; y++) for(let x = 0; x < W; x++, i += 4){
@@ -33768,7 +33911,7 @@ function make(base){
     vis++; if(a < 255) part++;
     if(x < x0) x0 = x; if(x > x1) x1 = x; if(y < y0) y0 = y; if(y > y1) y1 = y;
   }
-  if(x1 < 0 || part > vis * .05) return base;   // 빈 장 · 반투명이 많은 장(효과) — 그대로
+  if(x1 < 0 || (!force && part > vis * .05)) return base;   // 빈 장 · 반투명이 많은 장(마왕 오라 같은 효과) — 그대로 (FORCE 직업은 AA)
   x0 = Math.max(0, x0 - 1); y0 = Math.max(0, y0 - 1); x1 = Math.min(W - 1, x1 + 1); y1 = Math.min(H - 1, y1 + 1);   // AA 는 바깥 한 칸에도 반투명을 놓는다
   const w = x1 - x0 + 1, h = y1 - y0 + 1, d = new Uint8ClampedArray(w * h * 4);
   for(let y = 0; y < h; y++) d.set(src.subarray(((y + y0) * W + x0) * 4, ((y + y0) * W + x1 + 1) * 4), y * w * 4);
@@ -33784,7 +33927,7 @@ function cell(ji, pi, m, f){
   if(c){ CACHE.delete(key); CACHE.set(key, c); return c; }   // 최근에 쓴 것을 뒤로
   const base = sprCellCv(ji, pi, m, f);
   if(!base) return null;
-  c = make(base); put(key, c); warm(ji, pi);
+  c = make(base, FORCE.has(SPR_KEYS[ji])); put(key, c); warm(ji, pi);
   return c;
 }
 /* 같은 학생의 다른 장 — 쉬는 틈에 6ms 씩 (공격 · 맞음 장이 처음 나올 때 멈칫하지 않게) */
@@ -33803,14 +33946,14 @@ function pump(){
       const [ji, pi, m, f] = Q.shift(), key = ji + "|" + pi + "|" + m + "|" + f;
       if(CACHE.has(key)) continue;
       const base = sprCellCv(ji, pi, m, f);
-      if(base) put(key, make(base));
+      if(base) put(key, make(base, FORCE.has(SPR_KEYS[ji])));
     }
     pump();
   };
   if(window.requestIdleCallback) requestIdleCallback(go, {timeout: 300}); else setTimeout(go, 30);
 }
 sprCellBattle = cell;
-window.MIXAA = {art: ART, opt: OPT, cache: CACHE, aaCells, make};
+window.MIXAA = {art: ART, opt: OPT, cache: CACHE, aaCells, make, force: FORCE};
 })();
 /* MIXAA_END */
 /* FSTUT_START — 첫 시간표 튜토리얼 (1022 · apply_fstut.py) ─ 초반 스토리 튜토리얼 01 '첫 번째 시간표'. mockups/first-schedule 목업 그대로
@@ -46762,8 +46905,14 @@ function opLines(){
     {who:"wiz",   t:"마력 전부 쥐어짰어~ 더 이상은 못 버텨~"},
     {who:"you",   t:"...이미 끝났어. 더 이상은... 마왕군을 전선에서 전부 철수시켜줘."},   // 1026 사용자
     {who:"demon", face:"calm", t:"내게 수치를 줄 셈인가요? 크크크..."},   // 1026 사용자
-    {who:"demon", face:"mad", t:"크하하하하하하!", big:true},
-    {who:"demon", face:"mad", t:"물러물러물러물러물러물러물러물러물러!!!!!", red:true, then:"magic"},   // 1026 사용자 — 빨간 글 (red)
+    /* 1027 열셋째 사용자 — 여기부터 '물러물러…' 까지 누르지 않아도 넘어간다(auto — 글이 다 나온 뒤 ms · 누르면 바로) · 뒤 두 줄은 살짝 바꿈(크하하 한 글자 줄이고 크게 + 빨강 · 물러 열네 번 + 크게 + 빨강) */
+    {who:"demon", face:"calm", t:"상냥한 선배...", auto:1200},
+    {who:"demon", face:"calm", t:"최강의 선배...", auto:1200},
+    {who:"demon", face:"calm", t:"모두가 우러러 보는 선배...", auto:1300},
+    {who:"demon", face:"calm", t:"쿡쿡쿡쿡.", auto:800},
+    {who:"demon", face:"mad", t:"역겨워.", red:true, auto:1200},
+    {who:"demon", face:"mad", t:"크하하하하하!", big:true, red:true, auto:600},
+    {who:"demon", face:"mad", t:"물러물러물러물러물러물러물러\n물러물러물러물러물러물러물러!!!", big:true, red:true, auto:350, then:"magic"},   // 하얀 빛 반짝 — then magic (op_magic · 흰 빛 두 번) · 두 줄로 나뉠 때 '물러' 가운데가 끊기지 않게 일곱 번째 뒤에서 줄을 바꾼다
     {who:"you",   t:"뭘 하려는 거지!"},
     {who:"demon", face:"mad", t:"이번에는 패배했지만, 기필코 네놈의 파멸에 도달하겠다."},
     {who:"demon", face:"mad", t:"언젠가는, 꼭!"},
@@ -47364,6 +47513,7 @@ function opSay(tok, L){
     tx.className = "op-text" + (L.big ? " big" : "") + (L.red ? " red" : "");   // 1026 — 빨간 글 (마왕 '물러물러…')
     tx.textContent = "";
     box.classList.remove("done");
+    box.classList.toggle("auto", !!L.auto);                       // 1027 열셋째 — 저절로 넘어가는 줄은 ▼ 를 숨긴다
     if(box.hidden){
       box.hidden = false;
       box.animate([{opacity:0, transform:"translateX(-50%) translateY(12px)"}, {opacity:1, transform:"translateX(-50%)"}], {duration:380, easing:"ease-out"});
@@ -47371,13 +47521,14 @@ function opSay(tok, L){
     const full = Array.from(L.t), t0 = performance.now();
     let n = 0;
     const show = ()=>{ tx.textContent = full.slice(0, n).join(""); };
-    const done = ()=>{ clearInterval(tok.timer); tok.timer = 0; n = full.length; show(); box.classList.add("done"); };
-    clearInterval(tok.timer);
-    tok.timer = setInterval(()=>{ if(OP !== tok){ clearInterval(tok.timer); return; } n++; show(); if(n >= full.length) done(); }, L.big ? 75 : nameEnFirst() ? 21 : 34);   // 1010 — 영어는 글자 수가 두 배쯤이라 더 빨리
-    tok.adv = ()=>{
+    const done = ()=>{ clearInterval(tok.timer); tok.timer = 0; n = full.length; show(); box.classList.add("done");
+      if(L.auto){ clearTimeout(tok.autoT); tok.autoT = setTimeout(()=>{ if(OP === tok && tok.adv === adv){ tok.adv = null; res(true); } }, L.auto); } };   // 1027 열셋째 — 누르지 않아도 넘어간다
+    clearInterval(tok.timer); clearTimeout(tok.autoT);
+    tok.timer = setInterval(()=>{ if(OP !== tok){ clearInterval(tok.timer); return; } n++; show(); if(n >= full.length) done(); }, L.big ? (nameEnFirst() ? 42 : 75) : nameEnFirst() ? 21 : 34);   // 1010 — 영어는 글자 수가 두 배쯤이라 더 빨리 (1027 열셋째 — 큰 글도: 영어 'Undo…' 열네 번이 75 ms 면 5.6 초)
+    const adv = tok.adv = ()=>{
       if(performance.now() - t0 < 140) return;                     // 앞 줄을 넘긴 누름이 그대로 이어지지 않게
       if(n < full.length){ done(); return; }
-      tok.adv = null; res(true);
+      clearTimeout(tok.autoT); tok.adv = null; res(true);
     };
   });
 }
