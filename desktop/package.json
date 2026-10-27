@@ -11,7 +11,10 @@
     "start": "node tools/prepare.mjs && electron .",
     "dev": "electron .",
     "dist": "node tools/prepare.mjs && electron-builder --win dir",
-    "dist:zip": "node tools/prepare.mjs && electron-builder --win zip"
+    "dist:zip": "node tools/prepare.mjs && electron-builder --win zip",
+    "start:demo": "node tools/prepare.mjs --demo && electron .",
+    "dist:demo": "node tools/prepare.mjs --demo && electron-builder --win dir -c.directories.output=dist-demo",
+    "dist:demo:zip": "node tools/prepare.mjs --demo && electron-builder --win zip -c.directories.output=dist-demo"
   },
   "devDependencies": {
     "electron": "^44.9.3",

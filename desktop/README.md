@@ -39,6 +39,26 @@ npm run dist:zip        → dist/HeroSchool-0.1.0-win-x64.zip
 - 아이콘: `build/icon.png` (512 · 웹판 파비콘과 같은 방패) — 바꾸려면 같은 이름으로 덮어쓴다
 - 이름 · 버전: `package.json` 의 `productName` · `version` · `build.executableName`
 
+## 체험판 빌드 (STOVE 데모)
+
+1027 — 사용자 'stove pc 버전 데모 — 2년차 겨울에서 게임 진행이 종료' → **2년차 겨울 6주(겨울 마지막 주)를 마치면 끝** · 저장은 정식판과 같은 폴더.
+
+```
+python wrap.py          (저장소 맨 위에서 — heroschool.html 을 최신으로)
+cd desktop
+npm run start:demo      → 체험판으로 띄워 보기
+npm run dist:demo       → dist-demo/win-unpacked/HeroSchool.exe (STOVE 데모 업로드용)
+npm run dist:demo:zip   → dist-demo/HeroSchool-0.1.0-win-x64.zip
+```
+
+- `tools/prepare.mjs --demo` 가 `app/heroschool.html` 의 `DEMO_END` 를 `{year:2, phase:"winter", week:6}` 로 채운다 (저장소의 heroschool.html 은 그대로) —
+  itch 체험판(`tools/itch/build_itch.py`)과 같은 장치: 그 주를 마치면 끝 화면('체험판은 여기까지' · 네 언어)을 띄우고 주 · 계절을 더 넘기지 못한다
+  (봄 신인전 · 3년차 진급 없이). 끝 화면에서 '새 학원으로 다시 하기' · '학원 둘러보기'(화면은 볼 수 있고 주를 넘기려 하면 다시 뜬다).
+- 빌드 번호 뒤에 `-demo` (설정 화면 · 의견 보내기에 찍힌다). 끝 화면 글('2년차 겨울 6주차를 마쳤다')이 끝 주차와 다르면 준비 단계가 멈춘다.
+- 저장은 정식판과 같은 `%APPDATA%\HeroSchool` — 체험판에서 키우던 학원을 정식판에서 이어서 한다 (정식판은 같은 저장에서 봄 신인전부터 이어진다).
+- 체험판을 만든 뒤 정식판을 빌드할 때는 그냥 `npm run dist` — 준비 단계가 원래 heroschool.html 을 다시 복사한다. 결과 폴더가 달라(`dist/` · `dist-demo/`) 섞이지 않는다.
+- 끝 주차를 바꾸려면 `tools/prepare.mjs` 의 `DEMO_END` · `DEMO_TEXT` 와 game.html `demoEndShow` 글 · 번역 표(ui.json)를 같이.
+
 ## 화면
 
 | | |
@@ -62,11 +82,11 @@ npm run dist:zip        → dist/HeroSchool-0.1.0-win-x64.zip
 | `main.js` | 창 · `app://heroschool/` (app/ 를 정해진 주소로 — 저장이 이 주소에 남는다) · 키 · 새 창 링크는 기본 브라우저 · 한 번만 실행 |
 | `display.js` | 화면 모드 · 창 크기 프리셋 · 자리 기억 (`display.json`) |
 | `preload.js` | 게임에 `window.hsDesk` (get · set · quit · on) — 게임은 화면 맞춤 iframe 안에서 돌아서 모든 프레임에 연다. preload 가 게임 프레임에 닿지 않아도 게임(PCAPP)이 `app://heroschool/__desk/get · set · quit` 주소로 같은 일을 한다 (1026 — main.js deskHttp) |
-| `tools/prepare.mjs` | `app/` 에 게임 모으기 — heroschool.html 과 그 안에 이름이 적힌 그림 · 소리만 (원본 png · 프롬프트 json · 큰 wav 는 뺀다 · 글꼴 사용 허락 글은 같이). 넣지 않은 파일은 `prepare-skipped.txt` — 게임에서 빠진 그림이 보이면 `KEEP` 에 |
+| `tools/prepare.mjs` | `app/` 에 게임 모으기 — heroschool.html 과 그 안에 이름이 적힌 그림 · 소리만 (원본 png · 프롬프트 json · 큰 wav 는 뺀다 · 글꼴 사용 허락 글은 같이). 넣지 않은 파일은 `prepare-skipped.txt` — 게임에서 빠진 그림이 보이면 `KEEP` 에 · `--demo` 면 체험판(app/heroschool.html 의 `DEMO_END` — 위 '체험판 빌드') |
 | `tools/test_electron.cjs` | (선택) 리눅스 클라우드 시험 — playwright `_electron` · xvfb + openbox |
 | `tools/check_pc2.cjs` | (선택) 1026 둘째 — 설정 창 두 줄 · 속도 · 격자 · 시작 화면 음악 · 메뉴 소리 · 테두리 없음 뒤 다시 열기 |
 
-`node_modules/` · `app/` · `dist/` · `prepare-skipped.txt` 는 git 에 올리지 않는다 (`.gitignore`).
+`node_modules/` · `app/` · `dist/` · `dist-demo/` · `prepare-skipped.txt` 는 git 에 올리지 않는다 (`.gitignore`).
 
 ## STOVE
 
