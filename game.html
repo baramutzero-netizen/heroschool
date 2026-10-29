@@ -5883,6 +5883,14 @@ html[data-ui-finish="pixel"]:not(.pxb-off) .tcom-cap.an .tcom-body{--pxb-edge:#7
 .bthv-host{position:fixed;left:0;top:0;z-index:88;pointer-events:none}
 .bthv-host[hidden]{display:none}
 /* BTHV_CSS_END */
+/* BTPOP_CSS_START — 피해 숫자 맨 앞 (1029 다섯째 · apply_btpop.py · btpop_block.js) ─ 사용자 '피해량은 언제나 화면 제일 앞에 표시되도록 할까 이펙트에 가려서 안보일때가 있네'.
+   전투판(.bf-stage — isolation 쌓임 맥락) 맨 앞 층 .bpl (z 700 — 스타일리시 기술 이펙트 325 · 학원 이름표 · 재생 단추 610 보다 앞). 카메라(.bf-cam)와 같은 변형(--cam · 같은 전환)이라
+   카메라가 움직이면 같이 움직인다. 유닛 안 원본 숫자 묶음(.popwrap)은 층이 있는 동안 visibility hidden (자리 · 애니메이션은 그대로 — 복사본이 매 화면 그 자리를 따라간다) */
+.bf-stage > .bpl{position:absolute;inset:0;z-index:700;pointer-events:none;transform:var(--cam,none);transform-origin:50% 50%;transition:transform var(--cam-t,.45s) var(--cam-e,ease)}
+.bf-stage > .bpl > .bpl-p{position:absolute;width:0;height:0}
+.bf-stage > .bpl > .popwrap{right:auto;z-index:auto;transform-origin:50% 0}
+.bf-stage:has(> .bpl) .bf-cam .bf-unit > .popwrap{visibility:hidden}
+/* BTPOP_CSS_END */
 </style>
 
 <link rel="stylesheet" href="assets/title-art/title-screen.css?v=7">
@@ -20544,6 +20552,114 @@ window.addEventListener("resize", () => { if(H.uid) bthGone(); });
 window.BTHV = {frame: bthFrame, show: bthShow, hide: bthGone, html: bthHtml, state: H, T: BTHV_T};
 })();
 /* BTHV_END */
+/* BTPOP_START — 피해 숫자 맨 앞 (1029 다섯째 · apply_btpop.py) ─ 사용자 1029: '피해량은 언제나 화면 제일 앞에 표시되도록 할까 이펙트에 가려서 안보일때가 있네'.
+   · 떠오르는 숫자 묶음(.popwrap — 피해 · 치명타 · 회복 · 보호막 · MISS · DOWN · 영웅의 기상)은 유닛(.bf-unit — z-index 가 자리 y 인 쌓임 맥락) 안에 그려져서
+     앞줄 유닛 · 그 유닛의 이펙트(.fxspr · .bf-ultimate · 말풍선)와 스타일리시 기술 이펙트 층(.stylish-skill-fx — 전투판 z 325)에 가려졌다.
+   · 전투판에 맨 앞 층(.bpl — btpop_block.css · z 700)을 두고, 유닛 안에 새 묶음이 생기면(#modalRoot MutationObserver — openBattle unitOne · 스타일리시 camPop 둘 다)
+     똑같은 복사본(.bpl-c)을 층에 띄운다. 원본은 그대로 두고 감춘다(visibility hidden — 바뀐 곳만 고치기 btPatchUnit · 시험 btpatch_check 가 다루는 유닛 DOM 은 그대로).
+   · 자리 — 층 안 세 점(.bpl-p — 0,0 · 100,0 · 0,100)의 화면 자리로 층 좌표 ↔ 화면 좌표를 잡고, 원본 묶음(높이 0 · 유닛 폭)의 화면 가운데 · 길이를 층 좌표 · 배율로
+     (직업 크기 --us · 스타일리시 확대 --cs · 폰 .6 · 카메라 기울기까지). 복사본이 사는 동안 매 화면(rAF) 다시 — 유닛이 뛰어들거나(bent) 카메라가 움직여도 따라간다 (바뀔 때만 쓴다).
+     유닛의 진하기(opacity) · 숨김도 따라간다.
+   · 글자 크기는 원본 글의 계산된 크기를 그대로 (폰 .unit .pop 13px 처럼 유닛 안에서만 맞는 규칙) · 치명타 자리 맞춤(popCritFit)은 원본에만(고리 — .bf-cam 안) — 복사본은 그 값을 복사.
+   · 원본이 사라지면(다음 장 — 예전처럼 장마다 새 숫자) 복사본도 같이 · 애니메이션이 다 끝나도 걷는다.
+     층은 전투판이 생길 때 바로 만들고(카메라 전환을 처음부터 같이 탄다) 바뀐 곳만 고치는 장 사이에도 남는다(고리 — drawPatch BT_KEEP).
+   · window.__btpopOff = true 면 예전처럼 (시험 비교) · 오류가 나면 층을 걷고 예전처럼 (errPush 'btpop')
+   · 시험 tools/gen/sim/btpop_check.py */
+(() => {
+const P = {list: [], raf: 0, mo: null, dead: false};
+const BPL_SEL = ".bf-cam .bf-unit > .popwrap";
+function bplLayer(stage){
+  let L = stage.querySelector(":scope > .bpl");
+  if(!L){
+    L = document.createElement("div"); L.className = "bpl"; L.setAttribute("aria-hidden", "true");
+    L.innerHTML = '<i class="bpl-p" style="left:0;top:0"></i><i class="bpl-p" style="left:100px;top:0"></i><i class="bpl-p" style="left:0;top:100px"></i>';
+    stage.append(L);
+  }
+  return L;
+}
+/* 층 좌표 → 화면: 세 점으로 잡은 1차 변환 (카메라 확대 · 이동 · 기울기 · 대회 화면 맞춤 배율이 다 들어간다) — to 는 그 거꾸로 (화면 → 층) · k 는 층 1px 의 화면 길이 */
+function bplMap(L){
+  const p = L.querySelectorAll(":scope > .bpl-p"); if(p.length < 3) return null;
+  const a = p[0].getBoundingClientRect(), b = p[1].getBoundingClientRect(), c = p[2].getBoundingClientRect();
+  const ux = (b.left - a.left) / 100, uy = (b.top - a.top) / 100, vx = (c.left - a.left) / 100, vy = (c.top - a.top) / 100, det = ux * vy - uy * vx;
+  if(!(Math.abs(det) > 1e-9)) return null;
+  return {k: Math.hypot(ux, uy), to: (X, Y) => { const dx = X - a.left, dy = Y - a.top; return [(dx * vy - dy * vx) / det, (ux * dy - uy * dx) / det]; }};
+}
+function bplPut(c, k, v){ const s = c.__bs || (c.__bs = {}); if(s[k] === v) return; s[k] = v; if(v === "") c.style.removeProperty(k); else c.style.setProperty(k, v); }
+function bplAlpha(o, stop){                                                  // 원본이 보였다면의 진하기 — 유닛 · 카메라의 opacity 곱 (숨김이면 0)
+  let a = 1;
+  for(let e = o.parentElement; e && e !== stop; e = e.parentElement){
+    const cs = getComputedStyle(e);
+    if(cs.display === "none" || cs.visibility === "hidden") return 0;
+    const q = +cs.opacity; if(q < 1) a *= q;
+  }
+  return a;
+}
+function bplPlace(e, M){
+  const o = e.o, c = e.c, W = o.offsetWidth;
+  if(!M || !W){ bplPut(c, "visibility", "hidden"); return; }
+  const r = o.getBoundingClientRect(), len = Math.hypot(r.width, r.height), xy = M.to((r.left + r.right) / 2, (r.top + r.bottom) / 2);
+  const s = len > 0 ? len / (W * M.k) : 1, a = bplAlpha(o, e.stage);
+  bplPut(c, "left", (xy[0] - W / 2).toFixed(1) + "px"); bplPut(c, "top", xy[1].toFixed(1) + "px"); bplPut(c, "width", W + "px");
+  bplPut(c, "scale", s.toFixed(4)); bplPut(c, "opacity", a >= .999 ? "" : a.toFixed(3)); bplPut(c, "visibility", a > 0 ? "" : "hidden");
+}
+function bplLift(o){
+  if(o.__bpl && o.__bpl.isConnected) return;
+  const stage = o.closest(".bf-stage"); if(!stage) return;
+  const L = bplLayer(stage), c = o.cloneNode(true);
+  c.classList.add("bpl-c");
+  const os = o.querySelectorAll(".pop, .popcrit"), cs = c.querySelectorAll(".pop, .popcrit");
+  os.forEach((x, q) => { if(cs[q]) cs[q].style.fontSize = getComputedStyle(x).fontSize; });   // 유닛 안에서만 맞는 글자 크기 규칙까지
+  L.append(c); o.__bpl = c;
+  const e = {o, c, stage}; P.list.push(e);
+  bplPlace(e, bplMap(L));
+}
+function bplSweep(){ P.list = P.list.filter(e => { if(e.o.isConnected && e.c.isConnected) return true; e.c.remove(); return false; }); }
+function bplTick(){
+  P.raf = 0;
+  if(P.dead) return;
+  try{
+    const maps = new Map();
+    bplSweep();
+    P.list = P.list.filter(e => {
+      const an = e.c.getAnimations({subtree: true});
+      if(an.length && an.every(a => a.playState === "finished")){ e.c.remove(); return false; }   // 다 떠올랐다 (원본도 투명)
+      const L = e.c.parentElement; if(!maps.has(L)) maps.set(L, bplMap(L));
+      bplPlace(e, maps.get(L)); return true;
+    });
+  }catch(err){ bplFail(err); return; }
+  if(P.list.length) P.raf = requestAnimationFrame(bplTick);
+}
+function bplScan(n, out){ if(n.matches(BPL_SEL)) out.push(n); else n.querySelectorAll(BPL_SEL).forEach(x => out.push(x)); }
+/* 전투판이 새로 생기면 층부터 — 카메라 전환이 시작되기 전에 있어야 같은 전환을 처음부터 같이 탄다 (전환 중에 생긴 층은 끝 값에서 시작 — 그동안은 매 화면 자리 맞춤이 메운다) */
+function bplStages(n){ (n.matches(".bf-stage") ? [n] : n.querySelectorAll(".bf-stage")).forEach(st => { if(st.closest("#modalRoot")) bplLayer(st); }); }
+function bplObs(recs){
+  if(P.dead || window.__btpopOff) return;
+  try{
+    let add = null;
+    for(const r of recs) for(const n of r.addedNodes) if(n.nodeType === 1){ bplStages(n); bplScan(n, add || (add = [])); }
+    bplSweep();                                                              // 원본이 사라진 복사본 — 바로 (다음 장 숫자와 겹치지 않게)
+    if(add) add.forEach(o => { if(o.isConnected) bplLift(o); });
+    if(P.list.length && !P.raf) P.raf = requestAnimationFrame(bplTick);
+  }catch(err){ bplFail(err); }
+}
+function bplFail(err){
+  P.dead = true;
+  try{ if(typeof errPush === "function") errPush("btpop", String((err && err.message) || err), err && err.stack); }catch(x){}
+  try{ document.querySelectorAll(".bf-stage > .bpl").forEach(L => L.remove()); }catch(x){}   // 층이 없으면 원본이 다시 보인다 (CSS :has)
+  P.list = []; cancelAnimationFrame(P.raf); P.raf = 0;
+}
+function bplStart(){
+  const root = document.getElementById("modalRoot");
+  if(!root){ document.addEventListener("DOMContentLoaded", bplStart, {once: true}); return; }
+  P.mo = new MutationObserver(bplObs);
+  P.mo.observe(root, {childList: true, subtree: true});
+}
+bplStart();
+function bplSync(){ bplSweep(); const maps = new Map(); P.list.forEach(e => { const L = e.c.parentElement; if(!maps.has(L)) maps.set(L, bplMap(L)); bplPlace(e, maps.get(L)); }); }   // 시험 — 지금 바로 자리 맞춤
+window.BTPOP = {state: P, map: bplMap, layer: bplLayer, sync: bplSync, fail: bplFail};
+})();
+/* BTPOP_END */
 /* FONTSZ_START — 글자 크기 설정 (1026 목업 · apply_fontsz.py · mockups/font-size) ─ 사용자 1026 '폰트 크기 설정 한번 추가해볼까. 현재가 보통이면 지금보다 전체적으로 한 50% 정도 큰 폰트 사이즈로'
    (답: 읽는 글 위주 · 보통 · 크게 · 아주 크게 (100 · 125 · 150%) · 목업 먼저)
    · PREF.fontSize "normal" · "large" · "xlarge" → html[data-font-size] · --fszk 1.25 · 1.5 (보통이면 아무것도 붙이지 않는다 — 지금 그대로)
@@ -31969,7 +32085,7 @@ function battleBanner(k, wait){
    (떠오르는 동안 14px 더 올라가고 처음엔 1.18배로 커진다 — 그만큼 남긴다) */
 function popCritFit(root){
   const stage = root && root.querySelector(".bf-stage");
-  const ps = stage ? stage.querySelectorAll(".pop.crit") : [];
+  const ps = stage ? stage.querySelectorAll(".bf-cam .pop.crit") : [];   // 1029 다섯째 — 유닛 안 원본만 (맨 앞 층 .bpl 의 복사본은 이 값을 복사한다 · BTPOP)
   if(!ps.length) return;
   const top = stage.getBoundingClientRect().top;
   ps.forEach(p=>{
@@ -32894,7 +33010,7 @@ function openBattle(res, opt, onDone){
     }
     have.forEach(x=>{ if(!used.has(x) && x.parentNode === u) x.remove(); });  // 그 장 HTML 에 없는 것 (지난 장 숫자 · 카메라가 붙인 것)
   };
-  const BT_KEEP = ".bf-school,.bf-stam-box,.bf-legend,.cam-fx,.bf-cam,.tq-map,.tq-frame,.tq-title,.tq-character-shadows,.btbar,.tq-defs";   // 전투판에 남길 것 (쿼터뷰 배치가 옮겨 오거나 붙인 것 포함)
+  const BT_KEEP = ".bf-school,.bf-stam-box,.bf-legend,.cam-fx,.bf-cam,.tq-map,.tq-frame,.tq-title,.tq-character-shadows,.btbar,.tq-defs,.bpl";   // 전투판에 남길 것 (쿼터뷰 배치가 옮겨 오거나 붙인 것 포함 · 1029 다섯째 피해 숫자 맨 앞 층 .bpl — BTPOP)
   const drawPatch = (f, logs)=>{
     if(typeof BT_PATCH !== "undefined" && !BT_PATCH) return false;
     const m = document.querySelector(`#modalRoot .modal[data-bt="${btId}"]`);
