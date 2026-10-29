@@ -122,8 +122,8 @@ SIM_JS = r"""async (years) => {
     }
     closeModal();
     const sel = S.students[0] && S.students[0].id;
-    ['home','master','roster','team','plan','facil','relic','skill','counsel','csllog','log','record','codex','relicdex','opt'].forEach(v=>{
-      try{ UI.view = v; UI.sel = sel; render(); out.views.push({v, html: document.getElementById('app').innerHTML}); }
+    ['home','master','roster','team','plan','facil','relic','skill','counsel','csllog','log','record','codex','cdxcard','cdxexp','cdxpers','cdxcar','relicdex','opt','opt:disp','opt:battle','opt:sound'].forEach(v=>{   // 1029 — 도감 탭 (CDXTAB · 원정지 cdxexp 는 숨김이지만 글은 본다) · 설정 갈래 탭 (OPTAB — opt 는 게임 탭)
+      try{ const [vv, tab] = v.split(':'); UI.view = vv; UI.optTab = tab || 'game'; UI.sel = sel; render(); out.views.push({v, html: document.getElementById('app').innerHTML}); }
       catch(e){ out.err.push('view ' + v + ': ' + e.message); }
     });
     [1, 2, 6, 12].forEach(k=>{ try{ out.views.push({v: 'tut' + k, html: tutGuideHTML(k)}); }catch(e){ out.err.push('tut ' + k + ': ' + e.message); } });
@@ -210,7 +210,7 @@ PUBLIC = bool(CFG.get('public'))
 JA_PUB = PUBLIC and bool(CFG.get('ja'))   # 1014 일본어 공개
 ZH_EXTRA = ((['zh-Hans:false:简体中文'] if PUBLIC and CFG.get('zh-Hans') else [])      # 1022 중국어 간체 · 번체 공개 — 설정의 언어 칸 끝에 더해진다
             + (['zh-Hant:false:繁體中文'] if PUBLIC and CFG.get('zh-Hant') else []))     # (브라우저 · 주소 · 기억은 tools/i18n/check_zh.py 가 본다)
-LANG_RE = re.compile(r'<section class="panel"><div class="optrow"><div class="optlab"><b>언어 · Language</b>[\s\S]*?</section>')   # 공개 뒤 — B 에만 있는 설정의 언어 칸
+LANG_RE = re.compile(r'<section class="panel"[^>]*><div class="optrow"><div class="optlab"><b>언어 · Language</b>[\s\S]*?</section>')   # 공개 뒤 — B 에만 있는 설정의 언어 칸 (1029 — 판에 data-optcat · OPTAB)
 
 
 def norm(h):

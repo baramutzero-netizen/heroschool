@@ -9,7 +9,7 @@ import collections, csv, json, re, sys
 
 OPENING = {'OPTX', 'PROLOGUE', 'opLines()', 'opFatherLines()', 'opSay()', 'opFather()', 'openingPlay()', 'newScenarioStart()', 'showPrologue()'}
 TUT = {'tutGuideData()', 'tutGuideVisual()', 'tutGuideHTML()', 'cardLegendHtml()', 'tutOnePage()', 'tutOverPage()', 'tutSchedBtn()', 'showTutorial()',
-       'viewCodex()', 'codexJobs()', 'skGradeTable()', 'secretConds()', 'secretCondHtml()'}
+       'viewCodex()', 'codexJobs()', 'codexCards()', 'codexExped()', 'codexPers()', 'codexCareer()', 'skGradeTable()', 'secretConds()', 'secretCondHtml()'}
 NAMES = {'NAME_POOL', 'ACAD', 'EPI_TITLES', 'L5_NPC_ACAD', 'RELIC_ADJ', 'RELIC_NOUN', 'acadNames()', 'rivalAcademy()', 'EPI_CROWD', 'DEMON_NAME',
          'SPR_HUE_NAME', 'SPR_TONE_NAME', 'makeRivals()', 'makeBrothers()', 'SUR', 'GIV', 'MON'}
 DIALOGUE = {'COUNSEL', 'TRUST_LINES_P', 'TRUST_LINES', 'CAREER_REASON', 'GREET_LINES', 'UNIQ_GREET', 'DEFY_LINES', 'DEFY_REPLY', 'DEFY_REACT', 'DEFY_ASK',

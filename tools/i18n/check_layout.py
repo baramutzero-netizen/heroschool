@@ -31,8 +31,9 @@ SCENES = r"""(() => {
   const tinGo = step => { if (typeof TIN === 'undefined' || !document.querySelector('#view .tin')) return; tinStop(); TIN.typed = true; TIN.rwdOn = !!TIN.rwd; TIN.step = step; render(); };
   const fac = k => () => { RBC(); closeModal(); UI.view = 'facil'; UI.facTab = k; render(); tinGo('shop'); };
   const sc = {};
-  ['home','master','roster','team','plan','relic','skill','counsel','league','lgentry','spshop','rank','log','csllog','record','codex','relicdex','opt']
+  ['home','master','roster','team','plan','relic','skill','counsel','league','lgentry','spshop','rank','log','csllog','record','codex','cdxcard','cdxpers','cdxcar','relicdex','opt']   // 1029 — 도감 탭 (CDXTAB)
     .forEach(v => sc[v] = V(v));
+  ['disp', 'battle', 'sound'].forEach(t => sc['opt_' + t] = () => { RBC(); closeModal(); UI.view = 'opt'; UI.optTab = t; render(); });   // 1029 — 설정 갈래 탭 (OPTAB — opt 는 게임 탭)
   sc['roster_nosel'] = () => { RBC(); closeModal(); UI.view = 'roster'; UI.sel = null; render(); };
   if (window.RBK && RBK.on()) {
     sc['rbook_detail'] = () => { RBC(); closeModal(); UI.view = 'home'; render(); RBK.open({mode: 'detail', sel: S.students[0].id}); };

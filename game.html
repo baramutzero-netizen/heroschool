@@ -1410,6 +1410,31 @@ html body .cw-ov .cw-win button.cw-cookie-plate:is(:hover,:active,:focus,:focus-
 .cookie-holding .cw-say{pointer-events:none}
 .cw-cookie-note{display:none!important}
 /* COUNSEL_COOKIE_CSS_END */
+/* CKGLOW_CSS_START — 상담 쿠키 접시 반짝임 (1029 여덟째 · apply_ckglow.py) ─ 사용자 1029 '상담 창에서 쿠키 수량이 있어서 사용 가능할 경우 사용 가능한 타이밍에 빛나도록 하자'.
+   쿠키를 건넬 수 있을 때만 — 상담 쿠키(COUNSEL_COOKIE)의 cslCookieRefresh 가 접시 단추(.cw-cookie-plate)를 켜는 때: 답을 고르는 동안(CSLW.phase choose) · 쿠키 1개 이상 · 이 상담에서 아직 안 먹음.
+   · 접시 둘레 도트 테(단추 안 svg — 마우스를 올리면 보이던 테)가 숨 쉬듯 금빛으로 (그림 한 칸 2px 빛 테 — 결재란 깃펜 반짝임 skGlint 와 같은 모양)
+   · 접시가 은은히 밝아진다 (::after 금빛 둥근 빛 — 마우스를 올리면 ::after 는 원래 '쿠키' 이름표) · 단추째 screen 으로 겹쳐 아래 그림(쿠키)을 밝게만 한다 (가리지 않는다)
+   · 위 오른쪽 · 왼쪽 아래에 별이 번갈아 반짝 (::before — 결재란 별 skTw 와 같은 도트 별)
+   · 마우스를 올리거나 초점이 가면 테가 또렷이 (숨쉬기 멈춤 · 이름표) · 움직임 줄이기면 테 · 빛만 켠 채로 · 별 없음
+   · 켜진 접시에 도트 마감의 단추 그림자(안쪽 밝은 줄 · 아래 줄 — 더 센 선택자 !important)가 비쳐 네모 테가 보이던 것도 걷는다
+   쿠키를 들거나(cookie-hold) · 답을 고르면(answer) 단추가 꺼져 같이 꺼진다 */
+html body .cw-ov .cw-win button.cw-cookie-plate.cw-cookie-plate:not(:disabled){box-shadow:none!important}
+html body .cw-ov .cw-win .cw-cookie-plate:not(:disabled):not(:hover):not(:focus-visible){mix-blend-mode:screen}
+html body .cw-ov .cw-win .cw-cookie-plate:not(:disabled) svg{animation:ckGlow 1.3s ease-in-out infinite}
+html body .cw-ov .cw-win .cw-cookie-plate:not(:disabled) svg path{stroke:#ffe9a6}
+@keyframes ckGlow{0%,100%{opacity:.35;filter:drop-shadow(2px 0 0 #ffd36a00) drop-shadow(-2px 0 0 #ffd36a00) drop-shadow(0 2px 0 #ffd36a00) drop-shadow(0 -2px 0 #ffd36a00)}50%{opacity:1;filter:drop-shadow(2px 0 0 #ffd36ae6) drop-shadow(-2px 0 0 #ffd36ae6) drop-shadow(0 2px 0 #ffd36ae6) drop-shadow(0 -2px 0 #ffd36ae6)}}
+html body .cw-ov .cw-win .cw-cookie-plate:not(:disabled):is(:hover,:focus-visible) svg{animation:none;opacity:1;filter:drop-shadow(2px 0 0 #ffd36ae6) drop-shadow(-2px 0 0 #ffd36ae6) drop-shadow(0 2px 0 #ffd36ae6) drop-shadow(0 -2px 0 #ffd36ae6)}
+html body .cw-ov .cw-win .cw-cookie-plate:not(:disabled):not(:hover):not(:focus-visible)::after{content:"";display:block;left:-8px;top:-8px;right:-8px;bottom:-8px;padding:0;background:radial-gradient(closest-side,#ffd36a5c,#ffb84a2e 62%,#ffb84a00);
+  pointer-events:none;animation:ckBloom 1.3s ease-in-out infinite}
+@keyframes ckBloom{0%,100%{opacity:.2}50%{opacity:1}}
+html body .cw-ov .cw-win .cw-cookie-plate:not(:disabled)::before{content:"";position:absolute;left:58px;top:-2px;width:4px;height:4px;pointer-events:none;z-index:1;animation:ckTw 2.4s steps(1,end) infinite}
+@keyframes ckTw{0%{background:#fff3c4;box-shadow:none}6%{background:#fff;box-shadow:4px 0px #fff2b8, -4px 0px #fff2b8, 0px 4px #fff2b8, 0px -4px #fff2b8}12%{background:#fff;box-shadow:4px 0px #fffbe6, -4px 0px #fffbe6, 0px 4px #fffbe6, 0px -4px #fffbe6, 8px 0px #ffd65c, -8px 0px #ffd65c, 0px 8px #ffd65c, 0px -8px #ffd65c}18%{background:#fff;box-shadow:4px 0px #ffffff, -4px 0px #ffffff, 0px 4px #ffffff, 0px -4px #ffffff, 8px 0px #ffe7a0, -8px 0px #ffe7a0, 0px 8px #ffe7a0, 0px -8px #ffe7a0, 12px 0px #ffc845, -12px 0px #ffc845, 0px 12px #ffc845, 0px -12px #ffc845, 4px 4px #ffe7a0cc, -4px 4px #ffe7a0cc, 4px -4px #ffe7a0cc, -4px -4px #ffe7a0cc}24%{background:#fff;box-shadow:4px 0px #ffffff, -4px 0px #ffffff, 0px 4px #ffffff, 0px -4px #ffffff, 8px 0px #ffe7a0, -8px 0px #ffe7a0, 0px 8px #ffe7a0, 0px -8px #ffe7a0, 12px 0px #ffc845, -12px 0px #ffc845, 0px 12px #ffc845, 0px -12px #ffc845, 4px 4px #ffe7a0cc, -4px 4px #ffe7a0cc, 4px -4px #ffe7a0cc, -4px -4px #ffe7a0cc}30%{background:#fff;box-shadow:4px 0px #fffbe6, -4px 0px #fffbe6, 0px 4px #fffbe6, 0px -4px #fffbe6, 8px 0px #ffd65c, -8px 0px #ffd65c, 0px 8px #ffd65c, 0px -8px #ffd65c}36%{background:#fff;box-shadow:4px 0px #fff2b8, -4px 0px #fff2b8, 0px 4px #fff2b8, 0px -4px #fff2b8}42%{background:#fff3c4;box-shadow:none}48%{background:transparent;box-shadow:none}50%{background:transparent;box-shadow:-50px 22px #fff3c4}56%{background:transparent;box-shadow:-50px 22px #fff, -46px 22px #fff2b8, -54px 22px #fff2b8, -50px 26px #fff2b8, -50px 18px #fff2b8}62%{background:transparent;box-shadow:-50px 22px #fff, -46px 22px #fffbe6, -54px 22px #fffbe6, -50px 26px #fffbe6, -50px 18px #fffbe6, -42px 22px #ffd65c, -58px 22px #ffd65c, -50px 30px #ffd65c, -50px 14px #ffd65c}68%{background:transparent;box-shadow:-50px 22px #fff, -46px 22px #ffffff, -54px 22px #ffffff, -50px 26px #ffffff, -50px 18px #ffffff, -42px 22px #ffe7a0, -58px 22px #ffe7a0, -50px 30px #ffe7a0, -50px 14px #ffe7a0, -38px 22px #ffc845, -62px 22px #ffc845, -50px 34px #ffc845, -50px 10px #ffc845, -46px 26px #ffe7a0cc, -54px 26px #ffe7a0cc, -46px 18px #ffe7a0cc, -54px 18px #ffe7a0cc}74%{background:transparent;box-shadow:-50px 22px #fff, -46px 22px #ffffff, -54px 22px #ffffff, -50px 26px #ffffff, -50px 18px #ffffff, -42px 22px #ffe7a0, -58px 22px #ffe7a0, -50px 30px #ffe7a0, -50px 14px #ffe7a0, -38px 22px #ffc845, -62px 22px #ffc845, -50px 34px #ffc845, -50px 10px #ffc845, -46px 26px #ffe7a0cc, -54px 26px #ffe7a0cc, -46px 18px #ffe7a0cc, -54px 18px #ffe7a0cc}80%{background:transparent;box-shadow:-50px 22px #fff, -46px 22px #fffbe6, -54px 22px #fffbe6, -50px 26px #fffbe6, -50px 18px #fffbe6, -42px 22px #ffd65c, -58px 22px #ffd65c, -50px 30px #ffd65c, -50px 14px #ffd65c}86%{background:transparent;box-shadow:-50px 22px #fff, -46px 22px #fff2b8, -54px 22px #fff2b8, -50px 26px #fff2b8, -50px 18px #fff2b8}92%{background:transparent;box-shadow:-50px 22px #fff3c4}98%,100%{background:transparent;box-shadow:none}}
+@media (prefers-reduced-motion:reduce){
+  html body .cw-ov .cw-win .cw-cookie-plate:not(:disabled) svg{animation:none;opacity:.9;filter:drop-shadow(2px 0 0 #ffd36ae6) drop-shadow(-2px 0 0 #ffd36ae6) drop-shadow(0 2px 0 #ffd36ae6) drop-shadow(0 -2px 0 #ffd36ae6)}
+  html body .cw-ov .cw-win .cw-cookie-plate:not(:disabled):not(:hover):not(:focus-visible)::after{animation:none;opacity:.7}
+  html body .cw-ov .cw-win .cw-cookie-plate:not(:disabled)::before{animation:none;display:none}
+}
+/* CKGLOW_CSS_END */
 
 /* CSLWIN_CSS_START — 상담창 (1008 · apply_cslwin.py) ─ 상담 메뉴를 누르면 뜨는 창. mockups/counsel-window 목업 그대로
    창 588px · 무대 560 × 360 (1배 280 × 180 도트를 2배로) · 아래 글 상자. 글꼴은 물마루 12 / 20px. 좁은 화면은 .compact (무대만 줄이고 글은 그대로) */
@@ -2538,6 +2563,87 @@ html body #modalRoot .scw-ov button.scw-ch.scw-ch:is(.hot,:hover){color:#fff!imp
 @keyframes twPop{0%{scale:.7}100%{scale:1}}
 @media (prefers-reduced-motion:reduce){.tw-doc,.tw-paper,.tw-seal,.tw-env,.tw-letter,.tw-path,.tw-bg2,.tw-name{transition:none!important}.tw-node{animation:none!important}}
 /* TIWIN_CSS_END */
+/* XQRES_CSS_START — 원정 '빠르게 결과만' 결과 안내 (1029 여덟째 · apply_xqres.py) ─ 안내 화면 창(NTWIN — .ntw-xq) 그대로 · 철수 · 전멸 글만 붉게 */
+.ntw-xq .ntw-txt .big.bad{color:var(--bad)}
+/* XQRES_CSS_END */
+/* TIPWIN_CSS_START — 마우스 올림 글 상자 (1029 열째 · apply_tipwin.py) ─ 브라우저 기본 title 툴팁 대신 (TIPWIN 블록이 body 에 하나 둔다).
+   팝업 · 건물 안 테마 창(POPTHEME — .modal · 띠 창 .belt-win)과 같은 바탕 #2a1418 · 테 2px #8a5a4a · 둘레 줄(창 색 · 크림 · 검정) · 도트 글꼴 12px · 크림 글.
+   맨 위(z 2147483000 — 팝업 · 띠 창 · 토스트 위) · 누를 수 없다(pointer-events none) · 0.12초 흐려지며 나타남 · 글자 크기 설정은 상자째 zoom (TIPWIN 이 FSZ.k) */
+.hs-tip-host{position:fixed;left:0;top:0;z-index:2147483000;pointer-events:none;opacity:0;visibility:hidden;transition:opacity .12s ease-out,visibility 0s linear .12s}
+.hs-tip-host.on{opacity:1;visibility:visible;transition:opacity .12s ease-out}
+html body .hs-tip-host .hs-tip{box-sizing:border-box;width:max-content;max-width:320px;margin:0;padding:5px 9px 6px;
+  color:#fff4e6;background:#2a1418;border:2px solid #8a5a4a;border-radius:0;
+  box-shadow:0 0 0 2px #2a1418,0 0 0 4px #e9cdbf,0 0 0 6px #140a0c,0 6px 0 6px #0005,0 10px 18px 6px #0006;
+  font:400 12px/1.6 "Mulmaru",sans-serif;-webkit-font-smoothing:none;font-synthesis:none;letter-spacing:0;text-align:left;text-transform:none;
+  white-space:pre-line;overflow-wrap:anywhere}
+html:lang(ko) body .hs-tip-host .hs-tip{word-break:keep-all}
+@media (prefers-reduced-motion:reduce){.hs-tip-host,.hs-tip-host.on{transition:none}}
+/* TIPWIN_CSS_END */
+/* CDXHIDE_CSS_START — 도감 설명 글 숨김 (1029 열한째 · apply_cdxhide.py) ─ 사용자 '도감 목록에서 해당 텍스트 숨김처리'. viewCodex 의 글에 붙인 class cdx-hide (글은 그대로 — 이 줄을 빼면 다시 보인다) */
+html body .cdx-hide{display:none!important}
+/* (덤) 학원 일지 목록 — 글자 크기 '크게 · 아주 크게'(FSZ 창째 확대)에서 vh 를 ÷ 배율 하는 FSZ 규칙(.loglist:is([data-fszz], …) · 특이도 같고 뒤)이
+   .loglist.full 의 max-height:none 을 이겨 목록이 62vh 에서 잘린 채(overflow visible) 판 밖으로 넘쳤다 (1026 FONTSZ 뒤 · 기본 '크게'). 일지 화면의 목록은 끝까지 */
+html body #view .loglist.full{max-height:none}
+/* CDXHIDE_CSS_END */
+/* JPOP_CSS_START — 일지 · 설정 팝업 창 (1029 열셋째 · apply_jpop.py — 목업 mockups/journal-popup) ─ 팝업 · 건물 안 테마 창 · 학생 명부 책 크기 · 창 안 스크롤 */
+#jpRoot{position:fixed;inset:0;z-index:79;display:flex;align-items:center;justify-content:center;box-sizing:border-box;padding:0;
+  background:rgba(10,11,15,.72);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);overscroll-behavior:contain}
+#jpRoot[hidden]{display:none!important}
+/* 창 — 학생 명부 책과 같은 크기 셈 (RB fit: 배율 s = min(1, (화면 넓이 − 16) / 1214, (화면 높이 − 8) / 980) · 책 1176s × 948s)
+   1440 × 900 → 1070 × 863 · 1280 × 720 → 854 × 689 · 1920 × 1080 → 1176 × 948 (더 커지지 않는다) */
+#jpRoot .jp-win{position:relative;box-sizing:border-box;
+  width:min(1176px, calc((100vw - 16px) * 1176 / 1214), calc((100vh - 8px) * 1176 / 980));
+  height:min(948px, calc((100vw - 16px) * 948 / 1214), calc((100vh - 8px) * 948 / 980));
+  display:flex;flex-direction:column;padding:14px 8px 12px 16px;outline:none;
+  color:#fff4e6;background:#2a1418;border:2px solid #8a5a4a;border-radius:0;
+  box-shadow:0 0 0 2px #2a1418,0 0 0 4px #e9cdbf,0 0 0 6px #140a0c,0 8px 0 6px #0005,0 14px 28px 6px #0006;
+  animation:jpIn .22s ease-out both}
+@keyframes jpIn{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
+/* 창 안 스크롤 칸 — 바깥 게임 대신 여기만 스크롤된다 */
+#jpRoot .jp-body{flex:1 1 auto;min-height:0;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:0 8px 4px 0;
+  scrollbar-width:thin;scrollbar-color:#8a5a4a #1f0e11}
+#jpRoot .jp-body::-webkit-scrollbar{width:10px}
+#jpRoot .jp-body::-webkit-scrollbar-track{background:#1f0e11;box-shadow:inset 0 0 0 1px #b98f8455}
+#jpRoot .jp-body::-webkit-scrollbar-thumb{background:#8a5a4a;border:2px solid #1f0e11}
+/* 옮겨 온 화면(#view) — 창 폭에 맞춘다 · 서브탭(일지 · 설정 갈래)은 위에 붙는다 */
+html body #app #jpRoot #view{margin:0!important;max-width:none!important;min-height:0!important;padding-top:0!important;padding-bottom:6px!important}
+html body #app #jpRoot #view .subnav{position:sticky;top:0;z-index:4;margin:0 0 12px!important;padding:2px 52px 10px 0;background:#2a1418;box-shadow:0 1px 0 #b98f8455}
+/* 닫기 — 창 오른쪽 위 (학생 명부 책의 × 자리) · 팝업 테마 단추 */
+html body #jpRoot button.jp-x.jp-x{position:absolute;right:10px;top:10px;z-index:6;width:34px;height:34px;min-width:0;min-height:0;padding:0;margin:0;
+  font:400 22px/28px "Mulmaru",sans-serif;color:#fff4e6;background:#5b2a30;border:2px solid #e9cdbf!important;border-radius:0!important;cursor:pointer;
+  box-shadow:inset 0 0 0 1px #b98f84,2px 3px 0 #0007!important;outline:none}
+html body #jpRoot button.jp-x.jp-x:is(:hover,:focus-visible){background:#6b3036;border-color:#fff2c0!important}
+html body #jpRoot button.jp-x.jp-x:active{translate:1px 2px}
+@media (prefers-reduced-motion:reduce){#jpRoot .jp-win{animation:none}}
+/* JPOP_CSS_END */
+/* OPTAB_CSS_START — 설정 갈래 탭 (1029 열셋째 · apply_optab.py) ─ 탭 줄은 일지 서브탭 모양 그대로(.teamtabs.subnav) · 빌드 · 규칙 줄은 탭마다 맨 아래 오른쪽 */
+html body #view .opt-build{margin:14px 2px 2px;text-align:right;font-size:12px;color:#8a6a5e}
+html body #jpRoot #view .opt-build{color:var(--dim)}                       /* 팝업 창 안(어두운 창) — 밖(좁은 화면 · 밝은 바탕)은 갈색 */
+/* OPTAB_CSS_END */
+/* OPTHIDE_CSS_START — 설정 설명 글 숨김 (1029 열넷째 · apply_opthide.py) ─ 사용자 (설정 글 목록 + 스크린샷 둘) '설정에서 해당 텍스트 라인들 숨김처리 ·
+   화면 분위기 창은 전체적으로 숨김처리' — 스크린샷: 효과 미리보기 칸(참격 · 폭발 · 오라 · 회복) · 전투 배치 격자 판.
+   글 · 칸은 그대로 두고 CSS 로만 숨긴다 (판은 안의 단추 · id 로 찾는다 — 언어마다 글이 달라서 · 이 블록을 빼면 다시 보인다).
+   남긴 설명: 전투 연출 · 공격 화면 기울임 · 대회 중계 · 배경 음악 · 효과음 · 미리 듣기 안내 · 이어하기 칸 · PC 판 줄 · 문제 기록 (목록에 없었다)
+   값이 걸린 것은 CSS 가 아니라 설정 숨김 표시(OPT_…)로 — 전투 배치 격자(OPT_BF_GRID · 숨긴 동안 끔) · 전투 재생 속도 ×0.5 · ×3(OPT_BSPEED_ALL · 1029 열다섯째) */
+html body #view section.panel:has([data-lang]) .optlab > span,
+html body #view section.panel:has(#optLvPop) .optlab > span,
+html body #view section.panel:has(#optSchedScroll) .optlab > span,
+html body #view section.panel:has(#xfMake) > .panel-h > .hint,
+html body #view section.panel:has([data-uiscale]) .optlab > span,
+html body #view section.panel.fsz-row .optlab > span,
+html body #view section.panel:has([data-kofont]) .optlab > span,
+html body #view section.panel.opt-concept,
+html body #view .optrow:has(#fxA) .optlab > span,
+html body #view #fxAT,
+html body #view .optrow:has([data-bsp]) .optlab > span,
+html body #view .optrow:has([data-skpick]) .optlab > span,
+html body #view #fxDemo,
+html body #view #fxDemo + .opthint,
+html body #view section.panel:has(#bgmOn) > .panel-h > .hint,
+html body #view #bgmT{display:none!important}
+/* 위 순서 — 언어 · 레벨업 팝업 · 두루마리 스케줄(+ 저장된 서명) · 이어하기 머리 글 · 화면 크기(지금 ×k 까지) · 글자 크기 · 한국어 글꼴 · 화면 분위기 판 통째 ·
+   스킬 효과 투명도 · 'n% 만큼만 보인다' · 전투 재생 속도 · 기술 선택 연출 · 효과 미리보기 칸 · '위 미리보기는 …' · 음악 머리 글 · '곡이 또렷하게 들린다' */
+/* OPTHIDE_CSS_END */
 
 /* INVN_CSS_START — 소지품 · 스케줄 대회 안내 (1025 목업 · apply_invn.py) */
 .modal:has(> #invnRoot){width:min(560px,100%)}
@@ -5243,7 +5349,8 @@ html body #modalRoot .suc-reroll img,html body #modalRoot .suc-swing{width:128px
 /* POPTHEME_CSS_START — 팝업 · 건물 안 테마 (1021 · apply_poptheme.py) ─ 사용자 1021 '모든 이벤트 팝업 / 상담창 팝업 / 락커룸 팝업 / 경과 보고와 결산 팝업 등의 테마를
    마을 건물 안 테마로 교체하자'. 게임 팝업(#modalRoot .modal — 의식 · 이벤트 · 마을 손님 · 목표 · 프롤로그 · 새 시나리오 · 경과 보고 · 의뢰 · 결산 · 대회 · 친선전 · 튜토리얼 · 확인 창 …)과
    상담창 · 락커룸 · 스카우트 설득 창(.cw-ov .cw-win)을 건물 안 창(TOWNIN — .tin-win · .tin-box · 얼굴 액자 · 상품 카드 · 금색 단추)과 같은 색 · 테두리로. CSS 만 — 자리 · 크기 · 글꼴은 그대로.
-   빼는 것: 대회 편성(.tfw-modal — 이미 건물 안) · 원정 지도(.xm-modal) · 스킬 강화(.suc-modal) · 전투(.btm) — 제 화면이 따로 있다. 유물 획득(그림자 DOM)도 그대로.
+   빼는 것: 대회 편성(.tfw-modal — 이미 건물 안) · 스킬 강화(.suc-modal) · 전투(.btm) — 제 화면이 따로 있다. 유물 획득(그림자 DOM)도 그대로.
+   (1029 여덟째) 원정 지도(.xm-modal — 원정 파견 창)도 넣었다 — 사용자 '원정 화면 창 포맷 다른 창들과 마찬가지로 바꿔주고' (예전에는 뺐다 · 지도 · 액자 · 핀 · 나무판은 그림 그대로)
    화면 테마 · 팔레트(양피지 · 리소 · 민트) · 저널 · 도트 마감과 상관없이 같은 색 (게임이 .modal · button · .opt … 에 !important 로 붙이는 테두리 · 그림자는 html body #modalRoot … 로 덮는다).
    팝업 안의 예전 색은 변수(--bg · --surface · --text · --brass …)를 창 색으로 바꿔 끼워 따라오게 하고, 밝은 바탕 · 어두운 글이 박힌 것만 하나씩 덮는다.
    창 테두리는 바깥으로 — 테두리(2px 테 색 #8a5a4a)는 진짜 border, 그 바깥 창 색 · 크림 · 검은 줄은 box-shadow. 스크롤하는 글이 테두리 위로 지나가지 않고, 안쪽 폭은 도트 마감(2px)과 같다.
@@ -5251,7 +5358,7 @@ html body #modalRoot .suc-reroll img,html body #modalRoot .suc-swing{width:128px
    종이로 남기는 것 (섬 — 예전 종이 색 변수로 되돌린다): 졸업 증서(.gcert) · 튜토리얼 안 스케줄 카드 그림(.tg-guide .card · .tg-schedbtn) · 상담 답변 구름(.cw-cloud — 구름 그림이 밝다) */
 
 /* ── 창 — 변수 · 테두리 ── */
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm){
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm){
   --pt-ink:#fff4e6;--pt-line:#e9cdbf;--pt-edge:#b98f84;--pt-rim:#8a5a4a;--pt-win:#2a1418;--pt-panel:#42191f;--pt-card:#5b2a30;--pt-sel:#6b3036;--pt-gold:#ffd36a;--pt-dim:#e2c2b6;--pt-name:#ffd8c8;--pt-dark:#140a0c;
   --bg:#2a1418;--surface:#42191f;--surface2:#5b2a30;--line:#b98f84;--line-soft:#b98f8466;
   --text:#fff4e6;--muted:#ecd2c6;--dim:#d4b0a4;
@@ -5263,100 +5370,100 @@ html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.
   color-scheme:dark;color:var(--text);scrollbar-color:#8a5a4a #2a1418;
   background:#2a1418!important;background-image:none!important;border:2px solid #8a5a4a!important;border-radius:0!important;
   box-shadow:0 0 0 2px #2a1418,0 0 0 4px #e9cdbf,0 0 0 6px #140a0c,0 8px 0 6px #0005,0 14px 28px 6px #0006!important}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(h1,h2,h3,h4):not(.gcert *){color:var(--pt-name)}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :focus-visible{outline:2px dashed #ffe08a;outline-offset:2px}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) a{color:var(--pt-gold)}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) :is(h1,h2,h3,h4):not(.gcert *){color:var(--pt-name)}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) :focus-visible{outline:2px dashed #ffe08a;outline-offset:2px}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) a{color:var(--pt-gold)}
 /* 줄 — 크림 점선 (건물 안 상품 판 머리줄처럼) */
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .cerhead{border-bottom:1px dashed #b98f8499}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .rule{height:0;background:none;border-top:1px dashed #b98f8499}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .panel-h{border-bottom-color:#b98f8499}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(th,td){border-color:#b98f8455}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .cerwhy{border-left-color:#b98f84}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .cerhead{border-bottom:1px dashed #b98f8499}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .rule{height:0;background:none;border-top:1px dashed #b98f8499}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .panel-h{border-bottom-color:#b98f8499}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) :is(th,td){border-color:#b98f8455}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .cerwhy{border-left-color:#b98f84}
 
 /* ── 상자(대화창 · .tin-box) · 카드(상품 카드) ── */
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.panel,.logbox,.missionbox,.errbox,.fxdemo,.titlecard):not(.graddetail .panel){
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) :is(.panel,.logbox,.missionbox,.errbox,.fxdemo,.titlecard):not(.graddetail .panel){
   color:var(--text);background:var(--pt-panel)!important;background-image:none!important;border:2px solid var(--pt-line)!important;border-radius:0!important;
   box-shadow:inset 0 0 0 2px var(--pt-panel),inset 0 0 0 3px var(--pt-edge),0 0 0 2px var(--pt-dark),3px 4px 0 2px #0006!important}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.opt,.scard,.slot,.meter,.gradcard,.syn-card,.dslot,.rwd,.cercard,.lkcard){
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) :is(.opt,.scard,.slot,.meter,.gradcard,.syn-card,.dslot,.rwd,.cercard,.lkcard){
   color:var(--text);background:var(--pt-card)!important;background-image:none!important;border:2px solid var(--pt-line)!important;border-radius:0!important;
   box-shadow:inset 0 0 0 2px var(--pt-card),inset 0 0 0 3px var(--pt-edge),2px 3px 0 #0007!important}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(button.opt,label.opt,button.scard):not(:disabled):not(.sel):not(.on):hover{
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) :is(button.opt,label.opt,button.scard):not(:disabled):not(.sel):not(.on):hover{
   border-color:#fff!important;box-shadow:inset 0 0 0 2px var(--pt-card),inset 0 0 0 3px var(--pt-line),2px 3px 0 #0007!important;filter:brightness(1.08)}
 /* 고른 칸 — 금색 줄 + 바깥 한 칸 띄운 금빛 (대회 편성 창의 고른 경기 카드와 같다) */
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.opt.sel,.opt.on,.opt[aria-checked="true"],.opt[aria-pressed="true"],.scard.sel,.slot.on,.etm-card.sel-entry){
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) :is(.opt.sel,.opt.on,.opt[aria-checked="true"],.opt[aria-pressed="true"],.scard.sel,.slot.on,.etm-card.sel-entry){
   background:var(--pt-sel)!important;border-color:var(--pt-gold)!important;
   box-shadow:inset 0 0 0 2px var(--pt-sel),inset 0 0 0 3px var(--pt-edge),0 0 0 2px var(--pt-dark),0 0 0 4px #7a4a1e,2px 3px 0 4px #0007!important}
 /* 유물 · 스킬 카드 — 등급 색으로 옅게 물든 바탕 (밝은 바탕 대신 창 색에 섞는다) */
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.opt:has(> .rlname),.opt.skgrade){
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) :is(.opt:has(> .rlname),.opt.skgrade){
   background:color-mix(in srgb,var(--rg) 20%,#42191f)!important;border-color:color-mix(in srgb,var(--rg) 70%,#e9cdbf)!important;
   box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--rg) 20%,#42191f),inset 0 0 0 3px #b98f84,2px 3px 0 #0007!important}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.opt:has(> .rlname),.opt.skgrade).sel{
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) :is(.opt:has(> .rlname),.opt.skgrade).sel{
   box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--rg) 20%,#42191f),inset 0 0 0 3px #b98f84,0 0 0 2px var(--pt-dark),0 0 0 4px var(--pt-gold),2px 3px 0 4px #0007!important}
 /* 결과 · 보상 줄 (예전 금색 · 빨간 테두리 카드) — 건물 안 효과 상자(.tin-fx)처럼 */
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) div.opt:is([style*="border-color:var(--brass)"],[style*="border-color: var(--brass)"]){
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) div.opt:is([style*="border-color:var(--brass)"],[style*="border-color: var(--brass)"]){
   color:#ffe08a;background:#2b1b14!important;border-color:#e0b452!important;box-shadow:inset 0 0 0 2px #2b1b14,inset 0 0 0 3px #8a6a2a,0 0 0 2px var(--pt-dark),3px 4px 0 2px #0006!important}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) div.opt:is([style*="border-color:var(--bad)"],[style*="border-color: var(--bad)"]){
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) div.opt:is([style*="border-color:var(--bad)"],[style*="border-color: var(--bad)"]){
   color:#ffb39a;background:#2b1614!important;border-color:#c0533e!important;box-shadow:inset 0 0 0 2px #2b1614,inset 0 0 0 3px #7a3a2c,0 0 0 2px var(--pt-dark),3px 4px 0 2px #0006!important}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) div.opt:is([style*="border-color:var(--brass)"],[style*="border-color:var(--bad)"]) b{color:inherit}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) div.opt:is([style*="border-color:var(--brass)"],[style*="border-color:var(--bad)"]) b{color:inherit}
 
 /* ── 단추 — 카드 색 · 크림 줄 / 주 단추는 금색 (대회 편성 · 건물 안 그만둔다 단추) ── */
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn{
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .btn{
   color:var(--text)!important;background:var(--pt-card)!important;background-image:none!important;border:2px solid var(--pt-line)!important;border-radius:0!important;font-weight:400;
   box-shadow:inset 0 0 0 1px var(--pt-edge),2px 3px 0 #0007!important}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn:is(.primary,[aria-pressed="true"]){
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .btn:is(.primary,[aria-pressed="true"]){
   color:#fff3cf!important;background:#8a5a1e!important;border-color:var(--pt-gold)!important;box-shadow:inset 0 0 0 1px #e0b452,2px 3px 0 #0007!important}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn:not(:disabled):is(:hover,:focus-visible){border-color:#fff!important;filter:brightness(1.08)}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn:is(.primary,[aria-pressed="true"]):not(:disabled):is(:hover,:focus-visible){border-color:#fff2c0!important}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn:active:not(:disabled){translate:1px 2px;box-shadow:inset 0 0 0 1px var(--pt-edge)!important}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn:disabled{opacity:1;filter:saturate(.2) brightness(.6)}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn:is(.ghost,.icon){background:transparent!important;border-color:#b98f8488!important;box-shadow:none!important}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn[aria-pressed="true"]{outline:none}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .btn[style*="border-color:var(--bad)"]{color:#ffd2c8!important;background:#6b2a26!important;border-color:#ff9a86!important}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .btn:not(:disabled):is(:hover,:focus-visible){border-color:#fff!important;filter:brightness(1.08)}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .btn:is(.primary,[aria-pressed="true"]):not(:disabled):is(:hover,:focus-visible){border-color:#fff2c0!important}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .btn:active:not(:disabled){translate:1px 2px;box-shadow:inset 0 0 0 1px var(--pt-edge)!important}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .btn:disabled{opacity:1;filter:saturate(.2) brightness(.6)}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .btn:is(.ghost,.icon){background:transparent!important;border-color:#b98f8488!important;box-shadow:none!important}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .btn[aria-pressed="true"]{outline:none}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .btn[style*="border-color:var(--bad)"]{color:#ffd2c8!important;background:#6b2a26!important;border-color:#ff9a86!important}
 /* 입력 칸 · 고르기 */
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea){
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) :is(input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea){
   color:var(--text)!important;background:#1f0e11!important;background-image:none!important;border:2px solid var(--pt-edge)!important;border-radius:0!important;box-shadow:inset 1px 2px 0 #0009!important}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(input,select,textarea):focus{border-color:var(--pt-line)!important;outline:none}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(input[type=checkbox],input[type=radio],input[type=range]){accent-color:#e0b452}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) ::placeholder{color:#a8847c}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) :is(input,select,textarea):focus{border-color:var(--pt-line)!important;outline:none}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) :is(input[type=checkbox],input[type=radio],input[type=range]){accent-color:#e0b452}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) ::placeholder{color:#a8847c}
 
 /* ── 얼굴 액자 (건물 안 .tin-face) · 그림 액자 ── */
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.facebox,.tev-face,.ji-face,.tg-host,.tg-cface,.sprbox):not(.gcert *){
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) :is(.facebox,.tev-face,.ji-face,.tg-host,.tg-cface,.sprbox):not(.gcert *){
   padding:3px;border:2px solid var(--pt-line)!important;border-radius:0!important;background:linear-gradient(#80504a,#4a242a 70%,#3a1a20)!important;
   box-shadow:inset 0 0 0 2px #3a1a20,inset 0 0 0 3px var(--pt-edge),0 0 0 2px var(--pt-dark)!important}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .cerbanner{background:#1a0d10;border-bottom:2px solid var(--pt-rim)}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .valentine-art{border-radius:0;background:#1a0d10;box-shadow:0 0 0 2px var(--pt-line),0 0 0 4px var(--pt-dark),3px 5px 0 4px #0006}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) div:has(> img.ji-sil):not(.ji-face){padding:3px;border:2px solid var(--pt-line);border-radius:0!important;background:linear-gradient(#80504a,#4a242a 70%,#3a1a20)!important;
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .cerbanner{background:#1a0d10;border-bottom:2px solid var(--pt-rim)}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .valentine-art{border-radius:0;background:#1a0d10;box-shadow:0 0 0 2px var(--pt-line),0 0 0 4px var(--pt-dark),3px 5px 0 4px #0006}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) div:has(> img.ji-sil):not(.ji-face){padding:3px;border:2px solid var(--pt-line);border-radius:0!important;background:linear-gradient(#80504a,#4a242a 70%,#3a1a20)!important;
   box-shadow:inset 0 0 0 2px #3a1a20,inset 0 0 0 3px var(--pt-edge),0 0 0 2px var(--pt-dark)}
 /* 레벨 업 무대 · 막대 */
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .lvstage{border:2px solid var(--pt-line);border-radius:0;background:radial-gradient(ellipse at 50% 85%,#ffd36a2e,transparent 70%),var(--pt-panel);
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .lvstage{border:2px solid var(--pt-line);border-radius:0;background:radial-gradient(ellipse at 50% 85%,#ffd36a2e,transparent 70%),var(--pt-panel);
   box-shadow:inset 0 0 0 2px var(--pt-panel),inset 0 0 0 3px var(--pt-edge),0 0 0 2px var(--pt-dark),3px 4px 0 2px #0006}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.bar,.lkb,.mentbar){border-radius:0;background:#1f0e11;box-shadow:inset 0 0 0 1px #b98f8455}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) :is(.bar,.lkb,.mentbar){border-radius:0;background:#1f0e11;box-shadow:inset 0 0 0 1px #b98f8455}
 /* 졸업생 자세히 — 학생 자세히 판(.panel)은 틀 없이 (창이 곧 틀) */
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .graddetail .panel{background:none!important;background-image:none!important;border:0!important;box-shadow:none!important;padding:0}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .etm-pick{border-radius:0}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .etm-pick.on{color:#3a1a20}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .graddetail .panel{background:none!important;background-image:none!important;border:0!important;box-shadow:none!important;padding:0}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .etm-pick{border-radius:0}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .etm-pick.on{color:#3a1a20}
 
 /* ── 마을 손님 · 이벤트 — 얼굴 + 말은 건물 안 대화창처럼 (얼굴 액자를 품은 카드는 대화창 색) ── */
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .opt:has(> .tev-face){background:var(--pt-panel)!important;
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .opt:has(> .tev-face){background:var(--pt-panel)!important;
   box-shadow:inset 0 0 0 2px var(--pt-panel),inset 0 0 0 3px var(--pt-edge),0 0 0 2px var(--pt-dark),3px 4px 0 2px #0006!important}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .opt:has(> .tev-face) .eyebrow{color:var(--pt-name);letter-spacing:0}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .opt:has(> .tev-face) .eyebrow{color:var(--pt-name);letter-spacing:0}
 
 /* ── 섬 — 종이로 남기는 것 (예전 양피지 색) ── */
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.gcert,.tg-guide .card,.tg-schedbtn){
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) :is(.gcert,.tg-guide .card,.tg-schedbtn){
   --bg:#e2cfaa;--surface:#efdfbf;--surface2:#ddc69e;--line:#ad8c60;--line-soft:#c9ad80;--text:#35291f;--muted:#68543e;--dim:#75624c;
   --brass:#795322;--brass-b:#966830;--brass-soft:#9b702323;--indigo:#625084;--ok:#306543;--warn:#955015;--bad:#a0302c;
   --tank:#345e80;--dps:#9a3d2c;--heal:#306543;--supp:#67477f;--ex:#95335f;
   --journal-paper:linear-gradient(90deg,#e6cfa7,#f2e2c0 50%,#e6cfa7);--pixel-edge:#654a30;color-scheme:only light;color:var(--text)}
 
 /* ── 직업 의뢰 카드 · 결산 (경과 보고 위에 뜨는 작은 창) ── */
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .ji-card{color:var(--text);background:var(--pt-win)!important;background-image:none!important;
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .ji-card{color:var(--text);background:var(--pt-win)!important;background-image:none!important;
   border:2px solid var(--pt-rim)!important;border-radius:0!important;
   box-shadow:0 0 0 2px var(--pt-win),0 0 0 4px var(--pt-line),0 0 0 6px var(--pt-dark),0 8px 0 6px #0005,0 14px 28px 6px #0006!important}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .ji-bg{border-bottom:2px solid var(--pt-rim)}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .ji-face{border-width:2px!important}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .fin-row{border-bottom:1px dashed #b98f8466}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .fin-row.sum{border-top:1px dashed var(--pt-edge)}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .fin-row.end{border-bottom:0}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .ji-bg{border-bottom:2px solid var(--pt-rim)}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .ji-face{border-width:2px!important}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .fin-row{border-bottom:1px dashed #b98f8466}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .fin-row.sum{border-top:1px dashed var(--pt-edge)}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .fin-row.end{border-bottom:0}
 
 /* ── 경과 보고 (.dr-modal) — 요일 카드 · 무대 액자 · 무대 위 이름표 · 결과 상자 · 장면 단추 ── */
 html body #modalRoot .modal.dr-modal:not(.btm) .dr-days button{color:var(--muted);background:var(--pt-card)!important;border:2px solid var(--pt-line)!important;border-radius:0!important;
@@ -5388,19 +5495,19 @@ html body #modalRoot .modal.dr-modal:not(.btm) .dr-student-row{border-bottom:1px
 html body #modalRoot .modal.dr-modal:not(.btm) .dr-student-row.selected{background:var(--pt-card);outline:1px solid var(--pt-gold)}
 
 /* ── 튜토리얼 글 안내 (.tg-guide) — 금색 · 상자 모서리 ── */
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .tg-guide{--tg-paper:var(--pt-win);--tg-gold:var(--pt-gold)}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.tg-head,.tg-row){border-bottom-color:#b98f8499;border-bottom-style:dashed}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .tg-foot{border-top-color:#b98f8499;border-top-style:dashed}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.tg-visual,.tg-first){background:var(--pt-panel);border:2px solid var(--pt-line);border-radius:0;
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .tg-guide{--tg-paper:var(--pt-win);--tg-gold:var(--pt-gold)}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) :is(.tg-head,.tg-row){border-bottom-color:#b98f8499;border-bottom-style:dashed}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .tg-foot{border-top-color:#b98f8499;border-top-style:dashed}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) :is(.tg-visual,.tg-first){background:var(--pt-panel);border:2px solid var(--pt-line);border-radius:0;
   box-shadow:inset 0 0 0 2px var(--pt-panel),inset 0 0 0 3px var(--pt-edge),0 0 0 2px var(--pt-dark),3px 4px 0 2px #0006}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .tg-tip{background:var(--pt-panel);border-left-color:#e0b452;border-radius:0}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.tg-step>span,.tg-symbol){color:#fff3cf;background:#8a5a1e;border-radius:0;box-shadow:inset 0 0 0 1px var(--pt-gold)}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .tg-route li>span{color:#ffe08a;background:#2b1b14;border:2px solid #e0b452;border-radius:0;line-height:28px}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.tg-client,.tg-grade>span){background:var(--pt-card);border:2px solid var(--pt-line);border-radius:0;box-shadow:inset 0 0 0 1px var(--pt-edge)}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.tg-client.done,.tg-grade>span.on){border-color:var(--pt-gold)}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) :is(.tg-week span,.tg-choice-pair span){border-radius:0}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm) .tg-destination{border-color:var(--pt-edge);border-radius:0}
-html body #modalRoot .modal:not(.tfw-modal):not(.xm-modal):not(.suc-modal):not(.btm):has(.tg-guide)>.tutbar{background:var(--pt-win);border-top:1px dashed #b98f8499;box-shadow:none}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .tg-tip{background:var(--pt-panel);border-left-color:#e0b452;border-radius:0}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) :is(.tg-step>span,.tg-symbol){color:#fff3cf;background:#8a5a1e;border-radius:0;box-shadow:inset 0 0 0 1px var(--pt-gold)}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .tg-route li>span{color:#ffe08a;background:#2b1b14;border:2px solid #e0b452;border-radius:0;line-height:28px}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) :is(.tg-client,.tg-grade>span){background:var(--pt-card);border:2px solid var(--pt-line);border-radius:0;box-shadow:inset 0 0 0 1px var(--pt-edge)}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) :is(.tg-client.done,.tg-grade>span.on){border-color:var(--pt-gold)}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) :is(.tg-week span,.tg-choice-pair span){border-radius:0}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm) .tg-destination{border-color:var(--pt-edge);border-radius:0}
+html body #modalRoot .modal:not(.tfw-modal):not(.suc-modal):not(.btm):has(.tg-guide)>.tutbar{background:var(--pt-win);border-top:1px dashed #b98f8499;box-shadow:none}
 
 /* ── 상담창 · 락커룸 · 스카우트 설득 (.cw-ov .cw-win — CSLWIN · LKWIN 블록 위에 색만) ── */
 html body #modalRoot .cw-ov .cw-win{--cw-ink:#fff4e6;--cw-paper:#2a1418;--cw-edge:#8a5a4a;--cw-dark:#140a0c;--cw-btn:#b98f84;--cw-brass:#ffd36a;--cw-ok:#a6e48e;--cw-bad:#ff9a86;--cw-lead:#9cc8ff;--cw-dim:#d4b0a4;
@@ -8766,6 +8873,9 @@ const OPT_FIELD_PASTEL = false;     // 전투 배경 파스텔 필터 켜고 끄
 const OPT_XFER_FILE    = false;     // 이어하기 — 파일로 내보내기 · 파일에서 불러오기
 const OPT_PIXEL_FONT   = false;     // 도트 폰트 켜고 끄기 (1004 — 숨긴 동안은 모두 기본값: 켬)
 const OPT_BATTLE_CAM   = true;      // 전투 연출 심플 · 스타일리시 (1004 숨김 → 1022 다시 보임 — 사용자 · 기본값은 스타일리시)
+const OPT_BF_GRID      = false;     // 전투 배치 격자 켜고 끄기 (1029 열넷째 숨김 — OPTHIDE · 숨긴 동안은 기본값: 끔 · 시작 화면 설정에서도)
+const OPT_BSPEED_ALL   = false;     // 전투 재생 속도 ×0.5 · ×3 (1029 열다섯째 숨김 — 숨긴 동안은 ×1 · ×2 만: 설정 · 전투 화면 · 시작 화면 설정 · 저장된 ×0.5 · ×3 은 ×1 — PC 판과 같다)
+if(!OPT_BSPEED_ALL) BSPEEDS.splice(0, BSPEEDS.length, 280, 120);
 const PREF = {bspeed: 280, reportSpeed: 2, chronicleTest: false, uiConcept: "riso-pixel", uiV: 4, lvPopup: true, fieldPastel: false, pixelFont: true, bfGrid: false, battleCam: "stylish", camTilt: false, ctV: 1, schedScroll: true, skillPick: "all", koFont: "galmuri", koV: 2, fontSize: "large", fszV: 1, tcom: "both"};   // 1025 둘째 (QOL25) — 기본 한국어 글꼴 갈무리11 (koV 2)
 /* uiV 4 — 삽화를 기본으로 적용하고 이전 화면 분위기 선택은 숨긴다. */
 try{
@@ -8779,7 +8889,7 @@ try{
   if(j && typeof j.lvPopup === "boolean") PREF.lvPopup = j.lvPopup;
   if(j && typeof j.fieldPastel === "boolean" && OPT_FIELD_PASTEL) PREF.fieldPastel = j.fieldPastel;   // 설정을 숨긴 동안은 모두 기본값(끔 — 1001)
   if(j && typeof j.pixelFont === "boolean" && OPT_PIXEL_FONT) PREF.pixelFont = j.pixelFont;   // 설정을 숨긴 동안은 모두 기본값(켬 — 1004)
-  if(j && typeof j.bfGrid === "boolean") PREF.bfGrid = j.bfGrid;
+  if(j && typeof j.bfGrid === "boolean" && OPT_BF_GRID) PREF.bfGrid = j.bfGrid;   // 설정을 숨긴 동안은 기본값(끔 — 1029 열넷째 OPTHIDE)
   if(j && typeof j.schedScroll === "boolean") PREF.schedScroll = j.schedScroll;   // 두루마리 스케줄 (1006)
   if(j && ["all","mine","foe","off"].includes(j.skillPick)) PREF.skillPick = j.skillPick;   // 기술 선택 연출 (1015 — 기본은 모든 학생)
   if(j && ["mulmaru","galmuri"].includes(j.koFont) && (j.koFont === "galmuri" || (j.koV|0) >= 2)) PREF.koFont = j.koFont;
@@ -12325,7 +12435,7 @@ function renderExpedPick(R, bonus){
     $("#modalRoot").querySelectorAll("[data-xtm]").forEach(b=> b.onclick=()=>{ UI.expPick.tm=b.dataset.xtm; renderExpedPick(R, bonus); });
     const run = (quick)=>{
       if(XM.phase === "go") return;                                   // 1016 — 이동 중에는 다시 누르지 않는다
-      const go = ()=>{ XM.phase = ""; const E = expedInit(dg, teamMembers(TM), TM); closeModal(); expedLoop(E, !!quick, res=> expedDone(R, bonus, res, TM)); };
+      const go = ()=>{ XM.phase = ""; const E = expedInit(dg, teamMembers(TM), TM); E.xq = !!quick; closeModal(); expedLoop(E, !!quick, res=> expedDone(R, bonus, res, TM)); };   // 1029 여덟째 — 빠르게 결과만이면 결과 안내 창 (XQRES)
       if(quick) go(); else xmTravel(teamMembers(TM), go);             // 1016 — 원정 시작은 이동 중(2초)을 거쳐 전투로 (EXMAP 블록)
     };
     $("#xGo").onclick = ()=> run(false);
@@ -12625,7 +12735,7 @@ function xmGo(d0){
   if(!R || !TM) return;
   UI.expPick.tm = TM.n; UI.expPick.dg = d0.id;
   XM.arm = null; xmTipOff();
-  const go = ()=>{ XM.phase = ""; const E = expedInit(dg, teamMembers(TM), TM); closeModal(); expedLoop(E, quick, res=> expedDone(R, bonus, res, TM)); };
+  const go = ()=>{ XM.phase = ""; const E = expedInit(dg, teamMembers(TM), TM); E.xq = !!quick; closeModal(); expedLoop(E, quick, res=> expedDone(R, bonus, res, TM)); };   // 1029 여덟째 — 빠르게 결과만이면 결과 안내 창 (XQRES)
   if(quick){ go(); return; }
   xmTravel(teamMembers(TM), go);
 }
@@ -13005,6 +13115,7 @@ function beltLoop(E, quick, done){
   if(quick){
     let res = E.res;
     try{ res = beltFinish(E, R); }catch(e){ errPush("belt", e.message, e.stack); }
+    if(E.xq && window.XQRES && XQRES.show(E, R, res, done)) return;   // 1029 여덟째 — 빠르게 결과만(원정 지도 · 목록 창): 안내 창(완주 · 철수) → 닫으면 전리품 (XQRES)
     done(res);
     return;
   }
@@ -18867,14 +18978,14 @@ const VIEW_GROUPS = {
   roster: [{id:"roster", n:"학생 명부"}, {id:"team", n:"팀 편성"}],
   relic:  [{id:"relic", n:"유물 보관고"}, {id:"skill", n:"스킬 보관고"}],
   league: [{id:"league", n:"리그"}, {id:"lgentry", n:"등록"}, {id:"spshop", n:"SP 상점"}, {id:"rank", n:"순위"}],
-  log:    [{id:"log", n:"학원 일지"}, {id:"csllog", n:"상담 기록"}, {id:"record", n:"졸업생 명부"}, {id:"codex", n:"도감"}, {id:"relicdex", n:"유물 도감"}]   // 1008 — 상담 기록 (상담은 창으로) · 1021 — 유물 도감 (RELICDEX)
+  log:    [{id:"log", n:"학원 일지"}, {id:"csllog", n:"상담 기록"}, {id:"record", n:"졸업생 명부"}, {id:"codex", n:"직업"}, {id:"cdxcard", n:"일과 목록"}, /* 1029 CDXTAB — 원정지 탭 숨김: {id:"cdxexp", n:"원정지"}, */ {id:"cdxpers", n:"성격"}, {id:"cdxcar", n:"진로"}, {id:"relicdex", n:"유물 도감"}]   // 1008 — 상담 기록 (상담은 창으로) · 1021 — 유물 도감 (RELICDEX)
 };
 const VIEW_GROUP_OF = {};
 Object.keys(VIEW_GROUPS).forEach(g=> VIEW_GROUPS[g].forEach(t=>{ VIEW_GROUP_OF[t.id] = g; }));
 function viewGroupOf(id){ return VIEW_GROUP_OF[id] || id; }
 /* VIEWTHEME_START — 건물 안 테마를 입힌 화면 (1021 · apply_viewtheme.py) ─ 사용자 1021 '그다음 일지와 설정에도 테마 적용해주고'.
    render 가 그린 뒤 #view 에 data-pt 를 단다 (이 목록에 든 화면일 때만 — CSS 는 VIEWTHEME_CSS). 다른 화면에도 입히려면 여기에 더한다 */
-const PT_VIEWS = ["log", "csllog", "record", "codex", "relicdex", "opt"];      // 일지 다섯(학원 일지 · 상담 기록 · 졸업생 명부 · 도감 · 유물 도감 — 1021 RELICDEX) · 설정
+const PT_VIEWS = ["log", "csllog", "record", "codex", "cdxcard", "cdxexp", "cdxpers", "cdxcar", "relicdex", "opt"];      // 일지(학원 일지 · 상담 기록 · 졸업생 명부 · 도감 — 1029 CDXTAB 직업 · 일과 목록 · 원정지(숨김) · 성격 · 진로 · 유물 도감 — 1021 RELICDEX) · 설정
 function ptViewMark(v){ if(v) v.toggleAttribute("data-pt", PT_VIEWS.includes(UI.view)); }
 /* VIEWTHEME_END */
 function subTabsOpen(g){   // 리그 등록은 4년차 봄부터 · 졸업생 명부는 첫 졸업생이 나온 뒤에야
@@ -18957,6 +19068,7 @@ function render(){
   if(!S) return;   // 1026 — 세이브가 없는 시작 화면에서 불리면(창 크기 바뀜 등) 아무것도 하지 않는다
   if(window.RSTO) RSTO.gate();   // 1023 — 초반 스토리 01B (RSTO) — 첫 주를 마치기 전에는 학생 명부 · 팀 편성으로 가지 않고 안내 (명부 책보다 먼저)
   if(window.RBK) RBK.intercept();   // 1009 — 가로 넓은 화면: 학생 명부 · 팀 편성은 책 팝업 (apply_roster)
+  if(window.JPOP) JPOP.intercept();   // 1029 열셋째 — 넓은 화면: 일지 묶음 · 설정은 팝업 창 (JPOP · apply_jpop)
   { const fb = $("#btnFeed");
     if(fb && !fb.dataset.on && typeof FB_ICON!=="undefined" && FB_ICON){
       fb.innerHTML = `<img src="${FB_ICON}" alt="피드백">`;
@@ -19069,12 +19181,13 @@ function render(){
   else if(UI.view==="counsel") v.innerHTML = viewCounsel();
   else if(UI.view==="codex") v.innerHTML = viewCodex();
   else if(UI.view==="relicdex") v.innerHTML = viewRelicDex();   // 1021 — 일지 › 유물 도감 (RELICDEX)
+  else if(cdxView(UI.view)) v.innerHTML = viewCodex();   // 1029 열두째 — 도감의 다른 탭 (CDXTAB — 일과 목록 · 원정지 · 성격 · 진로 · 직업은 위 codex 줄)
   else if(UI.view==="record") v.innerHTML = viewRecord();
   else if(UI.view==="league") v.innerHTML = viewLeague();
   else if(UI.view==="lgentry") v.innerHTML = viewLgEntry();
   else if(UI.view==="rank") v.innerHTML = viewRank();
   else if(UI.view==="spshop") v.innerHTML = viewSpShop();
-  else if(UI.view==="opt") v.innerHTML = viewOpt();
+  else if(UI.view==="opt"){ v.innerHTML = viewOpt(); if(window.OPTAB) OPTAB.apply(v); }   // 1029 열셋째 — 설정 갈래 탭 (OPTAB — 지금 탭의 판만)
   else if(UI.view==="scout") v.innerHTML = viewScout();
   else if(UI.view==="log") v.innerHTML = viewLog();
   else if(UI.view==="csllog") v.innerHTML = viewCslLog();   // 1008 — 일지 › 상담 기록
@@ -22060,6 +22173,7 @@ function skSignPack(strokes){
 }
 function skFinish(){
   if(!SK.held || SK.writing || SK.busy) return;
+  if(skPopup()){ skDrop(); return; }                             // 1029 일곱째 — 그사이 다른 창이 떴다 (그은 서명은 지우고 깃펜을 내려놓는다)
   const c = skSig(); if(!c) return;
   if(SK.len >= 6 && (SK.ink <= .001 || (SK.nib && skOverInk(SK.nib)))){   // 잉크가 떨어져 다시 찍으러 갔다 — 이어 쓸 시간을 준다
     clearTimeout(SK.timer); SK.timer = setTimeout(skFinish, SK.ink <= .001 ? 2600 : 700); return;
@@ -22103,6 +22217,10 @@ function skReplay(sig, done){                                    // 저장된 �
   };
   requestAnimationFrame(step);
 }
+/* 1029 일곱째 — 서명하는 동안 다른 창(상담 · 스카우트 · 팝업 …)이 뜨면 서명을 멈춘다 (사용자 '스케줄 서명 도중에 상담 창을 누르니깐 이후 상담 창이 안켜지네' · '다른 팝업 창들도 비슷할듯?').
+   예전에는 뒤에서 서명이 끝나 주가 진행되면서 경과 보고가 #modalRoot 를 바꿔 끼워, 떠 있던 창을 닫지도 않고 지워 버렸다 (상담창은 CSLW.el 이 남아 다시 열리지 않았다 — POPFIX 도 같이).
+   이제 서명이 끝나는 때(skFinish) · 진행하기 직전(skSigned)에 창이 떠 있으면 진행하지 않는다 — 깃펜을 내려놓고, 창을 닫은 뒤 다시 서명한다 (저장된 서명이 있으면 결재란 한 번) */
+function skPopup(){ const r = $("#modalRoot"); return !!r && [...r.children].some(c => !c.hidden && c.getClientRects().length > 0 && getComputedStyle(c).visibility !== "hidden"); }   // 보이는 창만 (숨은 찌꺼기 · <style> 은 빼고)
 function skSigned(fresh){                                         // 서명 끝 — 잉크가 마르는 동안 잠깐 보여 주고 깃펜을 내려놓은 뒤 진행
   SK.busy = true; skScratch(false);
   const b = $("#btnWeek"); if(b) b.classList.add("signed");
@@ -22113,7 +22231,7 @@ function skSigned(fresh){                                         // 서명 끝 
     if(SK.keyOn){ document.removeEventListener("keydown", SK.keyOn); SK.keyOn = null; }
     SK.fx = {glow: true};                                         // 결재를 마쳤다 — 깃펜이 제자리로 돌아가도 반짝이는 소리는 내지 않는다 (곧 주가 진행되고 경과 보고가 뜬다)
     skQuillHome(); skInkUpd();                                     // skInkUpd → skFxUpd
-    const bw = $("#btnWeek"); if(bw && bw.isConnected && !bw.disabled && SK.go) SK.go(bw);
+    const bw = $("#btnWeek"); if(bw && bw.isConnected && !bw.disabled && SK.go && !skPopup()) SK.go(bw);   // 1029 일곱째 — 다른 창이 떠 있으면 진행하지 않는다 (창을 닫은 뒤 다시 결재)
   }, window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 150 : 550);
 }
 function skMoveTo(x, y, ms){                                       // 깃펜을 (x, y) 까지 옮긴다 (키보드 서명)
@@ -22256,7 +22374,7 @@ function viewPlanClassic(){
     </div>
     ${bonusSum>0? `<div class="rule"></div>
     <div class="btnrow"><span class="pill ok">체인 보너스 합계 +${Math.round(bonusSum*100)}%</span>
-      <span class="hint" style="color:var(--dim);font-size:12px">색이 이어진 만큼 그 훈련의 효과가 오른다 — 자세한 내용은 <b style="color:var(--text)">도감 · 카드 목록</b>에 있다.</span></div>`:""}
+      <span class="hint" style="color:var(--dim);font-size:12px">색이 이어진 만큼 그 훈련의 효과가 오른다 — 자세한 내용은 <b style="color:var(--text)">일지 · 일과 목록</b>에 있다.</span></div>`:""}
   </section>
   <section class="panel">
     ${actUnlocked()? `    <div class="panel-h"><h2>개인 행동</h2><span class="hint" hidden>스케줄 진행 시 각 학생이 오후에 따로 하는 행동입니다. 학생 탭에서도 개별적으로 바꿀 수 있습니다.</span>
@@ -24854,15 +24972,14 @@ function rotateInit(){
 }
 function viewOpt(){
   const a = optFxA();
-  const conceptPanel = `<section class="panel"><div class="panel-h"><h2>화면 분위기</h2></div><div class="optrow"><div class="optlab"><b>삽화</b><span>캐릭터 판화와 밝은 종이 배경을 사용하는 기본 화면입니다.</span></div><span class="badge">적용 중</span></div></section>`;
+  const conceptPanel = `<section class="panel opt-concept"><div class="panel-h"><h2>화면 분위기</h2></div><div class="optrow"><div class="optlab"><b>삽화</b><span>캐릭터 판화와 밝은 종이 배경을 사용하는 기본 화면입니다.</span></div><span class="badge">적용 중</span></div></section>`;
   const lvPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>레벨업 팝업</b><span>학생의 레벨이 오르면 팝업으로 알려 준다. 팝업의 '이후 보지 않음'을 체크해도 꺼진다.</span></div><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="optLvPop" ${PREF.lvPopup!==false?"checked":""}> 표시</label></div></section>`;
   const fpPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>전투 배경 파스텔 필터</b><span>전투 배경을 채도를 낮춘 파스텔 톤과 옅은 종이 결로 보여 준다. 끄면 원본 그림으로 싸운다.</span></div><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="optFieldPastel" ${PREF.fieldPastel!==false?"checked":""}> 사용</label></div></section>`;
   const pxPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>도트 폰트</b><span>글자를 도트 폰트(물마루)로 보여 준다. 또렷하게 찍히도록 글자 크기를 12 · 24px 로 맞춘다. 끄면 원래 글꼴로 돌아간다.</span></div><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="optPixelFont" ${PREF.pixelFont!==false?"checked":""}> 사용</label></div></section>`;
   const gridPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>전투 배치 격자</b><span>전투 화면 바닥에 학생이 설 자리(격자)를 표시한다. 기본은 표시하지 않는다.</span></div><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="optBfGrid" ${PREF.bfGrid?"checked":""}> 표시</label></div></section>`;
   const camPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>전투 연출</b><span>스타일리시 모드는 넓은 화면에서만 — 행동 게이지가 차오르고, 차례가 온 학생과 스킬 대상을 카메라가 가까이 잡아 보여 준다. 좁은 화면에서는 심플 모드로 돈다.</span></div><div class="ui-concept-picker" role="group" aria-label="전투 연출"><button type="button" class="btn" data-battle-cam="simple" aria-pressed="${PREF.battleCam!=="stylish"}">심플 모드</button><button type="button" class="btn" data-battle-cam="stylish" aria-pressed="${PREF.battleCam==="stylish"}">스타일리시 모드</button></div></div><div class="optrow" style="margin-top:8px"><div class="optlab"><b>공격 화면 기울임</b><span>스타일리시 모드에서 공격하는 순간 카메라가 흐르며 화면을 살짝 기울인다. 끄면 기울이지 않고 흐르기만 한다.</span></div><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="optCamTilt" ${PREF.camTilt!==false?"checked":""}> 사용</label></div></section>`;   // 1027 열일곱째 — 공격 화면 기울임 (PREF.camTilt)
   const skPanel = `<section class="panel"><div class="optrow"><div class="optlab"><b>두루마리 스케줄</b><span>넓은 화면의 스케줄을 책상 위 두루마리로 보여 준다. 결재는 깃펜을 잉크 단지에 찍어 서명한다. 끄면 예전 스케줄 화면.</span></div><label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="optSchedScroll" ${PREF.schedScroll!==false?"checked":""}> 켜기</label></div>${PREF.sign? `<div class="optrow" style="margin-top:8px"><div class="optlab"><b>저장된 서명</b><span>결재 때 쓰는 서명. 지우면 다음 결재 때 새로 그린다 — 서명줄에 새로 그어도 바뀐다.</span></div><button class="btn sm" id="optSignClear">서명 지우기</button></div>` : ""}</section>`;   // 두루마리 스케줄 (1006)
-  return langPanel() + (window.PCAPP ? PCAPP.row() : "") + scalePanel() + conceptPanel + koFontRow() + (window.FSZ ? FSZ.row() : "") + (OPT_PIXEL_FONT ? pxPanel : "") + skPanel + lvPanel + (OPT_FIELD_PASTEL ? fpPanel : "") + gridPanel + (OPT_BATTLE_CAM ? camPanel : "") + (window.TCOM ? TCOM.prefPanel() : "") + errPanel() + xferPanel() + `<section class="panel"><div class="optrow"><div class="optlab"><b>애니메이션 테스트</b><span>공통 몸체와 부위별 착용 레이어의 동작을 확인합니다.</span></div><button class="btn" id="avatarLabOpen">테스트 열기</button></div></section><section class="panel"><div class="optrow"><div class="optlab"><b>진행 페이지 테스트 모드</b><span>양피지 책으로 일정과 학생 집중 훈련을 기록합니다. 기본은 꺼짐이며 다른 페이지는 유지됩니다.</span></div><label><input type="checkbox" id="chronicleToggle" ${PREF.chronicleTest?"checked":""}> 사용</label></div></section><section class="panel">
-    <div class="panel-h"><h2>설정</h2><span class="hint">빌드 ${esc(BUILD)} · 규칙 ${RULES_VER} · 전투 연출과 화면 표시를 조절한다</span></div>
+  return langPanel() + (window.PCAPP ? PCAPP.row() : "") + scalePanel() + conceptPanel + koFontRow() + (window.FSZ ? FSZ.row() : "") + (OPT_PIXEL_FONT ? pxPanel : "") + skPanel + lvPanel + (OPT_FIELD_PASTEL ? fpPanel : "") + (OPT_BF_GRID ? gridPanel : "") + (OPT_BATTLE_CAM ? camPanel : "") + (window.TCOM ? TCOM.prefPanel() : "") + errPanel() + xferPanel() + `<section class="panel"><div class="optrow"><div class="optlab"><b>애니메이션 테스트</b><span>공통 몸체와 부위별 착용 레이어의 동작을 확인합니다.</span></div><button class="btn" id="avatarLabOpen">테스트 열기</button></div></section><section class="panel"><div class="optrow"><div class="optlab"><b>진행 페이지 테스트 모드</b><span>양피지 책으로 일정과 학생 집중 훈련을 기록합니다. 기본은 꺼짐이며 다른 페이지는 유지됩니다.</span></div><label><input type="checkbox" id="chronicleToggle" ${PREF.chronicleTest?"checked":""}> 사용</label></div></section><section class="panel opt-fx">
     <div class="optrow">
       <div class="optlab">
         <b>스킬 효과 투명도</b>
@@ -24899,7 +25016,7 @@ function viewOpt(){
         <span class="fxstage" data-demo="${n}" data-el="${["phys","fire","buff","heal"][i]}"></span></div>`).join("")}
     </div>
     <p class="opthint">위 미리보기는 실제 전투와 같은 속도로 반복 재생된다.</p>
-  </section>` + viewAudio();
+  </section>` + viewAudio() + `<p class="opthint opt-build">빌드 ${esc(BUILD)} · 규칙 ${RULES_VER}</p>`;   // 1029 열셋째 — 탭마다 맨 아래 (OPTAB)
 }
 /* ---------- 음악 ---------- */
 function audText(){
@@ -27536,6 +27653,26 @@ function jobGradeRow(job){
     return `<span class="jgs" title="Lv.1 ${fmt(Math.round(JOBS[job].base[k]))} · 레벨당 +${JOBS[job].grow[k]}">${n} <b style="color:${
       GRADE_COLOR[g.charAt(0)]}">${g}</b></span>`; }).join("");
 }
+/* CDXTAB_START — 도감을 일지의 탭 넷으로 (1029 열두째 · apply_cdxtab.py) ─ 사용자 1029: '도감 카테고리를 나눠서 다 개별 탭으로 넣자.
+   직업, 카드 목록은 일과 목록으로 이름 변경, 원정지는 숨김처리, 성격, 진로 / 기존 도감 카테고리를 5가지의 개별 카테고리로 변경'
+   · 일지 서브탭의 '도감' 한 칸 → 다섯 갈래 (VIEW_GROUPS.log — 도감 자리에 차례로 · 유물 도감은 그대로 맨 끝):
+       직업 = codex (예전 도감 id 그대로 — 도감으로 가던 길은 직업 탭으로) · 일과 목록 = cdxcard (예전 '카드 목록' — 판 제목도 바꿨다)
+       원정지 = cdxexp (숨김 — VIEW_GROUPS 에서 주석으로 뺐다 · 주석을 풀면 일과 목록 다음에 다시 보인다) · 성격 = cdxpers · 진로 = cdxcar (진로 기준 + 업보 진로)
+   · 예전 viewCodex(판 다섯을 이어 붙인 것)를 본문에서 함수 다섯으로 나눴다 — codexJobs · codexCards · codexExped · codexPers · codexCareer
+     viewCodex 는 지금 탭(UI.view)의 판만 그린다 · render 는 codex 줄 그대로 + 다른 탭 줄 하나(cdxView) · 건물 안 테마는 VIEWTHEME 의 PT_VIEWS 에 넷 더
+   · 숨긴 설명 글(CDXHIDE — 일과 목록 머리 글 · 범례 · 성격 · 진로 설명)은 그대로 숨김 · 스케줄(예전 화면)의 '자세한 내용은 도감 · 카드 목록' → '일지 · 일과 목록'
+   · 함수 선언이라 어디서 불러도 된다 (render 가 이 블록보다 앞에 있다) */
+function cdxView(v){
+  switch(v){
+    case "codex": return codexJobs;
+    case "cdxcard": return codexCards;
+    case "cdxexp": return codexExped;
+    case "cdxpers": return codexPers;
+    case "cdxcar": return codexCareer;
+  }
+  return null;
+}
+/* CDXTAB_END */
 function codexJobs(){
   const byRole = {tank:[], dps:[], heal:[], supp:[]};
   JOB_KEYS.forEach(k=>{ (byRole[JOBS[k].role] = byRole[JOBS[k].role] || []).push(k); });
@@ -27558,10 +27695,10 @@ function codexJobs(){
         </div>`; }).join("")}</div>`).join("")}
   </section>`;
 }
-function viewCodex(){
-  return codexJobs()
-    + `  <section class="panel">
-    <div class="panel-h"><h2>카드 목록</h2><span class="hint">같은 색 두 장이 한 쌍 · 아이템을 사면 그 짝이 덱에 들어온다 · 시설 등급이 오르면 효율이 오른다</span></div>
+function viewCodex(){ return (cdxView(UI.view) || codexJobs)(); }   // 1029 열두째 — 지금 탭의 판만 (CDXTAB)
+function codexCards(){   // 일과 목록 (1029 열두째 — 예전 이름 카드 목록)
+  return `  <section class="panel">
+    <div class="panel-h"><h2>일과 목록</h2><span class="hint cdx-hide">같은 색 두 장이 한 쌍 · 아이템을 사면 그 짝이 덱에 들어온다 · 시설 등급이 오르면 효율이 오른다</span></div>
     <div class="grid2">
       ${DECK_BASE.concat(DECK_ITEM).map(id=>{
         const t = TR[id], locked = (t.need && !S.items[t.need]) || (id==="exped" && campNoExped()), col = cardColor(id);
@@ -27578,10 +27715,12 @@ function viewCodex(){
         </div>`;
       }).join("")}
     </div>
-    <div class="rule"></div>
-    ${cardLegendHtml()}
-  </section>`
-    + `  <section class="panel">
+    <div class="cdx-hide"><div class="rule"></div>
+    ${cardLegendHtml()}</div>
+  </section>`;
+}
+function codexExped(){   // 원정지 (1029 열두째 — 탭은 숨김)
+  return `  <section class="panel">
     <div class="panel-h"><h2>원정지</h2></div>
     <div class="grid2">
       ${DUNGEONS.map(dgView).map(d=>{
@@ -27596,10 +27735,12 @@ function viewCodex(){
         </div>`;
       }).join("")}
     </div>
-  </section>`
-    + `  <section class="panel">
-    <div class="panel-h"><h2>성격</h2><span class="hint">입학 시 정해지며 바뀌지 않는다</span></div>
-    <p style="font-size:12.5px;color:var(--muted);margin:0 0 10px">성격은 입학할 때 멘탈리티에 한 번 반영되고, 상담에서 어떤 말이 통하는지를 결정한다.</p>
+  </section>`;
+}
+function codexPers(){   // 성격
+  return `  <section class="panel">
+    <div class="panel-h"><h2>성격</h2><span class="hint cdx-hide">입학 시 정해지며 바뀌지 않는다</span></div>
+    <p class="cdx-hide" style="font-size:12.5px;color:var(--muted);margin:0 0 10px">성격은 입학할 때 멘탈리티에 한 번 반영되고, 상담에서 어떤 말이 통하는지를 결정한다.</p>
     <div class="scroll-x"><table class="tb"><thead><tr><th>성격</th><th>멘탈리티 보정</th><th>재학생</th><th>설명</th></tr></thead><tbody>
       ${PERSONA_KEYS.map(k=>{ const n = S.students.filter(x=>(x.pers||"plain")===k);
         return `<tr><td><b style="color:${k==="genius"?"var(--brass)":"var(--text)"}">${PERSONA[k].n}</b></td>
@@ -27607,15 +27748,17 @@ function viewCodex(){
           <td style="font-size:12px;color:var(--muted)">${esc(PERSONA[k].d)}</td></tr>`;
       }).join("")}
     </tbody></table></div>
-  </section>`
-    + `  <section class="panel">
-    <div class="panel-h"><h2>진로 기준</h2><span class="hint">진로 평가는 대회 성적과 원정 성과로만 쌓인다</span></div>
-    <p style="font-size:12.5px;color:var(--muted);margin:0 0 10px">신입생은 평가 0에서 시작한다. 원정은 원정지마다 정해진 상한까지만 올려주고, 그 위는 대회에서만 넘길 수 있다. 대회에 나가 1승도 못 하면 평가가 깎인다.</p>
+  </section>`;
+}
+function codexCareer(){   // 진로 (진로 기준 · 업보 진로)
+  return `  <section class="panel">
+    <div class="panel-h"><h2>진로 기준</h2><span class="hint cdx-hide">진로 평가는 대회 성적과 원정 성과로만 쌓인다</span></div>
+    <p class="cdx-hide" style="font-size:12.5px;color:var(--muted);margin:0 0 10px">신입생은 평가 0에서 시작한다. 원정은 원정지마다 정해진 상한까지만 올려주고, 그 위는 대회에서만 넘길 수 있다. 대회에 나가 1승도 못 하면 평가가 깎인다.</p>
     <div class="scroll-x"><table class="tb"><thead><tr><th>진로</th><th>필요 평가</th><th>학원 명성</th><th>후원금</th><th>설명</th></tr></thead>
     <tbody>${CAREERS.filter(c=>c.id!=="none").map(c=>`<tr><td>${c.n}</td><td class="num">${c.min}</td><td class="num">+${c.fame}</td><td class="num">${fmt(c.gold)}</td><td style="color:var(--muted)">${c.d}</td></tr>`).join("")}</tbody></table></div>
     <div class="rule"></div>
     <div class="panel-h" style="margin-bottom:8px"><h2 style="font-size:13px">업보 진로</h2><span class="hint">업보가 쌓이면 평가와 무관하게 이쪽으로 갈린다</span></div>
-    <p style="font-size:12.5px;color:var(--muted);margin:0 0 10px">업보는 <b style="color:var(--text)">안개 낀 옛 성터 이상의 원정</b>에서 구간마다 쌓인다 (성터 ${dgKarma(DUNGEONS[1])} · 종탑 ${dgKarma(DUNGEONS[2])} · 균열 ${dgKarma(DUNGEONS[3])} · 무덤 ${dgKarma(DUNGEONS[4])}).
+    <p class="cdx-hide" style="font-size:12.5px;color:var(--muted);margin:0 0 10px">업보는 <b style="color:var(--text)">안개 낀 옛 성터 이상의 원정</b>에서 구간마다 쌓인다 (성터 ${dgKarma(DUNGEONS[1])} · 종탑 ${dgKarma(DUNGEONS[2])} · 균열 ${dgKarma(DUNGEONS[3])} · 무덤 ${dgKarma(DUNGEONS[4])}).
       교회에 <b style="color:var(--text)">${fmt(CHURCH_DONATE)} G</b>를 기부하면 전 학생의 업보가 ${CHURCH_KARMA} 씻긴다 (반기당 1회).</p>
     <div class="scroll-x"><table class="tb"><thead><tr><th>진로</th><th>필요 업보</th><th>필요 평가</th><th>학원 명성</th><th>후원금</th><th>설명</th></tr></thead>
     <tbody>${DARK_CAREERS.slice().reverse().map(c=>`<tr><td style="color:var(--bad)">${c.n}</td><td class="num">${c.karma}</td><td class="num">${c.min>0?c.min:"—"}</td>
@@ -28427,6 +28570,39 @@ function scwKey(e){
   if(SCW.phase === "done"){ const n = scwq(".cw-next"); if(n && n.classList.contains("on") && n.onclick) n.onclick(); }
 }
 /* SCOUTWIN_END */
+/* POPFIX_START — 다른 창에 밀려 사라진 상담창 · 스카우트 창 정리 (1029 일곱째 · apply_popfix.py) ─ 사용자 '스케줄 서명 도중에 상담 창을 누르니깐 이후 상담 창이 안켜지네' ·
+   '다른 팝업 창들도 비슷할듯?'.
+   · 상담창(CSLW — cslwin) · 스카우트 설득 창(SCW — scoutwin)은 '창이 떠 있다'를 CSLW.el · SCW.el 로 보고(열 때 그것이 있으면 열지 않는다), 키(Esc · 스페이스 · 엔터 · 1 ~ 3)를
+     document 에서 먼저 받는다. 창을 닫지 않은 채 다른 흐름이 #modalRoot 를 바꿔 끼우면(예: 서명이 뒤에서 끝나 경과 보고가 뜸 — 그 흐름은 SCHED_SCROLL 의 skPopup 이 막는다)
+     el 이 남아 다시 열리지 않았고 키를 가로채는 듣개도 남았다 (그 상태에서 Esc 를 누르면 보이지 않는 상담창이 닫히며 화면을 다시 그렸다).
+   · #modalRoot 의 자식이 바뀔 때마다 그 창의 el 이 화면에 없으면(isConnected 아님) 닫을 때와 같이 듣개 · 타이머를 걷고 비운다 (화면은 다시 그리지 않는다 — 다른 창이 떠 있다).
+     상담 결과는 답을 고른 순간 이미 반영되어 있다. 락커룸 창(LKW)은 원래 isConnected 를 보고 스스로 정리한다 */
+(() => {
+function cslwGone(){
+  if(typeof CSLW === "undefined" || !CSLW.el || CSLW.el.isConnected) return false;
+  try{ if(typeof cslCookieStop === "function") cslCookieStop(); }catch(e){}
+  CSLW.run++;
+  if(CSLW.typing){ const f = CSLW.typing; CSLW.typing = null; try{ f(); }catch(e){} }
+  document.removeEventListener("keydown", CSLW.key, true);
+  window.removeEventListener("resize", CSLW.rs);
+  CSLW.el = null; CSLW.cur = null; CSLW.phase = ""; CSLW.list = [];
+  return true;
+}
+function scwGone(){
+  if(typeof SCW === "undefined" || !SCW.el || SCW.el.isConnected) return false;
+  SCW.run++;
+  if(SCW.typing){ const f = SCW.typing; SCW.typing = null; try{ f(); }catch(e){} }
+  document.removeEventListener("keydown", SCW.key, true);
+  window.removeEventListener("resize", SCW.rs);
+  SCW.el = null; SCW.phase = ""; SCW.instant = false;
+  return true;
+}
+function popfixSweep(){ const a = cslwGone(), b = scwGone(); return a || b; }
+const root = document.getElementById("modalRoot");
+if(root) new MutationObserver(() => { try{ popfixSweep(); }catch(e){} }).observe(root, {childList: true});
+window.POPFIX = {sweep: popfixSweep};
+})();
+/* POPFIX_END */
 /* NTWIN_START — 안내 화면 창 (1025 목업 · apply_ntwin.py) ─ 사용자 1025 (그림 메모): '라이벌 · 소울 메이트 · 대회 결과 — 안내 화면 창에서는 sd 캐릭터들이 상황에 맞춰서 액션 ·
    안내 화면 텍스트에서는 관련 정보 표시'. 창 = 위 안내 내용 글(제목) · 가운데 안내 화면(무대) · 아래 안내 글 · 오른쪽 아래 닫기.
    · 라이벌 — 학원 연습장(계절) · 둘이 머리에 도발 불꽃을 달고 서 있다가 → 가운데로 달려와 부딪힘(피격 모션 · 맞는 순간 하얗게 한 번 반짝 · 충돌 불꽃) →
@@ -29051,6 +29227,388 @@ function twInvite(c){
 window.TIW = {fame: twFame, invite: twInvite, tierFx: twTierFx, inviteFx: twInviteFx, state: TW};
 })();
 /* TIWIN_END */
+/* XQRES_START — 원정 '빠르게 결과만' 결과 안내 · 켜 둔 것 기억 (1029 여덟째 · apply_xqres.py) ─ 사용자 1029: '빠르게 결과만 버튼이 눌린 상태로 게임을 껐다 키면 눌린 상태가 풀린다고하네.
+   그리고 빠르게 결과만 창을 누르고 진행 한 경우 안내 창을 이용해서 성공, 실패 여부를 표시해주고 안내 창 닫으면 획득 아이템을 표시해주자'
+   · 켜 둔 것 — 원정 지도의 '빠르게 결과만'(UI.expPick.quick)을 설정 PREF.xmQuick 으로 읽고 쓴다 (이 브라우저 · PC 앱에 남는다 — 띠 창 '빠르게'(PREF.beltFast)와 같이)
+   · 결과 안내 — 안내 화면 창(NTWIN — window.NTW.ui) 그대로: 위 '원정 결과 · 팀' · 원정지 이름 · 가운데 무대(그 원정지 전투 필드 쿼터뷰 · 떠난 학생 SD) · 아래 글(한 글자씩) · 오른쪽 아래 닫기
+     완주 — 다 같이 승리 모션 · 차례로 폴짝 · 금빛 반짝 · 음표 (belt_clear) / 철수 · 전멸 — 대기 · 땀 · 어두운 기운 (belt_retreat) · 쓰러진 학생은 쓰러진 모습
+     글 — '완주!' / 'n% 지점에서 철수' + 왜(지구력 · 탈진) / '전멸…' · 경험 · 자금(숫자가 올라가며 동전 소리) · 명성(완주)
+     (1029 아홉째 — 사용자 '원정 결과 창에서 얻은 것은 창을 닫으면 확인한다. 텍스트는 숨김처리': 그 줄은 뺐다)
+   · 닫으면 전리품(beltLoot — 띠 원정을 끝까지 본 것과 같은 창 · 유물 · 물건 · 자금) → 원정 결과(expedDone · 경과 보고가 이어진다). 얻은 것이 없으면 바로
+   · Esc 로 닫는다 · Enter 는 글이 찍히는 중이면 글부터 끝까지, 다 찍혔으면 닫기. 무대를 누르면 연출을 처음부터 (NTW 그대로)
+   고리 — beltLoop 의 빠르게 결과만에서 E.xq 면 XQRES.show (원정 지도 xmGo · 좁은 화면 목록 창이 '빠르게 결과만'으로 떠날 때 E.xq — 주 일괄 빠른 진행 runExpedition 은 그대로 셈만).
+   안내 창을 만들 수 없으면 false — 예전처럼 바로 결과 */
+(function(){
+try{ const j = JSON.parse(localStorage.getItem(PREF_KEY) || "null"); if(j && typeof j.xmQuick === "boolean") PREF.xmQuick = j.xmQuick; }catch(e){}   // '빠르게 결과만' — 이 브라우저에 남는다
+try{
+  UI.expPick = UI.expPick || {};
+  Object.defineProperty(UI.expPick, "quick", {configurable: true, enumerable: true,
+    get(){ return !!PREF.xmQuick; },
+    set(v){ v = !!v; if(!!PREF.xmQuick === v) return; PREF.xmQuick = v; try{ prefSave(); }catch(e){} }});
+}catch(e){}
+
+const XQ_WHY = {stam: "지구력이 바닥났다", wipe: "전멸", exh: "탈진한 채 이겼다 — 더 갈 수 없다"};   // 띠 창 철수 글과 같다
+function xqUi(){ return window.NTW && NTW.ui && NTW.modes ? NTW.ui : null; }
+
+/* ── 무대 연출 (NTW.modes.xq) ── */
+async function xqFx(run, U){
+  const ui = xqUi(); if(!ui) return;
+  const D = (NTW.state && NTW.state.data) || {}, down = D.down || [];
+  U.forEach(u => u.querySelectorAll(".ntw-fx").forEach(e => e.remove()));    // 다시 볼 때 — 학생에게 붙은 효과를 걷는다 (무대 효과 칸은 NTW 가 비운다)
+  const up = U.filter(u => !down[+u.dataset.i]);
+  U.forEach(u => { if(down[+u.dataset.i]){ u.classList.add("dim"); ui.spr(u, "down", {once: true}); } });
+  if(D.clear){
+    up.forEach((u, i) => { ui.spr(u, "win", {ms: 320}); ui.fx("spark", i % 2 ? 26 : -26, 92 + (i % 3) * 8, {k: 1.1, cls: "tw" + (i % 2 ? " d2" : ""), on: u}); });
+    if(ui.rm()) return;
+    ui.sfx("belt_clear");
+    for(const u of up){ await ui.wait(170); if(!ui.live(run)) return; ui.hop(u, 2); }
+    await ui.wait(420); if(!ui.live(run)) return;
+    ui.notes(50, 24);
+    return;
+  }
+  up.forEach((u, i) => { u.classList.add("dim"); if(i % 2 === 0) ui.fx("sweat", 26, 80, {k: 1.2, cls: "drip", on: u}); });
+  const mid = U[Math.floor(U.length / 2)];
+  if(mid) ui.fx("gloom", 0, 104, {k: 1.1, cls: "fade", on: mid});
+  if(!ui.rm()) ui.sfx("belt_retreat");
+}
+function xqReg(){ const ui = xqUi(); if(!ui) return false; NTW.modes.xq = xqFx; return true; }
+xqReg();
+
+/* ── 결과 안내 창 → 전리품 → done(res) ── */
+function xqShow(E, R, res, done){
+  const ui = xqUi(); if(!ui || !xqReg() || !E || !R || !res || typeof done !== "function") return false;
+  try{
+    const dg = E.dg || res.dg || {}, team = (E.team || []).filter(s => s && typeof sprHas === "function" && sprHas(s.job)).slice(0, 5);
+    const clear = !!res.clear, alive = R.alive || {};
+    const n = team.length, gap = n > 4 ? 15 : n > 3 ? 17 : 20, x0 = 50 - gap * (n - 1) / 2;
+    const units = team.map((s, i) => ui.unit(s, i, +(x0 + gap * i).toFixed(1), i >= Math.ceil(n / 2) && n > 1)).join("");
+    const down = team.map(s => alive[s.id] === false);
+    const field = String(dg.mon || "").replace(/^mon_/, ""), bg = (typeof tqMapKey === "function" && tqMapKey(field)) || "academy";
+    const L = R.loot || {}, items = L.items || {};
+    const loot = (res.relics || []).length > 0 || (L.gold || 0) > 0 || (typeof BELT_ITEMS_ORDER !== "undefined" && BELT_ITEMS_ORDER.some(k => items[k] > 0));
+    const exp = Math.round(res.exp || 0), gold = Math.round(res.gold || 0), fame = Math.round(res.fameGain || 0);
+    const cnt = (v, pre, suf, coin) => `<b class="num cnt" data-v="${v}" data-pre="${pre}" data-suf="${suf}" data-z="${pre}0${suf}" data-t="${pre}${fmt(v)}${suf}"${coin ? ' data-coin="1"' : ""}>${pre}${fmt(v)}${suf}</b>`;
+    const row = (k, v, cls) => `<p class="ntw-row${cls ? " " + cls : ""}" data-ty><span class="k">${k}</span> ${v}</p>`;
+    const none = `<b class="num">—</b>`;
+    const why = XQ_WHY[R.why] || "";
+    const big = clear ? `<p class="big gold" data-ty>${"완주"}!</p>`
+      : R.why === "wipe" ? `<p class="big bad" data-ty>${"전멸…"}</p><p class="sub" data-ty>${`${res.pct}% 지점에서 철수`}</p>`
+      : `<p class="big bad" data-ty>${`${res.pct}% 지점에서 철수`}</p>${why ? `<p class="sub" data-ty>${why}</p>` : ""}`;
+    const rows = row("경험", exp > 0 ? cnt(exp, "+", "", false) : none, exp > 0 ? "good" : "")
+      + row("자금", gold > 0 ? cnt(gold, "+", " G", true) : none, gold > 0 ? "good" : "")
+      + (fame > 0 ? row("명성", cnt(fame, "+", "", false), "good") : "");
+    const lines = `${big}<div class="ntw-rows">${rows}</div>`;   // 1029 아홉째 — '얻은 것은 창을 닫으면 확인한다' 줄은 뺐다 (사용자 '숨김처리' · 전리품 창은 그대로 뜬다)
+    const eye = E.TM && typeof teamLabel === "function" ? `${"원정 결과"} · ${esc(teamLabel(E.TM))}` : "원정 결과";
+    let fin = false;
+    const key = ev => {
+      if(!document.getElementById("xqOk")){ document.removeEventListener("keydown", key, true); return; }
+      if(ev.key === "Escape"){ ev.preventDefault(); ev.stopPropagation(); close(); return; }
+      if(ev.key === "Enter" && !ev.repeat){
+        ev.preventDefault(); ev.stopPropagation();
+        const st = NTW.state || {};
+        if(st.skip) st.skip(); else close();
+      }
+    };
+    const close = () => {
+      if(fin) return;
+      fin = true; document.removeEventListener("keydown", key, true);
+      try{ NTW.stop(); }catch(e){}
+      closeModal();
+      const go = () => done(res);
+      if(loot && typeof beltLoot === "function"){
+        try{ beltLoot(E, R, res, go); return; }
+        catch(e){ try{ errPush("xqres", e.message, e.stack); }catch(x){} closeModal(); }
+      }
+      go();
+    };
+    ui.mount("xq", {bg, clear, down, why: R.why || ""});
+    showModal(ui.html({mode: "xq " + (clear ? "x-clear" : "x-fail"), okId: "xqOk", eye, title: esc(dg.n || ""), units, lines}), () => {
+      const ok = document.getElementById("xqOk"); if(ok) ok.onclick = close;
+    });
+    if(!document.getElementById("xqOk")) return false;
+    document.addEventListener("keydown", key, true);
+    return true;
+  }catch(e){
+    try{ errPush("xqres", e.message, e.stack); }catch(x){}
+    return false;
+  }
+}
+window.XQRES = {show: xqShow, fx: xqFx, why: XQ_WHY};
+})();
+/* XQRES_END */
+/* TIPWIN_START — 마우스를 올리면 뜨는 글 상자를 팝업 창 서식으로 (1029 열째 · apply_tipwin.py) ─ 사용자 1029 (명부 책 '스킬 임의로 강화' 위 브라우저 기본 툴팁 스크린샷)
+   '마우스 오버 시 발생하는 별도의 서식 없는 팝업들에 일단 팝업 창 서식을 다 적용해줘'
+   · 게임 안 모든 title 속성(그림자 DOM — 명부 책 · 유물 상자 안도)을 브라우저 기본 툴팁 대신 게임 글 상자(.hs-tip — 팝업 · 건물 안 테마 창과 같은 바탕 · 테 · 둘레 줄 · 도트 글꼴)로 보인다
+   · 마우스(pointerType mouse)만 — 올린 요소에서 가장 가까운 title 의 글을 그동안 data-hs-tt 로 옮겨 두고(기본 툴팁이 안 뜨게) 0.45초 뒤 커서 오른쪽 아래에 띄운다.
+     벗어나면 title 을 되돌린다 (다른 코드가 title 을 읽는 것 · 터치 · 키보드는 예전 그대로). 방금까지 상자가 떠 있었으면(0.5초 안) 기다리지 않는다
+   · 누르기 · 휠 · 스크롤 · 키 · 창을 벗어나면 숨김 — 누른 요소는 벗어날 때까지 다시 안 뜬다 (기본 툴팁과 같다) · 요소가 사라지면 숨김
+   · 올려 둔 사이 그 요소의 title 이 바뀌면 글도 바뀐다 (MutationObserver — 문서 · 올려 본 그림자 뿌리) · 코드가 title 을 지우면 상자도 닫고 되돌리지 않는다
+   · 글자 크기 설정(FSZ.k — 팝업처럼)을 따라 커진다 · 화면 밖으로 나가지 않게 (오른쪽이 모자라면 왼쪽으로 · 아래가 모자라면 커서 위로) · 줄바꿈은 그대로 · 긴 글은 넓이 320 에서 접는다
+   · 자동화(navigator.webdriver)에서는 하지 않는다 (예전 시험이 title 을 그대로 읽는다) — 시험은 window.__tipForce = true · 끄려면 window.__tipOff = true */
+(function(){
+const TT = {own: null, tm: 0, chk: 0, last: 0, x: 0, y: 0, sup: null, host: null, box: null, mo: null, roots: new Set(), over: new WeakSet()};
+const TT_DELAY = 450, TT_WARM = 500;
+function ttOn(){ return !((navigator.webdriver && !window.__tipForce) || window.__tipOff); }
+function ttHost(){
+  if(TT.host && TT.host.isConnected) return TT.host;
+  const h = document.createElement("div");
+  h.className = "hs-tip-host"; h.setAttribute("aria-hidden", "true");
+  const b = document.createElement("div"); b.className = "hs-tip"; h.appendChild(b);
+  (document.body || document.documentElement).appendChild(h);
+  TT.host = h; TT.box = b;
+  return h;
+}
+/* 올린 자리에서 가장 가까운 title (그림자 DOM 안도 — composedPath) */
+function ttOwner(path){
+  for(const n of path){
+    if(!n || n.nodeType !== 1) continue;
+    if(n === document.body || n === document.documentElement) return null;
+    if(n.tagName === "IFRAME" || n.classList.contains("hs-tip-host")) return null;
+    if(n.hasAttribute("title") || n.hasAttribute("data-hs-tt")) return n;
+  }
+  return null;
+}
+function ttFlush(){ if(TT.mo) TT.mo.takeRecords(); }   // 내가 바꾼 것은 지켜보기에서 뺀다
+function ttTake(el){                                     // title → data-hs-tt (그동안 기본 툴팁이 안 뜬다)
+  const v = el.getAttribute("title");
+  if(v !== null){ el.setAttribute("data-hs-tt", v); el.removeAttribute("title"); ttFlush(); }
+  TT.own = el;
+  try{
+    const r = el.getRootNode();
+    if(TT.mo && r && r !== document && r.nodeType === 11 && !TT.roots.has(r)){ TT.roots.add(r); TT.mo.observe(r, {attributes: true, attributeFilter: ["title"], subtree: true}); }
+  }catch(e){}
+}
+function ttGive(el){                                     // 벗어나면 되돌린다
+  if(!el) return;
+  const v = el.getAttribute("data-hs-tt");
+  if(v === null) return;
+  el.removeAttribute("data-hs-tt");
+  if(!el.hasAttribute("title")) el.setAttribute("title", v);
+  ttFlush();
+}
+function ttHide(){
+  clearTimeout(TT.tm); TT.tm = 0;
+  clearInterval(TT.chk); TT.chk = 0;
+  if(TT.host && TT.host.classList.contains("on")){ TT.host.classList.remove("on"); TT.last = performance.now(); }
+}
+function ttLeave(){ ttHide(); if(TT.own) ttGive(TT.own); TT.own = null; TT.sup = null; }
+function ttPlace(){
+  const h = TT.host, b = TT.box; if(!h || !b) return;
+  h.style.left = "0px"; h.style.top = "0px";
+  const r = b.getBoundingClientRect(), de = document.documentElement;
+  const W = de.clientWidth || innerWidth, H = de.clientHeight || innerHeight, m = 10;   // 둘레 줄(6) + 틈
+  let x = TT.x + 14, y = TT.y + 22;
+  if(x + r.width + m > W) x = Math.max(m, W - r.width - m);
+  if(y + r.height + m > H) y = Math.max(m, TT.y - r.height - 12);
+  h.style.left = Math.round(x) + "px"; h.style.top = Math.round(y) + "px";
+}
+function ttShow(){
+  TT.tm = 0;
+  const el = TT.own;
+  if(!el || !el.isConnected || TT.sup === el || !ttOn()) return;
+  const v = el.getAttribute("data-hs-tt");
+  if(!v || !v.trim()) return;
+  ttHost();
+  TT.box.textContent = v;
+  const k = window.FSZ && typeof FSZ.k === "function" ? +FSZ.k() || 1 : 1;
+  TT.box.style.zoom = k !== 1 ? String(k) : "";
+  ttPlace();
+  TT.host.classList.add("on");
+  clearInterval(TT.chk);
+  TT.chk = setInterval(() => { if(!TT.own || !TT.own.isConnected) ttHide(); }, 250);
+}
+function ttText(v){                                      // 올려 둔 사이 title 이 바뀌었다
+  if(!TT.host || !TT.host.classList.contains("on")) return;
+  if(!v || !v.trim()){ ttHide(); return; }
+  TT.box.textContent = v; ttPlace();
+}
+try{
+  TT.mo = new MutationObserver(recs => {
+    for(const r of recs){
+      const el = r.target;
+      if(el !== TT.own) continue;
+      const v = el.getAttribute("title");
+      if(v !== null){ el.setAttribute("data-hs-tt", v); el.removeAttribute("title"); ttFlush(); ttText(v); }
+      else if(el.hasAttribute("data-hs-tt") && r.oldValue !== null){ el.removeAttribute("data-hs-tt"); ttFlush(); ttHide(); }   // 코드가 지웠다 — 되돌리지 않는다
+    }
+  });
+  TT.mo.observe(document.documentElement, {attributes: true, attributeFilter: ["title"], attributeOldValue: true, subtree: true});
+}catch(e){ TT.mo = null; }
+
+/* 그림자 DOM 안에서 요소끼리 옮겨 다니는 pointerover 는 문서까지 오지 않는다 (target · relatedTarget 이 같은 그림자 안이면 뿌리에서 멈춘다) —
+   처음 들어올 때(문서에 온다) 그 뿌리에도 같은 듣개를 단다 (명부 책 · 유물 상자 …) */
+function ttOver(e){
+  if(e.pointerType && e.pointerType !== "mouse") return;
+  if(!ttOn()){ if(TT.own) ttLeave(); return; }
+  const path = e.composedPath ? e.composedPath() : [e.target];
+  for(const n of path){ if(n && n.nodeType === 11 && n.host && !TT.over.has(n)){ TT.over.add(n); n.addEventListener("pointerover", ttOver, true); } }
+  const own = ttOwner(path);
+  if(own === TT.own) return;
+  ttLeave();
+  if(!own) return;
+  ttTake(own);
+  TT.x = e.clientX; TT.y = e.clientY;
+  const warm = TT.last && performance.now() - TT.last < TT_WARM;
+  TT.tm = setTimeout(ttShow, warm ? 0 : TT_DELAY);
+}
+document.addEventListener("pointerover", ttOver, true);
+document.addEventListener("pointermove", e => { if(!e.pointerType || e.pointerType === "mouse"){ TT.x = e.clientX; TT.y = e.clientY; } }, {capture: true, passive: true});
+document.addEventListener("pointerout", e => { if(!e.relatedTarget) ttLeave(); }, true);                 // 창 밖으로
+document.addEventListener("pointerdown", () => { if(TT.own) TT.sup = TT.own; ttHide(); }, true);
+addEventListener("wheel", ttHide, {capture: true, passive: true});
+addEventListener("scroll", ttHide, {capture: true, passive: true});
+addEventListener("keydown", ttHide, true);
+addEventListener("blur", ttLeave);
+window.TIPWIN = {state: TT, show: ttShow, hide: ttHide, leave: ttLeave, on: ttOn};
+})();
+/* TIPWIN_END */
+/* JPOP_START — 일지 · 설정 팝업 창 (1029 열셋째 · apply_jpop.py — 목업 mockups/journal-popup 을 게임에) ─ 사용자 1029: '그다음 일지 탭을 별도의 팝업으로 목업을 해보자.
+   팝업창 크기는 외부 게임 스크롤이 발생하지 않도록 학생 명부 창 크기정도로, 해당 창 내부에서 별도의 스크롤을 사용' → '일지 적용하고, 설정을 이제 팝업화해보자'
+   · 넓은 화면(townMode — 학생 명부 책이 뜨는 화면)에서 일지 묶음(viewGroupOf 'log' — 학원 일지 · 상담 기록 · 졸업생 명부 · 직업 · 일과 목록 · 성격 · 진로 · 유물 도감)이나
+     설정(opt — 갈래 탭은 OPTAB)을 열면 화면을 바꾸는 대신 팝업 창으로 (옆 메뉴 · 마스터 책상의 책 더미 · 다른 곳에서 UI.view 를 바꿔도 —
+     render 첫머리 JPOP.intercept · 학생 명부 책의 RBK.intercept 다음 줄)
+   · 창 = 팝업 · 건물 안 테마 창(바탕 #2a1418 · 테 · 둘레 줄) · 크기는 학생 명부 책과 같은 셈 (CSS — 1176 × 948 을 화면에 맞춰 줄인다 · 더 커지지 않는다)
+     → 바깥 게임은 스크롤되지 않는다 (창이 떠 있는 동안 html overflow hidden — 명부 책과 같다)
+   · 안쪽 — 게임 화면(#view) 그대로를 창 안 스크롤 칸(.jp-body)으로 옮겨 그린다 (render · bindView · 서브탭 · 유물 상세 · 졸업 증서 · 설정 단추가 그대로 돈다).
+     #view 는 #app 안에 그대로 있다 (창이 #app 안 — 건물 안 테마 화면 CSS 가 html body #app #view[data-pt] 로 잡는다) · 닫으면 제자리로
+   · 서브탭(.subnav — 일지 서브탭 · 설정 갈래 탭)은 스크롤해도 위에 붙어 있다(sticky) · 탭을 바꾸면 맨 위로 (설정은 UI.optTab 이 바뀌면) ·
+     오른쪽 위 × · 창 밖 어두운 바탕(창 안에서 끌다 밖에서 뗀 것은 빼고) · Esc(위에 뜬 게임 팝업이 없을 때) → 그 전 화면(JP.back)
+   · 창은 z 79 (학생 명부 책 · 원정 띠 창과 같다) — 게임 팝업(#modalRoot · z 80 — 유물 상세 · 졸업 증서 · 확인 창 …)은 그 위에 뜬다
+   · 좁은 화면(townMode 아님)은 예전처럼 화면 그대로 · 창이 좁아지면 예전 화면으로 · JPOP.set(false) 면 예전처럼 (시험 · 비교) */
+(function(){
+const JP = {on: true, open: false, back: "home", root: null, win: null, body: null, home: null, next: null, cur: "", ovf: "", down: false, grp: ""};
+const JP_NAME = {log: "일지", opt: "설정"};              // 창 이름 (읽어 주기 — aria-label)
+function jpWide(){ try{ return typeof townMode === "function" ? !!townMode() : innerWidth >= 1100; }catch(e){ return innerWidth >= 1100; } }
+function jpGrp(v){                                       // 팝업으로 여는 화면 묶음 — log · opt · 아니면 ""
+  if(v === "opt") return "opt";
+  return typeof viewGroupOf === "function" && viewGroupOf(v) === "log" ? "log" : "";
+}
+function jpKey(v){ return v === "opt" ? "opt:" + (window.OPTAB ? OPTAB.cur() : "") : v; }   // 탭이 바뀌었나 — 설정은 갈래 탭
+function jpBuild(){
+  if(JP.root && JP.root.isConnected) return JP.root;
+  const app = document.getElementById("app") || document.body;
+  const r = document.createElement("div");
+  r.id = "jpRoot"; r.hidden = true;
+  r.innerHTML = `<div class="jp-win" role="dialog" aria-modal="true" aria-label="${JP_NAME.log}" tabindex="-1"><div class="jp-body"></div>
+    <button type="button" class="jp-x" aria-label="${"닫기"}" title="${"닫기 (Esc)"}">×</button></div>`;
+  app.appendChild(r);
+  JP.root = r; JP.win = r.querySelector(".jp-win"); JP.body = r.querySelector(".jp-body");
+  r.querySelector(".jp-x").onclick = () => jpClose();
+  r.addEventListener("pointerdown", e => { JP.down = e.target === r; });          // 창 밖(어두운 바탕)을 누르면 닫는다 — 학생 명부 책과 같다
+  r.addEventListener("click", e => { if(e.target === r && JP.down) jpClose(); JP.down = false; });   // (창 안에서 끌다 밖에서 뗀 것은 빼고)
+  return r;
+}
+function jpTake(){                                       // #view 를 창 안 스크롤 칸으로
+  const v = document.getElementById("view"); if(!v) return;
+  jpBuild();
+  if(v.parentNode !== JP.body){ JP.home = v.parentNode; JP.next = v.nextSibling; JP.body.appendChild(v); }
+  JP.root.hidden = false; JP.open = true;
+  const de = document.documentElement;
+  JP.ovf = de.style.overflow; de.style.overflow = "hidden"; de.classList.add("jp-on");
+  try{ window.scrollTo(0, 0); }catch(e){}
+  try{ JP.win.focus({preventScroll: true}); }catch(e){}
+}
+function jpPut(){                                        // #view 를 제자리로
+  const v = document.getElementById("view");
+  if(v && JP.home && v.parentNode === JP.body) JP.home.insertBefore(v, JP.next && JP.next.parentNode === JP.home ? JP.next : null);
+  if(JP.root) JP.root.hidden = true;
+  JP.open = false; JP.cur = ""; JP.grp = "";
+  const de = document.documentElement;
+  de.style.overflow = JP.ovf || ""; de.classList.remove("jp-on");
+}
+/* render 첫머리 (학생 명부 책의 RBK.intercept 다음) */
+function jpIntercept(){
+  const g = jpGrp(UI.view);
+  if(!JP.on || !jpWide()){ if(JP.open) jpPut(); if(!g) JP.back = UI.view; return; }
+  if(g){
+    if(!JP.open) jpTake();
+    if(JP.grp !== g){ JP.grp = g; if(JP.win) JP.win.setAttribute("aria-label", JP_NAME[g] || JP_NAME.log); }
+    const k = jpKey(UI.view);
+    if(JP.cur !== k){ JP.cur = k; if(JP.body) JP.body.scrollTop = 0; }
+  }else{
+    if(JP.open) jpPut();
+    JP.back = UI.view;
+  }
+}
+function jpClose(){
+  if(!JP.open) return;
+  jpPut();
+  UI.view = JP.back && !jpGrp(JP.back) ? JP.back : "home";
+  render();
+}
+document.addEventListener("keydown", e => {
+  if(e.key !== "Escape" || !JP.open) return;
+  const mr = document.getElementById("modalRoot");
+  if(mr && mr.firstElementChild) return;                 // 위에 뜬 게임 팝업이 먼저 닫힌다
+  if(window.TIPWIN) try{ TIPWIN.hide(); }catch(x){}
+  e.preventDefault(); e.stopPropagation(); jpClose();
+}, true);
+addEventListener("resize", () => { if(JP.open && !jpWide() && typeof render === "function") render(); });   // 좁아지면 예전 화면으로
+window.JPOP = {intercept: jpIntercept, close: jpClose, state: JP, group: jpGrp,
+  set(on){ JP.on = !!on; if(typeof render === "function") render(); }};
+})();
+/* JPOP_END */
+/* OPTAB_START — 설정 갈래 탭 (1029 열셋째 · apply_optab.py) ─ 사용자 1029: '설정을 이제 팝업화해보자. 일단 게임, 화면, 사운드등으로 카테고리 나눠보자'
+   · 설정 화면(viewOpt — 판 여럿을 이어 붙인 것 · 판을 내는 블록이 여럿이라 판 HTML 은 그대로)을 그린 뒤(render 의 opt 줄 — bindView 앞)
+     판마다 갈래를 정해 지금 탭(UI.optTab)의 판만 남기고 탭 안 차례로 다시 늘어놓는다.
+     판은 안의 단추 · 칸으로 알아본다 (글은 언어마다 달라서 — 화면 분위기 판만 단추가 없어 고리로 class opt-concept · 예전 '설정' 판은 class opt-fx):
+       게임   — 언어 · 레벨업 팝업 · 두루마리 스케줄(저장된 서명) · 이어하기(코드) · 문제 기록 (· 개발판 시험 칸)
+       화면   — PC 판 화면 모드 · 창 크기 · 화면 크기 · 글자 크기 · 한국어 글꼴 · (도트 폰트) · 화면 분위기
+       전투   — 전투 연출(+ 공격 화면 기울임) · 스킬 효과 투명도 · 전투 재생 속도 · 기술 선택 연출 · 미리보기 · 전투 배치 격자 · (파스텔 필터)
+       사운드 — 배경 음악(미리 듣기) · 효과음 · 대회 중계(음성 · 자막)
+     모르는 판(나중에 더한 판)은 게임 탭 맨 뒤 — 갈래를 정하려면 OPT_CAT 에 한 줄
+   · 맨 위 탭 줄 = 일지 서브탭과 같은 모양(.teamtabs.subnav — 건물 안 테마 · 팝업에서는 위에 붙는다) · 누르면 UI.optTab → render (메뉴 소리) ·
+     사운드 탭을 떠나면 배경 음악 미리 듣기를 멈춘다 · 고른 탭은 이 창(탭)에서 기억한다(sessionStorage — PC 판 화면 모드를 바꿔 다시 불러와도 그 탭)
+   · 빌드 · 규칙 줄(.opt-build — 예전 '설정' 판 머리 글)은 탭마다 맨 아래
+   · 넓은 화면은 일지처럼 팝업 창 (JPOP) · 좁은 화면은 화면 그대로 + 탭 */
+(function(){
+const OPT_TABS = [["game", "게임"], ["disp", "화면"], ["battle", "전투"], ["sound", "사운드"]];
+const OPT_CAT = [                                        // [갈래, 판(또는 판 안)에서 찾을 것, 탭 안 차례]
+  ["game", "[data-lang]", 0], ["game", "#optLvPop", 1], ["game", "#optSchedScroll, #optSignClear", 2], ["game", "#xfMake, #xfCode", 3],
+  ["game", "#errCopy2, #errClear", 4], ["game", "#avatarLabOpen, #chronicleToggle", 5],
+  ["disp", ".pc-row", 0], ["disp", "[data-uiscale]", 1], ["disp", ".fsz-row, [data-fsz]", 2], ["disp", "[data-kofont]", 3], ["disp", "#optPixelFont", 4],
+  ["disp", ".opt-concept", 5],
+  ["battle", "[data-battle-cam], #optCamTilt", 0], ["battle", ".opt-fx, #fxA, [data-bsp], [data-skpick]", 1], ["battle", "#optBfGrid", 2], ["battle", "#optFieldPastel", 3],
+  ["sound", "#bgmOn, #bgmV, #sfxV", 0], ["sound", "[data-tcom-mode]", 1]
+];
+const OPT_KEY = "hs_optTab";
+let optSeen = false;                                     // 기억한 탭은 처음 한 번만 읽는다
+function optCur(){
+  if(!optSeen){ optSeen = true; try{ const t = sessionStorage.getItem(OPT_KEY); if(t && !UI.optTab) UI.optTab = t; }catch(e){} }
+  const t = UI.optTab;
+  return OPT_TABS.some(([k]) => k === t) ? t : "game";
+}
+function optCatOf(s){ for(const c of OPT_CAT){ if(s.matches(c[1]) || s.querySelector(c[1])) return c; } return null; }
+function optTabBar(cur){
+  return `<div class="teamtabs subnav opt-tabs" role="tablist" aria-label="${"설정"}" style="margin-bottom:12px">${OPT_TABS.map(([k, n]) =>
+    `<button type="button" class="ttab ${k === cur ? "on" : ""}" role="tab" aria-selected="${k === cur}" data-opttab="${k}">${n}</button>`).join("")}</div>`;
+}
+function optGo(k){
+  if(!OPT_TABS.some(([x]) => x === k) || k === optCur()) return;
+  if(optCur() === "sound" && typeof AUD_PV !== "undefined" && AUD_PV){ AUD_PV = 0; try{ audOver(null); }catch(e){} }   // 사운드 탭을 떠나면 미리 듣기 멈춤
+  UI.optTab = k;
+  try{ sessionStorage.setItem(OPT_KEY, k); }catch(e){}
+  try{ sfxPlay("menu"); }catch(e){}
+  render();
+}
+function optApply(v){                                    // render 의 opt 줄 — viewOpt 를 그린 바로 뒤 (bindView 앞)
+  if(!v) return;
+  const cur = optCur(), keep = [];
+  [...v.children].forEach((s, i) => {
+    if(!s.matches("section.panel")) return;
+    const c = optCatOf(s), cat = c ? c[0] : "game";
+    s.dataset.optcat = cat;
+    if(cat !== cur){ s.remove(); return; }
+    keep.push([c ? c[2] : 90, i, s]);
+  });
+  keep.sort((a, b) => a[0] - b[0] || a[1] - b[1]).forEach(x => v.appendChild(x[2]));
+  [...v.children].filter(e => e.classList.contains("opt-build")).forEach(e => v.appendChild(e));
+  v.insertAdjacentHTML("afterbegin", optTabBar(cur));
+  v.querySelectorAll(".opt-tabs [data-opttab]").forEach(b => b.onclick = () => optGo(b.dataset.opttab));
+}
+window.OPTAB = {apply: optApply, cur: optCur, go: optGo, tabs: OPT_TABS, cat: OPT_CAT};
+})();
+/* OPTAB_END */
 
 /* INVN_START — 소지품 · 규율의 서약서 · 스케줄 대회 안내 (1025 목업 · apply_invn.py) ─ 사용자 1025:
    '원정에서 드랍 가능 아이템 추가 — 사용 시 12주간 지침 무시 발생하지 않도록' (답: 규율의 서약서 · 보물상자 5% · 연습장 상자에는 없다) ·
@@ -48783,7 +49341,7 @@ function titleSettingsOpen(){
     ${check('lvPopup','레벨업 팝업',PREF.lvPopup!==false)}
     ${OPT_FIELD_PASTEL?check('fieldPastel','전투 배경 파스텔 필터',PREF.fieldPastel!==false):''}
     <h3>전투</h3>
-    ${check('bfGrid','전투 배치 격자',!!PREF.bfGrid)}
+    ${OPT_BF_GRID?check('bfGrid','전투 배치 격자',!!PREF.bfGrid):''}
     ${OPT_BATTLE_CAM?`<label>전투 연출<select id="titleBattleCam"><option value="simple" ${PREF.battleCam!=='stylish'?'selected':''}>심플</option><option value="stylish" ${PREF.battleCam==='stylish'?'selected':''}>스타일리시</option></select></label>`:''}
     <label>전투 재생 속도<select id="titleBattleSpeed">${BSPEEDS.map(v=>`<option value="${v}" ${bspeedNow()===v?'selected':''}>${bspeedLabel(v)}</option>`).join('')}</select></label>
     <footer>설정은 자동으로 저장됩니다.<br>음악은 게임을 시작하면 재생됩니다.${OPT_BATTLE_CAM?' 스타일리시 전투는 넓은 화면에서 적용됩니다.':''}</footer>`;
