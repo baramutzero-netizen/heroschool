@@ -1736,6 +1736,24 @@ html body .skwrap .skfit .skstage .sk-card > .fst-who{left:72px;top:-13px;width:
 #fstRoot .rv-skip{right:auto;left:var(--fst-side)}                                                  /* 게임 화면 위라 왼쪽 위 (오른쪽 위는 사이드 메뉴 칸과 겹친다) */
 #fstRoot .rv-skip[hidden]{display:none}
 /* FSTUT_CSS_END */
+/* SCHINT_CSS_START — 첫 스케줄 안내 (1029 · apply_schint.py · schint_block.js) ─ 모양은 첫 시간표 튜토리얼(FSTUT) 02 의 안내 그대로 (.fst-ring · .fst-finger · .fst-tip —
+   FSTUT CSS 를 같이 쓴다). 뿌리 #schHint 에는 .fst 를 달지 않고(body > .fst 는 '이야기 장면' 표시 — CREC · 글자 크기가 본다) .fst 의 변수 · 글꼴만 여기에 옮겨 둔다
+   (FSTUT_CSS .fst 와 같은 값 · 폭 600 · 1100 단계). 끌기 안내: 점선 카드(.sch-ghost)와 손가락이 같이 옆 칸 가운데까지 미끄러진다 — 움직임은 스크립트(Web Animations ·
+   schint_block.js shAnim — 거리를 px 로 넣는다. CSS 키프레임에 var(--dx) 를 쓰면 컴포지터가 처음 값(0)만 들고 있어 화면에서는 움직이지 않았다)
+   #schHint 는 입력을 받지 않는다 (pointer-events:none) */
+#schHint{--fst-ink:#fff4e6;--fst-line:#e9cdbf;--fst-win:#2a1418;--fst-gold:#ffd36a;--fst-dark:#140a0c;--fst-fs:16px;--fst-lh:24px;
+  position:fixed;inset:0;z-index:900;pointer-events:none;font-family:"Mulmaru",sans-serif;color:var(--fst-ink);-webkit-font-smoothing:none;font-synthesis:none}
+@media (min-width:600px){#schHint{--fst-fs:20px;--fst-lh:28px}}
+@media (min-width:1100px){#schHint{--fst-fs:24px;--fst-lh:32px}}
+#schHint *{box-sizing:border-box}
+.sch-hint .sch-ghost{position:fixed;display:none;border:3px dashed var(--fst-gold);border-radius:6px;background:rgba(255,211,106,.18);
+  box-shadow:0 0 0 2px var(--fst-dark),0 0 12px rgba(255,211,106,.5);pointer-events:none}
+.sch-hint.drag .sch-ghost{display:block}
+.sch-hint.drag .fst-finger{animation:none}   /* 끌기 — 콕콕 찌르기(fstPoke) 대신 옆 칸으로 (shAnim) */
+/* 1029 — 예전 스케줄(좁은 화면)의 빈 칸 '일과 배치' 글을 뺐다 (사용자 '스케줄 화면에서 일과 배치 텍스트 제거') — 폰 폭에서 빈 칸이 글 두 줄 높이를 그대로 지키게
+   (두 줄 + 위아래 여백 6px — 글자 크기 설정을 따라가게 lh 로 · lh 를 모르는 브라우저는 38px) */
+@media (max-width:640px){.dslot .dempty{min-height:38px;min-height:calc(2lh + 12px)}}
+/* SCHINT_CSS_END */
 /* CMARK_CSS_START — 일과 카드 표식 (1022 · apply_cmark.py · 목업 mockups/card-marks) ─ 표식 그림(assets/card_marks — 사용자가 준 tools/card-effect-marks-v1 · 24 도트 · 5색)을 카드 아래 한쪽에 붙이고
    컨디션 글 · 값은 다른 쪽으로 모은다 (카드 오른쪽 위는 추천 학생 얼굴 자리 · 왼쪽 위는 남은 주). html[data-cmk-side="r"] 이면 표식이 오른쪽 · 컨디션이 왼쪽 */
 /* 두루마리 스케줄 (2배 무대 · 카드 118 × 170 · 컨디션 줄 146 ~ 158) — 표식 24 (그림 그대로 · 사용자 1022 '24px로 넣자' — 목업 조작판은 24 · 32 · 48) */
@@ -2203,7 +2221,7 @@ html[lang="ja"] .crec-bub,html[lang^="zh"] .crec-bub{word-break:normal}   /* 일
 .prst .rv-card b{max-width:min(720px,calc(100vw - 48px))}
 .prst .rv-black{background:#000}
 .prst .pr-cnx{left:50%;right:auto;bottom:calc(18% + env(safe-area-inset-bottom,0px));margin-left:-.5em;font-size:var(--fst-fs)}
-.prst.nm{z-index:79}                                                            /* PR20 — 학원 이름 창(.overlay z 80) 뒤에 책상 CG 를 깔아 둔다 */
+.prst.nm{z-index:79}                                                            /* PR20 — 학원 이름 창(.overlay z 80) 뒤에 마스터 노트 화면을 깔아 둔다 (1029 — 예전 책상 CG) */
 .prst.nm .fst-hit,.prst.out .fst-hit{pointer-events:none}
 .prst.nm .fst-cast,.prst.nm .fst-talk,.prst.nm .fst-think{display:none}
 .prst .rv-skip[hidden]{display:none}
@@ -5814,7 +5832,10 @@ html.ffop-on #modalRoot .modal[data-bt]{cursor:pointer}
      테는 상자 바깥 그림자(box-shadow)로 그린다 — 글 자리(padding)는 그대로 · 바깥으로 한 점씩 커진다
    · 꼬리 — 돌린 네모 대신 계단 세모(점 그림 — ::after 한 점 + 그림자 점들): 몸 아랫테를 뚫고 세 줄 내려온다 (가운데 45% 자리 그대로)
    · 색 — 말풍선 몸 · 글은 그대로, 테는 원래 색을 진하게(밝은 회색 선은 두꺼워지면 흐려 보여서). 성격 · 대사 종류 색은 원래 색 그대로
-   · 값은 :root 변수 — 한 점 --pxb-u · 기본 테 --pxb-edge · 그림자 --pxb-drop · 중계 띠 --pxb-tc-* */
+   · 값은 :root 변수 — 한 점 --pxb-u · 기본 테 --pxb-edge · 그림자 --pxb-drop · 중계 띠 --pxb-tc-*
+   · 1029 — 사용자 '말풍선 박스 말꼬리 생성되는 위치에 남아있는 잔선 제거': 꼬리가 몸 아랫테를 뚫는 줄에 테 색이 반쯤 섞인 가는 줄이 남았다
+     (전투판 배율로 한 점이 1.0 ~ 1.3 화면 픽셀 — 몸 아랫테(그림자 띠)와 꼬리 몸(::after)이 같은 화면 픽셀 줄을 반씩 덮으면 테 색이 비친다) →
+     꼬리 몸(::after)을 한 점 위로(몸 안쪽까지) 늘려 그 줄을 통째로 덮는다 (몸과 같은 색이라 안쪽은 티가 안 난다 · 꼬리 테 ::before 는 그대로) */
 :root{
   --pxb-u:2px;
   --pxb-fill:#fffdf6;--pxb-edge:#5d554c;--pxb-drop:#0000002e;
@@ -5846,17 +5867,22 @@ html[data-ui-finish="pixel"]:not(.pxb-off) .bf-stage .bf-speech.bl-last{--pxb-ed
 html[data-ui-finish="pixel"]:not(.pxb-off) .bf-stage .bf-speech.bl-crit{--pxb-edge:#d29f1f;--pxb-glow:#f2b20077}
 /* ── 꼬리 — 계단 세모 (45도 · 몸 아랫테 아래로 네 줄) ── ::before = 테 모양 · ::after = 안쪽 몸 (둘 다 한 덩어리 clip-path — 점을 따로 찍으면
    배율이 소수일 때 점 사이에 흰 틈이 보였다). 줄 0 은 몸 아랫테 자리(테를 뚫는다) · 가운데 45% 자리 그대로 · 아홉 점 폭 · 다섯 점 높이
-   테: 줄 r 은 r … 9-r / 몸: 줄 0 은 1 … 8 · 줄 r 은 r+1 … 8-r (줄 3 까지) */
+   테: 줄 r 은 r … 9-r / 몸: 줄 0 은 1 … 8 · 줄 r 은 r+1 … 8-r (줄 3 까지) · 1029 — 몸은 줄 -1(몸 안쪽 한 점)부터 1 … 8 (잔선 없애기) */
 html[data-ui-finish="pixel"]:not(.pxb-off) .bf-stage .bf-speech::before,html[data-ui-finish="pixel"]:not(.pxb-off) .bf-stage .bf-speech::after{
   --u:var(--pxb-u);content:"";position:absolute;left:calc(45% - var(--u) * 4.5);top:100%;bottom:auto;right:auto;width:calc(var(--u) * 9);height:calc(var(--u) * 5);
   margin:0;border:0;transform:none;box-shadow:none;pointer-events:none}
 html[data-ui-finish="pixel"]:not(.pxb-off) .bf-stage .bf-speech::before{background:var(--pxb-edge);clip-path:polygon(0 0,calc(var(--u) * 9) calc(var(--u) * 0),calc(var(--u) * 9) calc(var(--u) * 1),calc(var(--u) * 8) calc(var(--u) * 1),calc(var(--u) * 8) calc(var(--u) * 2),calc(var(--u) * 7) calc(var(--u) * 2),calc(var(--u) * 7) calc(var(--u) * 3),calc(var(--u) * 6) calc(var(--u) * 3),calc(var(--u) * 6) calc(var(--u) * 4),calc(var(--u) * 5) calc(var(--u) * 4),calc(var(--u) * 5) calc(var(--u) * 5),calc(var(--u) * 4) calc(var(--u) * 5),calc(var(--u) * 4) calc(var(--u) * 4),calc(var(--u) * 3) calc(var(--u) * 4),calc(var(--u) * 3) calc(var(--u) * 3),calc(var(--u) * 2) calc(var(--u) * 3),calc(var(--u) * 2) calc(var(--u) * 2),calc(var(--u) * 1) calc(var(--u) * 2),calc(var(--u) * 1) calc(var(--u) * 1),calc(var(--u) * 0) calc(var(--u) * 1))}
-html[data-ui-finish="pixel"]:not(.pxb-off) .bf-stage .bf-speech::after{background:var(--f,var(--pxb-fill));clip-path:polygon(calc(var(--u) * 1) calc(var(--u) * 0),calc(var(--u) * 8) calc(var(--u) * 0),calc(var(--u) * 8) calc(var(--u) * 1),calc(var(--u) * 7) calc(var(--u) * 1),calc(var(--u) * 7) calc(var(--u) * 2),calc(var(--u) * 6) calc(var(--u) * 2),calc(var(--u) * 6) calc(var(--u) * 3),calc(var(--u) * 5) calc(var(--u) * 3),calc(var(--u) * 5) calc(var(--u) * 4),calc(var(--u) * 4) calc(var(--u) * 4),calc(var(--u) * 4) calc(var(--u) * 3),calc(var(--u) * 3) calc(var(--u) * 3),calc(var(--u) * 3) calc(var(--u) * 2),calc(var(--u) * 2) calc(var(--u) * 2),calc(var(--u) * 2) calc(var(--u) * 1),calc(var(--u) * 1) calc(var(--u) * 1))}
+html[data-ui-finish="pixel"]:not(.pxb-off) .bf-stage .bf-speech::after{top:calc(100% - var(--u));height:calc(var(--u) * 6);background:var(--f,var(--pxb-fill));clip-path:polygon(calc(var(--u) * 1) calc(var(--u) * 0),calc(var(--u) * 8) calc(var(--u) * 0),calc(var(--u) * 8) calc(var(--u) * 2),calc(var(--u) * 7) calc(var(--u) * 2),calc(var(--u) * 7) calc(var(--u) * 3),calc(var(--u) * 6) calc(var(--u) * 3),calc(var(--u) * 6) calc(var(--u) * 4),calc(var(--u) * 5) calc(var(--u) * 4),calc(var(--u) * 5) calc(var(--u) * 5),calc(var(--u) * 4) calc(var(--u) * 5),calc(var(--u) * 4) calc(var(--u) * 4),calc(var(--u) * 3) calc(var(--u) * 4),calc(var(--u) * 3) calc(var(--u) * 3),calc(var(--u) * 2) calc(var(--u) * 3),calc(var(--u) * 2) calc(var(--u) * 2),calc(var(--u) * 1) calc(var(--u) * 2))}
 /* ── 대회 중계 띠 — 어두운 띠 · 금빛 테(해설은 푸른 테 · 흥분한 실황은 밝은 금빛 + 빛 테) ── */
 html[data-ui-finish="pixel"]:not(.pxb-off) .tcom-body{--pxb-edge:var(--pxb-tc-edge);--f:var(--pxb-tc-fill);--pxb-drop:var(--pxb-tc-drop)}
 html[data-ui-finish="pixel"]:not(.pxb-off) .tcom-cap.hot .tcom-body{--pxb-edge:#ffc86d;--pxb-glow:rgba(255,200,109,.35)}
 html[data-ui-finish="pixel"]:not(.pxb-off) .tcom-cap.an .tcom-body{--pxb-edge:#7fa3c9}
 /* PXBUB_CSS_END */
+/* BTHV_CSS_START — 전투 대상 · 상태 아이콘 정보 상자 (1029 셋째 · apply_bthv.py · bthv_block.js) ─ 상자 모양은 그림자 DOM 안의 명부 책 CSS(.vtip — 유물 능력 상자)가 그린다.
+   여기에는 상자를 띄우는 자리만: 화면에 붙박고(fixed) 누르기를 가로채지 않는다 · 전투 창(.overlay z 80) 위 · 토스트(z 90) 아래 */
+.bthv-host{position:fixed;left:0;top:0;z-index:88;pointer-events:none}
+.bthv-host[hidden]{display:none}
+/* BTHV_CSS_END */
 </style>
 
 <link rel="stylesheet" href="assets/title-art/title-screen.css?v=7">
@@ -8727,7 +8753,7 @@ const OPT_FIELD_PASTEL = false;     // 전투 배경 파스텔 필터 켜고 끄
 const OPT_XFER_FILE    = false;     // 이어하기 — 파일로 내보내기 · 파일에서 불러오기
 const OPT_PIXEL_FONT   = false;     // 도트 폰트 켜고 끄기 (1004 — 숨긴 동안은 모두 기본값: 켬)
 const OPT_BATTLE_CAM   = true;      // 전투 연출 심플 · 스타일리시 (1004 숨김 → 1022 다시 보임 — 사용자 · 기본값은 스타일리시)
-const PREF = {bspeed: 280, reportSpeed: 2, chronicleTest: false, uiConcept: "riso-pixel", uiV: 4, lvPopup: true, fieldPastel: false, pixelFont: true, bfGrid: false, battleCam: "stylish", camTilt: true, schedScroll: true, skillPick: "all", koFont: "galmuri", koV: 2, fontSize: "large", fszV: 1, tcom: "both"};   // 1025 둘째 (QOL25) — 기본 한국어 글꼴 갈무리11 (koV 2)
+const PREF = {bspeed: 280, reportSpeed: 2, chronicleTest: false, uiConcept: "riso-pixel", uiV: 4, lvPopup: true, fieldPastel: false, pixelFont: true, bfGrid: false, battleCam: "stylish", camTilt: false, ctV: 1, schedScroll: true, skillPick: "all", koFont: "galmuri", koV: 2, fontSize: "large", fszV: 1, tcom: "both"};   // 1025 둘째 (QOL25) — 기본 한국어 글꼴 갈무리11 (koV 2)
 /* uiV 4 — 삽화를 기본으로 적용하고 이전 화면 분위기 선택은 숨긴다. */
 try{
   const j = JSON.parse(localStorage.getItem(PREF_KEY) || "null");
@@ -8747,7 +8773,7 @@ try{
   if(j && (j.fszV|0) >= 1 && ["normal","large","xlarge"].includes(j.fontSize)) PREF.fontSize = j.fontSize;   // 1026 (FONTSZ) — 글자 크기 (기본 크게 — fszV 1 전에 저장된 값(그때 기본 보통)은 읽지 않는다)   // 1025 둘째 (QOL25) — 예전 저장값 물마루는 기본값이었다 (koV 2 뒤에 고른 것만)
   if(j && ["both","sub","off"].includes(j.tcom)) PREF.tcom = j.tcom;   // 1024 — 대회 중계 (TCOM) — 음성 + 자막 · 음성 숨김 · 숨김                  // 한국어 글꼴 — 물마루 · 갈무리11 (1017)
   if(j && j.sign && Array.isArray(j.sign.s) && j.sign.s.length) PREF.sign = j.sign;          // 결재 서명 — 이 브라우저에 남는다 (1006)
-  if(j && typeof j.camTilt === "boolean") PREF.camTilt = j.camTilt;   // 1027 열일곱째 — 스타일리시 공격 때 화면 기울임 (기본 켬)
+  if(j && (j.ctV|0) >= 1 && typeof j.camTilt === "boolean") PREF.camTilt = j.camTilt;   // 1027 열일곱째 — 스타일리시 공격 때 화면 기울임 · 1029 — 기본 끔 (사용자 '스타일리시 전투 기울이기 설정 기본을 꺼짐으로' — ctV 1 전에 저장된 값(그때 기본 켬 · 다른 설정을 바꿀 때 같이 저장됐다)은 읽지 않는다)
   if(j && ["simple","stylish"].includes(j.battleCam) && OPT_BATTLE_CAM) PREF.battleCam = j.battleCam;   // 0930 — 스타일리시가 기본. 예전 "basic" 저장값은 한 번 무시한다 · 설정을 숨긴 동안은 모두 기본값(1004)
 }catch(e){}
 function applyUiConcept(){
@@ -9793,7 +9819,8 @@ function runBattle(teamA, teamB, opt){
   const frames = [];
   const snap = ()=> all.map(u=>({hp:u.hp,maxHp:u.maxHp,sh:u.shield,ult:u.ult,atb:clamp(u.atb/1000,0,1),alive:u.alive,
     cs:consOf(u).lv, dd:u.dDealt|0, dh:u.dHeal|0, dt:u.dTaken|0,
-    fx:u.fx.map(f=>({n:f.name,k:f.kind,stat:f.stat||null,regen:!!f.regen,mir:!!f.mir,taunt:!!f.taunt,allT:!!f.allT,hero:f.hero||null}))}));
+    fx:u.fx.map(f=>({n:f.name,k:f.kind,stat:f.stat||null,regen:!!f.regen,mir:!!f.mir,taunt:!!f.taunt,allT:!!f.allT,hero:f.hero||null,
+      t:f.turns,v:f.val,m:f.mode||null,sts:f.stats||null,rg:f.regen||0,tu:f.taunt||null}))}));   // 1029 셋째 — 전투 정보 상자(BTHV)가 남은 턴 · 값을 쓴다
   /* 쓰러지는 순간의 행동 · 필살 게이지를 적어 둔다 (1003) — 부활하면 0 이 아니라 이 값에서 다시 시작한다 */
   const downAt = t=>{ t.koAtb = t.atb; t.koUlt = t.ult; };
   /* 누적 기록 — 피해 / 회복 / 받은 피해 */
@@ -19051,6 +19078,7 @@ function render(){
   if(window.RBK) RBK.after();   // 1009 — 책에서 연 이름 변경 · 스킬 강화 팝업이 끝나면 책을 다시 그린다 (apply_roster)
   if(window.FST) FST.after();   // 1022 — 첫 시간표 튜토리얼 (FSTUT) — 카드의 추천 얼굴 · 02 스케줄이 열렸는지 · 이어하기
   if(window.CREC) CREC.after();   // 1022 — 일과 카드 추천 (CREC) — 얼굴 말풍선 · 새 카드가 한 장씩 날아온다
+  if(window.SCHINT) SCHINT.after();   // 1029 — 첫 스케줄 안내 (SCHINT) — 첫 주에 맨 왼쪽 카드 누르기 · 놓인 카드 끌기 안내
   if(window.RVST) RVST.after();   // 1022 — 초반 스토리 02 (RVST) — 장면 중에 나갔다가 다시 열면 그 줄부터 (S.rvst)
   if(window.RQST) RQST.after();   // 1022 — 초반 스토리 03 (RQST) — 장면 중에 나갔다가 다시 열면 그 줄부터 (S.rqst)
   if(window.SCEN) SCEN.after();   // 1023 — 시나리오 다시 보기 (SCEN) — 처음 끝낸 시나리오를 S.scen 에 적는다 (모래시계 팝업 단추)
@@ -20300,6 +20328,222 @@ function tick(now){
 const HX = window.HITFX = {hit, tick, on, opt: OPT, hold: null, live: ST};
 })();
 /* HITFX_END */
+/* BTHV_START — 전투 대상 · 상태 아이콘 정보 상자 (1029 셋째 · apply_bthv.py) ─ 사용자 1029: '전투에서 대상, 아이콘에 마우스 오버할때 보여지는 정보 개선 —
+   유물에 마우스 오버할때처럼 보이는 박스의 서식을 사용. 대상과 해당 대상의 아이콘 둘 다 같은 박스로 이어지게 하고 박스 내용은 대상의 체력 퍼센트,
+   버프 내용 순서대로, 디버프 내용 순서대로'.
+   · 상자 — 유물 획득 창 · 명부의 유물 칸과 같은 능력 상자(.vtip — 명부 책 CSS RBK.css 를 그림자 DOM 에 그대로 · relicDropTip 과 같은 방법).
+     머리(이름 · Lv · 직업) → 체력 % (보호막이 있으면 그 양) → 버프(차례대로) → 디버프(차례대로 — 의식 흐림 · 혼미가 맨 앞). 칩과 같은 그림(STICON) · 남은 턴 ·
+     능력치 변화(공격력 +20% 처럼 — 명부 능력 상자의 줄 모양) · 지속 피해 · 회복은 차례마다 양 · 도발은 묶인 상대. 버프 · 디버프가 없으면 그 칸은 뺀다.
+     크기도 유물 상자처럼 글자 크기 설정을 따라 (기본 '크게' ×1.25 — 유물 획득 창은 창째로 키운 팝업이라 그 안의 상자도 같이 커진다 · bthZoom).
+     1029 넷째 — 사용자 '체력 퍼센트 색상은 에너지 바 색상 따라가도록하고 중간 구분선 없이 다른 카테고리마다 간격만 살짝 띄우면':
+     체력 % 는 그 유닛 체력 막대 색(보통 초록 · 의식 흐림 노랑 · 혼미 빨강 — PXGAUGE 변수) · 점선은 모두 빼고 칸 사이만 8px.
+     → '진한색으로, 보호막 수치는 진한 푸른색? 턴 수도 진함으로 차이를 주고 버프의 퍼센트 수치는 버프 텍스트의 색상 따라가고 디버프의 퍼센트 수치는 디버프의 색상 따라가고?':
+     체력 % 는 막대 색의 진한 쪽 · 보호막 양은 진한 파랑 · 남은 턴은 진한 글색 · 능력치 값은 버프면 버프 머리 파랑 · 디버프면 디버프 머리 빨강 (줄 이름은 기본 글색).
+   · 대상(.bf-unit)이든 그 아래 아이콘(.bf-effect)이든 같은 유닛이면 같은 상자 하나 — 둘 사이를 오가도 깜빡이지 않는다 (data-uid 로 찾는다 ·
+     유닛을 벗어나면 0.12초 뒤에 숨긴다 — 이름표와 아이콘 줄 사이 틈(2px)을 지날 때 숨었다 뜨지 않게).
+     유닛 · 아이콘의 브라우저 툴팁(title)은 뺐다 (상자가 대신한다 · aria-label · 아이콘을 누르면 뜨는 토스트(data-effect-label)는 그대로).
+   · 마우스(pointerType mouse)일 때만 · 키보드 초점(:focus-visible — 유닛 tabindex 0 · 아이콘 단추)도 — 마우스가 올라간 유닛이 먼저 · 마우스가 떠나면 초점 유닛.
+     터치는 예전처럼 아이콘을 누르면 토스트.
+   · 장마다 새로 — openBattle draw(바뀐 곳만 · 통째로 둘 다) 끝의 BTHV.frame 이 그 장의 유닛 상태를 창(.modal[data-bt])에 적고, 상자가 떠 있으면 다시 쓴다.
+     자리는 유닛(이름표 · 아이콘 줄 포함)의 오른쪽 → 자리가 없으면 왼쪽 → 아래 · 위 (relicDropTip 과 같다). 스타일리시 카메라가 움직여도 따라간다(떠 있는 동안 매 장 자리만 — 바뀔 때만 쓴다).
+     창이 닫히거나 그 유닛이 화면에서 사라지면(카메라 밖 opacity 0) 숨긴다. 필드 실험실(opt.lab)에는 띄우지 않는다.
+   · 장 기록(runBattle snap)의 효과에 값을 더했다 — t 남은 턴 · v 값 · m 방식(mul 비율 · add 더하기) · sts 여러 능력치 · rg 지속 회복 · tu 도발한 유닛 (apply_bthv HOOKS)
+   · 시험 tools/gen/sim/bthv_check.py */
+(() => {
+const BTHV_T = {hp: "체력", sh: "보호막", buff: "버프", debuff: "디버프", down: "쓰러짐", all: "모든 능력", dot: "지속 피해", regen: "지속 회복", taunt: "공격 대상", calm: "침착성"};
+/* 상자 CSS (명부 책 RBK.css 다음). 1029 넷째 — 구분선 없이 칸(머리 · 체력 · 버프 · 디버프) 사이만 살짝(8px) 띄운다 (명부 상자의 점선 — 칸 위 · 줄 아래 — 를 뺐다) ·
+   체력 % 는 그 유닛 체력 막대 색의 진한 쪽 (PXGAUGE — 보통 --pxg-hp-lo · 의식 흐림 --pxg-fog-lo · 혼미 --pxg-stu-lo) · 보호막 양은 보호막 막대의 진한 파랑(--pxg-sh-lo) ·
+   남은 턴은 진한 글색(--ink · 예전 --ink3) · 능력치 줄의 값은 그 칸 머리 색(버프 --bth-buf 파랑 · 디버프 --bad 빨강) — 줄 이름은 기본 글색.
+   글(템플릿) 안에는 한글을 쓰지 않는다 — 번역 빌드가 번역할 글로 잡는다 */
+const BTHV_CSS = `#fitIn.rdp-fit{position:relative;left:auto;top:auto;width:auto;height:auto;transform:none}
+#fitIn.rdp-fit .vtip{position:relative;left:0;top:0}
+.bthv .bth-hd{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 6px}
+.bthv .bth-hd b{font-weight:400;color:var(--ink)}
+.bthv .bth-hd .g{color:var(--ink3)}
+.bthv .bth-hd .dn{color:var(--bad)}
+.bthv .bth-k{color:var(--ink3)}
+.bthv{--bth-buf:#2f5f8a}
+.bthv .bth-k.pos{color:var(--bth-buf)}
+.bthv .bth-k.neg{color:var(--bad)}
+.bthv .bth-fx{display:flex;align-items:center;gap:4px;margin-top:3px;white-space:nowrap}
+.bthv .bth-fx .ic{width:18px;height:18px;flex:none;image-rendering:pixelated}
+.bthv .bth-fx .ic.no{background:#e6d4b0}
+.bthv .bth-fx .nm{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.bthv .bth-fx .t{margin-left:auto;padding-left:6px;color:var(--ink);font-family:"Mulmaru Mono",Mulmaru}
+.bthv .vtp-st.bth-sub{margin-left:22px}
+.bthv .vtp-sec + .vtp-sec{margin-top:8px;padding-top:0;border-top:0}
+.bthv .vtp-st{border-bottom:0}
+.bthv .bth-hp b{color:var(--pxg-hp-lo,#238a4b)}
+.bthv .bth-hp.fog b{color:var(--pxg-fog-lo,#9f7110)}
+.bthv .bth-hp.stu b{color:var(--pxg-stu-lo,#962430)}
+.bthv .bth-sh b{color:var(--pxg-sh-lo,#0074b4)}
+.bthv .vtp-st.bth-sub,.bthv .vtp-st.bth-sub.neg{color:var(--ink)}
+.bthv .vtp-st.bth-sub.pos b{color:var(--bth-buf)}
+.bthv .vtp-st.bth-sub.neg b{color:var(--bad)}`;
+const H = {host: null, box: null, fit: null, z: 1, bt: null, uid: null, html: "", raf: 0, t: 0, at: {}, mbt: null, muid: null, fbt: null, fuid: null};   // 보이는 대상 bt · uid ← 마우스(mbt · muid) 또는 키보드 초점(fbt · fuid)
+const R2 = v => Math.round(v * 10) / 10;
+
+/* ── 상자 내용 ── */
+function bthName(uid, d){ const k = d.uids.indexOf(uid), n = k >= 0 ? d.names[k] : null; return n ? n.name : ""; }
+function bthVal(k, v, m){
+  const s = v < 0 ? "−" : "+", a = Math.abs(v), b = (typeof BATTLE !== "undefined" && BATTLE.find(x => x.k === k)) || {};
+  if(m === "mul") return s + Math.round(a * 100) + "%";                       // 비율 — 원래 값의 몇 %
+  if(b.p === 1 || b.p === 2) return s + R2(a * 100) + "%";                    // 확률 · 피흡 · 필살 게이지 — 더하는 값 (명부 능력 상자처럼 %)
+  return s + fmt(Math.round(a));
+}
+function bthRows(e, d){
+  const out = [], v = +e.v || 0;
+  if(e.k === "dot"){ if(v > 0) out.push([BTHV_T.dot, `차례마다 ${fmt(Math.round(v * BAL_DEAL * BAL_TAKE))}`, true]); return out; }
+  if(e.rg > 0) out.push([BTHV_T.regen, `차례마다 체력 ${R2(e.rg * BAL_HEAL * 100)}%`, false]);
+  if(e.tu){                                                                   // 도발 — 침착성이 깎이고 그 상대에게 시선이 쏠린다 (전투 기록 글과 같다)
+    if(v) out.push([BTHV_T.calm, bthVal(null, v, "mul"), v < 0]);
+    const nm = bthName(e.tu, d); if(nm) out.push([BTHV_T.taunt, nm, true]);
+    return out;
+  }
+  if(e.allT){ if(v) out.push([BTHV_T.all, bthVal(null, v, e.m || "mul"), v < 0]); return out; }
+  const ks = e.sts && e.sts.length ? e.sts : e.stat ? [e.stat] : [];
+  if(v) ks.forEach(k => { const b = (typeof BATTLE !== "undefined" && BATTLE.find(x => x.k === k)) || null; if(b) out.push([b.n, bthVal(k, v, e.m), v < 0]); });
+  return out;
+}
+function bthIcon(e, neg){
+  const S = window.STICON && STICON.art && STICON.art.icon;
+  const src = S ? (e.hero ? S.hero : S[STICON.key(e, neg)] || S.buff) : "";   // 칩(stiIcon)과 같은 그림
+  return src ? `<img class="ic" src="${src}" alt="" draggable="false">` : `<i class="ic no"></i>`;
+}
+/* 한 기술이 능력치마다 따로 건 효과('철벽 자세' · '철벽 자세·atk' · '내공 순환·피흡' …)는 한 줄로 — 앞 효과의 이름 + '·' 로 시작하고 남은 턴 · 버프/디버프가 같으면 그 아래 능력치 줄로
+   (일본어판은 '·피흡' 같은 글이 '・吸血' — 가운뎃점이 둘이다. 이름에 원래 '·' 가 든 기술(수둔·수렁 …)은 앞 효과가 없으니 그대로 한 줄) */
+function bthGroup(list){
+  const out = [];
+  list.forEach(x => {
+    const nm = String(x.e.n || ""), i = Math.max(nm.lastIndexOf("·"), nm.lastIndexOf("・"));
+    if(i > 0){
+      const base = nm.slice(0, i), g = out.find(o => o.neg === x.neg && String(o.e.n || "") === base && (+o.e.t || 0) === (+x.e.t || 0));
+      if(g){ g.more.push(x.e); return; }
+    }
+    out.push({e: x.e, neg: x.neg, more: []});
+  });
+  return out;
+}
+function bthFx(g, d){
+  const e = g.e, t = +e.t || 0, left = t - 1;                                 // 남은 턴 — 그 유닛이 행동할 때마다 1 씩 (0 이면 다음 차례에 끝난다)
+  const turns = t > 0 && t < 99 && left >= 1 ? `${left}턴` : "";
+  const rows = [e, ...g.more].flatMap(x => bthRows(x, d)).map(([a, b]) => `<div class="vtp-st bth-sub ${g.neg ? "neg" : "pos"}"><span>${esc(a)}</span><b>${esc(b)}</b></div>`).join("");   // 값 색은 그 칸(버프 · 디버프) 머리 색
+  return `<div class="bth-fx">${bthIcon(e, g.neg)}<span class="nm">${esc(e.n || "")}</span>${turns ? `<span class="t">${esc(turns)}</span>` : ""}</div>${rows}`;
+}
+function bthHtml(d, k){
+  const n = d.names[k], u = d.f && d.f.units && d.f.units[k];
+  if(!n || !u) return "";
+  const J = (typeof JOBS !== "undefined" && JOBS[n.job]) || {}, hide = !!J.hideStats;
+  let p = Math.round(clamp(u.hp / Math.max(1, u.maxHp), 0, 1) * 100);
+  if(u.hp > 0 && p < 1) p = 1;
+  if(u.hp < u.maxHp && p > 99) p = 99;
+  const head = `<div class="vtp-sec bth-hd"><b>${esc(n.name || "")}</b><span class="g">${n.lv != null ? `Lv.${n.lv} · ` : ""}${esc(J.name || "")}</span>${u.alive ? "" : `<span class="dn">${BTHV_T.down}</span>`}</div>`;
+  const hp = `<div class="vtp-sec"><div class="vtp-st bth-hp${u.cs === 2 ? " stu" : u.cs === 1 ? " fog" : ""}"><span>${BTHV_T.hp}</span><b>${hide ? "???" : p + "%"}</b></div>`   // 체력 막대 색의 진한 쪽 (의식 흐림 · 혼미면 막대 색이 바뀐다)
+    + (u.sh > 0 && !hide ? `<div class="vtp-st bth-sh"><span>${BTHV_T.sh}</span><b>${fmt(Math.round(u.sh))}</b></div>` : "") + `</div>`;
+  const fx = (u.fx || []).filter(e => e && e.k !== "s");                      // 보호막(k s)은 체력 칸에 양으로
+  const all = (u.cs ? [{e: {n: u.cs === 2 ? "혼미" : "의식 흐림", k: "mind"}, neg: true}] : [])   // 칩 줄과 같게 — 의식 흐림 · 혼미가 맨 앞
+    .concat(fx.map(e => ({e, neg: e.k === "d" || e.k === "dot" || e.k === "mind"})));
+  const G = bthGroup(all), buf = G.filter(g => !g.neg).map(g => bthFx(g, d)), deb = G.filter(g => g.neg).map(g => bthFx(g, d));
+  return head + hp
+    + (buf.length ? `<div class="vtp-sec"><div class="vtp-ln bth-k pos">${BTHV_T.buff}</div>${buf.join("")}</div>` : "")
+    + (deb.length ? `<div class="vtp-sec"><div class="vtp-ln bth-k neg">${BTHV_T.debuff}</div>${deb.join("")}</div>` : "");
+}
+
+/* ── 상자 (그림자 DOM — 명부 책 CSS) ── */
+function bthEnsure(){
+  if(H.host && H.host.isConnected) return true;
+  if(!window.RBK || !RBK.css) return false;
+  const host = document.createElement("div");
+  host.className = "bthv-host"; host.hidden = true;
+  const sr = host.attachShadow({mode: "open"});
+  sr.innerHTML = `<style>${RBK.css}\n${BTHV_CSS}</style><div id="fitIn" class="rdp-fit"><div class="vtip bthv" role="tooltip"></div></div>`;
+  document.body.append(host);
+  H.host = host; H.box = sr.querySelector(".vtip"); H.fit = sr.querySelector("#fitIn"); H.z = 1; H.html = ""; H.at = {};
+  return true;
+}
+const bthModal = bt => bt == null ? null : document.querySelector(`#modalRoot .modal[data-bt="${bt}"]`);
+const bthUnit = (m, uid) => m && uid ? m.querySelector(`.bf-unit[data-uid="${uid}"]`) : null;
+function bthRect(u){                                                           // 유닛 + 이름표 + 아이콘 줄 (아이콘 줄은 유닛 상자 밖으로 넘친다)
+  let L = Infinity, T = Infinity, Rr = -Infinity, B = -Infinity;
+  [u, u.querySelector(":scope > .bf-name"), u.querySelector(":scope > .bf-status")].forEach(el => {
+    if(!el) return; const r = el.getBoundingClientRect(); if(!(r.width > 0 && r.height > 0)) return;
+    L = Math.min(L, r.left); T = Math.min(T, r.top); Rr = Math.max(Rr, r.right); B = Math.max(B, r.bottom);
+  });
+  return L < Infinity ? {left: L, top: T, right: Rr, bottom: B, width: Rr - L, height: B - T} : null;
+}
+/* 글자 크기 설정(FONTSZ — 보통 · 크게 · 아주 크게)을 따라 — 유물 획득 창의 유물 상자는 창째로 키운 팝업(#modalRoot > .overlay — zoom) 안에 있어 같이 커진다.
+   전투 창은 그림판이라 키우지 않으니 상자만 같은 배율로 (fszFit 과 같은 값 — 창 안 배치 폭이 320px 보다 좁아지지 않게) */
+function bthZoom(){ const k = window.FSZ && FSZ.k ? +FSZ.k() || 1 : 1; return Math.min(k, Math.max(1, innerWidth / 320)); }
+function bthPut(k, v){ if(H.at[k] === v) return; H.at[k] = v; H.host.style.setProperty(k, v); }
+function bthPlace(){
+  const m = bthModal(H.bt), u = bthUnit(m, H.uid);
+  if(!u || !m.__bthv || getComputedStyle(u).opacity === "0"){ bthGone(); return false; }
+  const rc = bthRect(u); if(!rc){ bthGone(); return false; }
+  const br = H.box.getBoundingClientRect(), w = br.width, hh = br.height, W = innerWidth, Hh = innerHeight, g = 12;   // 글자 크기 배율(zoom)까지 든 크기
+  let x = rc.right + g, y = rc.top - 6;                                       // 오른쪽 → 왼쪽 → (좁은 화면) 아래 · 위
+  if(x + w > W - 8) x = rc.left - g - w;
+  if(x < 8){ x = Math.max(8, Math.min(W - w - 8, rc.left + rc.width / 2 - w / 2)); y = rc.bottom + g; if(y + hh > Hh - 8) y = rc.top - g - hh; }
+  bthPut("left", Math.round(x) + "px"); bthPut("top", Math.round(Math.max(8, Math.min(Hh - hh - 8, y))) + "px");
+  return true;
+}
+function bthPaint(){
+  const m = bthModal(H.bt), d = m && m.__bthv, k = d ? d.uids.indexOf(H.uid) : -1;
+  if(k < 0){ bthGone(); return; }
+  const html = bthHtml(d, k);
+  if(html !== H.html){ H.box.innerHTML = html; H.html = html; }
+  const z = bthZoom(); if(z !== H.z){ H.z = z; H.fit.style.zoom = z === 1 ? "" : String(z); }
+  if(H.host.hidden) H.host.hidden = false;
+  if(bthPlace() && !H.raf) H.raf = requestAnimationFrame(bthLoop);
+}
+function bthLoop(){ H.raf = 0; if(!H.host || H.host.hidden || !H.uid) return; if(bthPlace()) H.raf = requestAnimationFrame(bthLoop); }   // 카메라가 움직여도 따라간다
+function bthShow(bt, uid){
+  if(!bthEnsure()) return;
+  bt = String(bt);                                                            // 창 번호 — data-bt(글)와 openBattle btId(수)를 같게
+  if(H.bt !== bt || H.uid !== uid){ H.bt = bt; H.uid = uid; }
+  bthPaint();
+}
+function bthHide(){ H.uid = null; if(H.host && !H.host.hidden) H.host.hidden = true; cancelAnimationFrame(H.raf); H.raf = 0; }
+function bthGone(){ clearTimeout(H.t); H.t = 0; H.muid = H.fuid = null; bthHide(); }                    // 창이 닫혔거나 그 유닛이 없다 — 붙잡아 둔 대상도 같이 놓는다
+
+/* openBattle draw 끝 — 그 장의 유닛 상태 · 아이콘 단추 툴팁 걷기 · 떠 있으면 다시 */
+function bthFrame(bt, f, names, uids, opt){
+  if(opt && opt.lab) return;
+  const m = bthModal(bt); if(!m) return;
+  m.__bthv = {f, names, uids};
+  if(H.uid && H.bt === String(bt)) bthPaint();
+}
+/* 아이콘(상태 칩) 단추 — 브라우저 툴팁(title) 대신 상자 (aria-label · 토스트 글 data-effect-label 은 그대로) */
+if(typeof battleStatusIcon === "function"){
+  const bsi0 = battleStatusIcon;
+  battleStatusIcon = function(){ return String(bsi0.apply(this, arguments)).replace(/ title="[^"]*"/, ""); };
+}
+
+/* ── 듣기 ── 마우스가 올라간 유닛(muid)이 먼저 · 없으면 키보드 초점 유닛(fuid) · 둘 다 없으면 숨김 */
+const bthAt = t => t && t.closest ? t.closest("#modalRoot .modal[data-bt] .bf-unit[data-uid]") : null;
+function bthSync(){
+  const uid = H.muid || H.fuid || null;
+  if(!uid){ if(H.uid) bthHide(); return; }
+  bthShow(H.muid ? H.mbt : H.fbt, uid);
+}
+document.addEventListener("pointerover", e => {
+  if(e.pointerType && e.pointerType !== "mouse") return;                     // 터치 · 펜은 예전처럼 (아이콘을 누르면 토스트)
+  const u = bthAt(e.target), m = u && u.closest(".modal[data-bt]");
+  clearTimeout(H.t); H.t = 0;
+  if(u && m.__bthv){ H.mbt = m.dataset.bt; H.muid = u.dataset.uid; bthSync(); return; }
+  if(H.muid) H.t = setTimeout(() => { H.t = 0; H.muid = null; bthSync(); }, 120);   // 유닛을 벗어났다 — 잠깐 뒤에 (그림 · 이름표 · 아이콘 줄 사이 틈(2px)을 지날 때 깜빡이지 않게)
+}, true);
+document.addEventListener("pointerout", e => { if((!e.pointerType || e.pointerType === "mouse") && !e.relatedTarget && H.muid){ clearTimeout(H.t); H.t = 0; H.muid = null; bthSync(); } }, true);   // 창 밖으로
+document.addEventListener("focusin", e => {
+  const u = bthAt(e.target), m = u && u.closest(".modal[data-bt]");
+  if(!u || !m.__bthv || !(e.target.matches && e.target.matches(":focus-visible"))) return;   // 키보드 초점만 (마우스로 누른 초점은 붙잡지 않는다)
+  H.fbt = m.dataset.bt; H.fuid = u.dataset.uid; bthSync();
+}, true);
+document.addEventListener("focusout", () => { if(H.fuid){ H.fuid = null; bthSync(); } }, true);
+window.addEventListener("resize", () => { if(H.uid) bthGone(); });
+
+window.BTHV = {frame: bthFrame, show: bthShow, hide: bthGone, html: bthHtml, state: H, T: BTHV_T};
+})();
+/* BTHV_END */
 /* FONTSZ_START — 글자 크기 설정 (1026 목업 · apply_fontsz.py · mockups/font-size) ─ 사용자 1026 '폰트 크기 설정 한번 추가해볼까. 현재가 보통이면 지금보다 전체적으로 한 50% 정도 큰 폰트 사이즈로'
    (답: 읽는 글 위주 · 보통 · 크게 · 아주 크게 (100 · 125 · 150%) · 목업 먼저)
    · PREF.fontSize "normal" · "large" · "xlarge" → html[data-font-size] · --fszk 1.25 · 1.5 (보통이면 아무것도 붙이지 않는다 — 지금 그대로)
@@ -21145,7 +21389,7 @@ const SK_ICON = {basic:"dumbbell", heavy:"barbell", spar:"swords", mock:"shield"
 const SK_PAL = {red:["7a2a33","a83a46","e0616a","f08f92","f9cfc9"], green:["24603c","368552","54ae70","82c98d","c9eac5"],
   blue:["2a447f","3d62ad","5b87dd","88aaee","cddcf8"], sky:["1a6f80","2a98ad","48c3d8","80d9e6","c8f0f5"],
   gold:["7c5512","a97c22","d9a63c","ecc56a","f9e7b2"], none:["484c55","666b74","8a8f98","b1b5bc","dcdee2"]};
-const SK_INK = "#1d2433", SK_INK_LEN = 420;                   // 서명 잉크 색(잉크 단지 색) · 한 번 찍으면 그을 수 있는 길이(서명 캔버스 칸)
+const SK_INK = "#1d2433", SK_INK_LEN = Infinity;              // 서명 잉크 색(잉크 단지 색) · 한 번 찍으면 그을 수 있는 길이(서명 캔버스 칸) — 1029 셋째 끝없음 (사용자 '사인할 때 잉크 제한 두지 말고' · 예전 420 · 찍는 것은 그대로)
 /* 기본 서명 — 키보드로 결재하는데 저장된 서명이 없을 때 (목업의 학원장 서명) */
 const SK_SIG0 = [[4,15,8,6,11,3,12,9,8,14,6,13,12,10,16,11,18,7,17,12,21,13,24,8,25,13,29,12,31,6,33,3,33,12,36,13,39,9,41,12,44,11,47,8,49,12,53,11,57,9,61,11,66,10],
   [6,16,24,14,44,15,58,12]];
@@ -21301,7 +21545,7 @@ function viewPlanScroll(){
     const c = slots[i], cx = cxs[i];
     P.push(skRibbon(cx, d + "요일", c ? skColKey(c) : null));
     P.push(`<div class="sk-day" data-slot="${i}" style="left:${(cx - SK_CW/2)*2}px;top:${SK_YDAY*2}px" aria-label="${d}요일${c? " — "+esc((TR[c.t]||TR.free).n) : " — 비었다"}">${
-      c ? skCard(c, 0, 0) : `<div class="sk-empty" style="${skBg("slot_empty")}"><b style="top:136px">일과</b><b style="top:152px">배치</b></div>`}</div>`);
+      c ? skCard(c, 0, 0) : `<div class="sk-empty" style="${skBg("slot_empty")}"></div>`}</div>`);   // 1029 — 빈 칸의 '일과 배치' 글은 뺐다 (사용자 '스케줄 화면에서 일과 배치 텍스트 제거')
   });
   for(let i = 1; i < WEEK_DAYS; i++){
     if(!(chains[i] > 0)) continue;
@@ -21867,7 +22111,7 @@ function viewPlanClassic(){
         return `<div class="dslot ${c?"filled":""}" data-slot="${i}">
           ${chains[i]>0? `<span class="dchain">+${Math.round(chains[i]*100)}%</span>`:""}
           <div class="dh"><b>${d}요일</b></div>
-          ${c? cardHtml(c) : `<div class="dempty">일과<br>배치</div>`}
+          ${c? cardHtml(c) : `<div class="dempty"></div>`}
         </div>`;
       }).join("")}
     </div>
@@ -32557,8 +32801,7 @@ function openBattle(res, opt, onDone){
       const rd = !!(DROP && dropAt && k === DROP.k);                                      // 1018 — 유물을 떨어뜨리는 마지막 상대 (시체가 사라지고 유물이 뿅)
       return `<div class="unit bf-unit team-${side} ${boss?'bf-boss':''} ${big?'bf-big':''} ${mobU?'bf-mob':''} ${u.alive?'':'dead'} ${act?'act':''} ${heroOn?'hr-buff':''}${rd?' rdrop':''}${ent ? ent.cls(uids[k]) : ''}"
         style="left:${x}%;top:${y}%;z-index:${rd ? 140 : Math.round(y)};--us:${bfJobScale(n.job)};--uz:${bfUiZoom(n.job)}${rd ? `;--rd-out:${Math.round(RD_OUT - (performance.now() - dropAt))}ms` : ""}${ent ? ent.css(uids[k]) : ""}" data-slot="${soloBoss?'boss':`${side}-${row}-${col}`}" data-uid="${uids[k]}"${isMon ? ` data-mon="${esc(n.job)}"` : ""} tabindex="0"
-        aria-label="${esc(n.name)} 체력 ${hideHp? "???" : `${Math.round(u.hp)} / ${u.maxHp}`}, 행동 ${Math.round(u.atb*100)}%, 필살기 ${Math.round(u.ult)}%"
-        title="${esc(n.name)} · ${JOBS[n.job].name} · ${row==='front'?'전열':'후열'} / 체력 ${hideHp? "???" : `${fmt(u.hp)} / ${fmt(u.maxHp)}`}${u.sh>0?' · 보호막 '+fmt(u.sh):''} / 행동 ${Math.round(u.atb*100)}% · ${esc(n.ult||ultName(n.job))} ${Math.round(u.ult)}%">
+        aria-label="${esc(n.name)} 체력 ${hideHp? "???" : `${Math.round(u.hp)} / ${u.maxHp}`}, 행동 ${Math.round(u.atb*100)}%, 필살기 ${Math.round(u.ult)}%">
         ${popHtml}${fxc}${spr}${ultFX}${heroOn ? HR_SPARK : ""}${rd ? dropHtml() : ""}
         ${say?`<div class="bf-speech ${say.tone} ${talk.call.kind==='ult'?'ultimate':''}${talk.call.pers==='intro'?' timid':talk.call.pers==='boast'?' boast':''}" style="animation-delay:-${Math.round(age)}ms">${esc(say.text)}</div>`:''}
         <div class="bf-gauges" aria-hidden="true">
@@ -32734,6 +32977,7 @@ function openBattle(res, opt, onDone){
       $("#modalRoot").querySelectorAll('[data-effect-label]').forEach(el=>el.onclick=ev=>{ev.stopPropagation();toast(el.dataset.effectLabel);});
       if(battlePanel === "log"){ const bl = $("#blog"); if(bl) bl.scrollTop = bl.scrollHeight; }
       hitFxFrame(f);                                                      // 1027 열여덟째 — 타격 반짝임 · 흰 도트 파티클 (HITFX)
+      if(window.BTHV) BTHV.frame(btId, f, names, uids, opt);           // 1029 셋째 — 전투 대상 · 아이콘 정보 상자 (BTHV)
       if(window.__btDrawHook) window.__btDrawHook(i, true);              // 시험용 (tools/gen/sim/btpatch_check.py)
       return;
     }
@@ -32783,6 +33027,7 @@ function openBattle(res, opt, onDone){
     };
     $("#modalRoot").querySelectorAll("[data-sp]").forEach(b=> b.onclick=()=>{ bspeedSet(+b.dataset.sp); speed=bspeedNow(); if(timer){pause();play();} draw(); });
     hitFxFrame(f);                                                        // 1027 열여덟째 — 타격 반짝임 · 흰 도트 파티클 (HITFX)
+    if(window.BTHV) BTHV.frame(btId, f, names, uids, opt);             // 1029 셋째 — 전투 대상 · 아이콘 정보 상자 (BTHV)
     if(window.__btDrawHook) window.__btDrawHook(i, false);              // 시험용 (tools/gen/sim/btpatch_check.py)
   };
   /* 1026 (FFOP) — 학원제 결승 장면: 다음 장에 대사가 있으면 세우고 끝나면 다시 재생 */
@@ -34701,6 +34946,212 @@ function fAfter(){
 window.FST = {start: fStart, after: fAfter, replay: fReplay, skip: fRpSkip, state: F, cues: FST_CUES, advance: fAdvance, slam: fSlam, slamPrime: fSlamPrime, slamLead: fLead, slamLog: SLAM.log};
 })();
 /* FSTUT_END */
+/* SCHINT_START — 첫 스케줄 안내 (1029 · apply_schint.py) ─ 사용자 1029: '첫 스케줄 튜토리얼 시나리오 이후 가장 좌측 일과 카드 한장을 눌러보도록 유도,
+   일과 중 한 장을 클릭하면 유도 기능 해제 (강제 X) / 그 다음 카드를 누르거나 자동 배치를 통해서 일과가 스케줄에 배치된 상태면, 가장 좌측 스케줄에 배치된
+   일과를 드래그로도 이동시킬 수 있다는 유도 기능 표시. 드래그 시도 시 유도 기능 해제 (강제 X)'.
+   · 언제 — 첫 시간표 튜토리얼(FSTUT)을 마친 첫 주 (S.fsTut 2 · 1년차 봄 0주 — 첫 주를 진행하기 전). 그 주가 지난 세이브에는 띄우지 않는다.
+   · 세이브 S.schHint — 1 카드 안내 · 2 끌기 안내 · 3 끝 (없으면 아직 — 위 조건이 맞으면 1 로 시작 · render 중에는 저장하지 않고 다음 save 에 남는다)
+   · 1 — 손패 맨 윗줄의 맨 왼쪽 카드에 금색 원 · 손가락 · '일과 카드를 눌러 보세요.' (FSTUT 02 스케줄 단추 안내와 같은 모양 — .fst-guide · .fst-ring · .fst-finger · .fst-tip CSS 를
+     같이 쓴다. 뿌리 #schHint 에는 .fst 를 달지 않는다 — body > .fst 는 '이야기 장면이 떠 있다'는 표시라(CREC 새 카드 날리기 · 글자 크기) 변수만 따로 · schint_block.css)
+     새 카드가 날아오는 동안(.crec-wait · CREC 가 날리는 중)은 숨긴다
+     손패의 카드를 누르면 2 · 자동 배치 · 끌기 등으로 요일 칸에 카드가 들어가 있어도 2
+   · 2 — 요일 칸에 놓인 카드 중 맨 왼쪽(월요일부터)에 원 · 옆 칸으로 끌어 가는 손가락과 점선 카드 · '끌어서 다른 요일로 옮길 수도 있어요.'
+     (칸이 비면 숨었다가 카드가 놓이면 다시) · 카드를 끌기 시작하면 3 — 누른 채 6px(터치 14px) 움직이면 (두루마리 스케줄 skDragBind 와 같은 문턱) ·
+     HTML5 dragstart (예전 스케줄). 손패 카드를 끌어도 3 (끌기를 이미 안다)
+   · 첫 주를 진행하면(주 · 계절 · 해가 바뀌면) 3 — 안내가 다음 주까지 남지 않게
+   · 막지 않는다 — 화면을 어둡게 하지 않고 누르기 · 끌기를 가로채지 않는다 (pointer-events 없음 · 문서 capture 단계에서 듣기만 한다).
+     스케줄 화면(UI.view plan)에서만 · 창(modal) · 이야기 장면(.fst.on — FSTUT · 프롤로그 · 02 · 03 …) · 결재 깃펜을 잡은 동안은 숨긴다
+   · 두루마리 스케줄(넓은 화면 .sk-hand · .sk-day) · 예전 스케줄(좁은 화면 .handrow · .dslot) 둘 다 — [data-handzone] [data-card] · [data-slot] [data-card]
+   · 시험 tools/gen/sim/schint_check.py */
+(() => {
+const SH_TIP = {card: "일과 카드를 눌러 보세요.", drag: "끌어서 다른 요일로 옮길 수도 있어요."};
+const H = {raf: 0, root: null, pd: null, kind: "", log: [], anims: null, dx: null, rev: {}};
+const shOk = () => typeof S !== "undefined" && !!S;
+const shFirstWeek = () => S.year === 1 && S.phase === "spring" && (S.week | 0) === 0;
+const shPlaced = () => (S.slots || []).some(c => !!c);
+function shLog(k, v){ H.log.push([Math.round(performance.now()), k, v]); if(H.log.length > 60) H.log.shift(); }
+
+/* 지금 단계 — 0 안내 없음 · 1 카드 · 2 끌기 (세이브 값을 고쳐 가며) */
+function shState(){
+  if(!shOk()) return 0;
+  let v = S.schHint;
+  if(v == null){
+    if(S.fsTut !== 2 || !shFirstWeek()) return 0;
+    S.schHint = v = 1; shLog("start", 1);                                     // 첫 시간표 튜토리얼을 마친 첫 주
+  }
+  if(v !== 1 && v !== 2) return 0;
+  if(!shFirstWeek()){ S.schHint = 3; shLog("week", 3); return 0; }            // 첫 주를 진행했다
+  if(v === 1 && shPlaced()){ S.schHint = v = 2; shLog("placed", 2); }
+  return v;
+}
+function shSet(v, why){
+  if(!shOk() || S.schHint === v) return;
+  S.schHint = v; shLog(why || "set", v);
+  try{ save(); }catch(e){}
+  if(v >= 3) shHide();
+}
+function shBusy(){
+  const de = document.documentElement;
+  if(de.classList.contains("modal-open")) return true;
+  if(window.RBK && RBK.isOpen && RBK.isOpen()) return true;
+  if(typeof OP !== "undefined" && OP) return true;
+  if(window.FST && FST.state && (FST.state.on || FST.state.pend)) return true;
+  if(document.querySelector(".fst.on")) return true;                            // 이야기 장면이 입력을 받는 중
+  if(typeof SK !== "undefined" && SK && (SK.held || SK.busy)) return true;      // 결재 — 깃펜을 들었다
+  return false;
+}
+
+/* ── 무대 — FSTUT 의 안내 모양(.fst-guide · 원 · 손가락 · 보조 문구)을 그대로 · 점선 카드만 더 ── */
+function shBuild(){
+  if(H.root && H.root.isConnected) return;
+  const r = document.createElement("div");
+  r.id = "schHint"; r.className = "sch-hint"; r.setAttribute("aria-hidden", "true");   // .fst 를 달지 않는다 (위 머리말)
+  r.innerHTML = `<div class="fst-guide" hidden><i class="fst-ring"></i><i class="fst-ring2"></i><i class="sch-ghost"></i><i class="fst-finger"></i><div class="fst-tip"></div></div>`;
+  document.body.appendChild(r);
+  H.root = r; H.kind = "";
+  const I = (typeof TIN_ART !== "undefined" && TIN_ART && TIN_ART.icons) || null, at = I && I.at && I.at.hand;   // 손가락 — 건물 안 아이콘 시트의 hand (FSTUT 와 같다)
+  if(I && at){ const f = r.querySelector(".fst-finger"); f.style.setProperty("--fi", `url("${I.src}")`); f.style.setProperty("--fax", at[0]); f.style.setProperty("--fay", at[1]);
+    f.style.setProperty("--fiw", I.size[0]); f.style.setProperty("--fih", I.size[1]); }
+}
+function shHide(){ const g = H.root && H.root.querySelector(".fst-guide"); if(g) g.hidden = true; shAnimOff(); }
+/* 끌기 움직임 — 점선 카드 · 손가락을 옆 칸 가운데(dx px)까지 2초마다 (나타나기 → 미끄러지기 → 사라지기). CSS 키프레임의 var(--dx) 는 컴포지터가 처음 값만 들고 있어서
+   화면에서는 움직이지 않았다 (1029 시험 — getComputedStyle 은 움직이는데 스크린샷은 그대로) → Web Animations 로 px 를 넣고, 거리가 바뀌면 다시 만든다 */
+function shAnimOff(){ (H.anims || []).forEach(a => { try{ a.cancel(); }catch(e){} }); H.anims = null; H.dx = null; }
+function shAnim(gh, f, dx){
+  shAnimOff(); H.dx = dx;
+  if(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches){             // 움직임 줄이기 — 옆 칸에 멈춰 있는 점선 카드 · 손가락
+    put(gh, "translate", dx + "px 0"); put(f, "translate", dx + "px 0"); put(gh, "opacity", ".75"); return;
+  }
+  put(gh, "translate", ""); put(f, "translate", ""); put(gh, "opacity", "");
+  const e = "ease-in-out", to = dx + "px 0";
+  const K = [{offset: 0, translate: "0 0", opacity: 0, easing: e}, {offset: .14, translate: "0 0", opacity: 1, easing: e},
+             {offset: .62, translate: to, opacity: 1, easing: e}, {offset: .78, translate: to, opacity: 0}, {offset: 1, translate: to, opacity: 0}];
+  try{ H.anims = [gh, f].map(el => el.animate(K, {duration: 2000, iterations: Infinity})); }catch(x){ H.anims = null; }
+}
+const shVis = el => { if(!el) return null; const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 ? r : null; };
+/* 붙박인 위 칸 (좁은 화면 .topbar — position sticky · 넓은 화면은 오른쪽 사이드 fixed) — 카드가 그 밑에 깔렸으면 안내를 숨기고(스크롤하면 다시) · 글 상자는 그 위에 얹지 않는다 */
+function shCover(){
+  const tb = document.querySelector("#app > .topbar"); if(!tb) return null;
+  const p = getComputedStyle(tb).position; if(p !== "sticky" && p !== "fixed") return null;
+  return shVis(tb);
+}
+const shHit = (a, b) => !!(a && b && a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top);
+/* 단계마다 처음 한 번 — 카드가 위 칸 밑에 깔렸거나 화면 아래로 벗어났으면 스크롤해서 보여 준다 (폰 — 튜토리얼이 끝난 자리는 손패가 위 칸 밑에 깔려 있었다).
+   카드 안내는 요일 칸이 위 칸 바로 아래에 오게(손패 첫 줄까지 같이 보이면 — 누르면 그 카드가 들어갈 월요일까지 보이게) · 끌기 안내는 그 카드가 위 칸 바로 아래에.
+   그 뒤로는 스크롤을 건드리지 않는다 (사용자가 옮긴 자리 그대로) */
+function shReveal(st, r0, cov){
+  H.rev[st] = true;
+  const top = cov && cov.top <= 0 && cov.bottom < innerHeight * .8 ? cov.bottom : 0, bot = innerHeight;   // 위에 붙은 위 칸만 (넓은 화면의 오른쪽 사이드는 아니다)
+  if(r0.top >= top + 4 && r0.bottom <= bot - 4) return;                         // 이미 다 보인다
+  let d = r0.top - top - 12;
+  const day = st === 1 && document.querySelector("#view [data-slot]"), dr = day && day.getBoundingClientRect();
+  if(dr){ const d2 = dr.top - top - 8; if(r0.bottom - d2 <= bot - 8 && d2 <= d) d = d2; }
+  const sm = !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  try{ window.scrollBy({top: Math.round(d), behavior: sm ? "smooth" : "auto"}); }catch(e){ window.scrollBy(0, Math.round(d)); }
+  shLog("reveal", Math.round(d));
+}
+/* 손패 맨 윗줄의 맨 왼쪽 카드 (예전 스케줄의 좁은 화면은 손패가 두 줄 이상) */
+function shCardTarget(){
+  const v = document.getElementById("view"); if(!v) return null;
+  if(v.querySelector("[data-handzone] .crec-wait") || (window.CREC && CREC.state && CREC.state.busy)) return null;   // 새 카드가 날아오는 중 — 다 앉은 뒤에
+  const list = [...v.querySelectorAll("[data-handzone] [data-card]")].map(el => [el, shVis(el)]).filter(x => x[1]);
+  if(!list.length) return null;
+  const top = Math.min(...list.map(x => x[1].top));
+  const row = list.filter(x => x[1].top < top + x[1].height / 2);
+  row.sort((a, b) => a[1].left - b[1].left);
+  return row[0][0];
+}
+/* 요일 칸에 놓인 카드 중 맨 왼쪽 · 끌어 갈 옆 칸 (오른쪽 — 금요일이면 왼쪽) */
+function shSlotTarget(){
+  const v = document.getElementById("view"); if(!v) return null;
+  const days = [...v.querySelectorAll("[data-slot]")].filter(el => el.dataset.slot !== "" && !isNaN(+el.dataset.slot));
+  const full = days.filter(el => el.querySelector("[data-card]") && shVis(el)).sort((a, b) => (+a.dataset.slot) - (+b.dataset.slot));
+  if(!full.length) return null;
+  const s = full[0], i = +s.dataset.slot, at = k => days.find(el => +el.dataset.slot === k);
+  const next = at(i + 1) || at(i - 1) || null;
+  return {card: s.querySelector("[data-card]"), next};
+}
+
+/* ── 매 장 — 자리를 다시 잡는다 (스크롤 · 창 크기 · 다시 그린 화면). 값이 바뀔 때만 쓴다 (put) — 같은 값이라도 매 장 style 을 쓰면
+   끌기 움직임(Web Animations translate)이 화면에서 멈춰 보였다 (1029 시험 — 매 장 쓰기를 멈추면 미끄러진다) ── */
+function put(el, k, v){ const c = el.__sh || (el.__sh = {}); if(c[k] === v) return; c[k] = v; el.style.setProperty(k, v); }
+const px = v => Math.round(v) + "px";
+function shLoop(){
+  H.raf = 0;
+  const st = shState();
+  if(!st || typeof UI === "undefined" || UI.view !== "plan"){ shHide(); return; }   // 다음 render 의 after 가 다시 켠다
+  shBuild();
+  const g = H.root.querySelector(".fst-guide");
+  const t = shBusy() ? null : st === 1 ? shCardTarget() : shSlotTarget();
+  const el = t && (st === 1 ? t : t.card), r0 = el && shVis(el), cov = r0 && shCover();
+  if(r0 && !H.rev[st]) shReveal(st, r0, cov);                                   // 처음 한 번 — 가려졌으면 보이게 스크롤
+  const r = r0 && !shHit(r0, cov) ? r0 : null;                                 // 위 칸 밑에 깔린 카드 — 스크롤해서 드러나면
+  if(!r){ if(!g.hidden) g.hidden = true; }
+  else {
+    const kind = st === 1 ? "card" : "drag";
+    if(H.kind !== kind){ H.kind = kind; H.root.classList.toggle("drag", kind === "drag"); g.querySelector(".fst-tip").textContent = SH_TIP[kind]; shLog("show", kind); }
+    const W = innerWidth, pad = kind === "drag" ? 5 : 6;
+    g.querySelectorAll(".fst-ring, .fst-ring2").forEach(e => { put(e, "left", px(r.left - pad)); put(e, "top", px(r.top - pad)); put(e, "width", px(r.width + pad * 2)); put(e, "height", px(r.height + pad * 2)); });
+    const f = g.querySelector(".fst-finger"), gh = g.querySelector(".sch-ghost");
+    if(g.hidden) g.hidden = false;
+    const fs = f.offsetWidth || 48;
+    if(kind === "card"){
+      const leftSide = r.left >= fs + 16;                                      // 왼쪽에 자리가 없으면 오른쪽에서 왼쪽을 가리킨다
+      if(f.classList.contains("l") === leftSide) f.classList.toggle("l", !leftSide);
+      put(f, "left", px(leftSide ? r.left - fs - 10 : r.right + 10)); put(f, "top", px(r.top + r.height / 2 - fs / 2));
+    } else {
+      const nr = t.next && shVis(t.next);
+      const dx = Math.round(nr ? (nr.left + nr.width / 2) - (r.left + r.width / 2) : 0);
+      put(gh, "left", px(r.left)); put(gh, "top", px(r.top)); put(gh, "width", px(r.width)); put(gh, "height", px(r.height));
+      put(H.root, "--dx", dx + "px");                                          // 시험이 읽는다
+      if(f.classList.contains("l") !== (dx < 0)) f.classList.toggle("l", dx < 0);   // 끌어 가는 쪽을 가리킨다 — 손끝이 카드 가운데
+      const cx = r.left + r.width / 2, cy = r.top + r.height * .58;
+      put(f, "left", px(dx < 0 ? cx - fs * .12 : cx - fs * .88)); put(f, "top", px(cy - fs / 2));
+      if(H.dx !== dx || !H.anims) shAnim(gh, f, dx);
+    }
+    const tp = g.querySelector(".fst-tip"), tw = tp.offsetWidth, th = tp.offsetHeight;
+    const cx = r.left + r.width / 2, left = Math.round(Math.min(W - 8 - tw, Math.max(8, cx - tw / 2)));
+    const upTop = r.top - th - 16, up = upTop >= 4 && !shHit({left, right: left + tw, top: upTop, bottom: upTop + th}, cov);   // 위 — 자리가 없거나 위 칸에 걸리면 아래
+    if(tp.classList.contains("dn") === up) tp.classList.toggle("dn", !up);
+    put(tp, "left", left + "px"); put(tp, "top", px(up ? r.top - th - 16 : r.bottom + 16)); put(tp, "--ax", px(cx - left));
+  }
+  H.raf = requestAnimationFrame(shLoop);
+}
+/* render 끝 */
+function shAfter(){
+  const st = shState();
+  if(!st || typeof UI === "undefined" || UI.view !== "plan"){ shHide(); return; }
+  if(!H.raf) H.raf = requestAnimationFrame(shLoop);
+}
+
+/* ── 듣기 (capture — 게임의 누르기 · 끌기보다 먼저 · 가로채지 않는다) ── */
+const shLive = () => shOk() && (S.schHint === 1 || S.schHint === 2) && typeof UI !== "undefined" && UI.view === "plan";
+document.addEventListener("pointerdown", e => {
+  if(!shLive() || (e.button != null && e.button !== 0)) return;
+  const el = e.target && e.target.closest ? e.target.closest("#view [data-card]") : null;
+  H.pd = el ? {x: e.clientX, y: e.clientY, th: e.pointerType === "mouse" ? 6 : 14} : null;
+}, true);
+window.addEventListener("pointermove", e => {
+  const p = H.pd; if(!p) return;
+  if(Math.abs(e.clientX - p.x) + Math.abs(e.clientY - p.y) < p.th) return;
+  H.pd = null;
+  if(shLive()) shSet(3, "drag");                                              // 끌기를 시작했다
+}, true);
+const shUp = () => { H.pd = null; };
+window.addEventListener("pointerup", shUp, true);
+window.addEventListener("pointercancel", shUp, true);
+document.addEventListener("dragstart", e => {                                   // 예전 스케줄 — HTML5 끌기 (마우스)
+  if(shLive() && e.target && e.target.closest && e.target.closest("#view [data-card]")) shSet(3, "drag");
+}, true);
+document.addEventListener("click", e => {
+  if(!shLive() || S.schHint !== 1) return;
+  const el = e.target && e.target.closest ? e.target.closest("#view [data-handzone] [data-card]") : null;
+  if(el) shSet(2, "click");                                                   // 손패의 카드를 눌렀다 — 카드 안내 끝 (게임이 그 카드를 빈 칸에 넣는다)
+}, true);
+
+window.SCHINT = {after: shAfter, state: H, tip: SH_TIP, set: shSet, now: shState};
+})();
+/* SCHINT_END */
 /* CMARK_START — 일과 카드 표식 (1022 · apply_cmark.py · 목업 mockups/card-marks) ─ 사용자 1022 'card-effect-marks-v1 에다가 새로운 일과 표식을 추가해뒀는데,
    컨디션 텍스트하고 수치를 한쪽으로 몰아놓고 해당 표식을 하단에다 붙이자. 이제 학생 얼굴이 우상단에 표시되니까 · 새로 추가된건 전체 신뢰도 하락과 전체 신뢰도 증가.
    각각 0.1씩, 모든 표식은 이제 원정에는 안붙고 해당 표식 진행 날에는 경과 보고 캐릭터에게 효과 추가 · 컨디션 회복은 원정 진행 중에 모닥불에서 회복하는 느낌의 이펙트,
@@ -44292,7 +44743,9 @@ window.PRTK = {start, stop, pick, band, sitOf, lines: {sit: PK_SIT, mood: PK_MOO
      생각 · 마스터 말에는 초상화를 숨기고, 학생이 말할 때만 그 학생의 작은 초상화 하나 (대화창 위 오른쪽).
      A 정문 PR01 ~ 10 (PR01 암전 자막 '왕국력 231년 봄.' → 확인하면 정문 CG 0.8초 · PR10 확인하면 0.5초 암전 → 마스터 책상) → B 책상 PR11 ~ 16 (PR13 조금 따뜻한 빛) →
      1026 — B 는 마스터 노트 책상 그림(MDESK_ART.ext)에 세 학생의 웃는 얼굴(가운데 셋 · PR11 에 들어온다 · 학생이 말하면 그 학생만 밝게) — 사용자 '이 타이밍에 해당 부분 삽화를
-     마스터 노트 화면으로 바꾸고, 학생들의 웃는 얼굴 3개를 띄우자' · C 부터는 예전처럼 책상 CG(PR_ART 3) — 0.5초 암전.
+     마스터 노트 화면으로 바꾸고, 학생들의 웃는 얼굴 3개를 띄우자' · (예전 — C 부터 책상 CG(PR_ART 3) · 0.5초 암전)
+     1029 — C · 학원 이름 · D 도 마스터 노트 화면(세 얼굴 · 따뜻한 빛) 그대로 (사용자 '해당 삽화 쓰지말고 마스터 노트 화면 계속 유지' — 책상 CG 스크린샷).
+     B → C 사이 암전 없이 이어진다 · C 부터 다시 열 때(이름 창 '뒤로' · 다시 보기 · 이어하기의 D)도 마스터 노트 + 세 얼굴. 책상 CG(PR_ART 3)는 마스터 노트 그림이 없을 때만.
      C 장부 PR17 ~ 19 (PR18 검을 세우는 소리 → 종이를 펼치는 소리) → PR20 예전 학원 이름 창(askAcademyName — 무대는 창 뒤에 깔린다) →
      이름을 정하면(newScenarioStart — 새 게임 · 저장) PR21 '{학원 이름}. ……좋아. 시작해 보자.' → PR22 0.5초 암전 · 자막 '첫 수업일 아침' → 확인하면 마스터 화면 → PR23 첫 시간표(FST.start · 01 의 01번부터).
    · 이름 — 팔라딘 · 마법사는 오프닝에서 불린 이름(UI.openPal · openWiz) · 암흑 사제는 여기서 정해(UI.openDp) newScenarioStart 가 학생에게 붙인다.
@@ -44401,7 +44854,7 @@ function prBuild(){
   hit.addEventListener("touchmove", e => e.preventDefault(), {passive: false});
   r.querySelector(".rv-skip").addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); prSkip(); });
   PR_JOBS.forEach(j => Object.keys(PR_FACE[j] || {}).forEach(f => { const im = new Image(); im.src = PR_FACE[j][f]; }));
-  ["2", "m", "3"].forEach(k => { const u = prArtSrc(k); if(u){ const im = new Image(); im.src = u; } });
+  ["2", "m"].forEach(k => { const u = prArtSrc(k); if(u){ const im = new Image(); im.src = u; } });
 }
 function prTeardown(){ if(R.root) R.root.remove(); R.root = null; }
 document.addEventListener("keydown", e => {
@@ -44556,7 +45009,7 @@ async function prLines(sc){
   }
   return true;
 }
-/* 정문 → 마스터 책상 (1026 — B 는 마스터 노트 책상 그림) · B → C 책상 CG — 0.5초 암전 */
+/* 정문 → 마스터 책상 (1026 — B 는 마스터 노트 책상 그림 · 1029 — C · D 도 그대로라 B → C 에는 쓰지 않는다) */
 async function prToDesk(sess, k){
   prBox(null); prBust(null);
   await prFade(xq(".rv-black"), 1, 250); if(sess !== R.sess) return false;
@@ -44569,9 +45022,11 @@ async function prToDesk(sess, k){
 function prStage(cg, black){
   prBuild(); R.on = true;
   R.root.classList.remove("nm", "out");
-  if(R.root.classList.contains("trio")) prTrio(false);
-  R.root.classList.toggle("warm", cg === "3" && R.sc !== "a" && R.sc !== "b");
+  const trio = cg === "m" && R.sc !== "a" && R.sc !== "b";                      // 1029 — C · 이름 · D 의 마스터 노트 화면은 세 얼굴째 (B 는 PR11 에 들어온다)
+  if(R.root.classList.contains("trio") && !trio) prTrio(false);
+  R.root.classList.toggle("warm", (cg === "3" || cg === "m") && R.sc !== "a" && R.sc !== "b");
   prArt(cg);
+  if(trio && !R.root.classList.contains("trio")) prTrio(true);
   const bk = xq(".rv-black"); if(bk){ bk.getAnimations().forEach(a => a.cancel()); bk.style.opacity = black ? 1 : 0; }
   const card = xq(".rv-card"); if(card){ card.getAnimations().forEach(a => a.cancel()); card.style.opacity = 0; }
   const bg = xq(".rv-bg"); if(bg) bg.style.opacity = 1;
@@ -44583,14 +45038,13 @@ async function prFlow(from){
   try{ closeModal(); }catch(e){}
   try{ opVeil(false); }catch(e){}
   if(from === "a"){ prBgm(PR_BGM); prStage("2", true); }
-  else { prBgm(PR_BGM); prStage(from === "b" ? "m" : "3", true); R.sc = from; await prFade(xq(".rv-black"), 0, 600); if(!ok()) return; }
+  else { prBgm(PR_BGM); prStage("m", true); R.sc = from; await prFade(xq(".rv-black"), 0, 600); if(!ok()) return; }   // 1029 — C 부터도 마스터 노트
   if(from === "a"){
     if(!await prLines("a") || !ok()) return;
     if(!await prToDesk(sess) || !ok()) return;
   }
   if(from === "a" || from === "b"){
-    if(!await prLines("b") || !ok()) return;
-    if(!await prToDesk(sess, "3") || !ok()) return;                            // 1026 — 셋을 내리고 예전 책상 CG (장부 · 검)
+    if(!await prLines("b") || !ok()) return;                                   // 1029 — 그대로 C (예전: 셋을 내리고 0.5초 암전 뒤 책상 CG)
   }
   if(!await prLines("c") || !ok()) return;
   if(R.rp){ prD(false).catch(prFail); return; }                               // 다시 보기 — 이름 창 없이 PR21 (지금 학원 이름) · PR22
@@ -44599,7 +45053,7 @@ async function prFlow(from){
 /* PR20 — 예전 학원 이름 창 (무대는 창 뒤 · 입력은 창이 받는다) */
 function prName20(){
   R.sess++; R.on = false; R.typing = null; R.wait = null; R.cue = "PR20"; R.sc = "name"; prLog("cue", "PR20");
-  if(!R.root) prStage("3", false);
+  if(!R.root) prStage("m", false);
   prBox(null); prBust(null); prMark(false);
   const bk = xq(".rv-black"); if(bk){ bk.getAnimations().forEach(a => a.cancel()); bk.style.opacity = 0; }
   R.root.classList.add("nm");
@@ -44619,7 +45073,7 @@ async function prD(resume){
   const sess = R.sess;
   R.live = true; R.sc = "d";
   prBgm(PR_BGM);
-  prStage("3", !!resume);
+  prStage("m", !!resume);
   if(resume){ await prFade(xq(".rv-black"), 0, 600); if(sess !== R.sess) return; }
   if(!await prLines("d") || sess !== R.sess) return;
   prFinish();
@@ -46644,7 +47098,7 @@ const BGM_NONE = "_none";
 const AUD_KEY = "heroschool_audio_v1";
 /* 1011 — 배경 음악은 처음부터 켜짐 (예전엔 꺼짐 — 저장된 설정이 없는 새 브라우저 · itch 체험판에서 음악 없이 시작했다).
    이미 저장된 설정(켜짐/꺼짐)은 그대로 따른다. 브라우저는 첫 클릭 전에는 소리를 막으므로 첫 화면(시작 화면)은 원래 조용하다 */
-const AUD = {on:true, vol:55, sfx:70};
+const AUD = {on:true, vol:80, sfx:70};   // 1029 — 배경 음악 기본 80 (사용자 '배경 음악 기본 볼륨은 80으로' · 예전 55 · 저장된 설정은 그대로)
 try{
   const j = JSON.parse(localStorage.getItem(AUD_KEY) || "null");
   if(j){ if(typeof j.on === "boolean") AUD.on = j.on;
@@ -47674,7 +48128,9 @@ function openingPlay(){
   dragCfg($("#modalRoot"), null);
   /* 시작 화면에서 왔으면 검은 화면(opIn .45s)이 다 덮을 때까지 시작 화면을 밑에 남겨 둔다 — 그사이 뒤의 게임 화면이 비치지 않게 (1004).
      떼었다 다시 붙이면 시작 화면 애니메이션이 처음부터 다시 돌기 때문에, 시작 화면은 그대로 두고 나머지만 바꾼다 */
-  const mr = $("#modalRoot"), under = mr.querySelector(":scope > .overlay > .title-screen") ? mr.querySelector(":scope > .overlay") : null;
+  /* 1029 — 학원제 결승 장면(FFOP)의 검은 화면 '그리고, 5년 뒤.'에서 왔을 때도 그 검은 막을 밑에 남긴다 — 예전엔 바로 떼어 오프닝이 검게 덮이는 0.45초 동안
+     뒤의 마스터 노트 화면이 비쳤다 (사용자 '그리고 5년후 텍스트 나온 다음 마스터 노트 화면이 아주 잠시 보여') */
+  const mr = $("#modalRoot"), under = mr.querySelector(":scope > .overlay > .title-screen") ? mr.querySelector(":scope > .overlay") : mr.querySelector(":scope > .ffop-black");
   if(under) [...mr.childNodes].forEach(n=>{ if(n !== under) n.remove(); });
   else mr.replaceChildren();
   mr.insertAdjacentHTML("beforeend", `<div class="opening" id="opRoot" role="dialog" aria-modal="true" aria-label="새 시나리오 오프닝">

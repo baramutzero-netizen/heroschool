@@ -6,6 +6,8 @@
 // · 게임 쪽은 preload.js 의 window.hsDesk 로 설정을 읽고 바꾼다 (게임 블록 PCAPP — tools/gen/patch/pcapp_block.js)
 // · 리그(Firebase) 등 https 는 그대로 · 새 창으로 여는 링크는 기본 브라우저로
 const path = require("node:path");
+const fs = require("node:fs");
+const {Readable} = require("node:stream");
 const {app, BrowserWindow, Menu, ipcMain, net, protocol, shell, screen} = require("electron");
 const {pathToFileURL} = require("node:url");
 const D = require("./display");
@@ -29,8 +31,28 @@ function serve(){
     if(u.pathname.startsWith("/__desk/")) return deskHttp(u);
     const p = path.normalize(path.join(ROOT, decodeURIComponent(u.pathname)));
     if(!p.startsWith(ROOT + path.sep)) return new Response("not found", {status: 404});
+    const mime = MEDIA[path.extname(p).toLowerCase()];
+    if(mime) return media(p, mime, req.headers.get("range"));
     return net.fetch(pathToFileURL(p).toString()).catch(() => new Response("not found", {status: 404}));
   });
+}
+/* 1029 — 소리 · 영상은 Range(바이트 구간) 요청에 206 으로 답한다. 사용자 1029: '메인 화면 · 왕국력 236년 · 여신 · 도움이 안되서 미안하다 · 계절 bgm 이
+   잠시 재생되다가 몇 초 뒤 페이드 아웃되면서 안 들린다' (PC 빌드). net.fetch(file://) 는 Range 를 무시하고 파일을 통째로 준다 — 빌드한 exe(게임 파일이
+   app.asar 안)에서는 <audio> 가 곡 길이를 읽은 데까지만 보고 ~8초로 잡는다(재생하면서 조금씩 늘어난다) → 게임의 곡 끝 처리(끝나기 3초 전부터 줄인다 ·
+   BGM_END)가 5초쯤에 곡을 꺼 버렸다. npm start(asar 아님)에서는 길이를 '끝 모름'(Infinity)으로 잡아 곡 끝 처리를 건너뛰어서 드러나지 않았다.
+   fs 는 Electron 이 asar 안도 읽게 해 준다 (1029 시험 — asar 로 묶은 게임: 예전 아버지 곡 8초 → 7초에 꺼짐 · 고친 뒤 178.8초 · 효과음 fetch 그대로) */
+const MEDIA = {".ogg": "audio/ogg", ".mp3": "audio/mpeg", ".wav": "audio/wav", ".m4a": "audio/mp4", ".mp4": "video/mp4", ".webm": "video/webm"};
+function media(p, mime, range){
+  let size;
+  try{ size = fs.statSync(p).size; }catch(e){ return new Response("not found", {status: 404}); }
+  const head = {"Content-Type": mime, "Accept-Ranges": "bytes"};
+  const m = range && /^bytes=(\d*)-(\d*)$/.exec(range.trim());
+  if(!m || (m[1] === "" && m[2] === "")) return new Response(Readable.toWeb(fs.createReadStream(p)), {status: 200, headers: {...head, "Content-Length": String(size)}});
+  let s, e;
+  if(m[1] === ""){ s = Math.max(0, size - +m[2]); e = size - 1; }            // bytes=-N — 끝에서 N 바이트
+  else { s = +m[1]; e = m[2] === "" ? size - 1 : Math.min(+m[2], size - 1); }
+  if(!(s <= e) || s >= size) return new Response(null, {status: 416, headers: {...head, "Content-Range": `bytes */${size}`}});
+  return new Response(Readable.toWeb(fs.createReadStream(p, {start: s, end: e})), {status: 206, headers: {...head, "Content-Range": `bytes ${s}-${e}/${size}`, "Content-Length": String(e - s + 1)}});
 }
 
 function remember(){                                                          // 창 모드에서 크기 · 자리 (끌어서 바꾼 것도)

@@ -79,7 +79,7 @@ npm run dist:demo:zip   → dist-demo/HeroSchool-0.1.0-win-x64.zip
 
 | 파일 | 하는 일 |
 |---|---|
-| `main.js` | 창 · `app://heroschool/` (app/ 를 정해진 주소로 — 저장이 이 주소에 남는다) · 키 · 새 창 링크는 기본 브라우저 · 한 번만 실행 |
+| `main.js` | 창 · `app://heroschool/` (app/ 를 정해진 주소로 — 저장이 이 주소에 남는다) · 키 · 새 창 링크는 기본 브라우저 · 한 번만 실행 · 소리 · 영상은 Range 요청에 206 (1029 — 빌드한 exe(asar)에서 곡 길이를 ~8초로 잘못 잡아 배경 음악이 몇 초 뒤 꺼지던 것) |
 | `display.js` | 화면 모드 · 창 크기 프리셋 · 자리 기억 (`display.json`) |
 | `preload.js` | 게임에 `window.hsDesk` (get · set · quit · on) — 게임은 화면 맞춤 iframe 안에서 돌아서 모든 프레임에 연다. preload 가 게임 프레임에 닿지 않아도 게임(PCAPP)이 `app://heroschool/__desk/get · set · quit` 주소로 같은 일을 한다 (1026 — main.js deskHttp) |
 | `tools/prepare.mjs` | `app/` 에 게임 모으기 — heroschool.html 과 그 안에 이름이 적힌 그림 · 소리만 (원본 png · 프롬프트 json · 큰 wav 는 뺀다 · 글꼴 사용 허락 글은 같이). 넣지 않은 파일은 `prepare-skipped.txt` — 게임에서 빠진 그림이 보이면 `KEEP` 에 · `--demo` 면 체험판(app/heroschool.html 의 `DEMO_END` — 위 '체험판 빌드') |
