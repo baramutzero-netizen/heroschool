@@ -807,6 +807,11 @@ html[data-ui-concept="journal"] .npcname{color:#8a6a45}
 .dr-stage .dr-avatar canvas.spr{scale:var(--dr-job,1)}
 .dr-stage .dr-shadow{display:none}
 /* REPORT_SCENE_STYLE_END */
+/* RPAA_CSS_START — 경과 보고 학생 외곽선 끔 (1029 여섯째 · apply_rpaa.py) ─ 사용자 '경과보고에서 학생들 외곽선 테두리 필요없을듯? 경과 보고쪽 학생들 AA처리는 되어있나?'.
+   학생 도트(.dr-avatar 의 .spr-anchor — #dr-ol 필터) · 수련관 책상에 앉은 학생 그림(.dr-study-sprite — #dr-ols)의 검은 외곽선을 뺀다 (apply_report 의 1021 규칙은 그대로 두고 뒤에서 덮는다).
+   미용실 원장님(.dr-salon-owner — 학생이 아님)은 그대로. 학생 도트의 AA 는 sprTick 고리(apply_rpaa — 전투판처럼 경과 보고 무대 .dr-stage 도 MIXAA 장) */
+.dr-stage .dr-avatar .spr-anchor,.dr-stage .dr-study-sprite{filter:none}
+/* RPAA_CSS_END */
 /* ---------- 주간 일지 ---------- */
 .daylog{border:1px solid var(--line-soft);border-radius:4px;background:var(--bg);padding:12px 14px;
   margin:2px 0 8px;max-height:392px;overflow:auto;font-size:12.5px;line-height:1.66;position:relative}
@@ -6272,7 +6277,7 @@ function sprTick(){
     const f = el.dataset.f != null ? Math.min(+el.dataset.f, ((SPR_META[SPR_KEYS[j]]||[])[m]||[1]).length-1)   // 스타일리시 연출 — 장을 직접 고른다
       : el.dataset.still ? sprStillAt(j, m) : sprFrameAt(j, m, loop ? now : now-t0, ms, !t0, loop);
     if(el.__f===f && el.__key===j+"|"+pi+"|"+m) continue;
-    const bf = sprCellBattle && (el.__bf ?? (el.__bf = !!el.closest(".bf-stage")));   // 1027 — 전투판 도트만 AA 장 (MIXAA)
+    const bf = sprCellBattle && (el.__bf ?? (el.__bf = !!el.closest(".bf-stage, .dr-stage")));   // 1027 — 전투판 도트만 AA 장 (MIXAA) · 1029 여섯째 경과 보고 무대 학생도 (RPAA)
     const cell = bf ? sprCellBattle(j, pi, m, f) : sprCellCv(j, pi, m, f);
     if(!cell) continue;
     el.__f=f; el.__key=j+"|"+pi+"|"+m;
@@ -22045,6 +22050,14 @@ function skStrokeEnd(){
   SK.cur = null;
   clearTimeout(SK.timer); SK.timer = setTimeout(skFinish, 850);   // 잠깐 쉬면 서명이 끝난 것으로 본다 (획을 여러 번 그어도 된다)
 }
+/* 저장 서명 (1029 여섯째 — 사용자 '사인하는데 저장되는 사인의 제한 한도가 있나?') — 예전에는 획 40 · 획마다 300 점까지만 저장해서 긴 획 · 획이 많은 서명은 다음 결재(저장된 서명)에서 잘렸다
+   (잉크 제한을 없앤 뒤로는 더 길게 그을 수 있다). 이제 획 · 점을 그은 그대로 모두 — 설정 저장(localStorage) 크기만 지키려고 모두 합쳐 4000 점에서 멈춘다
+   (보통 서명은 수백 점 · 점은 한 칸 넘게 움직일 때만 생긴다 — 4000 점이면 서명 칸을 수십 번 오가는 길이). 점을 줄이면 도트 선(Bresenham)이 달라져 그대로 둔다 */
+function skSignPack(strokes){
+  const out = []; let left = 8000;                                // 수 — x · y 둘이 한 점
+  for(const s of strokes){ if(left < 2) break; const q = s.slice(0, left - left % 2); left -= q.length; if(q.length) out.push(q); }
+  return out;
+}
 function skFinish(){
   if(!SK.held || SK.writing || SK.busy) return;
   const c = skSig(); if(!c) return;
@@ -22057,7 +22070,7 @@ function skFinish(){
     skReplay(PREF.sign, ()=> skSigned(false));
     return;
   }
-  PREF.sign = {v:1, w:c.width, h:c.height, s:SK.strokes.slice(0, 40).map(s=> s.slice(0, 600))};
+  PREF.sign = {v:1, w:c.width, h:c.height, s:skSignPack(SK.strokes)};   // 1029 여섯째 — 예전 SK.strokes.slice(0, 40).map(s=> s.slice(0, 600)) (획 40 · 획마다 300 점에서 잘렸다)
   prefSave();
   skSigned(true);
 }
@@ -22071,7 +22084,8 @@ function skReplay(sig, done){                                    // 저장된 �
   const c = skSig(), g = c.getContext("2d"), m = skSigFit(sig, c);
   const strokes = sig.s.map(s=>{ const o = []; for(let i = 0; i + 1 < s.length; i += 2) o.push([Math.round(s[i] * m.k), Math.round(s[i+1] * m.k) + m.dy]); return o; }).filter(s=> s.length);
   let si = 0, pi = 0, acc = 0, last = performance.now();
-  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches, speed = reduce ? 4000 : 150;   // 칸/초
+  const len = strokes.reduce((t, s)=> t + s.reduce((u, p, i)=> i ? u + Math.max(1, Math.hypot(p[0] - s[i-1][0], p[1] - s[i-1][1])) : u, 0), 0);   // 그을 길이 (칸)
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches, speed = reduce ? 4000 : Math.max(150, len / 3);   // 칸/초 — 1029 여섯째: 긴 서명(450 칸 넘게)은 3초 안에 (저장 한도를 없앴다)
   const step = (now)=>{
     if(!c.isConnected){ SK.busy = false; skScratch(false); return; }
     acc += (now - last) / 1000 * speed; last = now;
