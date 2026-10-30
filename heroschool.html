@@ -6781,6 +6781,26 @@ const pick= a => a[Math.floor(RNG()*a.length)];
 const clamp=(v,a,b)=> v<a?a:v>b?b:v;
 const fmt = n => Math.round(n).toLocaleString('ko-KR');
 const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* HPDISP_START — 체력 계열 숫자 표시 나누기 (1030 · apply_hpdisp.py) ─ 사용자 1029: '전체적으로 표시되는 체력과 피해량을 줄이고싶은데 어떻게하는게 좋을까?
+   현재 능력치는 유지하고 표시되는 능력치/피해를 낮춘다 or 전체적으로 변경시킨다' → '나누기 20하면 문제 있을까 / A쪽으로' (A — 보이는 숫자만)
+   · 판정 · 저장 · 서버 값(리그 묶음의 유물 옵션 · 마왕 대항전 최고 피해 · 순위표)은 그대로 — 화면에 보이는 체력 계열 숫자만 HP_DISP 로 나눈다
+   · 나누는 것: 체력 · 최대 체력 · 피해 · 회복 · 보호막 · 흡수 · 지속 피해 · 피해량 · 회복량 · 받은 피해 · 마왕 대항전 피해(구간 · 기록 · 순위 · 일지 · 알림) ·
+     유물 체력 옵션(합성 범위 · SP 상점 포함) · 레벨당 체력
+     그대로: 공격력 · 방어력 · 속도 · 전투력 · 비율(% · ×) · 원정 지구력 · 컨디션 (공격력 · 방어력 유물 옵션은 나누면 +1 ~ +2 로 뭉개진다)
+   · 셈 — 체력 · 최대 체력(능력치 판 · 레벨 업 · 도감 · 전투 읽기 글) hpCur: 올림 (살아 있으면 1 이상 · 가득 찬 체력은 최대 체력과 같은 수)
+          양(피해 · 회복 · 보호막 · 합계 · 유물 옵션) hpAmt: 반올림 · 0 보다 크면 1 이상 (작은 회복도 +1 · 깎는 옵션은 −1 이하)
+          레벨당 체력 성장 hpGrowTxt: 소수 첫째 자리 (70 → 3.5)
+   · 예전에 적어 둔 일지 줄('마왕 대항전 — … 피해')은 그대로 · HP_DISP = 1 이면 예전 그대로 (10 으로 바꾸려면 이 줄만)
+   고리 (apply_hpdisp.py) — 본문: 레벨 업 능력치 · 전투 기록 글(runBattle) · 유물 합성 옵션(affValTxt) · 좁은 화면 능력치 · 마왕 대항전 · SP 상점 옵션 · 도감 직업 능력 ·
+     전투 화면(피해량 상자 · 머리 위 숫자 둘 · 읽기 글) / 남의 블록(블록 파일도 같이): RELICDB 유물 옵션 글 · ROSTERBK 명부 능력치 · FFOP 대본 전투 글 · BTHV 보호막 · 지속 피해 */
+const HP_DISP = 20;                                       // 화면에 보이는 체력 계열 숫자 ÷ (1 = 예전 그대로)
+function hpCur(v){ v = +v || 0; return v > 0 ? Math.max(1, Math.ceil(v / HP_DISP - 1e-6)) : 0; }                            // 체력 · 최대 체력 — 올림 (1 이상)
+function hpAmt(v){ v = +v || 0; const r = Math.max(1, Math.round(Math.abs(v) / HP_DISP)); return v > 0 ? r : v < 0 ? -r : 0; }   // 양 — 반올림 (0 이 아니면 ±1 이상)
+function hpStat(k, v){ return k === "hp" ? hpCur(v) : v; }                               // 능력치 판 — 체력만
+function hpAff(k, v){ return k === "hp" ? hpAmt(v) : v; }                                // 유물 옵션 — 체력만
+function hpGrowTxt(k, v){ return k === "hp" ? String(Math.round(v / HP_DISP * 10) / 10) : String(v); }   // 레벨당 성장 — 체력만 (소수 첫째 자리)
+function fmtHp(v){ return fmt(hpAmt(v)); }
+/* HPDISP_END */
 /* 한국어 조사 — 받침 유무로 고른다 */
 function hasJong(w){
   const t = String(w||"").replace(/<[^>]*>/g,"").trim();
@@ -8004,7 +8024,7 @@ function relicAffOf(K, g, res){
 /* 능력 값 글 — 부호째 (정수 능력 +12 · 비율 능력 +1.2% · 깎이면 −) · 옛 affValTxt 는 0 ~ 1 사이만 % 라 음수 · 1 이상(S+ 크리 피해)이 틀렸다 */
 function relicValTxt(a){
   const v = +a.v || 0, st = RELIC_DB.stats[a.k];
-  const s = (st && st.int) || !st ? fmt(Math.abs(Math.round(v * 100) / 100)) : (Math.abs(v) * 100).toFixed(1) + "%";
+  const s = (st && st.int) || !st ? fmt(Math.abs(hpAff(a.k, Math.round(v * 100) / 100))) : (Math.abs(v) * 100).toFixed(1) + "%";
   return (v < 0 ? "−" : "+") + s;
 }
 /* ── 출현 ── */
@@ -9381,7 +9401,7 @@ function lvupCeremony(c){
   const lv0 = c.lv0, lv1 = Math.max(c.lv1, lv0);
   const A = battleStats(st), B = battleStats(Object.assign({}, st, {level:lv0}));
   const rows = [[_T("체력"),"hp"],[_T("공격력"),"atk"],[_T("방어력"),"def"],[_T("속도"),"spd"]].map(([n,k])=>{
-    const a = Math.round(A[k]||0), b = Math.round(B[k]||0), d = a - b;
+    const a = hpStat(k, Math.round(A[k]||0)), b = hpStat(k, Math.round(B[k]||0)), d = a - b;
     return `<div class="lvrow"><span>${n}</span><b class="num">${fmt(b)} <i>→</i> ${fmt(a)}</b><em class="num">${d>0? "+"+fmt(d) : ""}</em></div>`;
   }).join("");
   const sp = Math.floor(lv1/2) - Math.floor(lv0/2);
@@ -10265,7 +10285,7 @@ function runBattle(teamA, teamB, opt){
       const hpBefore = u.hp;
       u.hp = Math.max(0, u.hp - Math.round(dotDmg));
       u.dTaken += Math.round(dotDmg);
-      push(`${_L`<b>${epiH(u.name)}</b> 지속 피해 ${fmt(dotDmg)}`}`,"", u.uid);
+      push(`${_L`<b>${epiH(u.name)}</b> 지속 피해 ${fmtHp(dotDmg)}`}`,"", u.uid);
       /* 저주 — 갉아낸 만큼 시전자 쪽 아군 전체가 회복한다 */
       const real = hpBefore - u.hp;
       if(real > 0 && dotHeal.length){
@@ -10280,7 +10300,7 @@ function runBattle(teamA, teamB, opt){
             const h0 = a.hp; a.hp = Math.min(a.maxHp, a.hp + h); recHeal(sv, a.hp - h0);
             if(a.hp > h0) pp.push({u:a.uid, v:a.hp-h0, k:"heal"});
           });
-          if(pp.length) push(_L`저주가 갉아낸 만큼 아군 전체 ${fmt(h)} 회복`,"heal",sv.uid,null,pp);
+          if(pp.length) push(_L`저주가 갉아낸 만큼 아군 전체 ${fmtHp(h)} 회복`,"heal",sv.uid,null,pp);
         });
       }
       if(u.hp<=0){ downAt(u); u.alive=false; push(`${_L`<b>${epiH(u.name)}</b> 전투 불능`}`,"die",u.uid); }
@@ -10290,7 +10310,7 @@ function runBattle(teamA, teamB, opt){
       const Pr = u.pas;
       if(Pr && Pr.regen && u.hp < u.maxHp){
         const h = Math.min(u.maxHp-u.hp, Math.round(u.maxHp*Pr.regen*BAL_HEAL));
-        if(h>0){ u.hp += h; recHeal(u, h); push(`${_L`<b>${epiH(u.name)}</b> 자연 회복 ${fmt(h)}`}`,"heal",u.uid); }
+        if(h>0){ u.hp += h; recHeal(u, h); push(`${_L`<b>${epiH(u.name)}</b> 자연 회복 ${fmtHp(h)}`}`,"heal",u.uid); }
       }
       /* 자연 회복 — 아군 전체 */
       if(Pr && Pr.regenAll){
@@ -10310,7 +10330,7 @@ function runBattle(teamA, teamB, opt){
         u.hp += h;
         const sv = (f.src!=null) ? all.find(x=> x.uid===f.src) : null;
         recHeal(sv || u, h);
-        push(`${_L`<b>${epiH(u.name)}</b> ${esc(f.name)} ${fmt(h)} 회복`}`,"heal",(sv||u).uid,null,[{u:u.uid,v:h,k:"heal"}]);
+        push(`${_L`<b>${epiH(u.name)}</b> ${esc(f.name)} ${fmtHp(h)} 회복`}`,"heal",(sv||u).uid,null,[{u:u.uid,v:h,k:"heal"}]);
       });
     }
 
@@ -10396,7 +10416,7 @@ function runBattle(teamA, teamB, opt){
       if(tg.length){
         const pop = [];
         tg.forEach(t=>{ t.hp = Math.max(0, t.hp - v); recDmg(boss, t, v); pop.push({u:t.uid, v, k:"dmg"}); });
-        push(_L`회피할 수 없는 일격 — 살아 있던 ${tg.length}명에게 각각 ${fmt(v)} 피해`,"crit",boss.uid,null,pop);
+        push(_L`회피할 수 없는 일격 — 살아 있던 ${tg.length}명에게 각각 ${fmtHp(v)} 피해`,"crit",boss.uid,null,pop);
         tg.forEach(t=>{ if(t.hp<=0){ downAt(t); t.alive=false; t.fx=[]; push(`${_L`<b>${epiH(t.name)}</b> 전투 불능`}`,"die",boss.uid,null,[{u:t.uid,k:"die"}]); } });
       }
       if(!aliveOf(A).length) winner = "B";
@@ -10480,7 +10500,7 @@ function runBattle(teamA, teamB, opt){
     if(absorbed) pop.push({u:tgt.uid, v:absorbed, k:"absorb"});
     if(dmg>0 || !absorbed) pop.push({u:tgt.uid, v:dmg, k:crit?"crit":"dmg"});
     if(leeched>0) pop.push({u:src.uid, v:leeched, k:"heal"});
-    push(`${_L`<b>${epiH(tgt.name)}</b>에게 ${fmt(dmg)}${absorbed? ` ${_L`(보호막 ${fmt(absorbed)} 흡수)`}`:""}${crit?_T(" — 치명타!"):""}`}`, crit?"crit":"", src.uid, null, pop);
+    push(`${_L`<b>${epiH(tgt.name)}</b>에게 ${fmtHp(dmg)}${absorbed? ` ${_L`(보호막 ${fmtHp(absorbed)} 흡수)`}`:""}${crit?_T(" — 치명타!"):""}`}`, crit?"crit":"", src.uid, null, pop);
     if(tgt.hp<=0){ downAt(tgt); tgt.alive=false; tgt.fx=[]; push(`${_L`<b>${epiH(tgt.name)}</b> 전투 불능`}`,"die",src.uid,null,[{u:tgt.uid,k:"die"}]); return dmg; }
     if(dmg>0){
       const cs = consOf(tgt);
@@ -10581,12 +10601,12 @@ function runBattle(teamA, teamB, opt){
         tg.forEach(t=>{ const b=Math.min(t.maxHp-t.hp,h); t.hp+=b; recHeal(u, b);
           let cl=null;
           if(sk.cleanse){ for(let c=0;c<sk.cleanse;c++){ const i=t.fx.findIndex(f=>f.kind==="d"||f.kind==="dot"); if(i<0) break; cl = t.fx.splice(i,1)[0].name; } }
-          push(`${_L`<b>${epiH(t.name)}</b> 회복 ${fmt(b)}${cl?` ${_L`· <b>${esc(cl)}</b> 해제`}`:""}`}`,"heal",u.uid,null,[{u:t.uid,v:b,k:"heal"}]); });
+          push(`${_L`<b>${epiH(t.name)}</b> 회복 ${fmtHp(b)}${cl?` ${_L`· <b>${esc(cl)}</b> 해제`}`:""}`}`,"heal",u.uid,null,[{u:t.uid,v:b,k:"heal"}]); });
         break; }
       case "shield": {
         const sh = Math.round(eff(u, sk.scale||"def")*p*2.9*BAL_SHIELD);
         tg.forEach(t=>{ t.shield = sh; addFx(t,{name:_T("보호막"),kind:"s",turns:dur+1,stat:null,val:0}); });
-        push(_L`아군 ${tg.length}인 보호막 ${fmt(sh)}`,"heal",u.uid,null, tg.map(t=>({u:t.uid,v:sh,k:"shield"})));
+        push(_L`아군 ${tg.length}인 보호막 ${fmtHp(sh)}`,"heal",u.uid,null, tg.map(t=>({u:t.uid,v:sh,k:"shield"})));
         break; }
       case "buff": {
         tg.forEach(t=>{
@@ -10621,16 +10641,16 @@ function runBattle(teamA, teamB, opt){
         tg.forEach(t=>{ t.atb = Math.max(0, t.atb - 1000*p); addFx(t,{name:sk.name,kind:"d",turns:dur+1,stat:"spd",mode:"mul",val:-p*.5}); });
         push(`${_L`<b>${epiH(tg[0].name)}</b> 행동 게이지 -${Math.round(p*100)}%`}`,"",u.uid);
         break; }
-      case "ult_single": tg.forEach(t=> t.alive && dealDamage(u, t, p + (sk.mirBonus? sk.mirBonus*(u.mir|0) : 0), sk)); if(sk.heal){ const h=Math.round(u.maxHp*sk.heal*.35*BAL_HEAL); const h0=u.hp; u.hp=Math.min(u.maxHp,u.hp+h); recHeal(u, u.hp-h0); push(`${_L`<b>${epiH(u.name)}</b> 회복 ${fmt(h)}`}`,"heal",u.uid,null,[{u:u.uid,v:u.hp-h0,k:"heal"}]);} break;
+      case "ult_single": tg.forEach(t=> t.alive && dealDamage(u, t, p + (sk.mirBonus? sk.mirBonus*(u.mir|0) : 0), sk)); if(sk.heal){ const h=Math.round(u.maxHp*sk.heal*.35*BAL_HEAL); const h0=u.hp; u.hp=Math.min(u.maxHp,u.hp+h); recHeal(u, u.hp-h0); push(`${_L`<b>${epiH(u.name)}</b> 회복 ${fmtHp(h)}`}`,"heal",u.uid,null,[{u:u.uid,v:u.hp-h0,k:"heal"}]);} break;
       case "ult_aoe": { let tot = 0;
         tg.forEach(t=>{ if(t.alive) tot += dealDamage(u,t,p,sk); });
         if(!sk.noBreak) tg.forEach(t=> t.alive && addFx(t,{name:_T("방어 붕괴"),kind:"d",turns:dur+1,stat:"def",mode:"mul",val:-.25}));
         if((sk.shieldSelf || sk.shieldDef) && tot>0){
           const sh = Math.round(tot*(sk.shieldSelf||0) + (sk.shieldDef? eff(u,"def")*sk.shieldDef*BAL_SHIELD : 0));
           u.shield += sh; u.shBy = u.uid;
-          push(`${_L`<b>${epiH(u.name)}</b> 보호막 ${fmt(sh)} — 가른 만큼 몸을 두른다`}`,"heal",u.uid,null,[{u:u.uid,v:sh,k:"shield"}]);
+          push(`${_L`<b>${epiH(u.name)}</b> 보호막 ${fmtHp(sh)} — 가른 만큼 몸을 두른다`}`,"heal",u.uid,null,[{u:u.uid,v:sh,k:"shield"}]);
         }
-        if(sk.heal){ const h=Math.round(u.maxHp*sk.heal*.3*BAL_HEAL); const h0=u.hp; u.hp=Math.min(u.maxHp,u.hp+h); recHeal(u, u.hp-h0); push(`${_L`<b>${epiH(u.name)}</b> 회복 ${fmt(h)}`}`,"heal",u.uid,null,[{u:u.uid,v:u.hp-h0,k:"heal"}]); }
+        if(sk.heal){ const h=Math.round(u.maxHp*sk.heal*.3*BAL_HEAL); const h0=u.hp; u.hp=Math.min(u.maxHp,u.hp+h); recHeal(u, u.hp-h0); push(`${_L`<b>${epiH(u.name)}</b> 회복 ${fmtHp(h)}`}`,"heal",u.uid,null,[{u:u.uid,v:u.hp-h0,k:"heal"}]); }
         break; }
       case "drain": {
         let d = 0;
@@ -10638,7 +10658,7 @@ function runBattle(teamA, teamB, opt){
         if(d>0){
           const low = aliveOf(allies).slice().sort((a,b)=> a.hp/a.maxHp - b.hp/b.maxHp)[0];
           if(low){ const h=Math.round(d*(sk.drain||.7)*healMulOf(u)), ab=Math.min(low.maxHp-low.hp,h); low.hp+=ab; recHeal(u, ab);
-            push(`${_L`<b>${epiH(low.name)}</b> 흡수 회복 ${fmt(ab)}`}`,"heal",u.uid,null,[{u:low.uid,v:ab,k:"heal"}]); }
+            push(`${_L`<b>${epiH(low.name)}</b> 흡수 회복 ${fmtHp(ab)}`}`,"heal",u.uid,null,[{u:low.uid,v:ab,k:"heal"}]); }
         }
         break; }
       case "ult_drain": {
@@ -10647,7 +10667,7 @@ function runBattle(teamA, teamB, opt){
         const hh=Math.round(tot*(sk.drain||.35));
         if(hh>0){ const pp=[];
           aliveOf(allies).forEach(a=>{ const h0=a.hp; a.hp=Math.min(a.maxHp,a.hp+hh); recHeal(u, a.hp-h0); if(a.hp>h0) pp.push({u:a.uid,v:a.hp-h0,k:"heal"}); });
-          push(_L`아군 전체 ${fmt(hh)} 흡수 회복`,"heal",u.uid,null,pp); }
+          push(_L`아군 전체 ${fmtHp(hh)} 흡수 회복`,"heal",u.uid,null,pp); }
         break; }
       case "ult_bless": {
         const kk = p/sk.power;
@@ -10669,7 +10689,7 @@ function runBattle(teamA, teamB, opt){
             if(t.hp>h0) pp.push({u:t.uid,v:t.hp-h0,k:"heal"});
             pp.push({u:t.uid,v:sh,k:"shield"});
             addFx(t,{name:_T("성역"),kind:"b",turns:dur+1,stat:"def",mode:"mul",val:.35}); });
-          push(_L`아군 전체 회복 ${fmt(h)} · 보호막 ${fmt(sh)} · 방어 강화`,"heal",u.uid,null,pp); } break; }
+          push(_L`아군 전체 회복 ${fmtHp(h)} · 보호막 ${fmtHp(sh)} · 방어 강화`,"heal",u.uid,null,pp); } break; }
       case "ult_heal": {
         const h=Math.round(eff(u,"atk")*p*2.9*healMulOf(u)*BAL_HEAL);
         { const pp=[]; const back=[];
@@ -10686,7 +10706,7 @@ function runBattle(teamA, teamB, opt){
             if(!actionFx.t.includes(t.uid)) actionFx.t.push(t.uid);
             pp.push({u:t.uid,v:t.hp,k:"heal"}); back.push(epiH(t.name));
           });
-          push(_L`아군 전체 회복 ${fmt(h)} · 약화 해제${back.length? ` ${_L`· <b>${back.join("</b>, <b>")}</b> 다시 일어선다`}`:""}`,"heal",u.uid,null,pp); } break; }
+          push(_L`아군 전체 회복 ${fmtHp(h)} · 약화 해제${back.length? ` ${_L`· <b>${back.join("</b>, <b>")}</b> 다시 일어선다`}`:""}`,"heal",u.uid,null,pp); } break; }
       case "regen": {
         tg.forEach(t=>{ if(!t.alive) return;
           addFx(t,{name:sk.name,kind:"b",turns:dur+1,stat:null,val:0,regen:p,src:u.uid}); });
@@ -14304,7 +14324,7 @@ function addRelicToPool(r){
    → 스킬 성공률 → 스킬 저항률 → 받는 크리 감소 → 필살 게이지 → 피흡 */
 const AFF_ORDER = (()=>{ const o={}; BATTLE.forEach((b,i)=> o[b.k]=i); return o; })();
 function affSorted(list){ return (list||[]).slice().sort((a,b)=> (AFF_ORDER[a.k]??99) - (AFF_ORDER[b.k]??99)); }
-function affValTxt(v){ return v<1&&v>0 ? (v*100).toFixed(1)+"%" : fmt(v); }
+function affValTxt(v, k){ return v<1&&v>0 ? (v*100).toFixed(1)+"%" : fmt(hpAff(k, v)); }   // 1030 — k 가 체력이면 ÷HP_DISP (HPDISP)
 /* 한 줄에 하나씩, 최대 4줄 — 넘치면 앞줄부터 둘씩 묶는다 */
 function affLines(items){
   const n = items.length, L = Math.min(4, n), out = [];
@@ -14351,7 +14371,7 @@ function synthOn(){ return !!(S.items && S.items.synth); }
 function affDef(k){ return RELIC_AFFIX.find(x=> x.k===k) || null; }
 function relicSRange(k){ const a = affDef(k), m = 1.4*RELIC_POWER; return a ? [a.v[0]*m, a.v[1]*m] : [0,0]; }
 function affRound(k, v){ const a = affDef(k); return (a && a.int) ? Math.max(1, Math.round(v)) : Math.round(v*1000)/1000; }
-function affRangeTxt(k, lo, hi){ const a = affValTxt(affRound(k,lo)), b = affValTxt(affRound(k,hi)); return a===b ? a : `${a}~${b}`; }
+function affRangeTxt(k, lo, hi){ const a = affValTxt(affRound(k,lo), k), b = affValTxt(affRound(k,hi), k); return a===b ? a : `${a}~${b}`; }
 function synthCands(exclude){ return (S.relicPool||[]).filter(r=> r && r.grade==="S" && !r.kind && r.id && exclude.indexOf(r.id) < 0); }   // 1017 — 옛 유물만 (128종 유물은 합성하지 않는다)
 function relicById(id){ return (S.relicPool||[]).find(r=> r && r.id===id) || null; }
 /* 결과 예상 — 확정 칸 · 고정 칸 · 무작위 칸 */
@@ -14406,14 +14426,14 @@ function synthRender(){
       <div class="opt syn-card">${relicNameHtml(r)}
         <div class="raff">${affSorted(r.aff).map(a=>{
           const lk = U.lock && U.lock.src===src && U.lock.k===a.k;
-          const line = `<span>${esc(a.n)} <b>+${affValTxt(a.v)}</b></span>`;
+          const line = `<span>${esc(a.n)} <b>+${affValTxt(a.v, a.k)}</b></span>`;
           if(sk.indexOf(a.k)>=0) return `<div class="syn-ln">${line}<span class="syn-tg shared">${_L`공통`}</span></div>`;
           if(rk.indexOf(a.k)>=0) return `<button class="syn-ln syn-lockable ${lk?"on":""}" data-synlock="${src}|${a.k}" title="${_L`이 능력치를 결과에 그대로 옮긴다 (합성 가격 2배)`}">${line}<span class="syn-tg ${lk?"lock":""}">${lk?_T("고정됨"):_T("고정")}</span></button>`;
           return `<div class="syn-ln">${line}</div>`; }).join("")}</div></div></div>`;
   };
   const mid = !plan ? `<div class="syn-empty">${_L`두 유물을 고르면 결과를 미리 보여준다`}</div>`
     : plan.shared.map((x,i)=> `<div class="syn-slot"><span class="syn-no">${i+1}</span><div><b>${esc(x.n)}</b> ${affRangeTxt(x.k, x.min, x.max)}</div></div>`).join("")
-      + (plan.lock ? `<div class="syn-slot lock"><span class="syn-no">${plan.shared.length+1}</span><div><b>${esc(plan.lock.n)}</b> +${affValTxt(plan.lock.v)}</div></div>` : "")
+      + (plan.lock ? `<div class="syn-slot lock"><span class="syn-no">${plan.shared.length+1}</span><div><b>${esc(plan.lock.n)}</b> +${affValTxt(plan.lock.v, plan.lock.k)}</div></div>` : "")
       + Array.from({length:plan.nRand}, (_,j)=> `<div class="syn-slot rand"><span class="syn-no">${plan.shared.length + (plan.lock?1:0) + j + 1}</span><div><b>${_L`무작위`}</b></div></div>`).join("")
       + (plan.nRand ? `<div class="syn-cands"><div class="syn-sub" style="margin-bottom:3px">${_L`무작위 후보 — ${plan.pool.length}개 중 ${plan.nRand}개`}</div>${
           plan.pool.map(o=>{ const [lo,hi] = relicSRange(o.k); return `<div>${esc(o.n)} <span style="color:var(--dim)">${affRangeTxt(o.k, lo, hi)}</span></div>`; }).join("")}</div>` : "");
@@ -16832,7 +16852,7 @@ function vmOf(st){
     })),
     cond: Math.round(st.cond), eff: effPct(st), condTone: condEff(st.cond).tone, power: Math.round(power(st)), sp: st.sp || 0,
     battle: (bs => BATTLE.map(b => { const v = bs[b.k] || 0;
-      return {k: b.k, n: RB_BAT_N[b.k] || b.n, v: b.p === 1 ? (b.k === "critDmg" ? (v * 100).toFixed(0) + "%" : (v * 100).toFixed(1) + "%") : b.p === 2 ? "×" + v.toFixed(2) : fmt(v)}; }))(battleStats(st)),
+      return {k: b.k, n: RB_BAT_N[b.k] || b.n, v: b.p === 1 ? (b.k === "critDmg" ? (v * 100).toFixed(0) + "%" : (v * 100).toFixed(1) + "%") : b.p === 2 ? "×" + v.toFixed(2) : fmt(hpStat(b.k, v))}; }))(battleStats(st)),
     cons: Math.round(consThr(st.ment.stam)), willCut: Math.round((1 - clamp(1 - st.ment.will / 100 * .7, .3, 1)) * 100)
   };
 }
@@ -20121,7 +20141,7 @@ function ffBuild(){
     if(st.hero){ st.hero.forEach(id => { const u = by(id); u.fx.push({n: _T("만능"), k: "b", hero: "ffop"}); }); return; }
     if(st.dot){
       st.dot.forEach(([id, v]) => { const t = by(id); if(!t.alive) return; t.hp = Math.max(0, t.hp - v); t.dt += v;
-        push(`${_L`<b>${esc(t.name)}</b> 지속 피해 ${fmt(v)}`}`, "", t.uid, null, [{u: t.uid, v, k: "dmg"}]); if(t.hp <= 0) down(t, t); });
+        push(`${_L`<b>${esc(t.name)}</b> 지속 피해 ${fmtHp(v)}`}`, "", t.uid, null, [{u: t.uid, v, k: "dmg"}]); if(t.hp <= 0) down(t, t); });
       return;
     }
     const a = by(st.a), sk = ffSkill(st.sk); if(!a || !sk) return;
@@ -20139,8 +20159,8 @@ function ffBuild(){
     if(st.from) fr.ffFrom = st.from;
     a.atb = 0;
     a.gauge = st.ult ? 0 : Math.min(95, a.gauge + (sk.kind === "basic" ? 14 : 20));
-    (st.sh || []).forEach(([id, v]) => { const t = by(id); t.sh += v; push(`${_L`<b>${esc(t.name)}</b> 보호막 ${fmt(v)}`}`, "heal", a.uid, null, [{u: t.uid, v, k: "shield"}]); });
-    (st.heal || []).forEach(([id, v]) => { const t = by(id); const h = Math.min(v, t.maxHp - t.hp); t.hp += h; a.dh += h; push(`${_L`<b>${esc(t.name)}</b> 회복 ${fmt(h)}`}`, "heal", a.uid, null, [{u: t.uid, v: h, k: "heal"}]); });
+    (st.sh || []).forEach(([id, v]) => { const t = by(id); t.sh += v; push(`${_L`<b>${esc(t.name)}</b> 보호막 ${fmtHp(v)}`}`, "heal", a.uid, null, [{u: t.uid, v, k: "shield"}]); });
+    (st.heal || []).forEach(([id, v]) => { const t = by(id); const h = Math.min(v, t.maxHp - t.hp); t.hp += h; a.dh += h; push(`${_L`<b>${esc(t.name)}</b> 회복 ${fmtHp(h)}`}`, "heal", a.uid, null, [{u: t.uid, v: h, k: "heal"}]); });
     (st.unst || []).forEach(([id, n]) => { const t = by(id); t.fx = t.fx.filter(f => f.n !== n); });
     (st.st || []).forEach(([id, n, kd, tau]) => { const t = by(id); if(!t.alive) return; t.fx = t.fx.filter(f => f.n !== n).concat({n, k: kd, taunt: !!tau, sk: st.sk});
       push(`<b>${esc(t.name)}</b> ${esc(n)}`, "", a.uid); });
@@ -20153,7 +20173,7 @@ function ffBuild(){
       t.hp = Math.max(0, t.hp - v); t.dt += v; a.dd += v;
       t.gauge = Math.min(95, t.gauge + 9);
       pop.push({u: id, v, k: crit ? "crit" : "dmg"});
-      push(`${_L`<b>${esc(t.name)}</b>에게 ${fmt(v)}${s ? ` ${_L`(보호막 ${fmt(s)} 흡수)`}` : ""}${crit ? _T(" — 치명타!") : ""}`}`, crit ? "crit" : "", a.uid, null, pop);
+      push(`${_L`<b>${esc(t.name)}</b>에게 ${fmtHp(v)}${s ? ` ${_L`(보호막 ${fmtHp(s)} 흡수)`}` : ""}${crit ? _T(" — 치명타!") : ""}`}`, crit ? "crit" : "", a.uid, null, pop);
       if(t.hp <= 0) down(a, t);
     });
     if(st.say) fr.ffSay = st.say;
@@ -20759,7 +20779,7 @@ function bthVal(k, v, m){
 }
 function bthRows(e, d){
   const out = [], v = +e.v || 0;
-  if(e.k === "dot"){ if(v > 0) out.push([BTHV_T.dot, _L`차례마다 ${fmt(Math.round(v * BAL_DEAL * BAL_TAKE))}`, true]); return out; }
+  if(e.k === "dot"){ if(v > 0) out.push([BTHV_T.dot, _L`차례마다 ${fmtHp(v * BAL_DEAL * BAL_TAKE)}`, true]); return out; }
   if(e.rg > 0) out.push([BTHV_T.regen, _L`차례마다 체력 ${R2(e.rg * BAL_HEAL * 100)}%`, false]);
   if(e.tu){                                                                   // 도발 — 침착성이 깎이고 그 상대에게 시선이 쏠린다 (전투 기록 글과 같다)
     if(v) out.push([BTHV_T.calm, bthVal(null, v, "mul"), v < 0]);
@@ -20805,7 +20825,7 @@ function bthHtml(d, k){
   if(u.hp < u.maxHp && p > 99) p = 99;
   const head = `<div class="vtp-sec bth-hd"><b>${esc(n.name || "")}</b><span class="g">${n.lv != null ? `Lv.${n.lv} · ` : ""}${esc(J.name || "")}</span>${u.alive ? "" : `<span class="dn">${BTHV_T.down}</span>`}</div>`;
   const hp = `<div class="vtp-sec"><div class="vtp-st bth-hp${u.cs === 2 ? " stu" : u.cs === 1 ? " fog" : ""}"><span>${BTHV_T.hp}</span><b>${hide ? "???" : p + "%"}</b></div>`   // 체력 막대 색의 진한 쪽 (의식 흐림 · 혼미면 막대 색이 바뀐다)
-    + (u.sh > 0 && !hide ? `<div class="vtp-st bth-sh"><span>${BTHV_T.sh}</span><b>${fmt(Math.round(u.sh))}</b></div>` : "") + `</div>`;
+    + (u.sh > 0 && !hide ? `<div class="vtp-st bth-sh"><span>${BTHV_T.sh}</span><b>${fmtHp(u.sh)}</b></div>` : "") + `</div>`;
   const fx = (u.fx || []).filter(e => e && e.k !== "s");                      // 보호막(k s)은 체력 칸에 양으로
   const all = (u.cs ? [{e: {n: u.cs === 2 ? _T("혼미") : _T("의식 흐림"), k: "mind"}, neg: true}] : [])   // 칩 줄과 같게 — 의식 흐림 · 혼미가 맨 앞
     .concat(fx.map(e => ({e, neg: e.k === "d" || e.k === "dot" || e.k === "mind"})));
@@ -21590,7 +21610,7 @@ function studentDetail(s, opt){
         <div class="stats">
         ${BATTLE.map(b=>{
           let v = bs[b.k]||0;
-          const txt = b.p===1? (b.k==="critDmg"? (v*100).toFixed(0)+"%" : (v*100).toFixed(1)+"%") : b.p===2? "×"+v.toFixed(2) : fmt(v);
+          const txt = b.p===1? (b.k==="critDmg"? (v*100).toFixed(0)+"%" : (v*100).toFixed(1)+"%") : b.p===2? "×"+v.toFixed(2) : fmt(hpStat(b.k, v));
           return `<div class="st"><span class="k">${b.n}</span><span class="v num">${txt}</span></div>`;
         }).join("")}
         </div>
@@ -23241,7 +23261,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1029-2329";
+const BUILD = "1030-1207";
 const BUILD_TS = 0;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
@@ -23686,7 +23706,7 @@ function viewLeague(){
       <button class="ttab ${tab==="five"?"on":""}" data-lgtab="five">${_L`5인 리그`}
       <span class="tt-sub">${_L`LP ${fmt(L5.lp)} · ${L5.w}승 ${L5.l}패 · ${L5.n}시즌`}</span></button>
       <button class="ttab ${tab==="demon"?"on":""}" data-lgtab="demon">${_L`마왕 대항전`}
-      <span class="tt-sub">${_L`최고 피해 ${fmt(D.best|0)} · ${fmt(D.n|0)}판`}</span></button></div>
+      <span class="tt-sub">${_L`최고 피해 ${fmtHp(D.best|0)} · ${fmt(D.n|0)}판`}</span></button></div>
   </section>`;
   if(tab === "demon") return sub + viewDemon();
   if(tab === "five"){
@@ -24405,9 +24425,9 @@ function demonRun(n){
     D.best = dmg; D.bestAt = ts; D.comp = P.t.map(x=> x.u);
     D.bestForm = P.form; D.bestPlus = !!P.plus; D.dirty = true;
   }
-  logE(`${_L`마왕 대항전 — <b>${DEMON_NAME}</b>에게 <b>${fmt(dmg)}</b> 피해 (${b.acts|0}턴)${sp? ` · SP <b style="color:var(--indigo)">+${sp}</b>` : ""}${best? ` ${_L`· <b style="color:var(--brass)">최고 기록</b>`}` : ""}`}`, best? "good" : "");
+  logE(`${_L`마왕 대항전 — <b>${DEMON_NAME}</b>에게 <b>${fmtHp(dmg)}</b> 피해 (${b.acts|0}턴)${sp? ` · SP <b style="color:var(--indigo)">+${sp}</b>` : ""}${best? ` ${_L`· <b style="color:var(--brass)">최고 기록</b>`}` : ""}`}`, best? "good" : "");
   save();
-  toast(_L`마왕 대항전 — 피해 ${fmt(dmg)}${sp? ` · SP +${sp}` : ""}${best? _T(" · 최고 기록!") : ""}`);
+  toast(_L`마왕 대항전 — 피해 ${fmtHp(dmg)}${sp? ` · SP +${sp}` : ""}${best? _T(" · 최고 기록!") : ""}`);
   if(D.dirty) demonPush();
   if(UI.view === "league" || UI.view === "rank" || UI.view === "spshop") render();
   return true;
@@ -24468,7 +24488,7 @@ function demonWatch(){
   const b = demonBattle(L.P, L.sn != null ? L.sn : L.n);
   if(!b){ toast(_T("전투를 불러오지 못했다.")); return; }
   openBattle(b, {titleA:S.acadName||_T("우리 학원"), titleB:DEMON_NAME, field:"demonking", bgm:"league", jingle:true,
-    head:_L`마왕 대항전 — ${demonAt(L.n)} · 피해 ${fmt(demonDmg(b))}`,
+    head:_L`마왕 대항전 — ${demonAt(L.n)} · 피해 ${fmtHp(demonDmg(b))}`,
     doneLabel:_T("닫는다")}, ()=> render());
 }
 /* 칸이 열린 시각 — 날짜까지 */
@@ -24495,7 +24515,7 @@ function viewDemon(){
     <div class="panel-h"><h2>${_L`마왕 대항전`}</h2>
       <span class="hint" id="dmClock">${_L`다음 마왕전까지 ${hhmmss(left)}`}</span></div>
     <div class="lgbar">
-      <div class="lgstat"><span>${_L`최고 피해량`}</span><b class="num" style="color:var(--brass)">${fmt(D.best|0)}</b></div>
+      <div class="lgstat"><span>${_L`최고 피해량`}</span><b class="num" style="color:var(--brass)">${fmtHp(D.best|0)}</b></div>
       <div class="lgstat"><span>${_L`참가`}</span><b class="num">${_L`${fmt(D.n|0)}판`}</b></div>
       <div class="lgstat"><span>${_L`받은 SP`}</span><b class="num" style="color:var(--indigo)">${fmt(D.sp|0)}</b></div>
       <div class="lgstat"><span>${_L`출전`}</span><b class="num">${_L`${mem.length} / ${cap}명`}</b></div>
@@ -24505,9 +24525,9 @@ function viewDemon(){
     ${mem.length? "" : `<div class="empty">${_L`마왕 대항전 편성이 비어 있다 — 리그의 등록 탭에서 졸업생을 한 명 이상 넣으면 바로 이번 판부터 싸운다.`}</div>`}
     ${L? `<div class="rule"></div><div class="eyebrow" style="margin-bottom:6px">${_L`지난 마왕전`} <span style="color:var(--dim)">${_L`— 다음 판이 열리기 전까지 관전할 수 있다`}</span></div>
       <div class="dmlast">
-        <div class="dmlast-v"><b class="num">${fmt(L.dmg)}</b><span>${_L`피해`}</span></div>
+        <div class="dmlast-v"><b class="num">${fmtHp(L.dmg)}</b><span>${_L`피해`}</span></div>
         <div class="dmlast-d">${_L`${at(L.n*DEMON_STEP)} · ${L.P.t.length}명 · ${L.turns}턴${L.turns>=DEMON_TURNS? _T(" — 마왕의 차례") : ""}<br>
-          ${L.sp? `SP <b style="color:var(--indigo)">+${L.sp}</b>` : `<span style="color:var(--dim)">${_L`SP 없음 (${fmt(DEMON_SP[DEMON_SP.length-1][0])} 이상부터)`}</span>`}${L.dmg>=D.best && L.dmg>0? ` ${_L`· <b style="color:var(--brass)">최고 기록</b>`}` : ""}`}</div>
+          ${L.sp? `SP <b style="color:var(--indigo)">+${L.sp}</b>` : `<span style="color:var(--dim)">${_L`SP 없음 (${fmtHp(DEMON_SP[DEMON_SP.length-1][0])} 이상부터)`}</span>`}${L.dmg>=D.best && L.dmg>0? ` ${_L`· <b style="color:var(--brass)">최고 기록</b>`}` : ""}`}</div>
         <button class="btn primary sm" data-dmw>${_L`관전`}</button>
       </div>` : ""}
   </section>
@@ -24528,10 +24548,10 @@ function viewDemon(){
   </section>
   <section class="panel">
     <div class="panel-h"><h2>${_L`보상 · 기록`}</h2><span class="hint">${_L`한 판의 피해량으로 정한다 · 닿은 구간을 모두 더한다`}</span></div>
-    <div class="dmtiers">${tier.map(([t,v])=> `<div class="dmtier${L && L.dmg>=t? " on":""}"><span>${_L`${fmt(t)} 피해`}</span>${_L`<b>SP +${v}</b><small>합계 +${demonSpOf(t)}</small>`}</div>`).join("")}</div>
+    <div class="dmtiers">${tier.map(([t,v])=> `<div class="dmtier${L && L.dmg>=t? " on":""}"><span>${_L`${fmtHp(t)} 피해`}</span>${_L`<b>SP +${v}</b><small>합계 +${demonSpOf(t)}</small>`}</div>`).join("")}</div>
     ${D.hist.length? `<div class="dmhist">${D.hist.slice(0,10).map(h=> `<div class="dmhist-r">
         <span class="num">${at(h.n*DEMON_STEP)}</span>
-        <b class="num" style="color:var(--${h.dmg>=D.best?"brass":"text"})">${fmt(h.dmg)}</b>
+        <b class="num" style="color:var(--${h.dmg>=D.best?"brass":"text"})">${fmtHp(h.dmg)}</b>
         <span>${_L`${h.m|0}명 · ${h.turns|0}턴`}</span>
         <span class="num" style="color:var(--${h.sp?"indigo":"dim"})">${h.sp? "SP +"+h.sp : "-"}</span></div>`).join("")}</div>`
       : `<div class="empty" style="margin-top:12px">${_L`아직 싸운 기록이 없다.`}</div>`}
@@ -24549,7 +24569,7 @@ function demonRankBody(R, mine){
           <div class="rkan">${esc(t.acad)}${t.tid===mine? (" <span class=\"tag\" style=\"color:var(--brass);border-color:var(--brass)\">" + _T("우리") + "</span>"):""}</div>
           <div class="rkad">${_L`${esc(formData(t.form, t.plus).n)} · ${t.units.length}인${t.n? ` ${_L`· ${fmt(t.n)}판`}` : ""}`}</div>
         </div>
-        <div class="rklp num">${fmt(t.best)}<span>${_L`피해`}</span></div>
+        <div class="rklp num">${fmtHp(t.best)}<span>${_L`피해`}</span></div>
         <div class="rkmem">${t.units.map(rankUnitCell).join("")}</div>
       </div>`).join("")}
     </div>`;
@@ -24641,7 +24661,7 @@ function spBuy(id){
 }
 function spAffLine(a){
   const v = a.v;
-  return `${a.n} <b style="color:var(--text)">+${v<1&&v>0 ? Math.round(v*1000)/10+"%" : fmt(v)}</b>`;
+  return `${a.n} <b style="color:var(--text)">+${v<1&&v>0 ? Math.round(v*1000)/10+"%" : fmt(hpAff(a.k, v))}</b>`;
 }
 function viewSpShop(){
   const have = spOf();
@@ -27564,7 +27584,7 @@ function jobStatGrade(job, k){
 }
 function jobGradeRow(job){
   return JOB_STATS.map(([k,n])=>{ const g = jobStatGrade(job, k);
-    return `<span class="jgs" title="${_L`Lv.1 ${fmt(Math.round(JOBS[job].base[k]))} · 레벨당 +${JOBS[job].grow[k]}`}">${n} <b style="color:${
+    return `<span class="jgs" title="${_L`Lv.1 ${fmt(hpStat(k, Math.round(JOBS[job].base[k])))} · 레벨당 +${hpGrowTxt(k, JOBS[job].grow[k])}`}">${n} <b style="color:${
       GRADE_COLOR[g.charAt(0)]}">${g}</b></span>`; }).join("");
 }
 /* CDXTAB_START — 도감을 일지의 탭 넷으로 (1029 열두째 · apply_cdxtab.py) ─ 사용자 1029: '도감 카테고리를 나눠서 다 개별 탭으로 넣자.
@@ -32976,7 +32996,7 @@ function openBattle(res, opt, onDone){
   };
   const statBox = (f, side, title, foe)=>{
     const list = names.map((n,k)=>({n,k})).filter(x=> x.n.side===side);
-    const row = (cls,ico,lab,v)=> `<div class="bsr"><span class="k ${cls}">${ico}${lab}</span><b>${fmt(v||0)}</b></div>`;
+    const row = (cls,ico,lab,v)=> `<div class="bsr"><span class="k ${cls}">${ico}${lab}</span><b>${fmtHp(v||0)}</b></div>`;
     return `<div class="bsbox ${foe?"foe":""}">
       <h5>${esc(title)}</h5>
       ${list.map(({n,k})=>{ const u=f.units[k];
@@ -33052,7 +33072,7 @@ function openBattle(res, opt, onDone){
         const txt = x.k==="miss" ? "MISS"
                   : x.k==="die"  ? "DOWN"
                   : x.k==="hero" ? esc(hrType(x.t).n)                                             // 1015 — 영웅의 기상 (이름만)
-                  : (x.k==="heal"||x.k==="shield" ? "+" : "") + fmt(x.v||0);
+                  : (x.k==="heal"||x.k==="shield" ? "+" : "") + fmtHp(x.v||0);
         return `<span class="pop ${x.k}" style="--pd:${dur}ms;animation-delay:${x.ago ? -x.ago : pi*90}ms;top:${pi*17}px">${
           x.k==="crit" ? `<b class="popcrit">CRITICAL!!</b>` : ""}${txt}</span>`;
       }).join("")}</div>` : "";
@@ -33095,7 +33115,7 @@ function openBattle(res, opt, onDone){
       const rd = !!(DROP && dropAt && k === DROP.k);                                      // 1018 — 유물을 떨어뜨리는 마지막 상대 (시체가 사라지고 유물이 뿅)
       return `<div class="unit bf-unit team-${side} ${boss?'bf-boss':''} ${big?'bf-big':''} ${mobU?'bf-mob':''} ${u.alive?'':'dead'} ${act?'act':''} ${heroOn?'hr-buff':''}${rd?' rdrop':''}${ent ? ent.cls(uids[k]) : ''}"
         style="left:${x}%;top:${y}%;z-index:${rd ? 140 : Math.round(y)};--us:${bfJobScale(n.job)};--uz:${bfUiZoom(n.job)}${rd ? `;--rd-out:${Math.round(RD_OUT - (performance.now() - dropAt))}ms` : ""}${ent ? ent.css(uids[k]) : ""}" data-slot="${soloBoss?'boss':`${side}-${row}-${col}`}" data-uid="${uids[k]}"${isMon ? ` data-mon="${esc(n.job)}"` : ""} tabindex="0"
-        aria-label="${_L`${esc(n.name)} 체력 ${hideHp? "???" : `${Math.round(u.hp)} / ${u.maxHp}`}, 행동 ${Math.round(u.atb*100)}%, 필살기 ${Math.round(u.ult)}%`}">
+        aria-label="${_L`${esc(n.name)} 체력 ${hideHp? "???" : `${hpCur(u.hp)} / ${hpCur(u.maxHp)}`}, 행동 ${Math.round(u.atb*100)}%, 필살기 ${Math.round(u.ult)}%`}">
         ${popHtml}${fxc}${spr}${ultFX}${heroOn ? HR_SPARK : ""}${rd ? dropHtml() : ""}
         ${say?`<div class="bf-speech ${say.tone} ${talk.call.kind==='ult'?'ultimate':''}${talk.call.pers==='intro'?' timid':talk.call.pers==='boast'?' boast':''}" style="animation-delay:-${Math.round(age)}ms">${esc(say.text)}</div>`:''}
         <div class="bf-gauges" aria-hidden="true">
@@ -33341,7 +33361,7 @@ function openBattle(res, opt, onDone){
     if(!el || !list.length) return;
     const dur = 1500;
     el.insertAdjacentHTML("beforeend", `<div class="popwrap">${list.map((x,pi)=>{
-      const txt = x.k==="miss" ? "MISS" : x.k==="die" ? "DOWN" : (x.k==="heal"||x.k==="shield" ? "+" : "") + fmt(x.v||0);
+      const txt = x.k==="miss" ? "MISS" : x.k==="die" ? "DOWN" : (x.k==="heal"||x.k==="shield" ? "+" : "") + fmtHp(x.v||0);
       return `<span class="pop ${x.k}" style="--pd:${dur}ms;animation-delay:${pi*90}ms;top:${pi*17}px">${x.k==="crit" ? `<b class="popcrit">CRITICAL!!</b>` : ""}${txt}</span>`;
     }).join("")}</div>`);
     popCritFit($("#modalRoot"));
