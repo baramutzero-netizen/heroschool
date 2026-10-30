@@ -2514,6 +2514,57 @@ html body #modalRoot .scw-ov button.scw-ch.scw-ch:is(.hot,:hover){color:#fff!imp
 .ep-named .ep-title{opacity:1;scale:1}
 @media (prefers-reduced-motion:reduce){.ep-sil,.ep-bub,.ep-title,.ep-beam,.ep-pool{animation:none!important;transition:none!important}.ep-crowd-on .ep-bub{opacity:1}}
 /* EPWIN_CSS_END */
+/* TRWIN_CSS_START — 신뢰 안내 창 (1030 목업 · apply_trwin.py) ─ 안내 화면 창(NTWIN) 무대 위에: 학생 머리 위 큰 하트(빈 하트 위로 빨간 하트가 아래부터 차오른다 ·
+   꽉 차면 여신의 눈물이 맺혀 아래로 떨어진다 — 1030 셋째부터 하트 안 숫자 없음 · 넷째부터 떨어진다 · 다섯째부터 얻은 수만큼) · 단계가 바뀌는 칸은 하트 아래 단계 이름 도장 · 운명(9)은 금빛 하트 + 뒤로 도는 빛줄기 /
+   글 — 신뢰 하트 줄(새 칸이 톡) · 여신의 눈물 줄(물방울 그림 · 보유) */
+.ntw-trl{position:absolute;inset:0;pointer-events:none}   /* 쌓임 맥락을 만들지 않는다 — 빛줄기는 학생 아래 · 하트 · 도장은 학생 위 */
+.ntw-trust .ntw-units{z-index:3}
+.tr-rays{position:absolute;left:50%;top:40%;width:120%;aspect-ratio:1;translate:-50% -50%;z-index:1;opacity:0;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,#ffe28a66 0deg 8deg,transparent 8deg 22deg);
+  -webkit-mask:radial-gradient(closest-side,#000 18%,#0008 46%,transparent 72%);mask:radial-gradient(closest-side,#000 18%,#0008 46%,transparent 72%);transition:opacity .6s}
+.ntw-trust.tr-fate .tr-full .tr-rays{opacity:1;animation:trSpin 16s linear infinite}
+@keyframes trSpin{to{rotate:360deg}}
+.tr-heart{position:absolute;left:50%;top:7%;width:calc(84px * var(--ntk));height:calc(76px * var(--ntk));translate:-50% 0;z-index:6;opacity:0;scale:.3;
+  transition:opacity .18s,scale .36s cubic-bezier(.2,1.6,.4,1)}
+.tr-in .tr-heart{opacity:1;scale:1}
+.tr-heart i{position:absolute;inset:0;background-size:100% 100%;background-repeat:no-repeat;image-rendering:pixelated}
+.tr-h1{clip-path:inset(100% 0 0 0)}
+.tr-fill .tr-h1{animation:trFill 1.1s steps(13,end) forwards}
+@keyframes trFill{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0 0 0 0)}}
+.tr-full .tr-h1{animation:none;clip-path:inset(0 0 0 0)}
+.tr-full .tr-heart{animation:trBeat .62s ease-out}
+@keyframes trBeat{0%{scale:1;filter:brightness(2.4)}18%{scale:1.2;filter:brightness(1.5)}42%{scale:.95;filter:none}64%{scale:1.08}100%{scale:1}}
+/* 여신의 눈물 — 하트 아래 끝에 맺혔다가(늘어나며) 아래로 똑 떨어져 학생 머리에서 사라진다 (1030 넷째 — 사용자 '위로 올라가지말고 아래로 떨어지는걸로') ·
+   떨어지는 거리 --tr-fall 은 블록이 하트 끝과 학생 머리 자리를 재서 넣는다 · 하트(눈물)는 단계 도장 위로 지나간다 ·
+   얻은 수만큼 물방울이 여럿이면(1030 다섯째 — 단계가 바뀌는 칸 2 · 운명 3 · 많아야 5) --d 번째는 .36s 씩 늦게 (블록 TR_DROP_MS 와 같게) */
+.tr-heart i.tr-tear{inset:auto;left:50%;top:64%;width:calc(22px * var(--ntk));height:calc(32px * var(--ntk));translate:-50% 0;opacity:0;transform-origin:50% 0;
+  filter:drop-shadow(0 0 calc(4px * var(--ntk)) #bfe6ff)}
+.tr-full .tr-heart i.tr-tear{animation:trTear 1.6s calc(.1s + var(--d, 0) * .36s) both}
+@keyframes trTear{
+  0%{opacity:0;scale:.2;translate:-50% 0;animation-timing-function:cubic-bezier(.2,1.6,.4,1)}
+  16%{opacity:1;scale:1;translate:-50% 0;animation-timing-function:ease-in-out}
+  34%{opacity:1;scale:.88 1.14;translate:-50% calc(3px * var(--ntk));animation-timing-function:cubic-bezier(.5,0,.9,.6)}
+  88%{opacity:1;scale:.95 1.06;translate:-50% var(--tr-fall,90px)}
+  100%{opacity:0;scale:1.4 .5;translate:-50% calc(var(--tr-fall,90px) + 4px)}}
+.tr-stamp{position:absolute;left:50%;top:calc(7% + 80px * var(--ntk));translate:-50% 0;z-index:5;opacity:0;scale:1.8;rotate:-8deg;transition:opacity .16s,scale .32s cubic-bezier(.3,1.4,.5,1),rotate .32s}
+.tr-stamp b{display:block;padding:calc(2px * var(--ntk)) calc(9px * var(--ntk));font:400 calc(17px * var(--ntk))/1.2 "Mulmaru",sans-serif;white-space:nowrap;color:#ffe08a;
+  background:#3a1820e6;border:calc(2px * var(--ntk)) solid #e0b25e;box-shadow:0 0 0 calc(2px * var(--ntk)) #2a0f14,0 0 14px #ffcf5a66;-webkit-font-smoothing:none;font-synthesis:none}
+.tr-named .tr-stamp{opacity:1;scale:1;rotate:-3deg}
+/* 글 — 신뢰 하트 줄 · 단계 이름 · 바닥 */
+.ntw-trust .ntw-txt .tr-bn{color:var(--brass-b)}
+.ntw-trust .ntw-row.tr-hrow{display:flex;align-items:center;gap:0;flex-wrap:wrap}
+.ntw-trust .ntw-row .k{min-width:6.6em}
+.tr-hh{display:inline-flex;gap:2px;margin-right:8px;vertical-align:-2px}
+.tr-h{display:inline-block;width:16px;height:14px;line-height:0}
+.tr-h img{width:100%;height:100%;image-rendering:pixelated;display:block}
+.ntw-txt .on .tr-h.new{animation:trHPop .5s cubic-bezier(.2,1.6,.4,1) calc(.15s + var(--i,0) * .14s) both}
+@keyframes trHPop{0%{scale:0;opacity:0}60%{scale:1.45;opacity:1}100%{scale:1;opacity:1}}
+.tr-ti{display:inline-block;width:12px;height:17px;margin-right:6px;vertical-align:-3px;line-height:0}
+.tr-ti img{width:100%;height:100%;image-rendering:pixelated;display:block}
+.ntw-trust .ntw-txt .tr-own{font-size:12px;color:var(--dim);margin-left:4px}
+@media (max-width:599px){.tr-h{width:13px;height:11px}.ntw-trust .ntw-row .k{min-width:5.4em}}
+@media (prefers-reduced-motion:reduce){.tr-heart,.tr-heart i,.tr-stamp,.tr-rays,.tr-h,.tr-h1{animation:none!important;transition:none!important}}
+/* TRWIN_CSS_END */
 
 /* TIWIN_CSS_START — 인가 등급 · 새 대회 초대장 안내 창 (1025 목업 · apply_tiwin.py) ─ 안내 화면 창(NTWIN) 무대 위에: 인가증(말린 문서 → 펼침 · 붉은 인장 쾅) /
    봉투가 날아와 인장이 깨지고 편지가 펼쳐짐 → 새 대회장 배경 · 아래 사다리 경로(열린 칸이 금빛으로 이어짐) */
@@ -15407,7 +15458,7 @@ function answerCounsel(qi, oi, win){   // win — 상담창(1008): 화면을 다
     phase:q.phase||S.phase, week:q.week||(S.week+1)});
   logE(ok
     ? `상담 — <b>${dnH(st)}</b>(${personaOf(st).n})의 마음에 닿았다.${byLead? ` <span style="color:var(--brass)">지도력으로 설득</span>`:""}${byTrust? ` <span style="color:var(--brass)">운명 단계 — 무엇을 말해도 닿는다</span>`:""}${gain? ` <b style="color:var(--ok)">${gain.n} +${gain.d}</b>${dbl? ` <span style="color:var(--brass)">(호소력 2배)</span>`:""}`:""}${cookie? ` <span style="color:var(--brass)">(쿠키 상승량 2배)</span>`:""}${capped? ` <span style="color:var(--dim)">더 오를 항목이 없다 — 멘탈리티가 모두 한계다</span>`:""} · <span style="color:var(--brass)">신뢰 ${trustGainWord(1)}</span>`
-    : `상담 — <b>${dnH(st)}</b>(${personaOf(st).n})${eunn(personaOf(st).n)} 아직 납득하지 못한 표정이다. <span style="color:var(--bad)">신뢰 감소</span>`, ok?"good":"");
+    : `상담 — <b>${dnH(st)}</b>(${personaOf(st).n})${eunn(personaOf(st).n)} 아직 납득하지 못한 표정이다.${trustRaw(st) < tr0 ? ` <span style="color:var(--bad)">신뢰 감소</span>` : ""}`, ok?"good":"");
   save();
   const res = {ok, fit, byLead, byTrust, cookie, gain, dbl, capped, say:ans.say, r:ans.r, trustUp: trustRaw(st) > tr0, trustDown: trustRaw(st) < tr0, band: tb1 !== tb0 ? tb1 : null};   // 1008 — 상담창
   if(win) return res;
@@ -15659,7 +15710,7 @@ function answerDefy(pi, oi, win){   // win — 상담창(1008): 화면을 다시
   if(D.log.length > DEFY_LOG_MAX) D.log.splice(0, D.log.length - DEFY_LOG_MAX);
   logE(ok
     ? `지침 무시 상담 — <b>${dnH(st)}</b>(${personaOf(st).n})${iga(st.name)} 마스터의 뜻을 받아들였다.${byLead? ` <span style="color:var(--brass)">지도력으로 설득</span>`:""}${gain? ` <b style="color:var(--ok)">${gain.n} +${gain.d}</b>${dbl? ` <span style="color:var(--brass)">(호소력 2배)</span>`:""}`:""}${cookie? ` <span style="color:var(--brass)">(쿠키 상승량 2배)</span>`:""}${cond? ` · 컨디션 +${cond}`:""} · 신뢰 증가 · 앞으로 한동안 지침을 잘 따를 것 같다.`
-    : `지침 무시 상담 — <b>${dnH(st)}</b>(${personaOf(st).n})${eunn(st.name)} 납득하지 못한 표정이다. 신뢰 감소 · 일단은 지침을 따를 것 같다.`, ok? "good" : "");
+    : `지침 무시 상담 — <b>${dnH(st)}</b>(${personaOf(st).n})${eunn(st.name)} 납득하지 못한 표정이다. ${trustRaw(st) < tr0 ? "신뢰 감소 · " : ""}일단은 지침을 따를 것 같다.`, ok? "good" : "");
   save();
   const rx = masterQ(ok ? R2[0] : R2[1], st, true), rq = rx.match(/“([^”]*)”|「([^」]*)」/);   // 1008 — 상담창 · 1014 일본어판 「」
   const res = {ok, fit, byLead, byTrust, cookie, gain, dbl, capped, cond, say: rq ? (rq[1] !== undefined ? rq[1] : rq[2]) : rx, r: rx.replace(/“[^”]*”|「[^」]*」/, "").trim(), trustUp: trustRaw(st) > tr0, trustDown: trustRaw(st) < tr0, band: tb1 !== tb0 ? tb1 : null};
@@ -16072,6 +16123,7 @@ function cslwClose(done){
   render();
   if(done) toast("찾아온 학생들의 이야기를 모두 들었다.");
   setTimeout(()=>{ const r = $("#modalRoot"); if(r && r.firstElementChild === el) closeModal(); }, 420);
+  if(window.TRW) TRW.after(480);   // 1030 — 상담 중 신뢰가 새 칸이면 창이 닫힌 뒤 안내 창 (TRWIN)
 }
 function cslwKey(e){
   if(!CSLW.el) return;
@@ -18656,9 +18708,11 @@ function addTrust(st, v, raw){
   if(!st) return 0;
   const b0 = trustOf(st);
   // raw 가 아니면 배율을 먹인다 — 소수점은 그대로 누적된다
-  // 소수를 그대로 더하면 0.3 을 스무 번 더했을 때 5.999… 가 된다 — 소수 둘째 자리에서 끊는다
-  st.trust = clamp(Math.round((trustRaw(st) + v * (raw ? 1 : TRUST_MUL)) * 100) / 100, 0, TRUST_MAX);
+  // 소수를 그대로 더하면 0.3 을 스무 번 더했을 때 5.999… 가 된다 — 소수 셋째 자리에서 끊는다 (1030 넷째 — 둘째였다 · 추천 일과 +0.02 × 배율이 깎이지 않게)
+  const d = v * (raw ? 1 : TRUST_MUL), t1 = d > 0 && window.TRW ? TRW.gainTo(trustRaw(st), d) : trustRaw(st) + d;   // 1030 넷째 — 늘 때는 칸마다 배율 (0→1 ×2 … 8→9 ×0.5 · TRWIN)
+  st.trust = clamp(Math.round(t1 * 1000) / 1000, window.TRW ? TRW.floor(st) : 0, TRUST_MAX);   // 1030 — 지금 칸 아래로는 떨어지지 않는다 (바뀌기 전 칸) · 소수 셋째 자리 (TRWIN)
   const b1 = trustOf(st);
+  if(b1 > b0 && window.TRW) TRW.up(st, b0, b1);   // 1030 — 새 칸 → 여신의 눈물 · 의식 차례에 신뢰 안내 창 (TRWIN)
   if(b1 !== b0){
     const b = trustBand(b1), bb = trustBand(b0);
     if(b.step !== bb.step)
@@ -29115,6 +29169,256 @@ function epHtml(c){
 window.EPW = {html: epHtml, fx: epFx, stop: epSndStop, snd: EP_SND, state: EP};
 })();
 /* EPWIN_END */
+/* TRWIN_START — 신뢰 안내 창 · 신뢰 바닥 (1030 목업 · apply_trwin.py · mockups/trust-window) ─ 사용자 1030: '이제 학생의 신뢰도의 단계가 오를때 안내창으로 표시해주고,
+   올라간 단계 이하로는 안떨어지는 작업을 목업부터 해보자' — 답: 하트 한 칸(신뢰 1 ~ 9)마다 · 학생 혼자 + 하트 · 그 일이 끝난 뒤
+   · 새 칸 — 신뢰가 새 정수 칸에 닿으면(addTrust) 의식 차례에 {type:"trust", sid, lv0, lv1, 날짜} (아직 안 본 같은 학생 것이 있으면 하나로 — lv1 만 올린다)
+   · 바닥 — 신뢰가 줄 때 지금 칸 아래로는 내려가지 않는다 (addTrust 의 clamp 아래쪽 = TRW.floor(st) — 바뀌기 전 칸 · 예전 세이브는 지금 칸부터)
+   · 창 = 안내 화면 창(NTWIN · NTW.ui) 그대로: 위 날짜 · '신뢰' / 가운데 무대(학원 연습장 · 학생 혼자) / 아래 글(한 글자씩) / 닫기(#cerOk — showCeremony 흐름)
+   · 무대 — ① 학생 머리 위에 빈 하트가 톡 ② 아래부터 차오른다(차오르는 줄에 반짝) ③ 꽉 차면 하얗게 번쩍 · 두근 · 작은 하트가 퍼진다 · 하트 아래 끝에 여신의 눈물이 맺혀 학생 머리로 똑 떨어진다(1030 넷째 — 톡 소리 op_drip · 작은 반짝)
+     ④ 학생 폴짝 · 승리 모션 · 음표. 단계가 바뀌는 칸(1 · 3 · 5 · 7 · 9)은 하트 아래 단계 이름 도장(금빛). 칸이 높을수록 반짝이가 많다 ·
+     9(운명)는 금빛 하트 · 뒤로 도는 빛줄기 · 금빛 반짝이가 계속 오른다
+   · 글 — 단계가 바뀌면 'A와(과)의 관계가 ○○ 단계가 되었습니다!' + 단계 설명 (아니면 'A와(과)의 신뢰가 깊어졌습니다!' 한 줄) ·
+     신뢰 하트 줄(새 칸이 톡) n / 9 · 여신의 눈물 +얻은 수(보유) · 졸업 후원금 +(20% × n) · 단계가 바뀌면 지침 무시 확률 −10%p (운명 — 지침 무시: 무시 안함 · 상담 · 락커룸: 무조건 호응)
+     1030 셋째(사용자 — 목업을 보고): 바닥 줄('이제 신뢰가 하트 n칸 아래로 …') · '다음 단계 …까지 하트 n칸' 줄 · 하트 안 숫자는 뺐다 (바닥은 그대로 돈다) ·
+     '더는 하지 않는다' → '무시 안함' · '어떤 말이든 닿는다' → '무조건 호응' · 신뢰 한 칸마다 여신의 눈물 1개 (마스터 육성에 쓸 재화)
+   · 여신의 눈물 — S.items.tear (새 칸에 닿는 순간 TR_TEAR_AT 만큼 · 일지 한 줄 · 안내 창 줄) — 소지품에는 보이지 않는다 (1030 여섯째 — 셋째에 넣었던 INVN 고리는 뺐다)
+     1030 다섯째(사용자 '1,3,5,7 도달 시 눈물 획득량 2개, 9 도달 시 3개 / 한명당 총 15개 획득 가능하게 하자'): 단계가 바뀌는 칸(1 · 3 · 5 · 7) 2개 · 운명(9) 3개 ·
+     나머지(2 · 4 · 6 · 8) 1개 = 한 명에 모두 15개 · 무대의 물방울도 얻은 수만큼(많아야 5) 차례로 떨어진다
+     1030 여섯째(사용자 '소지품에서 노출 시키지마. 지난 칸 몫은 한번 지급하자'): 학생마다 받은 칸 st.tearLv — 같은 칸은 두 번 주지 않는다(한 명에 많아야 15개 · 바닥과 상관없이) ·
+     세이브를 열 때(bootMain) TRW.back() — 지금 칸까지 아직 안 받은 몫을 모아 한 번에 · 일지 한 줄 (예전 세이브는 지금 칸까지의 몫 · 그 뒤에는 0 · 새 학생은 받은 칸 0)
+   · 1030 넷째(사용자 '신뢰 증가율을 0에서 1갈때 2배, 8에서 9갈때 0.5배 느낌으로 … 초반에는 쉽게, 후반에는 어렵게' — 답: 곱셈으로 매끄럽게 · 증가에만):
+     늘 때만 지금 칸의 배율 TR_GAIN (0→1 ×2.0 · 1.7 · 1.4 · 1.2 · 4→5 ×1.0 · 0.85 · 0.7 · 0.6 · 8→9 ×0.5) — 칸을 넘으면 남은 몫은 다음 칸 배율로 (TRW.gainTo) ·
+     줄 때(빗나감 · 신뢰 하락 표식)는 그대로 · 소수 셋째 자리에서 끊는다(예전 둘째 — 추천 일과 +0.02 × 배율이 깎이지 않게 · 바닥도 같은 자리로)
+   · 띄우는 때 — 의식 차례(showCeremony): 일과(추천 일과 · 신뢰 표식)는 주간 진행 끝 · 락커룸은 경기 · 대회 결과 뒤 · 상담 · 지침 무시 상담은 그 창을 닫을 때(TRW.after)
+   고리 (apply_trwin.py) — addTrust(바닥 · 새 칸) · showCeremony(type trust) · bootMain(지난 칸 몫 TRW.back — 1030 여섯째) · 상담창 닫기(CSLWIN) · 좁은 화면 상담 단추 둘 ·
+     빗나감 글의 '신뢰 감소'는 실제로 줄었을 때만 (상담 · 지침 무시 일지 · 락커룸 일지 · 락커룸 창 두 곳 — LKWIN) */
+(function(){
+const TR = {art: null, loop: 0};
+const TR_FILL_MS = 1100;                                       // 하트가 차오르는 시간 (CSS trFill 과 같게)
+function trUi(){ return window.NTW && NTW.ui && NTW.modes ? NTW.ui : null; }
+function trStu(id){ return (typeof S !== "undefined" && S && (S.students || []).find(x => x.id === id)) || null; }
+function trBand(v){ return trustBand(v); }
+function trDefyIdx(v){ return v >= 7 ? 4 : v >= 5 ? 3 : v >= 3 ? 2 : v >= 1 ? 1 : 0; }   // defyTrustIdx 와 같은 칸
+
+/* ── 바닥 — 바뀌기 전 칸 (정수 · addTrust 와 같은 소수 셋째 자리) ── */
+function trFloor(st){
+  const v = st && +st.trust;
+  return isFinite(v) ? clamp(Math.floor(Math.round(v * 1000) / 1000), 0, TRUST_MAX) : 0;
+}
+
+/* ── 증가율 (1030 넷째) — 지금 칸(정수)마다 배율 · 칸을 넘으면 남은 몫은 다음 칸 배율로 ── */
+const TR_GAIN = [2.0, 1.7, 1.4, 1.2, 1.0, 0.85, 0.7, 0.6, 0.5];   // 0→1 … 8→9 (2 × 0.25^(칸/8) 을 0.05 자리로 — 4→5 가 ×1)
+function trRate(k){ return TR_GAIN[clamp(k | 0, 0, TR_GAIN.length - 1)] || 1; }
+function trGainTo(t, d){                                         // 신뢰 t 에 기본 증가량 d(> 0)를 더한 뒤의 신뢰
+  let left = d;
+  while(left > 1e-9 && t < TRUST_MAX - 1e-9){
+    const k = clamp(Math.floor(t + 1e-9), 0, TRUST_MAX - 1), m = trRate(k), need = (k + 1 - t) / m;
+    if(left >= need - 1e-9){ t = k + 1; left -= need; } else { t += left * m; left = 0; }
+  }
+  return Math.min(TRUST_MAX, t);
+}
+function trNeed(t, to){                                          // t 에서 to 까지 가는 데 드는 기본 증가량 (목업 · 시험)
+  let need = 0;
+  while(t < to - 1e-9){
+    const k = clamp(Math.floor(t + 1e-9), 0, TRUST_MAX - 1), nx = Math.min(to, k + 1);
+    need += (nx - t) / trRate(k); t = nx;
+  }
+  return need;
+}
+
+/* ── 여신의 눈물 (1030 셋째) — 마스터 육성에 쓸 재화 · 닿은 칸마다 TR_TEAR_AT 만큼 (1030 다섯째) · 학생마다 받은 칸 st.tearLv (1030 여섯째) ── */
+const TR_TEAR = "여신의 눈물";
+const TR_TEAR_AT = [0, 2, 1, 2, 1, 2, 1, 2, 1, 3];              // 칸 1 … 9 에 닿을 때 — 단계가 바뀌는 칸(1 · 3 · 5 · 7) 2개 · 운명(9) 3개 · 나머지 1개 → 한 명에 모두 15개
+const TR_DROP_MS = 360;                                          // 물방울이 여럿이면 이만큼 사이를 두고 (CSS trTear 지연 .36s 와 같게)
+function trTearOf(lv0, lv1){                                     // 칸 lv0 → lv1 로 오를 때 얻는 수 (lv0 < 칸 ≤ lv1)
+  let n = 0;
+  for(let k = Math.max(0, lv0 | 0) + 1; k <= Math.min(TRUST_MAX, lv1 | 0); k++) n += TR_TEAR_AT[k] || 0;
+  return n;
+}
+function trTears(){ return Math.max(0, Math.floor(Number(typeof S !== "undefined" && S && S.items && S.items.tear) || 0)); }
+function trPaidLv(st){ const v = st ? Number(st.tearLv) : NaN; return isFinite(v) ? clamp(Math.floor(v), 0, TRUST_MAX) : 0; }   // 받은 칸 — 없으면 0 (예전 세이브 · 새 학생)
+function trPay(st, lv){                                          // lv 칸까지 아직 안 받은 몫을 준다 → 준 수 (같은 칸은 두 번 주지 않는다 — 1030 여섯째)
+  if(!st) return 0;
+  const from = trPaidLv(st), to = clamp(lv | 0, 0, TRUST_MAX), n = to > from ? trTearOf(from, to) : 0;
+  st.tearLv = Math.max(from, to);
+  if(n > 0){ S.items = S.items || {}; S.items.tear = trTears() + n; }
+  return n;
+}
+
+/* ── 새 칸 — 여신의 눈물 · 의식 차례에 (같은 학생이 아직 안 본 것이 있으면 하나로 — 받은 수도 더한다) ── */
+function trUp(st, lv0, lv1){
+  if(!st || !(lv1 > lv0) || typeof S === "undefined" || !S || !(S.students || []).includes(st)) return;
+  const n = trPay(st, lv1);
+  if(n > 0) logE(`${TR_TEAR} — <b>${dnH(st)}</b>${gwa(st.name)}의 신뢰가 깊어져 <b style="color:var(--brass)">${TR_TEAR}</b> ${n}개를 얻었다. (보유 ${trTears()}개)`, "good");
+  if(typeof UI === "undefined") return;
+  const Q = UI.ceremonies = UI.ceremonies || [];
+  const c = Q.find(x => x && x.type === "trust" && x.sid === st.id);
+  if(c){ c.lv1 = Math.max(c.lv1 | 0, lv1); c.tear = (c.tear | 0) + n; return; }
+  const P = PHASES[S.phase] || {weeks: 6};
+  Q.push({type: "trust", sid: st.id, lv0, lv1, tear: n, year: S.year, phase: S.phase, week: Math.max(1, Math.min(P.weeks || 6, (S.week | 0) + 1))});
+}
+
+/* ── 지난 칸 몫 (1030 여섯째) — 세이브를 열 때(bootMain) 한 번: 학생마다 지금 칸까지 아직 안 받은 몫을 모아 준다 · 일지 한 줄 (그 뒤에는 0) ── */
+function trBack(){
+  if(typeof S === "undefined" || !S || !Array.isArray(S.students)) return 0;
+  let n = 0;
+  S.students.forEach(st => { if(st) n += trPay(st, trFloor(st)); });
+  if(n > 0) logE(`${TR_TEAR} — 학생들과 지금까지 쌓아 온 신뢰의 몫으로 <b style="color:var(--brass)">${TR_TEAR}</b> ${n}개를 받았다. (보유 ${trTears()}개)`, "good");
+  return n;
+}
+
+/* ── 그 일이 끝난 뒤 — 상담창 · 좁은 화면 상담 (다른 창 · 진행 중이면 의식 차례가 알아서: 주간 진행 끝 · 대회 결과 뒤) ── */
+function trAfter(ms){
+  setTimeout(() => {
+    if(!(UI.ceremonies || []).some(c => c && c.type === "trust")) return;
+    const mr = document.getElementById("modalRoot");
+    if(UI.wrun || UI.battle || UI.tour || UI.pendingTour || (mr && mr.innerHTML.trim()) || document.getElementById("bootLoader")) return;
+    showCeremony();
+  }, ms || 0);
+}
+
+/* ── 도트 하트 — 큰 하트(빈 · 빨강 · 금빛) · 글 줄의 작은 하트 ── */
+function trArt(){
+  if(TR.art) return TR.art;
+  const U = trUi();
+  const BIG = ["..###.....###..", ".#####...#####.", "#######.#######", "###############", "###############", "###############", ".#############.",
+               "..###########..", "...#########...", "....#######....", ".....#####.....", "......###......", ".......#......."];
+  const SMALL = [".##.##.", "#######", "#######", ".#####.", "..###..", "...#..."];
+  const TEAR = ["...#...", "...#...", "..###..", "..###..", ".#####.", ".#####.", "#######", "#######", "#######", ".#####.", "..###.."];   // 여신의 눈물 — 물방울 (빛 · 그늘)
+  const tear = (c, x, y) => (x === 2 && (y === 5 || y === 6)) || (x === 3 && y === 4) ? [250, 255, 255] : (x >= 4 && y >= 7) || (x === 5 && y === 6) ? [86, 150, 228] : [150, 214, 255];
+  const shape = M => (x, y) => y >= 0 && y < M.length && x >= 0 && x < M[0].length && M[y][x] === "#";
+  const shade = (M, base, hi, lo) => { const at = shape(M); return (c, x, y) => ((x >= 2 && x <= 3 && y >= 1 && y <= 3) || (x === 1 && y === 3) || (x === 10 && y === 1)) ? hi
+    : (y > M.length * .4 && (!at(x + 1, y + 1) || !at(x, y + 1))) ? lo : base; };
+  const sm = (M, base, hi) => (c, x, y) => (x === 1 && y === 1) || (x === 2 && y === 1) ? hi : base;
+  return (TR.art = {
+    empty: U.pix(BIG, shade(BIG, [70, 38, 54], [98, 62, 78], [52, 26, 40]), [250, 228, 234]),
+    full: U.pix(BIG, shade(BIG, [234, 70, 98], [255, 178, 192], [178, 38, 70]), [84, 18, 38]),
+    gold: U.pix(BIG, shade(BIG, [250, 198, 62], [255, 244, 188], [204, 138, 26]), [96, 58, 8]),
+    on: U.pix(SMALL, sm(SMALL, [232, 70, 96], [255, 186, 198]), [120, 30, 50]),
+    off: U.pix(SMALL, sm(SMALL, [226, 210, 198], [240, 230, 222]), [176, 150, 132]),
+    gon: U.pix(SMALL, sm(SMALL, [246, 192, 58], [255, 240, 182]), [120, 76, 10]),
+    tear: U.pix(TEAR, tear, [28, 58, 118])
+  });
+}
+
+/* ── 무대 연출 (NTW.modes.trust) ── */
+const TR_SPOT = [[40, 30], [60, 26], [34, 16], [66, 12], [46, 6], [56, 38], [30, 32], [70, 34], [50, 2]];   // 꽉 찰 때 반짝이 자리 [x %, y %] — 칸이 높을수록 많이
+async function trFx(run, U){
+  const ui = trUi(), q = ui.q, st = q(".ntw-stage"), a = U[0]; if(!st || !a) return;
+  const D = (NTW.state && NTW.state.data) || {}, lv = clamp(D.lv1 | 0, 1, TRUST_MAX), fate = lv >= TRUST_MAX, A = trArt();
+  const K = parseFloat(getComputedStyle(st).getPropertyValue("--ntk")) || 1;    // 무대 배율 — 좁은 화면에서 반짝이 · 하트 · 음표도 같이 작게
+  const nd = clamp(D.tear != null ? D.tear | 0 : trTearOf(D.lv0, lv), 0, 5);   // 물방울 수 = 이번에 받은 여신의 눈물 (많아야 5 — 1030 다섯째 · 받은 칸이라 0 이면 없다)
+  let L = q(".ntw-trl");
+  if(!L){ L = document.createElement("div"); L.className = "ntw-trl"; st.appendChild(L); }
+  L.innerHTML = `<div class="tr-rays"></div>
+    <div class="tr-heart"><i class="tr-h0" style="background-image:url(${A.empty.url})"></i><i class="tr-h1" style="background-image:url(${(fate ? A.gold : A.full).url})"></i>${
+      Array.from({length: nd}, (_, i) => `<i class="tr-tear" style="--d:${i};background-image:url(${A.tear.url})"></i>`).join("")}</div>
+    ${D.band ? `<div class="tr-stamp"><b></b></div>` : ""}`;
+  const sb = L.querySelector(".tr-stamp b"); if(sb) sb.textContent = D.bn || "";
+  st.classList.remove("tr-in", "tr-fill", "tr-full", "tr-named");
+  TR.loop++;
+  const fin = () => { st.classList.add("tr-in", "tr-fill", "tr-full", "tr-named"); ui.spr(a, "win"); };
+  if(ui.rm()){ fin(); return; }
+  await ui.wait(320); if(!ui.live(run)) return;
+  st.classList.add("tr-in"); ui.sfx("relic_pop");                              // ① 빈 하트가 톡
+  await ui.wait(480); if(!ui.live(run)) return;
+  st.classList.add("tr-fill"); ui.sfx("heal");                                 // ② 아래부터 차오른다 — 차오르는 줄에 반짝
+  for(let i = 0; i < 6; i++){
+    const k = (i + .5) / 6, y = 7 + 27 * (1 - k);
+    ui.fx("spark", 50 + (i % 2 ? 9 : -9) * (1 - k * .5), y, {k: .8 * K, cls: "pop", life: 440});
+    await ui.wait(TR_FILL_MS / 6); if(!ui.live(run)) return;
+  }
+  const land = trTearAim(st, L, a, K);                                         // 여신의 눈물이 떨어질 거리 · 닿는 자리 (하트 끝 → 학생 머리)
+  st.classList.add("tr-full");                                                 // ③ 꽉 — 번쩍 · 두근 · 작은 하트 · 반짝이 · 여신의 눈물
+  ui.fx("burst", 50, 9, {k: 2.2 * K, cls: "pop", life: 440});
+  ui.sfx(D.band ? "levelup" : "csl_ok"); if(fate) ui.sfx("fs_glint");
+  [[38, 20], [62, 16], [50, 4]].forEach(([x, y], i) => setTimeout(() => ui.live(run) && ui.fx("heart", x, y, {k: 1.2 * K, cls: "rise", life: 1600}), i * 140));
+  TR_SPOT.slice(0, Math.min(TR_SPOT.length, 1 + lv)).forEach(([x, y], i) => ui.fx("spark", x, y, {k: (.9 + (i % 3) * .2) * K, cls: "tw" + (i % 2 ? " d2" : ""), life: 2600}));
+  for(let i = 0; i < nd; i++) setTimeout(() => {                               // 여신의 눈물이 학생 머리에 닿는 때 (CSS trTear .1s + 1.6s 의 88% · 물방울마다 .36s 뒤) — 톡 · 작은 반짝
+    if(!ui.live(run)) return;
+    const dx = i % 2 ? 3 : 0;
+    ui.sfx("op_drip"); ui.fx("spark", 46 + dx, land - 1, {k: .7 * K, cls: "pop", life: 460}); ui.fx("spark", 55 - dx, land + 1, {k: .6 * K, cls: "pop", life: 460});
+  }, 1500 + i * TR_DROP_MS);
+  await ui.wait(260); if(!ui.live(run)) return;
+  st.classList.add("tr-named"); ui.spr(a, "win"); ui.hop(a, 2); trNotes(run, 58, 44, K);   // ④ 폴짝 · 승리 모션 · 음표 (단계가 바뀌면 이름 도장)
+  if(fate) trGlitter(run, K);
+}
+/* 여신의 눈물 — 하트 끝에서 학생 머리(그림 칸 위쪽에서 조금 아래)까지 떨어질 거리를 재서 --tr-fall 로 · 닿는 자리(무대 %)를 돌려준다 */
+function trTearAim(st, L, a, K){
+  const t = L.querySelector(".tr-tear"); if(!t || !a) return 56;
+  const sr = st.getBoundingClientRect(), tr = t.getBoundingClientRect(), ur = a.getBoundingClientRect();   // .ntw-u — 발밑 한 점
+  const head = ur.top + 34 - 113 * K;                                        // 그림 칸(128 · 발밑 34 아래 · ×배율) 위쪽에서 15 쯤 아래 = 머리
+  const fall = Math.max(24 * K, head + 4 * K - tr.bottom);
+  L.querySelectorAll(".tr-tear").forEach(x => x.style.setProperty("--tr-fall", fall.toFixed(1) + "px"));   // 물방울이 여럿이어도 같은 자리 · 같은 거리
+  return sr.height ? clamp((head + 6 * K - sr.top) / sr.height * 100, 30, 80) : 56;
+}
+/* 음표 — NTW 음표와 같은 셋 (무대 배율만큼) */
+function trNotes(run, x, y, K){
+  const ui = trUi();
+  [["note", -6, 0, 1.3, 0], ["note2", 4, -4, 1.2, 220], ["note", 10, 2, 1.1, 420]].forEach(([k, dx, dy, s, t]) =>
+    setTimeout(() => ui.live(run) && ui.fx(k, x + dx, y + dy, {k: s * K, cls: "rise", life: 1600}), t));
+}
+/* 운명 — 금빛 반짝이가 계속 오른다 (다시 보기 · 닫기면 멈춘다) */
+function trGlitter(run, K){
+  const ui = trUi(), tok = ++TR.loop;
+  const tick = () => {
+    if(TR.loop !== tok || !ui.live(run)) return;
+    ui.fx("spark", 18 + Math.random() * 64, 46 + Math.random() * 36, {k: (.6 + Math.random() * .6) * (K || 1), cls: "rise", life: 1600});
+    setTimeout(tick, 170);
+  };
+  tick();
+}
+function trReg(){ const ui = trUi(); if(!ui) return false; NTW.modes.trust = trFx; return true; }
+trReg();
+
+/* ── 창 — 의식(type trust) · 같은 #cerOk ── */
+function trHearts(lv0, lv1, fate){
+  const A = trArt(); let k = 0;
+  return `<span class="tr-hh" aria-hidden="true">${Array.from({length: TRUST_MAX}, (_, i) => {
+    const on = i < lv1, nw = i >= lv0 && i < lv1;
+    return `<i class="tr-h${on ? " on" : ""}${nw ? " new" : ""}"${nw ? ` style="--i:${k++}"` : ""}><img src="${(on ? (fate ? A.gon : A.on) : A.off).url}" alt="" draggable="false"></i>`;
+  }).join("")}</span>`;
+}
+function trHtml(c){
+  const ui = trUi(); if(!ui || !trReg()) return null;
+  const st = c && trStu(c.sid);
+  if(!st || typeof sprHas !== "function" || !sprHas(st.job)) return null;
+  const lv1 = clamp(c.lv1 | 0, 1, TRUST_MAX), lv0 = clamp(Math.min(c.lv0 | 0, lv1 - 1), 0, TRUST_MAX);
+  const B1 = trBand(lv1), B0 = trBand(lv0), band = B1.step !== B0.step, fate = lv1 >= TRUST_MAX;
+  const nm = dnH(st);
+  const big = band ? `<p class="big${fate ? " gold" : ""}" data-ty>${nm}${gwa(st.name)}의 관계가 <b class="tr-bn">${B1.step}</b> 단계가 되었습니다!</p>`
+    : `<p class="big" data-ty>${nm}${gwa(st.name)}의 신뢰가 깊어졌습니다!</p>`;
+  const sub = band ? `<p class="sub" data-ty>${esc(B1.rel)}.</p>` : "";             // 1030 셋째 — '다음 단계 …까지 하트 n칸' 줄은 뺐다
+  const row = (k, v, cls) => `<p class="ntw-row${cls ? " " + cls : ""}" data-ty><span class="k">${k}</span> ${v}</p>`;
+  const d0 = DEFY_TRUST[trDefyIdx(lv0)], d1 = DEFY_TRUST[trDefyIdx(lv1)], tn = trCerTear(c, lv0, lv1);
+  const rows = row(`${"신뢰"}`, `${trHearts(lv0, lv1, fate)}<b class="num">${lv1} / ${TRUST_MAX}</b>`, "tr-hrow good")
+    + (tn > 0 ? row(`${TR_TEAR}`, `${trTearIc()}<b class="num">+${tn}</b> <span class="tr-own">${`보유 ${trTears()}개`}</span>`, "tr-trow good") : "")
+    + row(`${"졸업 후원금"}`, `<b class="num">+${Math.round(lv1 * TRUST_GRAD_GOLD * 100)}%</b>`, "good")
+    + (fate ? row(`${"지침 무시"}`, `<b>${"무시 안함"}</b>`, "good") + row(`${"상담 · 락커룸"}`, `<b>${"무조건 호응"}</b>`, "good")
+      : band && d1 < d0 ? row(`${"지침 무시 확률"}`, `<b class="num">−${d0 - d1}%p</b>`, "good") : "");
+  const ph = PHASES[c.phase] ? PHASES[c.phase].n : "";
+  ui.mount("trust", {bg: "academy", lv0, lv1, band, fate, bn: B1.step, tear: tn});
+  return ui.html({mode: "trust" + (band ? " tr-band" : "") + (fate ? " tr-fate" : ""), eye: c.year ? `${yrName(c.year)} ${ph} ${c.week}주` : "", title: `${"신뢰"}`,
+    units: ui.unit(st, 0, 50, false), lines: big + sub + `<div class="ntw-rows">${rows}</div>`});   // 1030 셋째 — 바닥 줄('이제 신뢰가 하트 n칸 아래로 …')은 뺐다 (바닥은 그대로 돈다)
+}
+/* 이번 창에서 받은 여신의 눈물 — 의식에 적힌 수 (받은 칸이 있어 0 이면 줄 · 물방울 없음 · 1030 여섯째) · 없으면 칸으로 */
+function trCerTear(c, lv0, lv1){ return c && c.tear != null ? Math.max(0, c.tear | 0) : trTearOf(lv0, lv1); }
+/* 여신의 눈물 그림 — 글 줄 (도트 물방울 · 소지품에는 보이지 않는다 — 1030 여섯째) */
+function trTearIc(){ return `<i class="tr-ti" aria-hidden="true"><img src="${trArt().tear.url}" alt="" draggable="false"></i>`; }
+/* 창을 만들 수 없을 때 (그림 없는 학생 · NTW 없음) — 예전 모양 팝업 */
+function trPlain(c){
+  const st = c && trStu(c.sid), lv1 = clamp((c && c.lv1) | 0, 1, TRUST_MAX), lv0 = clamp(Math.min((c && c.lv0) | 0, lv1 - 1), 0, TRUST_MAX), B = trBand(lv1), tn = trCerTear(c, lv0, lv1);
+  return `<div class="cerhead"><div class="eyebrow">${"신뢰"}</div><h2 style="font-size:24px;margin-top:2px">${st ? dnH(st) : ""} — ${B.step} <span class="num">${lv1} / ${TRUST_MAX}</span></h2></div>
+    <p class="od" style="margin-top:8px">${esc(B.rel)}${tn > 0 ? ` · ${`${TR_TEAR} +${tn}`}` : ""}</p>
+    <div class="btnrow" style="margin-top:14px"><button class="btn primary" id="cerOk">${"확인"}</button></div>`;
+}
+function trCer(c){ return trHtml(c) || trPlain(c); }
+
+window.TRW = {floor: trFloor, up: trUp, back: trBack, after: trAfter, cer: trCer, html: trHtml, fx: trFx, art: trArt, state: TR,
+  tears: trTears, tearName: TR_TEAR, tearAt: TR_TEAR_AT, tearOf: trTearOf, paidLv: trPaidLv, left: st => trTearOf(trPaidLv(st), TRUST_MAX),
+  gain: TR_GAIN, rate: trRate, gainTo: trGainTo, need: trNeed};
+})();
+/* TRWIN_END */
 
 /* TIWIN_START — 인가 등급 · 새 대회 초대장 안내 창 (1025 목업 · apply_tiwin.py · mockups/tier-invite) ─ 사용자 1025: '새로운 인가 등급 안내창하고 새로운 대회 안내 창 목업해볼까'
    답: 인가 등급은 '인가증에 도장 쾅' · 새 대회는 '서한 → 대회 경로 이어짐' · 글은 짧게.
@@ -30382,12 +30686,14 @@ function bindView(){
   v.querySelectorAll("[data-csl]").forEach(b=> b.onclick=()=>{
     const [qi,oi] = b.dataset.csl.split("|").map(Number);
     answerCounsel(qi, oi);
+    if(window.TRW) TRW.after();   // 1030 — 신뢰가 새 칸이면 안내 창 (TRWIN)
   });
   v.querySelectorAll("[data-cslw]").forEach(b=> b.onclick=()=> cslwOpen());   // 1008 — 상담창 열기
   v.querySelectorAll("[data-cslrec]").forEach(b=> b.onclick=()=>{ UI.view = "csllog"; render(); });
   v.querySelectorAll("[data-defy]").forEach(b=> b.onclick=()=>{   // 1008 — 지침 무시 상담
     const [pi,oi] = b.dataset.defy.split("|").map(Number);
     answerDefy(pi, oi);
+    if(window.TRW) TRW.after();   // 1030 — 신뢰가 새 칸이면 안내 창 (TRWIN)
   });
   v.querySelectorAll("[data-mpt]").forEach(b=> b.onclick=()=>{
     const k=b.dataset.mpt;
@@ -30604,6 +30910,7 @@ function showCeremony(){
     : c.type==="lvup" ? lvupCeremony(c)
     : c.type==="rivalintro" ? rivalIntroCeremony(c)
     : c.type==="jobgrade" ? jobGradeCeremony(c)
+    : c.type==="trust" ? (window.TRW ? TRW.cer(c) : "")   // 1030 — 신뢰 새 칸 (TRWIN)
     : enrollCeremony(c);
   } finally { NAME_PLAIN = false; }
   showModal(html, ()=>{
@@ -34366,14 +34673,17 @@ function lockerSpeak(t, L, idx, my){
     let conv = false, byTrust = false;
     if(!ok && trustFull(st)){ ok = true; byTrust = true; }        // 운명 단계는 언제나 통한다
     else if(!ok && !right && RNG() < netP){ ok = true; conv = true; }   // 호소력 — 맞지 않는 말일 때
+    const t0 = trustRaw(st);   // 1030 — 바닥에 걸려 줄지 않았으면 '신뢰 감소'를 쓰지 않는다 (TRWIN)
     addTrust(st, ok ? (o.type==="motive" ? TRUST_D.motive : TRUST_D.speech) : TRUST_D.speechMiss, true);   // 동기부여는 신뢰가 두 배로 쌓인다 · 1022 — +0.2 (동기부여 +0.4) · 빗나가면 −0.1
     L.res[st.id] = ok; L.conv[st.id] = conv; L.byTrust = L.byTrust||{}; L.byTrust[st.id] = byTrust;
+    L.tdn = L.tdn||{}; L.tdn[st.id] = trustRaw(st) < t0;   // 1030 — 신뢰가 실제로 줄었는지 (락커룸 창 · 일지 — TRWIN)
     L.mood[st.id] = Math.round(clamp(L.mood[st.id] + (ok? MOOD_SPEECH : -MOOD_SPEECH), 0, 100));
     (ok? names.ok : names.no).push(st.name);
+    if(L.tdn[st.id]) (names.dn = names.dn||[]).push(st.name);
   });
   logE(`락커룸 — <b>${SPEECH_TYPE[o.type].n}</b> &ldquo;${esc(o.t)}&rdquo;${
     names.ok.length? ` · <b style="color:var(--ok)">통함 ${esc(names.ok.join(", "))}</b> <span style="color:var(--brass)">신뢰 ${trustGainWord(o.type==="motive"?2:1)}</span>`:""}${
-    names.no.length? ` · <span style="color:var(--bad)">빗나감 ${esc(names.no.join(", "))}</span> <span style="color:var(--bad)">신뢰 감소</span>`:""}`, "");
+    names.no.length? ` · <span style="color:var(--bad)">빗나감 ${esc(names.no.join(", "))}</span>${(names.dn||[]).length? ` <span style="color:var(--bad)">신뢰 감소</span>` : ""}`:""}`, "");
 }
 
 /* LKWIN_START — 락커룸 창 (1013 · apply_lkwin.py) ─ 경기 직전 감독의 한마디를 상담창 같은 창으로. mockups/locker-room 목업 그대로
@@ -34466,7 +34776,7 @@ function lockerHtml(L, my){
         <div class="lkf">${v>=MOOD_GOOD? `체력·공격력·방어력·속도 <b style="color:var(--ok)">+${Math.round(MOOD_STAT*100)}%</b>`
           : v<=MOOD_BAD? `체력·공격력·방어력·속도 <b style="color:var(--bad)">-${Math.round(MOOD_STAT*100)}%</b>` : "보정 없음"}</div>
         ${said? `<div class="lkr ${r?"ok":"bad"}">${r? "받아들였다":"통하지 않았다"} ${d>0?"+":""}${d}${
-          r? ` · <span style="color:var(--brass)">신뢰 ${trustGainWord(said.type==="motive"?2:1)}</span>` : ` · <span style="color:var(--bad)">신뢰 감소</span>`}${   /* 1022 — 빗나가면 신뢰 −0.1 (TRUST_D) */
+          r? ` · <span style="color:var(--brass)">신뢰 ${trustGainWord(said.type==="motive"?2:1)}</span>` : (L.tdn && !L.tdn[st.id] ? "" : ` · <span style="color:var(--bad)">신뢰 감소</span>`)}${   /* 1022 — 빗나가면 신뢰 −0.1 (TRUST_D) */
           L.conv[st.id]? ` · <span style="color:var(--brass)">호소력</span>`:""}${
           (L.byTrust&&L.byTrust[st.id])? ` · <span style="color:var(--brass)">운명</span>`:""}</div>`:""}
       </div>`; }).join("")}</div>
@@ -34896,7 +35206,7 @@ function lkwResultHtml(){
   const nm = T=> esc(T.st.name) + (L.conv[T.st.id] ? ` <span class="cw-lead">(호소력)</span>` : (L.byTrust && L.byTrust[T.st.id]) ? ` <span class="cw-lead">(운명)</span>` : "");
   const pct = Math.round(MOOD_STAT * 100), lines = [];
   if(ok.length) lines.push(`<span class="cw-ok">통함 — ${ok.map(nm).join(", ")}</span> · <span class="cw-brass">신뢰 ${trustGainWord(o.type === "motive" ? 2 : 1)}</span>`);
-  if(no.length) lines.push(`<span class="cw-bad">빗나감 — ${no.map(nm).join(", ")}</span> · <span class="cw-bad">신뢰 감소</span>`);   // 1022 — 빗나가면 신뢰 −0.1 (TRUST_D)
+  if(no.length) lines.push(`<span class="cw-bad">빗나감 — ${no.map(nm).join(", ")}</span>${L.tdn && !no.some(T=> L.tdn[T.st.id]) ? "" : ` · <span class="cw-bad">신뢰 감소</span>`}`);   // 1022 — 빗나가면 신뢰 −0.1 (TRUST_D)
   const g = LKW.team.filter(T=> L.mood[T.st.id] >= MOOD_GOOD).length, b = LKW.team.filter(T=> L.mood[T.st.id] <= MOOD_BAD).length;
   if(g && b) lines.push(`이번 경기 체력·공격력·방어력·속도 — 기분 좋음 ${g}명 <span class="cw-ok">+${pct}%</span> · 기분 나쁨 ${b}명 <span class="cw-bad">-${pct}%</span>`);
   else if(g) lines.push(`이번 경기 체력·공격력·방어력·속도 — 기분 좋음 ${g}명 <span class="cw-ok">+${pct}%</span>`);
@@ -49663,6 +49973,7 @@ function bootMain(){
     if(x._prevFocus != null) x._prevFocus = actNorm(x._prevFocus);
     if(!x.pers){ x.pers = wchoose(PERSONA_KEYS.reduce((a,k)=>{ a[k]=PERSONA[k].w; return a; }, {})); applyPersona(x); }
   });
+  if(window.TRW) TRW.back();   // 1030 여섯째 — 지금 칸까지 아직 안 받은 신뢰 칸 몫의 여신의 눈물 (예전 세이브는 한 번 · 학생마다 받은 칸 tearLv — TRWIN)
   if(S.phase==="winter" && S.scouts && typeof S.scoutTries!=="number") S.scoutTries = scoutTriesMax();
   if(S.phase==="fall" && !S.fallRun) S.fallRun = newFallRun();
   if(!S.mission) S.mission = newMission();

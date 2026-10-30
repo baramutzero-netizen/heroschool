@@ -2034,5 +2034,16 @@
  "_OPTAB (1029)": "",
  "게임": "Game",
  "화면": "Display",
- "사운드": "Sound"
+ "사운드": "Sound",
+ "_trwin (1030 — 신뢰 안내 창 · 여신의 눈물 · trwin_block — 새 칸 · 지난 칸 몫)": "",
+ "여신의 눈물": "Goddess Tears",
+ "{0} — <b>{1}</b>{2}의 신뢰가 깊어져 <b>{3}</b> {4}개를 얻었다. (보유 {5}개)": "{0} — Trust with <b>{1}</b> deepened, earning {4} <b>{4|Goddess Tear|Goddess Tears}</b>. (Owned: {5})",
+ "{0} — 학생들과 지금까지 쌓아 온 신뢰의 몫으로 <b>{1}</b> {2}개를 받았다. (보유 {3}개)": "{0} — For the trust built with your students so far, you received {2} <b>{2|Goddess Tear|Goddess Tears}</b>. (Owned: {3})",
+ "{0}{1}의 관계가 <b>{2}</b> 단계가 되었습니다!": "Your relationship with {0} is now at <b>{2}</b>!",
+ "{0}{1}의 신뢰가 깊어졌습니다!": "Your trust with {0} has deepened!",
+ "보유 {0}개": "Owned: {0}",
+ "무시 안함": "Never",
+ "상담 · 락커룸": "Counseling · Locker Room",
+ "무조건 호응": "Always takes it to heart",
+ "지침 무시 확률": "Defiance chance"
 }
