@@ -31,8 +31,8 @@ def fields(S):
         'epiLog': [(e.get('name'), e.get('title'), e.get('prev'), e.get('crowd')) for e in S.get('epiLog', [])],
         'relics': [(r.get('name'), [a.get('n') for a in r.get('aff', [])]) for r in S.get('relicPool', [])],
         'skills': [(x.get('name'), x.get('from')) for x in S.get('skillPool', [])],
-        'friendly': [(x.get('name'), [[m.get('name') for m in t] for t in x.get('teams', [])])
-                     for ph in ('spring', 'winter') for x in ((S.get('friendly') or {}).get(ph) or {}).get('offers', [])],
+        'friendly': [(x.get('name'), [[m.get('name') for m in (t or [])] for t in (x.get('teams') or [])])   # 1021 친선전 편지 — 편지가 오기 전엔 offers 가 null (1030)
+                     for ph in ('spring', 'winter') for x in (((S.get('friendly') or {}).get(ph) or {}).get('offers') or []) if x],
         'mission': [x.get('n') for x in (S.get('mission') or {}).get('done', [])],
         'tour': [r.get('vs') for r in (S.get('lastTour') or {}).get('results', [])],
     }
