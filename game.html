@@ -3053,6 +3053,77 @@ html body #modalRoot .tch .tch-sk{grid-template-columns:36px minmax(0,1fr) auto}
 .ntw-row.mt-trx .mt-trx-ic{display:inline-block;width:20px;height:20px;margin-right:6px;vertical-align:-5px;line-height:0}
 .ntw-row.mt-trx .mt-trx-ic .skill-icon{position:relative;float:none;margin:0;width:100%;height:100%}
 /* MTREE_CSS_END */
+/* GTEAR_CSS_START — 여신의 눈물 첫 획득 '다시 닿은 목소리' (1102 일곱째 목업 · 여덟째 고침 · apply_gtear.py) ─ 대화창 · 여신의 빛은 오프닝 것(.op-talk · .op-wisp)을 그대로 쓰고
+   여기는 장면 틀(어둠 · 여신의 기운) · 마스터의 생각 창 · 눈물 빛방울 · 눈물에서 여신으로 이어지는 실 · 잔광 · 번쩍 · 빛이 퍼짐 · 반짝이 · 파문 · 연결선을 따라 가는 빛 ·
+   넣을 수 있는 칸 · 좁은 화면 책상 · 칸 누르기 안내(#gtHint — FSTUT 02 · SCHINT 의 원 · 손가락 · 보조 문구를 같이 쓰고 변수만 여기에) */
+.gt-root{position:fixed;inset:0;z-index:110;overflow:hidden;user-select:none;-webkit-user-select:none;cursor:pointer;color:#f3ede4;-webkit-tap-highlight-color:transparent}
+.gt-root [hidden]{display:none!important}
+.gt-dim{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .9s ease;background:radial-gradient(ellipse 72% 62% at 50% 36%,rgba(22,36,64,.86),rgba(4,6,14,.95) 72%)}
+.gt-root.dim .gt-dim{opacity:1}
+.gt-aura{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 1.1s ease;
+  background:radial-gradient(ellipse 62% 34% at 50% -4%,rgba(186,226,255,.42),rgba(150,205,255,.12) 55%,transparent 75%),linear-gradient(180deg,rgba(150,205,255,.10),transparent 30%,transparent 70%,rgba(150,205,255,.08))}
+.gt-root.aura .gt-aura{opacity:1}
+.gt-root.fade .gt-aura{opacity:0}
+.gt-fx{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+/* 여신의 빛 — 오프닝 .op-wisp 를 조금 크게 · 화면 좌표로 옮긴다 */
+.gt-root .gt-orb{left:50%;top:36%;z-index:3;transform:scale(1.9);transition-property:left,top,transform,opacity;transition-timing-function:cubic-bezier(.45,.05,.3,1);transition-duration:0s}
+.gt-root .gt-orb.in{transform:scale(.5);opacity:0;transition-duration:.6s}
+.gt-root .gt-orb.sway{animation:gtSway 1.6s ease-in-out}
+@keyframes gtSway{0%,100%{translate:0 0}20%{translate:-11px 2px}48%{translate:8px -2px}76%{translate:-4px 1px}}
+/* 눈물 빛방울 — 위로 뾰족한 작은 물방울 */
+.gt-drop{position:absolute;z-index:3;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50% 0 50% 50%;rotate:-45deg;opacity:0;pointer-events:none;
+  background:radial-gradient(circle at 42% 58%,#fff 0 24%,#dff2ff 46%,#8cc9ff 82%);box-shadow:0 0 10px 3px rgba(150,210,255,.75),0 0 30px 9px rgba(110,180,255,.28)}
+.gt-drop.rise{animation:gtRise 1.3s ease-out forwards,gtFloat 2.8s ease-in-out 1.3s infinite}
+@keyframes gtRise{0%{opacity:0;translate:0 30px}100%{opacity:1;translate:0 0}}
+@keyframes gtFloat{0%,100%{opacity:1;translate:0 0}50%{opacity:1;translate:0 -5px}}
+/* 눈물에서 여신으로 이어지는 실 (GT0111 · 1102 여덟째) — 가는 빛줄 · 앞에 작은 빛 · 이어지면 밝게(.lit) */
+.gt-tie{position:absolute;inset:0}
+.gt-tie svg{display:block;overflow:visible;filter:drop-shadow(0 0 2px rgba(205,235,255,.95)) drop-shadow(0 0 8px rgba(120,190,255,.55))}
+.gt-tie path{fill:none;stroke:#e2f3ff;stroke-width:1.6;stroke-linecap:round;transition:stroke-width .25s ease,stroke .25s ease}
+.gt-tie.lit path{stroke:#fff;stroke-width:2.6}
+.gt-tie-head{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:radial-gradient(circle,#fff 0 30%,#d6efff 56%,rgba(150,205,255,0) 76%);
+  box-shadow:0 0 10px 3px rgba(150,210,255,.8)}
+/* 잔광 · 번쩍 · 불티 · 퍼지는 빛 · 반짝이 · 파문 · 번지는 빛 */
+.gt-trail{position:absolute;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:radial-gradient(circle,#fff 0 30%,#cfe9ff 55%,rgba(150,205,255,0) 75%);box-shadow:0 0 8px 2px rgba(150,210,255,.55)}
+.gt-flash{position:absolute;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;opacity:0;
+  background:radial-gradient(circle,rgba(255,255,255,.95) 0 6%,rgba(200,235,255,.8) 18%,rgba(140,200,255,.38) 40%,rgba(120,190,255,0) 68%)}
+.gt-flash::after{content:"";position:absolute;inset:22%;border-radius:50%;border:2px solid rgba(220,242,255,.9);box-shadow:0 0 12px rgba(150,210,255,.8)}
+.gt-spark{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;z-index:2;
+  background:radial-gradient(circle,#fff 0 35%,#d6efff 60%,rgba(150,205,255,0) 76%);box-shadow:0 0 14px 5px rgba(150,210,255,.75),0 0 40px 12px rgba(110,180,255,.3)}
+.gt-bloom{position:absolute;width:240px;height:240px;margin:-120px 0 0 -120px;border-radius:50%;opacity:0;z-index:1;
+  background:radial-gradient(circle,rgba(255,255,255,.95) 0 7%,rgba(222,243,255,.78) 20%,rgba(160,212,255,.34) 42%,rgba(120,190,255,0) 68%)}
+.gt-tw{position:absolute;width:18px;height:18px;margin:-9px 0 0 -9px;z-index:3;opacity:0;animation:gtTw .72s ease-out both}
+.gt-tw::before,.gt-tw::after{content:"";position:absolute;left:50%;top:50%;background:#fff;box-shadow:0 0 5px #fff,0 0 4px #9fd8ff}
+.gt-tw::before{width:2px;height:18px;margin:-9px 0 0 -1px}
+.gt-tw::after{width:18px;height:2px;margin:-1px 0 0 -9px}
+@keyframes gtTw{0%{transform:scale(0) rotate(0);opacity:1}45%{transform:scale(1) rotate(20deg);opacity:1}100%{transform:scale(0) rotate(45deg);opacity:0}}
+.gt-ripple{position:absolute;width:190px;height:190px;border-radius:50%;transform:translate(-50%,-50%);border:2px solid rgba(225,244,255,.95);box-shadow:0 0 14px rgba(150,210,255,.8),inset 0 0 10px rgba(150,210,255,.5)}
+.gt-beam{position:absolute;height:4px;margin-top:-2px;transform-origin:0 50%;border-radius:2px;
+  background:linear-gradient(90deg,rgba(255,255,255,.95),rgba(205,236,255,.9) 60%,rgba(160,210,255,.4));box-shadow:0 0 8px rgba(150,210,255,.85)}
+/* 넣을 수 있는 칸 — 칸 모양(납작한 육각형) 안에서만 은은하게 */
+.gt-hex{position:absolute;overflow:hidden;clip-path:polygon(25% 3%,75% 3%,99% 50%,75% 97%,25% 97%,1% 50%)}
+.gt-hex.can{background:radial-gradient(ellipse at 50% 50%,rgba(214,240,255,.5),rgba(170,215,255,.22) 55%,rgba(150,205,255,0) 75%);animation:gtCan 2.2s ease-in-out infinite}
+@keyframes gtCan{0%,100%{opacity:.55}50%{opacity:1}}
+/* 좁은 화면 — 장면 안 책상 그림 (회중시계가 보이게) */
+.gt-desk{position:absolute;z-index:0}
+.gt-desk img{position:absolute;inset:0;width:100%;height:100%;max-width:none;display:block;image-rendering:pixelated}
+/* 대화창 — 오프닝 것 그대로 (.op-talk.goddess · 이름표 ??? · 당신) · 건너뛰기 단추 */
+.gt-root .gt-talk{z-index:5;cursor:pointer}
+.gt-root .gt-skip{z-index:6}
+/* 마스터의 생각 (GT0103 · 1102 여덟째) — 이름 없는 생각 창 (학원제 결승 FFOP · 첫 시간표 .fst-think 와 같은 모양: 점선 안쪽 줄 · 흐린 글) */
+.gt-root .gt-talk.think{background:var(--fst-win);border-color:var(--fst-edge);box-shadow:0 0 0 2px var(--fst-dark),3px 4px 0 2px rgba(0,0,0,.4)}
+.gt-root .gt-talk.think::before{content:"";position:absolute;inset:5px;border:1px dashed rgba(185,143,132,.53);pointer-events:none}
+.gt-root .gt-talk.think .op-name{display:none}
+.gt-root .gt-talk.think .op-text{color:#e2c2b6}
+/* 칸 누르기 안내 (1102 여덟째 — 사용 안내 상자 대신) — 뿌리 #gtHint 에는 .fst 를 달지 않는다 (SCHINT 와 같다 — body > .fst 는 '이야기 장면' 표시) · 입력을 받지 않는다 */
+#gtHint{--fst-ink:#fff4e6;--fst-line:#e9cdbf;--fst-win:#2a1418;--fst-gold:#ffd36a;--fst-dark:#140a0c;--fst-fs:16px;--fst-lh:24px;
+  position:fixed;inset:0;z-index:900;pointer-events:none;font-family:"Mulmaru",sans-serif;color:var(--fst-ink);-webkit-font-smoothing:none;font-synthesis:none}
+@media (min-width:600px){#gtHint{--fst-fs:20px;--fst-lh:28px}}
+@media (min-width:1100px){#gtHint{--fst-fs:24px;--fst-lh:32px}}
+#gtHint *{box-sizing:border-box}
+#gtHint.cell .fst-ring,#gtHint.cell .fst-ring2{border-radius:50%}   /* 칸 — 육각형을 감싸는 동그라미 */
+@media (prefers-reduced-motion:reduce){.gt-drop.rise{animation:none;opacity:1}.gt-hex.can{animation:none;opacity:.8}.gt-root .gt-orb.sway{animation:none}.gt-tw{display:none}}
+/* GTEAR_CSS_END */
 
 /* TIWIN_CSS_START — 인가 등급 · 새 대회 초대장 안내 창 (1025 목업 · apply_tiwin.py) ─ 안내 화면 창(NTWIN) 무대 위에: 인가증(말린 문서 → 펼침 · 붉은 인장 쾅) /
    봉투가 날아와 인장이 깨지고 편지가 펼쳐짐 → 새 대회장 배경 · 아래 사다리 경로(열린 칸이 금빛으로 이어짐) */
@@ -7261,7 +7332,7 @@ const JOBS = {
     base:{hp:870,atk:128,def:48,spd:128,crit:.15,critDmg:1.65,acc:.93,eva:.16,skAcc:.9,skRes:.12,ultGain:1.1,leech:.01},
     grow:{hp:42,atk:7.6,def:2.4,spd:4.0},
     skills:[
-      {id:"ro_b",fx:"slash",el:"phys",kind:"basic",name:"급습",type:"dmg",target:"enemy_low",power:1.0,proc:1,dur:0,txt:"빈틈을 파고든다"},
+      {id:"ro_b",fx:"slash",el:"phys",kind:"basic",name:"급습",type:"dmg",target:"enemy_rand",power:1.0,proc:1,dur:0,vsLowest:.3,txt:"체력이 가장 적은 적에게 주는 피해가 30% 늘어난다"},   // 1102 여섯째 — 사용자: 노리기는 빼고 체력이 가장 적은 적에게 추가 피해 (예전 체력이 가장 적은 적 대상)
       {id:"ro_1",fx:"slash",el:"poison",name:"독 단검",type:"dot",target:"enemy_rand",power:.34,proc:.22,dur:3,txt:"지속 피해를 남긴다"},
       {id:"ro_2",fx:"aura",el:"buff",name:"그림자 밟기",type:"buff",target:"self",power:.28,proc:.16,dur:2,stat:"spd",eva:.14,txt:"속도와 회피를 끌어올린다"},
       {id:"ro_u",fx:"slash",el:"dark",kind:"ult",name:"암살",type:"ult_single",target:"enemy_low",power:2.7,proc:1,dur:0,execute:.25,txt:"빈사의 적에게 추가 피해"}
@@ -7371,7 +7442,7 @@ const JOBS = {
     base:{hp:900,atk:110,def:52,spd:124,crit:.15,critDmg:1.6,acc:.96,eva:.18,skAcc:.97,skRes:.16,ultGain:1.1,leech:0},
     grow:{hp:44,atk:6,def:2.6,spd:4.2},
     skills:[
-      {id:"nj_b",fx:"pierce",el:"phys",kind:"basic",name:"쿠나이",type:"dmg",target:"enemy_back",power:.88,proc:1,dur:0,txt:"뒤쪽을 노려 던진다"},
+      {id:"nj_b",fx:"pierce",el:"phys",kind:"basic",name:"쿠나이",type:"dmg",target:"enemy_rand",power:.88,proc:1,dur:0,vsBack:.3,txt:"후열의 적에게 주는 피해가 30% 늘어난다"},   // 1102 여섯째 — 사용자: 노리기는 빼고 후열 적을 맞히면 추가 피해 (예전 후열 대상)
       {id:"nj_1",fx:"aura",el:"debuff",name:"수둔·수렁",type:"slow",target:"enemy_all",power:.22,proc:.2,dur:2,txt:"발밑을 물로 적셔 적 전체를 묶는다"},
       {id:"nj_2",fx:"pierce",el:"arcane",name:"수둔·수룡아",type:"dmg",target:"enemy_rand",power:1.1,proc:.24,dur:0,atbCut:.2,txt:"물의 이빨이 덮쳐 상대의 박자를 끊는다"},
       {id:"nj_u",fx:"slash",el:"dark",kind:"ult",name:"천류·풍마수리검",type:"ult_single",target:"enemy_low",power:3.0,proc:1,dur:0,mirBonus:.5,txt:"물그림자의 힘을 실어 강력한 피해를 입힌다"}
@@ -10145,10 +10216,11 @@ function logE(html, cls){
    ============================================================ */
 function mkUnit(st, side, idx, row){
   const s = battleStats(st);
+  const xb = window.MTREE ? MTREE.exBattle(st, skillsOf(st)) : null;   // 1102 다섯째 — 엑스트라 스킬 (기술 목록 · 수치 · 패시브 — MTREE · 엑스트라가 없으면 원래 것 그대로)
   return {
     uid: side+idx, ref: st.id, name: dn(st), job: st.job, side, idx, pers:voiceKey(st),
     row: row || ROW_OF(st.job), lv: st.level,
-    ment: Object.assign({}, mentEff(st)), injured: injWeeks(st), skMod: st.skMod||{}, skills: relicSkills(st, skillsOf(st)), passiveJob: passiveJobOf(st),
+    ment: Object.assign({}, mentEff(st)), injured: injWeeks(st), skMod: xb ? xb.skMod : (st.skMod||{}), skills: relicSkills(st, xb ? xb.skills : skillsOf(st)), passiveJob: passiveJobOf(st), exPas: xb ? xb.pas : null,
     base: s, maxHp: Math.round(s.hp), hp: Math.round(s.hp),
     atb: ri(0,300), ult: clamp(+st.ult0 || 0, 0, 100), shield:0, fx:[], alive:true, acted:0,   // ult0 — 시작 필살 게이지 (1021 넷째 · 원정 보스 EXPED_BOSS_ULT0 · genMonster)
     dDealt:0, dHeal:0, dTaken:0,
@@ -10422,6 +10494,7 @@ function passiveFor(o){
   const out = Object.assign({}, P);
   ["takeLow","ultBasic","vsBack","vsFront","vsLow","vsHigh","healMul","aoe","regen","take","leech","leechAll","evaSelf","counter","atbOnDebuff","encore","mirage","regenAll"].forEach(x=>{ if(out[x]) out[x] = out[x]*k; });
   out.k = k;
+  if(o && o.exPas && window.MTREE && MTREE.exPasMerge) MTREE.exPasMerge(out, o.exPas);   // 1102 다섯째 — 엑스트라 패시브를 겹친다 (전투 유닛만 · 그 패시브의 배율 · MTREE)
   return out;
 }
 
@@ -10491,11 +10564,13 @@ function runBattle(teamA, teamB, opt){
   }));
   // 패시브 — 전투 개시
   [[A,"A"],[B,"B"]].forEach(([U])=> U.forEach(u=>{
-    const P = u.pas; if(!P || !P.onStart) return;
+    const P0 = u.pas; if(!P0) return;
+    (P0.onStart ? [P0] : []).concat(P0.exStart || []).forEach(P=>{   // 1102 다섯째 — 엑스트라 패시브의 전투 개시 효과도 원래 것 다음에 (그 패시브의 배율 k · MTREE exPasMerge)
     if(P.onStart==="shieldAll") U.forEach(a=>{ if(a!==u) a.shield = Math.max(a.shield, Math.round(a.maxHp*.08*P.k*BAL_SHIELD)); });
     if(P.onStart==="atbSelf")   u.atb = Math.max(u.atb, Math.round(400*P.k));
     if(P.onStart==="atbAll")    U.forEach(a=> a.atb = Math.max(a.atb, Math.round(150*P.k)));
     if(P.onStart==="skAccAll")  U.forEach(a=> a.base.skAcc = (a.base.skAcc||0) + .05*P.k);
+    });
   }));
   const all = A.concat(B);
   const frames = [];
@@ -10547,7 +10622,7 @@ function runBattle(teamA, teamB, opt){
       const ufoes = uu.side==="A"?B:A, uallies = uu.side==="A"?A:B;
       if(aliveOf(ufoes).length){
         const uSKL = uu.skills || JOBS[uu.job].skills;
-        const uSk = uSKL.find(x=>x.kind==="ult");
+        const uSk = exPickAct(uu, uSKL.filter(x=>x.kind==="ult"), ufoes, uallies);   // 1102 다섯째 — 필살기가 둘 이상이면(엑스트라 스킬) 적극성으로 고른다 (exPickAct · MTREE)
         if(uSk){
           totalActs++; stamTick();
           if(totalActs===FATIGUE_AT+1 && !fatigueNoted){ fatigueNoted=true; push(`장기전 — 양측 모두 지쳐 주고받는 피해가 커진다`,"sec"); }
@@ -10636,7 +10711,9 @@ function runBattle(teamA, teamB, opt){
     const foes = u.side==="A"?B:A, allies = u.side==="A"?A:B;
     if(!aliveOf(foes).length) break;
     const SKL = u.skills || JOBS[u.job].skills;
-    const basic = SKL.find(s=>s.kind==="basic");
+    const basics = SKL.filter(s=>s.kind==="basic");   // 1102 다섯째 — 엑스트라 스킬로 일반 공격이 둘 이상이면 일반 공격을 쓰게 될 때 적극성으로 고른다 (exPickAct · MTREE)
+    let basic = basics[0];
+    const pickBasic = ()=>{ if(basics.length > 1){ basic = exPickAct(u, basics, foes, allies); if(pk) pk.b = basic.id; } return basic; };   // pk.b — 스타일리시 기술 고르기 칸 (camPick)
     // (필살기는 게이지 충전 즉시 루프 상단에서 발동한다)
     const acts  = SKL.filter(s=>!s.kind);
 
@@ -10657,7 +10734,7 @@ function runBattle(teamA, teamB, opt){
         // 적극성 — 이미 유지 중인 효과를 다시 걸지 않는다
         if(chosen !== basic && actValue(chosen,u,foes,allies) < .2 && RNG() < u.ment.aggr/100){
           push(`<b>${epiH(u.name)}</b> — ${chosen.name}${eunn(chosen.name)} 아직 유지 중, 다시 걸지 않는다`,"",u.uid);
-          chosen = basic; pk.keep = 1;
+          chosen = pickBasic(); pk.keep = 1;
         }
         // 시전 성공 판정
         if(chosen !== basic){
@@ -10673,10 +10750,10 @@ function runBattle(teamA, teamB, opt){
               ? ` · 적 ${tgt0.length}명 평균 스킬 저항 ${Math.round(res*100)}%`
               : ` · ${epiH(tgt0[0].name)}의 스킬 저항 ${Math.round(res*100)}%`;
             push(`<b>${epiH(u.name)}</b>의 ${chosen.name} — 시전 실패 <span style="color:var(--dim)">(성공 ${Math.round(pOk*100)}%${why})</span>`,"",u.uid);
-            chosen = basic; pk.res = 1;
+            chosen = pickBasic(); pk.res = 1;
           }
         }
-      } else chosen = basic;
+      } else chosen = pickBasic();
     }
     const fAct = frames.length;          // 이 행동의 첫 줄 — 아래 필살 게이지 몫을 여기서부터 보이게 한다
     resolve(u, chosen, foes, allies, isUlt);
@@ -10758,6 +10835,11 @@ function runBattle(teamA, teamB, opt){
     if(sk.type==="regen") return dup ? .1 : 1.0;
     return 1.0 + (sk.type==="dmg_aoe"? aliveOf(foes).length*.22 : 0);
   }
+  /* 1102 다섯째 — 일반 공격 · 필살기가 둘 이상일 때 (엑스트라 스킬 · MTREE): 적극성에 통하면 상황 효율이 가장 좋은 것 · 못 통하면 그것을 빼고 (MTREE.exPick · exValue — 효율은 actValue 판단) */
+  function exPickAct(u, list, foes, allies){
+    if(!list || list.length < 2 || !window.MTREE || !MTREE.exPick) return list ? list[0] : undefined;
+    return MTREE.exPick(u, list, sk=> MTREE.exValue(sk, u, foes, allies, s=> actValue(s, u, foes, allies)));
+  }
 
   function dealDamage(src, tgt, mult, o){
     o=o||{};
@@ -10780,6 +10862,10 @@ function runBattle(teamA, teamB, opt){
       dmg *= 1 + (cd-1)*(1-cr);
     }
     if(o.execute && tgt.hp/tgt.maxHp < .4) dmg *= (1+o.execute*2);
+    /* 1102 여섯째 — 기본 공격의 추가 피해 (사용자 '노리기는 빼고'): vsBack — 맞은 적이 후열이면 (무영객 쿠나이) ·
+       vsLowest — 맞기 전 체력이 살아 있는 상대 가운데 가장 적으면 · 같으면 모두 (암살자 급습). RNG 를 쓰지 않는다 */
+    if(o.vsBack && tgt.row==="back") dmg *= 1+o.vsBack;
+    if(o.vsLowest && aliveOf(tgt.side==="A"? A : B).every(t=> t.hp >= tgt.hp)) dmg *= 1+o.vsLowest;
     /* 물그림자 — 한 겹을 흩어 피해를 줄인다 */
     { const Pw = tgt.pas;
       if(Pw && Pw.mirage && (tgt.mir|0)>0){
@@ -19798,6 +19884,7 @@ function render(){
   if(window.INVN) INVN.after();   // 1025 — INVN — 스케줄 단추 위 대회 안내 (3주 안)
   if(window.RXAL) RXAL.after();   // 1024 — 유물 장착 알림 (RXAL) — 책상 학생 명부 책 · 학생 명부 책 안(얼굴 · 유물 칸) 표식
   if(window.WZV) WZV.after();   // 1024 — 개교 마법사 전용 대사 (WZV) — 예전 세이브의 개교 멤버 마법사에게 표식 wz1 (한 번)
+  if(window.GTEAR) GTEAR.after();   // 1102 일곱째 — 여신의 눈물 첫 획득 (GTEAR) — 대회 · 전투 중이라 미룬 · 장면 중에 나갔던 예약을 한가할 때 · 축복 창이 닫히면 칸 누르기 안내도
   if(window.PRST) PRST.after();   // 1024 — 프롤로그 00 (PRST) — 이름을 정한 뒤 PR22 전에 나갔으면 PR21 부터 → 첫 시간표 (S.story.prologue)
 }
 /* 학원 이름 (1007) — 두 줄을 넘으면 두 줄에 들어가는 크기까지 글자를 비례로 줄인다
@@ -29964,7 +30051,7 @@ window.TRW = {floor: trFloor, up: trUp, back: trBack, after: trAfter, cer: trCer
      · 칸 설정 {t, cost(레벨마다 소모), max(최대 레벨 — 종류 기본값과 같으면 적지 않는다 · 해금 칸은 1), v(레벨마다 효과)} · 설정 판 v 2 (v 1 — 예전 한 번에 여는 칸 — 은 max 1 로 읽는다)
      · 진행 S.mtree = {lv: {칸: 레벨}, fill: {칸: 다음 레벨에 넣은 눈물}} (예전 open 은 Lv.1 로) · 효과 = 레벨마다 값 × 레벨 · 마스터 포인트 칸은 레벨마다 바로 더한다
      · 판 — 칸 아래 레벨 점(금빛 = 레벨 · 다음 점의 파란 차오름 = 넣은 눈물) · 최대 레벨 칸은 금빛 테(.full) · 다리 = 한쪽이 최대면 밝게 / 두 칸이 열리면 금빛
-     · 오른쪽 칸 — Lv.n / 최대 · 레벨마다 · 지금 · 모두 · 다음 레벨 물방울(넣은 수 / 가격) · '눈물 1개 넣기' (누를 때마다 · 길게 누르면 계속 — 떨어지는 물방울 · op_drip · 레벨 업 relic_pop)
+     · 오른쪽 칸 — Lv.n / 최대 · 레벨마다 · 지금 · 모두 · 다음 레벨 물방울(넣은 수 / 가격) · '눈물 1개 투입' (1102 아홉째 — 예전 '넣기' · 누를 때마다 · 길게 누르면 계속 — 떨어지는 물방울 · op_drip · 레벨 업 relic_pop)
    1031 일곱째 — 사용자: 판의 값 글(+1 · +2%)은 빼고(고르면 오른쪽에) · 물방울 줄의 'Lv.2까지' 글도 빼고 · 스킬 보관고 탭의 보유 수 대신 포인트 배분 탭에 남은 포인트(mpAvail · 0 이면 없음) */
 (function(){
 const MT = {tab: "tree", sel: null, cfg: null,   // 1102 넷째 — 처음 탭은 맨 앞 '여신의 축복' (예전 '포인트 배분')
@@ -30636,7 +30723,7 @@ addEventListener("keydown", ev => { if(ev.key === "Escape") mvTipHide(); }, true
    채운 칸을 바꾸면 비용 · 전수할 때 단계 그대로.
    st.exSk = [기록 | null …] — 자리 = 엑스트라 칸 · 기록 = 보관고 기술의 사본(이름 · 종류 · 직업 · 스킬 id · mod · 어디서 · 해) · 칸 수 exSlots = 1 + 열린 전수력 증가 칸 값(모든 학생 같다 · 많아야 EX_MAX)
    빈 칸은 공짜 · 채운 칸을 바꾸면 skillPrice(새 기술) 골드 · 같은 기술은 둘 가질 수 없다(기본 기술에 있으면 막힘 · 엑스트라에 낮은 단계로 있으면 그 칸만 — 단계 올리기도 바꾸기)
-   전투 셈은 아직 — 게임에 넣을 때 (스킬은 발동 후보 · 필살기 · 일반 공격은 번갈아 · 패시브는 겹쳐서) */
+   전투 셈 — 1102 다섯째 (아래 exBattle · 스킬은 발동 후보 · 필살기 · 일반 공격은 적극성으로 고른다 · 패시브는 겹쳐서) */
 const EX_MAX = 6;
 function exSlots(){ return Math.min(EX_MAX, 1 + Math.max(0, mtSum("teachUp") | 0)); }   // 1 + 전수력 증가 (레벨마다 값 × 레벨)
 function exSlotsMax(){ return Math.min(EX_MAX, 1 + Math.max(0, mtSum("teachUp", true) | 0)); }   // 하트의 전수력 증가 칸을 모두 올리면
@@ -30652,7 +30739,7 @@ function exCost(e){ return typeof skillPrice === "function" ? skillPrice({mod: m
 function exUsers(e){ const k = mvKey(e); return (S.students || []).filter(st => exOf(st).some(x => x && mvKey(x) === k)); }
 function exFree(st){ return exOf(st).filter(x => !x).length; }
 /* 1031 다섯째 — 엑스트라 기술 레벨: 기본 Lv.1 · 학생 신뢰가 3 · 5 · 7 · 9 에 닿을 때마다 +1 · 많아야 그 기술의 최대 레벨(cap — 전수할 때의 하트 '최대 레벨 증가')
-   레벨은 적어 두지 않고 그때그때 센다 (신뢰는 내려가지 않는다 — TRW.floor) · 전투 셈에 쓸 mod = exMod (게임에 넣을 때) */
+   레벨은 적어 두지 않고 그때그때 센다 (신뢰는 내려가지 않는다 — TRW.floor) · 전투 셈에 쓸 mod = exMod (1102 다섯째 — exBattle) */
 const EX_LV_AT = [3, 5, 7, 9];                                          // 신뢰 칸 — Lv.2 · 3 · 4 · 5 (사용자 보기 그대로)
 const EX_LV_TOP = 5;                                                    // 최대 레벨 상한 (SK_LV_MAX)
 function exLvSum(all){ return Math.max(0, mtSum("teachLv", all) | 0); }   // 최대 레벨 증가 (레벨마다 값 × 레벨 — 1031 여섯째 · all — 모두 올리면)
@@ -30664,7 +30751,7 @@ function exTrustLv(st){ const t = exTrustOf(st); return 1 + EX_LV_AT.filter(v =>
 function exLv(st, x){ return x ? Math.min(exCapOf(x), exTrustLv(st)) : 0; }
 function exNext(st, x){ const lv = exLv(st, x); return x && lv < exCapOf(x) ? EX_LV_AT[lv - 1] : null; }   // 다음 레벨이 되는 신뢰 (최대면 null)
 function exRest(st, x){ return x ? EX_LV_AT.slice(exLv(st, x) - 1, exCapOf(x) - 1) : []; }               // 남은 신뢰 칸 (최대 레벨까지)
-function exMod(st, x){ return x ? {grade: mvG(x.mod), up: exLv(st, x) - 1} : null; }                     // 전투 셈에 쓸 mod (게임에 넣을 때)
+function exMod(st, x){ return x ? {grade: mvG(x.mod), up: exLv(st, x) - 1} : null; }                     // 전투 셈에 쓸 mod (1102 다섯째 — exBattle)
 function exFxTxt(x, lv){                                                 // 1101 여섯째 — 엑스트라 기술의 지금 효과량 (게임 규칙 그대로 — Lv.1 은 강화 없음 · 레벨 당 몫 × (레벨 − 1) · 시간 정지 EX Lv.5 = +160% · 사용자 고름)
   if(!x || typeof skVal !== "function") return "";
   const v = skVal(mvG(x.mod), Math.max(0, (lv | 0) - 1), x.cat === "passive" ? null : mvSkOf(x));
@@ -30684,6 +30771,75 @@ function exUpHtml(st, b0, b1){
     const ic = typeof skillIconHtml === "function" ? skillIconHtml(o.x.cat === "passive" ? "passive" : o.x.skillId, SK_GRADE[mvG(o.x.mod)], o.x.job) : "";
     return `<p class="ntw-row good mt-trx" data-ty><span class="k">${"엑스트라 스킬"}</span> <span class="mt-trx-ic">${ic}</span>${`${esc(o.x.name)} <b class="num">Lv.${o.l0} → Lv.${o.l1}</b>`}</p>`;
   }).join("");
+}
+/* ── 1102 다섯째 — 엑스트라 스킬 전투 셈 (사용자 '기술 목록/수치는 말한대로 넣어주고 / 번갈아 쓰기는 … 적극성 체크 시 보유한 필살기/일반 공격 중 상황에 효율이 좋은
+   필살기/일반 공격을 먼저 사용, 적극성 체크 실패 시 해당 필살기/일반 공격 제외 사용 / 패시브 합치기도 말한대로 / 시전 쪽 연출은 그대로 학생 직업 기준') ──
+   exBattle(st, base) — mkUnit 고리: 유닛 기술 목록 = 기본 기술 + 엑스트라 칸의 기술(칸 차례 · 그 직업 기술 정의 그대로 · 패시브는 빼고) ·
+     수치 기록 skMod = 학생 skMod 사본 + 엑스트라 기술 id 마다 exMod(전수할 때의 등급 + 신뢰로 오른 지금 레벨 — 위력 · 발동률 · 지속은 원래 기술의 강화 표 그대로) ·
+     pas = 엑스트라 패시브 [{job, grade, up}] (passiveFor 가 겹친다). 엑스트라가 없으면 원래 것 그대로 (학생 기록은 고치지 않는다 — 졸업생 · 상대 학생 · 마물도 그대로)
+   스킬은 목록에 들어가기만 하면 차례마다 발동 판정 후보 (기본 스킬 둘과 같이 — 뜬 것 중에서 고를 때 적극성은 예전 그대로)
+   exPick(u, list, val) — 일반 공격 · 필살기가 둘 이상일 때: 적극성 판정(RNG < 적극성/100)에 통하면 상황 효율(val)이 가장 좋은 것 · 못 통하면 그것을 뺀 나머지
+     (하나면 그것 · 여럿이면 무작위). 같은 효율이면 원래 차례(기본 → 엑스트라 1칸 → 2칸)
+   exValue(sk, u, foes, allies, av) — 상황 효율. av = 그 전투의 actValue (스킬을 고를 때와 같은 판단 — 회복 · 보호막 · 버프 · 디버프 · 지속 · 재생 · 전체 피해) ·
+     필살기 종류는 거기에 맞춘다: ult_heal 회복 판단 + 일으킬 수 있는 쓰러진 아군 × 0.8 · ult_guard 회복 판단(적어도 1) · ult_bless · ult_unseal 버프(이미 걸려 있으면 낮게) ·
+     적 전체(ult_aoe · ult_drain · ult_time) 1 + 남은 적 × 0.22 (전체 피해 스킬과 같은 몫) · 한 명 공격 1 /
+     덤 — 체력 40% 아래 적이 있으면 체력 낮은 적 대상 +0.3 · 체력이 가장 적은 적 추가 피해(vsLowest — 급습) 그 몫 · 처형 몫(execute) ·
+     후열 추가 피해(vsBack — 쿠나이) × 남은 적 가운데 후열 몫 (1102 여섯째) · 연타 +0.05 × (타수 − 1) · 그래도 같으면 위력(skPow × 타수)이 센 쪽
+   exPasMerge(out, list) — passiveFor 고리: 엑스트라 패시브의 수치를 그 패시브의 배율(등급 + 지금 레벨 — 원래 패시브와 같은 셈)로 곱해 더한다 ·
+     전투 개시 효과(onStart)는 out.exStart [{onStart, k}] — runBattle 전투 개시 고리가 원래 것 다음에 차례로 */
+function exBattle(st, base){
+  const L = Array.isArray(base) ? base : [], m0 = (st && st.skMod) || {}, out = {skills: L, skMod: m0, pas: null};
+  if(!st || !Array.isArray(st.exSk) || !st.exSk.some(Boolean)) return out;          // exOf 를 부르지 않는다 (엑스트라 칸이 없는 기록에 exSk 를 만들지 않게)
+  const have = new Set(L.map(k => k && k.id)), add = [], mod = Object.assign({}, m0), pas = [];
+  exOf(st).forEach(x => {
+    if(!x) return;
+    const m = exMod(st, x);
+    if(x.cat === "passive"){
+      if(typeof passiveOf === "function" && passiveOf(x.job) && x.job !== passiveJobOf(st) && !pas.some(p => p.job === x.job)) pas.push({job: x.job, grade: m.grade, up: m.up});
+      return;
+    }
+    const sk = mvSkOf(x);
+    if(!sk || have.has(sk.id)) return;                                   // 기본 기술에 이미 있는 기술은 넣지 않는다 (전수 창이 막는다 — 예전 기록 대비)
+    have.add(sk.id); add.push(sk); mod[sk.id] = m;
+  });
+  if(add.length){ out.skills = L.concat(add); out.skMod = mod; }
+  if(pas.length) out.pas = pas;
+  return out;
+}
+function exPick(u, list, val){
+  if(!list || list.length < 2) return list ? list[0] : undefined;
+  const v = list.map((s, i) => ({s, i, v: +val(s) || 0})).sort((a, b) => b.v - a.v || a.i - b.i);
+  if(RNG() < (((u && u.ment && +u.ment.aggr) || 0) / 100)) return v[0].s;   // 적극성 — 상황 효율이 가장 좋은 것
+  const rest = v.slice(1);                                               // 못 통하면 그것을 빼고
+  return rest.length === 1 ? rest[0].s : rest[Math.floor(RNG() * rest.length) % rest.length].s;
+}
+function exValue(sk, u, foes, allies, av){
+  if(!sk) return -1;
+  const F = (foes || []).filter(t => t && t.alive), T = sk.type || "";
+  const low = F.length ? Math.min(...F.map(t => t.hp / Math.max(1, t.maxHp))) : 1;
+  let v;
+  if(T === "ult_heal") v = av(sk) + (sk.revive ? (allies || []).filter(a => a && !a.alive && !a.revived).length * .8 : 0);
+  else if(T === "ult_guard") v = Math.max(1, av(Object.assign({}, sk, {type: "heal"})));
+  else if(T === "ult_bless" || T === "ult_unseal") v = av(Object.assign({}, sk, {type: "buff"}));
+  else if(sk.target === "enemy_all") v = 1 + F.length * .22;
+  else v = av(sk);
+  if(sk.target === "enemy_low" && low < .4) v += .3;
+  if(sk.vsLowest && low < .4) v += +sk.vsLowest || 0;                    // 1102 여섯째 — 급습 (노리기를 빼고 체력이 가장 적은 적에게 추가 피해 — 예전 체력 낮은 적 대상 몫과 같은 때)
+  if(sk.vsBack && F.length) v += (+sk.vsBack || 0) * F.filter(t => t.row === "back").length / F.length;   // 1102 여섯째 — 쿠나이 (후열 추가 피해 × 남은 적 가운데 후열 몫)
+  if(sk.execute && low < .4) v += +sk.execute || 0;
+  if((sk.hits | 0) > 1) v += ((sk.hits | 0) - 1) * .05;
+  return v + (typeof skPow === "function" ? skPow(u, sk) : (+sk.power || 0)) * Math.max(1, sk.hits | 0) * .001;
+}
+function exPasMerge(out, list){
+  if(!out) return out;
+  (list || []).forEach(e => {
+    const E = typeof passiveOf === "function" ? passiveOf(e.job) : null; if(!E) return;
+    const k = 1 + (typeof skVal === "function" ? skVal(e.grade, e.up, null).pow : 0);
+    Object.keys(E).forEach(f => { if(typeof E[f] === "number") out[f] = (+out[f] || 0) + E[f] * k; });
+    if(E.onStart) (out.exStart = out.exStart || []).push({onStart: E.onStart, k});
+    (out.exN = out.exN || []).push(E.n);
+  });
+  return out;
 }
 function exTrustUp(st, b0, b1){                                         // 고리 addTrust — 신뢰가 새 칸이면 오른 엑스트라 기술을 일지에
   const out = exUpRows(st, b0, b1);
@@ -31368,7 +31524,7 @@ function mtSide(){
       : st === "lock" ? `<button type="button" class="btn mt-go" disabled>${tear}<span>잠김</span></button>`
       : cost > 0 && have < 1 ? `<button type="button" class="btn mt-go" disabled>${tear}<span>여신의 눈물이 없다</span></button>`
       : cost <= 0 ? `<button type="button" class="btn primary mt-go" data-mt-feed="${id}"><span>${T.key ? "열기" : "레벨 업"} (눈물 없이)</span></button>`
-      : `<button type="button" class="btn primary mt-go" data-mt-feed="${id}" title="누를 때마다 1개 · 길게 누르면 계속 넣는다">${tear}<b class="num">1</b><span>넣기</span></button>`;
+      : `<button type="button" class="btn primary mt-go" data-mt-feed="${id}" title="누를 때마다 1개 · 길게 누르면 계속 넣는다">${tear}<b class="num">1</b><span>투입</span></button>`;   // 1102 아홉째 — 사용자 '넣기 -> 투입' (단추 이름만 · 번역은 같은 값으로 열쇠만)
     const need = start || empty || full ? "" : `<div class="mt-need">${mtDrops(fill, cost)}<b class="num">${fill} / ${cost}</b></div>`;   // 1031 일곱째 — 넣으면 한 레벨씩만 오르니 '다음 레벨' 글은 없다
     const multi = !start && !empty && !T.key;                          // 머리 둘째 줄 — 여러 레벨 칸은 Lv.지금 / 최대 (해금 · 시작 · 빈 칸은 갈래 표)
     const fxNow = val ? T.fx(Math.round(v * lv * 100) / 100) : mtFx(id);   // 1101 — 효과 줄은 '오르는 수치 이름 + 지금까지 오른 수치' (마스터 육성 포인트 +5 · Lv.0 이면 +0) · 해금 칸은 그대로
@@ -31513,6 +31669,7 @@ window.MTREE = {on: () => true, tab: () => MT.tab, setTab(t){ MT.tab = t === "tr
   insBonus: mvBonus, insTrainIds: MV_TRAIN_IDS, insMatch: MV_MATCH, insTrainK: MV_TRAIN_K,
   shown: mtShown, keyOn: mtOn, relicOn: () => mtOn("relic"), skFree: mtSkFree, trustMul: mtTrustMul, exUpRows, exUpHtml, teachTrust: TCH_TRUST,   // 1102 넷째 — 게임 고리 (노출 · 직업 유물 · 스킬 무료 초기화 · 신뢰 · 신뢰 안내 창 줄)
   insInfo: mvInfo, insInfoK: MV_INFO_K, pasP: MV_PAS_P,
+  exBattle, exPick, exValue, exPasMerge,   // 1102 다섯째 — 엑스트라 스킬 전투 셈 (mkUnit · runBattle · passiveFor · 대회 편성 창 고리)
   teachOpen: tchOpen, teachRender: tchRender, teachDo: tchDo, teachWhy: tchWhy, teachTargets: tchTargets, teachState: () => MT.tch, faces: TCH_FACE, facesDef: JSON.parse(JSON.stringify(TCH_FACE)), faceVars: tchFaceVars,
   exSlots, exSlotsMax, exOf, exHas, exCost, exTeach, exUsers, exFree,
   exCapNow, exCapMax, exCapOf, exLv, exTrustLv, exNext, exRest, exMod, trustUp: exTrustUp, exLvAt: EX_LV_AT, exLvTop: EX_LV_TOP, ladder: tchLadder, vaultSorts: mvSorts,
@@ -31528,6 +31685,677 @@ window.MTREE = {on: () => true, tab: () => MT.tab, setTab(t){ MT.tab = t === "tr
   tears: mtTears, art: mtArt, select: mtSelect, tearIc: mtTearIc, icon: mtIcon, board: {w: MT_BW, h: MT_BH, hw: MT_HW, hh: MT_HH}};
 })();
 /* MTREE_END */
+/* GTEAR_START — 여신의 눈물 첫 획득 '다시 닿은 목소리' (1102 일곱째 목업 · 여덟째 고침 · apply_gtear.py · mockups/goddess-tear) ─
+   대본 tools/tutorial-story/scenario-goddess-tear-first-acquisition-draft.md (초안 v2 · GT0101 ~ GT0128).
+   사용자 1102: '이제 # 여신의 눈물 첫 획득 — 다시 닿은 목소리를 작업해보자' → 목업 먼저 · 곡은 오프닝 여신 곡(opGoddess — 대화 동안 · 끝나면 원래 곡).
+   1102 여덟째 (목업을 보고) — ① GT0103 '…누구십니까?' → 마스터의 생각 '…머릿속에서 목소리가 울려 퍼지는 느낌… 이건…?' (사용자 글 '머리 속 · 울려퍼지는' 은 맞춤법대로)
+     ② GT0111 빛의 길(점 일곱) 대신 눈물에서 여신으로 이어지는 실 → 이어지면 빛이 한 번 밝게 → 실이 사라진다 · GT0112 '그 믿음이 맺혀, 가늘게나마 이어졌군요.'
+     ③ 축복 창이 열려도 칸을 바로 보이지 않는다 — 빛이 시작 칸 자리에 닿아 퍼지면 시작 칸이 나타나고 · 연결선을 따라 빛이 가면 길 · 이웃 칸이 나타난다
+     ④ 끝나면 사용 안내 상자 대신 칸 누르기 안내 — 간파 칸(지금 넣을 수 있는 칸) → 투입 단추
+   1102 아홉째 — 사용자 '간파 칸을 눌러보세요 가 아니라 칸을 눌러 보세요. 라고만 하자 · 넣기 -> 투입' — 보조 문구 '칸을 눌러 보세요.' · 단추 이름 '투입'(MTREE 블록 · 게임에 들어갔다) ·
+     2 단계 문구는 그대로 '여신의 눈물을 넣어 보세요.' (사용자 1102 아홉째 '안내 자체는 넣어 보세요. 가 좋아보임' — 단추만 투입)
+   · 언제 — 학생 신뢰로 여신의 눈물을 처음 받으면 (TRW.up 을 감싼다 — 받기 전에 눈물 이력이 없고 받은 뒤 보유가 있으면) S.story.gtear = {v, due:1, src:"trust"} 예약 →
+     의식 차례에 {type:"gtear"} — 그 판의 신뢰 안내들 뒤 (같은 판에 신뢰 안내가 더 들어오면 그 뒤로 옮긴다) · 다음 의식은 칸 누르기 안내가 끝날 때까지 기다린다.
+     대회 · 전투 · 주간 진행 중이면 미뤘다가 한가할 때(render 끝 GTEAR.after) · 장면 중에 나갔다 다시 열면 처음부터 (예약은 남는다 · 눈물은 다시 주지 않는다).
+   · 이력 — 보유 눈물 · 학생이 받은 칸(tearLv) · 마스터 육성 seen · 칸 레벨 · 넣던 눈물 (하나라도 있으면 '처음'이 아니다 — 다 쓰고 다시 얻어도 재연하지 않는다)
+   · 예전 세이브 — 세이브를 열 때(TRW.back 을 감싼다) 이력이 있으면 done (src old — 재연하지 않는다) · 지난 칸 몫으로 처음 받으면 예약 (src back — 같은 본문)
+   · 무대 — 지금 화면이 어두워지고 연한 푸른 빛(오프닝 여신의 빛 .op-wisp) · 아래에 눈물 빛방울. 대화창은 오프닝 대화창 그대로(.op-talk — 이름표 ??? · 당신 · 얼굴 없음) ·
+     마스터의 생각은 이름 없는 생각 창(.think — 학원제 결승 FFOP 의 생각 창과 같은 모양: 점선 안쪽 줄 · 흐린 글). 학생 초상 · 스프라이트 · 목소리 · 회상은 넣지 않는다.
+     GT0106 빛이 흔들린다 · GT0111 빛방울 끝에서 가는 실이 자라 여신의 빛에 닿는다 → 빛이 한 번 번쩍 → 실이 사라진다 (그동안 GT0112) ·
+     GT0119 어둠이 걷히며 마스터 책상 (좁은 화면은 장면 안의 책상 그림 — 회중시계가 보이게) · 빛이 잔광을 남기며 회중시계로 →
+     GT0119A 시계가 푸르게 반짝 · 진짜 여신의 축복 창(마스터 육성 '여신의 축복' 탭 — 칸 · 연결선은 가려 둔다) → GT0119B 빛이 시작 칸 자리로 · 닿으면 퍼지고 그 빛 속에서 시작 칸이 나타난다 →
+     GT0119C 맑은 울림 · 파문 · 연결선을 따라 빛이 가면 길과 이웃 칸이 나타난다 · 지금 넣을 수 있는 칸만 은은하게 → GT0120 ~ 0127 (창 위 · 입력은 막는다) →
+     GT0128 빛과 목소리가 잦아든다 → 칸 누르기 안내.
+   · 값 — 눈물 · 칸 레벨 · 넣던 눈물 · 해금은 건드리지 않는다 (시작 칸은 원래 열려 있다 — 나타나는 모습만 · 다음 칸은 밝히기만)
+   · 칸 누르기 안내 — 첫 스케줄 안내(SCHINT)와 같은 모양(금색 원 · 손가락 · 보조 문구 — FSTUT 02) · 막지 않는다 (화면을 어둡게 하지 않고 누르기를 가로채지 않는다).
+     1 간파 칸(지금 넣을 수 있는 칸) '칸을 눌러 보세요.' → 그 칸을 고르면 2 투입 단추 '여신의 눈물을 넣어 보세요.' (다른 칸을 고르면 1 로) → 눈물을 넣으면 끝.
+     축복 창을 닫거나 다른 탭 · 화면으로 가도 끝 (다시 띄우지 않는다) — 끝나면 다음 의식. 다른 창(modal)이 떠 있는 동안은 숨는다
+   · 건너뛰기(오른쪽 위) — 바로 끝(done · how skip) · 빛 · 울림 · 입력 막기 · 칸 가리기를 치우고 축복 창 + 칸 누르기 안내
+   · 다시 보기(목업 조작판 — GTEAR.preview) — 세이브는 건드리지 않는다
+   · 고리 (apply_gtear.py) — showCeremony(type gtear) · render 끝(GTEAR.after). TRW.up · TRW.back 은 이 블록이 감싼다 (TRWIN 블록 글은 그대로)
+   · 1102 열째 게임에 넣음 — 시나리오 다시 보기(SCEN) · 일지 한 줄은 없다 (사용자 '넣지 않음') · 자동화(navigator.webdriver)에서는 예약하지 않는다 (다른 시험의 흐름 그대로 —
+     시험 · 목업은 window.__gtearForce = true) */
+(function(){
+const GT_VER = 1;
+const GT_BGM = "opGoddess";                                      // 오프닝 여신 곡 (사용자 1102 — 대화 동안)
+const GT_SFX = {glint: "fs_glint", chime: "xp_bell"};             // 회중시계 반짝 · 시작 칸 맑은 울림
+const GT_WATCH = [517, 411];                                      // 책상 그림(MDESK_GEO.size 746 × 478) 속 회중시계 가운데
+const GT_T = {skip: "건너뛰기 ▸", goddess: "???", you: "당신", think: "당신 (생각)", aria: "여신의 목소리"};
+const GT_TIP = {cell: "칸을 눌러 보세요.", feed: "여신의 눈물을 넣어 보세요."};   // 칸 누르기 안내 (1102 아홉째 — 칸 이름은 넣지 않는다 · 2 단계 문구는 '넣어 보세요' 그대로 · 단추만 투입)
+/* 대본 — who goddess(이름표 ???) · you(당신 — think 면 이름 없는 생각 창) / fx 연출
+   (GT0101 어둠 · 0106 흔들림 · 0111 실 · 0119 책상 · 0119A 회중시계 · 0119B 시작 칸이 빛 속에서 · 0119C 길 · 이웃 칸 · 0128 잦아듦) */
+const GT_CUES = [
+  {id: "GT0101", fx: "dim"},
+  {id: "GT0102", who: "goddess", t: "…이제야, 당신에게 목소리가 닿는군요."},
+  {id: "GT0103", who: "you", think: 1, t: "…머릿속에서 목소리가 울려 퍼지는 느낌… 이건…?"},   // 1102 여덟째 — 사용자 '...누구십니까? -> (생각)...'
+  {id: "GT0104", who: "goddess", t: "놀라지 마세요. 당신이 걸어가는 길을 지켜보고 있던 이입니다."},
+  {id: "GT0105", who: "you", t: "이 목소리… 어디선가 들은 것 같은데."},
+  {id: "GT0106", fx: "sway"},
+  {id: "GT0107", who: "goddess", t: "학생들이 당신에게 마음을 열기 시작했군요."},
+  {id: "GT0108", who: "goddess", t: "그 신뢰가 당신과 아이들 사이의 연결고리를 단단히 잇고 있습니다. 저에게도 느껴질 만큼요."},
+  {id: "GT0109", who: "you", t: "…아이들이 저를 믿어 준 덕분이라는 겁니까?"},
+  {id: "GT0110", who: "goddess", t: "네. 당신이 내민 마음에, 아이들이 답하기 시작한 것입니다."},
+  {id: "GT0111", fx: "tie"},
+  {id: "GT0112", who: "goddess", t: "그 믿음이 맺혀, 가늘게나마 이어졌군요."},                // 1102 여덟째 — 사용자 (예전 '…당신의 손에 닿았군요.')
+  {id: "GT0113", who: "you", t: "이 작은 빛으로… 무엇을 할 수 있습니까?"},
+  {id: "GT0114", who: "goddess", t: "당신 안에는 아직 깨어나지 않은 힘이 있습니다."},
+  {id: "GT0115", who: "goddess", t: "이제 그 연결을 통해, 당신의 본래 능력을 일깨워 드리겠습니다."},
+  {id: "GT0116", who: "you", t: "제게… 그런 힘이 있었습니까?"},
+  {id: "GT0117", who: "goddess", t: "네. 다만 한꺼번에 모든 힘을 되찾을 수는 없습니다."},
+  {id: "GT0118", who: "goddess", t: "마음이 이어지는 만큼, 잠들어 있던 가능성도 조금씩 눈을 뜰 것입니다."},
+  {id: "GT0119", fx: "desk"},
+  {id: "GT0119A", fx: "watch"},
+  {id: "GT0119B", fx: "bloom"},
+  {id: "GT0119C", fx: "engrave"},
+  {id: "GT0120", who: "goddess", t: "길을 열어 두었습니다."},
+  {id: "GT0120A", who: "goddess", t: "이제, 당신이 쌓아 갈 믿음으로 그 너머를 밝혀 가세요."},
+  {id: "GT0121", who: "goddess", t: "그 빛을 이곳에 바치세요. 당신 안에 잠든 힘을 일깨워 드리겠습니다."},
+  {id: "GT0122", who: "you", t: "더 강해져서… 아이들을 이끄는 데 쓸 수도 있겠군요."},
+  {id: "GT0123", who: "goddess", t: "그렇습니다. 어떤 힘을 먼저 일깨울지는, 당신이 선택하세요."},
+  {id: "GT0124", who: "goddess", t: "앞으로도 아이들과 마음을 나누세요. 서로를 향한 믿음이 깊어질수록, 그 빛은 다시 맺힐 것입니다."},
+  {id: "GT0125", who: "goddess", t: "그 빛으로 더욱 강해지세요. 그리고 당신을 믿고 손을 내민 이들과 함께 나아가세요."},
+  {id: "GT0126", who: "you", t: "…알겠습니다. 이 믿음을 헛되이 하지 않겠습니다."},
+  {id: "GT0127", who: "goddess", t: "부디, 서로 이어진 마음들이 당신의 길을 밝혀 주기를."},
+  {id: "GT0128", fx: "fade"}
+];
+/* 연출 시간(ms) — 움직임 줄이기면 짧게 */
+const GT_MS = {dim: 1500, sway: 1700, tie: 1150, tieHold: 600, tieFade: 800, lift: 900, fly: 1900, flash: 700, open: 560, spark: 950, bloom: 950, chime: 760, beam: 650,
+  settle: 650, fade: 1100};
+const R = {on: false, live: false, pend: false, wait: false, sess: 0, root: null, typing: 0, trailT: 0, adv: null, cue: "", log: [], preview: false,
+  prevOver: null, watch: null, desk: null, mask: null, hint: null, hintEnd: "", t0: 0};
+
+/* ── 세이브 ── */
+function gtS(){ return typeof S !== "undefined" && S && S.story && S.story.gtear && typeof S.story.gtear === "object" ? S.story.gtear : null; }
+function gtSet(o){
+  if(typeof S === "undefined" || !S) return null;
+  S.story = S.story && typeof S.story === "object" ? S.story : {};
+  S.story.gtear = Object.assign({v: GT_VER}, S.story.gtear || {}, o);
+  return S.story.gtear;
+}
+function gtDue(){ const g = gtS(); return !!(g && g.due && !g.done); }
+function gtTears(){ return window.TRW && TRW.tears ? TRW.tears() : Math.max(0, Math.floor(Number(S && S.items && S.items.tear) || 0)); }
+function gtHist(){                                                // 눈물 이력 — 보유 · 받은 칸 · 마스터 육성 seen · 칸 레벨 · 넣던 눈물
+  if(typeof S === "undefined" || !S) return true;
+  if(Math.floor(Number(S.items && S.items.tear) || 0) > 0) return true;
+  if((S.students || []).some(st => st && (Number(st.tearLv) || 0) > 0)) return true;
+  const M = S.mtree;
+  return !!(M && (M.seen || Object.keys(M.lv || {}).some(k => (M.lv[k] | 0) > 0) || Object.keys(M.fill || {}).some(k => (M.fill[k] | 0) > 0)));
+}
+function gtAuto(){ return !!(navigator.webdriver && !window.__gtearForce); }   // 자동화 — 다른 시험에서는 띄우지 않는다
+function gtReserve(src){
+  if(gtAuto()) return;
+  gtSet({due: 1, done: 0, src, at: {y: S.year | 0, p: S.phase || "", w: S.week | 0}});
+}
+/* 의식 차례 — 그 판의 신뢰 안내들 바로 뒤에 하나 */
+function gtQueue(){
+  if(typeof UI === "undefined" || !gtDue() || R.live) return;
+  const Q = UI.ceremonies = UI.ceremonies || [];
+  for(let i = Q.length - 1; i >= 0; i--) if(Q[i] && Q[i].type === "gtear") Q.splice(i, 1);
+  let at = -1;
+  Q.forEach((c, i) => { if(c && c.type === "trust") at = i; });
+  if(at < 0) Q.push({type: "gtear"}); else Q.splice(at + 1, 0, {type: "gtear"});
+}
+/* TRW.up · TRW.back 을 감싼다 — 처음 받는 때를 안다 (TRWIN 블록 글은 그대로) */
+function gtWrap(){
+  if(!window.TRW || TRW.__gt) return;
+  const up0 = TRW.up, back0 = TRW.back;
+  TRW.up = function(){
+    const first = !gtS() && !gtHist();
+    const r = up0.apply(this, arguments);
+    if(first && gtTears() > 0) gtReserve("trust");
+    if(gtDue()) gtQueue();
+    return r;
+  };
+  TRW.back = function(){
+    const g0 = gtS(), hist = gtHist();
+    if(!g0 && hist) gtSet({due: 0, done: 1, src: "old"});          // 예전 세이브 — 이미 눈물을 얻은 적이 있다 (재연하지 않는다)
+    const n = back0.apply(this, arguments);
+    if(!g0 && !hist && gtTears() > 0) gtReserve("back");           // 지난 칸 몫으로 처음 받았다 — 한 번 (같은 본문)
+    return n;
+  };
+  TRW.__gt = 1;
+}
+
+/* ── 띄우는 때 ── */
+function gtIdle(){
+  const mr = document.getElementById("modalRoot");
+  return !(UI.wrun || UI.battle || UI.tour || UI.pendingTour || (UI.ceremonies || []).length || (mr && mr.innerHTML.trim()) || document.getElementById("bootLoader")
+    || (typeof OP !== "undefined" && OP) || (typeof BELT !== "undefined" && BELT.on) || (window.FST && FST.state && FST.state.on) || S.fsTut === 1
+    || (window.RVST && RVST.state && (RVST.state.on || RVST.state.live)) || (window.RQST && RQST.state && (RQST.state.on || RQST.state.live))
+    || (window.XPST && XPST.state && (XPST.state.on || XPST.state.live)) || (window.FRIS && FRIS.state && (FRIS.state.on || FRIS.state.live))
+    || (window.FLST && FLST.state && (FLST.state.on || FLST.state.live)) || document.documentElement.classList.contains("modal-open"));
+}
+function gtBusy(){ return !!(UI.wrun || UI.battle || UI.tour || UI.pendingTour); }
+/* showCeremony 고리 — {type:"gtear"} 차례 (늘 true — 다른 의식 팝업으로 흘리지 않는다) */
+function gtPlay(c){
+  if(!gtDue() || !window.MTREE || R.on || R.live){ showCeremony(); return true; }
+  if((UI.ceremonies || []).some(x => x && x.type === "trust")){ gtQueue(); showCeremony(); return true; }   // 신뢰 안내가 남았으면 그 뒤로
+  if(gtBusy()){ R.wait = true; showCeremony(); return true; }       // 대회 · 전투 · 주간 진행 — 한가할 때 (after)
+  gtStart(false);
+  return true;
+}
+/* render 끝 — 미룬 예약 · 장면 중에 나갔던 예약을 한가할 때 · 칸 누르기 안내는 축복 창이 닫히면 같이 끝 */
+function gtAfter(){
+  if(typeof S === "undefined" || !S) return;
+  if(R.hint){ if(!gtWinOpen()) gtHintEnd(false, "close"); else if(!R.hint.raf) R.hint.raf = requestAnimationFrame(gtHintLoop); }
+  if(!gtDue() || R.on || R.live || R.pend || !window.MTREE) return;
+  if(!gtIdle()) return;
+  R.pend = true;
+  setTimeout(() => {
+    R.pend = false;
+    if(!gtDue() || R.on || R.live || !gtIdle()) return;
+    R.wait = false;
+    queueCeremony({type: "gtear"});
+    showCeremony();
+  }, 0);
+}
+function gtWinOpen(){ return typeof UI !== "undefined" && (UI.mdeskPop === "master" || UI.view === "master") && !!(window.MTREE && MTREE.tab() === "tree"); }
+
+/* ── 장면 ── */
+const gtQ = s => R.root ? R.root.querySelector(s) : null;
+const gtRM = () => !!(window.__gtRM || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches));
+const gtMs = k => gtRM() ? Math.min(260, Math.round(GT_MS[k] * .25)) : GT_MS[k];
+function gtWait(ms, sess){ return new Promise(r => setTimeout(r, ms)).then(() => R.sess === sess && R.on); }
+function gtFrame(){ return new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); }
+function gtSfx(k){ try{ if(GT_SFX[k] && SFX[GT_SFX[k]]) sfxPlay(GT_SFX[k]); }catch(e){} }
+function gtStart(preview){
+  gtHintEnd(true);
+  R.on = true; R.live = true; R.wait = false; R.preview = !!preview; R.sess++; R.cue = ""; R.log = []; R.watch = null; R.hintEnd = ""; R.t0 = performance.now();
+  R.prevOver = typeof AOVER !== "undefined" ? AOVER : null;
+  gtBuild();
+  try{ audOver(GT_BGM); }catch(e){}
+  Object.values(GT_SFX).forEach(k => { try{ if(SFX[k]) sfxLoad(SFX[k].f); }catch(e){} });
+  const sess = R.sess;
+  gtFlow(sess).catch(e => { try{ errPush("gtear", e.message, e.stack); }catch(x){} if(R.sess === sess) gtEnd("error"); });
+}
+function gtBuild(){
+  const mr = document.getElementById("modalRoot");
+  if(!mr) return;
+  try{ window.scrollTo(0, 0); }catch(e){}
+  mr.insertAdjacentHTML("beforeend", `<div class="gt-root" id="gtRoot" role="dialog" aria-modal="true" aria-label="${esc(GT_T.aria)}">
+      <div class="gt-dim" aria-hidden="true"></div><div class="gt-aura" aria-hidden="true"></div>
+      <div class="gt-fx" aria-hidden="true"></div>
+      <div class="op-wisp gt-orb" hidden aria-hidden="true"><i></i></div>
+      <div class="gt-drop" hidden aria-hidden="true"></div>
+      <div class="op-talk goddess gt-talk" hidden>
+        <div class="op-face" hidden><img alt="" draggable="false"></div>
+        <div class="op-body"><div class="op-name goddess"></div><div class="op-text" aria-live="polite"></div><span class="op-next" aria-hidden="true">▼</span></div>
+      </div>
+      <button class="op-skip gt-skip" type="button">${esc(GT_T.skip)}</button>
+    </div>`);
+  R.root = mr.querySelector("#gtRoot");
+  try{ modalLockSync(); }catch(e){}
+  R.root.addEventListener("click", ev => {
+    if(ev.target.closest(".gt-skip")){ ev.stopPropagation(); gtSkip(); return; }
+    if(R.adv) R.adv();
+  });
+}
+async function gtFlow(sess){
+  for(const q of GT_CUES){
+    if(R.sess !== sess || !R.on) return;
+    R.cue = q.id; R.log.push(q.id);
+    if(q.fx){ if(!await gtFx(q.fx, sess)) return; continue; }
+    if(!await gtSay(q, sess)) return;
+  }
+  if(R.sess === sess && R.on) gtEnd("done");
+}
+/* 대사 한 줄 — 글자가 하나씩 · 누르면 다 나오고 · 다시 누르면 다음 (오프닝 opSay 와 같은 결) · think — 이름 없는 생각 창 */
+function gtSay(q, sess){
+  return new Promise(res => {
+    const box = gtQ(".gt-talk"), nm = gtQ(".gt-talk .op-name"), tx = gtQ(".gt-talk .op-text");
+    if(!box || R.sess !== sess){ res(false); return; }
+    const who = q.who === "goddess" ? "goddess" : "you", think = !!q.think;
+    box.classList.toggle("goddess", who === "goddess" && !think);
+    box.classList.toggle("think", think);
+    nm.className = "op-name " + who;
+    nm.textContent = think ? GT_T.think : who === "goddess" ? GT_T.goddess : GT_T.you;
+    tx.textContent = "";
+    box.classList.remove("done");
+    if(box.hidden){
+      box.hidden = false;
+      if(!gtRM()) box.animate([{opacity: 0, transform: "translateX(-50%) translateY(12px)"}, {opacity: 1, transform: "translateX(-50%)"}], {duration: 380, easing: "ease-out"});
+    }
+    const full = Array.from(q.t), t0 = performance.now();
+    let n = 0;
+    const show = () => { tx.textContent = full.slice(0, n).join(""); };
+    const done = () => { clearInterval(R.typing); R.typing = 0; n = full.length; show(); box.classList.add("done"); };
+    clearInterval(R.typing);
+    R.typing = setInterval(() => { if(R.sess !== sess){ clearInterval(R.typing); return; } n++; show(); if(n >= full.length) done(); },
+      typeof nameEnFirst === "function" && nameEnFirst() ? 21 : 34);
+    R.adv = () => {
+      if(performance.now() - t0 < 140) return;                   // 앞 줄을 넘긴 누름이 이어지지 않게
+      if(n < full.length){ done(); return; }
+      R.adv = null; res(R.sess === sess);
+    };
+  });
+}
+function gtTalkHide(){
+  const box = gtQ(".gt-talk"); if(!box || box.hidden) return;
+  R.adv = null; clearInterval(R.typing); R.typing = 0;
+  if(gtRM()){ box.hidden = true; return; }
+  const a = box.animate([{opacity: 1}, {opacity: 0}], {duration: 260, easing: "ease-in", fill: "forwards"});
+  a.onfinish = () => { box.hidden = true; a.cancel(); };
+}
+/* 빛 — 화면 좌표 (#gtRoot 는 화면 전체) */
+function gtOrbTo(x, y, ms){
+  const o = gtQ(".gt-orb"); if(!o) return;
+  o.style.transitionDuration = (ms || 0) + "ms";
+  o.style.left = x + "px"; o.style.top = y + "px";
+}
+function gtFxEl(cls, x, y, html){
+  const L = gtQ(".gt-fx"); if(!L) return null;
+  const d = document.createElement("div");
+  d.className = cls;
+  if(x != null){ d.style.left = x + "px"; d.style.top = y + "px"; }
+  if(html) d.innerHTML = html;
+  L.appendChild(d);
+  return d;
+}
+function gtGone(el, ms){ if(!el) return; const a = el.animate([{opacity: getComputedStyle(el).opacity}, {opacity: 0}], {duration: ms || 500, fill: "forwards"}); a.onfinish = () => el.remove(); }
+/* 번쩍 — 동그란 빛 · 고리 (회중시계 · 실이 닿은 여신의 빛) */
+function gtFlash(x, y, ms, big){
+  const f = gtFxEl("gt-flash", x, y); if(!f) return null;
+  if(gtRM()){ setTimeout(() => f.remove(), 200); return f; }
+  const a = f.animate([{transform: "scale(.2)", opacity: 0}, {transform: "scale(1)", opacity: 1, offset: .32}, {transform: `scale(${big || 1.5})`, opacity: 0}], {duration: ms || 900, easing: "ease-out", fill: "forwards"});
+  a.onfinish = () => f.remove();
+  return f;
+}
+/* 반짝이 — 빛이 퍼질 때 둘레에 (모양은 FSTUT .fst-spark · 푸른 빛) */
+function gtTwinkle(cx, cy, n, rad){
+  if(gtRM()) return;
+  for(let i = 0; i < n; i++){
+    const a = i / n * Math.PI * 2 + Math.random() * .8, d = rad * (.55 + Math.random() * .55);
+    const t = gtFxEl("gt-tw", cx + Math.cos(a) * d, cy + Math.sin(a) * d * .78);
+    if(t){ t.style.animationDelay = Math.round(i * 60 + Math.random() * 90) + "ms"; setTimeout(() => t.remove(), 1300); }
+  }
+}
+/* GT0111 — 눈물에서 여신으로 이어지는 실 한 가닥 (사용자 1102 여덟째 '선을 눈물에게서 여신으로 이어지면서 이어지면 잠시 빛이 밝게 한번 빛나고 선을 페이드 아웃') ·
+   학생 모습 · 이름 없이. 빛방울 끝에서 가는 실이 살짝 굽이치며 자라 여신의 빛에 닿으면 → 빛이 한 번 밝게(번쩍 · 고리 · 실도 밝게) → 실이 사라진다 (사라지는 동안 GT0112) */
+async function gtTie(sess){
+  const d = gtQ(".gt-drop"), o = gtQ(".gt-orb");
+  if(!d || !o || d.hidden || o.hidden) return gtWait(200, sess);
+  const dr = d.getBoundingClientRect(), orr = o.getBoundingClientRect(), rm = gtRM();
+  const x0 = dr.left + dr.width / 2, y0 = dr.top + 3, x1 = orr.left, y1 = orr.top + 5;   // 빛방울 위 끝 → 여신의 빛 가운데 (빛은 0 × 0 상자 — 왼쪽 위가 가운데)
+  const L = Math.max(24, y0 - y1), A = Math.min(20, L * .22), f = v => v.toFixed(1);
+  const W = gtFxEl("gt-tie", null, null, `<svg width="100%" height="100%"><path d="M${f(x0)} ${f(y0)}C${f(x0 + A)} ${f(y0 - L * .36)} ${f(x1 - A)} ${f(y1 + L * .4)} ${f(x1)} ${f(y1)}"/></svg><i class="gt-tie-head"></i>`);
+  if(!W) return gtWait(200, sess);
+  const p = W.querySelector("path"), hd = W.querySelector(".gt-tie-head"), len = p.getTotalLength(), T = gtMs("tie");
+  p.style.strokeDasharray = len; p.style.strokeDashoffset = rm ? 0 : len;
+  R.tie = {from: [x0, y0], to: [x1, y1], len};
+  const ok = await new Promise(res => {
+    const t0 = performance.now();
+    const step = now => {
+      if(R.sess !== sess || !R.on){ res(false); return; }
+      const k = rm ? 1 : Math.min(1, (now - t0) / T), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+      p.style.strokeDashoffset = f(len * (1 - e));
+      const pt = p.getPointAtLength(len * e); hd.style.left = f(pt.x) + "px"; hd.style.top = f(pt.y) + "px";
+      if(k < 1) requestAnimationFrame(step); else res(true);
+    };
+    requestAnimationFrame(step);
+  });
+  if(!ok) return false;
+  hd.remove();
+  W.classList.add("lit");                                          // 이어졌다 — 실도 밝게
+  gtFlash(x1, y1 - 5, 950, 1.7);
+  if(!rm) try{ o.animate([{filter: "brightness(1)", transform: "scale(1.9)"}, {filter: "brightness(2.6)", transform: "scale(2.9)", offset: .28}, {filter: "brightness(1)", transform: "scale(1.9)"}],
+    {duration: 950, easing: "ease-out"}); }catch(e){}
+  if(!await gtWait(gtMs("tieHold"), sess)) return false;
+  gtGone(W, gtMs("tieFade"));                                      // 실이 사라진다 — 그동안 다음 대사(GT0112)
+  return R.sess === sess && R.on;
+}
+/* 좁은 화면 — 책상이 없는 화면이라 장면 안에 책상 그림을 깐다 (회중시계가 가운데쯤 오게 · 화면을 다 덮는다) */
+function gtDeskStage(){
+  const A = typeof MDESK_ART !== "undefined" ? MDESK_ART : null, G = typeof MDESK_GEO !== "undefined" ? MDESK_GEO : null;
+  const L = gtQ(".gt-fx"); if(!A || !G || !L) return null;
+  const [DW, DH] = G.size, vw = innerWidth, vh = innerHeight;
+  const s = Math.max(vw / DW, vh / DH) * 1.25;
+  let x = vw / 2 - GT_WATCH[0] * s, y = vh * .42 - GT_WATCH[1] * s;
+  x = Math.min(0, Math.max(vw - DW * s, x)); y = Math.min(0, Math.max(vh - DH * s, y));
+  const d = document.createElement("div");
+  d.className = "gt-desk";
+  d.style.cssText = `left:${x.toFixed(1)}px;top:${y.toFixed(1)}px;width:${(DW * s).toFixed(1)}px;height:${(DH * s).toFixed(1)}px`;
+  d.innerHTML = `<img src="${A.ext}" alt="" draggable="false"><img src="${A.items}" alt="" draggable="false">`;
+  L.prepend(d);
+  R.desk = {el: d, pt: [x + GT_WATCH[0] * s, y + GT_WATCH[1] * s]};
+  return R.desk;
+}
+/* 좁은 화면 — 창이 아래에 그려지면 그 칸이 보이게 쪽을 옮긴다 (장면 중에는 창 잠금(modal-open)이라 body top 으로 · 풀리면 그 자리에 머문다 — MODAL_LOCK_Y) */
+function gtPageTo(el, frac){
+  const r = el && el.getBoundingClientRect();
+  if(!r || !(r.height > 0) || !document.documentElement.classList.contains("modal-open")) return Promise.resolve();
+  const cur = -(parseFloat(document.body.style.top) || 0), maxY = Math.max(0, document.body.scrollHeight - innerHeight);
+  const y = Math.round(Math.max(0, Math.min(maxY, cur + r.top + r.height / 2 - innerHeight * (frac || .4))));
+  if(Math.abs(y - cur) < 4) return Promise.resolve();
+  try{ MODAL_LOCK_Y = y; }catch(e){}
+  if(gtRM()){ document.body.style.top = (-y) + "px"; return Promise.resolve(); }
+  return new Promise(res => {
+    const t0 = performance.now(), d = 650;
+    const step = now => {
+      const k = Math.min(1, (now - t0) / d), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2;
+      document.body.style.top = (-(cur + (y - cur) * e)).toFixed(1) + "px";
+      if(k < 1) requestAnimationFrame(step); else res();
+    };
+    requestAnimationFrame(step);
+  });
+}
+function gtWatchPt(){
+  if(R.desk) return R.desk.pt;
+  const a = document.querySelector(".mdesk .mdesk-art"), G = typeof MDESK_GEO !== "undefined" ? MDESK_GEO : null;
+  if(!a || !G) return null;
+  const r = a.getBoundingClientRect(); if(!(r.width > 0)) return null;
+  return [r.left + r.width * GT_WATCH[0] / G.size[0], r.top + r.height * GT_WATCH[1] / G.size[1]];
+}
+/* 빛이 잔광을 남기며 간다 */
+function gtFly(p, ms, sess){
+  const o = gtQ(".gt-orb"); if(!o) return Promise.resolve(false);
+  gtOrbTo(p[0], p[1], gtRM() ? 0 : ms);
+  clearInterval(R.trailT);
+  if(!gtRM()) R.trailT = setInterval(() => {
+    if(R.sess !== sess || !R.root){ clearInterval(R.trailT); return; }
+    const r = o.getBoundingClientRect(), t = gtFxEl("gt-trail", r.left, r.top);
+    if(t){ const a = t.animate([{opacity: .85, transform: "scale(1)"}, {opacity: 0, transform: "scale(.3)"}], {duration: 900, easing: "ease-out", fill: "forwards"}); a.onfinish = () => t.remove(); }
+  }, 55);
+  return gtWait(gtRM() ? 60 : ms, sess).then(ok => { clearInterval(R.trailT); R.trailT = 0; return ok; });
+}
+function gtNode(id){ return document.querySelector(`.mt-wrap .mt-board .mt-h[data-mtn="${id}"]`); }
+function gtRect(el){ if(!el) return null; const r = el.getBoundingClientRect(); return r.width > 0 ? {x: r.left, y: r.top, w: r.width, h: r.height, cx: r.left + r.width / 2, cy: r.top + r.height / 2} : null; }
+function gtHex(n, cls){
+  const h = gtFxEl("gt-hex" + (cls ? " " + cls : "")); if(!h) return null;
+  h.style.cssText = `left:${n.x.toFixed(1)}px;top:${n.y.toFixed(1)}px;width:${n.w.toFixed(1)}px;height:${n.h.toFixed(1)}px`;
+  return h;
+}
+function gtCans(){                                                // 지금 넣을 수 있는 칸 (판에 보이는 것만 — 가려 둔 칸도 자리는 있다)
+  if(!window.MTREE) return [];
+  return MTREE.cells().filter(c => c.id !== MTREE.start && MTREE.stateOf(c.id) === "can" && (!MTREE.vis || MTREE.vis(c.id)))
+    .map(c => ({id: c.id, r: gtRect(gtNode(c.id))})).filter(c => c.r);
+}
+/* 축복 창의 칸 · 연결선 가리기 (사용자 1102 여덟째 '바로 노드를 보여주지말고 빛이 노드 위치에 다다라서 빛을 퍼트리고 노드가 출현하도록') —
+   스타일 한 장(#gtMask — 판을 다시 그려도 그대로) · show 에 든 칸만 보이고 · 연결선은 lines 가 켜지면. null 이면 치운다 (장면 끝 · 건너뛰기 · 끊기) */
+function gtMask(show, lines){
+  let st = document.getElementById("gtMask");
+  if(show == null){ if(st) st.remove(); R.mask = null; return; }
+  if(!st){ st = document.createElement("style"); st.id = "gtMask"; document.head.appendChild(st); }
+  R.mask = {show: show.slice(), lines: !!lines};
+  const q = s => window.CSS && CSS.escape ? CSS.escape(s) : String(s).replace(/["\\]/g, "");
+  st.textContent = `.mt-wrap .mt-board .mt-h${show.map(id => `:not([data-mtn="${q(id)}"])`).join("")}{opacity:0!important}`
+    + (lines ? "" : ".mt-wrap .mt-board .mt-ln{opacity:0!important}");
+}
+function gtShow(id){ if(R.mask && !R.mask.show.includes(id)) gtMask(R.mask.show.concat(id), R.mask.lines); }
+/* 칸이 빛 속에서 나타난다 (밝게 · 작게 → 제 모습) */
+function gtRise(el, k){
+  if(!el || gtRM()) return;
+  try{ el.animate([{opacity: 0, filter: "brightness(3) saturate(.3)", scale: String(k || .55)}, {opacity: 1, filter: "brightness(1.8) saturate(.7)", scale: "1.07", offset: .55},
+    {opacity: 1, filter: "brightness(1) saturate(1)", scale: "1"}], {duration: 800, easing: "cubic-bezier(.2,.8,.3,1)"}); }catch(e){}
+}
+function gtLinesOn(){                                             // 연결선 — 빛이 지나가면 나타난다
+  if(!R.mask || R.mask.lines) return;
+  gtMask(R.mask.show, true);
+  if(!gtRM()) document.querySelectorAll(".mt-wrap .mt-board .mt-ln").forEach(l => { try{ l.animate([{opacity: 0, filter: "brightness(2.6)"}, {opacity: 1, filter: "brightness(1)"}], {duration: 560, easing: "ease-out"}); }catch(e){} });
+}
+/* 연출 — 끝까지 가면 true · 건너뛰기 · 다른 세션이면 false */
+async function gtFx(k, sess){
+  const W = ms => gtWait(ms, sess), rm = gtRM();
+  if(k === "dim"){
+    void R.root.offsetWidth;                                       // 어둠이 천천히 (붙인 바로 뒤라 한 번 그린 뒤에)
+    R.root.classList.add("dim");
+    const x = innerWidth / 2, y = innerHeight * .36;
+    gtOrbTo(x, y, 0);
+    const o = gtQ(".gt-orb"); if(o) o.hidden = false;
+    const d = gtQ(".gt-drop");                                     // 1102 여덟째 — 실(GT0111)이 보이게 빛과 조금 더 떨어뜨린다 (예전 84px)
+    if(d){ d.style.left = x + "px"; d.style.top = (y + Math.min(120, innerHeight * .15)) + "px"; d.hidden = false; d.classList.add("rise"); }
+    return W(gtMs("dim"));
+  }
+  if(k === "sway"){
+    const o = gtQ(".gt-orb"); if(!o) return true;
+    if(!rm){ o.classList.remove("sway"); void o.offsetWidth; o.classList.add("sway"); }
+    const ok = await W(gtMs("sway"));
+    o.classList.remove("sway");
+    return ok;
+  }
+  if(k === "tie") return gtTie(sess);
+  if(k === "desk"){
+    gtTalkHide();
+    const wide = typeof mdeskOn === "function" && mdeskOn();
+    UI.mdeskPop = null; UI.view = "home";
+    try{ render(); }catch(e){}
+    if(!wide) gtDeskStage();
+    if(!await W(80)) return false;
+    R.root.classList.remove("dim"); R.root.classList.add("lift");
+    gtGone(gtQ(".gt-tie"), 400);
+    const d = gtQ(".gt-drop");
+    if(d){ d.classList.remove("rise"); const o = gtQ(".gt-orb"), r = o && o.getBoundingClientRect();
+      if(r && !rm){ const a = d.animate([{left: d.style.left, top: d.style.top, opacity: 1}, {left: r.left + "px", top: r.top + "px", opacity: 0}], {duration: 700, easing: "ease-in", fill: "forwards"}); a.onfinish = () => { d.hidden = true; }; }
+      else d.hidden = true; }
+    if(!await W(gtMs("lift"))) return false;
+    const p = gtWatchPt();
+    R.watch = p || [innerWidth * .66, innerHeight * .78];
+    return gtFly(R.watch, gtMs("fly"), sess);
+  }
+  if(k === "watch"){
+    const p = R.watch || gtWatchPt() || [innerWidth / 2, innerHeight / 2];
+    const f = gtFxEl("gt-flash", p[0], p[1]);
+    if(f && !rm) f.animate([{transform: "scale(.2)", opacity: 0}, {transform: "scale(1)", opacity: 1, offset: .35}, {transform: "scale(1.5)", opacity: 0}], {duration: 900, easing: "ease-out", fill: "forwards"});
+    gtSfx("glint");
+    const o = gtQ(".gt-orb"); if(o) o.classList.add("in");
+    if(!await W(gtMs("flash"))) return false;
+    if(f) f.remove();
+    gtMask([], false);                                             // 창이 열려도 칸 · 연결선은 아직 (빛이 닿으면 나타난다)
+    if(window.MTREE && MTREE.setTab) MTREE.setTab("tree");
+    UI.view = "master";                                            // 넓은 화면은 render 가 책상 팝업으로 (1006)
+    try{ render(); }catch(e){}
+    if(R.desk){ gtGone(R.desk.el, 420); R.desk = null; }
+    if(!await W(gtMs("open"))) return false;
+    await gtFrame();
+    if(!(typeof mdeskOn === "function" && mdeskOn())){             // 좁은 화면 — 시작 칸 자리가 보이게 (대화창 위)
+      await gtPageTo(gtNode(window.MTREE ? MTREE.start : ""), .4);
+      await gtFrame();
+    }
+    return R.sess === sess && R.on;
+  }
+  if(k === "bloom"){                                               // 빛이 시작 칸 자리에 닿아 퍼지고 · 그 빛 속에서 시작 칸이 나타난다
+    const id = window.MTREE ? MTREE.start : "", n = gtRect(gtNode(id));
+    if(!n){ gtShow(id); return W(200); }
+    const from = R.watch || [innerWidth / 2, innerHeight * .8];
+    const sp = gtFxEl("gt-spark", from[0], from[1]);
+    if(sp && !rm){
+      const a = sp.animate([{transform: "translate(0,0) scale(1)"}, {transform: `translate(${(n.cx - from[0]).toFixed(1)}px,${(n.cy - from[1]).toFixed(1)}px) scale(.7)`}], {duration: gtMs("spark"), easing: "cubic-bezier(.45,.05,.3,1)", fill: "forwards"});
+      if(!await W(gtMs("spark"))) return false;
+      a.cancel();
+    }
+    if(sp) sp.remove();
+    const bl = gtFxEl("gt-bloom", n.cx, n.cy);
+    if(bl && !rm){ const a = bl.animate([{transform: "scale(.12)", opacity: 0}, {transform: "scale(.72)", opacity: 1, offset: .24}, {transform: "scale(1.3)", opacity: 0}], {duration: 1200, easing: "ease-out", fill: "forwards"}); a.onfinish = () => bl.remove(); }
+    else if(bl) bl.remove();
+    gtTwinkle(n.cx, n.cy, 6, n.w * .85);
+    if(!await W(rm ? 0 : 170)) return false;
+    gtShow(id); gtRise(gtNode(id), .5);
+    return W(gtMs("bloom"));
+  }
+  if(k === "engrave"){                                             // 맑은 울림 · 파문 → 연결선을 따라 빛 → 길 · 이웃 칸이 나타난다 → 넣을 수 있는 칸만 은은하게
+    const id = window.MTREE ? MTREE.start : "", n = gtRect(gtNode(id));
+    gtShow(id);
+    gtSfx("chime");
+    if(n){
+      const el = gtNode(id);
+      if(el && !rm) try{ el.animate([{filter: "brightness(1)"}, {filter: "brightness(1.9)", offset: .3}, {filter: "brightness(1)"}], {duration: 900, easing: "ease-out"}); }catch(e){}
+      const rp = gtFxEl("gt-ripple", n.cx, n.cy);
+      if(rp && !rm){ const a = rp.animate([{transform: "translate(-50%,-50%) scale(.15)", opacity: .95}, {transform: "translate(-50%,-50%) scale(1)", opacity: 0}], {duration: 900, easing: "ease-out", fill: "forwards"}); a.onfinish = () => rp.remove(); }
+      else if(rp) rp.remove();
+    }
+    if(!await W(Math.round(gtMs("chime") * .55))) return false;
+    const cans = gtCans(), bd = gtMs("beam") + 500, hit = rm ? 0 : Math.round(bd * .6);
+    cans.forEach((c, i) => {                                       // 연결선을 따라 이웃 칸까지 — 닿으면 길 · 칸이 나타난다
+      const reveal = () => { if(R.sess !== sess) return; gtLinesOn(); gtShow(c.id); gtRise(gtNode(c.id), .7); gtTwinkle(c.r.cx, c.r.cy, 4, c.r.w * .6); };
+      if(!n){ reveal(); return; }
+      const dx = c.r.cx - n.cx, dy = c.r.cy - n.cy, L = Math.hypot(dx, dy), b = gtFxEl("gt-beam", n.cx, n.cy);
+      if(b){
+        b.style.width = L.toFixed(1) + "px"; b.style.transform = `rotate(${(Math.atan2(dy, dx) * 180 / Math.PI).toFixed(1)}deg)`;
+        if(!rm){ const a = b.animate([{transform: b.style.transform + " scaleX(0)", opacity: 1}, {transform: b.style.transform + " scaleX(1)", opacity: 1, offset: .6}, {transform: b.style.transform + " scaleX(1)", opacity: 0}],
+          {duration: bd, delay: i * 70, easing: "ease-out", fill: "forwards"}); a.onfinish = () => b.remove(); }
+        else b.remove();
+      }
+      setTimeout(reveal, hit + i * 70);
+    });
+    if(!await W((rm ? 0 : hit + Math.max(0, cans.length - 1) * 70) + 160)) return false;
+    gtMask(null);                                                  // 남은 가림을 치운다 (첫 눈물 때는 시작 칸 · 이웃 칸뿐)
+    cans.forEach(c => gtHex(c.r, "can"));                          // 지금 넣을 수 있는 칸만 은은하게
+    if(!await W(gtMs("settle"))) return false;
+    R.root.classList.add("aura");                                  // 여신의 빛 — 창 위에 은은하게 (GT0128 에 잦아든다)
+    return true;
+  }
+  if(k === "fade"){
+    gtTalkHide();
+    R.root.classList.remove("aura"); R.root.classList.add("fade");
+    R.root.querySelectorAll(".gt-hex.can").forEach(h => gtGone(h, 900));
+    return W(gtMs("fade"));
+  }
+  return true;
+}
+
+/* ── 끝 · 건너뛰기 ── */
+function gtTeardown(){
+  clearInterval(R.typing); R.typing = 0; clearInterval(R.trailT); R.trailT = 0;
+  R.adv = null; R.desk = null;
+  gtMask(null);
+  const r = R.root; R.root = null;
+  if(r) r.remove();
+  try{ modalLockSync(); }catch(e){}
+}
+function gtEnd(how){
+  if(!R.on) return;
+  R.sess++; R.on = false;
+  if(!R.preview){ gtSet({due: 0, done: 1, how}); try{ save(); }catch(e){} }
+  gtTeardown();
+  try{ audOver(R.prevOver == null ? null : R.prevOver); }catch(e){}
+  if(window.MTREE && MTREE.setTab) MTREE.setTab("tree");
+  if(!gtWinOpen()){ UI.view = "master"; }
+  try{ render(); }catch(e){}
+  gtHintShow();
+}
+function gtSkip(){ if(R.on) gtEnd("skip"); }
+
+/* ── 칸 누르기 안내 — 사용자 1102 여덟째 '튜토리얼이 종료되면 설명 박스 노출하지말고 간파 노드를 클릭하도록 유도, 그다음 넣기 버튼을 클릭하도록 유도'.
+   첫 스케줄 안내(SCHINT · 사용자 1029 '유도 … (강제 X)')와 같은 모양 · 같은 결 — FSTUT 02 의 금색 원 · 손가락 · 보조 문구(.fst-ring · .fst-finger · .fst-tip)를 같이 쓰고
+   뿌리(#gtHint)에는 .fst 를 달지 않고 변수만 (gtear_block.css) · 막지 않는다 (pointer-events 없음 — 화면을 어둡게 하지 않고 누르기를 가로채지 않는다).
+   1 — 지금 넣을 수 있는 칸(첫 눈물 때는 시작 칸 위 간파) · 2 — 그 칸을 고르면 오른쪽 칸(좁은 화면은 판 아래)의 투입 단추 (다른 칸을 고르면 1 로) ·
+   눈물을 넣으면(보유가 줄거나 그 칸의 넣은 눈물 · 레벨이 오르면) 끝 · 축복 창을 닫거나 다른 탭 · 화면으로 가도 끝 (다시 띄우지 않는다) · 다른 창(modal)이 뜨면 숨는다.
+   단계마다 처음 한 번 — 가려졌으면 보이게 스크롤 (책상 팝업은 오른쪽 칸 안 · 좁은 화면은 화면) */
+function gtHintVals(id){ return {tear: gtTears(), fill: MTREE.fill(id) | 0, lv: MTREE.lv(id) | 0}; }
+function gtHintShow(){
+  gtHintEnd(true);
+  const c = window.MTREE && gtWinOpen() ? gtCans()[0] : null;
+  if(!c){ R.hintEnd = "none"; gtLiveOff(); return; }
+  const el = document.createElement("div");
+  el.id = "gtHint"; el.className = "gt-hint"; el.setAttribute("aria-hidden", "true");
+  el.innerHTML = `<div class="fst-guide" hidden><i class="fst-ring"></i><i class="fst-ring2"></i><i class="fst-finger"></i><div class="fst-tip"></div></div>`;
+  document.body.appendChild(el);
+  const I = (typeof TIN_ART !== "undefined" && TIN_ART && TIN_ART.icons) || null, at = I && I.at && I.at.hand;   // 손가락 — 건물 안 아이콘 시트의 hand (FSTUT · SCHINT 와 같다)
+  if(I && at){ const f = el.querySelector(".fst-finger"); f.style.setProperty("--fi", `url("${I.src}")`); f.style.setProperty("--fax", at[0]); f.style.setProperty("--fay", at[1]);
+    f.style.setProperty("--fiw", I.size[0]); f.style.setProperty("--fih", I.size[1]); }
+  R.hint = {id: c.id, el, step: 0, raf: 0, rev: {}, base: gtHintVals(c.id), log: []};
+  R.hint.raf = requestAnimationFrame(gtHintLoop);
+}
+const gtVis = el => { if(!el) return null; const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 ? r : null; };
+const gtHit = (a, b) => !!(a && b && a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top);
+function gtPut(el, k, v){ const c = el.__gt || (el.__gt = {}); if(c[k] === v) return; c[k] = v; el.style.setProperty(k, v); }
+const gtPx = v => Math.round(v) + "px";
+function gtCover(){                                               // 좁은 화면 — 위에 붙박인 위 칸 (넓은 화면의 오른쪽 사이드는 아니다)
+  const tb = document.querySelector("#app > .topbar"); if(!tb) return null;
+  const p = getComputedStyle(tb).position; if(p !== "sticky" && p !== "fixed") return null;
+  const r = gtVis(tb); return r && r.top <= 0 && r.bottom < innerHeight * .5 ? r : null;
+}
+function gtReveal(el){
+  const r = gtVis(el); if(!r) return;
+  const sm = !gtRM(), cov = gtCover(), top = cov ? cov.bottom : 0, room = 64;
+  if(typeof mdeskOn === "function" && mdeskOn()){                  // 책상 팝업 — 오른쪽 칸(판 높이 안에서 스크롤)
+    const box = el.closest(".mt-side"), b = box && box.scrollHeight > box.clientHeight + 2 ? box.getBoundingClientRect() : null;
+    if(!b) return;
+    const d = r.bottom > b.bottom - 10 ? r.bottom - b.bottom + 18 : r.top < b.top + 10 ? r.top - b.top - 18 : 0;
+    if(d) try{ box.scrollBy({top: Math.round(d), behavior: sm ? "smooth" : "auto"}); }catch(e){ box.scrollTop += d; }
+    return;
+  }
+  if(r.top >= top + room && r.bottom <= innerHeight - 16) return;   // 이미 다 보인다 (위에 보조 문구 자리까지)
+  const d = r.top + r.height / 2 - (top + (innerHeight - top) * .52);
+  try{ window.scrollBy({top: Math.round(d), behavior: sm ? "smooth" : "auto"}); }catch(e){ window.scrollBy(0, Math.round(d)); }
+}
+function gtHintLoop(){
+  const H = R.hint; if(!H) return;
+  H.raf = 0;
+  if(!window.MTREE || !gtWinOpen()){ gtHintEnd(false, "close"); return; }
+  const v = gtHintVals(H.id);
+  if(v.tear < H.base.tear || v.fill > H.base.fill || v.lv > H.base.lv){ gtHintEnd(false, "fed"); return; }
+  const g = H.el.querySelector(".fst-guide"), mr = document.getElementById("modalRoot");
+  const busy = document.documentElement.classList.contains("modal-open") || !!(mr && mr.innerHTML.trim());
+  const sel = MTREE.state && MTREE.state.sel === H.id;
+  const fb = sel ? document.querySelector(`.mt-wrap .mt-side [data-mt-feed="${H.id}"]`) : null;
+  if(sel && !fb && document.querySelector(".mt-wrap .mt-side .mt-go:disabled")){ gtHintEnd(false, "none"); return; }   // 넣을 수 없다 (눈물이 없다 · 막혔다)
+  const step = fb ? 2 : 1, el = busy ? null : step === 2 ? fb : gtNode(H.id), r0 = gtVis(el);
+  if(r0 && !H.rev[step]){ H.rev[step] = 1; gtReveal(el); }
+  const r = r0 ? gtVis(el) : null;
+  if(!r){ if(!g.hidden) g.hidden = true; H.raf = requestAnimationFrame(gtHintLoop); return; }
+  if(H.step !== step){
+    H.step = step; H.log.push(step);
+    H.el.classList.toggle("cell", step === 1); H.el.classList.toggle("feed", step === 2);
+    g.querySelector(".fst-tip").textContent = step === 1 ? GT_TIP.cell : GT_TIP.feed;
+  }
+  if(g.hidden) g.hidden = false;
+  const pad = step === 1 ? 14 : 5;                                 // 칸은 동그랗게 (육각형 모서리까지 안에) · 단추는 둥근 네모
+  g.querySelectorAll(".fst-ring, .fst-ring2").forEach(e => { gtPut(e, "left", gtPx(r.left - pad)); gtPut(e, "top", gtPx(r.top - pad)); gtPut(e, "width", gtPx(r.width + pad * 2)); gtPut(e, "height", gtPx(r.height + pad * 2)); });
+  const f = g.querySelector(".fst-finger"), fs = f.offsetWidth || 48, W = innerWidth;
+  let fx = null, flip = false;
+  if(r.left - pad >= fs + 14) fx = r.left - pad - fs - 6;          // 왼쪽 바깥에서 가리킨다 (자리가 없으면 —)
+  else if(step === 2){                                             // 넓은 단추(좁은 화면) — 가운데 글(눈물 · 1 · 투입) 왼쪽 빈 곳에서 글을 가리킨다
+    const kids = [...el.children].map(gtVis).filter(Boolean);
+    const u = kids.length ? Math.min(...kids.map(k => k.left)) : null;
+    if(u != null && u - r.left >= fs + 12) fx = u - fs - 8;
+  }
+  if(fx == null){
+    if(r.right + pad + fs + 14 <= W){ fx = r.right + pad + 6; flip = true; }   // 오른쪽 바깥에서 왼쪽을
+    else fx = Math.max(4, r.left + 4);
+  }
+  if(f.classList.contains("l") !== flip) f.classList.toggle("l", flip);
+  gtPut(f, "left", gtPx(fx)); gtPut(f, "top", gtPx(r.top + r.height / 2 - fs / 2));
+  const tp = g.querySelector(".fst-tip"), tw = tp.offsetWidth, th = tp.offsetHeight, cov = gtCover();
+  const cx = r.left + r.width / 2, left = Math.round(Math.min(W - 8 - tw, Math.max(8, cx - tw / 2)));
+  const upTop = r.top - pad - th - 14, dnTop = r.bottom + pad + 14;
+  const upOk = upTop >= 4 && !gtHit({left, right: left + tw, top: upTop, bottom: upTop + th}, cov), dnOk = dnTop + th <= innerHeight - 4;
+  const up = step === 1 ? (upOk || !dnOk) : !(dnOk || !upOk);      // 칸 — 위 (빈 판) · 단추 — 아래 (위는 넣은 눈물 줄)
+  if(tp.classList.contains("dn") === up) tp.classList.toggle("dn", !up);
+  gtPut(tp, "left", left + "px"); gtPut(tp, "top", gtPx(up ? upTop : dnTop)); gtPut(tp, "--ax", gtPx(cx - left));
+  H.raf = requestAnimationFrame(gtHintLoop);
+}
+function gtHintEnd(silent, why){
+  const H = R.hint; R.hint = null;
+  if(H){ cancelAnimationFrame(H.raf); R.hintEnd = why || "end"; R.hintLog = H.log; }
+  const el = (H && H.el) || document.getElementById("gtHint"); if(el) el.remove();
+  if(silent || !H) return;
+  gtLiveOff();
+}
+function gtLiveOff(){                                              // 장면 · 안내가 다 끝났다 — 다음 의식
+  const pv = R.preview;
+  R.live = false; R.preview = false;
+  if(!pv && typeof UI !== "undefined" && (UI.ceremonies || []).length) showCeremony();
+}
+
+/* 장면 중 — 넘기기(Enter · Space · Z · →) 말고는 게임 단축키 · Esc 를 막는다 (건너뛰기 단추에 초점이면 그 단추) */
+window.addEventListener("keydown", e => {
+  if(!R.on) return;
+  const k = e.key, onSkip = document.activeElement && document.activeElement.classList && document.activeElement.classList.contains("gt-skip");
+  if((k === "Enter" || k === " ") && onSkip) return;
+  if(k === "Enter" || k === " " || k === "Spacebar" || k === "z" || k === "Z" || k === "ArrowRight"){ e.preventDefault(); e.stopPropagation(); if(!e.repeat && R.adv) R.adv(); return; }
+  if(k === "Tab") return;
+  e.stopPropagation();
+  if(k === "Escape") e.preventDefault();
+}, true);
+
+gtWrap();
+window.GTEAR = {play: gtPlay, after: gtAfter, state: R, cues: GT_CUES, tip: GT_TIP, text: GT_T, watch: GT_WATCH, ms: GT_MS, bgm: GT_BGM, sfx: GT_SFX,
+  s: gtS, due: gtDue, hist: gtHist, queue: gtQueue, wrap: gtWrap, skip: gtSkip, end: gtEnd, start: gtStart,
+  preview(){ if(R.on || R.live) return false; gtStart(true); return true; },
+  abort(){ if(!R.on) return false; R.sess++; R.on = false; R.live = false; gtTeardown(); try{ audOver(R.prevOver == null ? null : R.prevOver); }catch(e){} return true; },   // 시험 · 목업 — 저장 왕복 흉내 (세이브는 그대로)
+  hintEnd: gtHintEnd, winOpen: gtWinOpen, deskPt: gtWatchPt, cans: gtCans, mask: () => R.mask};
+})();
+/* GTEAR_END */
 
 /* TIWIN_START — 인가 등급 · 새 대회 초대장 안내 창 (1025 목업 · apply_tiwin.py · mockups/tier-invite) ─ 사용자 1025: '새로운 인가 등급 안내창하고 새로운 대회 안내 창 목업해볼까'
    답: 인가 등급은 '인가증에 도장 쾅' · 새 대회는 '서한 → 대회 경로 이어짐' · 글은 짧게.
@@ -32995,6 +33823,7 @@ function showCeremony(){
   if(window.WRST && c.type==="scout" && WRST.play(c)) return;   // 1025 — 첫 겨울 · 신입생 모집 준비 08c (WRST) — 1년차 첫 겨울이면 스카우트 안내 팝업 대신 장면 (끝나면 스카우트 화면 · 다음 의식)
   if(window.SPST && c.type==="sparkler" && SPST.play(c)) return;   // 1023 — 학원제 개막식의 밤 07 (SPST) — 상대역이 팔라딘이면 네 쪽 대신 장면 (끝나면 다음 의식)
   if(window.SMST && c.type==="camp" && SMST.play(c)) return;   // 1023 — 첫 여름 합숙 이야기 06 (SMST) — 첫해 여름 합숙 안내 앞에 장면 (끝나면 안내를 이어 띄운다)
+  if(window.GTEAR && c.type==="gtear" && GTEAR.play(c)) return;   // 1102 일곱째 — 여신의 눈물 첫 획득 '다시 닿은 목소리' (GTEAR) — 그 판의 신뢰 안내들 뒤 (칸 누르기 안내가 끝나면 다음 의식)
   if(window.XPST && c.type==="xpst") return XPST.play(c);   // 1023 — 원정 이야기 (기록 정리 · 가져온 기록 — 곡은 XPST 가)
   audOver(c.type==="grad" ? "ending" : null);
   if(c.type==="tut") return tutOneCeremony(c);
@@ -35915,7 +36744,7 @@ function openBattle(res, opt, onDone){
       const soloBoss=(boss||big)&&names.filter(v=>v.side==='B').length===1;
       const ultFX=ultimateCasts.map(c=>{
         const target=c.targets.includes(uids[k]),caster=c.actor===uids[k];
-        return target||caster?ultimateEffect(c.job,target?'target':'caster',performance.now()-c.at,n.side==='B'):'';
+        return target||caster?ultimateEffect(target?(c.tjob||c.job):c.job,target?'target':'caster',performance.now()-c.at,n.side==='B'):'';   // 1102 다섯째 — 맞는 쪽은 그 필살기의 직업 (tjob)
       }).join('');
       const P=soloBoss?null:bfSlotPos(side,row,col);                          // 자리 — BATTLE_TUNE · 필드 실험실 (0929)
       const x=soloBoss?50:P.x;
@@ -36086,7 +36915,7 @@ function openBattle(res, opt, onDone){
       if(f.call&&f.actor&&!camQuiet) speech.set(f.actor,{call:f.call,at:performance.now(),frame:i});   // 1015 — 줌아웃 뒤 다시 그릴 때는 외침 · 필살기 그림을 다시 틀지 않는다 (줌인에서 보였다)
       if(f.call&&f.call.kind==='ult'&&f.fx&&!camQuiet){
         const actor=names[uids.indexOf(f.actor)];
-        if(actor&&ULT_STYLE[actor.job]) ultimateCasts.push({actor:f.actor,job:actor.job,targets:f.fx.t||[],at:performance.now()});
+        if(actor&&ULT_STYLE[actor.job]){ const tj = f.fx.skillId ? ownerJobOf(f.fx.skillId) : null; ultimateCasts.push({actor:f.actor,job:actor.job,tjob:tj&&ULT_STYLE[tj]?tj:actor.job,targets:f.fx.t||[],at:performance.now()}); }   // 1102 다섯째 — 맞는 쪽 그림은 그 필살기의 직업 것 (엑스트라 스킬 — 시전 쪽은 학생 직업 그대로 · 사용자)
       }
       if(i===res.frames.length-1){speech.clear();ultimateCasts=[];}
       speechFrame=i;
@@ -36446,7 +37275,7 @@ function openBattle(res, opt, onDone){
   const camPick = async (tok, j)=>{
     const F = res.frames[j], P = F.pick, a = F.actor, ka = uids.indexOf(a), U0 = res.A.concat(res.B)[ka];
     if(!P || !U0 || !F.fx || !pickShow(ka)) return true;
-    const SKL = U0.skills || JOBS[U0.job].skills, basic = SKL.find(s=> s.kind === "basic"), acts = SKL.filter(s=> !s.kind);
+    const SKL = U0.skills || JOBS[U0.job].skills, basic = (P.b && SKL.find(s=> s.id === P.b)) || SKL.find(s=> s.kind === "basic"), acts = SKL.filter(s=> !s.kind);   // 1102 다섯째 — 일반 공격이 둘 이상이면 이번에 고른 것 (pk.b · MTREE)
     if(!basic || !acts.length) return true;
     const stage = document.querySelector("#modalRoot .bf-stage"), cam = stage && stage.querySelector(".bf-cam"), ae = uEl(a);
     if(!stage || !cam || !ae) return true;
@@ -48659,9 +49488,10 @@ function tourEnter(t){
 /* ── 학생 → 창 자료 (판 · 분석) ── 기술은 전투와 같은 목록 (전수 · 유물 기술 포함) */
 function tfwUnit(s){
   const b = battleStats(s), J = JOBS[s.job] || {}, P = PASSIVES[passiveJobOf(s)] || {};
-  const sk = (relicSkills(s, skillsOf(s)) || []).map(x=> ({n:x.name, type:x.type, target:x.target, kind:x.kind || "skill", stat:x.stat || null}));
+  const xb = window.MTREE && MTREE.exBattle ? MTREE.exBattle(s, skillsOf(s)) : null, PX = [P].concat(xb && xb.pas ? xb.pas.map(e=> PASSIVES[e.job] || {}) : []);   // 1102 다섯째 — 엑스트라 스킬 · 패시브도 (전투와 같은 목록 · MTREE)
+  const sk = (relicSkills(s, xb ? xb.skills : skillsOf(s)) || []).map(x=> ({n:x.name, type:x.type, target:x.target, kind:x.kind || "skill", stat:x.stat || null}));
   return {s, id:s.id, name:s.name, job:s.job, jn:J.name || s.job, role:J.role || "dps", grade:s.grade || "C", lv:s.level, pw:Math.round(power(s)),
-    hp:b.hp, spd:b.spd, sk, back:sk.filter(x=> x.target === "enemy_back").map(x=> x.n), vsBack:P.vsBack || 0, pas:P.n || ""};
+    hp:b.hp, spd:b.spd, sk, back:sk.filter(x=> x.target === "enemy_back").map(x=> x.n), vsBack:PX.reduce((a, q)=> a + (q.vsBack || 0), 0), pas:(PX.find(q=> q.vsBack) || P).n || ""};
 }
 function tfwTeamView(c, m){
   const x = c.teams[m], tm = x.tm, plus = formPlusOn(), F = formData(tm.form, plus);

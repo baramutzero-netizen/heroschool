@@ -23,7 +23,7 @@
   "build": {
     "appId": "dev.badbeans.heroschool",
     "productName": "용사 학원 키우기",
-    "executableName": "HeroSchool",
+    "executableName": "HeroSchoolGame",
     "copyright": "© Bad Beans",
     "directories": {"output": "dist", "buildResources": "build"},
     "files": ["main.js", "display.js", "preload.js", "package.json", "app/**/*"],
@@ -31,7 +31,8 @@
     "win": {
       "target": [{"target": "dir", "arch": ["x64"]}],
       "icon": "build/icon.png",
-      "artifactName": "HeroSchool-${version}-win-${arch}.${ext}"
+      "artifactName": "HeroSchool-${version}-win-${arch}.${ext}",
+      "extraFiles": [{"from": "launcher/HeroSchool.exe", "to": "HeroSchool.exe"}]
     }
   }
 }

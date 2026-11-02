@@ -22,8 +22,52 @@ app.commandLine.appendSwitch("autoplay-policy", "no-user-gesture-required");   /
 
 let win = null, S = null, saveT = 0, quitting = false, resume = null;   // resume — 창을 새로 열 때 새 창의 게임이 이어서 열 화면 (설정 창 · 설정 화면 — 한 번만)
 
-if(!app.requestSingleInstanceLock()) app.quit();
-app.on("second-instance", () => { if(win){ if(win.isMinimized()) win.restore(); win.focus(); } });
+/* 1102 — 실행 기록 (사용자 1102: 'STOVE 클라이언트에서 플레이를 누르면 잠시 게임 창이 켜졌다가 순식간에 바로 창이 닫히면서 꺼져') —
+   %APPDATA%\HeroSchool\launch.log 에 한 줄씩: 켜진 곳 · 인자 · 한 번만 실행 · 창 · 게임 읽기 · 하위 프로세스(GPU · 화면 · 네트워크)가 죽은 까닭 · 끝난 까닭.
+   200KB 를 넘으면 launch.old.log 로 넘기고 새로. 긴 인자(로그인 표 같은 것)는 앞만 적는다 · 환경 변수는 STOVE 이름만(값 없이) */
+const LOG = path.join(app.getPath("userData"), "launch.log");
+function log(what, o){
+  try{
+    fs.mkdirSync(path.dirname(LOG), {recursive: true});
+    try{ if(fs.statSync(LOG).size > 200 * 1024) fs.renameSync(LOG, LOG.replace(/\.log$/, ".old.log")); }catch(e){}
+    fs.appendFileSync(LOG, `${new Date().toISOString()} [${process.pid}] ${what}${o === undefined ? "" : " " + JSON.stringify(o)}\r\n`);
+  }catch(e){}
+}
+const short = a => String(a).length > 48 ? String(a).slice(0, 24) + `…(${String(a).length})` : String(a);
+log("start", {exe: process.execPath, argv: process.argv.slice(1).map(short), cwd: process.cwd(), ppid: process.ppid, packaged: app.isPackaged,
+  electron: process.versions.electron, launcher: !!process.env.HS_LAUNCHER, env: Object.keys(process.env).filter(k => /stove|smilegate|sgup/i.test(k))});
+process.on("uncaughtExceptionMonitor", e => log("uncaught", String(e && e.stack || e).slice(0, 2000)));
+
+/* 1102 — STOVE DRM Maker 는 실행기 HeroSchool.exe(desktop/launcher)에 입힌다. 본체에 입히면 DrmCheckerV3.dll 이 import 로 들어가 Electron 하위 프로세스(GPU · 화면 · 네트워크 —
+   이 exe 를 --type= 로 다시 띄운다)마다 돌아 게임이 켜지자마자 꺼졌다 (사용자 1102 — STOVE 빌드 52448). 본체 HeroSchoolGame.exe 를 실행기 없이 바로 켜면 실행기로 다시 켜고 끝낸다
+   (DRM 확인 · STOVE 플레이 시간이 실행기 프로세스에 · 실행기는 HS_LAUNCHER=1 을 준다 · 다시 켤 때 --hs-relaunch — 한 번만). 실행기가 없는 빌드(예전 · 웹 시험)는 그대로 */
+const LAUNCHER = path.join(path.dirname(process.execPath), "HeroSchool.exe");
+let RELAUNCH = false;
+if(process.platform === "win32" && app.isPackaged && !process.env.HS_LAUNCHER && !process.argv.includes("--hs-relaunch")
+  && path.basename(process.execPath).toLowerCase() !== "heroschool.exe" && fs.existsSync(LAUNCHER)){
+  try{
+    require("node:child_process").spawn(LAUNCHER, process.argv.slice(1).concat("--hs-relaunch"), {detached: true, stdio: "ignore", cwd: path.dirname(LAUNCHER)}).unref();
+    RELAUNCH = true;
+    log("relaunch-via-launcher", {launcher: LAUNCHER});
+    app.exit(0);
+  }catch(e){ log("relaunch-failed — 본체로 그대로 켠다", String(e && e.message || e)); }
+}
+
+/* 한 번만 실행 — 이미 켜진 용사 학원(같은 저장 폴더 — 정식판 · 체험판 · npm start 모두)이 있으면 그 창을 앞으로 가져오고 이쪽은 창을 열지 않고 끝낸다
+   (1102 — 예전에는 app.quit() 뒤에도 whenReady 가 창을 열어서 '잠깐 켜졌다 바로 닫히는' 창이 보였다) */
+const LOCK = !RELAUNCH && app.requestSingleInstanceLock();
+if(!LOCK && !RELAUNCH){ log("lock-failed — 이미 실행 중인 용사 학원이 있다 · 창을 열지 않고 끝낸다"); app.quit(); }
+app.on("second-instance", (e, argv) => {
+  log("second-instance", {argv: (argv || []).slice(1).map(short), win: !!(win && !win.isDestroyed())});
+  if(!app.isReady() || !S) return;
+  if(win && !win.isDestroyed()){ if(win.isMinimized()) win.restore(); win.show(); win.focus(); }
+  else win = open();                                                          // 창 없이 남아 있던 경우 — 새 창
+});
+app.on("child-process-gone", (e, d) => log("child-process-gone", d));         // GPU · 네트워크 · 유틸리티 (type · reason · exitCode)
+app.on("render-process-gone", (e, wc, d) => log("render-process-gone", d));   // 게임 화면 (reason · exitCode)
+app.on("window-all-closed", () => log("window-all-closed", {quitting}));
+app.on("before-quit", () => log("before-quit", {quitting}));
+app.on("quit", (e, code) => log("quit", {code}));
 
 function serve(){
   protocol.handle("app", req => {
@@ -83,11 +127,16 @@ function open(){
   w.on("enter-full-screen", () => { if(S.mode === "window"){ S.mode = "fullscreen"; D.save(S); } tell(); });
   w.on("leave-full-screen", () => { if(S.mode === "fullscreen"){ S.mode = "window"; D.save(S); } tell(); });
   w.once("ready-to-show", () => {
+    log("shown", {mode: S.mode});
     if(S.mode === "fullscreen") w.setFullScreen(true);
     else if(S.mode === "window" && S.max) w.maximize();
     w.show(); w.focus();
+    setTimeout(() => { try{ log("processes", app.getAppMetrics().map(m => m.type + ":" + m.pid)); }catch(e){} }, 4000);   // 4초 뒤 살아 있는 프로세스
   });
-  w.on("closed", () => { if(win === w) win = null; });
+  w.webContents.on("did-finish-load", () => log("loaded"));
+  w.webContents.on("did-fail-load", (e, code, desc, url, main) => { if(code !== -3) log("did-fail-load", {code, desc, url: short(url), main}); });   // -3 = 게임이 스스로 다시 연 것 (화면 맞춤 틀)
+  w.on("unresponsive", () => log("unresponsive"));
+  w.on("closed", () => { log("window-closed"); if(win === w) win = null; });
   w.loadURL(START);
   return w;
 }
@@ -136,15 +185,17 @@ function deskHttp(u){
   try{
     if(op === "get") return J(deskGet(u.searchParams.get("first") === "1"));
     if(op === "set"){ let o = {}; try{ o = JSON.parse(u.searchParams.get("o") || "{}"); }catch(e){} return J(deskSet(o)); }
-    if(op === "quit"){ quitting = true; setTimeout(() => app.quit(), 50); return J({ok: true}); }
+    if(op === "quit"){ log("quit-by-game"); quitting = true; setTimeout(() => app.quit(), 50); return J({ok: true}); }
   }catch(e){ return J({error: String(e && e.message || e)}); }
   return new Response("not found", {status: 404});
 }
 ipcMain.handle("desk:get", e => deskGet(!!(win && e.sender === win.webContents)));
 ipcMain.handle("desk:set", (e, o) => deskSet(o));
-ipcMain.handle("desk:quit", () => { quitting = true; app.quit(); });
+ipcMain.handle("desk:quit", () => { log("quit-by-game"); quitting = true; app.quit(); });
 
 app.whenReady().then(() => {
+  if(!LOCK) return;                                                           // 한 번만 실행 — 창을 열지 않는다 (위 app.quit 이 끝낸다)
+  try{ log("ready", {gpu: app.getGPUFeatureStatus()}); }catch(e){ log("ready"); }
   Menu.setApplicationMenu(null);
   serve();
   S = D.load();

@@ -32,7 +32,7 @@ npm start               (tools/prepare.mjs 가 app/ 에 게임을 모은 뒤 Ele
 
 ```
 cd desktop
-npm run dist            → dist/win-unpacked/HeroSchool.exe (폴더째 배포 · STOVE 업로드용)
+npm run dist            → dist/win-unpacked/HeroSchool.exe (폴더째 배포 · STOVE 업로드용 — HeroSchool.exe 는 실행기 · 본체는 HeroSchoolGame.exe · 아래 STOVE)
 npm run dist:zip        → dist/HeroSchool-0.1.0-win-x64.zip
 ```
 
@@ -47,7 +47,7 @@ npm run dist:zip        → dist/HeroSchool-0.1.0-win-x64.zip
 python wrap.py          (저장소 맨 위에서 — heroschool.html 을 최신으로)
 cd desktop
 npm run start:demo      → 체험판으로 띄워 보기
-npm run dist:demo       → dist-demo/win-unpacked/HeroSchool.exe (STOVE 데모 업로드용)
+npm run dist:demo       → dist-demo/win-unpacked/HeroSchool.exe (STOVE 데모 업로드용 — 실행기 · 본체 HeroSchoolGame.exe)
 npm run dist:demo:zip   → dist-demo/HeroSchool-0.1.0-win-x64.zip
 ```
 
@@ -79,10 +79,11 @@ npm run dist:demo:zip   → dist-demo/HeroSchool-0.1.0-win-x64.zip
 
 | 파일 | 하는 일 |
 |---|---|
-| `main.js` | 창 · `app://heroschool/` (app/ 를 정해진 주소로 — 저장이 이 주소에 남는다) · 키 · 새 창 링크는 기본 브라우저 · 한 번만 실행 · 소리 · 영상은 Range 요청에 206 (1029 — 빌드한 exe(asar)에서 곡 길이를 ~8초로 잘못 잡아 배경 음악이 몇 초 뒤 꺼지던 것) |
+| `main.js` | 창 · `app://heroschool/` (app/ 를 정해진 주소로 — 저장이 이 주소에 남는다) · 키 · 새 창 링크는 기본 브라우저 · 한 번만 실행 (1102 — 이미 켜져 있으면 창을 열지 않고 끝낸다) · 소리 · 영상은 Range 요청에 206 (1029 — 빌드한 exe(asar)에서 곡 길이를 ~8초로 잘못 잡아 배경 음악이 몇 초 뒤 꺼지던 것) · 실행 기록 `%APPDATA%\HeroSchool\launch.log` (1102 — 아래 STOVE) |
 | `display.js` | 화면 모드 · 창 크기 프리셋 · 자리 기억 (`display.json`) |
 | `preload.js` | 게임에 `window.hsDesk` (get · set · quit · on) — 게임은 화면 맞춤 iframe 안에서 돌아서 모든 프레임에 연다. preload 가 게임 프레임에 닿지 않아도 게임(PCAPP)이 `app://heroschool/__desk/get · set · quit` 주소로 같은 일을 한다 (1026 — main.js deskHttp) |
 | `tools/prepare.mjs` | `app/` 에 게임 모으기 — heroschool.html 과 그 안에 이름이 적힌 그림 · 소리만 (원본 png · 프롬프트 json · 큰 wav 는 뺀다 · 글꼴 사용 허락 글은 같이). 넣지 않은 파일은 `prepare-skipped.txt` — 게임에서 빠진 그림이 보이면 `KEEP` 에 · `--demo` 면 체험판(app/heroschool.html 의 `DEMO_END` — 위 '체험판 빌드') |
+| `launcher/` | 실행기 `HeroSchool.exe` (1102 — STOVE DRM Maker 는 여기에 · `launcher.c` · `launcher.rc`(아이콘 · 버전 정보 · 매니페스트) · `build.sh`) — 본체 `HeroSchoolGame.exe` 를 띄우고 기다린다 |
 | `tools/test_electron.cjs` | (선택) 리눅스 클라우드 시험 — playwright `_electron` · xvfb + openbox |
 | `tools/check_pc2.cjs` | (선택) 1026 둘째 — 설정 창 두 줄 · 속도 · 격자 · 시작 화면 음악 · 메뉴 소리 · 테두리 없음 뒤 다시 열기 |
 
@@ -93,5 +94,16 @@ npm run dist:demo:zip   → dist-demo/HeroSchool-0.1.0-win-x64.zip
 - STOVE PC SDK 가 공식으로 붙는 엔진은 Native(C/C++) · Unity · Unreal — Electron 은 없다.
   SDK 를 붙이지 않은 빌드(DRM 없는 빌드)를 STOVE Studio '빌드 업로드'에 올리면 DRM MAKER 가 필수 SDK 를 자동으로 넣어 준다 (2026-10 문서 기준).
   업적 · 친구 같은 SDK 기능까지 쓰려면 Native SDK DLL 을 Node 쪽(koffi 등)에서 불러 `preload.js` 로 게임에 여는 일이 따로 필요하다.
-- 업로드할 것: `npm run dist` 의 `dist/win-unpacked/` 폴더 (실행 파일 `HeroSchool.exe`).
+- 업로드할 것: `npm run dist` 의 `dist/win-unpacked/` 폴더 (체험판은 `dist-demo/win-unpacked/`) · 실행 파일 **`HeroSchool.exe`** (실행기).
+- **DRM Maker 는 `HeroSchool.exe`(실행기)에만** — 본체 `HeroSchoolGame.exe` 에 입히면 안 된다 (1102 — 빌드 52448 은 Electron 본체에 입혀서 켜지자마자 꺼졌다:
+  DRM Maker 는 고른 exe 에 `.stove` 칸과 `DrmCheckerV3.dll` import 를 넣는데(그 DLL 은 D3D · DXGI · GL 을 가로채는 오버레이 + 소유 확인), Electron 은 GPU · 화면 · 네트워크
+  하위 프로세스를 자기 exe 로 다시 띄워서 하위 프로세스마다 DrmChecker 가 돌았다).
+  실행기(`launcher/` — C 한 장 · mingw-w64 · 51KB · 아이콘 · 버전 정보)는 같은 폴더의 `HeroSchoolGame.exe` 를 받은 인자 그대로 띄우고 끝날 때까지 기다린다
+  (STOVE 플레이 시간 · DRM 확인이 이 프로세스로 · 끝 코드 그대로 · `HS_LAUNCHER=1` · 작업 개체로 실행기가 끝나면 게임도 끝). 본체를 실행기 없이 바로 켜면 main.js 가 실행기로 다시 켠다
+  (`--hs-relaunch` — 한 번만 · 그래서 DRM 이 있는 설치본은 본체를 바로 켜도 DRM 을 거친다). STOVE 오버레이(DrmChecker 의 그래픽 가로채기)는 게임 화면에 붙지 않는다 — 소유 확인 · 플레이 시간은 그대로.
+  실행기를 고치면 `sh launcher/build.sh` (클라우드 — `apt-get install gcc-mingw-w64-x86-64 binutils-mingw-w64-x86-64`) → `launcher/HeroSchool.exe` (electron-builder `win.extraFiles` 가 win-unpacked 맨 위에 넣는다).
 - 리그(Firebase)는 웹판과 같이 쓴다 — 인터넷이 없으면 리그만 안 된다.
+- **켜졌다 바로 꺼질 때** (1102 — STOVE 테스트 빌드 52448 에서 창이 잠깐 켜졌다 닫힘): `%APPDATA%\HeroSchool\launch.log` 를 본다 (1102 뒤 빌드부터) —
+  `lock-failed` 면 이미 켜진 용사 학원이 있다 (작업 관리자 세부 정보에서 HeroSchool.exe · HeroSchoolGame.exe 를 모두 끝낸다 · 저장 폴더가 같아 정식판 · 체험판 · npm start 도 하나만) ·
+  `child-process-gone` 이면 GPU · 화면 · 네트워크 하위 프로세스가 죽었다 (본체 HeroSchoolGame.exe 에 DRM 이 입혀졌는지 — 설치 폴더 exe 에 `.stove` 칸 · DrmCheckerV3.dll import · 위 'DRM Maker 는 실행기에만').
+  Chromium 기록까지 보려면 실행 인자에 `--enable-logging=file --log-file=D:\heroschool\stove_debug.log`.

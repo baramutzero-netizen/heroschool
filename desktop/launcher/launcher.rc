@@ -1,0 +1,35 @@
+#pragma code_page(65001)
+#include <winver.h>
+#include <winuser.h>
+
+1 ICON "icon.ico"
+1 24 "launcher.manifest"
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION 0,1,0,0
+PRODUCTVERSION 0,1,0,0
+FILEFLAGSMASK 0x3fL
+FILEFLAGS 0x0L
+FILEOS VOS_NT_WINDOWS32
+FILETYPE VFT_APP
+FILESUBTYPE 0x0L
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "041204b0"
+    BEGIN
+      VALUE "CompanyName", "Bad Beans"
+      VALUE "FileDescription", "용사 학원 키우기"
+      VALUE "FileVersion", "0.1.0.0"
+      VALUE "InternalName", "HeroSchool"
+      VALUE "LegalCopyright", "© Bad Beans"
+      VALUE "OriginalFilename", "HeroSchool.exe"
+      VALUE "ProductName", "용사 학원 키우기"
+      VALUE "ProductVersion", "0.1.0.0"
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x412, 1200
+  END
+END
