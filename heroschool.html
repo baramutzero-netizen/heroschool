@@ -6378,6 +6378,12 @@ html[data-ui-finish="pixel"]:not(.pxb-off) .tcom-cap.an .tcom-body{--pxb-edge:#7
 .pfx-tint-sanct{background:rgb(255,236,176)}
 .pfx-tint-curse{background:rgb(112,86,150);-webkit-backdrop-filter:saturate(.6);backdrop-filter:saturate(.6)}
 .pfx-tint-comm{background:rgb(92,16,34)}
+.pfx-tint-earth{background:rgb(206,170,120);-webkit-backdrop-filter:saturate(.7);backdrop-filter:saturate(.7)}
+.pfx-tint-wrath{background:rgb(28,58,30)}
+.pfx-tint-invert{background:#fff;mix-blend-mode:difference}
+.pfx-tint-gale{background:rgb(196,232,206)}
+.pfx-tint-meteor{background:rgb(232,138,88);-webkit-backdrop-filter:saturate(.7);backdrop-filter:saturate(.7)}
+.pfx-tint-heat{background:rgb(238,164,108);-webkit-backdrop-filter:saturate(.7);backdrop-filter:saturate(.7)}
 .pfx-tint.pfx-over{position:fixed;inset:0;z-index:2990}
 .pfx-poptop{position:fixed;inset:0;z-index:2995;pointer-events:none}
 .pfx-pophold{position:fixed;transform-origin:0 0;pointer-events:none}
@@ -23971,7 +23977,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1103-1222";
+const BUILD = "1103-1612";
 const BUILD_TS = 0;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
@@ -52768,10 +52774,11 @@ function opDrops(){
      중력 반전 wz_u → gravity-flip (10타 — 0.6 ~ 3초 · 간격 ×0.8 · 피해 숫자 · 막대를 10으로 나눔 · 타마다 피격음 · 연보라가 화면째 덮고 피해 숫자만 앞 · 합성 소리 wzGravity)
      효과마다 기본 크기 (마법진 0.8 · 마력탄 · 화염 폭발 1 · 서리 결계 · 중력 반전 1.25) · 서리 결계 · 중력 반전은 클로즈업을 이펙트 길이만큼 늘인다 (camTurn 의 camW 고리 — SKPFX.hold)
    · 팔라딘 (1103 열넷째) · 암흑사제 (1103 열여섯째) — 각 직업 목업 mockups/<직업>-pixelfx 에서 옮겼다 (SPEC 머리 주석)
+   · 검투사 · 드루이드 · 암살자 · 궁수 · 무도가 (1103 스물넷째) — 블록 끝에 각 목업의 <직업>_fx.js 를 그대로 붙였다
    · 다른 직업도 SPEC · CASTER 에 더하면 같은 틀로 (목업은 SKPFX.addSheet · SPEC 으로 시트 · 기술을 더한다)
    · window.__skpfxOff = true 면 예전 그림 그대로 · SKPFX.st.mode = "now" 도 같다 (목업 비교) */
 (function(){
-  const SHEETS = {"sigil":{"src":"assets/skill-fx/pfx/wizard-sigil.webp?v=e641cad6","fps":30,"n":43,"w":96,"h":96,"cols":7,"pivot":[20,48],"loop":false},"bolt":{"src":"assets/skill-fx/pfx/mana-bolt.webp?v=31fb526c","fps":30,"n":12,"w":56,"h":24,"cols":3,"pivot":[44,12],"loop":true},"hit":{"src":"assets/skill-fx/pfx/mana-hit.webp?v=004e9699","fps":30,"n":25,"w":80,"h":72,"cols":5,"pivot":[40,54],"loop":false},"fire":{"src":"assets/skill-fx/pfx/fire-blast.webp?v=fcf4e13d","fps":30,"n":64,"w":128,"h":128,"cols":8,"pivot":[64,104],"loop":false},"ward":{"src":"assets/skill-fx/pfx/frost-ward.webp?v=81f3e78f","fps":30,"n":85,"w":304,"h":184,"cols":8,"pivot":[152,120],"loop":false},"grav":{"src":"assets/skill-fx/pfx/gravity-flip.webp?v=5aeaf087","fps":30,"n":118,"w":304,"h":288,"cols":11,"pivot":[152,232],"loop":false},"pswing":{"src":"assets/skill-fx/pfx/paladin-swing.webp?v=dd1c8ed1","fps":30,"n":28,"w":104,"h":124,"cols":6,"pivot":[48,56],"loop":false},"psmite":{"src":"assets/skill-fx/pfx/judgment-strike.webp?v=1f62224f","fps":30,"n":34,"w":120,"h":136,"cols":7,"pivot":[60,112],"loop":false},"pward":{"src":"assets/skill-fx/pfx/oath-ward.webp?v=34584a8f","fps":30,"n":55,"w":76,"h":92,"cols":9,"pivot":[38,82],"loop":false},"pheal":{"src":"assets/skill-fx/pfx/healing-light.webp?v=6045f6fc","fps":30,"n":54,"w":64,"h":156,"cols":12,"pivot":[32,144],"loop":false},"psanct":{"src":"assets/skill-fx/pfx/sanctuary.webp?v=85f476f0","fps":30,"n":73,"w":304,"h":288,"cols":9,"pivot":[152,232],"loop":false},"dcast":{"src":"assets/skill-fx/pfx/dark-essence-cast.webp?v=bebcd531","fps":30,"n":31,"w":96,"h":88,"cols":6,"pivot":[60,44],"loop":false},"dtouch":{"src":"assets/skill-fx/pfx/umbral-touch.webp?v=31fc43ff","fps":30,"n":31,"w":136,"h":124,"cols":6,"pivot":[68,100],"loop":false},"dsiphon":{"src":"assets/skill-fx/pfx/blood-siphon.webp?v=4259e0ad","fps":30,"n":31,"w":80,"h":100,"cols":7,"pivot":[40,88],"loop":false},"dorb":{"src":"assets/skill-fx/pfx/blood-orb.webp?v=b27606ba","fps":30,"n":12,"w":48,"h":24,"cols":3,"pivot":[38,12],"loop":true},"dcurse":{"src":"assets/skill-fx/pfx/curse-sigil.webp?v=30e18efe","fps":30,"n":85,"w":304,"h":184,"cols":8,"pivot":[152,120],"loop":false},"dcomm":{"src":"assets/skill-fx/pfx/dark-communion.webp?v=5a03800e","fps":30,"n":100,"w":304,"h":288,"cols":10,"pivot":[152,232],"loop":false}};
+  const SHEETS = {"sigil":{"src":"assets/skill-fx/pfx/wizard-sigil.webp?v=e641cad6","fps":30,"n":43,"w":96,"h":96,"cols":7,"pivot":[20,48],"loop":false},"bolt":{"src":"assets/skill-fx/pfx/mana-bolt.webp?v=31fb526c","fps":30,"n":12,"w":56,"h":24,"cols":3,"pivot":[44,12],"loop":true},"hit":{"src":"assets/skill-fx/pfx/mana-hit.webp?v=004e9699","fps":30,"n":25,"w":80,"h":72,"cols":5,"pivot":[40,54],"loop":false},"fire":{"src":"assets/skill-fx/pfx/fire-blast.webp?v=fcf4e13d","fps":30,"n":64,"w":128,"h":128,"cols":8,"pivot":[64,104],"loop":false},"ward":{"src":"assets/skill-fx/pfx/frost-ward.webp?v=81f3e78f","fps":30,"n":85,"w":304,"h":184,"cols":8,"pivot":[152,120],"loop":false},"grav":{"src":"assets/skill-fx/pfx/gravity-flip.webp?v=5aeaf087","fps":30,"n":118,"w":304,"h":288,"cols":11,"pivot":[152,232],"loop":false},"pswing":{"src":"assets/skill-fx/pfx/paladin-swing.webp?v=dd1c8ed1","fps":30,"n":28,"w":104,"h":124,"cols":6,"pivot":[48,56],"loop":false},"psmite":{"src":"assets/skill-fx/pfx/judgment-strike.webp?v=1f62224f","fps":30,"n":34,"w":120,"h":136,"cols":7,"pivot":[60,112],"loop":false},"pward":{"src":"assets/skill-fx/pfx/oath-ward.webp?v=34584a8f","fps":30,"n":55,"w":76,"h":92,"cols":9,"pivot":[38,82],"loop":false},"pheal":{"src":"assets/skill-fx/pfx/healing-light.webp?v=6045f6fc","fps":30,"n":54,"w":64,"h":156,"cols":12,"pivot":[32,144],"loop":false},"psanct":{"src":"assets/skill-fx/pfx/sanctuary.webp?v=85f476f0","fps":30,"n":73,"w":304,"h":288,"cols":9,"pivot":[152,232],"loop":false},"dcast":{"src":"assets/skill-fx/pfx/dark-essence-cast.webp?v=bebcd531","fps":30,"n":31,"w":96,"h":88,"cols":6,"pivot":[60,44],"loop":false},"dtouch":{"src":"assets/skill-fx/pfx/umbral-touch.webp?v=31fc43ff","fps":30,"n":31,"w":136,"h":124,"cols":6,"pivot":[68,100],"loop":false},"dsiphon":{"src":"assets/skill-fx/pfx/blood-siphon.webp?v=4259e0ad","fps":30,"n":31,"w":80,"h":100,"cols":7,"pivot":[40,88],"loop":false},"dorb":{"src":"assets/skill-fx/pfx/blood-orb.webp?v=b27606ba","fps":30,"n":12,"w":48,"h":24,"cols":3,"pivot":[38,12],"loop":true},"dcurse":{"src":"assets/skill-fx/pfx/curse-sigil.webp?v=30e18efe","fps":30,"n":85,"w":304,"h":184,"cols":8,"pivot":[152,120],"loop":false},"dcomm":{"src":"assets/skill-fx/pfx/dark-communion.webp?v=5a03800e","fps":30,"n":100,"w":304,"h":288,"cols":10,"pivot":[152,232],"loop":false},"sswing":{"src":"assets/skill-fx/pfx/gladiator-swing.webp?v=f6a5e0c6","fps":30,"n":22,"w":124,"h":128,"cols":5,"pivot":[40,62],"loop":false},"scleave":{"src":"assets/skill-fx/pfx/slant-cleave.webp?v=4c2ca857","fps":30,"n":27,"w":140,"h":136,"cols":6,"pivot":[68,110],"loop":false},"sroar":{"src":"assets/skill-fx/pfx/taunt-roar.webp?v=d0e0de8a","fps":30,"n":25,"w":136,"h":116,"cols":5,"pivot":[28,60],"loop":false},"smark":{"src":"assets/skill-fx/pfx/taunt-mark.webp?v=87f8af66","fps":30,"n":43,"w":104,"h":120,"cols":8,"pivot":[52,104],"loop":false},"siron":{"src":"assets/skill-fx/pfx/iron-stance.webp?v=fc82e6ef","fps":30,"n":52,"w":132,"h":124,"cols":7,"pivot":[66,104],"loop":false},"searth":{"src":"assets/skill-fx/pfx/boulder-rend.webp?v=11b0d526","fps":30,"n":109,"w":352,"h":264,"cols":10,"pivot":[176,212],"loop":false},"drglyph":{"src":"assets/skill-fx/pfx/druid-glyph.webp?v=18ce6f16","fps":30,"n":30,"w":104,"h":104,"cols":6,"pivot":[36,56],"loop":false},"drlash":{"src":"assets/skill-fx/pfx/thorn-lash.webp?v=be1fa35c","fps":30,"n":43,"w":200,"h":128,"cols":6,"pivot":[134,114],"loop":false},"drseed":{"src":"assets/skill-fx/pfx/regen-seed.webp?v=62f3c396","fps":30,"n":52,"w":96,"h":120,"cols":9,"pivot":[48,104],"loop":false},"drbeast":{"src":"assets/skill-fx/pfx/beast-form.webp?v=e58d195b","fps":30,"n":49,"w":136,"h":148,"cols":8,"pivot":[64,126],"loop":false},"drwrath":{"src":"assets/skill-fx/pfx/wrath-of-nature.webp?v=6e67e73b","fps":30,"n":97,"w":360,"h":240,"cols":9,"pivot":[180,190],"loop":false},"rosign":{"src":"assets/skill-fx/pfx/rogue-sign.webp?v=986fa568","fps":30,"n":24,"w":88,"h":100,"cols":6,"pivot":[30,52],"loop":false},"rocross":{"src":"assets/skill-fx/pfx/ambush-cross.webp?v=e0d0c9cf","fps":30,"n":24,"w":112,"h":112,"cols":5,"pivot":[56,92],"loop":false},"rodagger":{"src":"assets/skill-fx/pfx/venom-dagger.webp?v=0357efbe","fps":30,"n":6,"w":48,"h":24,"cols":2,"pivot":[34,12],"loop":true},"rovenom":{"src":"assets/skill-fx/pfx/venom-burst.webp?v=a4d9ba91","fps":30,"n":40,"w":128,"h":108,"cols":6,"pivot":[64,96],"loop":false},"rostep":{"src":"assets/skill-fx/pfx/shade-step.webp?v=df39c43f","fps":30,"n":40,"w":128,"h":104,"cols":6,"pivot":[76,92],"loop":false},"romark":{"src":"assets/skill-fx/pfx/inverse-cut.webp?v=3a2d673f","fps":30,"n":85,"w":344,"h":224,"cols":8,"pivot":[172,176],"loop":false},"arwind":{"src":"assets/skill-fx/pfx/archer-wind.webp?v=58205dd0","fps":30,"n":25,"w":120,"h":88,"cols":5,"pivot":[28,46],"loop":false},"ararrow":{"src":"assets/skill-fx/pfx/aimed-arrow.webp?v=2fa6f1e8","fps":30,"n":6,"w":64,"h":16,"cols":2,"pivot":[56,8],"loop":true},"arhit":{"src":"assets/skill-fx/pfx/arrow-impact.webp?v=ec4dc4ab","fps":30,"n":22,"w":112,"h":96,"cols":5,"pivot":[56,84],"loop":false},"arpierce":{"src":"assets/skill-fx/pfx/pierce-shot.webp?v=bd6dffab","fps":30,"n":40,"w":344,"h":128,"cols":4,"pivot":[172,104],"loop":false},"arhawk":{"src":"assets/skill-fx/pfx/hawk-eye.webp?v=ceb8e1a3","fps":30,"n":46,"w":112,"h":120,"cols":8,"pivot":[56,104],"loop":false},"armeteor":{"src":"assets/skill-fx/pfx/meteor-volley.webp?v=6986d047","fps":30,"n":94,"w":280,"h":256,"cols":10,"pivot":[140,216],"loop":false},"mopress":{"src":"assets/skill-fx/pfx/monk-pressure.webp?v=c6bc6b46","fps":30,"n":24,"w":112,"h":96,"cols":5,"pivot":[36,50],"loop":false},"motwin":{"src":"assets/skill-fx/pfx/twin-strike.webp?v=c4d6c2ff","fps":30,"n":24,"w":112,"h":104,"cols":5,"pivot":[56,90],"loop":false},"moorb":{"src":"assets/skill-fx/pfx/chi-orb.webp?v=9a17f71a","fps":30,"n":6,"w":56,"h":32,"cols":2,"pivot":[40,16],"loop":true},"moburst":{"src":"assets/skill-fx/pfx/chi-burst.webp?v=93ba359f","fps":30,"n":25,"w":128,"h":120,"cols":5,"pivot":[64,100],"loop":false},"moflow":{"src":"assets/skill-fx/pfx/inner-flow.webp?v=cb6fbb8b","fps":30,"n":49,"w":112,"h":120,"cols":8,"pivot":[56,106],"loop":false},"mofists":{"src":"assets/skill-fx/pfx/palm-barrage.webp?v=3ee24e98","fps":30,"n":91,"w":336,"h":256,"cols":9,"pivot":[168,196],"loop":false}};
   const ST = {mode: "pfx", slow: false, scale: 1, sigil: true, plays: 0, snd: [], hits: [], flash: [], cast: [], rate: 1, hold: null, nT: 0, box: null, tint: null, chill: null, endBy: null, last: null};
   const IMG = {};
   const img = k => { if(!IMG[k]){ IMG[k] = new Image(); IMG[k].src = SHEETS[k].src; } return IMG[k]; };
@@ -52862,19 +52869,22 @@ function opDrops(){
         D.push(d); });
       if(!opt.heal) setTimeout(() => D.forEach(d => { const c = d.el.querySelector("canvas.spr"); if(c && d.parts.length){ c.dataset.m = SPR_M.idle; c.dataset.f = 0; } }), 130 / Math.max(.1, rate));
     });
-    ST.hits = [];
+    ST.hits = []; ST.hitDmg = [];
     times.forEach((at, i) => list.push({fn: tt => hitOne(D, i, N, caster, snd, rate, tt, opt), delay: at}));
   }
+  /* 나눔 누적 비율 F[0] = 0 … F[N] = 1 — w 가 없으면 똑같이 */
+  function hitFrac(N, w){ const ws = w && w.length === N ? w : Array(N).fill(1), S = ws.reduce((a, b) => a + b, 0); let c = 0; return [0].concat(ws.map(x => (c += x) / S)); }
   function hitOne(D, i, N, caster, snd, rate, tt, opt){
     opt = opt || {};
     ST.hits.push(Math.round(tt * 1000) / 1000);
     if(snd && typeof sfxPlay === "function") sfxPlay(snd, 1 + i * .025);   // 피격음 — 타마다 조금씩 높게
     ST.snd.push({k: snd, at: Math.round(tt * 1000) / 1000, hit: i + 1});
-    const L = N - 1;
+    const L = N - 1, F = hitFrac(N, opt.w);   // 1103 스물셋째 — opt.w(타마다 무게)가 있으면 그 비율로 나눈다 (없으면 똑같이)
     D.forEach((d, j) => {
       const el = d.el; if(!el.isConnected) return;
       const pops = [];
-      d.parts.forEach(p => { const part = Math.floor(p.n * (i + 1) / N) - Math.floor(p.n * i / N); pops.push({k: p.k, txt: (p.k === "heal" || p.k === "shield" ? "+" : "") + (typeof fmt === "function" ? fmt(part) : part), crit: p.k === "crit" && i === L}); });
+      if(!j) ST.hitDmg[i] = d.parts.reduce((a, p) => a + Math.floor(p.n * F[i + 1]) - Math.floor(p.n * F[i]), 0);   // 시험용 — 첫 맞는 유닛이 타마다 받은 피해
+      d.parts.forEach(p => { const part = Math.floor(p.n * F[i + 1]) - Math.floor(p.n * F[i]); pops.push({k: p.k, txt: (p.k === "heal" || p.k === "shield" ? "+" : "") + (typeof fmt === "function" ? fmt(part) : part), crit: p.k === "crit" && i === L}); });
       if(i === 0) d.first.forEach(x => { const [k, n] = x.split(":"); pops.push({k, txt: k === "miss" ? "MISS" : "+" + (typeof fmt === "function" ? fmt(+n) : n)}); });
       if(i === L) d.last.forEach(k => pops.push({k, txt: "DOWN"}));
       if(pops.length){
@@ -52894,7 +52904,7 @@ function opDrops(){
       }
       if(!d.parts.length) return;
       [["hp", ".bf-meter.hp i"], ["sh", ".bf-shield"]].forEach(([key, q]) => { const m = bar(el, q), a = pct(d[key][0]), b = pct(d[key][1]);
-        if(m && !isNaN(a) && !isNaN(b)) m.style.height = (a + (b - a) * (i + 1) / N) + "%"; });
+        if(m && !isNaN(a) && !isNaN(b)) m.style.height = (a + (b - a) * F[i + 1]) + "%"; });
       if(opt.heal) return;   // 회복 · 보호막은 막대만 (흰 반짝임 · 피격 자세 없이)
       try{ window.HITFX && hitNow(el, {from: caster, crit: d.crit && i === L, sf: rate, seed: i * 131 + j}); }catch(e){}
       const c = el.querySelector("canvas.spr"); if(c){ c.dataset.m = SPR_M.hit; c.dataset.f = i % 2; delete c.dataset.still; delete c.dataset.once; }
@@ -53101,6 +53111,220 @@ function opDrops(){
     place: {group: placeGroup, chest: placeChest, feet: placeFeet, front: placeFront, sigil: placeSigil, unitBox, geo},
     snd: sndPlay, hitNow: (el, o) => hitNow(el, o),
     addSheet(k, m){ SHEETS[k] = m; delete IMG[k]; }};
+})();
+
+/* ── 1103 스물넷째 — 검투사 · 드루이드 · 암살자 · 궁수 · 무도가 (사용자 '드루이드, 암살자, 궁수, 몽크, 암흑 사제, 소드맨 작업한것들 게임에 적용시키자') ──
+   각 직업 목업(mockups/<직업>-pixelfx/src/<직업>_fx.js)을 그대로 옮겼다 — window.SKPFX(위 엔진)에 SPEC · CASTER · 크기 · 소리를 더한다. 시트는 SHEETS(skpfx_sheets.json) · 소리는 bgm/ */
+/* 검투사(소드맨) pixelfx (1103 열여섯째 목업 — 게임에 넣을 때 SKPFX 블록의 SPEC · CASTER 로 옮긴다)
+   사용자 1103: '적용시키고 다음은 소드맨 작업해보자' — 마법사 · 팔라딘 · 암흑사제 때 정한 규칙을 그대로:
+   새로 그리기 · 광역기는 5명 줄 기준 크기 · 가운데는 맞는 유닛 · 효과마다 기본 크기 · 소리 · 흰 반짝임은 이펙트가 닿을 때 · 이펙트 길이만큼 클로즈업 ·
+   필살기는 화면째 필터(숫자만 앞) + 여러 번에 나눠 + 합성 소리 · 연달아(사이 1.5초)
+   고유 효과 swordSwing(칼 휘두름) → melee/gladiator-swing (가슴 앞 · 강철빛 초승달 · 기술마다)
+   베기 sw_b → melee/slant-cleave (1103 스물셋째 다시 — 사용자 '베는 방향을 바꾸고 크기는 작게': 뒤 위에서 앞 아래로 비스듬히 · 크기 0.8 · 맞는 적 발밑 · 0.08초에 소리 · 흰 반짝임 · 예전 vertical-cleave 는 기록)
+   도발 sw_1 tauntCall + tauntAnger → melee/taunt-roar (시전자 가슴 앞 — 붉은 외침 셋) + melee/taunt-mark (맞는 적 머리 위 💢 · 발밑 붉은 고리 — 외침이 닿는 0.25초에 · 소리)
+   철벽 자세 sw_2 shadowStep → melee/iron-stance (시전자 발밑 — 칼을 꽂고 강철 판 여섯이 솟아 잠긴다 · 0.3초에 소리 · 이펙트만큼 클로즈업)
+   대지 가르기 sw_u earthWave → melee/boulder-rend (1103 스물셋째 다시 — 사용자 '대지 가르기도 서리 결계 수준으로 필터, 마지막 타에서 갈라진 대지 사이로 커다란 돌덩이가 튀어나오며 큰 피해 (피해 분배를 마지막에 중점)':
+     적 5명 줄 기준 · 유닛 앞에 그린다 · 시전자 쪽에서 땅이 찢어져 달려온다 · 흙빛 바닥 필터(서리 결계 정도 0.45) · 일곱 번 울린다 — 0.65 ~ 2.45초 · 간격 ×0.8 · 마지막 타에 큰 돌덩이들이 갈라진 틈에서 솟는다 ·
+     피해는 마지막에 몰아서(무게 6 · 6 · 7 · 7 · 8 · 8 · 58 %) ·
+     마지막에 돌 송곳 · 피해 숫자 · 막대를 7번에 나눔 · 타마다 게임 칼 소리 · 타마다 화면이 흔들린다 · 합성 소리 swEarth(src/earth_sfx.py) · 맞는 적 흙빛으로 물들기) */
+(function(){
+  const E = window.SKPFX; if(!E) return;
+  Object.assign(E.size, {sswing: 1.25, scleave: .8, sroar: 1, smark: 1, siron: 1.25, searth: 1});
+  const P = E.place, sm = E.smooth;
+  try{ if(typeof SFX !== "undefined" && !SFX.swEarth) SFX.swEarth = {f: window.__SW_EARTH || "sword_earth.mp3", v: .9}; }catch(e){}
+  const CUT = .08, ROAR = .25, MARK_POP = .1, SET = .3;
+  const SW_T = E.accel(7, .65, 2.45, .8), END = 2.45, OFF = 2.55;
+  const DUST = {c: [1.2, .98, .7], k: 1.05, b: .03, max: .55};
+  const at = (list, k, d) => { if(k) list.push({fn: tt => E.snd(k, tt), delay: d}); };
+  /* 땅이 울릴 때마다 전투판을 흔든다 (translate — 카메라의 transform 과 따로 논다) */
+  const shake = (stage, amp, ms) => tt => { try{ const r = Math.max(.1, E.st.rate || 1) * (E.st.slow ? .25 : 1), a = amp;
+    stage.animate([{translate: "0 0"}, {translate: `${a}px ${a * .4}px`}, {translate: `${-a * .8}px ${-a * .3}px`}, {translate: `${a * .5}px ${a * .2}px`}, {translate: `${-a * .25}px 0`}, {translate: "0 0"}], {duration: ms / r}); }catch(e){} };
+  /* 적 줄 기준 자리 — 시전자가 오른쪽(적 편 B)이면 그림을 뒤집는다 (땅이 시전자 쪽에서 찢어져 오게) */
+  const group = (c, id) => { const g = P.group(c.stage, c.foe, c.side, id); return (o, G, tt) => Object.assign(g(o, G, tt), {flip: c.side === "B"}); };
+  Object.assign(E.spec, {
+    sw_b: {holdSnd: true, flash: () => CUT, build(c){ c.T.forEach((el, i) => c.list.push({sheet: "scleave", el, delay: i * .05, place: P.feet(1)})); at(c.list, c.held, CUT); }},
+    sw_1: {holdSnd: true, flash: () => ROAR, build(c){
+      if(c.caster) c.list.push({sheet: "sroar", el: c.caster, delay: 0, place: P.front(c.side)});
+      c.T.forEach((el, i) => c.list.push({sheet: "smark", el, delay: ROAR - MARK_POP + i * .05, place: P.feet(1)}));
+      at(c.list, c.held, ROAR); }},
+    sw_2: {hold: true, holdSnd: true, flash: () => 0, build(c){
+      const me = c.caster || c.T[0]; if(me) c.list.push({sheet: "siron", el: me, delay: 0, place: P.feet(1)});
+      at(c.list, c.held, SET); }},
+    sw_u: {hold: true, holdSnd: true, flash: () => -1, build(c){
+      c.list.push({sheet: "searth", el: c.stage, delay: .15, only: c.T, place: group(c, "sw_u"), snd: "swEarth"});
+      c.list.push({tint: "earth", el: c.stage, ground: true, delay: 0, until: OFF + .7, env: lt => .45 * sm(.1, .55, lt) * (1 - sm(END + .2, OFF + .6, lt))});   // 흙빛 바닥 필터 — 서리 결계 정도(0.45)
+      c.list.push({chill: c.T, color: DUST, delay: 0, until: OFF + .45, env: lt => DUST.max * sm(.1, .8, lt) * (1 - sm(OFF, OFF + .4, lt))});
+      SW_T.forEach((h, i) => c.list.push({fn: shake(c.stage, i === SW_T.length - 1 ? 7 : 2 + i * .5, i === SW_T.length - 1 ? 420 : 200), delay: h}));
+      E.multiHit(c.list, c.T, c.caster, "weapon", c.rate, SW_T, {w: [6, 6, 7, 7, 8, 8, 58]}); }}   // 피해는 마지막 돌덩이에 몰아서
+  });
+  E.caster.sword = {sheet: "sswing", place: c => P.front(c.side)};
+})();
+/* 드루이드 pixelfx (1103 열일곱째 목업 — 게임에 넣을 때 SKPFX 블록의 SPEC · CASTER 로 옮긴다)
+   사용자 1103: '드루이드 목업도 제작해보자' — 마법사 · 팔라딘 · 암흑사제 · 검투사 때 정한 규칙을 그대로:
+   새로 그리기 · 광역기는 5명 줄 기준 크기 · 가운데는 맞는 유닛 · 효과마다 기본 크기 · 소리 · 흰 반짝임은 이펙트가 닿을 때 · 이펙트 길이만큼 클로즈업 ·
+   필살기는 화면째 필터(숫자만 앞) + 여러 번에 나눠 + 합성 소리 · 연달아(사이 1.5초)
+   고유 효과 druidCircle(손 앞 문양) → nature/druid-glyph (가슴 앞 · 초록 고리 · 잎 여섯 · 기술마다)
+   가시 채찍 dr_b → nature/thorn-lash (맞는 적 발밑 — 드루이드 쪽에서 가시 덩굴이 솟아 가슴을 후려친다 · 0.46초에 소리 · 흰 반짝임)
+   재생의 씨앗 dr_1 regenSeed → nature/regen-seed (맞는 아군 발밑 — 빛나는 씨앗이 떨어져 새싹 · 생명의 고리가 몸을 타고 오른다 · 0.3초에 소리 · 이펙트만큼 클로즈업)
+   야수화 dr_2 bearSign → nature/beast-form (드루이드 발밑 — 호박빛 곰 정령이 솟아 포효 · 발톱 자국 셋 · 0.35초에 소리 · 이펙트만큼 클로즈업)
+   대자연의 진노 dr_u natureRoots → nature/wrath-of-nature (적 5명 줄 기준 · 이끼 고리 · 가시 뿌리가 여섯 번 솟는다 — 0.65 ~ 2.35초 · 간격 ×0.8 · 잎 폭풍 · 포자 ·
+     마지막에 덤불째 솟아 꽃 · 짙은 숲빛이 화면째 덮고 숫자만 앞 · 피해 숫자 · 막대를 6번에 나눔 · 타마다 게임 소리 · 합성 소리 drWrath(src/nature_sfx.py) · 맞는 적 독빛으로 물들기) */
+(function(){
+  const E = window.SKPFX; if(!E) return;
+  Object.assign(E.size, {drglyph: 1.25, drlash: 1.25, drseed: 1.25, drbeast: 1.25, drwrath: 1});
+  const P = E.place, sm = E.smooth;
+  try{ if(typeof SFX !== "undefined" && !SFX.drWrath) SFX.drWrath = {f: window.__DR_WRATH || "druid_wrath.mp3", v: .9}; }catch(e){}
+  const LASH = .46, LAND = .3, ROAR = .35;
+  const DR_T = E.accel(6, .65, 2.35, .8), END = 2.35, OFF = 2.45;
+  const TOXIC = {c: [.8, 1.18, .72], k: 1.05, b: .03, max: .55};
+  const at = (list, k, d) => { if(k) list.push({fn: tt => E.snd(k, tt), delay: d}); };
+  /* 덩굴은 드루이드 쪽에서 솟는다 — 드루이드가 오른쪽(편 B)이면 뒤집는다 */
+  const feetFrom = side => { const f = P.feet(1); return (o, G, tt) => Object.assign(f(o, G, tt), {flip: side === "B"}); };
+  Object.assign(E.spec, {
+    dr_b: {holdSnd: true, flash: () => LASH, build(c){ c.T.forEach((el, i) => c.list.push({sheet: "drlash", el, delay: i * .05, place: feetFrom(c.side)})); at(c.list, c.held, LASH); }},
+    dr_1: {hold: true, holdSnd: true, flash: () => 0, build(c){ c.T.forEach((el, i) => c.list.push({sheet: "drseed", el, delay: i * .06, place: P.feet(1)})); at(c.list, c.held, LAND); }},
+    dr_2: {hold: true, holdSnd: true, flash: () => 0, build(c){
+      const me = c.caster || c.T[0]; if(me) c.list.push({sheet: "drbeast", el: me, delay: 0, place: feetFrom(c.side)});
+      at(c.list, c.held, ROAR); }},
+    dr_u: {hold: true, holdSnd: true, flash: () => -1, build(c){
+      c.list.push({sheet: "drwrath", el: c.stage, delay: .15, only: c.T, place: P.group(c.stage, c.foe, c.side, "dr_u"), snd: "drWrath"});
+      c.list.push({tint: "wrath", over: true, el: c.stage, delay: 0, until: OFF + .45, env: lt => lt < END ? Math.pow(lt / END, 1.4) : 1 - sm(OFF, OFF + .4, lt)});   // 짙은 숲빛 — 화면째 · 2.35초에 불투명 · 0.1초 뒤 걷힘
+      c.list.push({chill: c.T, color: TOXIC, delay: 0, until: OFF + .45, env: lt => TOXIC.max * sm(.1, .8, lt) * (1 - sm(OFF, OFF + .4, lt))});
+      E.multiHit(c.list, c.T, c.caster, c.held, c.rate, DR_T); }}
+  });
+  E.caster.druid = {sheet: "drglyph", place: c => P.front(c.side)};
+})();
+/* 암살자(도적) pixelfx (1103 열여덟째 목업 — 게임에 넣을 때 SKPFX 블록의 SPEC · CASTER 로 옮긴다)
+   사용자 1103: '도적 목업해보자' — 마법사 · 팔라딘 · 암흑사제 · 검투사 · 드루이드 때 정한 규칙을 그대로:
+   새로 그리기 · 효과마다 기본 크기 · 소리 · 흰 반짝임은 이펙트가 닿을 때 · 이펙트 길이만큼 클로즈업 ·
+   필살기는 화면째 필터(숫자만 앞) + 여러 번에 나눠 + 합성 소리 · 연달아(사이 1.5초) — 암살은 한 명에게 거는 필살기라 그 적 발밑 기준
+   고유 효과 rogueSignal(시전 신호) → melee/rogue-sign (가슴 앞 · 단검이 손에서 휙 돌며 번쩍 · 보라 연기 · 기술마다)
+   급습 ro_b rogueSlash → melee/ambush-cross (맞는 적 발밑 · 두 번 X 자로 벤다 — 0.06초에 소리 · 흰 반짝임)
+   독 단검 ro_1 poisonDagger → melee/venom-dagger (시전자 가슴 → 맞는 적 가슴으로 돌며 날아간다 0.22초) + melee/venom-burst (꽂히는 0.22초에 독이 튄다 · 소리 · 흰 반짝임)
+   그림자 밟기 ro_2 shadowStep → melee/shade-step (시전자 발밑 — 그림자 연기 · 잔상 셋 · 0.2초에 소리 · 이펙트만큼 클로즈업)
+   암살 ro_u assassination → melee/inverse-cut (1103 스물한째 다시 — 사용자 '기존 스킬 이펙트를 참고해서 먼저 한번 긋고, 화면이 반전되면서 하얀색 액체가 흩뿌리는 느낌':
+     맞는 적 발밑 · 0.5초에 붉은 초승달로 한 번 긋는다(예전 assassination 그림처럼) · 0.6초에 화면째 반전(backdrop invert — 숫자만 앞) ·
+     상처에서 액체가 일곱 번 뿜어진다 — 0.75 ~ 2.35초 · 간격 ×0.8 · 시트에는 검게 그려 반전된 화면에서 하얗게 보인다 · 액체가 2.85초까지 사라지고 2.95초부터 반전이 걷힌다 ·
+     피해 숫자 · 막대를 8번(긋기 + 일곱)에 나눔 · 타마다 게임 소리 · 합성 소리 roAssassin(src/invert_sfx.py → sfx/inverse-cut.mp3) · 맞는 적 어둡게 물들기
+     (예전 판 melee/death-mark · sfx/death-mark.mp3 는 기록으로 남김) */
+(function(){
+  const E = window.SKPFX; if(!E) return;
+  Object.assign(E.size, {rosign: 1.25, rocross: 1.25, rodagger: 1, rovenom: 1.25, rostep: 1.25, romark: 1.25});
+  const P = E.place, sm = E.smooth;
+  try{ if(typeof SFX !== "undefined" && !SFX.roAssassin) SFX.roAssassin = {f: window.__RO_MARK || "rogue_assassin.mp3", v: .9}; }catch(e){}
+  const CUT = .06, FLY = .22, STEP = .2;
+  const RO_T = [.5].concat(E.accel(7, .75, 2.35, .8)), INV = .6, OFF = 2.95;   // 긋기 1 + 뿜기 7 · 반전은 0.6초에 켜져 2.95초부터 걷힌다 (액체가 다 사라진 뒤)
+  const DUSK = {c: [.72, .62, 1.05], k: .9, b: -.02, max: .55};
+  const at = (list, k, d) => { if(k) list.push({fn: tt => E.snd(k, tt), delay: d}); };
+  /* 던진 단검 — 시전자 가슴 앞 → 맞는 적 가슴 · 살짝 위로 휘며 */
+  const fly = (caster, target, side) => (o, G, tt) => {
+    const a = P.unitBox(caster, G), b = P.unitBox(target, G), k = a.h * .92 / 48, u = Math.min(1, Math.max(0, (tt - o.delay) / FLY)), e = u * u * (3 - 2 * u);
+    const ax = a.cx + (side === "B" ? -1 : 1) * a.w * .2, ay = a.top + a.h * .5, bx = b.cx, by = b.top + b.h * .5;
+    return {x: ax + (bx - ax) * e, y: ay + (by - ay) * e - Math.sin(u * Math.PI) * a.h * .1, k, flip: bx < ax};
+  };
+  const feetFrom = side => { const f = P.feet(1); return (o, G, tt) => Object.assign(f(o, G, tt), {flip: side === "B"}); };
+  Object.assign(E.spec, {
+    ro_b: {holdSnd: true, flash: () => CUT, build(c){ c.T.forEach((el, i) => c.list.push({sheet: "rocross", el, delay: i * .05, place: P.feet(1)})); at(c.list, c.held, CUT); }},
+    ro_1: {holdSnd: true, flash: () => FLY, build(c){
+      c.T.forEach((el, i) => { if(c.caster) c.list.push({sheet: "rodagger", el, delay: i * .05, until: FLY + i * .05, place: fly(c.caster, el, c.side)}); c.list.push({sheet: "rovenom", el, delay: FLY + i * .05, place: P.feet(1)}); });
+      at(c.list, c.held, FLY); }},
+    ro_2: {hold: true, holdSnd: true, flash: () => 0, build(c){
+      const me = c.caster || c.T[0]; if(me) c.list.push({sheet: "rostep", el: me, delay: 0, place: feetFrom(c.side)});
+      at(c.list, c.held, STEP); }},
+    ro_u: {hold: true, holdSnd: true, flash: () => -1, build(c){
+      c.T.forEach((el, i) => c.list.push({sheet: "romark", el, delay: .15, place: P.feet(1), snd: i ? null : "roAssassin"}));
+      c.list.push({tint: "invert", over: true, el: c.stage, delay: 0, until: OFF + .3, env: lt => sm(INV - .02, INV + .04, lt) * (1 - sm(OFF, OFF + .15, lt))});   // 화면째 반전 — 0.6초에 확 · 2.95초부터 0.15초에 걷힘
+      c.list.push({chill: c.T, color: DUSK, delay: 0, until: OFF + .45, env: lt => DUSK.max * sm(.1, .8, lt) * (1 - sm(OFF, OFF + .4, lt))});
+      E.multiHit(c.list, c.T, c.caster, c.held, c.rate, RO_T); }}
+  });
+  E.caster.rogue = {sheet: "rosign", place: c => P.front(c.side)};
+})();
+/* 궁수 pixelfx (1103 열아홉째 목업 — 게임에 넣을 때 SKPFX 블록의 SPEC · CASTER 로 옮긴다)
+   사용자 1103: '궁수 스킬 목업' — 지금까지 직업들 때 정한 규칙을 그대로:
+   새로 그리기 · 광역기는 5명 줄 기준 크기 · 가운데는 맞는 유닛 · 효과마다 기본 크기 · 소리 · 흰 반짝임은 이펙트가 닿을 때 · 이펙트 길이만큼 클로즈업 ·
+   광역기(필살기 아님)는 시전 동안 바닥 필터 + 맞는 학생 물들기 · 필살기는 화면째 필터(숫자만 앞) + 여러 번에 나눠 + 합성 소리 · 연달아(사이 1.5초)
+   고유 효과 archerWind(시전 바람) → projectiles/archer-wind (가슴 앞 · 시위가 튕기며 번쩍 · 초록 바람 나선 · 기술마다)
+   조준 사격 ar_b → projectiles/aimed-arrow (시전자 → 맞는 적 가슴 0.2초) + projectiles/arrow-impact (꽂히는 0.2초 · 소리 · 흰 반짝임)
+   관통 화살 ar_1 greenPierce → projectiles/pierce-shot (적 5명 줄 기준 · 궁수 쪽에서 한 발이 줄을 꿰뚫는다 · 연초록 바닥 필터 · 맞는 적 초록빛 · 지나가는 차례로 흰 반짝임 · 클로즈업)
+   매의 눈 ar_2 hawkEye → projectiles/hawk-eye (궁수 발밑 — 머리 위 금빛 매의 눈 · 조준 고리 · 0.3초에 소리 · 클로즈업)
+   유성 화살 ar_u meteorRain · meteorFront · meteorImpact → projectiles/meteor-volley (한 명에게 — 맞는 적 발밑 · 불화살 일곱 발이 갈수록 빠르게 · 마지막 큰 유성 화살 ·
+     배경은 서리 결계 정도 — 잿불빛 바닥 필터(0.45 · 1103 스물둘째 사용자 '필살기 뒷배경 바뀌는 단계를 서리 결계정도의 단계로') · 8번 0.65 ~ 2.35초 · 간격 ×0.8 · 피해 숫자 · 막대를 8번에 나눔 · 타마다 활 소리 · 합성 소리 arMeteor(src/meteor_sfx.py) · 맞는 적 불빛 물들기) */
+(function(){
+  const E = window.SKPFX; if(!E) return;
+  Object.assign(E.size, {arwind: 1.25, ararrow: 1, arhit: 1.25, arpierce: 1, arhawk: 1.25, armeteor: 1.25});
+  const P = E.place, sm = E.smooth;
+  try{ if(typeof SFX !== "undefined" && !SFX.arMeteor) SFX.arMeteor = {f: window.__AR_METEOR || "archer_meteor.mp3", v: .9}; }catch(e){}
+  const FLY = .2, PASS = .14, OPEN = .3;
+  const AR_T = E.accel(8, .65, 2.35, .8), END = 2.35, OFF = 2.45;
+  const GALE = {c: [.82, 1.12, .9], k: 1.05, b: .04, max: .5}, BLAZE = {c: [1.25, .82, .55], k: 1.08, b: .03, max: .55};
+  const at = (list, k, d) => { if(k) list.push({fn: tt => E.snd(k, tt), delay: d}); };
+  const fly = (caster, target, side) => (o, G, tt) => {
+    const a = P.unitBox(caster, G), b = P.unitBox(target, G), k = a.h * .92 / 48, u = Math.min(1, Math.max(0, (tt - o.delay) / FLY));
+    const ax = a.cx + (side === "B" ? -1 : 1) * a.w * .3, ay = a.top + a.h * .5, bx = b.cx, by = b.top + b.h * .5;
+    return {x: ax + (bx - ax) * u, y: ay + (by - ay) * u - Math.sin(u * Math.PI) * a.h * .06, k, flip: bx < ax};
+  };
+  const flipB = (side, f) => (o, G, tt) => Object.assign(f(o, G, tt), {flip: side === "B"});
+  Object.assign(E.spec, {
+    ar_b: {holdSnd: true, flash: () => FLY, build(c){
+      c.T.forEach((el, i) => { if(c.caster) c.list.push({sheet: "ararrow", el, delay: i * .05, until: FLY + i * .05, place: fly(c.caster, el, c.side)}); c.list.push({sheet: "arhit", el, delay: FLY + i * .05, place: flipB(c.side, P.feet(1))}); });
+      at(c.list, c.held, FLY); }},
+    ar_1: {hold: true, holdSnd: true, flash: i => PASS + i * .07, build(c){
+      c.list.push({sheet: "arpierce", el: c.stage, delay: 0, only: c.T, place: flipB(c.side, P.group(c.stage, c.foe, c.side, "ar_1"))});
+      c.list.push({tint: "gale", el: c.stage, ground: true, delay: 0, until: 1.4, env: lt => .35 * sm(.05, .3, lt) * (1 - sm(.8, 1.3, lt))});   // 연초록 바닥 필터
+      c.list.push({chill: c.T, color: GALE, delay: 0, until: 1.4, env: lt => GALE.max * sm(.1, .4, lt) * (1 - sm(.8, 1.3, lt))});
+      at(c.list, c.held, .1); }},
+    ar_2: {hold: true, holdSnd: true, flash: () => 0, build(c){
+      const me = c.caster || c.T[0]; if(me) c.list.push({sheet: "arhawk", el: me, delay: 0, place: P.feet(1)});
+      at(c.list, c.held, OPEN); }},
+    ar_u: {hold: true, holdSnd: true, flash: () => -1, build(c){
+      c.T.forEach((el, i) => c.list.push({sheet: "armeteor", el, delay: .15, place: flipB(c.side, P.feet(1)), snd: i ? null : "arMeteor"}));
+      c.list.push({tint: "meteor", el: c.stage, ground: true, delay: 0, until: OFF + .45, env: lt => .45 * sm(.1, .55, lt) * (1 - sm(END, OFF + .4, lt))});   // 잿불빛 바닥 필터 — 서리 결계 정도(0.45)
+      c.list.push({chill: c.T, color: BLAZE, delay: 0, until: OFF + .45, env: lt => BLAZE.max * sm(.1, .8, lt) * (1 - sm(OFF, OFF + .4, lt))});
+      E.multiHit(c.list, c.T, c.caster, "bow", c.rate, AR_T); }}
+  });
+  E.caster.archer = {sheet: "arwind", place: c => P.front(c.side)};
+})();
+/* 무도가(몽크) pixelfx (1103 스무째 목업 — 게임에 넣을 때 SKPFX 블록의 SPEC · CASTER 로 옮긴다)
+   사용자 1103: '몽크 목업' — 지금까지 직업들 때 정한 규칙을 그대로:
+   새로 그리기 · 효과마다 기본 크기 · 소리 · 흰 반짝임은 이펙트가 닿을 때 · 이펙트 길이만큼 클로즈업 ·
+   필살기는 화면째 필터(숫자만 앞) + 여러 번에 나눠 + 합성 소리 · 연달아(사이 1.5초) — 백열권은 한 명에게 거는 필살기라 그 적 발밑 기준
+   고유 효과 monkPressure(기세) → impacts/monk-pressure (가슴 앞 · 기가 주먹으로 감겨 들고 앞으로 압력 고리 · 기술마다)
+   연격 mo_b → impacts/twin-strike (맞는 적 발밑 · 두 번 주먹 — 0.06 · 0.2초 · 첫 주먹에 소리 · 흰 반짝임)
+   기공파 mo_1 chiHit → impacts/chi-orb (시전자 → 맞는 적 가슴 0.2초) + impacts/chi-burst (닿는 0.2초에 터진다 · 소리 · 흰 반짝임)
+   내공 순환 mo_2 shadowStep → impacts/inner-flow (시전자 발밑 — 금빛 기가 몸을 감아 돌고 배꼽에 모였다가 오라로 퍼진다 · 0.3초에 소리 · 클로즈업)
+   백열권 mo_u fistRush · oraText → impacts/palm-barrage (1103 스물둘째 다시 — 사용자 '주먹만이 아니라 여러가지 장권들을 여러 각도에서 연달아 날리는 느낌':
+     맞는 적 발밑 · 백열 장권(편 손바닥)이 사방에서 갈수록 빠르게 · 닿은 자리에 손바닥 자국 · 마지막 큰 장권 한 방에 충격파 · 예전 hundred-fists 는 기록) ·
+     배경은 서리 결계 정도 — 바닥 필터(0.45 · 1103 스물둘째 사용자 '필살기 뒷배경 바뀌는 단계를 서리 결계정도의 단계로') · 8번 0.65 ~ 2.35초 · 간격 ×0.8 · 피해 숫자 · 막대를 8번에 나눔 · 타마다 주먹 소리 · 합성 소리 moFists(src/fists_sfx.py) · 맞는 적 달아오르게 물들기) */
+(function(){
+  const E = window.SKPFX; if(!E) return;
+  Object.assign(E.size, {mopress: 1.25, motwin: 1.25, moorb: 1, moburst: 1.25, moflow: 1.25, mofists: 1.25});
+  const P = E.place, sm = E.smooth;
+  try{ if(typeof SFX !== "undefined" && !SFX.moFists) SFX.moFists = {f: window.__MO_FISTS || "monk_fists.mp3", v: .9}; }catch(e){}
+  const PUNCH = .06, FLY = .2, FLOW = .3;
+  const MO_T = E.accel(8, .65, 2.35, .8), END = 2.35, OFF = 2.45;
+  const GLOW = {c: [1.22, .92, .7], k: 1.08, b: .04, max: .55};
+  const at = (list, k, d) => { if(k) list.push({fn: tt => E.snd(k, tt), delay: d}); };
+  const fly = (caster, target, side) => (o, G, tt) => {
+    const a = P.unitBox(caster, G), b = P.unitBox(target, G), k = a.h * .92 / 48, u = Math.min(1, Math.max(0, (tt - o.delay) / FLY)), e = u * (2 - u);
+    const ax = a.cx + (side === "B" ? -1 : 1) * a.w * .3, ay = a.top + a.h * .5, bx = b.cx, by = b.top + b.h * .5;
+    return {x: ax + (bx - ax) * e, y: ay + (by - ay) * e, k, flip: bx < ax};
+  };
+  const flipB = (side, f) => (o, G, tt) => Object.assign(f(o, G, tt), {flip: side === "B"});
+  Object.assign(E.spec, {
+    mo_b: {holdSnd: true, flash: () => PUNCH, build(c){ c.T.forEach((el, i) => c.list.push({sheet: "motwin", el, delay: i * .05, place: flipB(c.side, P.feet(1))})); at(c.list, c.held, PUNCH); }},
+    mo_1: {holdSnd: true, flash: () => FLY, build(c){
+      c.T.forEach((el, i) => { if(c.caster) c.list.push({sheet: "moorb", el, delay: i * .05, until: FLY + i * .05, place: fly(c.caster, el, c.side)}); c.list.push({sheet: "moburst", el, delay: FLY + i * .05, place: P.feet(1)}); });
+      at(c.list, c.held, FLY); }},
+    mo_2: {hold: true, holdSnd: true, flash: () => 0, build(c){
+      const me = c.caster || c.T[0]; if(me) c.list.push({sheet: "moflow", el: me, delay: 0, place: P.feet(1)});
+      at(c.list, c.held, FLOW); }},
+    mo_u: {hold: true, holdSnd: true, flash: () => -1, build(c){
+      c.T.forEach((el, i) => c.list.push({sheet: "mofists", el, delay: .15, place: flipB(c.side, P.feet(1)), snd: i ? null : "moFists"}));
+      c.list.push({tint: "heat", el: c.stage, ground: true, delay: 0, until: OFF + .45, env: lt => .45 * sm(.1, .55, lt) * (1 - sm(END, OFF + .4, lt))});   // 달아오른 바닥 필터 — 서리 결계 정도(0.45)
+      c.list.push({chill: c.T, color: GLOW, delay: 0, until: OFF + .45, env: lt => GLOW.max * sm(.1, .8, lt) * (1 - sm(OFF, OFF + .4, lt))});
+      E.multiHit(c.list, c.T, c.caster, "punch", c.rate, MO_T); }}
+  });
+  E.caster.monk = {sheet: "mopress", place: c => P.front(c.side)};
 })();
 /* SKPFX_END */
 /* 오프닝을 닫는다 — 연한 푸른 빛이 화면을 덮은 뒤 프롤로그가 드러난다. fast = 건너뛰기 (1003: 흰빛 → 푸른 빛) */
