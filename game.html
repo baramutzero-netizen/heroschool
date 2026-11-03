@@ -3124,6 +3124,60 @@ html body #modalRoot .tch .tch-sk{grid-template-columns:36px minmax(0,1fr) auto}
 #gtHint.cell .fst-ring,#gtHint.cell .fst-ring2{border-radius:50%}   /* 칸 — 육각형을 감싸는 동그라미 */
 @media (prefers-reduced-motion:reduce){.gt-drop.rise{animation:none;opacity:1}.gt-hex.can{animation:none;opacity:.8}.gt-root .gt-orb.sway{animation:none}.gt-tw{display:none}}
 /* GTEAR_CSS_END */
+/* INST_CSS_START — 간파 첫 해금 '보이는 것과 가르칠 수 있는 것' (1102 열한째 목업 · apply_inst.py) ─ 대화창 · 초상화 · 암전 · 건너뛰기는 첫 시간표(.fst) · 02(.rvst) 그대로 쓰고
+   여기는 무대만: 학원 대련장 쿼터뷰 지도(화면 채움 · 카메라가 옮겨 간다) · 도트(전수 연출 .tcs-u 그대로 — 외곽선 필터만 이 무대 것) · 모으는 불씨 · 남은 작은 불씨 ·
+   가장자리로(E — 둘레가 조금 어두워진다) · 암흑 사제의 차가운 시선(기본 초상 + 눈가의 약한 그늘) · 마스터 금빛 이름표 ·
+   C 전수 강제 클릭(#instGuide — 누를 칸만 뚫린 어둠 막 · 첫 시간표 02 의 원 · 손가락 · 보조 문구 — 뿌리에는 .fst 를 달지 않고 변수만) · 전수 창 머리의 '성공률 100%' 줄 · 장면 ↔ 실제 화면 암전 막 */
+.fst.inst{z-index:907}
+.inst .rv-bg{opacity:1;overflow:hidden}
+.rvst.inst .fst-cast{left:0;right:0;width:auto;margin-left:0;translate:none}
+.inst .fst-bust{right:auto;transition:left .42s cubic-bezier(.3,.8,.3,1),filter .18s,translate .36s cubic-bezier(.25,.9,.3,1.3)}
+.inst .fst-talk.mst .fst-tx{color:#fff1cf}
+.inst .fst-talk.mst .fst-nm span{color:#ffd36a}
+.inst .rv-skip{z-index:12}
+/* 무대 — 지도(1536 × 1024 판)를 배율 u 로 · 카메라는 판 전체를 옮긴다 (transform) */
+.in-stage{position:absolute;inset:0;overflow:hidden;background:#1b1410}
+.in-cam{position:absolute;left:0;top:0;transform-origin:0 0;transition-property:transform;transition-timing-function:cubic-bezier(.45,.05,.3,1);will-change:transform}
+.in-map{position:absolute;left:0;top:0;width:100%;height:100%;max-width:none!important;image-rendering:pixelated;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.in-defs{position:absolute;left:0;top:0}
+.in-stage .tcs-body{filter:url(#inOl)}
+.in-stage .tcs-nm,.in-stage .tcs-say{display:none}
+.in-fxl{position:absolute;left:0;top:0;width:0;height:0;z-index:5000;pointer-events:none}
+/* IN0113 — 불씨가 마법사 앞 가운데에 잠깐 모인다 (도트처럼 겹 원 · 빛) */
+.in-gather{position:absolute;width:calc(45px * var(--s,1));height:calc(45px * var(--s,1));border-radius:50%;transform:translate(-50%,-50%);opacity:0;
+  background:var(--orb) 50% 50% / 100% 100% no-repeat;image-rendering:pixelated;
+  box-shadow:0 0 calc(14px * var(--s,1)) calc(4px * var(--s,1)) rgba(255,140,40,.5),0 0 calc(38px * var(--s,1)) calc(10px * var(--s,1)) rgba(255,110,30,.2)}
+.in-spark{position:absolute;width:calc(4px * var(--s,1));height:calc(4px * var(--s,1));opacity:0;background:#ffd36a;box-shadow:0 0 calc(5px * var(--s,1)) rgba(255,154,60,.9)}
+/* IN0124 — 팔라딘 앞에 남은 작은 불씨가 꺼진다 */
+.in-ember{position:absolute;width:calc(9px * var(--s,1));height:calc(13px * var(--s,1));transform:translate(-50%,-100%);border-radius:50% 50% 40% 40% / 62% 62% 38% 38%;
+  background:radial-gradient(ellipse at 50% 72%,#fff3c4 0 22%,#ffc24a 22% 46%,#ff7a24 46% 70%,rgba(255,90,20,0) 72%);box-shadow:0 0 calc(8px * var(--s,1)) rgba(255,140,40,.7);
+  animation:inEmber 1.5s ease-in forwards}
+@keyframes inEmber{0%{opacity:1;scale:1}18%{scale:1.15 .9}34%{scale:.92 1.08}52%{opacity:.9;scale:1.05 .95}100%{opacity:0;scale:.2;translate:0 calc(-10px * var(--s,1))}}
+/* E — 가장자리로: 둘레가 조금 어두워진다 (웃음소리가 멀어지는 느낌) */
+.inst .rv-vig::after{content:"";position:absolute;inset:0;opacity:0;transition:opacity 1.4s ease;
+  background:radial-gradient(ellipse 66% 70% at 46% 42%,rgba(20,10,12,0) 46%,rgba(20,10,12,.58) 100%)}
+.inst.far .rv-vig::after{opacity:1}
+/* 암흑 사제 — 차가운 시선 (IN0133 · 0134): 기본 초상 + 눈가의 약한 그늘 · 조금 식은 빛 (따로 표정 그림을 만들지 않는다 — 대본) */
+.inst .fst-bust.cold img{filter:saturate(.72) brightness(.94) hue-rotate(-8deg)}
+.inst .fst-bust.cold::after{content:"";position:absolute;left:28%;right:18%;top:36%;height:24%;pointer-events:none;
+  background:radial-gradient(ellipse 50% 46% at 52% 44%,rgba(16,8,26,.6),rgba(16,8,26,.34) 52%,rgba(16,8,26,0) 100%);mix-blend-mode:multiply;animation:inCold 1s ease both}
+@keyframes inCold{from{opacity:0}to{opacity:1}}
+/* C 전수 — 강제 클릭: 누를 칸만 뚫린 어둠 막 (넷) · 원 · 손가락 · 보조 문구 (.fst-guide — FSTUT CSS) */
+#instGuide{--fst-ink:#fff4e6;--fst-line:#e9cdbf;--fst-win:#2a1418;--fst-gold:#ffd36a;--fst-dark:#140a0c;--fst-fs:16px;--fst-lh:24px;
+  position:fixed;inset:0;z-index:960;pointer-events:none;font-family:"Mulmaru",sans-serif;color:var(--fst-ink);-webkit-font-smoothing:none;font-synthesis:none}
+@media (min-width:600px){#instGuide{--fst-fs:20px;--fst-lh:28px}}
+@media (min-width:1100px){#instGuide{--fst-fs:24px;--fst-lh:32px}}
+#instGuide *{box-sizing:border-box}
+#instGuide .in-blk{position:fixed;left:0;top:0;width:0;height:0;background:rgba(12,6,10,.46);pointer-events:auto;cursor:default}
+#instGuide.cut .in-blk,#instGuide.cut .fst-guide{display:none}
+#instGuide .fst-tip{z-index:2}
+/* 전수 창 머리 — 이번 튜토리얼 전수는 반드시 성공 (hooks.tchHead) */
+.in-sure{flex:0 1 auto;min-width:0;margin:0 4px;font-size:14px;font-weight:700;line-height:1.35;color:#ffd36a;background:rgba(255,211,106,.1);border:1px solid #c9a36a;border-radius:4px;padding:3px 10px}
+@media (max-width:640px){.in-sure{flex-basis:100%;order:3;margin:4px 0 0;font-size:12px;text-align:center}}
+/* 장면 ↔ 실제 화면 — 암전 막 */
+.in-curtain{position:fixed;inset:0;z-index:2147481500;background:#0d0708;opacity:0;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.in-ember{animation:none;opacity:0}.inst .fst-bust.cold::after{animation:none}.in-cam{transition:none}}
+/* INST_CSS_END */
 
 /* TIWIN_CSS_START — 인가 등급 · 새 대회 초대장 안내 창 (1025 목업 · apply_tiwin.py) ─ 안내 화면 창(NTWIN) 무대 위에: 인가증(말린 문서 → 펼침 · 붉은 인장 쾅) /
    봉투가 날아와 인장이 깨지고 편지가 펼쳐짐 → 새 대회장 배경 · 아래 사다리 경로(열린 칸이 금빛으로 이어짐) */
@@ -6613,6 +6667,18 @@ html[data-ui-finish="pixel"]:not(.pxb-off) .tcom-cap.an .tcom-body{--pxb-edge:#7
 .bf-stage > .bpl > .popwrap{right:auto;z-index:auto;transform-origin:50% 0}
 .bf-stage:has(> .bpl) .bf-cam .bf-unit > .popwrap{visibility:hidden}
 /* BTPOP_CSS_END */
+/* SKPFX_CSS_START — 스타일리시 전투 기술 pixelfx (1103 열한째 · apply_skpfx.py) — 캔버스 층(유닛 위 · 바닥 층은 .bf-cam 앞 = 유닛 아래) · 필터 · 화면 필터 위 피해 숫자 층 */
+.bf-stage > .pfx-layer{position:absolute;inset:0;pointer-events:none;z-index:40;overflow:visible}
+.bf-stage > .pfx-layer.pfx-ground{z-index:0}
+.pfx-fx{position:absolute;max-width:none!important;image-rendering:pixelated;pointer-events:none}
+.pfx-tint{position:absolute;inset:0;pointer-events:none}
+.pfx-tint-frost{background:rgb(168,196,224);-webkit-backdrop-filter:saturate(.55);backdrop-filter:saturate(.55)}
+.pfx-tint-grav{background:rgb(205,186,240)}
+.pfx-tint-sanct{background:rgb(255,236,176)}
+.pfx-tint.pfx-over{position:fixed;inset:0;z-index:2990}
+.pfx-poptop{position:fixed;inset:0;z-index:2995;pointer-events:none}
+.pfx-pophold{position:fixed;transform-origin:0 0;pointer-events:none}
+/* SKPFX_CSS_END */
 </style>
 
 <link rel="stylesheet" href="assets/title-art/title-screen.css?v=7">
@@ -6670,7 +6736,7 @@ html[data-ui-finish="pixel"]:not(.pxb-off) .tcom-cap.an .tcom-body{--pxb-edge:#7
 <script src="assets/spr_x_img/forcemage.png.js?v=7447282c"></script>
 <script src="assets/spr_x_img/monk.png.js?v=1293d674"></script>
 <script src="assets/spr_x_img/archer.png.js?v=bb32fd53"></script>
-<script src="assets/spr_x_img/wizard.png.js?v=ec11c8a4"></script>
+<script src="assets/spr_x_img/wizard.png.js?v=29dadcaf"></script>
 <script src="assets/spr_x_img/darkpriest.png.js?v=643c1d79"></script>
 <script src="assets/spr_x_img/bard.png.js?v=3c08341e"></script>
 <script src="assets/spr_x_img/enchanter.png.js?v=d6c5cda7"></script>
@@ -19885,6 +19951,7 @@ function render(){
   if(window.RXAL) RXAL.after();   // 1024 — 유물 장착 알림 (RXAL) — 책상 학생 명부 책 · 학생 명부 책 안(얼굴 · 유물 칸) 표식
   if(window.WZV) WZV.after();   // 1024 — 개교 마법사 전용 대사 (WZV) — 예전 세이브의 개교 멤버 마법사에게 표식 wz1 (한 번)
   if(window.GTEAR) GTEAR.after();   // 1102 일곱째 — 여신의 눈물 첫 획득 (GTEAR) — 대회 · 전투 중이라 미룬 · 장면 중에 나갔던 예약을 한가할 때 · 축복 창이 닫히면 칸 누르기 안내도
+  if(window.INST) INST.after();   // 1102 열한째 — 간파 첫 해금 (INST) — 예전 세이브(이미 간파가 열림)는 done · 장면 중에 나갔다가 다시 열면 그 단락부터 (S.inst)
   if(window.PRST) PRST.after();   // 1024 — 프롤로그 00 (PRST) — 이름을 정한 뒤 PR22 전에 나갔으면 PR21 부터 → 첫 시간표 (S.story.prologue)
 }
 /* 학원 이름 (1007) — 두 줄을 넘으면 두 줄에 들어가는 크기까지 글자를 비례로 줄인다
@@ -30888,6 +30955,7 @@ function tchPOf(st, e){
   const kind = e && TCH_PK[e.cat] != null ? e.cat : null;
   const o = {g, base: TCH_P0[g], kind, kd: kind ? TCH_PK[kind] : 0, leadPt: lead, lead: lead * 2, genV: gen, gen: gen / 5, heart: +mtSum("teachP") || 0};
   o.p = clamp(o.base + o.kd + o.lead + o.gen + o.heart, 0, 100);
+  if(MT.hooks.tchP){ const r = MT.hooks.tchP(st, e, o); if(r) return r; }   // 1102 열한째 — 간파 첫 해금 튜토리얼(INST)의 확정 전수 — 창 · 연출의 성공 확률을 100% 로 (그 학생 · 그 기술만)
   return o;
 }
 function tchPTxt(v){ v = Math.round((+v || 0) * 10) / 10; return v % 1 ? v.toFixed(1) : String(v); }
@@ -31675,7 +31743,8 @@ window.MTREE = {on: () => true, tab: () => MT.tab, setTab(t){ MT.tab = t === "tr
   exCapNow, exCapMax, exCapOf, exLv, exTrustLv, exNext, exRest, exMod, trustUp: exTrustUp, exLvAt: EX_LV_AT, exLvTop: EX_LV_TOP, ladder: tchLadder, vaultSorts: mvSorts,
   exFx: exFxTxt, trustName: exTrustName, rb: {state: MT_RB, patch: mtRbPatch, wire: mtRbWire, desc: mtRbDesc},
   teachCnt: {cap: tchCntCap, used: tchCntUsed, left: tchCntLeft, reset: tchCntReset, key: tchSeasonKey, why: tchCntWhy},   // 1101 열넷째 — 계절 전수 횟수
-  teachP: tchPOf, teachP0: TCH_P0, cut: {state: TCS, open: tcsOpen, end: tcsEnd, skip: tcsSkip, close: tcsClose, master: tcsMasterSpr, set: TCS_SET, layout: tcsLayout, map: tcsMapSrc}, sfxMap: MT_SFX,   // 1101 아홉째 — 전수 확률 · 연출 · 단추 소리 · 열째 — 대련장 무대   // 1101 여섯째 — 효과량 줄 · 신뢰 이름 · 명부 엑스트라 탭
+  teachP: tchPOf, teachP0: TCH_P0, cut: {state: TCS, open: tcsOpen, end: tcsEnd, skip: tcsSkip, close: tcsClose, master: tcsMasterSpr, set: TCS_SET, layout: tcsLayout, map: tcsMapSrc,   // 1101 아홉째 — 전수 확률 · 연출 · 단추 소리 · 열째 — 대련장 무대   // 1101 여섯째 — 효과량 줄 · 신뢰 이름 · 명부 엑스트라 탭
+    unit: tcsUnit, mot: tcsMot, say: tcsSay, hush: tcsHush, fx: tcsFx, emo: tcsEmo, jobSc: tcsJobSc, box: tcsBox}, sfxMap: MT_SFX, gain: mvGain,   // 1102 열한째 — 대련장 무대 조각 · 터득(mvGain)을 간파 첫 해금 장면(INST)이 같이 쓴다
   vaultTipHtml: k => { const e = mvNorm().find(x => mvKey(x) === k); return e ? mvTipHtml(e) : ""; }, vaultTipShow: mvTipShow, vaultTipHide: mvTipHide, vaultSel: mvSel, vaultTip: MVT,
   state: MT, types: MT_TYPES, order: MT_ORDER, def: MT_DEF, start: MT_START, cells: mtCells, cell: mtCell, nb: mtNb, pairs: mtPairs, key: mtKey,
   cfg: mtCfg, setCfg: mtSetCfg, node: mtNode, name: mtName, desc: mtDesc, fx: mtFx, val: mtVal, cost: mtCost, type: mtType,
@@ -32356,6 +32425,741 @@ window.GTEAR = {play: gtPlay, after: gtAfter, state: R, cues: GT_CUES, tip: GT_T
   hintEnd: gtHintEnd, winOpen: gtWinOpen, deskPt: gtWatchPt, cans: gtCans, mask: () => R.mask};
 })();
 /* GTEAR_END */
+/* INST_START — 간파 첫 해금 '보이는 것과 가르칠 수 있는 것' (1102 열한째 목업 · apply_inst.py · mockups/insight-unlock) ─
+   대본 tools/tutorial-story/scenario-insight-first-unlock-draft.md (초안 v1 · IN0101 ~ IN0134 · C 실제 전수 안내).
+   사용자 1102: 'scenario-insight-first-unlock-draft 목업 작업해보자' · 물음 답: 무대는 대련장 지도 + 도트(전수 연출의 학원 대련장 지도 위에 팔라딘 · 마법사 · 마스터 ·
+     암흑 사제 도트 — 화염 폭발 이펙트를 실제로 쏜다) · 대사는 아래 대화창 + 표정 초상화 · 곡은 지금 계절 곡 그대로 · 전수 안내는 강제 클릭.
+   · 언제 — 여신의 축복에서 '간파' 칸이 처음 열린 순간(MTREE hooks.fed — 그 칸의 레벨이 올라 간파가 켜졌을 때) 예약 S.inst → 의식 차례 {type:"inst"} —
+     여신의 눈물 첫 획득(GTEAR)의 칸 누르기 안내가 끝난 뒤 · 다른 의식 · 장면이 없을 때 바로 (render 끝 INST.after 가 이어 준다).
+     조건 — 개교 셋(팔라딘 · 마법사 · 암흑 사제 — 원래 학생 ID)이 모두 재학 · 셋이 졸업을 앞둔 겨울(3학년 겨울)이 아님 · 팔라딘이 화염 폭발을 갖고 있지 않고 엑스트라 빈 칸이 있음.
+     맞지 않으면 장면 없이 done(skip 까닭) — 간파 해금은 그대로 (대본: 일반 도움말 · 예외 대본은 아직). 예전 세이브(이미 간파가 열림)는 done(old) · 다시 하지 않는다.
+   · 무대 — 학원 대련장 쿼터뷰 지도(전수 연출 tcsMapSrc — 지금 계절)를 화면에 맞춰 깔고 도트(MTREE.cut.unit — 전수 연출과 같은 그림 · 외곽선 · 그림자):
+     마법사(왼쪽 · 오른쪽을 본다) · 팔라딘(오른쪽 · 왼쪽을 본다) · 마스터(아래 왼쪽 — 지켜본다) · 암흑 사제(오른쪽 가장자리 — 화면 가운데에 두지 않는다).
+     대사는 아래 대화창 + 초상화(fst_faces 표정 — default 는 학생 기본 초상 FACE_IMG) · 마스터는 금빛 이름표 · 연출 줄은 글 없이.
+     A IN0101 ~ 0116: '어느 날 오전 · 훈련 대련장' → IN0104 마법사 공격 모션 + 화염 폭발(wz_1 이펙트 · 소리) → 팔라딘이 받는다(맞는 모션 · 실제 체력 · 승패 없음) →
+       IN0105 그 순간 간파 컷인(MTREE.icut — 기존 그대로 · 등급 글자 없음) + 화염 폭발 보관고 등록(MTREE.gain — 마법사의 지금 기술 등급 · 더 좋은 기록이면 덮어쓰지 않는다 · 일지) →
+       IN0113 불씨가 마법사 앞 가운데에 잠깐 모였다가 한 번에 퍼진다(모으기 빛 → 더 큰 화염 폭발 · 실제 수치는 그대로)
+     B IN0117 ~ 0122 → IN0123 암전 → C 전수(강제 클릭) → D IN0124 ~ 0131 (대련장으로 · 팔라딘 앞 작은 불씨가 꺼진다 · 마법사 웃음) →
+     E IN0132 ~ 0134 카메라가 가장자리의 암흑 사제에게 · '……' · 기본 초상 + 눈가 그늘 · 한 박자 → 암전 → 끝.
+   · C 전수 — 강제 클릭(사용자): 마스터 육성 '마스터 스킬' 탭(넓은 화면 책상 팝업 · 좁은 화면 마스터 화면) → ① 전수 단추 ② 학생 목록의 팔라딘 ③ 화염 폭발 ④ 전수 —
+     그 칸만 밝게 뚫린 어둠 막(누르기는 그 칸만) · 금색 원 · 손가락 · 짧은 문구 · Esc 막음. 전수 창 머리에 '이번 튜토리얼 전수는 반드시 성공합니다 · 성공률 100%'
+     (hooks.tchHead · 창 · 연출의 성공 확률도 100% — hooks.tchP) · 이 전수만 MT.tch.force(성공) · MT.tch.free(계절 횟수 쓰지 않음) — 신뢰 상승 · 레벨은 보통 성공 그대로.
+     전수 연출(TCS — 마스터 시범 · 팔라딘이 따라 하기 · 전수 성공!)의 확인을 누르면 전수 창을 닫고 D. 신뢰 안내 창(전수 성공 +0.3)은 장면이 끝난 뒤 의식 차례로.
+   · 세이브 S.inst = {id, st: "a" · "b" · "teach" · "d" · "e" · "done", cast {paladin · wizard · darkpriest: {id, name, uniq}}, vault, taught, how, skip, old} —
+     단락마다 저장 · 다시 열면 그 단락 처음부터 (보관고 등록 · 전수는 다시 하지 않는다 — 전수가 끝났으면 D 부터).
+   · 건너뛰기(오른쪽 위) — A · B 는 전수 안내로(보관고 등록은 조용히) · D · E 는 끝으로.
+   · 자동화(navigator.webdriver)에서는 예약하지 않는다 (다른 시험 흐름 그대로) — 시험 · 목업은 window.__instForce = true
+   · 고리 (apply_inst.py) — showCeremony(type insight) · render 끝(INST.after) · MTREE 훅(fed · tchHead · tchP · taught — 앞의 훅을 이어 부른다) */
+(() => {
+const IN_FACE = {"paladin":{"motivated":"assets/fst_faces/paladin-motivated.png?v=9f80f84f","surprised":"assets/fst_faces/paladin-surprised.png?v=b0ed2bf6","flustered":"assets/fst_faces/paladin-flustered.png?v=4622b965","joy":"assets/fst_faces/paladin-joy.png?v=3e213740","pout":"assets/fst_faces/paladin-pout.png?v=0467f5b3","smile":"assets/fst_faces/paladin-smile.png?v=f5c93a74"},"wizard":{"smile":"assets/fst_faces/wizard-smile.png?v=d2ae512d","motivated":"assets/fst_faces/wizard-motivated.png?v=8e324f77","surprised":"assets/fst_faces/wizard-surprised.png?v=79818b69","joy":"assets/fst_faces/wizard-joy.png?v=a1a0733e"},"darkpriest":{"smile":"assets/fst_faces/darkpriest-smile.png?v=51f67484"}};   // apply_inst.py — {직업: {표정: fst_faces 표정 그림 + ?v=}} · default 는 학생 기본 초상(FACE_IMG)
+const IN_ID = "insight-first-v1";
+const IN_LK = window.HS_LANG === "en" ? 1.6 : 1;
+const IN_CPS = 30 * IN_LK;
+const IN_QUIET = /[\s….‥]/;
+const IN_JOBS = ["paladin", "wizard", "darkpriest"];
+const IN_BUSTS = ["wizard", "paladin", "darkpriest"];
+const IN_SK = "wz_1";                                                          // 화염 폭발 (마법사 일반 스킬)
+const IN_T = {skip: "건너뛰기", master: "마스터", cap: "훈련 대련장", sub: "어느 날 오전", sure: "이번 튜토리얼 전수는 반드시 성공합니다 · 성공률 100%"};   // 암전 글 — sub(금빛 작은 글) 위 · cap 아래
+const IN_TIP = {open: "전수를 눌러 보세요.", stu: "{n} 골라 보세요.", sk: "{s} 골라 보세요.", go: "전수를 눌러 보세요."};   // {n} 팔라딘 이름 + 을/를 · {s} 기술 이름 + 을/를
+const IN_ORDER = ["a", "b", "teach", "d", "e", "done"];
+/* 대본 — k say(말 · who master · paladin · wizard · darkpriest · face 표정) · fx(연출 — 글 없이) / {P} 팔라딘 이름 */
+const IN_CUES = {
+  a: [
+    {id: "IN0101", k: "fx", fx: "open"},
+    {id: "IN0102", k: "say", who: "paladin", face: "motivated", t: "자, 공격해 보세요!"},
+    {id: "IN0103", k: "say", who: "wizard", face: "smile", t: "그럼 간다아. 화염 폭발~!"},
+    {id: "IN0104", k: "fx", fx: "blast"},
+    {id: "IN0105", k: "fx", fx: "insight"},
+    {id: "IN0106", k: "say", who: "master", t: "…잠깐."},
+    {id: "IN0107", k: "say", who: "wizard", face: "default", t: "응? 왜에?"},
+    {id: "IN0108", k: "say", who: "master", t: "불꽃을 퍼뜨리기 전에, 중심에 마력을 조금만 더 모아 봐. 그다음 한 번에 놓는 거야."},
+    {id: "IN0109", k: "say", who: "wizard", face: "default", t: "먼저 모았다가… 한 번에?"},
+    {id: "IN0110", k: "say", who: "master", t: "응. 지금은 펼치는 도중에 힘이 흩어져. 그렇게 하면 불꽃이 더 고르게 퍼질 것 같아."},
+    {id: "IN0111", k: "say", who: "paladin", face: "motivated", t: "한 번 더 받아 볼게요!"},
+    {id: "IN0112", k: "say", who: "wizard", face: "motivated", t: "좋아아. 그럼… 화염 폭발!"},
+    {id: "IN0113", k: "fx", fx: "blast2"},
+    {id: "IN0114", k: "say", who: "wizard", face: "surprised", t: "오오…! 진짜네! 아까보다 훨씬 잘 모여어!"},
+    {id: "IN0115", k: "say", who: "paladin", face: "joy", t: "와, 대단해요! 보고만 계셨는데 어떻게 아셨어요?"},
+    {id: "IN0116", k: "say", who: "master", t: "…나도 신기하네. 어디서 힘이 흩어지는지 보였어."}
+  ],
+  b: [
+    {id: "IN0117", k: "say", who: "master", t: "{P}, 너도 한번 따라 해 볼래?"},
+    {id: "IN0118", k: "say", who: "paladin", face: "surprised", t: "네? 제가요? 전 마법사가 아닌데요…"},
+    {id: "IN0119", k: "say", who: "master", t: "속는 셈 치고 해 보자. 내가 옆에서 알려 줄게."},
+    {id: "IN0120", k: "say", who: "wizard", face: "smile", t: "오오. 이건 나도 보고 싶네에."},
+    {id: "IN0121", k: "say", who: "paladin", face: "flustered", t: "…알겠어요. 웃으시면 안 돼요."},
+    {id: "IN0122", k: "say", who: "master", t: "천천히 해도 돼. 먼저 힘이 모이는 감각부터 잡아 보자."},
+    {id: "IN0123", k: "fx", fx: "toTeach"}
+  ],
+  d: [
+    {id: "IN0124", k: "fx", fx: "back"},
+    {id: "IN0125", k: "say", who: "paladin", face: "joy", t: "오오오! 진짜로 됐어요! 제가 마법을 썼어요!"},
+    {id: "IN0126", k: "say", who: "paladin", face: "flustered", t: "아직은 좀 미숙해 보이지만요. 헤헤…"},
+    {id: "IN0127", k: "say", who: "master", t: "처음인데 잘했어. 그 감각을 기억해 둬."},
+    {id: "IN0128", k: "say", who: "wizard", face: "smile", t: "오오. 이제 {P}한테 맡기면 되겠네에."},
+    {id: "IN0129", k: "say", who: "wizard", face: "joy", t: "나는 뒤에서 쉬면 되겠다아."},
+    {id: "IN0130", k: "say", who: "paladin", face: "pout", t: "말이 되는 소리를 하세요!"},
+    {id: "IN0131", k: "fx", fx: "laugh"}
+  ],
+  e: [
+    {id: "IN0132", k: "fx", fx: "pan"},
+    {id: "IN0133", k: "say", who: "darkpriest", face: "default", cold: 1, t: "……"},
+    {id: "IN0134", k: "fx", fx: "stare"}
+  ]
+};
+/* 무대 — 지도 1536 × 1024 판의 발밑 자리 (계절 지도 넷 모두 같은 판) · 보는 쪽(flip — 왼쪽) · 카메라가 보는 곳
+   마법사(왼쪽 뒤) · 팔라딘(오른쪽)이 마주 서고 마스터는 둘 앞 가운데에서 지켜본다 — 화면 왼쪽 가운데(간파 컷인 자리)는 비워 둔다 · 암흑 사제는 오른쪽 가장자리 */
+const IN_POS = {wizard: [664, 474], paladin: [916, 524], master: [763, 631], darkpriest: [1190, 590]};
+const IN_FLIP = {wizard: false, paladin: true, master: false, darkpriest: true};
+const IN_CAM = {a: [760, 530], e: [1150, 560]};
+const IN_MS = {open: 700, blast: 1500, cut: 2500, gather: 900, blast2: 1700, card: 1100, back: 900, laugh: 1500, pan: 1700, stare: 1700};
+const R = {on: false, sess: 0, i: -1, typing: null, wait: null, root: null, sc: "", cast: {}, preview: false, live: false, pend: false, ending: false, cam: "a",
+  fc: null, flags: null, log: [], cut: 0};
+const iq = s => R.root ? R.root.querySelector(s) : null;
+const isleep = ms => new Promise(r => setTimeout(r, ms));
+const iRM = () => !!(window.__inRM || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches));
+const iMs = k => iRM() ? Math.min(240, Math.round(IN_MS[k] * .2)) : IN_MS[k];
+
+/* ── 세이브 ── */
+function inOn(){ return !!S && !((navigator.webdriver && !window.__instForce) || window.__instOff); }
+function inS(){ return S && S.inst && typeof S.inst === "object" ? S.inst : null; }
+function inSet(o){ if(!S || R.preview) return null; S.inst = Object.assign({id: IN_ID}, S.inst || {}, o); try{ save(); }catch(e){} return S.inst; }
+function inLive(id){ return (S.students || []).find(s => s && s.id === id) || null; }
+function inCastIds(){
+  if(window.CTST && typeof CTST.castIds === "function"){ const c = CTST.castIds(); if(c && c.paladin && c.darkpriest && c.wizard) return c; }
+  const c = (S.rqst && S.rqst.cast) || (S.rvst && S.rvst.cast);
+  if(c && c.paladin && c.darkpriest && c.wizard) return {paladin: c.paladin, darkpriest: c.darkpriest, wizard: c.wizard};
+  const L = S.students || [], d = L.find(s => s && s.uniq === "dp1"); if(!d) return null;
+  const p = L.find(s => s && s.job === "paladin" && s.year === d.year), w = L.find(s => s && s.job === "wizard" && s.year === d.year);
+  return p && w ? {paladin: p.id, darkpriest: d.id, wizard: w.id} : null;
+}
+function inTrio(){                                                             // 개교 셋이 모두 재학 중 — {직업: {id, name, uniq}} 또는 null
+  const ids = inCastIds(); if(!ids) return null;
+  const out = {};
+  for(const j of IN_JOBS){ const v = ids[j], id = v && typeof v === "object" ? v.id : v, st = inLive(id); if(!st) return null; out[j] = {id: st.id, name: st.name, uniq: st.uniq || null}; }
+  return out;
+}
+function inEntry(){                                                            // 마법사의 지금 화염 폭발 (등급 — 학생 기술 기록 그대로)
+  const w = R.cast.wizard && inLive(R.cast.wizard.id), sk = ((JOBS.wizard || {}).skills || []).find(x => x.id === IN_SK);
+  if(!sk) return null;
+  const L = w && window.MTREE ? MTREE.learnable(MTREE.ofStudent(w)) : [], e = L.find(x => x.skillId === IN_SK);
+  if(e) return e;
+  const mod = w && w.skMod && w.skMod[IN_SK];
+  return {name: sk.name, cat: "skill", job: "wizard", skillId: IN_SK, mod: {grade: (mod && mod.grade) | 0, up: 0}};
+}
+function inVaultE(){ return window.MTREE ? MTREE.vaultNorm().find(x => MTREE.vaultKey(x) === "s:" + IN_SK) || null : null; }
+/* 왜 이 장면을 띄우지 않는가 (없으면 "") — 대본 '조건 불일치 시 간파 자체의 해금을 막지 않는다' */
+function inWhy(T){
+  if(!T) return "nocast";
+  const P = inLive(T.paladin.id);
+  if(S.phase === "winter" && IN_JOBS.some(j => { const s = inLive(T[j].id); return s && (s.year | 0) >= 3; })) return "grad";   // 졸업을 앞둔 겨울
+  if(!P) return "nocast";
+  const has = window.MTREE ? MTREE.exHas(P, {cat: "skill", job: "wizard", skillId: IN_SK}) : null;
+  if(has) return "has";
+  if(!window.MTREE || MTREE.exFree(P) < 1) return "slot";
+  return "";
+}
+
+/* ── 무대 ── */
+function inGeo(){                                                              // 지도 배율 u(화면 px ÷ 지도 px) · 도트 배율 q(편집기 px — 전수 연출과 같은 식) · 카메라 자리
+  const W = innerWidth, H = innerHeight, wide = typeof townMode === "function" ? townMode() : W >= 1100;
+  let u = wide ? Math.min(1.9, Math.max(1, W / 980)) : Math.min(1.2, Math.max(.62, W / 560));
+  u = Math.max(u, W / 1536, H / 1024);
+  return {W, H, u, q: u / (1500 / 1536), ax: W * (wide ? .44 : .5), ay: H * (wide ? .36 : .33)};
+}
+function inCamXY(G, at){
+  let x = G.ax - at[0] * G.u, y = G.ay - at[1] * G.u;
+  x = Math.min(0, Math.max(G.W - 1536 * G.u, x)); y = Math.min(0, Math.max(G.H - 1024 * G.u, y));
+  return [x, y];
+}
+function inStage(){                                                             // 지도 · 도트 넷 (다시 부르면 지금 화면 크기로 다시 그린다)
+  const st = iq(".in-stage"); if(!st || !window.MTREE) return;
+  const G = inGeo(), C = MTREE.cut, mk = C.master(), src = C.map(), L = {q: G.q};
+  const units = IN_JOBS.concat("master").map(k => {
+    const x = k === "master" ? null : R.cast[k], s = x ? inLive(x.id) : null, job = k === "master" ? "master" : k;
+    const ok = k === "master" ? mk : (typeof sprHas !== "function" || sprHas(job));
+    return C.unit("in-u in-" + k, job, C.jobSc(job), L, [IN_POS[k][0] * G.u, IN_POS[k][1] * G.u],
+      {ok, p: s && typeof sprPalOf === "function" ? sprPalOf(s) : undefined, flip: IN_FLIP[k], nm: "", ba: IN_FLIP[k] ? .2 : .8});
+  }).join("");
+  const r = Math.max(.75, G.q);
+  st.innerHTML = `<div class="in-cam" style="width:${(1536 * G.u).toFixed(1)}px;height:${(1024 * G.u).toFixed(1)}px">`
+    + (src ? `<img class="in-map" src="${src}" alt="" draggable="false">` : "")
+    + `<svg class="in-defs" width="0" height="0" aria-hidden="true"><filter id="inOl" x="-15%" y="-15%" width="130%" height="130%"><feMorphology in="SourceAlpha" operator="dilate" radius="${r.toFixed(2)}" result="ex"/>`
+    + `<feComposite in="ex" in2="SourceAlpha" operator="out" result="edge"/><feFlood flood-color="#111111" result="ink"/><feComposite in="ink" in2="edge" operator="in" result="ol"/><feMerge><feMergeNode in="ol"/><feMergeNode in="SourceGraphic"/></feMerge></filter></svg>`
+    + units + `<div class="in-fxl"></div></div>`;
+  R.geo = G;
+  inCamTo(R.cam, 0);
+}
+function inCamTo(k, ms){
+  R.cam = k;
+  const cam = iq(".in-cam"), G = R.geo; if(!cam || !G) return;
+  const [x, y] = inCamXY(G, IN_CAM[k] || IN_CAM.a);
+  cam.style.transitionDuration = (iRM() ? 0 : ms || 0) + "ms";
+  cam.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;
+}
+function inUnit(k){ return iq(".in-stage .in-" + k); }
+let IN_ORB = "";
+function inOrb(){                                                               // 모이는 불씨 — 15 × 15 도트 원 (겹 빛 · 키우면 도트 그대로)
+  if(IN_ORB) return IN_ORB;
+  try{
+    const n = 15, cv = document.createElement("canvas"); cv.width = cv.height = n;
+    const c = cv.getContext("2d"), C = [[2.3, "#fff6d0"], [3.7, "#ffd36a"], [5.2, "#ff9a3c"], [6.6, "#e8541e"]];
+    for(let y = 0; y < n; y++) for(let x = 0; x < n; x++){
+      const d = Math.hypot(x - 7, y - 7), f = C.find(v => d <= v[0]); if(!f) continue;
+      c.fillStyle = (x === 5 && y === 5) || (x === 6 && y === 4) ? "#ffffff" : f[1]; c.fillRect(x, y, 1, 1);
+    }
+    IN_ORB = cv.toDataURL();
+  }catch(e){}
+  return IN_ORB;
+}
+function inMot(k, m){ const u = inUnit(k); if(u && window.MTREE) MTREE.cut.mot(u, m); }
+function inSk(){ return ((JOBS.wizard || {}).skills || []).find(x => x.id === IN_SK) || {fx: "burst", el: "fire"}; }
+function inSfx(k){
+  try{
+    if(k === "blast"){ const s = typeof sfxOf === "function" ? sfxOf({job: "wizard"}, inSk()) : "magic"; if(s) sfxPlay(s); }
+    else if(k) sfxPlay(k);
+  }catch(e){}
+}
+function inFxAt(k, scale){                                                      // 그 사람 가슴에 이펙트 (전수 연출의 tcsFx — 형태 · 원소 · 전투판 크기)
+  const u = inUnit(k), L = u && u.querySelector(".tcs-fx"); if(!L || !window.MTREE) return;
+  MTREE.cut.fx(L, inSk(), (scale || .9) * R.geo.q);
+}
+function inBuild(){
+  if(R.root) return;
+  const r = document.createElement("div");
+  r.id = "instRoot"; r.className = "fst rvst inst on";
+  r.innerHTML = `<div class="rv-bg"><div class="in-stage"></div><div class="rv-vig"></div></div><div class="fst-fx"></div><div class="fst-hit"></div>
+    <button type="button" class="rv-skip">${esc(IN_T.skip)}</button>
+    <div class="fst-cast">${IN_BUSTS.map(k => `<div class="fst-bust" data-who="${k}" hidden><img alt="" draggable="false"></div>`).join("")}</div>
+    <div class="fst-talk"><div class="fst-nm"><i></i><span></span></div><div class="fst-tx"></div><div class="fst-nx">▼</div></div>
+    <div class="rv-black"><div class="rv-card"><i></i><b></b></div></div>`;
+  document.body.appendChild(r);
+  R.root = r;
+  const hit = r.querySelector(".fst-hit");
+  hit.addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); inAdvance(); });
+  hit.addEventListener("wheel", e => e.preventDefault(), {passive: false});
+  hit.addEventListener("touchmove", e => e.preventDefault(), {passive: false});
+  r.querySelector(".rv-skip").addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); inSkip(); });
+  IN_JOBS.forEach(j => Object.keys(IN_FACE[j] || {}).forEach(f => { const im = new Image(); im.src = IN_FACE[j][f]; }));
+  inStage();
+}
+function inTeardown(){ if(R.root) R.root.remove(); R.root = null; }
+addEventListener("resize", () => { if(R.root && R.on) inStage(); });
+document.addEventListener("keydown", e => {
+  if(!R.root || !R.on) return;
+  if(e.key === " " || e.key === "Enter"){ e.preventDefault(); e.stopPropagation(); inAdvance(); }
+  else if(e.key === "Escape"){ e.preventDefault(); e.stopPropagation(); }
+}, true);
+function inFade(el, to, ms){
+  return new Promise(res => {
+    if(!el){ res(); return; }
+    const from = +getComputedStyle(el).opacity;
+    el.getAnimations().forEach(a => a.cancel());
+    el.style.opacity = to;
+    if(iRM()) ms = Math.min(ms, 140);
+    const a = el.animate([{opacity: from}, {opacity: to}], {duration: Math.max(1, ms), easing: "ease"});
+    a.onfinish = a.oncancel = () => res();
+  });
+}
+function inBox(on){ const b = iq(".fst-talk"); if(b) b.classList.toggle("show", !!on); }
+function inMark(on){ R.root && R.root.querySelectorAll(".fst-nx").forEach(e => e.classList.toggle("on", on)); }
+function inName(who){
+  if(who === "master") return IN_T.master;
+  const x = R.cast[who]; if(!x) return (JOBS[who] && JOBS[who].name) || "";
+  const st = inLive(x.id);
+  return st && typeof dn === "function" ? dn(st) : (x.name || "");
+}
+function inPlate(who){
+  const nm = iq(".fst-nm"), sp = nm.querySelector("span"), tk = iq(".fst-talk");
+  let col = "#ffd36a";
+  if(who !== "master"){ const role = JOBS[who] && JOBS[who].role; col = role === "tank" ? "#8cc4f0" : role === "heal" ? "#86d6a4" : "#f2957d"; }
+  sp.textContent = inName(who);
+  nm.style.setProperty("--rc", col);
+  tk.classList.toggle("mst", who === "master");
+}
+function inLine(c){
+  let t = String(c.t || "");
+  if(t.indexOf("{P}") >= 0) t = t.split("{P}").join(inName("paladin"));
+  const x = IN_JOBS.indexOf(c.who) >= 0 ? R.cast[c.who] : null, st = x ? inLive(x.id) : null;
+  return st && typeof masterQ === "function" ? masterQ(t, st) : t;
+}
+function inType(el, text, voice, sess){
+  return new Promise(res => {
+    if(R.typing) R.typing();
+    const ch = [...String(text || "")]; let n = 0, tm = 0;
+    const done = () => { clearTimeout(tm); if(R.typing === done) R.typing = null; if(el) el.textContent = text; res(); };
+    if(!el || !ch.length){ if(el) el.textContent = ""; res(); return; }
+    const step = () => {
+      if(sess !== R.sess){ if(R.typing === done) R.typing = null; res(); return; }
+      n++; el.textContent = ch.slice(0, n).join("");
+      if(voice && !IN_QUIET.test(ch[n - 1]) && typeof cwBlip === "function") cwBlip(voice);
+      if(n >= ch.length){ done(); return; }
+      let d = 1000 / IN_CPS;
+      if(ch[n - 1] === "…" && ch[n] !== "…") d += 320;
+      tm = setTimeout(step, d);
+    };
+    el.textContent = ""; R.typing = done;
+    tm = setTimeout(step, 1000 / IN_CPS);
+  });
+}
+function inWaitClick(){ return new Promise(r => { R.wait = r; inMark(true); }); }
+function inAdvance(){
+  if(!R.on || R.ending) return;
+  if(R.typing){ R.typing(); return; }
+  if(R.wait){ const r = R.wait; R.wait = null; inMark(false); r(); }
+}
+function inBust(k){ return iq(`.fst-bust[data-who="${k}"]`); }
+function inFace(k, f){
+  if(!f || IN_JOBS.indexOf(k) < 0) return;
+  const set = IN_FACE[k] || {}, src = f === "default" ? (typeof FACE_IMG !== "undefined" && FACE_IMG[k]) || set.smile : (set[f] || set.smile), b = inBust(k);
+  if(b && src){ const im = b.querySelector("img"); if(im.getAttribute("src") !== src) im.src = src; }
+}
+function inLit(list){ IN_BUSTS.forEach(k => { const e = inBust(k); if(e) e.classList.toggle("on", !!(list && list.indexOf(k) >= 0)); }); }
+function inLayout(snap){
+  const vis = IN_BUSTS.filter(k => { const e = inBust(k); return e && !e.hidden; });
+  const mid = (vis.length - 1) / 2, box = R.root && R.root.querySelector(".fst-cast"), e0 = vis.length && inBust(vis[0]);
+  const W = box ? box.clientWidth : 0, bw = e0 ? e0.offsetWidth : 0, span = vis.length - 1;
+  const room = span > 0 && W && bw ? (W - 16 - bw) / span : 0;
+  const step = room ? `min(var(--fst-step), ${room.toFixed(1)}px)` : "var(--fst-step)";
+  vis.forEach((k, j) => {
+    const e = inBust(k);
+    if(snap) e.style.transition = "none";
+    e.style.left = `calc(50% + ${step} * ${(j - mid).toFixed(2)} - var(--fst-bust) / 2)`;
+    if(snap){ void e.offsetWidth; e.style.transition = ""; }
+  });
+}
+function inShowCast(list){ IN_BUSTS.forEach(k => { const e = inBust(k); if(e) e.hidden = !(list && list.indexOf(k) >= 0 && R.cast[k]); }); inLayout(true); }
+async function inCard(cap, sub, mid, sess){                                    // 암전 · 글 한 장 (가운데에 mid — 화면을 바꾼다)
+  const bk = iq(".rv-black"), card = iq(".rv-card");
+  inBox(false); inMark(false);
+  await inFade(bk, 1, 420); if(sess !== R.sess) return false;
+  if(cap && card){ card.querySelector("b").textContent = cap; const i = card.querySelector("i"); i.textContent = sub || ""; i.hidden = !sub; await inFade(card, 1, 260); if(sess !== R.sess) return false; }
+  if(mid) mid();
+  await isleep(iRM() ? 300 : iMs("card")); if(sess !== R.sess) return false;
+  if(cap && card){ await inFade(card, 0, 260); if(sess !== R.sess) return false; }
+  await inFade(bk, 0, 600);
+  return sess === R.sess;
+}
+
+/* ── 연출 ── */
+async function inFx(c, sess){
+  const ok = () => sess === R.sess, f = c.fx;
+  if(f === "open"){ inShowCast(["wizard", "paladin"]); IN_JOBS.forEach(j => inFace(j, "smile")); await isleep(iMs("open")); return ok(); }
+  if(f === "blast" || f === "blast2"){
+    inLit(["wizard"]);
+    R.root.querySelectorAll(".in-stage .tcs-fx").forEach(e => { e.innerHTML = ""; });   // 지난 이펙트 그림을 걷는다
+    if(f === "blast2"){                                                         // 불씨가 마법사 앞 가운데에 잠깐 모였다가 (IN0113)
+      const L = iq(".in-fxl"), G = R.geo, w = IN_POS.wizard, p = IN_POS.paladin;
+      const g = document.createElement("i"); g.className = "in-gather";
+      const gx = (w[0] + (p[0] - w[0]) * .3) * G.u, gy = (w[1] + (p[1] - w[1]) * .3) * G.u - 46 * G.q, sp = [];
+      g.style.left = gx.toFixed(1) + "px"; g.style.top = gy.toFixed(1) + "px"; g.style.setProperty("--s", (G.q * 1.2).toFixed(2)); g.style.setProperty("--orb", `url("${inOrb()}")`);
+      L.appendChild(g);
+      inSfx("fs_glint");
+      if(!iRM()){
+        g.animate([{transform: "translate(-50%,-50%) scale(.15)", opacity: 0}, {transform: "translate(-50%,-50%) scale(.75)", opacity: 1, offset: .6},
+          {transform: "translate(-50%,-50%) scale(1)", opacity: 1}], {duration: iMs("gather"), easing: "ease-in", fill: "forwards"});
+        for(let i = 0; i < 8; i++){                                             // 둘레의 불티가 가운데로 모인다
+          const e = document.createElement("i"), a = i / 8 * Math.PI * 2 + .35, r0 = (58 + (i % 3) * 12) * G.q;
+          e.className = "in-spark"; e.style.left = gx.toFixed(1) + "px"; e.style.top = gy.toFixed(1) + "px"; e.style.setProperty("--s", G.q.toFixed(2));
+          L.appendChild(e); sp.push(e);
+          e.animate([{transform: `translate(calc(-50% + ${(Math.cos(a) * r0).toFixed(1)}px),calc(-50% + ${(Math.sin(a) * r0 * .72).toFixed(1)}px))`, opacity: 0},
+            {opacity: 1, offset: .25}, {transform: "translate(-50%,-50%)", opacity: .2}], {duration: Math.round(iMs("gather") * (.72 + (i % 3) * .1)), easing: "ease-in", fill: "forwards"});
+        }
+      }
+      await isleep(iMs("gather")); sp.forEach(e => e.remove()); if(!ok()){ g.remove(); return false; }
+      g.remove();
+    }
+    inMot("wizard", "attack"); inSfx("blast");
+    await isleep(iRM() ? 0 : 180); if(!ok()) return false;
+    inFxAt("paladin", f === "blast2" ? 1.2 : .9);                               // 팔라딘이 방패를 세워 받는다 (맞는 모션 — 실제 체력 · 승패 없음)
+    inMot("paladin", "hit");
+    if(f === "blast2"){ const pu = inUnit("paladin"); if(pu && !iRM()) pu.animate([{filter: "brightness(1)"}, {filter: "brightness(1.6)", offset: .3}, {filter: "brightness(1)"}], {duration: 700}); }
+    if(f === "blast"){ R.cutAt = performance.now(); setTimeout(() => { if(ok()) inInsight(); }, iRM() ? 0 : 320); }   // 불꽃이 펼쳐지는 순간 — 간파 컷인 (IN0105)
+    await isleep(iMs(f)); if(!ok()) return false;
+    inMot("wizard", "idle"); inMot("paladin", "idle"); inLit([]);
+    return ok();
+  }
+  if(f === "insight"){                                                          // 컷인이 끝날 때까지 (IN0104 에서 이미 띄웠다)
+    if(!R.cut) inInsight();
+    const left = Math.max(0, iMs("cut") - (performance.now() - (R.cutAt || 0)));
+    await isleep(left); return ok();
+  }
+  if(f === "toTeach"){ inBox(false); return ok(); }
+  if(f === "back"){                                                             // 대련장으로 — 팔라딘 앞에 남은 작은 불씨가 꺼진다
+    inShowCast(["wizard", "paladin"]); inFace("paladin", "joy"); inFace("wizard", "smile");
+    const L = iq(".in-fxl"), G = R.geo, p = IN_POS.paladin;
+    if(L && G){ const e = document.createElement("i"); e.className = "in-ember"; e.style.left = ((p[0] - 30) * G.u).toFixed(1) + "px"; e.style.top = ((p[1] - 6) * G.u).toFixed(1) + "px";
+      e.style.setProperty("--s", G.q.toFixed(2)); L.appendChild(e); setTimeout(() => e.remove(), 1600); }
+    inMot("paladin", "win");
+    await isleep(iMs("back")); return ok();
+  }
+  if(f === "laugh"){                                                            // 마법사가 웃고 팔라딘도 웃음을 참는다 · 마스터가 둘을 본다
+    const w = inUnit("wizard"), p = inUnit("paladin");
+    if(window.MTREE){ MTREE.cut.emo(w, "note"); }
+    inFace("wizard", "joy"); inFace("paladin", "smile"); inLit(["wizard", "paladin"]); inBox(false);
+    if(p && !iRM()) p.animate([{translate: "0 0"}, {translate: "0 -3px"}, {translate: "0 0"}, {translate: "0 -2px"}, {translate: "0 0"}], {duration: 700});
+    await isleep(iMs("laugh")); inLit([]); return ok();
+  }
+  if(f === "pan"){                                                              // 웃음소리가 멀어지고 카메라가 가장자리로 (암흑 사제)
+    inBox(false); inShowCast([]);
+    R.root.classList.add("far");
+    inCamTo("e", iMs("pan"));
+    await isleep(iMs("pan")); return ok();
+  }
+  if(f === "stare"){                                                            // 차가운 시선 — 한 박자
+    const b = inBust("darkpriest"); if(b) b.classList.add("cold");
+    inBox(false);
+    await isleep(iMs("stare")); return ok();
+  }
+  return ok();
+}
+function inInsight(){                                                           // IN0105 — 간파 컷인 + 화염 폭발 보관고 등록 (한 번 · 더 좋은 기록은 그대로)
+  if(R.cut || !window.MTREE) return;
+  R.cut = 1;
+  const e = inEntry(); if(!e) return;
+  const X = inS();
+  if(!R.preview && X && !X.vault){
+    const w = R.cast.wizard ? inLive(R.cast.wizard.id) : null;
+    const r = MTREE.gain({name: w ? dn(w) : ""}, e, {train: true, at: "insight-tutorial"});   // 일지 · 보관고 · 컷인 (mvTell — 주 진행이 아니면 바로 mvCut)
+    inSet({vault: 1});
+    if(r) return;
+  }
+  MTREE.icut.show({e: inVaultE() || e});                                        // 이미 더 좋은 기록 · 다시 보기 — 컷인만
+}
+
+/* ── 장면 ── */
+async function inLines(sc){
+  const sess = R.sess, list = IN_CUES[sc] || [];
+  R.sc = sc;
+  for(let i = 0; i < list.length; i++){
+    const c = list[i]; if(sess !== R.sess) return false;
+    R.i = i; R.cue = c.id; R.log.push(c.id);
+    if(c.k === "fx"){ inBox(false); inMark(false); if(!await inFx(c, sess)) return false; continue; }
+    if(IN_JOBS.indexOf(c.who) >= 0){
+      if(c.who === "darkpriest") inShowCast(["darkpriest"]);
+      inFace(c.who, c.face); inLit([c.who]);
+      const b = inBust(c.who); if(b) b.classList.toggle("cold", !!c.cold);
+    } else inLit([]);
+    inPlate(c.who); inBox(true);
+    const el = iq(".fst-talk .fst-tx");
+    await inType(el, inLine(c), c.who === "master" ? "csl_mst" : "csl_stu", sess);
+    if(sess !== R.sess) return false;
+    await inWaitClick(); if(sess !== R.sess) return false;
+  }
+  return true;
+}
+/* 흐름 — from 단락부터 (다시 열면 그 단락 처음부터) */
+async function inFlow(from){
+  const sess = R.sess, ok = () => sess === R.sess, at = s => IN_ORDER.indexOf(from) <= IN_ORDER.indexOf(s);
+  if(from !== "teach"){
+    inBuild(); R.on = true; R.ending = false;
+    const bk = iq(".rv-black"); if(bk){ bk.getAnimations().forEach(a => a.cancel()); bk.style.opacity = 1; }
+    inShowCast([]); inLit([]); R.root.classList.remove("far"); R.cam = "a"; inStage();
+  }
+  if(IN_ORDER.indexOf(from) <= IN_ORDER.indexOf("b")){                        // A · B (B 부터 — 다시 열기)
+    if(from === "a"){
+      if(!await inCard(IN_T.cap, IN_T.sub, null, sess) || !ok()) return;
+      inSet({st: "a"});
+      if(!await inLines("a") || !ok()) return;
+    } else {
+      if(!await inCard(IN_T.cap, IN_T.sub, () => { inShowCast(["wizard", "paladin"]); IN_JOBS.forEach(j => inFace(j, "smile")); }, sess) || !ok()) return;
+    }
+    inSet({st: "b"});
+    if(!await inLines("b") || !ok()) return;
+  }
+  if(IN_ORDER.indexOf(from) <= IN_ORDER.indexOf("teach")){
+    const X = inS();
+    if(!(X && X.taught) && !R.preview){ inSet({st: "teach"}); await inTeach(sess); return; }   // 전수 안내 — 끝나면 D 로 (inTeachDone) · 다시 보기는 전수 없이 D 의 암전으로
+  }
+  if(at("d")){
+    if(from === "d" || from === "teach" || IN_ORDER.indexOf(from) < IN_ORDER.indexOf("d")){
+      if(!R.root){ inBuild(); R.on = true; R.ending = false; R.cam = "a"; inStage(); const bk = iq(".rv-black"); if(bk) bk.style.opacity = 1; }
+      R.root.classList.remove("far"); R.cam = "a"; inStage(); inShowCast([]);
+      const bk = iq(".rv-black"); if(bk && +getComputedStyle(bk).opacity < .5) await inFade(bk, 1, 300);
+      if(!await inCard("", "", null, sess) || !ok()) return;
+    }
+    inSet({st: "d"});
+    if(!await inLines("d") || !ok()) return;
+  }
+  if(at("e")){
+    if(from === "e" && !await inCard("", "", null, sess)) return;               // E 부터(다시 열기 · 다시 보기) — 암전에서 밝아진다
+    inSet({st: "e"});
+    if(!await inLines("e") || !ok()) return;
+  }
+  await inClose();
+}
+async function inClose(){
+  const sess = R.sess;
+  R.ending = true; inBox(false);
+  await inFade(iq(".rv-black"), 1, 700); if(sess !== R.sess) return;
+  await isleep(iRM() ? 80 : 260); if(sess !== R.sess) return;
+  inEnd("done");
+}
+function inEnd(how){
+  const was = R.preview, bk = iq(".rv-black"), dark = !!bk && +getComputedStyle(bk).opacity > .9;
+  R.sess++; R.on = false; R.ending = false; R.typing = null; R.wait = null;
+  inFcEnd(); inFlagsOff();
+  if(dark) inCurtain(true, 0);                                                  // 암전 그대로 걷고 실제 화면이 천천히 밝아진다
+  inTeardown();
+  R.preview = false; R.live = false;
+  const lift = () => { if(dark) inCurtain(false, iRM() ? 120 : 480); };
+  if(was){ try{ render(); }catch(e){} lift(); return; }
+  inSet({st: "done", how: how || "done"});
+  try{ render(); }catch(e){}
+  lift();
+  if((UI.ceremonies || []).length) showCeremony();                             // 신뢰 안내(전수 성공 +0.3) 등 — 장면이 끝난 뒤
+}
+function inSkip(){                                                              // 건너뛰기 — A · B 는 전수 안내로 (보관고 등록은 조용히) · D · E 는 끝으로
+  if(!R.on) return;
+  const X = inS(), sc = R.sc;
+  if(R.preview){ inEnd("skip"); return; }
+  if((!sc || sc === "a" || sc === "b") && !(X && X.taught)){                  // 첫 암전 글 중(아직 단락 전)도 A 와 같다
+    if(!(X && X.vault)){ R.cut = 1; const e = inEntry(); if(e && window.MTREE){ MTREE.vaultAdd(Object.assign({}, e, {from: inName("wizard"), year: S.year, how: "ins", at: "insight-tutorial"})); } inSet({vault: 1}); }
+    R.sess++; R.typing = null; R.wait = null; inBox(false);
+    inSet({st: "teach", how: "skip"});
+    inTeach(R.sess);
+    return;
+  }
+  inEnd("skip");
+}
+function inStart(from, cast, preview){
+  R.cast = cast || {}; R.preview = !!preview; R.live = true; R.sess++; R.log = []; R.cut = 0; R.cutAt = 0; R.sc = ""; R.cue = "";
+  inFlow(from).catch(e => { try{ errPush("inst", e.message, e.stack); }catch(x){} inFcEnd(); inFlagsOff(); inTeardown(); inCurtain(false, 0); R.on = false; R.live = false; if(!preview) try{ showCeremony(); }catch(x){} });
+}
+
+/* ── C 전수 — 강제 클릭 (마스터 스킬 탭 → 전수 → 팔라딘 → 화염 폭발 → 전수 → 전수 연출 → 확인 → D) ── */
+function inFlagsOn(){
+  if(!window.MTREE || R.flags) return;
+  const T = MTREE.state.tch;
+  R.flags = {force: T.force, free: T.free};
+  T.force = true; T.free = true;                                                 // 이 전수만 — 늘 성공 · 계절 횟수를 쓰지 않는다
+}
+function inFlagsOff(){ if(!R.flags || !window.MTREE) return; const T = MTREE.state.tch; T.force = R.flags.force; T.free = R.flags.free; R.flags = null; }
+function inSure(st, e){ return !!(R.fc && st && e && R.cast.paladin && st.id === R.cast.paladin.id && e.skillId === IN_SK); }
+function inCurtain(on, ms){                                                     // 장면 ↔ 실제 화면 사이 암전 막 (장면 뿌리를 걷는 동안 가린다)
+  let c = document.getElementById("instCurtain");
+  if(!c){ if(!on) return Promise.resolve(); c = document.createElement("div"); c.id = "instCurtain"; c.className = "in-curtain"; c.setAttribute("aria-hidden", "true"); document.body.appendChild(c); }
+  if(!ms){ c.getAnimations().forEach(a => a.cancel()); c.style.opacity = on ? 1 : 0; if(!on) c.remove(); return Promise.resolve(); }
+  return inFade(c, on ? 1 : 0, ms).then(() => { if(!on && +c.style.opacity === 0) c.remove(); });
+}
+async function inTeach(sess){
+  if(R.root){                                                                   // IN0123 — 암전 → 마스터 스킬 화면
+    inBox(false); inMark(false);
+    await inFade(iq(".rv-black"), 1, 420); if(sess !== R.sess) return;
+    await isleep(iRM() ? 120 : 420); if(sess !== R.sess) return;
+    inCurtain(true, 0);
+    inTeardown();
+  }
+  R.on = false;                                                                 // 대화 장면은 걷고 실제 화면 (R.live 는 그대로 — 다음 의식은 기다린다)
+  if(sess !== R.sess){ inCurtain(false, 0); return; }
+  const P = R.cast.paladin && inLive(R.cast.paladin.id);
+  if(!P || !window.MTREE){ inTeachDone(sess); return; }
+  const has = MTREE.exHas(P, {cat: "skill", job: "wizard", skillId: IN_SK});
+  if(has && !has.core){ inSet({taught: 1}); inTeachDone(sess); inCurtain(false, 0); return; }   // 이미 전수했다 (전수 연출의 확인 전에 나갔다가 다시 열었다) — D 부터
+  if(has || MTREE.exFree(P) < 1){ inEnd("slot"); inCurtain(false, 400); return; }               // 그사이 칸이 찼다 · 기본 기술이 됐다 — 전수 없이 끝 (예외 대본은 아직)
+  try{ closeModal(); }catch(e){}
+  MTREE.setTab("vault");
+  MTREE.state.tch.cat = "all";                                                  // 전수 창 기술 목록 — 전체 (화염 폭발이 보이게)
+  UI.view = "master";                                                           // 넓은 화면은 render 가 책상 팝업으로
+  try{ render(); }catch(e){}
+  inFlagsOn();
+  R.fc = {sess, step: 0, raf: 0, el: null, rev: {}, log: [], pid: P.id, taught: false, miss: 0, fix: 0, pk: {}};   // pk — 팔라딘 · 화염 폭발을 직접 눌렀다 (미리 골라져 있어도 그 단계를 보여 준다)
+  inFcBuild();
+  R.fc.raf = requestAnimationFrame(inFcLoop);
+  inCurtain(false, iRM() ? 120 : 520);
+}
+function inFcBuild(){
+  const r = document.createElement("div");
+  r.id = "instGuide"; r.className = "in-guide"; r.setAttribute("aria-hidden", "true");
+  r.innerHTML = `<i class="in-blk" data-b="t"></i><i class="in-blk" data-b="b"></i><i class="in-blk" data-b="l"></i><i class="in-blk" data-b="r"></i>`
+    + `<div class="fst-guide" hidden><i class="fst-ring"></i><i class="fst-ring2"></i><i class="fst-finger"></i><div class="fst-tip"></div></div>`;
+  document.body.appendChild(r);
+  const I = (typeof TIN_ART !== "undefined" && TIN_ART && TIN_ART.icons) || null, at = I && I.at && I.at.hand;
+  if(I && at){ const f = r.querySelector(".fst-finger"); f.style.setProperty("--fi", `url("${I.src}")`); f.style.setProperty("--fax", at[0]); f.style.setProperty("--fay", at[1]);
+    f.style.setProperty("--fiw", I.size[0]); f.style.setProperty("--fih", I.size[1]); }
+  R.fc.el = r;
+  R.fc.clk = ev => {                                                            // 누른 칸 — 팔라딘 · 화염 폭발 (전수 창이 처음부터 골라 두어도 안내는 차례대로)
+    const F = R.fc, t = ev.target && ev.target.closest ? ev.target.closest("#tchRoot [data-tch-st], #tchRoot [data-tch-sk]") : null; if(!F || !t) return;
+    if(t.dataset.tchSt === F.pid) F.pk.st = 1;
+    if(t.dataset.tchSk === "s:" + IN_SK) F.pk.sk = 1;
+  };
+  document.addEventListener("click", R.fc.clk, true);
+}
+function inFcEnd(){
+  const F = R.fc; R.fc = null;
+  if(F){ cancelAnimationFrame(F.raf); if(F.el) F.el.remove(); if(F.clk) document.removeEventListener("click", F.clk, true); }
+  const g = document.getElementById("instGuide"); if(g) g.remove();
+}
+const ivis = el => { if(!el) return null; const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 ? r : null; };
+function iput(el, k, v){ const c = el.__in || (el.__in = {}); if(c[k] === v) return; c[k] = v; el.style.setProperty(k, v); }
+const ipx = v => Math.round(v) + "px";
+function inFcTarget(){                                                          // 지금 단계와 누를 칸
+  const T = MTREE.state.tch, root = document.getElementById("tchRoot"), F = R.fc;
+  if(MTREE.cut.state.el) return {step: 5, el: null};                             // 전수 연출 — 그 창의 확인 · 건너뛰기는 그대로
+  if(F.taught) return {step: 6, el: null};
+  if(!root) return {step: 1, el: document.querySelector(".mv-go[data-tch-open]")};
+  if(T.sid !== F.pid || !F.pk.st) return {step: 2, el: root.querySelector(`[data-tch-st="${F.pid}"]`)};
+  if(T.key !== "s:" + IN_SK || !F.pk.sk) return {step: 3, el: root.querySelector(`[data-tch-sk="s:${IN_SK}"]`)};
+  const slot = root.querySelector("[data-tch-slot]:not(.on)");
+  if(T.slot == null && slot) return {step: 3, el: slot};
+  return {step: 4, el: root.querySelector("[data-tch-go]")};
+}
+function inFcTip(step){
+  const P = R.cast.paladin && inLive(R.cast.paladin.id), nm = P ? dn(P) : "", sk = inSk().name || "";
+  if(step === 1 || step === 4) return IN_TIP[step === 1 ? "open" : "go"];
+  if(step === 2) return IN_TIP.stu.replace("{n}", nm + (typeof eulr === "function" ? eulr(nm) : ""));
+  return IN_TIP.sk.replace("{s}", sk + (typeof eulr === "function" ? eulr(sk) : ""));
+}
+function inFcReveal(el){
+  const box = el.closest(".tch-scroll, .mv-grid");
+  if(box && box.scrollHeight > box.clientHeight + 2 || box && box.scrollWidth > box.clientWidth + 2){
+    try{ el.scrollIntoView({block: "nearest", inline: "nearest"}); }catch(e){}
+  }
+  const r = ivis(el); if(!r) return;
+  if(r.top < 8 || r.bottom > innerHeight - 8){ try{ el.scrollIntoView({block: "center", inline: "nearest"}); }catch(e){} }
+}
+function inFcLoop(){
+  const F = R.fc; if(!F) return;
+  F.raf = 0;
+  if(F.sess !== R.sess){ inFcEnd(); return; }
+  const {step, el} = inFcTarget(), g = F.el.querySelector(".fst-guide"), B = F.el.querySelectorAll(".in-blk");
+  if(step === 6){ inTeachDone(F.sess); return; }
+  if(F.step !== step){ F.step = step; F.log.push(step); g.querySelector(".fst-tip").textContent = step === 5 ? "" : inFcTip(step); F.el.classList.toggle("cut", step === 5); }
+  const r0 = step === 5 ? null : ivis(el);
+  if(r0 && !F.rev[step]){ F.rev[step] = 1; inFcReveal(el); }
+  const r = r0 ? ivis(el) : null, W = innerWidth, H = innerHeight;
+  if(r || step === 5) F.miss = 0;
+  else if(!F.miss) F.miss = performance.now();
+  else if(performance.now() - F.miss > 2500){                                   // 누를 칸이 한참 없다 — 화면을 다시 그린다 (마스터 스킬 탭 · 전수 창) · 두 번 해도 없으면 안내를 거두고 끝 (막힌 채 남지 않게)
+    if(F.fix >= 2){ try{ errPush("inst", "teach target missing · step " + step, ""); }catch(e){} inEnd("lost"); return; }
+    F.fix++; F.miss = performance.now();
+    try{ if(step === 1){ closeModal(); MTREE.setTab("vault"); UI.view = "master"; render(); } else { MTREE.state.tch.cat = "all"; MTREE.teachRender(); } }catch(e){}
+  }
+  if(!r){                                                                       // 칸이 아직 없다(창이 열리는 중 · 연출 중) — 막만 (연출 중에는 막도 걷는다)
+    g.hidden = true;
+    B.forEach(b => { const k = b.dataset.b; iput(b, "left", "0px"); iput(b, "top", k === "t" ? "0px" : ipx(H)); iput(b, "width", ipx(W)); iput(b, "height", k === "t" && step !== 5 ? ipx(H) : "0px"); });
+    F.raf = requestAnimationFrame(inFcLoop); return;
+  }
+  const pad = 5, L = r.left - pad, T0 = r.top - pad, Rr = r.right + pad, Bt = r.bottom + pad;
+  iput(B[0], "left", "0px"); iput(B[0], "top", "0px"); iput(B[0], "width", ipx(W)); iput(B[0], "height", ipx(Math.max(0, T0)));
+  iput(B[1], "left", "0px"); iput(B[1], "top", ipx(Bt)); iput(B[1], "width", ipx(W)); iput(B[1], "height", ipx(Math.max(0, H - Bt)));
+  iput(B[2], "left", "0px"); iput(B[2], "top", ipx(T0)); iput(B[2], "width", ipx(Math.max(0, L))); iput(B[2], "height", ipx(Bt - T0));
+  iput(B[3], "left", ipx(Rr)); iput(B[3], "top", ipx(T0)); iput(B[3], "width", ipx(Math.max(0, W - Rr))); iput(B[3], "height", ipx(Bt - T0));
+  if(g.hidden) g.hidden = false;
+  g.querySelectorAll(".fst-ring, .fst-ring2").forEach(e => { iput(e, "left", ipx(L)); iput(e, "top", ipx(T0)); iput(e, "width", ipx(Rr - L)); iput(e, "height", ipx(Bt - T0)); });
+  const f = g.querySelector(".fst-finger"), fs = f.offsetWidth || 48;
+  let fx, flip = false;
+  if(L >= fs + 12) fx = L - fs - 6; else if(Rr + fs + 12 <= W){ fx = Rr + 6; flip = true; } else fx = Math.max(4, r.left + 4);
+  if(f.classList.contains("l") !== flip) f.classList.toggle("l", flip);
+  iput(f, "left", ipx(fx)); iput(f, "top", ipx(r.top + r.height / 2 - fs / 2));
+  const tp = g.querySelector(".fst-tip"), tw = tp.offsetWidth, th = tp.offsetHeight, cx = r.left + r.width / 2;
+  const left = Math.round(Math.min(W - 8 - tw, Math.max(8, cx - tw / 2))), upTop = T0 - th - 14, dnTop = Bt + 14, up = upTop >= 4 || dnTop + th > H - 4;
+  if(tp.classList.contains("dn") === up) tp.classList.toggle("dn", !up);
+  iput(tp, "left", left + "px"); iput(tp, "top", ipx(up ? upTop : dnTop)); iput(tp, "--ax", ipx(cx - left));
+  F.raf = requestAnimationFrame(inFcLoop);
+}
+/* 강제 클릭 동안 — 누를 칸의 Enter · Space 말고는 키를 막는다 (Esc · 단축키) · 전수 연출은 그 창의 키(Esc = 건너뛰기 · 닫기)를 그대로 */
+window.addEventListener("keydown", e => {
+  const F = R.fc; if(!F || (window.MTREE && MTREE.cut.state.el)) return;
+  if(e.key === "Tab") return;
+  const t = inFcTarget().el, on = t && document.activeElement === t;
+  if((e.key === "Enter" || e.key === " ") && on) return;
+  e.preventDefault(); e.stopPropagation();
+}, true);
+function inTeachDone(sess){                                                     // 전수 연출의 확인 뒤 — 전수 창을 닫고 대련장(D)으로
+  if(sess !== R.sess) return;
+  inFcEnd(); inFlagsOff();
+  try{ if(window.MTREE && MTREE.cut.state.el) MTREE.cut.close(true); }catch(e){}
+  try{ closeModal(); }catch(e){}
+  inSet({st: "d", taught: 1});
+  R.on = true;
+  inFlow("d").catch(e => { try{ errPush("inst", e.message, e.stack); }catch(x){} inTeardown(); inCurtain(false, 0); R.on = false; R.live = false; try{ showCeremony(); }catch(x){} });
+}
+
+/* ── MTREE 훅 — 앞의 훅을 이어 부른다 ── */
+function inHooks(){
+  if(!window.MTREE || MTREE.__in) return;
+  const H = MTREE.state.hooks, fed0 = H.fed, head0 = H.tchHead, p0 = H.tchP, taught0 = H.taught, cut0 = H.cut;
+  H.fed = function(id, r){ if(fed0) fed0.apply(this, arguments); inFed(id, r); };
+  H.tchHead = function(){ const a = head0 ? head0.apply(this, arguments) || "" : ""; return a + (R.fc ? `<span class="in-sure">${esc(IN_T.sure)}</span>` : ""); };
+  H.tchP = function(st, e, o){ const a = p0 ? p0.apply(this, arguments) : null; if(inSure(st, e)) return Object.assign({}, a || o, {p: 100, sure: 1}); return a; };
+  H.taught = function(d){ if(taught0) taught0.apply(this, arguments); if(R.fc && d && d.sid === R.fc.pid && d.key === "s:" + IN_SK){ R.fc.taught = true; inSet({taught: 1}); } };   // 바로 저장 — 확인 전에 나갔다 와도 D 부터
+  H.cut = function(r, el){ if(cut0) cut0.apply(this, arguments); inCutAt(el); };
+  MTREE.__in = 1;
+}
+function inCutAt(el){                                                           // 장면 중 간파 컷인 — 초상화 바로 위 (도트 · 초상화를 가리지 않게 · 화면 왼쪽은 그대로)
+  if(!R.root || !R.on || !el || el.dataset.at !== "page") return;
+  const c = iq(".fst-cast"), k = +el.dataset.k || 3, F = MTREE.icut.face, fh = ((F && F.crop && F.crop[3]) || 44) * k; if(!c) return;
+  const y = Math.max(fh / 2 + 8, c.getBoundingClientRect().top - fh / 2 - 12);
+  if(y > (parseFloat(el.style.top) || 0)) el.style.top = y.toFixed(1) + "px";
+}
+/* 간파가 처음 열렸다 (그 칸의 레벨이 올라 켜졌을 때) — 예약 */
+function inFed(id, r){
+  if(!r || !r.ok || !window.MTREE || inS()) return;
+  const n = MTREE.node(id); if(!n || n.t !== "insight" || !MTREE.insOn()) return;
+  if(!inOn()){ return; }                                                        // 자동화 — 예약하지 않는다 (예전 세이브처럼 아래 inAfter 가 done(old) 로)
+  const T = inTrio(), why = inWhy(T);
+  if(why){ inSet({st: "done", skip: why, at: {y: S.year | 0, p: S.phase || ""}}); return; }
+  inSet({st: "a", cast: T, vault: 0, taught: 0, at: {y: S.year | 0, p: S.phase || "", w: S.week | 0}});
+  inQueue();
+}
+function inQueue(){
+  const Q = UI.ceremonies = UI.ceremonies || [];
+  if(!Q.some(c => c && c.type === "inst")) Q.push({type: "inst"});
+  setTimeout(() => { if(inIdle(true)) showCeremony(); }, 0);                     // 여신의 눈물 칸 안내 중이면 그 안내가 끝날 때 (gtLiveOff → showCeremony)
+}
+function inDue(){ const X = inS(); return !!(X && ["a", "b", "teach", "d", "e"].indexOf(X.st) >= 0); }
+function inIdle(q){
+  const mr = document.getElementById("modalRoot");
+  return !(UI.wrun || UI.battle || UI.tour || UI.pendingTour || (!q && (UI.ceremonies || []).length) || (mr && mr.innerHTML.trim()) || document.getElementById("bootLoader")
+    || (typeof OP !== "undefined" && OP) || (typeof BELT !== "undefined" && BELT.on) || (window.FST && FST.state && FST.state.on)
+    || (window.GTEAR && GTEAR.state && (GTEAR.state.on || GTEAR.state.live))
+    || ["RVST", "RQST", "XPST", "FRIS", "FLST", "SMST", "SPST", "CTST", "RKST", "SHVS", "RGST", "WRST", "NWST"].some(k => window[k] && window[k].state && (window[k].state.on || window[k].state.live))
+    || (!q && document.documentElement.classList.contains("modal-open")));
+}
+/* showCeremony 고리 — {type:"inst"} 차례 (늘 true) · 게임에 이미 있는 type "insight"(예전 여름 합숙 깨달음 팝업)와 다른 이름 */
+function inPlay(c){
+  if(!c || c.type !== "inst") return false;
+  UI.ceremonies = (UI.ceremonies || []).filter(x => !(x && x.type === "inst"));
+  if(!inDue() || R.on || R.live){ showCeremony(); return true; }
+  if(UI.wrun || UI.battle || UI.tour || UI.pendingTour){ showCeremony(); return true; }   // 한가할 때 (after)
+  const X = inS();
+  inStart(X.st, X.cast || {}, false);
+  return true;
+}
+/* render 끝 — 예전 세이브 · 장면 중에 나갔다가 다시 열면 그 단락부터 */
+function inAfter(){
+  if(typeof S === "undefined" || !S || !Array.isArray(S.students)) return;
+  inHooks();
+  if(!inS() && window.MTREE && MTREE.insOn() && !R.live){ S.inst = {id: IN_ID, st: "done", old: 1}; return; }   // 예전 세이브 — 이미 간파가 열렸다
+  if(!inDue() || R.on || R.live || R.pend || !inOn() || !inFree()) return;
+  R.pend = true;
+  setTimeout(() => {
+    R.pend = false;
+    if(!inDue() || R.on || R.live || !inFree()) return;
+    UI.ceremonies = (UI.ceremonies || []).filter(c => !(c && c.type === "inst"));   // 남아 있던 이 장면 차례는 하나로
+    queueCeremony({type: "inst"});
+    showCeremony();
+  }, 0);
+}
+function inFree(){                                                              // 한가하다 — 다른 의식 · 창 · 장면이 없다 (차례에 남은 이 장면 자리는 빼고 본다)
+  return !(UI.ceremonies || []).some(c => c && c.type !== "inst") && inIdle(true) && !document.documentElement.classList.contains("modal-open");
+}
+
+/* ── 다시 보기 (목업) — 세이브를 건드리지 않고 (보관고 등록 · 전수 없이 · 오른쪽 위 건너뛰기) ── */
+function inPreview(from){
+  if(R.on || R.live) return false;
+  const X = inS(), c = (X && X.cast) || inTrio(); if(!c) return false;
+  inStart(IN_ORDER.indexOf(from) >= 0 && from !== "done" && from !== "teach" ? from : "a", c, true);
+  return true;
+}
+function inAbort(){ if(!R.live) return false; R.sess++; R.on = false; R.live = false; R.typing = null; R.wait = null; inFcEnd(); inFlagsOff(); inTeardown(); inCurtain(false, 0); return true; }   // 목업 — 저장 왕복 흉내
+
+inHooks();
+window.INST = {play: inPlay, after: inAfter, preview: inPreview, abort: inAbort, skip: inSkip, advance: inAdvance, state: R, cues: IN_CUES, order: IN_ORDER, T: IN_T, tip: IN_TIP,
+  pos: IN_POS, cam: IN_CAM, ms: IN_MS, face: IN_FACE, s: inS, due: inDue, trio: inTrio, why: inWhy, entry: inEntry, vaultE: inVaultE, fed: inFed, queue: inQueue, fcTarget: () => R.fc ? inFcTarget() : null};
+})();
+/* INST_END */
 
 /* TIWIN_START — 인가 등급 · 새 대회 초대장 안내 창 (1025 목업 · apply_tiwin.py · mockups/tier-invite) ─ 사용자 1025: '새로운 인가 등급 안내창하고 새로운 대회 안내 창 목업해볼까'
    답: 인가 등급은 '인가증에 도장 쾅' · 새 대회는 '서한 → 대회 경로 이어짐' · 글은 짧게.
@@ -33824,6 +34628,7 @@ function showCeremony(){
   if(window.SPST && c.type==="sparkler" && SPST.play(c)) return;   // 1023 — 학원제 개막식의 밤 07 (SPST) — 상대역이 팔라딘이면 네 쪽 대신 장면 (끝나면 다음 의식)
   if(window.SMST && c.type==="camp" && SMST.play(c)) return;   // 1023 — 첫 여름 합숙 이야기 06 (SMST) — 첫해 여름 합숙 안내 앞에 장면 (끝나면 안내를 이어 띄운다)
   if(window.GTEAR && c.type==="gtear" && GTEAR.play(c)) return;   // 1102 일곱째 — 여신의 눈물 첫 획득 '다시 닿은 목소리' (GTEAR) — 그 판의 신뢰 안내들 뒤 (칸 누르기 안내가 끝나면 다음 의식)
+  if(window.INST && c.type==="inst" && INST.play(c)) return;   // 1102 열한째 — 간파 첫 해금 '보이는 것과 가르칠 수 있는 것' (INST) — 대련장 장면 → 전수 강제 클릭 → 후일담 (끝나면 다음 의식 — 전수 성공의 신뢰 안내 등)
   if(window.XPST && c.type==="xpst") return XPST.play(c);   // 1023 — 원정 이야기 (기록 정리 · 가져온 기록 — 곡은 XPST 가)
   audOver(c.type==="grad" ? "ending" : null);
   if(c.type==="tut") return tutOneCeremony(c);
@@ -37147,7 +37952,7 @@ function openBattle(res, opt, onDone){
     camBars(LF);
     if(tests.length){
       /* 정신력 시험 — 1.5초 흐름 대신 맞는 순간을 조금 보여 준 뒤 맞은 학생에게 천천히 다가간다 (camTest) */
-      const held = await camW(tok, 520);
+      const held = await camW(tok, window.SKPFX ? SKPFX.hold(520) : 520);   // 1103 열한째 — pixelfx 기술 (SKPFX)
       stopSkillFx();
       if(!held || !await camTest(tok, tests, ae, CS)) return false;
     } else {
@@ -37155,7 +37960,7 @@ function openBattle(res, opt, onDone){
     const dir = attack ? L : -L;
     stage.style.setProperty("--cam-t", T(1.5)); stage.style.setProperty("--cam-e", "linear");
     stage.style.setProperty("--cam", `${CP}scale(${CS}) translateX(${Math.round(dir*stT().drift/100*sw*1.2/CS)}px)${attack && PREF.camTilt !== false ? ` rotate(${dir*stT().tilt}deg)` : ""}`);   /* 1027 열일곱째 — 설정 '공격 화면 기울임' 을 끄면 흐르기만 */   // 1024 — STYLISH_TUNE.drift · tilt (STLAB)   // 흐르는 폭은 화면에서 예전과 같게
-    const held = await camW(tok, 1500);
+    const held = await camW(tok, window.SKPFX ? SKPFX.hold(1500) : 1500);   // 1103 열한째 — pixelfx 기술은 이펙트가 다 돌 만큼 (SKPFX)
     stopSkillFx();
     if(!held) return false;
     }
@@ -52343,6 +53148,319 @@ function opDrops(){
   });
 }
 /* OPBLOOD_END */
+/* SKPFX_START — 스타일리시 전투 기술 pixelfx (1103 열한째 · apply_skpfx.py) ─ 사용자 1103: '게임에 적용시키고 …' (마법사 pixelfx 목업 mockups/wizard-pixelfx 그대로).
+   물음 답: 스타일리시 전투만 (심플 · 세로 전투는 지금 그림) · 목업에서 만든 것 전부.
+   · 스타일리시 전투의 기술 그림(stylishSkillFxShow)을 이 차례만 감싼다 — SPEC 에 있는 기술은 게임 그림(STYLISH_SKILL_FX targets · groups · 시전 쪽 casters)을 빼고
+     pixelfx 시트(assets/skill-fx/pfx/*.png — pixelfx 저장소 D:\pixelfx 의 src/fx 를 `node tools/render.mjs <id> --sheet --bg none` 으로 구운 것 · 메타는 SHEETS)를 캔버스로 튼다.
+   · 시간은 이펙트 시간(초) — 배속(camSf)을 따라 흐른다. 클로즈업이 끝나면(cam-focus 가 빠지면) 0.25초에 걸쳐 걷힌다.
+   · 마법사 (1102 열다섯째 ~ 1103 열째 목업):
+     시전 마법진 wizardCircles → arcane/wizard-sigil (지팡이 끝) · 마력탄 wz_b → mana-bolt → mana-hit (소리 · 흰 반짝임은 탄이 닿을 때 0.42초) ·
+     화염 폭발 wz_1 → fire-blast (맞는 적마다 · 반짝임은 불덩이가 터질 때 0.12초 + 차례 × 0.05) ·
+     서리 결계 wz_2 → frost-ward (적 5명 줄 기준 크기 · 가운데는 불려 나온 적 · 연푸른 바닥 필터 · 맞는 학생 스프라이트도 연푸르게) ·
+     중력 반전 wz_u → gravity-flip (10타 — 0.6 ~ 3초 · 간격 ×0.8 · 피해 숫자 · 막대를 10으로 나눔 · 타마다 피격음 · 연보라가 화면째 덮고 피해 숫자만 앞 · 합성 소리 wzGravity)
+     효과마다 기본 크기 (마법진 0.8 · 마력탄 · 화염 폭발 1 · 서리 결계 · 중력 반전 1.25) · 서리 결계 · 중력 반전은 클로즈업을 이펙트 길이만큼 늘인다 (camTurn 의 camW 고리 — SKPFX.hold)
+   · 다른 직업도 SPEC · CASTER 에 더하면 같은 틀로 (목업은 SKPFX.addSheet · SPEC 으로 시트 · 기술을 더한다)
+   · window.__skpfxOff = true 면 예전 그림 그대로 · SKPFX.st.mode = "now" 도 같다 (목업 비교) */
+(function(){
+  const SHEETS = {"sigil":{"src":"assets/skill-fx/pfx/wizard-sigil.webp?v=e641cad6","fps":30,"n":43,"w":96,"h":96,"cols":7,"pivot":[20,48],"loop":false},"bolt":{"src":"assets/skill-fx/pfx/mana-bolt.webp?v=31fb526c","fps":30,"n":12,"w":56,"h":24,"cols":3,"pivot":[44,12],"loop":true},"hit":{"src":"assets/skill-fx/pfx/mana-hit.webp?v=004e9699","fps":30,"n":25,"w":80,"h":72,"cols":5,"pivot":[40,54],"loop":false},"fire":{"src":"assets/skill-fx/pfx/fire-blast.webp?v=fcf4e13d","fps":30,"n":64,"w":128,"h":128,"cols":8,"pivot":[64,104],"loop":false},"ward":{"src":"assets/skill-fx/pfx/frost-ward.webp?v=81f3e78f","fps":30,"n":85,"w":304,"h":184,"cols":8,"pivot":[152,120],"loop":false},"grav":{"src":"assets/skill-fx/pfx/gravity-flip.webp?v=5aeaf087","fps":30,"n":118,"w":304,"h":288,"cols":11,"pivot":[152,232],"loop":false},"pswing":{"src":"assets/skill-fx/pfx/paladin-swing.webp?v=dd1c8ed1","fps":30,"n":28,"w":104,"h":124,"cols":6,"pivot":[48,56],"loop":false},"psmite":{"src":"assets/skill-fx/pfx/judgment-strike.webp?v=1f62224f","fps":30,"n":34,"w":120,"h":136,"cols":7,"pivot":[60,112],"loop":false},"pward":{"src":"assets/skill-fx/pfx/oath-ward.webp?v=34584a8f","fps":30,"n":55,"w":76,"h":92,"cols":9,"pivot":[38,82],"loop":false},"pheal":{"src":"assets/skill-fx/pfx/healing-light.webp?v=6045f6fc","fps":30,"n":54,"w":64,"h":156,"cols":12,"pivot":[32,144],"loop":false},"psanct":{"src":"assets/skill-fx/pfx/sanctuary.webp?v=85f476f0","fps":30,"n":73,"w":304,"h":288,"cols":9,"pivot":[152,232],"loop":false}};
+  const ST = {mode: "pfx", slow: false, scale: 1, sigil: true, plays: 0, snd: [], hits: [], flash: [], cast: [], rate: 1, hold: null, nT: 0, box: null, tint: null, chill: null, endBy: null, last: null};
+  const IMG = {};
+  const img = k => { if(!IMG[k]){ IMG[k] = new Image(); IMG[k].src = SHEETS[k].src; } return IMG[k]; };
+  const on = () => !window.__skpfxOff && ST.mode === "pfx";
+  const smooth = (a, b, x) => { const u = Math.min(1, Math.max(0, (x - a) / (b - a))); return u * u * (3 - 2 * u); };
+  const FX_SIZE = {sigil: .8, bolt: 1, hit: 1, fire: 1, ward: 1.25, grav: 1.25,
+    pswing: 1.25, psmite: 1.25, pward: 1.25, pheal: 1.25, psanct: 1};   // 팔라딘 (1103 열셋째 — 사용자 '고유 효과, 성스러운 일격, 치유의 빛, 수호의 맹세의 기본 크기는 크게, 성역 선포는 보통')
+  const BOLT = .22, FIRE_BANG = .12;
+  const geo = stage => { const sr = stage.getBoundingClientRect(); return {sr, sx: stage.clientWidth / sr.width, sy: stage.clientHeight / sr.height}; };
+  const unitBox = (el, G) => { const r = el.getBoundingClientRect(); return {cx: (r.left + r.width / 2 - G.sr.left) * G.sx, top: (r.top - G.sr.top) * G.sy, h: r.height * G.sy, w: r.width * G.sx}; };
+
+  /* ── 자리 ── */
+  /* 지팡이 끝 — 지금 마법진(wizardCircles)의 자리: 몸 가운데에서 몸 너비 0.34 앞 · 위에서 높이 0.39 */
+  const tip = (el, G, side) => { const u = unitBox(el, G); return {x: u.cx + (side === "B" ? -1 : 1) * u.w * .34, y: u.top + u.h * .39, h: u.h}; };
+  function placeSigil(side){ return (o, G) => { const t = tip(o.el, G, side), k = t.h * 1.15 / 60; return {x: t.x, y: t.y, k, flip: side === "B"}; }; }
+  function placeChest(mul){ return (o, G) => { const u = unitBox(o.el, G), k = u.h * .92 / 48 * (mul || 1); return {x: u.cx, y: u.top + u.h * .55 + 19 * k, k}; }; }
+  function placeBolt(caster, target, side){
+    return (o, G, tt) => { const a = tip(caster, G, side), b = unitBox(target, G), k = a.h * .92 / 48, u = Math.min(1, Math.max(0, (tt - o.delay) / BOLT));
+      const bx = b.cx, by = b.top + b.h * .55, e = u * u * (3 - 2 * u);
+      return {x: a.x + (bx - a.x) * e, y: a.y + (by - a.y) * e - Math.sin(u * Math.PI) * a.h * .12, k, flip: bx < a.x}; };
+  }
+  /* 광역기 — 5명 자리 기준 크기 · 가운데는 지금 불려 나온 맞는 유닛들 (1103 — 3명이면 안쪽에 모여 선다)
+     클로즈업(cam-focus) 중: 게임이 그 기술에 세우는 줄(stylishFormation → 쿼터뷰는 tqFormation)에 그 편 5명을 세워 본 폭 (1103 열두째 — 아군에게 거는 광역기도 같은 식) ·
+     바닥 = 서 있는 유닛 발밑(몸 높이 0.8) · 고리 지름 240px = 줄 폭 + 유닛 너비. 클로즈업이 아니면 그 편 자리 칸(.bf-slot) 상자 × 1.3
+     team — 그 편 (적에게 거는 기술은 시전자의 반대편 · 아군에게 거는 기술(ally)은 같은 편 — 시전자 + 넷) */
+  function span5(stage, side, skillId, ally){
+    const TQ = typeof tqCloseup === "function" ? tqCloseup(stage) : null, ids = ["_p1", "_p2", "_p3", "_p4", "_p5"];
+    let pos = ally ? stylishFormation("_p0", ids.slice(0, 4), [], side, skillId) : stylishFormation("_p0", [], ids, side, skillId);
+    if(TQ) pos = tqFormation(TQ, pos, "_p0");
+    const pick = pos.filter(p => ally || p.uid !== "_p0"), xs = pick.map(p => p.x);
+    return {x0: Math.min(...xs), x1: Math.max(...xs), y: pick.length ? pick[0].y : 58};
+  }
+  function placeGroup(stage, team, side, skillId, ally){
+    return (o, G) => {
+      const cam = stage.querySelector(".bf-cam"), focus = stage.classList.contains("cam-focus");
+      const es = [...stage.querySelectorAll(`.bf-unit.team-${team}${focus ? ".cam-in" : ""}:not(.dead)`)].filter(e => !o.only || !o.only.length || o.only.includes(e)).map(e => e.getBoundingClientRect());
+      if(cam && focus && typeof stylishFormation === "function"){
+        const cr = cam.getBoundingClientRect(), L = span5(stage, side, skillId, ally);
+        const X0 = cr.left + cr.width * L.x0 / 100, X1 = cr.left + cr.width * L.x1 / 100;
+        const uw = es.length ? es.reduce((a, r) => a + r.width, 0) / es.length : cr.width * .08;
+        const foot = es.length ? es.reduce((a, r) => a + r.top + r.height * .8, 0) / es.length : cr.top + cr.height * L.y / 100;
+        const W = (Math.abs(X1 - X0) + uw) * G.sx, k = W / 240;
+        const cx = es.length ? es.reduce((a, r) => a + r.left + r.width / 2, 0) / es.length : (X0 + X1) / 2;
+        ST.box = {l: (Math.min(X0, X1) - G.sr.left) * G.sx, r: (Math.max(X0, X1) - G.sr.left) * G.sx, t: (foot - G.sr.top) * G.sy, b: (foot - G.sr.top) * G.sy, k, focus: 1, cx: (cx - G.sr.left) * G.sx};
+        return {x: (cx - G.sr.left) * G.sx, y: (foot - G.sr.top) * G.sy, k};
+      }
+      const ss = [...stage.querySelectorAll(`.bf-slot.team-${team}`)].map(e => e.getBoundingClientRect());
+      if(!ss.length) return null;
+      const l = Math.min(...ss.map(r => r.left)), r = Math.max(...ss.map(r => r.right)), t = Math.min(...ss.map(r => r.top)), b = Math.max(...ss.map(r => r.bottom));
+      const W = (r - l) * G.sx * 1.3, k = W / 240;
+      ST.box = {l: (l - G.sr.left) * G.sx, r: (r - G.sr.left) * G.sx, t: (t - G.sr.top) * G.sy, b: (b - G.sr.top) * G.sy, k, focus: 0};
+      return {x: ((l + r) / 2 - G.sr.left) * G.sx, y: ((t + b) / 2 - G.sr.top) * G.sy, k};
+    };
+  }
+  /* 발밑 (한 명에게 — 위로 서는 그림) · 가슴 앞 (시전 쪽 — 몸 너비 0.12 앞) — 크기는 화염 폭발과 같은 식 (유닛 높이 × 0.92 = 48px) */
+  function placeFeet(mul){ return (o, G) => { const u = unitBox(o.el, G), k = u.h * .92 / 48 * (mul || 1); return {x: u.cx, y: u.top + u.h * .8, k}; }; }
+  function placeFront(side, mul){ return (o, G) => { const u = unitBox(o.el, G), k = u.h * .92 / 48 * (mul || 1); return {x: u.cx + (side === "B" ? -1 : 1) * u.w * .12, y: u.top + u.h * .55, k, flip: side === "B"}; }; }
+
+  /* ── 맞는 학생 물들이기 — SVG feColorMatrix: 제 색(단위 행렬) ↔ '밝기 × 색' 행렬을 v 만큼 (.spr-anchor 에만 — 체력 막대 · 이름은 그대로) ── */
+  function tintMatrix(v, T){
+    const L = [.3, .59, .11], K = T.k || 1.18, B = T.b == null ? .05 : T.b, out = [];
+    for(let r = 0; r < 3; r++){ for(let c = 0; c < 3; c++) out.push((1 - v) * (r === c ? 1 : 0) + v * T.c[r] * L[c] * K); out.push(0, v * B); }
+    out.push(0, 0, 0, 1, 0);
+    return out.map(x => +x.toFixed(4)).join(" ");
+  }
+  const CHILL = {c: [.66, .84, 1.08], k: 1.18, b: .05, max: .6};
+  let tintN = 0;
+
+  /* ── 10타 (중력 반전) — 게임이 한 번에 그린 피해 숫자(camPop) · 막대(camBars)를 거두어 n 번에 나눈다 ── */
+  const bar = (el, q) => el && el.querySelector(q);
+  const pct = v => parseFloat(v);
+  function hitSnap(T){ return T.map(el => ({el, hp: (bar(el, ".bf-meter.hp i") || {style: {}}).style.height, sh: (bar(el, ".bf-shield") || {style: {}}).style.height, pw: new Set(el.querySelectorAll(":scope > .popwrap"))})); }
+  function multiHit(list, T, caster, snd, rate, times, opt){
+    opt = opt || {};
+    const D = [], hp0 = hitSnap(T), N = times.length;
+    Promise.resolve().then(() => {
+      hp0.forEach(h => { const el = h.el, d = {el, parts: [], first: [], last: [], crit: false, hp: [h.hp, (bar(el, ".bf-meter.hp i") || {style: {}}).style.height], sh: [h.sh, (bar(el, ".bf-shield") || {style: {}}).style.height]};
+        el.querySelectorAll(":scope > .popwrap").forEach(w => { if(h.pw.has(w)) return;
+          w.querySelectorAll(".pop").forEach(sp => { const k = [...sp.classList].find(c => c !== "pop") || "dmg", b = sp.querySelector(".popcrit"), txt = sp.textContent.replace(b ? b.textContent : "", "");
+            const n = +(txt.replace(/[^0-9]/g, "") || 0);
+            if(k === "miss" || k === "die") (k === "die" ? d.last : d.first).push(k);
+            else if((k === "heal" || k === "shield") && !opt.heal) d.first.push(k + ":" + n);
+            else { d.parts.push({k, n}); if(k === "crit") d.crit = true; } });
+          w.remove(); });
+        [["hp", ".bf-meter.hp i"], ["sh", ".bf-shield"]].forEach(([key, q]) => { const m = bar(el, q); if(m && d[key][0] != null) m.style.height = d[key][0]; });
+        const c = el.querySelector("canvas.spr"); if(c && d.parts.length && !opt.heal){ c.dataset.m = SPR_M.idle; c.dataset.f = 0; }   // 첫 타까지는 서 있는다
+        D.push(d); });
+      if(!opt.heal) setTimeout(() => D.forEach(d => { const c = d.el.querySelector("canvas.spr"); if(c && d.parts.length){ c.dataset.m = SPR_M.idle; c.dataset.f = 0; } }), 130 / Math.max(.1, rate));
+    });
+    ST.hits = [];
+    times.forEach((at, i) => list.push({fn: tt => hitOne(D, i, N, caster, snd, rate, tt, opt), delay: at}));
+  }
+  function hitOne(D, i, N, caster, snd, rate, tt, opt){
+    opt = opt || {};
+    ST.hits.push(Math.round(tt * 1000) / 1000);
+    if(snd && typeof sfxPlay === "function") sfxPlay(snd, 1 + i * .025);   // 피격음 — 타마다 조금씩 높게
+    ST.snd.push({k: snd, at: Math.round(tt * 1000) / 1000, hit: i + 1});
+    const L = N - 1;
+    D.forEach((d, j) => {
+      const el = d.el; if(!el.isConnected) return;
+      const pops = [];
+      d.parts.forEach(p => { const part = Math.floor(p.n * (i + 1) / N) - Math.floor(p.n * i / N); pops.push({k: p.k, txt: (p.k === "heal" || p.k === "shield" ? "+" : "") + (typeof fmt === "function" ? fmt(part) : part), crit: p.k === "crit" && i === L}); });
+      if(i === 0) d.first.forEach(x => { const [k, n] = x.split(":"); pops.push({k, txt: k === "miss" ? "MISS" : "+" + (typeof fmt === "function" ? fmt(+n) : n)}); });
+      if(i === L) d.last.forEach(k => pops.push({k, txt: "DOWN"}));
+      if(pops.length){
+        const jx = ((i * 37 + j * 11) % 5 - 2) * 7, jy = -(i % 3) * 7;
+        const html = `<div class="popwrap pfx-pw" style="left:${jx}px;right:${-jx}px;margin-top:${jy}px">${pops.map((x, pi) =>
+          `<span class="pop ${x.k}" style="--pd:${i === L ? 1300 : 850}ms;top:${pi * 17}px">${x.crit ? `<b class="popcrit">CRITICAL!!</b>` : ""}${x.txt}</span>`).join("")}</div>`;
+        let w;
+        const top = document.querySelector(".pfx-poptop");
+        if(top){   // 화면째 덮는 필터가 떠 있다 — 피해 숫자는 그 위 층에 (유닛 화면 자리 · 크기를 따라 — 전투판의 숫자 층 .bpl 은 필터 위로 못 나온다)
+          const r = el.getBoundingClientRect(), s = r.width / Math.max(1, el.offsetWidth);
+          w = document.createElement("div"); w.className = "pfx-pophold";
+          Object.assign(w.style, {left: r.left + "px", top: r.top + "px", width: el.offsetWidth + "px", height: el.offsetHeight + "px", transform: `scale(${s})`});
+          w.innerHTML = html; top.append(w);
+        } else { el.insertAdjacentHTML("beforeend", html); w = el.lastElementChild; }
+        setTimeout(() => w.remove(), (i === L ? 1400 : 950));
+        try{ if(i === L && typeof popCritFit === "function") popCritFit(document.querySelector("#modalRoot")); }catch(e){}
+      }
+      if(!d.parts.length) return;
+      [["hp", ".bf-meter.hp i"], ["sh", ".bf-shield"]].forEach(([key, q]) => { const m = bar(el, q), a = pct(d[key][0]), b = pct(d[key][1]);
+        if(m && !isNaN(a) && !isNaN(b)) m.style.height = (a + (b - a) * (i + 1) / N) + "%"; });
+      if(opt.heal) return;   // 회복 · 보호막은 막대만 (흰 반짝임 · 피격 자세 없이)
+      try{ window.HITFX && hitNow(el, {from: caster, crit: d.crit && i === L, sf: rate, seed: i * 131 + j}); }catch(e){}
+      const c = el.querySelector("canvas.spr"); if(c){ c.dataset.m = SPR_M.hit; c.dataset.f = i % 2; delete c.dataset.still; delete c.dataset.once; }
+    });
+  }
+  /* 앞 간격의 r 배씩 짧아지는 n 타 — from ~ to 초 */
+  const accel = (n, from, to, r) => { const g = (to - from) * (1 - r) / (1 - Math.pow(r, n - 1)); return Array.from({length: n}, (_, i) => from + g * (1 - Math.pow(r, i)) / (1 - r)); };
+
+  /* ── 기술 (SPEC) — ctx: {stage, caster, T(맞는 유닛들), side, foe, held(붙잡은 기술 소리), rate, list} → list 에 시트 · 필터 · 타를 넣는다
+     flash(i) — 게임의 흰 반짝임(HITFX)을 미룰 초 (-1 = 빼고 · 0 = 그대로) · hold — 클로즈업을 이펙트 길이만큼 늘인다 · holdSnd — 기술 소리를 붙잡는다 ── */
+  const GRAV_T = accel(10, .6, 3.0, .8), GRAV_END = 3.0, GRAV_OFF = 3.1;
+  const PA_SMITE = .08, PA_SET = .36, PA_LAND = .28, SANCT_T = accel(5, .7, 1.43, .8), SANCT_END = 1.43, SANCT_OFF = 1.53;
+  const GOLDEN = {c: [1.24, 1.06, .62], k: 1.15, b: .06, max: .55};
+  const sndAt = (list, k, d) => { if(k) list.push({fn: tt => sndPlay(k, tt), delay: d}); };   // 붙잡은 기술 소리를 이펙트가 닿을 때
+  const SPEC = {
+    wz_b: {holdSnd: true, flash: () => .2 + BOLT, build(c){ let s = c.held; c.T.forEach(el => { c.list.push({sheet: "bolt", el, delay: .2, until: .2 + BOLT, place: placeBolt(c.caster, el, c.side)}); c.list.push({sheet: "hit", el, delay: .2 + BOLT, place: placeChest(1), snd: s}); s = null; }); }},
+    wz_1: {flash: i => FIRE_BANG + i * .05, build(c){ c.T.forEach((el, i) => c.list.push({sheet: "fire", el, delay: i * .05, place: placeChest(1)})); }},
+    wz_2: {hold: true, flash: () => 0, build(c){
+      c.list.push({sheet: "ward", el: c.stage, ground: true, delay: .1, only: c.T, place: placeGroup(c.stage, c.foe, c.side, "wz_2")});
+      c.list.push({tint: "frost", el: c.stage, ground: true, delay: 0, until: 3.0, env: lt => .45 * smooth(.1, .55, lt) * (1 - smooth(2.2, 2.9, lt))});   // 시전 동안 채도 낮은 연푸른 바닥 필터
+      c.list.push({chill: c.T, color: CHILL, delay: 0, until: 3.0, env: lt => CHILL.max * smooth(.1, .7, lt) * (1 - smooth(2.2, 2.9, lt))}); }},   // 맞는 학생도 연푸르게
+    wz_u: {hold: true, holdSnd: true, flash: () => -1, build(c){
+      c.list.push({sheet: "grav", el: c.stage, ground: true, delay: .15, only: c.T, place: placeGroup(c.stage, c.foe, c.side, "wz_u"), snd: "wzGravity"});
+      c.list.push({tint: "grav", over: true, el: c.stage, delay: 0, until: GRAV_OFF + .45, env: lt => lt < GRAV_END ? Math.pow(lt / GRAV_END, 1.4) : 1 - smooth(GRAV_OFF, GRAV_OFF + .4, lt)});   // 연보라 — 화면째 · 3초에 불투명 · 0.1초 뒤 걷힘
+      multiHit(c.list, c.T, c.caster, c.held, c.rate, GRAV_T); }},
+    /* 팔라딘 (1103 열넷째 — 목업 mockups/paladin-pixelfx): 성스러운 일격 → judgment-strike (맞는 적 발밑 · 터지는 0.08초에 소리 · 흰 반짝임) ·
+       수호의 맹세 → oath-ward (맞는 아군마다 0.06초씩 · 방패가 서는 0.36초에 소리) · 치유의 빛 → healing-light (빛이 닿는 0.28초에 소리) ·
+       성역 선포 → sanctuary (아군 5명 줄 기준 · 금빛 화면째(숫자만 앞) · 축복 5번 0.7 ~ 1.43초 — 일레븐랩스 소리 paSanctuary 에 맞춤 · 회복 · 보호막 숫자 나눔 · 아군 금빛 물들기) */
+    pa_b: {holdSnd: true, flash: () => PA_SMITE, build(c){ c.T.forEach((el, i) => c.list.push({sheet: "psmite", el, delay: i * .05, place: placeFeet(1)})); sndAt(c.list, c.held, PA_SMITE); }},
+    pa_1: {hold: true, holdSnd: true, flash: () => 0, build(c){ c.T.forEach((el, i) => c.list.push({sheet: "pward", el, delay: i * .06, place: placeFeet(1)})); sndAt(c.list, c.held, PA_SET); }},
+    pa_2: {hold: true, holdSnd: true, flash: () => 0, build(c){ c.T.forEach((el, i) => c.list.push({sheet: "pheal", el, delay: i * .06, place: placeFeet(1)})); sndAt(c.list, c.held, PA_LAND); }},
+    pa_u: {hold: true, holdSnd: true, flash: () => -1, build(c){
+      c.list.push({sheet: "psanct", el: c.stage, ground: true, delay: .15, only: c.T, place: placeGroup(c.stage, c.side, c.side, "pa_u", true), snd: "paSanctuary"});
+      c.list.push({tint: "sanct", over: true, el: c.stage, delay: 0, until: SANCT_OFF + .45, env: lt => lt < SANCT_END ? Math.pow(lt / SANCT_END, 1.4) : 1 - smooth(SANCT_OFF, SANCT_OFF + .4, lt)});   // 금빛 — 화면째 · 정점에 불투명
+      c.list.push({chill: c.T, color: GOLDEN, delay: 0, until: SANCT_OFF + .45, env: lt => GOLDEN.max * smooth(.1, .8, lt) * (1 - smooth(SANCT_OFF, SANCT_OFF + .4, lt))});
+      multiHit(c.list, c.T, c.caster, c.held, c.rate, SANCT_T, {heal: true}); }}
+  };
+  /* 시전 쪽 (직업마다 · 그 직업의 게임 casters 그림을 뺀다) */
+  const CASTER = {wizard: {sheet: "sigil", place: c => placeSigil(c.side)}, paladin: {sheet: "pswing", place: c => placeFront(c.side)}};   // 팔라딘 — 시전 휘두름 (예전 trail)
+
+  /* ── 흰 반짝임(HITFX) 때 맞추기 — 게임은 맞는 장면 시작에 바로 번쩍인다 → SPEC.flash 초 뒤로 ── */
+  let hitNow = (el, o) => window.HITFX && HITFX.hit(el, o);
+  function hitHook(){
+    if(!window.HITFX || HITFX.__skpfx) return;
+    const h0 = HITFX.hit.bind(HITFX); hitNow = h0; HITFX.__skpfx = true;
+    HITFX.hit = function(el, o){
+      const c = ST.hitCtx, sp = c && SPEC[c.id];
+      if(!on() || !sp || !sp.flash || performance.now() - c.at > 60) return h0(el, o);
+      const i = Math.max(0, c.t.indexOf(el && el.dataset && el.dataset.uid)), d = sp.flash(i);
+      ST.flash.push({id: c.id, d: Math.round(d * 1000) / 1000});
+      if(d < 0) return false;
+      if(!d) return h0(el, o);
+      setTimeout(() => { if(el.isConnected) h0(el, o); }, d * 1000 / (Math.max(.1, ST.rate) * (ST.slow ? .25 : 1)));
+      return true;
+    };
+  }
+
+  /* ── 기술 소리 — 맞는 장면 시작(sfxFrame · 스타일리시 camTurn 만 — 세 번째 인자 active)에 바로 나던 것을 붙잡아 이펙트 시간에 ── */
+  const origSfx = sfxFrame;
+  sfxFrame = function(f, rate, active){
+    const id = f && f.fx && f.fx.skillId, sp = SPEC[id];
+    if(arguments.length >= 3 && sp && on()){
+      ST.rate = rate || 1;
+      ST.hitCtx = {id, t: (f.fx.t || []).slice(), at: performance.now()};
+      hitHook();
+      if(sp.holdSnd && f.fx.s){ ST.held = {id, s: f.fx.s}; return; }
+    }
+    return origSfx.apply(this, arguments);
+  };
+  function sndPlay(k, tt){
+    ST.snd.push({k, at: Math.round(tt * 1000) / 1000});
+    if(typeof sfxPlay === "function") sfxPlay(k, ST.slow ? .8 : 1);
+  }
+  try{ if(typeof SFX !== "undefined" && !SFX.wzGravity) SFX.wzGravity = {f: "wizard_gravity.mp3", v: .9}; }catch(e){}
+  try{ if(typeof SFX !== "undefined" && !SFX.paSanctuary) SFX.paSanctuary = {f: "paladin_sanctuary.mp3", v: .9}; }catch(e){}   // 성역 선포 — 사용자가 일레븐랩스로 만든 소리 (mockups/paladin-pixelfx/sfx)   // 중력 반전 합성 소리 (mockups/wizard-pixelfx/src/gravity_sfx.py)
+
+  /* ── 클로즈업 늘이기 — camTurn 의 camW(tok, 1500) · 정신력 시험 camW(tok, 520) 고리: SKPFX.hold(ms) — 이 차례 이펙트가 다 돌 만큼(끝 + 0.3초) ── */
+  let pend = 0;
+  function hold(ms){ const w = pend; pend = 0; ST.hold = {base: ms, ms: Math.max(ms, w)}; return Math.max(ms, w); }
+
+  /* ── 감싸기 ── */
+  const orig = stylishSkillFxShow;
+  stylishSkillFxShow = function(stage, caster, targets, job, skillId, side, active, groupTargets, timing){
+    const sp = SPEC[skillId], cs = CASTER[job];
+    if(sp) ST.cast.push({sk: skillId, at: Math.round(performance.now())});
+    if(!on() || !(sp || cs)) return orig.apply(this, arguments);
+    preload();
+    const F = STYLISH_SKILL_FX, keep = {t: F.targets[skillId], g: F.groups[skillId], c: F.casters[job]};
+    if(sp){ F.targets[skillId] = []; F.groups[skillId] = []; }
+    if(cs && ST.sigil) F.casters[job] = [];
+    let stop;
+    try{ stop = orig.apply(this, arguments); } finally { F.targets[skillId] = keep.t; F.groups[skillId] = keep.g; F.casters[job] = keep.c; }
+    const T = (targets || []).filter(Boolean), list = [], held = ST.held && ST.held.id === skillId ? ST.held.s : null, rate = ST.rate || 1;
+    ST.held = null; ST.nT = T.length;
+    if(cs && ST.sigil && caster) list.push({sheet: cs.sheet, el: caster, delay: 0, place: cs.place({side, caster})});
+    if(sp) sp.build({stage, caster, T, side, foe: side === "A" ? "B" : "A", held, rate, list, job, skillId});
+    if(!list.length) return stop;
+    play(stage, list, rate);
+    pend = 0;
+    if(sp && sp.hold){ const end = Math.max(...list.filter(o => o.sheet !== (cs && cs.sheet)).map(o => o.sheet ? o.delay + SHEETS[o.sheet].n / SHEETS[o.sheet].fps : (o.until != null ? o.until : o.delay)));
+      pend = (end + .3) * 1000 / (ST.slow ? .25 : 1); }
+    return () => { try{ stop && stop(); }catch(e){} };   // pixelfx 판은 끝까지 돈다 (클로즈업이 끝나면 걷힌다)
+  };
+
+  /* ── 틀기 — 캔버스(시트 한 장씩) · 바닥 층(.bf-cam 앞 — 유닛 아래) · 필터 · 타 ── */
+  function play(stage, list, rate){
+    const layer = document.createElement("div"), ground = document.createElement("div");
+    layer.className = "pfx-layer"; ground.className = "pfx-layer pfx-ground";
+    stage.append(layer);
+    stage.insertBefore(ground, stage.querySelector(".bf-cam"));
+    const extra = [], undo = [];
+    list.forEach(o => { if(o.fn) return;
+      if(o.chill){ const id = "pfxTint" + (++tintN), sv = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        sv.setAttribute("width", "0"); sv.setAttribute("height", "0"); sv.style.position = "absolute";
+        sv.innerHTML = `<filter id="${id}" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="${tintMatrix(0, o.color)}"/></filter>`;
+        document.body.append(sv); extra.push(sv); o.m = sv.querySelector("feColorMatrix");
+        o.an = o.chill.map(el => el.querySelector(".spr-anchor")).filter(Boolean); o.an.forEach(a => { a.style.filter = `url(#${id})`; });
+        undo.push(() => o.an.forEach(a => { a.style.filter = ""; })); return; }
+      if(o.tint){ const d = document.createElement("div"); d.className = "pfx-tint pfx-tint-" + o.tint; d.style.opacity = "0";
+        if(o.over){ d.classList.add("pfx-over"); document.body.append(d); extra.push(d); const t = document.createElement("div"); t.className = "pfx-poptop"; document.body.append(t); extra.push(t); }
+        else ground.prepend(d);
+        o.d = d; return; }
+      const P = SHEETS[o.sheet], c = document.createElement("canvas"); img(o.sheet);
+      c.width = P.w; c.height = P.h; c.className = "pfx-fx pfx-" + o.sheet; c.dataset.target = (o.el.dataset && o.el.dataset.uid) || "";
+      c.style.display = "none"; (o.ground ? ground : layer).append(c); Object.assign(o, {c, g: c.getContext("2d"), last: -1, P}); });
+    const spd = () => Math.max(.1, rate) * (ST.slow ? .25 : 1);
+    let raf = 0, dead = false, tt = 0, prev = performance.now(), fading = false;
+    const focus0 = stage.classList.contains("cam-focus");
+    ST.plays++; ST.endBy = null; ST.tint = null; ST.chill = null;
+    const stop = why => { if(dead) return; dead = true; ST.endBy = why || "done"; cancelAnimationFrame(raf); layer.remove(); ground.remove(); extra.forEach(e => e.remove()); undo.forEach(f => { try{ f(); }catch(e){} }); };
+    const step = now => {
+      if(dead) return;
+      if(!stage.isConnected){ stop("gone"); return; }
+      tt += (now - prev) / 1000 * spd(); prev = now;
+      if(focus0 && !fading && !stage.classList.contains("cam-focus")){ fading = true; [layer, ground, ...extra].forEach(e => { e.style.transition = "opacity .25s ease"; e.style.opacity = "0"; }); setTimeout(() => stop("focus"), 260); return; }
+      if(fading) return;
+      const G = geo(stage);
+      let alive = 0, fired = false;   // 타는 한 장에 하나씩 (같은 소리 55ms 막기에 걸리지 않게)
+      list.forEach(o => {
+        if(o.fn){ if(!o.done){ if(tt >= o.delay && !fired){ fired = o.done = true; try{ o.fn(tt); }catch(e){ console.warn(e); } } else alive++; } return; }
+        if(o.chill){ if(tt >= o.until){ o.m.setAttribute("values", tintMatrix(0, o.color)); return; } alive++; const v = Math.max(0, Math.min(1, o.env(Math.max(0, tt - o.delay))));
+          o.m.setAttribute("values", tintMatrix(v, o.color)); ST.chill = {v, n: o.an.length, max: Math.max(v, (ST.chill && ST.chill.max) || 0)}; return; }
+        if(o.tint){ const lt = tt - o.delay; if(tt >= o.until){ o.d.style.opacity = "0"; return; } alive++; const v = Math.max(0, Math.min(1, o.env(Math.max(0, lt)))); o.d.style.opacity = v.toFixed(3);
+          ST.tint = {k: o.tint, v, tt, max: Math.max(v, (ST.tint && ST.tint.k === o.tint && ST.tint.max) || 0)}; return; }
+        const P = o.P, lt = tt - o.delay, f = P.loop ? Math.floor(lt * P.fps) % P.n : Math.floor(lt * P.fps);
+        const over = o.until != null ? tt >= o.until : f >= P.n;
+        if(over){ o.c.style.display = "none"; return; }
+        alive++;
+        if(lt < 0){ o.c.style.display = "none"; return; }
+        if(o.snd && !o.sndDone){ o.sndDone = true; sndPlay(o.snd, tt); }
+        const q = o.place(o, G, tt); if(!q){ o.c.style.display = "none"; return; }
+        const k = q.k * (FX_SIZE[o.sheet] || 1) * ST.scale;   // 효과마다 기본 크기
+        o.c.style.display = "";
+        Object.assign(o.c.style, {left: (q.x - P.pivot[0] * k) + "px", top: (q.y - P.pivot[1] * k) + "px", width: P.w * k + "px", height: P.h * k + "px",
+          transformOrigin: `${P.pivot[0] * k}px ${P.pivot[1] * k}px`, transform: q.flip ? "scaleX(-1)" : ""});
+        const im = img(o.sheet);
+        if(f !== o.last && im.complete && im.naturalWidth){ o.last = f; o.g.clearRect(0, 0, P.w, P.h); o.g.drawImage(im, (f % P.cols) * P.w, Math.floor(f / P.cols) * P.h, P.w, P.h, 0, 0, P.w, P.h); }
+      });
+      ST.last = {tt, alive};
+      if(!alive && tt > .2){ stop(); return; }
+      raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return stop;
+  }
+  /* 시트는 처음 pixelfx 기술 · 시전 그림을 틀 때 다 받는다 (첫 장이 비면 다음 장부터 — 그 전투의 다음 기술부터는 받아 둔 것) */
+  let pre = false;
+  function preload(){ if(pre) return; pre = true; Object.keys(SHEETS).forEach(k => { const im = img(k); try{ im.decode && im.decode().catch(() => {}); }catch(e){} }); }
+  /* 스타일리시 전투를 열 때(stylishSkillFxPreload — 게임이 기술 그림을 미리 받는 곳) 시트도 받아 풀어 둔다 — 첫 시전의 첫 장이 밀리지 않게 */
+  if(typeof stylishSkillFxPreload === "function"){ const pre0 = stylishSkillFxPreload; stylishSkillFxPreload = function(res){ try{ if(on()) preload(); }catch(e){} return pre0.apply(this, arguments); }; }
+  window.SKPFX = {st: ST, sheets: SHEETS, spec: SPEC, caster: CASTER, size: FX_SIZE, hold, preload, accel, smooth, multiHit, tintMatrix,
+    place: {group: placeGroup, chest: placeChest, feet: placeFeet, front: placeFront, sigil: placeSigil, unitBox, geo},
+    snd: sndPlay, hitNow: (el, o) => hitNow(el, o),
+    addSheet(k, m){ SHEETS[k] = m; delete IMG[k]; }};
+})();
+/* SKPFX_END */
 /* 오프닝을 닫는다 — 연한 푸른 빛이 화면을 덮은 뒤 프롤로그가 드러난다. fast = 건너뛰기 (1003: 흰빛 → 푸른 빛) */
 function openingFinish(fast){
   const tok = OP; if(!tok) return;
