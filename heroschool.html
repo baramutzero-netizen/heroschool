@@ -6376,6 +6376,8 @@ html[data-ui-finish="pixel"]:not(.pxb-off) .tcom-cap.an .tcom-body{--pxb-edge:#7
 .pfx-tint-frost{background:rgb(168,196,224);-webkit-backdrop-filter:saturate(.55);backdrop-filter:saturate(.55)}
 .pfx-tint-grav{background:rgb(205,186,240)}
 .pfx-tint-sanct{background:rgb(255,236,176)}
+.pfx-tint-curse{background:rgb(112,86,150);-webkit-backdrop-filter:saturate(.6);backdrop-filter:saturate(.6)}
+.pfx-tint-comm{background:rgb(92,16,34)}
 .pfx-tint.pfx-over{position:fixed;inset:0;z-index:2990}
 .pfx-poptop{position:fixed;inset:0;z-index:2995;pointer-events:none}
 .pfx-pophold{position:fixed;transform-origin:0 0;pointer-events:none}
@@ -23969,7 +23971,7 @@ function leagueRR(n){
 const SEASON_STEP  = 5 * 60 * 1000;        // 라운드 하나가 열리는 간격
 const SEASON_EVERY = 3 * 60 * 60 * 1000;   // 시즌이 새로 열리는 주기
 /* 빌드 표식 — 지금 보고 있는 파일이 언제 만들어진 것인지. wrap.py 가 갈아끼운다. */
-const BUILD = "1103-1048";
+const BUILD = "1103-1222";
 const BUILD_TS = 0;   // 같은 순간의 밀리초 — 새 빌드인지 비교할 때 쓴다 (wrap_site.py 가 갈아끼운다)
 const SEASON_MIN   = 4;                    // 시즌이 열리기 위한 최소 팀 수
 /* 전투 규칙 판번호 —
@@ -52765,17 +52767,19 @@ function opDrops(){
      서리 결계 wz_2 → frost-ward (적 5명 줄 기준 크기 · 가운데는 불려 나온 적 · 연푸른 바닥 필터 · 맞는 학생 스프라이트도 연푸르게) ·
      중력 반전 wz_u → gravity-flip (10타 — 0.6 ~ 3초 · 간격 ×0.8 · 피해 숫자 · 막대를 10으로 나눔 · 타마다 피격음 · 연보라가 화면째 덮고 피해 숫자만 앞 · 합성 소리 wzGravity)
      효과마다 기본 크기 (마법진 0.8 · 마력탄 · 화염 폭발 1 · 서리 결계 · 중력 반전 1.25) · 서리 결계 · 중력 반전은 클로즈업을 이펙트 길이만큼 늘인다 (camTurn 의 camW 고리 — SKPFX.hold)
+   · 팔라딘 (1103 열넷째) · 암흑사제 (1103 열여섯째) — 각 직업 목업 mockups/<직업>-pixelfx 에서 옮겼다 (SPEC 머리 주석)
    · 다른 직업도 SPEC · CASTER 에 더하면 같은 틀로 (목업은 SKPFX.addSheet · SPEC 으로 시트 · 기술을 더한다)
    · window.__skpfxOff = true 면 예전 그림 그대로 · SKPFX.st.mode = "now" 도 같다 (목업 비교) */
 (function(){
-  const SHEETS = {"sigil":{"src":"assets/skill-fx/pfx/wizard-sigil.webp?v=e641cad6","fps":30,"n":43,"w":96,"h":96,"cols":7,"pivot":[20,48],"loop":false},"bolt":{"src":"assets/skill-fx/pfx/mana-bolt.webp?v=31fb526c","fps":30,"n":12,"w":56,"h":24,"cols":3,"pivot":[44,12],"loop":true},"hit":{"src":"assets/skill-fx/pfx/mana-hit.webp?v=004e9699","fps":30,"n":25,"w":80,"h":72,"cols":5,"pivot":[40,54],"loop":false},"fire":{"src":"assets/skill-fx/pfx/fire-blast.webp?v=fcf4e13d","fps":30,"n":64,"w":128,"h":128,"cols":8,"pivot":[64,104],"loop":false},"ward":{"src":"assets/skill-fx/pfx/frost-ward.webp?v=81f3e78f","fps":30,"n":85,"w":304,"h":184,"cols":8,"pivot":[152,120],"loop":false},"grav":{"src":"assets/skill-fx/pfx/gravity-flip.webp?v=5aeaf087","fps":30,"n":118,"w":304,"h":288,"cols":11,"pivot":[152,232],"loop":false},"pswing":{"src":"assets/skill-fx/pfx/paladin-swing.webp?v=dd1c8ed1","fps":30,"n":28,"w":104,"h":124,"cols":6,"pivot":[48,56],"loop":false},"psmite":{"src":"assets/skill-fx/pfx/judgment-strike.webp?v=1f62224f","fps":30,"n":34,"w":120,"h":136,"cols":7,"pivot":[60,112],"loop":false},"pward":{"src":"assets/skill-fx/pfx/oath-ward.webp?v=34584a8f","fps":30,"n":55,"w":76,"h":92,"cols":9,"pivot":[38,82],"loop":false},"pheal":{"src":"assets/skill-fx/pfx/healing-light.webp?v=6045f6fc","fps":30,"n":54,"w":64,"h":156,"cols":12,"pivot":[32,144],"loop":false},"psanct":{"src":"assets/skill-fx/pfx/sanctuary.webp?v=85f476f0","fps":30,"n":73,"w":304,"h":288,"cols":9,"pivot":[152,232],"loop":false}};
+  const SHEETS = {"sigil":{"src":"assets/skill-fx/pfx/wizard-sigil.webp?v=e641cad6","fps":30,"n":43,"w":96,"h":96,"cols":7,"pivot":[20,48],"loop":false},"bolt":{"src":"assets/skill-fx/pfx/mana-bolt.webp?v=31fb526c","fps":30,"n":12,"w":56,"h":24,"cols":3,"pivot":[44,12],"loop":true},"hit":{"src":"assets/skill-fx/pfx/mana-hit.webp?v=004e9699","fps":30,"n":25,"w":80,"h":72,"cols":5,"pivot":[40,54],"loop":false},"fire":{"src":"assets/skill-fx/pfx/fire-blast.webp?v=fcf4e13d","fps":30,"n":64,"w":128,"h":128,"cols":8,"pivot":[64,104],"loop":false},"ward":{"src":"assets/skill-fx/pfx/frost-ward.webp?v=81f3e78f","fps":30,"n":85,"w":304,"h":184,"cols":8,"pivot":[152,120],"loop":false},"grav":{"src":"assets/skill-fx/pfx/gravity-flip.webp?v=5aeaf087","fps":30,"n":118,"w":304,"h":288,"cols":11,"pivot":[152,232],"loop":false},"pswing":{"src":"assets/skill-fx/pfx/paladin-swing.webp?v=dd1c8ed1","fps":30,"n":28,"w":104,"h":124,"cols":6,"pivot":[48,56],"loop":false},"psmite":{"src":"assets/skill-fx/pfx/judgment-strike.webp?v=1f62224f","fps":30,"n":34,"w":120,"h":136,"cols":7,"pivot":[60,112],"loop":false},"pward":{"src":"assets/skill-fx/pfx/oath-ward.webp?v=34584a8f","fps":30,"n":55,"w":76,"h":92,"cols":9,"pivot":[38,82],"loop":false},"pheal":{"src":"assets/skill-fx/pfx/healing-light.webp?v=6045f6fc","fps":30,"n":54,"w":64,"h":156,"cols":12,"pivot":[32,144],"loop":false},"psanct":{"src":"assets/skill-fx/pfx/sanctuary.webp?v=85f476f0","fps":30,"n":73,"w":304,"h":288,"cols":9,"pivot":[152,232],"loop":false},"dcast":{"src":"assets/skill-fx/pfx/dark-essence-cast.webp?v=bebcd531","fps":30,"n":31,"w":96,"h":88,"cols":6,"pivot":[60,44],"loop":false},"dtouch":{"src":"assets/skill-fx/pfx/umbral-touch.webp?v=31fc43ff","fps":30,"n":31,"w":136,"h":124,"cols":6,"pivot":[68,100],"loop":false},"dsiphon":{"src":"assets/skill-fx/pfx/blood-siphon.webp?v=4259e0ad","fps":30,"n":31,"w":80,"h":100,"cols":7,"pivot":[40,88],"loop":false},"dorb":{"src":"assets/skill-fx/pfx/blood-orb.webp?v=b27606ba","fps":30,"n":12,"w":48,"h":24,"cols":3,"pivot":[38,12],"loop":true},"dcurse":{"src":"assets/skill-fx/pfx/curse-sigil.webp?v=30e18efe","fps":30,"n":85,"w":304,"h":184,"cols":8,"pivot":[152,120],"loop":false},"dcomm":{"src":"assets/skill-fx/pfx/dark-communion.webp?v=5a03800e","fps":30,"n":100,"w":304,"h":288,"cols":10,"pivot":[152,232],"loop":false}};
   const ST = {mode: "pfx", slow: false, scale: 1, sigil: true, plays: 0, snd: [], hits: [], flash: [], cast: [], rate: 1, hold: null, nT: 0, box: null, tint: null, chill: null, endBy: null, last: null};
   const IMG = {};
   const img = k => { if(!IMG[k]){ IMG[k] = new Image(); IMG[k].src = SHEETS[k].src; } return IMG[k]; };
   const on = () => !window.__skpfxOff && ST.mode === "pfx";
   const smooth = (a, b, x) => { const u = Math.min(1, Math.max(0, (x - a) / (b - a))); return u * u * (3 - 2 * u); };
   const FX_SIZE = {sigil: .8, bolt: 1, hit: 1, fire: 1, ward: 1.25, grav: 1.25,
-    pswing: 1.25, psmite: 1.25, pward: 1.25, pheal: 1.25, psanct: 1};   // 팔라딘 (1103 열셋째 — 사용자 '고유 효과, 성스러운 일격, 치유의 빛, 수호의 맹세의 기본 크기는 크게, 성역 선포는 보통')
+    pswing: 1.25, psmite: 1.25, pward: 1.25, pheal: 1.25, psanct: 1,   // 팔라딘 (1103 열셋째 — 사용자 '고유 효과, 성스러운 일격, 치유의 빛, 수호의 맹세의 기본 크기는 크게, 성역 선포는 보통')
+    dcast: 1, dtouch: 1, dsiphon: 1, dorb: 1, dcurse: 1.25, dcomm: 1.25};   // 암흑사제 (1103 열여섯째 — 목업 mockups/darkpriest-pixelfx · 저주 · 성찬 크게)
   const BOLT = .22, FIRE_BANG = .12;
   const geo = stage => { const sr = stage.getBoundingClientRect(); return {sr, sx: stage.clientWidth / sr.width, sy: stage.clientHeight / sr.height}; };
   const unitBox = (el, G) => { const r = el.getBoundingClientRect(); return {cx: (r.left + r.width / 2 - G.sr.left) * G.sx, top: (r.top - G.sr.top) * G.sy, h: r.height * G.sy, w: r.width * G.sx}; };
@@ -52905,6 +52909,19 @@ function opDrops(){
   const PA_SMITE = .08, PA_SET = .36, PA_LAND = .28, SANCT_T = accel(5, .7, 1.43, .8), SANCT_END = 1.43, SANCT_OFF = 1.53;
   const GOLDEN = {c: [1.24, 1.06, .62], k: 1.15, b: .06, max: .55};
   const sndAt = (list, k, d) => { if(k) list.push({fn: tt => sndPlay(k, tt), delay: d}); };   // 붙잡은 기술 소리를 이펙트가 닿을 때
+  /* 암흑사제 (1103 열여섯째) — 손길이 터지는 0.15초 · 흡혈 구슬이 떠나는 0.35초(0.3초 날아간다) · 성찬 8번 0.6 ~ 2.6초 */
+  const DP_TOUCH = .15, DP_LEAVE = .35, DP_FLY = .3, COMM_T = accel(8, .6, 2.6, .8), COMM_END = 2.6, COMM_OFF = 2.7;
+  const VIOLET = {c: [.86, .66, 1.18], k: 1.1, b: .02, max: .5}, BLOOD = {c: [1.25, .5, .55], k: 1.05, b: .02, max: .55};
+  /* 암흑사제 지팡이 끝 (지금 darkEssence 그림이 맞추는 곳 — 몸 가운데에서 몸 너비 0.46 앞 · 위에서 높이 0.38) */
+  function placeStaff(side){ return (o, G) => { const u = unitBox(o.el, G), k = u.h * .92 / 48; return {x: u.cx + (side === "B" ? -1 : 1) * u.w * .46, y: u.top + u.h * .38, k, flip: side === "B"}; }; }
+  /* 피 구슬 — 맞는 적의 뽑힌 구슬 자리(발밑 위 28px) → 시전자 가슴 앞 · 살짝 위로 휘며 */
+  function placeOrb(target, caster, side){
+    return (o, G, tt) => {
+      const a = unitBox(target, G), b = unitBox(caster, G), k = a.h * .92 / 48, u = Math.min(1, Math.max(0, (tt - o.delay) / DP_FLY)), e = u * u * (3 - 2 * u);
+      const ax = a.cx, ay = a.top + a.h * .8 - 28 * k, bx = b.cx + (side === "B" ? -1 : 1) * b.w * .12, by = b.top + b.h * .55;
+      return {x: ax + (bx - ax) * e, y: ay + (by - ay) * e - Math.sin(u * Math.PI) * a.h * .18, k, flip: bx < ax};
+    };
+  }
   const SPEC = {
     wz_b: {holdSnd: true, flash: () => .2 + BOLT, build(c){ let s = c.held; c.T.forEach(el => { c.list.push({sheet: "bolt", el, delay: .2, until: .2 + BOLT, place: placeBolt(c.caster, el, c.side)}); c.list.push({sheet: "hit", el, delay: .2 + BOLT, place: placeChest(1), snd: s}); s = null; }); }},
     wz_1: {flash: i => FIRE_BANG + i * .05, build(c){ c.T.forEach((el, i) => c.list.push({sheet: "fire", el, delay: i * .05, place: placeChest(1)})); }},
@@ -52926,10 +52943,28 @@ function opDrops(){
       c.list.push({sheet: "psanct", el: c.stage, ground: true, delay: .15, only: c.T, place: placeGroup(c.stage, c.side, c.side, "pa_u", true), snd: "paSanctuary"});
       c.list.push({tint: "sanct", over: true, el: c.stage, delay: 0, until: SANCT_OFF + .45, env: lt => lt < SANCT_END ? Math.pow(lt / SANCT_END, 1.4) : 1 - smooth(SANCT_OFF, SANCT_OFF + .4, lt)});   // 금빛 — 화면째 · 정점에 불투명
       c.list.push({chill: c.T, color: GOLDEN, delay: 0, until: SANCT_OFF + .45, env: lt => GOLDEN.max * smooth(.1, .8, lt) * (1 - smooth(SANCT_OFF, SANCT_OFF + .4, lt))});
-      multiHit(c.list, c.T, c.caster, c.held, c.rate, SANCT_T, {heal: true}); }}
+      multiHit(c.list, c.T, c.caster, c.held, c.rate, SANCT_T, {heal: true}); }},
+    /* 암흑사제 (1103 열여섯째 — 목업 mockups/darkpriest-pixelfx): 어둠의 손길 → umbral-touch (맞는 적 발밑 · 터지는 0.15초에 소리 · 흰 반짝임) ·
+       흡혈 의식 → blood-siphon + blood-orb (구슬이 0.35초에 떠나 시전자 가슴으로 · 떠날 때 소리) ·
+       저주 → curse-sigil (적 5명 줄 기준 · 흐린 보라 바닥 필터 · 맞는 적 보랏빛 · 일레븐랩스 소리 dpCurse — 게임 기술 소리 대신) ·
+       어둠의 성찬 → dark-communion (적 5명 줄 기준 · 검붉은 화면째(숫자만 앞) · 8번 0.6 ~ 2.6초 · 일레븐랩스 소리 dpCommunion · 피해 숫자 나눔 · 핏빛 물들기) */
+    dp_b: {holdSnd: true, flash: () => DP_TOUCH, build(c){ c.T.forEach((el, i) => c.list.push({sheet: "dtouch", el, delay: i * .05, place: placeFeet(1)})); sndAt(c.list, c.held, DP_TOUCH); }},
+    dp_1: {holdSnd: true, flash: () => 0, build(c){
+      c.T.forEach((el, i) => { c.list.push({sheet: "dsiphon", el, delay: i * .05, place: placeFeet(1)}); if(c.caster) c.list.push({sheet: "dorb", el, delay: DP_LEAVE + i * .05, until: DP_LEAVE + DP_FLY + i * .05, place: placeOrb(el, c.caster, c.side)}); });
+      sndAt(c.list, c.held, DP_LEAVE); }},
+    dp_2: {hold: true, holdSnd: true, flash: () => 0, build(c){
+      c.list.push({sheet: "dcurse", el: c.stage, ground: true, delay: .1, only: c.T, place: placeGroup(c.stage, c.foe, c.side, "dp_2"), snd: "dpCurse"});
+      c.list.push({tint: "curse", el: c.stage, ground: true, delay: 0, until: 3.0, env: lt => .4 * smooth(.1, .55, lt) * (1 - smooth(2.1, 2.9, lt))});   // 흐린 보라 바닥 필터
+      c.list.push({chill: c.T, color: VIOLET, delay: 0, until: 3.0, env: lt => VIOLET.max * smooth(.1, .7, lt) * (1 - smooth(2.1, 2.9, lt))}); }},
+    dp_u: {hold: true, holdSnd: true, flash: () => -1, build(c){
+      c.list.push({sheet: "dcomm", el: c.stage, ground: true, delay: .15, only: c.T, place: placeGroup(c.stage, c.foe, c.side, "dp_u"), snd: "dpCommunion"});
+      c.list.push({tint: "comm", over: true, el: c.stage, delay: 0, until: COMM_OFF + .45, env: lt => lt < COMM_END ? Math.pow(lt / COMM_END, 1.4) : 1 - smooth(COMM_OFF, COMM_OFF + .4, lt)});   // 검붉은 빛 — 화면째 · 2.6초에 불투명
+      c.list.push({chill: c.T, color: BLOOD, delay: 0, until: COMM_OFF + .45, env: lt => BLOOD.max * smooth(.1, .8, lt) * (1 - smooth(COMM_OFF, COMM_OFF + .4, lt))});
+      multiHit(c.list, c.T, c.caster, c.held, c.rate, COMM_T); }}
   };
   /* 시전 쪽 (직업마다 · 그 직업의 게임 casters 그림을 뺀다) */
-  const CASTER = {wizard: {sheet: "sigil", place: c => placeSigil(c.side)}, paladin: {sheet: "pswing", place: c => placeFront(c.side)}};   // 팔라딘 — 시전 휘두름 (예전 trail)
+  const CASTER = {wizard: {sheet: "sigil", place: c => placeSigil(c.side)}, paladin: {sheet: "pswing", place: c => placeFront(c.side)},
+    darkpriest: {sheet: "dcast", place: c => placeStaff(c.side)}};   // 암흑사제 — 지팡이 끝 보라 소용돌이 (예전 darkEssence)   // 팔라딘 — 시전 휘두름 (예전 trail)
 
   /* ── 흰 반짝임(HITFX) 때 맞추기 — 게임은 맞는 장면 시작에 바로 번쩍인다 → SPEC.flash 초 뒤로 ── */
   let hitNow = (el, o) => window.HITFX && HITFX.hit(el, o);
@@ -52965,6 +53000,7 @@ function opDrops(){
     if(typeof sfxPlay === "function") sfxPlay(k, ST.slow ? .8 : 1);
   }
   try{ if(typeof SFX !== "undefined" && !SFX.wzGravity) SFX.wzGravity = {f: "wizard_gravity.mp3", v: .9}; }catch(e){}
+  try{ if(typeof SFX !== "undefined"){ if(!SFX.dpCurse) SFX.dpCurse = {f: "darkpriest_curse.mp3", v: .9}; if(!SFX.dpCommunion) SFX.dpCommunion = {f: "darkpriest_communion.mp3", v: .9}; } }catch(e){}   // 암흑사제 저주 · 성찬 — 일레븐랩스 (mockups/darkpriest-pixelfx/src/elevenlabs_mix.py)
   try{ if(typeof SFX !== "undefined" && !SFX.paSanctuary) SFX.paSanctuary = {f: "paladin_sanctuary.mp3", v: .9}; }catch(e){}   // 성역 선포 — 사용자가 일레븐랩스로 만든 소리 (mockups/paladin-pixelfx/sfx)   // 중력 반전 합성 소리 (mockups/wizard-pixelfx/src/gravity_sfx.py)
 
   /* ── 클로즈업 늘이기 — camTurn 의 camW(tok, 1500) · 정신력 시험 camW(tok, 520) 고리: SKPFX.hold(ms) — 이 차례 이펙트가 다 돌 만큼(끝 + 0.3초) ── */
@@ -52978,11 +53014,11 @@ function opDrops(){
     if(sp) ST.cast.push({sk: skillId, at: Math.round(performance.now())});
     if(!on() || !(sp || cs)) return orig.apply(this, arguments);
     preload();
-    const F = STYLISH_SKILL_FX, keep = {t: F.targets[skillId], g: F.groups[skillId], c: F.casters[job]};
-    if(sp){ F.targets[skillId] = []; F.groups[skillId] = []; }
+    const F = STYLISH_SKILL_FX, SC = F.skillCasters || {}, keep = {t: F.targets[skillId], g: F.groups[skillId], c: F.casters[job], s: SC[skillId]};
+    if(sp){ F.targets[skillId] = []; F.groups[skillId] = []; if(keep.s) SC[skillId] = []; }   // 1103 열여섯째 — 기술마다 시전 쪽 그림(skillCasters — 도발 tauntCall)도
     if(cs && ST.sigil) F.casters[job] = [];
     let stop;
-    try{ stop = orig.apply(this, arguments); } finally { F.targets[skillId] = keep.t; F.groups[skillId] = keep.g; F.casters[job] = keep.c; }
+    try{ stop = orig.apply(this, arguments); } finally { F.targets[skillId] = keep.t; F.groups[skillId] = keep.g; F.casters[job] = keep.c; if(keep.s) SC[skillId] = keep.s; }
     const T = (targets || []).filter(Boolean), list = [], held = ST.held && ST.held.id === skillId ? ST.held.s : null, rate = ST.rate || 1;
     ST.held = null; ST.nT = T.length;
     if(cs && ST.sigil && caster) list.push({sheet: cs.sheet, el: caster, delay: 0, place: cs.place({side, caster})});
