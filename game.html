@@ -6683,6 +6683,11 @@ html[data-ui-finish="pixel"]:not(.pxb-off) .tcom-cap.an .tcom-body{--pxb-edge:#7
 .pfx-tint-gale{background:rgb(196,232,206)}
 .pfx-tint-meteor{background:rgb(232,138,88);-webkit-backdrop-filter:saturate(.7);backdrop-filter:saturate(.7)}
 .pfx-tint-heat{background:rgb(238,164,108);-webkit-backdrop-filter:saturate(.7);backdrop-filter:saturate(.7)}
+.pfx-tint-dawn{background:rgb(214,170,158);-webkit-backdrop-filter:saturate(.75);backdrop-filter:saturate(.75)}
+.pfx-tint-stop{background:transparent;-webkit-backdrop-filter:grayscale(1);backdrop-filter:grayscale(1)}
+.pfx-tint-mire{background:rgb(96,150,160);-webkit-backdrop-filter:saturate(.55);backdrop-filter:saturate(.55)}
+.pfx-tint-tide{background:rgb(70,96,128);-webkit-backdrop-filter:saturate(.55);backdrop-filter:saturate(.55)}
+.pfx-tint-unseal{background:rgb(196,92,118);-webkit-backdrop-filter:saturate(.7);backdrop-filter:saturate(.7)}   /* 1105 여덟째 — 전쟁법사 봉인 해제 진홍 바닥 */
 .pfx-tint.pfx-over{position:fixed;inset:0;z-index:2990}
 .pfx-poptop{position:fixed;inset:0;z-index:2995;pointer-events:none}
 .pfx-pophold{position:fixed;transform-origin:0 0;pointer-events:none}
@@ -53169,10 +53174,12 @@ function opDrops(){
      효과마다 기본 크기 (마법진 0.8 · 마력탄 · 화염 폭발 1 · 서리 결계 · 중력 반전 1.25) · 서리 결계 · 중력 반전은 클로즈업을 이펙트 길이만큼 늘인다 (camTurn 의 camW 고리 — SKPFX.hold)
    · 팔라딘 (1103 열넷째) · 암흑사제 (1103 열여섯째) — 각 직업 목업 mockups/<직업>-pixelfx 에서 옮겼다 (SPEC 머리 주석)
    · 검투사 · 드루이드 · 암살자 · 궁수 · 무도가 (1103 스물넷째) — 블록 끝에 각 목업의 <직업>_fx.js 를 그대로 붙였다
+   · 신성 사제 · 시마도사 · 무영객 (1105 일곱째) — 같은 식으로 블록 끝에 (원본 그림 · 데포르메는 목업에만)
+   · 전쟁법사 (1105 여덟째) — 같은 식으로 블록 끝에 (원본 그림 · 데포르메는 목업에만 · 게임 봉인 단계 소리 unseal0 ~ 6 은 pixelfx 판에서 뺀다)
    · 다른 직업도 SPEC · CASTER 에 더하면 같은 틀로 (목업은 SKPFX.addSheet · SPEC 으로 시트 · 기술을 더한다)
    · window.__skpfxOff = true 면 예전 그림 그대로 · SKPFX.st.mode = "now" 도 같다 (목업 비교) */
 (function(){
-  const SHEETS = {"sigil":{"src":"assets/skill-fx/pfx/wizard-sigil.webp?v=e641cad6","fps":30,"n":43,"w":96,"h":96,"cols":7,"pivot":[20,48],"loop":false},"bolt":{"src":"assets/skill-fx/pfx/mana-bolt.webp?v=31fb526c","fps":30,"n":12,"w":56,"h":24,"cols":3,"pivot":[44,12],"loop":true},"hit":{"src":"assets/skill-fx/pfx/mana-hit.webp?v=004e9699","fps":30,"n":25,"w":80,"h":72,"cols":5,"pivot":[40,54],"loop":false},"fire":{"src":"assets/skill-fx/pfx/fire-blast.webp?v=fcf4e13d","fps":30,"n":64,"w":128,"h":128,"cols":8,"pivot":[64,104],"loop":false},"ward":{"src":"assets/skill-fx/pfx/frost-ward.webp?v=81f3e78f","fps":30,"n":85,"w":304,"h":184,"cols":8,"pivot":[152,120],"loop":false},"grav":{"src":"assets/skill-fx/pfx/gravity-flip.webp?v=5aeaf087","fps":30,"n":118,"w":304,"h":288,"cols":11,"pivot":[152,232],"loop":false},"pswing":{"src":"assets/skill-fx/pfx/paladin-swing.webp?v=dd1c8ed1","fps":30,"n":28,"w":104,"h":124,"cols":6,"pivot":[48,56],"loop":false},"psmite":{"src":"assets/skill-fx/pfx/judgment-strike.webp?v=1f62224f","fps":30,"n":34,"w":120,"h":136,"cols":7,"pivot":[60,112],"loop":false},"pward":{"src":"assets/skill-fx/pfx/oath-ward.webp?v=34584a8f","fps":30,"n":55,"w":76,"h":92,"cols":9,"pivot":[38,82],"loop":false},"pheal":{"src":"assets/skill-fx/pfx/healing-light.webp?v=6045f6fc","fps":30,"n":54,"w":64,"h":156,"cols":12,"pivot":[32,144],"loop":false},"psanct":{"src":"assets/skill-fx/pfx/sanctuary.webp?v=85f476f0","fps":30,"n":73,"w":304,"h":288,"cols":9,"pivot":[152,232],"loop":false},"dcast":{"src":"assets/skill-fx/pfx/dark-essence-cast.webp?v=bebcd531","fps":30,"n":31,"w":96,"h":88,"cols":6,"pivot":[60,44],"loop":false},"dtouch":{"src":"assets/skill-fx/pfx/umbral-touch.webp?v=31fc43ff","fps":30,"n":31,"w":136,"h":124,"cols":6,"pivot":[68,100],"loop":false},"dsiphon":{"src":"assets/skill-fx/pfx/blood-siphon.webp?v=4259e0ad","fps":30,"n":31,"w":80,"h":100,"cols":7,"pivot":[40,88],"loop":false},"dorb":{"src":"assets/skill-fx/pfx/blood-orb.webp?v=b27606ba","fps":30,"n":12,"w":48,"h":24,"cols":3,"pivot":[38,12],"loop":true},"dcurse":{"src":"assets/skill-fx/pfx/curse-sigil.webp?v=30e18efe","fps":30,"n":85,"w":304,"h":184,"cols":8,"pivot":[152,120],"loop":false},"dcomm":{"src":"assets/skill-fx/pfx/dark-communion.webp?v=5a03800e","fps":30,"n":100,"w":304,"h":288,"cols":10,"pivot":[152,232],"loop":false},"sswing":{"src":"assets/skill-fx/pfx/gladiator-swing.webp?v=f6a5e0c6","fps":30,"n":22,"w":124,"h":128,"cols":5,"pivot":[40,62],"loop":false},"scleave":{"src":"assets/skill-fx/pfx/slant-cleave.webp?v=4c2ca857","fps":30,"n":27,"w":140,"h":136,"cols":6,"pivot":[68,110],"loop":false},"sroar":{"src":"assets/skill-fx/pfx/taunt-roar.webp?v=d0e0de8a","fps":30,"n":25,"w":136,"h":116,"cols":5,"pivot":[28,60],"loop":false},"smark":{"src":"assets/skill-fx/pfx/taunt-mark.webp?v=87f8af66","fps":30,"n":43,"w":104,"h":120,"cols":8,"pivot":[52,104],"loop":false},"siron":{"src":"assets/skill-fx/pfx/iron-stance.webp?v=fc82e6ef","fps":30,"n":52,"w":132,"h":124,"cols":7,"pivot":[66,104],"loop":false},"searth":{"src":"assets/skill-fx/pfx/boulder-rend.webp?v=11b0d526","fps":30,"n":109,"w":352,"h":264,"cols":10,"pivot":[176,212],"loop":false},"drglyph":{"src":"assets/skill-fx/pfx/druid-glyph.webp?v=18ce6f16","fps":30,"n":30,"w":104,"h":104,"cols":6,"pivot":[36,56],"loop":false},"drlash":{"src":"assets/skill-fx/pfx/thorn-lash.webp?v=be1fa35c","fps":30,"n":43,"w":200,"h":128,"cols":6,"pivot":[134,114],"loop":false},"drseed":{"src":"assets/skill-fx/pfx/regen-seed.webp?v=62f3c396","fps":30,"n":52,"w":96,"h":120,"cols":9,"pivot":[48,104],"loop":false},"drbeast":{"src":"assets/skill-fx/pfx/beast-form.webp?v=e58d195b","fps":30,"n":49,"w":136,"h":148,"cols":8,"pivot":[64,126],"loop":false},"drwrath":{"src":"assets/skill-fx/pfx/wrath-of-nature.webp?v=6e67e73b","fps":30,"n":97,"w":360,"h":240,"cols":9,"pivot":[180,190],"loop":false},"rosign":{"src":"assets/skill-fx/pfx/rogue-sign.webp?v=986fa568","fps":30,"n":24,"w":88,"h":100,"cols":6,"pivot":[30,52],"loop":false},"rocross":{"src":"assets/skill-fx/pfx/ambush-cross.webp?v=e0d0c9cf","fps":30,"n":24,"w":112,"h":112,"cols":5,"pivot":[56,92],"loop":false},"rodagger":{"src":"assets/skill-fx/pfx/venom-dagger.webp?v=0357efbe","fps":30,"n":6,"w":48,"h":24,"cols":2,"pivot":[34,12],"loop":true},"rovenom":{"src":"assets/skill-fx/pfx/venom-burst.webp?v=a4d9ba91","fps":30,"n":40,"w":128,"h":108,"cols":6,"pivot":[64,96],"loop":false},"rostep":{"src":"assets/skill-fx/pfx/shade-step.webp?v=df39c43f","fps":30,"n":40,"w":128,"h":104,"cols":6,"pivot":[76,92],"loop":false},"romark":{"src":"assets/skill-fx/pfx/inverse-cut.webp?v=3a2d673f","fps":30,"n":85,"w":344,"h":224,"cols":8,"pivot":[172,176],"loop":false},"arwind":{"src":"assets/skill-fx/pfx/archer-wind.webp?v=58205dd0","fps":30,"n":25,"w":120,"h":88,"cols":5,"pivot":[28,46],"loop":false},"ararrow":{"src":"assets/skill-fx/pfx/aimed-arrow.webp?v=2fa6f1e8","fps":30,"n":6,"w":64,"h":16,"cols":2,"pivot":[56,8],"loop":true},"arhit":{"src":"assets/skill-fx/pfx/arrow-impact.webp?v=ec4dc4ab","fps":30,"n":22,"w":112,"h":96,"cols":5,"pivot":[56,84],"loop":false},"arpierce":{"src":"assets/skill-fx/pfx/pierce-shot.webp?v=bd6dffab","fps":30,"n":40,"w":344,"h":128,"cols":4,"pivot":[172,104],"loop":false},"arhawk":{"src":"assets/skill-fx/pfx/hawk-eye.webp?v=ceb8e1a3","fps":30,"n":46,"w":112,"h":120,"cols":8,"pivot":[56,104],"loop":false},"armeteor":{"src":"assets/skill-fx/pfx/meteor-volley.webp?v=6986d047","fps":30,"n":94,"w":280,"h":256,"cols":10,"pivot":[140,216],"loop":false},"mopress":{"src":"assets/skill-fx/pfx/monk-pressure.webp?v=c6bc6b46","fps":30,"n":24,"w":112,"h":96,"cols":5,"pivot":[36,50],"loop":false},"motwin":{"src":"assets/skill-fx/pfx/twin-strike.webp?v=c4d6c2ff","fps":30,"n":24,"w":112,"h":104,"cols":5,"pivot":[56,90],"loop":false},"moorb":{"src":"assets/skill-fx/pfx/chi-orb.webp?v=9a17f71a","fps":30,"n":6,"w":56,"h":32,"cols":2,"pivot":[40,16],"loop":true},"moburst":{"src":"assets/skill-fx/pfx/chi-burst.webp?v=93ba359f","fps":30,"n":25,"w":128,"h":120,"cols":5,"pivot":[64,100],"loop":false},"moflow":{"src":"assets/skill-fx/pfx/inner-flow.webp?v=cb6fbb8b","fps":30,"n":49,"w":112,"h":120,"cols":8,"pivot":[56,106],"loop":false},"mofists":{"src":"assets/skill-fx/pfx/palm-barrage.webp?v=3ee24e98","fps":30,"n":91,"w":336,"h":256,"cols":9,"pivot":[168,196],"loop":false}};
+  const SHEETS = {"sigil":{"src":"assets/skill-fx/pfx/wizard-sigil.webp?v=e641cad6","fps":30,"n":43,"w":96,"h":96,"cols":7,"pivot":[20,48],"loop":false},"bolt":{"src":"assets/skill-fx/pfx/mana-bolt.webp?v=31fb526c","fps":30,"n":12,"w":56,"h":24,"cols":3,"pivot":[44,12],"loop":true},"hit":{"src":"assets/skill-fx/pfx/mana-hit.webp?v=004e9699","fps":30,"n":25,"w":80,"h":72,"cols":5,"pivot":[40,54],"loop":false},"fire":{"src":"assets/skill-fx/pfx/fire-blast.webp?v=fcf4e13d","fps":30,"n":64,"w":128,"h":128,"cols":8,"pivot":[64,104],"loop":false},"ward":{"src":"assets/skill-fx/pfx/frost-ward.webp?v=81f3e78f","fps":30,"n":85,"w":304,"h":184,"cols":8,"pivot":[152,120],"loop":false},"grav":{"src":"assets/skill-fx/pfx/gravity-flip.webp?v=5aeaf087","fps":30,"n":118,"w":304,"h":288,"cols":11,"pivot":[152,232],"loop":false},"pswing":{"src":"assets/skill-fx/pfx/paladin-swing.webp?v=dd1c8ed1","fps":30,"n":28,"w":104,"h":124,"cols":6,"pivot":[48,56],"loop":false},"psmite":{"src":"assets/skill-fx/pfx/judgment-strike.webp?v=1f62224f","fps":30,"n":34,"w":120,"h":136,"cols":7,"pivot":[60,112],"loop":false},"pward":{"src":"assets/skill-fx/pfx/oath-ward.webp?v=34584a8f","fps":30,"n":55,"w":76,"h":92,"cols":9,"pivot":[38,82],"loop":false},"pheal":{"src":"assets/skill-fx/pfx/healing-light.webp?v=6045f6fc","fps":30,"n":54,"w":64,"h":156,"cols":12,"pivot":[32,144],"loop":false},"psanct":{"src":"assets/skill-fx/pfx/sanctuary.webp?v=85f476f0","fps":30,"n":73,"w":304,"h":288,"cols":9,"pivot":[152,232],"loop":false},"dcast":{"src":"assets/skill-fx/pfx/dark-essence-cast.webp?v=bebcd531","fps":30,"n":31,"w":96,"h":88,"cols":6,"pivot":[60,44],"loop":false},"dtouch":{"src":"assets/skill-fx/pfx/umbral-touch.webp?v=31fc43ff","fps":30,"n":31,"w":136,"h":124,"cols":6,"pivot":[68,100],"loop":false},"dsiphon":{"src":"assets/skill-fx/pfx/blood-siphon.webp?v=4259e0ad","fps":30,"n":31,"w":80,"h":100,"cols":7,"pivot":[40,88],"loop":false},"dorb":{"src":"assets/skill-fx/pfx/blood-orb.webp?v=b27606ba","fps":30,"n":12,"w":48,"h":24,"cols":3,"pivot":[38,12],"loop":true},"dcurse":{"src":"assets/skill-fx/pfx/curse-sigil.webp?v=30e18efe","fps":30,"n":85,"w":304,"h":184,"cols":8,"pivot":[152,120],"loop":false},"dcomm":{"src":"assets/skill-fx/pfx/dark-communion.webp?v=5a03800e","fps":30,"n":100,"w":304,"h":288,"cols":10,"pivot":[152,232],"loop":false},"sswing":{"src":"assets/skill-fx/pfx/gladiator-swing.webp?v=f6a5e0c6","fps":30,"n":22,"w":124,"h":128,"cols":5,"pivot":[40,62],"loop":false},"scleave":{"src":"assets/skill-fx/pfx/slant-cleave.webp?v=4c2ca857","fps":30,"n":27,"w":140,"h":136,"cols":6,"pivot":[68,110],"loop":false},"sroar":{"src":"assets/skill-fx/pfx/taunt-roar.webp?v=d0e0de8a","fps":30,"n":25,"w":136,"h":116,"cols":5,"pivot":[28,60],"loop":false},"smark":{"src":"assets/skill-fx/pfx/taunt-mark.webp?v=87f8af66","fps":30,"n":43,"w":104,"h":120,"cols":8,"pivot":[52,104],"loop":false},"siron":{"src":"assets/skill-fx/pfx/iron-stance.webp?v=fc82e6ef","fps":30,"n":52,"w":132,"h":124,"cols":7,"pivot":[66,104],"loop":false},"searth":{"src":"assets/skill-fx/pfx/boulder-rend.webp?v=11b0d526","fps":30,"n":109,"w":352,"h":264,"cols":10,"pivot":[176,212],"loop":false},"drglyph":{"src":"assets/skill-fx/pfx/druid-glyph.webp?v=18ce6f16","fps":30,"n":30,"w":104,"h":104,"cols":6,"pivot":[36,56],"loop":false},"drlash":{"src":"assets/skill-fx/pfx/thorn-lash.webp?v=be1fa35c","fps":30,"n":43,"w":200,"h":128,"cols":6,"pivot":[134,114],"loop":false},"drseed":{"src":"assets/skill-fx/pfx/regen-seed.webp?v=62f3c396","fps":30,"n":52,"w":96,"h":120,"cols":9,"pivot":[48,104],"loop":false},"drbeast":{"src":"assets/skill-fx/pfx/beast-form.webp?v=e58d195b","fps":30,"n":49,"w":136,"h":148,"cols":8,"pivot":[64,126],"loop":false},"drwrath":{"src":"assets/skill-fx/pfx/wrath-of-nature.webp?v=6e67e73b","fps":30,"n":97,"w":360,"h":240,"cols":9,"pivot":[180,190],"loop":false},"rosign":{"src":"assets/skill-fx/pfx/rogue-sign.webp?v=986fa568","fps":30,"n":24,"w":88,"h":100,"cols":6,"pivot":[30,52],"loop":false},"rocross":{"src":"assets/skill-fx/pfx/ambush-cross.webp?v=e0d0c9cf","fps":30,"n":24,"w":112,"h":112,"cols":5,"pivot":[56,92],"loop":false},"rodagger":{"src":"assets/skill-fx/pfx/venom-dagger.webp?v=0357efbe","fps":30,"n":6,"w":48,"h":24,"cols":2,"pivot":[34,12],"loop":true},"rovenom":{"src":"assets/skill-fx/pfx/venom-burst.webp?v=a4d9ba91","fps":30,"n":40,"w":128,"h":108,"cols":6,"pivot":[64,96],"loop":false},"rostep":{"src":"assets/skill-fx/pfx/shade-step.webp?v=df39c43f","fps":30,"n":40,"w":128,"h":104,"cols":6,"pivot":[76,92],"loop":false},"romark":{"src":"assets/skill-fx/pfx/inverse-cut.webp?v=3a2d673f","fps":30,"n":85,"w":344,"h":224,"cols":8,"pivot":[172,176],"loop":false},"arwind":{"src":"assets/skill-fx/pfx/archer-wind.webp?v=58205dd0","fps":30,"n":25,"w":120,"h":88,"cols":5,"pivot":[28,46],"loop":false},"ararrow":{"src":"assets/skill-fx/pfx/aimed-arrow.webp?v=2fa6f1e8","fps":30,"n":6,"w":64,"h":16,"cols":2,"pivot":[56,8],"loop":true},"arhit":{"src":"assets/skill-fx/pfx/arrow-impact.webp?v=ec4dc4ab","fps":30,"n":22,"w":112,"h":96,"cols":5,"pivot":[56,84],"loop":false},"arpierce":{"src":"assets/skill-fx/pfx/pierce-shot.webp?v=bd6dffab","fps":30,"n":40,"w":344,"h":128,"cols":4,"pivot":[172,104],"loop":false},"arhawk":{"src":"assets/skill-fx/pfx/hawk-eye.webp?v=ceb8e1a3","fps":30,"n":46,"w":112,"h":120,"cols":8,"pivot":[56,104],"loop":false},"armeteor":{"src":"assets/skill-fx/pfx/meteor-volley.webp?v=6986d047","fps":30,"n":94,"w":280,"h":256,"cols":10,"pivot":[140,216],"loop":false},"mopress":{"src":"assets/skill-fx/pfx/monk-pressure.webp?v=c6bc6b46","fps":30,"n":24,"w":112,"h":96,"cols":5,"pivot":[36,50],"loop":false},"motwin":{"src":"assets/skill-fx/pfx/twin-strike.webp?v=c4d6c2ff","fps":30,"n":24,"w":112,"h":104,"cols":5,"pivot":[56,90],"loop":false},"moorb":{"src":"assets/skill-fx/pfx/chi-orb.webp?v=9a17f71a","fps":30,"n":6,"w":56,"h":32,"cols":2,"pivot":[40,16],"loop":true},"moburst":{"src":"assets/skill-fx/pfx/chi-burst.webp?v=93ba359f","fps":30,"n":25,"w":128,"h":120,"cols":5,"pivot":[64,100],"loop":false},"moflow":{"src":"assets/skill-fx/pfx/inner-flow.webp?v=cb6fbb8b","fps":30,"n":49,"w":112,"h":120,"cols":8,"pivot":[56,106],"loop":false},"mofists":{"src":"assets/skill-fx/pfx/palm-barrage.webp?v=3ee24e98","fps":30,"n":91,"w":336,"h":256,"cols":9,"pivot":[168,196],"loop":false},"prpray":{"src":"assets/skill-fx/pfx/priest-prayer.webp?v=7395a088","fps":30,"n":25,"w":72,"h":72,"cols":5,"pivot":[36,38],"loop":false},"prmote":{"src":"assets/skill-fx/pfx/purify-mote.webp?v=960e5f4b","fps":30,"n":6,"w":52,"h":32,"cols":2,"pivot":[36,16],"loop":true},"prwave":{"src":"assets/skill-fx/pfx/purify-wave.webp?v=7bd73b72","fps":30,"n":25,"w":76,"h":96,"cols":6,"pivot":[38,84],"loop":false},"prbloom":{"src":"assets/skill-fx/pfx/grace-bloom.webp?v=ea60ba7d","fps":30,"n":40,"w":124,"h":132,"cols":7,"pivot":[62,112],"loop":false},"prbless":{"src":"assets/skill-fx/pfx/benediction.webp?v=1fb537cc","fps":30,"n":37,"w":96,"h":144,"cols":8,"pivot":[48,112],"loop":false},"prdawn":{"src":"assets/skill-fx/pfx/dawn-prayer.webp?v=892debd2","fps":30,"n":82,"w":304,"h":200,"cols":8,"pivot":[152,146],"loop":false},"tmgear":{"src":"assets/skill-fx/pfx/chrono-gears.webp?v=121e4e74","fps":30,"n":25,"w":72,"h":72,"cols":5,"pivot":[36,36],"loop":false},"tmshard":{"src":"assets/skill-fx/pfx/time-shard.webp?v=0c594038","fps":30,"n":6,"w":56,"h":32,"cols":2,"pivot":[40,16],"loop":true},"tmbreak":{"src":"assets/skill-fx/pfx/shard-break.webp?v=6de1637a","fps":30,"n":24,"w":80,"h":88,"cols":6,"pivot":[40,76],"loop":false},"tmhaste":{"src":"assets/skill-fx/pfx/haste-dial.webp?v=3391f125","fps":30,"n":37,"w":132,"h":104,"cols":6,"pivot":[62,92],"loop":false},"tmdelay":{"src":"assets/skill-fx/pfx/delay-hourglass.webp?v=06cddb1e","fps":30,"n":43,"w":80,"h":108,"cols":8,"pivot":[40,96],"loop":false},"tmhalt":{"src":"assets/skill-fx/pfx/chrono-halt.webp?v=31c6ad28","fps":30,"n":85,"w":304,"h":248,"cols":9,"pivot":[152,190],"loop":false},"njripple":{"src":"assets/skill-fx/pfx/ink-ripple.webp?v=1cc9dcf5","fps":30,"n":24,"w":104,"h":56,"cols":4,"pivot":[52,40],"loop":false},"njkunai":{"src":"assets/skill-fx/pfx/kunai-flight.webp?v=a557cf30","fps":30,"n":6,"w":60,"h":16,"cols":2,"pivot":[52,8],"loop":true},"njstrike":{"src":"assets/skill-fx/pfx/kunai-strike.webp?v=ae0c7bf2","fps":30,"n":22,"w":80,"h":84,"cols":5,"pivot":[40,74],"loop":false},"njmire":{"src":"assets/skill-fx/pfx/water-mire.webp?v=7faf0030","fps":30,"n":61,"w":304,"h":140,"cols":6,"pivot":[152,96],"loop":false},"njfang":{"src":"assets/skill-fx/pfx/water-fang-back.webp?v=cf2e7182","fps":30,"n":34,"w":120,"h":132,"cols":7,"pivot":[60,112],"loop":false},"njfangf":{"src":"assets/skill-fx/pfx/water-fang-front.webp?v=4a622d39","fps":30,"n":34,"w":120,"h":132,"cols":7,"pivot":[60,112],"loop":false},"njfuma":{"src":"assets/skill-fx/pfx/fuma-storm-back.webp?v=376cf728","fps":30,"n":85,"w":220,"h":168,"cols":9,"pivot":[110,128],"loop":false},"njfumaf":{"src":"assets/skill-fx/pfx/fuma-storm-front.webp?v=19882399","fps":30,"n":85,"w":220,"h":168,"cols":9,"pivot":[110,128],"loop":false},"fmspark":{"src":"assets/skill-fx/pfx/force-spark.webp?v=f4286d79","fps":30,"n":19,"w":64,"h":60,"cols":5,"pivot":[26,30],"loop":false},"fmfist":{"src":"assets/skill-fx/pfx/force-fist.webp?v=99561b44","fps":30,"n":22,"w":120,"h":92,"cols":5,"pivot":[70,80],"loop":false},"fmcrush":{"src":"assets/skill-fx/pfx/crush-seal.webp?v=fd722ec4","fps":30,"n":31,"w":116,"h":180,"cols":7,"pivot":[58,112],"loop":false},"fmcharge":{"src":"assets/skill-fx/pfx/overcharge.webp?v=25bf234f","fps":30,"n":43,"w":112,"h":120,"cols":7,"pivot":[56,106],"loop":false},"fmunseal":{"src":"assets/skill-fx/pfx/unseal.webp?v=f01ec070","fps":30,"n":79,"w":228,"h":200,"cols":9,"pivot":[114,160],"loop":false}};
   const ST = {mode: "pfx", slow: false, scale: 1, sigil: true, plays: 0, snd: [], hits: [], flash: [], cast: [], rate: 1, hold: null, nT: 0, box: null, tint: null, chill: null, endBy: null, last: null};
   const IMG = {};
   const img = k => { if(!IMG[k]){ IMG[k] = new Image(); IMG[k].src = SHEETS[k].src; } return IMG[k]; };
@@ -53719,6 +53726,205 @@ function opDrops(){
       E.multiHit(c.list, c.T, c.caster, "punch", c.rate, MO_T); }}
   });
   E.caster.monk = {sheet: "mopress", place: c => P.front(c.side)};
+})();
+/* ── 1105 일곱째 — 신성 사제 · 시마도사 · 무영객 (사용자 '신성 사제, 시마도사, 무영객 게임에 적용') ──
+   각 직업 목업(mockups/<직업>-pixelfx/src/<직업>_fx.js)을 그대로 옮겼다 (원본 그림 — 데포르메 판은 목업에만: E.st.look 이 'deform' 일 때만 도는 two() 갈래는 게임에서 꺼져 있다 ·
+   무영객 two() 는 앞 시트(njfangf)가 있으면 — 게임도 수룡아 · 풍마수리검을 몸 뒤(바닥 층) · 앞 두 장으로). 시트는 SHEETS(skpfx_sheets.json) · 소리는 bgm/priest_dawn · timemage_halt · ninja_fuma.mp3 */
+/* 신성 사제 pixelfx (1103 스물다섯째 목업 — 게임에 넣을 때 tools/gen/patch/skpfx_block.js 끝에 이 파일을 그대로 붙인다 · SH addSheet 줄만 뺀다)
+   사용자 1103: '신성 사제 목업 작업' — 지금까지 직업들 때 정한 규칙을 그대로:
+   새로 그리기 · 효과마다 기본 크기 · 소리 · 흰 반짝임은 이펙트가 닿을 때 · 이펙트 길이만큼 클로즈업 ·
+   필살기는 배경을 서리 결계 정도(바닥 필터 0.45) + 여러 번에 나눠 + 합성 소리 · 연달아(사이 1.5초)
+   빛깔 — 해 모양 지팡이의 청옥(사파이어)빛 + 금빛 (팔라딘의 호박 금빛 · 암흑사제의 보라와 다르게)
+   고유 효과 holyEssence → holy/priest-prayer (지팡이 끝 청옥 — 빛을 빨아들였다가 0.22초에 번쩍 · 금빛 해 고리가 돈다 · 기술마다)
+   신성 파동 pr_b → holy/purify-mote (지팡이 끝 → 맞는 적 가슴 0.22초) + holy/purify-wave (닿는 0.22초에 네 갈래 빛 · 청옥 고리 셋이 퍼진다 · 소리 · 흰 반짝임)
+   대치유 pr_1 → holy/grace-bloom (데포르메 판은 몸 뒤 · 몸 앞 두 장 — grace-bloom-d-back / -front · 맞는 아군 발밑 — 빛 꽃잎 여덟이 연꽃처럼 피고 · 빛 기둥 · 가슴에서 검은 티끌(디버프)이 밀려나 부서진다 · 0.35초에 소리 · 클로즈업)
+   축복 pr_2 → holy/benediction (아군마다 0.06초씩 · 머리 위 금빛 고리가 발밑까지 내려앉는 0.5초에 소리 · 빛줄기 · 오름 꺾쇠 둘 · 클로즈업)
+   부활의 기도 pr_u → holy/dawn-prayer (아군 5명 줄 기준 · 하늘에 장미창이 켜지고 새벽빛 기둥이 비스듬히 내린다 · 기도 다섯 0.65 ~ 2.17초(고르게 · 마지막이 크다) ·
+     회복 숫자 · 막대를 5번에 나눔 · 새벽빛 바닥 필터 0.45 · 아군 새벽빛 물들기 · 합성 소리 prDawn(src/dawn_sfx.py)) */
+(function(){
+  const E = window.SKPFX; if(!E) return;
+  Object.assign(E.size, {prbloomf: 1.25, prblessf: 1.25, prdawnf: 1, prpray: 1, prmote: 1, prwave: 1, prbloom: 1.25, prbless: 1.25, prdawn: 1});
+  const P = E.place, sm = E.smooth;
+  try{ if(typeof SFX !== "undefined" && !SFX.prDawn) SFX.prDawn = {f: window.__PR_DAWN || "priest_dawn.mp3", v: .9}; }catch(e){}
+  const FLY = .22, BLOOM = .35, LAND = .5;
+  const PR_T = [.5, .88, 1.26, 1.64, 2.02].map(x => x + .15), END = 2.17, OFF = 2.27;
+  const DAWN = {c: [1.2, 1.08, .9], k: 1.12, b: .07, max: .5};
+  /* 1103 스물여덟째 — 데포르메 판은 몸 뒤(바닥 층) · 몸 앞 두 장 (…f 시트가 있을 때) */
+  const two = () => E.st.look === "deform" && !!E.sheets.prbloomf;
+  const at = (list, k, d) => { if(k) list.push({fn: tt => E.snd(k, tt), delay: d}); };
+  /* 지팡이 끝 청옥 — 몸 가운데에서 몸 너비 0.46 앞 · 위에서 높이 0.38 (암흑사제 placeStaff 와 같은 자리) */
+  const staff = (el, G, side) => { const u = P.unitBox(el, G); return {x: u.cx + (side === "B" ? -1 : 1) * u.w * .46, y: u.top + u.h * .38, h: u.h}; };
+  const placeStaff = side => (o, G) => { const s = staff(o.el, G, side); return {x: s.x, y: s.y, k: s.h * .92 / 48, flip: side === "B"}; };
+  const fly = (caster, target, side) => (o, G, tt) => {
+    const a = staff(caster, G, side), b = P.unitBox(target, G), k = a.h * .92 / 48, u = Math.min(1, Math.max(0, (tt - o.delay) / FLY)), e = u * u * (3 - 2 * u);
+    const bx = b.cx, by = b.top + b.h * .5;
+    return {x: a.x + (bx - a.x) * e, y: a.y + (by - a.y) * e - Math.sin(u * Math.PI) * a.h * .1, k, flip: bx < a.x};
+  };
+  Object.assign(E.spec, {
+    pr_b: {holdSnd: true, flash: () => FLY, build(c){
+      c.T.forEach((el, i) => { if(c.caster) c.list.push({sheet: "prmote", el, delay: i * .05, until: FLY + i * .05, place: fly(c.caster, el, c.side)}); c.list.push({sheet: "prwave", el, delay: FLY + i * .05, place: P.feet(1)}); });
+      at(c.list, c.held, FLY); }},
+    pr_1: {hold: true, holdSnd: true, flash: () => 0, build(c){ c.T.forEach((el, i) => { c.list.push({sheet: "prbloom", el, delay: i * .06, ground: two(), place: P.feet(1)}); if(two()) c.list.push({sheet: "prbloomf", el, delay: i * .06, place: P.feet(1)}); }); at(c.list, c.held, BLOOM); }},
+    pr_2: {hold: true, holdSnd: true, flash: () => 0, build(c){ c.T.forEach((el, i) => { c.list.push({sheet: "prbless", el, delay: i * .06, ground: two(), place: P.feet(1)}); if(two()) c.list.push({sheet: "prblessf", el, delay: i * .06, place: P.feet(1)}); }); at(c.list, c.held, LAND); }},
+    pr_u: {hold: true, holdSnd: true, flash: () => -1, build(c){
+      c.list.push({sheet: "prdawn", el: c.stage, ground: true, delay: .15, only: c.T, place: P.group(c.stage, c.side, c.side, "pr_u", true), snd: "prDawn"});
+      if(two()) c.list.push({sheet: "prdawnf", el: c.stage, delay: .15, only: c.T, place: P.group(c.stage, c.side, c.side, "pr_u", true)});   // 바닥 고리 앞 절반 · 별은 유닛 위
+      c.list.push({tint: "dawn", el: c.stage, ground: true, delay: 0, until: OFF + .45, env: lt => .45 * sm(.1, .55, lt) * (1 - sm(END, OFF + .4, lt))});   // 새벽빛 바닥 필터 — 서리 결계 정도(0.45)
+      c.list.push({chill: c.T, color: DAWN, delay: 0, until: OFF + .45, env: lt => DAWN.max * sm(.1, .8, lt) * (1 - sm(OFF, OFF + .4, lt))});
+      E.multiHit(c.list, c.T, c.caster, c.held, c.rate, PR_T, {heal: true, w: [16, 16, 16, 16, 36]}); }}   // 마지막 기도가 크다
+  });
+  E.caster.priest = {sheet: "prpray", place: c => placeStaff(c.side)};
+})();
+/* 시마도사 pixelfx (1103 스물여섯째 목업 — 게임에 넣을 때 tools/gen/patch/skpfx_block.js 끝에 이 파일을 그대로 붙인다 · SH addSheet 줄만 뺀다)
+   사용자 1103: '시마도사 목업' — 지금까지 직업들 때 정한 규칙을 그대로:
+   새로 그리기 · 효과마다 기본 크기 · 소리 · 흰 반짝임은 이펙트가 닿을 때 · 이펙트 길이만큼 클로즈업 ·
+   필살기는 배경을 서리 결계 정도(바닥 필터 0.45) + 합성 소리 · 연달아(사이 1.5초)
+   빛깔 — 지팡이 끝 하늘빛 수정 + 시계 놋쇠(금빛)
+   고유 효과 tmGears → arcane/chrono-gears (지팡이 끝 수정 — 작은 시계판 · 바늘이 한 바퀴 · 톱니 둘 · 0.24초에 번쩍 · 기술마다)
+   시간 파편 tm_b tmRift → arcane/time-shard (지팡이 끝 → 맞는 적 가슴 0.22초 · 잔상 셋) + arcane/shard-break (닿는 0.22초에 깨진 시계 테 · 유리 조각 · 소리 · 흰 반짝임)
+   가속 tm_1 tmHaste → arcane/haste-dial (맞는 아군 발밑 — 바닥 시계판 바늘이 앞으로 내달리고 · 속도 줄 · 앞으로 꺾쇠 셋 · 0.3초에 소리 · 클로즈업)
+   지연 tm_2 tmDelay → arcane/delay-hourglass (맞는 적 발밑 — 몸을 감싸는 모래시계 · 모래가 거꾸로 오른다 · 위 시계판이 거꾸로 돈다 · 0.3초에 소리 · 클로즈업)
+   시간 정지 tm_u tmStop → arcane/chrono-halt (적 5명 줄 기준 — 바닥 시계 테 · 뒤로 큰 시계판이 솟아 거꾸로 점점 빠르게 돌다가 1.5초에 열두 시에 멎는다 ·
+     잿빛 충격 고리 · 모든 것이 멈춘다(떠 있는 알갱이 · 시계판의 빛 금) · 2.25초에 깨져 떨어진다 · 피해가 없는 필살기라 나눠 치기 대신 멎는 때(1.65초)에 한 번 ·
+     잿빛 푸른 바닥 필터 — 멎기 전 0.2 · 멎으면 0.45(서리 결계 정도) · 맞는 적 잿빛 물들기(멎을 때부터) · 합성 소리 tmHalt(src/halt_sfx.py — 태엽 · 똑딱 열 번 · 종 · 깨짐)) */
+(function(){
+  const E = window.SKPFX; if(!E) return;
+  Object.assign(E.size, {tmhaltf: 1, tmgear: 1, tmshard: 1, tmbreak: 1.25, tmhaste: 1.25, tmdelay: 1, tmhalt: 1});
+  const P = E.place, sm = E.smooth;
+  try{ if(typeof SFX !== "undefined" && !SFX.tmHalt) SFX.tmHalt = {f: window.__TM_HALT || "timemage_halt.mp3", v: .9}; }catch(e){}
+  const FLY = .22, RUSH = .3, SET = .3, D0 = .15, STOP = 1.5 + D0, BREAK = 2.25 + D0, OFF = 2.8 + D0;
+  const ASH = {c: [1, 1, 1], k: 1, b: .02, max: 1};   // 1105 넷째 — 잿빛 = 완전한 흑백 (전장의 유닛 모두)
+  /* 1103 스물여덟째 — 데포르메 판은 몸 뒤(바닥 층) · 몸 앞 두 장 (tmhaltf 시트가 있을 때) */
+  const two = () => E.st.look === "deform" && !!E.sheets.tmhaltf;
+  const at = (list, k, d) => { if(k) list.push({fn: tt => E.snd(k, tt), delay: d}); };
+  /* 지팡이 끝 수정 — 몸 가운데에서 몸 너비 0.42 앞 · 위에서 높이 0.2 */
+  const tip = (el, G, side) => { const u = P.unitBox(el, G); return {x: u.cx + (side === "B" ? -1 : 1) * u.w * .42, y: u.top + u.h * .2, h: u.h}; };
+  const placeTip = side => (o, G) => { const s = tip(o.el, G, side); return {x: s.x, y: s.y, k: s.h * .92 / 48, flip: side === "B"}; };
+  const fly = (caster, target, side) => (o, G, tt) => {
+    const a = tip(caster, G, side), b = P.unitBox(target, G), k = a.h * .92 / 48, u = Math.min(1, Math.max(0, (tt - o.delay) / FLY)), e = u * u * (3 - 2 * u);
+    const bx = b.cx, by = b.top + b.h * .5;
+    return {x: a.x + (bx - a.x) * e, y: a.y + (by - a.y) * e, k, flip: bx < a.x};
+  };
+  const flipB = (side, f) => (o, G, tt) => Object.assign(f(o, G, tt), {flip: side === "B"});
+  Object.assign(E.spec, {
+    tm_b: {holdSnd: true, flash: () => FLY, build(c){
+      c.T.forEach((el, i) => { if(c.caster) c.list.push({sheet: "tmshard", el, delay: i * .05, until: FLY + i * .05, place: fly(c.caster, el, c.side)}); c.list.push({sheet: "tmbreak", el, delay: FLY + i * .05, place: P.feet(1)}); });
+      at(c.list, c.held, FLY); }},
+    tm_1: {hold: true, holdSnd: true, flash: () => 0, build(c){ c.T.forEach((el, i) => c.list.push({sheet: "tmhaste", el, delay: i * .06, place: flipB(c.side, P.feet(1))})); at(c.list, c.held, RUSH); }},
+    tm_2: {hold: true, holdSnd: true, flash: () => 0, build(c){ c.T.forEach((el, i) => c.list.push({sheet: "tmdelay", el, delay: i * .06, place: P.feet(1)})); at(c.list, c.held, SET); }},
+    tm_u: {hold: true, holdSnd: true, flash: () => -1, build(c){
+      c.list.push({fn: () => { const st = c.stage; if(st.dataset.skillMonochrome === "tm_u") st.style.filter = st.style.filter.replace("grayscale(1) contrast(1.12)", "").trim(); }, delay: 0});   // 게임의 화면째 흑백(지금 그림 tm_u)은 빼고 — 배경은 바닥 필터 · 잿빛은 맞는 적만
+      c.list.push({sheet: "tmhalt", el: c.stage, ground: true, delay: D0, only: c.T, place: P.group(c.stage, c.foe, c.side, "tm_u"), snd: "tmHalt"});
+      if(two()) c.list.push({sheet: "tmhaltf", el: c.stage, delay: D0, only: c.T, place: P.group(c.stage, c.foe, c.side, "tm_u")});   // 데포르메 — 바닥 고리 앞 절반 · 멈춘 덩이는 유닛 위
+      c.list.push({tint: "stop", el: c.stage, ground: true, delay: 0, until: OFF + .45, env: lt => (.3 * sm(.1, .55, lt) + .7 * sm(STOP - .03, STOP + .05, lt)) * (1 - sm(BREAK, OFF + .2, lt))});   // 1105 넷째 — 배경 흑백: 되감는 동안 0.3 · 멎으면 통째로(1) — 시계 그림은 그 위라 제 색
+      c.list.push({chill: [...c.stage.querySelectorAll(".bf-unit:not(.dead)")], color: ASH, delay: 0, until: OFF + .45, env: lt => ASH.max * sm(STOP - .03, STOP + .1, lt) * (1 - sm(BREAK, OFF, lt))});   // 1105 넷째 — 멎을 때부터 전장의 유닛 모두 흑백
+      E.multiHit(c.list, c.T, c.caster, null, c.rate, [STOP]); }}   // 피해 없는 필살기 — 숫자 · 상태를 멎는 때에 한 번
+  });
+  E.caster.timemage = {sheet: "tmgear", place: c => placeTip(c.side)};
+})();
+/* 무영객 pixelfx (1105 다섯째 목업 — 게임에 넣을 때 tools/gen/patch/skpfx_block.js 끝에 이 파일을 그대로 붙인다 · SH addSheet 줄만 뺀다)
+   사용자 1105: '그 다음은 무영객 목업' — 지금까지 직업들 때 정한 규칙을 그대로:
+   새로 그리기 · 효과마다 기본 크기 · 소리 · 흰 반짝임은 이펙트가 닿을 때 · 이펙트 길이만큼 클로즈업 ·
+   필살기는 배경을 서리 결계 정도(바닥 필터 0.45) + 여러 번에 나눠 + 합성 소리 · 연달아(사이 1.5초) · 데포르메 판(그림 원본 | 데포르메)
+   빛깔 — 물그림자: 먹빛 남보라 그림자 + 청록 물 + 목도리 · 허리띠의 진홍
+   고유 효과 ninjaRipple → shadow/ink-ripple (자신 발밑 · 바닥 층 — 먹물 방울이 떨어져 물그림자 고리가 번진다 · 기술마다)
+   쿠나이 nj_b → shadow/kunai-flight (가슴 앞 → 맞는 적 가슴 0.2초) + shadow/kunai-strike (닿는 0.2초에 물 X 자 · 먹 튐 · 쿠나이가 잠깐 꽂힌다 · 소리 · 흰 반짝임)
+   수둔·수렁 nj_1 waterSwamp · dissonance → shadow/water-mire (적 5명 줄 기준 · 바닥 층 — 검은 물웅덩이 · 물결 · 물 촉수 여섯이 발목을 잡는 0.5초에 소리 ·
+     청록 바닥 필터 · 맞는 적 청록 물들기 · 클로즈업)
+   수둔·수룡아 nj_2 boundaryWave · waterDragon → shadow/water-fang (1105 여섯째 다시 — 동양 수룡 · 맞는 적 발밑 — 웅덩이에서 수룡이 S 자로 솟아 0.35초에 문다 · 소리 · 흰 반짝임 · 클로즈업 ·
+     데포르메는 몸 뒤(웅덩이 · 목) / 앞(머리 · 별) 두 장)
+   천류·풍마수리검 nj_u fumaPassed · waterFlower → shadow/fuma-storm (맞는 적 발밑 — 물 · 그림자의 큰 풍마수리검이 갈수록 빠르게 적을 돌며 8번 벤다 0.65 ~ 2.4초(간격 ×0.82) ·
+     마지막에 꿰뚫고 먹 X 자 · 물꽃 · 몸 뒤를 지날 때는 바닥 층 / 앞은 유닛 위 두 장 · 피해 숫자 · 막대를 8번에 나눔(마지막이 크다) · 타마다 무영객 소리 ·
+     먹빛 청록 바닥 필터(0.45) · 맞는 적 청록 물들기 · 합성 소리 njFuma(src/fuma_sfx.py)) */
+(function(){
+  const E = window.SKPFX; if(!E) return;
+  Object.assign(E.size, {njripple: 1, njkunai: 1, njstrike: 1.25, njmire: 1, njfang: 1, njfangf: 1, njfuma: 1.25, njfumaf: 1.25});
+  const P = E.place, sm = E.smooth;
+  try{ if(typeof SFX !== "undefined" && !SFX.njFuma) SFX.njFuma = {f: window.__NJ_FUMA || "ninja_fuma.mp3", v: .9}; }catch(e){}
+  const FLY = .2, MIRE_D = .1, GRIP = .4, BITE = .35, D0 = .15;
+  const HITS = (() => { const n = 8, a = .5, b = 2.25, r = .82, g = (b - a) * (1 - r) / (1 - Math.pow(r, n - 1)); return Array.from({length: n}, (_, i) => a + g * (1 - Math.pow(r, i)) / (1 - r)); })();
+  const NJ_T = HITS.map(x => x + D0), END = NJ_T[NJ_T.length - 1], OFF = END + .1;
+  const TIDE = {c: [.72, 1.02, 1.12], k: 1.12, b: .04, max: .55};
+  const two = () => !!E.sheets.njfangf;   // 수룡아 몸 뒤(바닥 층 — 웅덩이 · 몸 · 갈기) · 몸 앞(머리 · 뿔 · 물보라) 두 장 — 1105 여섯째부터 원본도
+  const at = (list, k, d) => { if(k) list.push({fn: tt => E.snd(k, tt), delay: d}); };
+  const groundCaster = list => list.forEach(o => { if(o.sheet === "njripple") o.ground = true; });   // 시전 물그림자는 발밑 바닥 층 (CASTER 에는 ground 가 없다)
+  /* 쿠나이를 뽑아 던지는 손 — 가슴 앞 (몸 너비 0.2 앞 · 높이 0.55) */
+  const hand = (el, G, side) => { const u = P.unitBox(el, G); return {x: u.cx + (side === "B" ? -1 : 1) * u.w * .2, y: u.top + u.h * .55, h: u.h}; };
+  const fly = (caster, target, side) => (o, G, tt) => {
+    const a = hand(caster, G, side), b = P.unitBox(target, G), k = a.h * .92 / 48, u = Math.min(1, Math.max(0, (tt - o.delay) / FLY)), e = u * (2 - u);
+    const bx = b.cx, by = b.top + b.h * .5;
+    return {x: a.x + (bx - a.x) * e, y: a.y + (by - a.y) * e - Math.sin(u * Math.PI) * a.h * .06, k, flip: bx < a.x};
+  };
+  const flipB = (side, f) => (o, G, tt) => Object.assign(f(o, G, tt), {flip: side === "B"});
+  Object.assign(E.spec, {
+    nj_b: {holdSnd: true, flash: () => FLY, build(c){ groundCaster(c.list);
+      c.T.forEach((el, i) => { if(c.caster) c.list.push({sheet: "njkunai", el, delay: i * .05, until: FLY + i * .05, place: fly(c.caster, el, c.side)}); c.list.push({sheet: "njstrike", el, delay: FLY + i * .05, place: flipB(c.side, P.feet(1))}); });
+      at(c.list, c.held, FLY); }},
+    nj_1: {hold: true, holdSnd: true, flash: () => 0, build(c){ groundCaster(c.list);
+      c.list.push({sheet: "njmire", el: c.stage, ground: true, delay: MIRE_D, only: c.T, place: P.group(c.stage, c.foe, c.side, "nj_1")});
+      c.list.push({tint: "mire", el: c.stage, ground: true, delay: 0, until: 2.4, env: lt => .4 * sm(.1, .5, lt) * (1 - sm(1.7, 2.3, lt))});   // 청록 바닥 필터 — 서리 결계 정도
+      c.list.push({chill: c.T, color: TIDE, delay: 0, until: 2.4, env: lt => TIDE.max * sm(MIRE_D + GRIP - .1, MIRE_D + GRIP + .15, lt) * (1 - sm(1.7, 2.3, lt))});   // 발목이 잡히면 청록
+      at(c.list, c.held, MIRE_D + GRIP); }},
+    nj_2: {hold: true, holdSnd: true, flash: () => BITE, build(c){ groundCaster(c.list);
+      c.T.forEach((el, i) => { c.list.push({sheet: "njfang", el, delay: i * .05, ground: two(), place: flipB(c.side, P.feet(1))}); if(two()) c.list.push({sheet: "njfangf", el, delay: i * .05, place: flipB(c.side, P.feet(1))}); });
+      at(c.list, c.held, BITE); }},
+    nj_u: {hold: true, holdSnd: true, flash: () => -1, build(c){ groundCaster(c.list);
+      c.T.forEach((el, i) => {
+        c.list.push({sheet: "njfuma", el, ground: true, delay: D0, place: flipB(c.side, P.feet(1)), snd: i ? null : "njFuma"});   // 몸 뒤를 지날 때 · 뒤 물꽃 — 바닥 층
+        c.list.push({sheet: "njfumaf", el, delay: D0, place: flipB(c.side, P.feet(1))});   // 몸 앞 — 수리검 · 베기 자국 · 먹 X 자 · 앞 물꽃
+      });
+      c.list.push({tint: "tide", el: c.stage, ground: true, delay: 0, until: OFF + .45, env: lt => .45 * sm(.1, .55, lt) * (1 - sm(END, OFF + .4, lt))});   // 먹빛 청록 바닥 필터 — 서리 결계 정도(0.45)
+      c.list.push({chill: c.T, color: TIDE, delay: 0, until: OFF + .45, env: lt => TIDE.max * sm(.1, .8, lt) * (1 - sm(OFF, OFF + .4, lt))});
+      E.multiHit(c.list, c.T, c.caster, "ninja", c.rate, NJ_T, {w: [9, 9, 10, 10, 11, 11, 12, 28]}); }}   // 8번 · 마지막(꿰뚫기)이 크다
+  });
+  E.caster.ninja = {sheet: "njripple", place: c => P.feet(1)};
+})();
+/* ── 1105 여덟째 — 전쟁법사 (사용자 '전쟁법사도 적용') — 목업 mockups/forcemage-pixelfx 의 forcemage_fx.js 를 그대로 (원본 그림 · 데포르메는 목업에만 — two() 는 데포르메일 때만) ── */
+/* 전쟁법사 pixelfx (1105 첫째 목업 — 게임에 넣을 때 tools/gen/patch/skpfx_block.js 끝에 이 파일을 그대로 붙인다 · SH addSheet 줄만 뺀다)
+   사용자 1105: '전쟁법사 기본 이펙트 목업 작업하고 데포르메 버전도 추가' — 지금까지 직업들 때 정한 규칙을 그대로:
+   새로 그리기 · 효과마다 기본 크기 · 소리 · 흰 반짝임은 이펙트가 닿을 때 · 이펙트 길이만큼 클로즈업 ·
+   필살기는 배경을 서리 결계 정도(바닥 필터 0.45) + 합성 소리 · 연달아(사이 1.5초) · 데포르메 판(그림 원본 | 데포르메)
+   빛깔 — 옷의 진홍 마력 + 지팡이 끝 금별
+   고유 효과 staffThrust → arcane/force-spark (지팡이 끝 금별 — 진홍 마력이 모였다가 0.16초에 번쩍 · 앞으로 충격 호 · 불티 · 기술마다)
+   마력 강타 fm_b → arcane/force-fist (맞는 적 발밑 — 진홍 마력 주먹이 날아와 0.1초에 가슴을 친다 · 흰 별 · 납작한 충격 고리 · 소리 · 흰 반짝임)
+   파쇄격 fm_1 → arcane/crush-seal (맞는 적 발밑 — 머리 위 진홍 룬 고리가 0.3초에 내리찍는다 · 바닥 금 · 고리 · 파편 · 소리 · 흰 반짝임)
+   마력 과충전 fm_2 shadowStep → arcane/overcharge (자신 발밑 — 진홍 마력이 가슴으로 감겨 들어 0.35초에 터지고 · 오라 · 오르는 고리 셋 · 번개 · 금별 · 소리 · 클로즈업)
+   봉인 해제 fm_u unseal0 ~ 6 → arcane/unseal (자신 발밑 · 바닥 층 — 금빛 봉인 고리 셋 · 빛 사슬 · 0.6 · 1.0 · 1.4초에 하나씩 깨지고 · 1.8초에 진홍 기둥 · 충격 고리 · 불꽃 관 ·
+     피해가 없는 필살기라 나눠 치기 대신 마지막 봉인이 깨지는 때(1.95초)에 한 번 · 진홍 바닥 필터 0.45 · 자신 진홍 물들기 · 합성 소리 fmUnseal(src/unseal_sfx.py) ·
+     게임 지금 그림의 단계 소리(unseal0 ~ 6)는 pixelfx 판에서 뺀다) */
+(function(){
+  const E = window.SKPFX; if(!E) return;
+  Object.assign(E.size, {fmspark: 1, fmfist: 1.25, fmcrush: 1.25, fmcharge: 1.25, fmunseal: 1.25, fmunsealf: 1.25, fmchargef: 1.25});
+  const P = E.place, sm = E.smooth;
+  try{ if(typeof SFX !== "undefined" && !SFX.fmUnseal) SFX.fmUnseal = {f: window.__FM_UNSEAL || "forcemage_unseal.mp3", v: .9}; }catch(e){}
+  const HIT = .1, CRUSH = .3, CHARGE = .35, D0 = .15, FINAL = 1.8 + D0, OFF = 2.6 + D0;
+  const RED = {c: [1.28, .86, .96], k: 1.1, b: .05, max: .55};
+  const two = () => E.st.look === "deform" && !!E.sheets.fmunsealf;   // 데포르메 — 몸 뒤(바닥 층) · 몸 앞 두 장
+  const at = (list, k, d) => { if(k) list.push({fn: tt => E.snd(k, tt), delay: d}); };
+  /* 지팡이 끝 금별 — 몸 가운데에서 몸 너비 0.46 앞 · 위에서 높이 0.58 (가슴 앞에 든 짧은 별 지팡이) */
+  const tip = (el, G, side) => { const u = P.unitBox(el, G); return {x: u.cx + (side === "B" ? -1 : 1) * u.w * .46, y: u.top + u.h * .58, h: u.h}; };
+  const placeTip = side => (o, G) => { const s = tip(o.el, G, side); return {x: s.x, y: s.y, k: s.h * .92 / 48, flip: side === "B"}; };
+  const flipB = (side, f) => (o, G, tt) => Object.assign(f(o, G, tt), {flip: side === "B"});
+  /* 게임 지금 그림의 봉인 단계 소리(sfxPlay('unseal0' ~ 'unseal6'))는 pixelfx 판에서 뺀다 — 합성 소리 하나로 */
+  (function mute(){
+    if(typeof sfxPlay !== "function") return;
+    const p0 = sfxPlay;
+    sfxPlay = function(k){ if(/^unseal\d$/.test(String(k))){ if(!window.__skpfxOff && E.st.mode === "pfx"){ E.st.unsealMuted = (E.st.unsealMuted || 0) + 1; return; } E.st.unsealPlayed = (E.st.unsealPlayed || 0) + 1; } return p0.apply(this, arguments); };
+  })();
+  Object.assign(E.spec, {
+    fm_b: {holdSnd: true, flash: () => HIT, build(c){ c.T.forEach((el, i) => c.list.push({sheet: "fmfist", el, delay: i * .05, place: flipB(c.side, P.feet(1))})); at(c.list, c.held, HIT); }},
+    fm_1: {holdSnd: true, flash: () => CRUSH, build(c){ c.T.forEach((el, i) => c.list.push({sheet: "fmcrush", el, delay: i * .05, place: P.feet(1)})); at(c.list, c.held, CRUSH); }},
+    /* 1105 둘째 — 마력 과충전 데포르메는 몸 뒤(바닥 층) · 앞 두 장 */
+    fm_2: {hold: true, holdSnd: true, flash: () => 0, build(c){ const me = c.caster || c.T[0]; if(me){ c.list.push({sheet: "fmcharge", el: me, delay: 0, ground: two(), place: P.feet(1)}); if(two()) c.list.push({sheet: "fmchargef", el: me, delay: 0, place: P.feet(1)}); } at(c.list, c.held, CHARGE); }},
+    fm_u: {hold: true, holdSnd: true, flash: () => -1, build(c){
+      const me = c.caster || c.T[0]; if(!me) return;
+      c.list.push({sheet: "fmunseal", el: me, ground: true, delay: D0, place: P.feet(1), snd: "fmUnseal"});
+      if(two()) c.list.push({sheet: "fmunsealf", el: me, delay: D0, place: P.feet(1)});   // 데포르메 — 고리 앞 절반 · 조각 · 불꽃은 유닛 위
+      c.list.push({tint: "unseal", el: c.stage, ground: true, delay: 0, until: OFF + .45, env: lt => (.2 * sm(.1, .55, lt) + .25 * sm(FINAL - .05, FINAL + .1, lt)) * (1 - sm(OFF - .3, OFF + .3, lt))});   // 진홍 바닥 — 마지막 봉인이 깨지면 서리 결계 정도(0.45)
+      c.list.push({chill: [me], color: RED, delay: 0, until: OFF + .45, env: lt => RED.max * sm(.2, .8, lt) * (1 - sm(OFF - .3, OFF + .2, lt))});
+      E.multiHit(c.list, c.T.length ? c.T : [me], c.caster, null, c.rate, [FINAL], {heal: true}); }}   // 피해 없는 필살기 — 상승 숫자 · 상태를 마지막 봉인에 한 번
+  });
+  E.caster.forcemage = {sheet: "fmspark", place: c => placeTip(c.side)};
 })();
 /* SKPFX_END */
 /* 오프닝을 닫는다 — 연한 푸른 빛이 화면을 덮은 뒤 프롤로그가 드러난다. fast = 건너뛰기 (1003: 흰빛 → 푸른 빛) */
