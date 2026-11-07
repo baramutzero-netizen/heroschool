@@ -2252,5 +2252,10 @@
  "<b>열린 칸 {0} / {1}</b> · 레벨 {2} / {3} · 쓴 눈물 {4}": "<b>Nodes unlocked {0} / {1}</b> · Levels {2} / {3} · Tears spent {4}",
  "보유 여신의 눈물": "Goddess Tears owned",
  "남은 마스터 포인트": "Master Points left",
- "무료 초기화 (이국의 부채 {0}개)": "Free Reroll (Exotic Fans: {0})"
+ "무료 초기화 (이국의 부채 {0}개)": "Free Reroll (Exotic Fans: {0})",
+ "_juice (1107 — 타격감 설정 줄 juice_block)": "",
+ "타격감": "Hit Impact",
+ "맞는 순간 화면이 맞은 쪽으로 툭 흔들리고, 아주 잠깐 멈추고, 맞은 쪽이 밀렸다 돌아오고, 바닥에 흔적이 남는다. 기기에서 움직임 줄이기를 켜면 꺼진다.": "On each hit the screen jolts toward the blow, freezes for an instant, the target is knocked back and springs back, and marks are left on the ground. Turned off when your device's reduce-motion setting is on.",
+ "끔": "Off",
+ "약하게": "Light"
 }
