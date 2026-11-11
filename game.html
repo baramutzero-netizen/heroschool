@@ -4,18 +4,19 @@
    Screen modes (1013): the layout only looks at the width the game sees - 1100 css px or more is the wide layout (side panel, desk, town map,
    schedule scroll, roster book, landscape battle), less is the narrow one. Each kind of device is given its width here:
    - pc (mouse): the game always runs in our frame (iframe + transform: scale). Auto scale: window <= 640 x1 (narrow layout),
-     641..1099 window / 1100 (the game sees a window 1100 wide), 1100 and up the big screen rule (x1.05 .. x2.5, else x1).
+     641..1099 window / 1100 (the game sees a window 1100 wide), lower than 870 min(w/1100, h/870) but not under x0.75 (1111), else the big screen rule (x1.05 .. x2.5, else x1).
    - tablet (touch, short screen side >= 600): viewport meta width=1100 while the window is 641..1099 wide - the browser scales the page.
    - phone (touch, short side < 600): left alone - portrait is the narrow layout; held sideways the game shows a "turn it" cover (ROTATE). */
 (function(){
-  var W = window, D = document, KEY = "hs_scale", BW = 1280, BH = 870, KMIN = 1.05, KMAX = 2.5;
+  var W = window, D = document, KEY = "hs_scale", BW = 1280, BH = 870, KMIN = 1.05, KMAX = 2.5, KLOW = 0.75;   // KLOW (1111): the smallest auto shrink - below it the game scrolls
   var WIDE = 1100, NARROW = 640, PHONE = 600;   // wide layout from 1100 css px - windows up to 640 keep the narrow layout - phones: short screen side under 600
   var EMBED = false;   // tools/itch/build_itch.py sets true: also become the host inside a foreign iframe (itch.io)
   var PATH = location.pathname; if(PATH.charAt(PATH.length - 1) === "/") PATH += "index.html";   // folder URLs: itch.io answers 403
   function kOf(p, w, h){
     if(p && p !== "auto"){ var n = parseFloat(p); return n >= 50 && n <= 300 ? n / 100 : 1; }
     if(w <= NARROW) return 1;                                     // narrow window: the narrow layout as it is
-    if(w < WIDE) return Math.floor(w / WIDE * 1000) / 1000;      // 641..1099: shrink - inside, the window is (at least) 1100 wide
+    if(w < WIDE || h < BH)                                        // 641..1099 wide or under 870 high (1111 - 1280x720, 1366x768): shrink so the
+      return Math.floor(Math.min(w / WIDE, Math.max(KLOW, h / BH)) * 1000) / 1000;   // frame is 870 high, at least 1100 wide, never under KLOW
     var k = Math.floor(Math.min(KMAX, w / BW, h / BH) * 1000) / 1000;
     return k >= KMIN ? k : 1;
   }
@@ -25784,6 +25785,7 @@ function langSwitch(k){
    · iframe 안(?hsf=k): 게임. devicePixelRatio 를 ×k 로 보여 캔버스(오프닝 글)가 또렷하다 (HS_SCALE.dpr0() = 진짜 값). 스크롤바는 가늘게(html.hs-framed).
      언어 바꾸기 · 새 버전 불러오기는 HS_SCALE.nav 로 틀에 넘겨 탭째로 다시 불러온다.
    · 큰 화면 배율: 자동 = min(창 폭 ÷ 1280, 창 높이 ÷ 870) — 1.05 아래는 1 · 2.5 까지 (870 = 액자 화면이 스크롤 없이 들어가는 높이).
+   · 1111 — 창 높이가 870 보다 낮으면(1280×720 · 1366×768 · 150% 모니터의 1920×1080) min(폭 ÷ 1100, 높이 ÷ 870) 으로 줄인다 · ×0.75 아래로는 줄이지 않고 스크롤.
      설정 값 localStorage hs_scale (auto · 100 · 125 · 150 · 175 · 200) — 100 이면 늘 ×1.
    · 틀 없이: 폰 · 태블릿 · 자동화(Playwright — 다른 시험은 예전 그대로) · ?scale=off. 시험용 주소 ?scale=auto|150…(틀 강제) · user(자동화여도 사람처럼) · off.
    · 맨 앞 스크립트에는 한글을 쓰지 않는다 — 한글이 든 첫 스크립트에 i18n 빌드가 번역 장치를 넣는데, 그게 <head> 이면 정적 HTML 을 못 옮긴다.
@@ -25793,7 +25795,7 @@ function scaleOn(){ return typeof HS_SCALE !== "undefined" && (HS_SCALE.framed |
 function scalePanel(){
   if(!scaleOn()) return "";
   const cur = UI_SCALES.some(([v])=> v === HS_SCALE.pref) ? HS_SCALE.pref : "auto", k = HS_SCALE.framed ? (HS_SCALE.k || 1) : 1;
-  const desc = "게임 전체를 브라우저 확대처럼 키우거나 줄인다. 자동은 창에 맞춘다 — 폭 1100 보다 좁은 창은 넓은 화면을 통째로 줄이고(640 이하는 좁은 화면 배치), 큰 모니터에서는 스케줄 · 마을 액자가 창 높이에 꼭 맞게 키운다. 직접 고른 배율에서 폭이 모자라면 좁은 화면 배치가 된다.";
+  const desc = "게임 전체를 브라우저 확대처럼 키우거나 줄인다. 자동은 창에 맞춘다 — 폭 1100 보다 좁거나 높이 870 보다 낮은 창은 넓은 화면을 통째로 줄이고(×0.75 까지 · 폭 640 이하는 좁은 화면 배치), 큰 모니터에서는 스케줄 · 마을 액자가 창 높이에 꼭 맞게 키운다. 직접 고른 배율에서 폭이 모자라면 좁은 화면 배치가 된다.";
   return `<section class="panel"><div class="optrow"><div class="optlab"><b>화면 크기</b><span>${desc} <b class="num" style="white-space:nowrap">${`지금 ×${k.toFixed(2)}`}</b></span></div><div class="ui-concept-picker" role="group" aria-label="화면 크기">${
     UI_SCALES.map(([v, n])=>`<button type="button" class="btn" data-uiscale="${v}" aria-pressed="${cur===v}">${n}</button>`).join("")}</div></div></section>`;
 }

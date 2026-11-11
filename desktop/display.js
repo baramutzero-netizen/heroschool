@@ -10,7 +10,7 @@ const {app, screen} = require("electron");
 
 const MODES = ["window", "fullscreen", "borderless"];
 const SIZES = [[1280, 720], [1600, 900], [1920, 1080], [2560, 1440]];
-const MIN = {w: 960, h: 600};
+const MIN = {w: 960, h: 660};   // 1111 — 높이 660: 0.75배(870 × 0.75 = 653)에서도 세로 스크롤 없이 다 보이게
 const FILE = () => path.join(app.getPath("userData"), "display.json");
 
 function load(){
