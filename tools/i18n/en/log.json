@@ -419,7 +419,7 @@
  "5인 리그에 등록했다.": "Entered the Squad League.",
  "리그에 등록했다.": "Entered the league.",
  "<b>{0}</b> 구비 — 모든 진형에 두 자리가 더 열렸다 ({1}). 진형 이름 뒤에 {2} 가 붙는다.": "<b>{0}</b> acquired — every formation gets two more slots ({1}). Formation names now end with {2}.",
- "<b>{0}</b> 구비 — 모든 원정지가 <b>이계·</b> 판으로 바뀌었다. 권장 레벨 +{1}, 구간당 경험·자금 ×{2}.": "<b>{0}</b> acquired — every expedition site switched to its <b>Otherworld</b> version. Recommended level +{1}, EXP·funds per stage ×{2}.",
+ "<b>{0}</b> 구비 — 모든 원정지가 <b>이계·</b> 판으로 바뀌었다. 다섯 곳 모두 가장 높은 곳에 맞춰 권장 레벨 {1}, 구간당 경험·자금이 같아진다.": "<b>{0}</b> acquired — every expedition site switched to its <b>Otherworld</b> version. All five now match the highest site: recommended level {1}, with the same EXP·funds per stage.",
  "<b>{0}</b> 구비 — 유물 보관고의 S급 유물에 <b>합성</b> 버튼이 생겼다.": "<b>{0}</b> acquired — S-grade relics in the Relic Vault now have a <b>Fuse</b> button.",
  "<b>{0}</b> 구비 — {1}": "<b>{0}</b> acquired — {1}",
  "{0}{1} 이미 EX 유물을 차고 있다. 한 명당 하나까지다.": "{0} already wears an EX relic. One per student.",

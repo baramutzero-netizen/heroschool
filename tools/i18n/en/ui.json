@@ -1966,6 +1966,7 @@
  "재학 중 — 다음 겨울 후보로 나오지 않는다": "Enrolled — won't appear next winter",
  "재학 중": "Enrolled",
  "선택 직업 출현 확률 증가 · 다음 겨울에도 재학 중인 직업은 후보로 나오지 않는다 (졸업 예정 직업은 나온다)": "Raises the odds for the selected classes · Classes still enrolled next winter won't appear (graduating classes will)",
+ "고른 직업은 겨울 후보에 3명씩 나온다 · 다음 겨울에도 재학 중인 직업은 후보로 나오지 않는다 (졸업 예정 직업은 나온다)": "Each selected class appears 3 times among winter candidates · Classes still enrolled next winter won't appear (graduating classes will)",
  "같은 직업이 먼저 들어와 다른 학원으로": "Same class taken — went elsewhere",
  "입학하면 같은 직업 후보 <b>{0}</b>명은 다른 학원으로 간다.": "If they enroll, <b>{0}</b> other {0|candidate|candidates} of the same class will go elsewhere.",
  "같은 직업 후보 {0}명은 다른 학원으로 발길을 돌렸다.": "{0} {0|candidate|candidates} of the same class turned to other academies.",
