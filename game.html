@@ -2139,6 +2139,98 @@ html[lang="ja"] .crec-bub,html[lang^="zh"] .crec-bub{word-break:normal}   /* 일
 .ffer .rv-img{filter:blur(3px) brightness(.74) saturate(.92);transition:filter .6s ease}
 .ffer.lose .rv-img{filter:blur(3px) brightness(.56) saturate(.66)}
 /* FFER_CSS_END */
+/* FFAW_CSS_START — 학원제 시상식과 왕실 인사 17 + 공용판 (1119 목업 · apply_ffaw.py) ─ 무대는 02(.rvst) · 10(.rgst) · 11(.fqst) 그대로 쓰고 더한 것만:
+   시상식장 — 본선 결승장(쿼터뷰 final)을 흐리게 · 준우승은 한 단계 어둡게 · 단상 아래(D)는 더 흐리게 · 왕실 이름표 · 연출 자막(호명 · 시상) · 16 아래 깔아 둔 까만 무대(prep) */
+.fst.ffaw{z-index:906}
+.ffaw .rv-img{filter:blur(3px) brightness(.8) saturate(.95);transition:filter .8s ease}
+.ffaw.lose .rv-img{filter:blur(3px) brightness(.6) saturate(.7)}
+.ffaw.below .rv-img{filter:blur(6px) brightness(.62) saturate(.85)}
+.ffaw.lose.below .rv-img{filter:blur(6px) brightness(.5) saturate(.62)}
+.ffaw.prep .fst-talk,.ffaw.prep .fst-think,.ffaw.prep .fst-cast,.ffaw.prep .fst-hit{visibility:hidden}
+.ffaw .fst-bust.roy img{image-rendering:pixelated}
+.ffaw .fst-talk.roy .fst-nm span{color:#f4e6ff}
+.ffaw .fst-talk.roy .fst-tx{color:#fbf6ff}
+.ffaw .aw-cap{position:absolute;left:0;right:0;top:20%;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;opacity:0;z-index:5;visibility:hidden}
+.ffaw .aw-cap.show{visibility:visible}
+.ffaw .aw-cap b{font-weight:400;font-size:calc(var(--fst-fs) * 1.3);line-height:1.35;letter-spacing:.05em;color:#ffe6a8;padding:8px 28px;
+  background:linear-gradient(90deg,transparent,rgba(20,12,16,.82) 18%,rgba(20,12,16,.82) 82%,transparent);border-top:2px solid rgba(255,214,140,.55);border-bottom:2px solid rgba(255,214,140,.55);
+  text-shadow:0 2px 0 #1a0c08;word-break:keep-all;text-align:center;max-width:min(880px,calc(100vw - 40px))}
+.ffaw .aw-cap i{font-style:normal;font-size:calc(var(--fst-fs) * .78);line-height:1.3;color:#f6ead2;background:rgba(20,12,16,.7);padding:3px 14px;text-shadow:0 1px 0 #000}
+.ffaw .aw-cap i[hidden]{display:none}
+.ffaw.lose .aw-cap b{color:#e8dccb;border-color:rgba(214,200,180,.45)}
+/* FFAW_CSS_END */
+/* WKGR_CSS_START — 경과 보고 골드 칸 · 이번 주 성장 창 (1120 목업 · apply_wkgr.py · wkgr_block.js) */
+#modalRoot .panel-h.wk-head{display:flex;align-items:center;gap:14px}
+#modalRoot .panel-h.wk-head>.hint{margin-left:auto}
+.wk-gold{position:relative;flex:none;display:flex;align-items:center;gap:7px;padding:5px 12px 5px 9px;border:1px solid var(--brass);border-radius:6px;background:#1c1210cc;color:#ffe7b0;font-size:16px;line-height:1;white-space:nowrap}
+html body #modalRoot .wk-gold b{font-family:"Mulmaru Mono","Mulmaru",monospace!important;font-size:17px!important;letter-spacing:0!important;font-variant-numeric:tabular-nums;min-width:6.2ch;text-align:right;font-weight:400}
+.wk-gold.neg b{color:var(--bad)}
+.wk-coin{width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff2b8 0 18%,#f0c049 19% 62%,#a86f19 63%);box-shadow:0 0 0 1px #5a3a0c}
+.wk-gold.hit-dn{animation:wkHitDn .5s ease-out}
+.wk-gold.hit-up{animation:wkHitUp .5s ease-out}
+@keyframes wkHitDn{0%{box-shadow:0 0 0 0 #e0605088}30%{box-shadow:0 0 0 4px #e0605055}100%{box-shadow:0 0 0 0 #e0605000}}
+@keyframes wkHitUp{0%{box-shadow:0 0 0 0 #7fd08a88}30%{box-shadow:0 0 0 4px #7fd08a55}100%{box-shadow:0 0 0 0 #7fd08a00}}
+.wk-fly{position:absolute;right:0;top:100%;width:0;height:0;pointer-events:none;z-index:30}
+.wk-d{position:absolute;right:0;top:4px;white-space:nowrap;font-size:14px;font-weight:700;padding:3px 8px;border-radius:4px;background:#1c1210;box-shadow:0 2px 6px #0008;opacity:0;animation:wkFly 1.5s ease-out forwards}
+.wk-d.dn{color:#ff8f7a;border:1px solid #b8524466}
+.wk-d.up{color:#8fe39a;border:1px solid #4f9a5966}
+@keyframes wkFly{0%{opacity:0;transform:translateY(-6px)}10%{opacity:1;transform:translateY(0)}78%{opacity:1;transform:translateY(6px)}100%{opacity:0;transform:translateY(12px)}}
+/* 이번 주 성장 — 두 열 × 네 줄 (한 쪽에 여덟 · 1120 다섯째 — 왼쪽 큰 얼굴 · 표정) */
+.wk-card{width:min(1080px,100%);max-height:calc(100vh - 24px);display:flex;flex-direction:column}
+.wk-card>*{flex:none}.wk-card>.wk-grid{flex:0 1 auto}
+.wk-h{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.wk-pager{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.wk-pager .btn{min-width:30px;padding-left:6px;padding-right:6px}
+.wk-pgn{min-width:3.2em;text-align:center;font-variant-numeric:tabular-nums;color:var(--text)}
+.wk-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 8px;padding:8px 20px 2px;overflow:auto;min-height:0}
+.wk-st{display:flex;align-items:stretch;gap:10px;padding:5px 9px 5px 5px;border:1px solid var(--line-soft);border-radius:6px;background:#00000022;min-width:0;opacity:0;transform:translateY(5px);transition:opacity .25s ease,transform .25s ease;container-type:inline-size}
+.wk-st[hidden]{display:none}
+.wk-st.on{opacity:1;transform:none}
+.wk-st.best{border-color:var(--brass);background:#e0b45a14}
+.wk-face{position:relative;flex:none;width:80px;height:80px;border-radius:5px;overflow:hidden;background:linear-gradient(180deg,#3a2526,#1e1415);border:1px solid var(--line-soft)}
+.wk-st.best .wk-face{border-color:var(--brass)}
+.wk-face img{width:100%;height:100%;object-fit:cover;object-position:50% 12%;image-rendering:pixelated}
+.wk-main{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:6px}
+.wk-top{display:flex;align-items:center;gap:7px;min-width:0;font-size:14px}
+.wk-nm{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto}
+.wk-role{flex:0 1 auto;min-width:0;display:flex}.wk-role .tag{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wk-lv{flex:none;font-size:12.5px;color:var(--muted);white-space:nowrap}
+.wk-lv b{color:#ffd77a}
+.wk-lv em{font-style:normal;margin-left:3px;padding:1px 4px;border-radius:3px;background:#e0b45a;color:#2a1a08;font-size:10.5px;font-weight:700}
+.wk-cond{margin-left:auto;flex:none;font-size:12px;color:var(--muted);white-space:nowrap}
+.wk-cond b{font-variant-numeric:tabular-nums;font-size:13px}
+.wk-cond.healthy b{color:var(--ok)}.wk-cond.tired b{color:#e6b65a}.wk-cond.critical b{color:var(--bad)}
+.wk-inj{font-style:normal;margin-right:5px;padding:1px 5px;border-radius:3px;background:#8a3a30;color:#ffd9d0;font-size:10.5px;font-weight:700}
+.wk-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px 4px}
+.wk-stat{display:flex;align-items:baseline;justify-content:space-between;gap:4px;padding:2px 7px;border-radius:3px;border:1px solid var(--line-soft);background:#00000026;min-width:0;white-space:nowrap;font-size:12.5px;line-height:1.4}
+.wk-sn{color:var(--muted);font-size:11.5px;flex:none}
+.wk-sv{display:flex;align-items:baseline;gap:3px;font-variant-numeric:tabular-nums;min-width:0;overflow:hidden}
+.wk-sv .mental-grade{margin-right:.12em}
+.wk-sv i{font-style:normal;color:#6acbff;font-weight:900;font-size:10.5px}
+.wk-from{color:var(--muted)}
+.wk-stat.up{border-color:#5aa36a66;background:#3d7a4a2b}.wk-stat.up b{color:#ddf57b}
+.wk-stat.dn{border-color:#b8524466;background:#8a3a302b}.wk-stat.dn b{color:#ffb29d}.wk-stat.dn i{color:#ffa399}
+.wk-stat.same{opacity:.5}.wk-stat.same .wk-sv{color:var(--muted)}
+html[lang="en"] .wk-stat,html[lang="ja"] .wk-stat{flex-direction:column;align-items:flex-start;gap:0;line-height:1.12;padding:1px 6px}   /* 영어 · 일본어판 — 능력치 이름이 길다(Composure · チームワーク) · 이름 위 · 값 아래 · 줄 간격을 줄여 높이를 맞춘다 */
+html[lang="en"] .wk-sn,html[lang="ja"] .wk-sn{font-size:10px}
+html[lang="en"] .wk-stats,html[lang="ja"] .wk-stats{gap:2px 4px}
+html[lang="en"] .wk-main,html[lang="ja"] .wk-main{gap:4px}
+html[lang="en"] .wk-st,html[lang="ja"] .wk-st{padding-top:4px;padding-bottom:4px}
+html[lang^="zh"] .wk-sn{font-size:10.5px}
+html[lang^="zh"] .wk-stat{padding:2px 5px;gap:3px}   /* 중 — 한 줄 그대로 · 이름 글자만 작게 */
+@container (max-width:440px){.wk-face{width:74px;height:74px}.wk-stat{font-size:11.5px;padding:2px 5px}.wk-sn{font-size:10.5px}}
+@container (max-width:380px){.wk-stat{flex-direction:column;align-items:flex-start;gap:0;line-height:1.25}.wk-face{width:70px;height:70px}}
+.wk-fund{margin:10px 20px 0;padding:8px 12px;border:1px dashed #b98f8466;border-radius:6px;font-size:12.5px;opacity:0;transition:opacity .3s ease}
+.wk-fund.on{opacity:1}
+.wk-fund-h{font-size:11.5px;color:var(--muted);margin-bottom:4px}
+.wk-fund-rows{display:flex;flex-wrap:wrap;gap:4px 16px;color:var(--muted)}
+.wk-fund-rows b{font-variant-numeric:tabular-nums;color:var(--text)}
+.wk-fund-rows b.dn{color:var(--bad)}.wk-fund-rows b.up{color:var(--ok)}.wk-fund-rows b.zero{color:var(--dim)}
+.wk-fund-rows .it{color:var(--text);font-weight:700}
+.wk-fund-rows .end{margin-left:auto;color:var(--text);font-weight:700}
+@media (max-width:620px){.wk-grid{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-reduced-motion:reduce){.wk-st,.wk-fund{transition:none}.wk-d{animation-duration:.01s}.wk-gold{animation:none!important}}
+/* WKGR_CSS_END */
 /* WRST_CSS_START — 첫 겨울 · 신입생 모집 준비 08c '빈자리에 앉을 아이들' (1025 목업 · apply_wrst.py) ─ 무대는 02(.rvst) · 첫 시간표(.fst) 그대로 쓰고 더한 것만:
    배경(마스터 책상 그림 — 도트 그대로) · 겨울빛(차갑게 · 창밖 눈이 천천히) · 초상화 셋(가운데 맞춤) · 마스터 금빛 이름표 ·
    스카우트 화면 안내(.peek — 무대 바탕을 걷고 대화창만 · 그 칸에 금빛 테두리가 숨쉰다) */
@@ -15848,6 +15940,7 @@ function finishLadder(t){
   if(window.FQRS && FQRS.outro(t, ctNext)) return;   // 1112 — 학원제 예선 결과 이야기 12 (FQRS): 정산 · 저장 뒤 학원제 예선 진출 · 탈락 (결과마다 처음 한 번) → 결과 상세 창
   if(window.FFRS && FFRS.outro(t, ctNext)) return;   // 1114 — 학원제 본선 결과 이야기 14 (FFRS): 정산 · 저장 뒤 본선 16강 · 8강 · 4강 탈락 (라운드마다 처음 한 번) → 결과 상세 창
   if(window.FFER && FFER.outro(t, ctNext)) return;   // 1117 — 학원제 결승 결과 이야기 16 (FFER): 정산 · 저장 뒤 결승 우승 · 준우승 (결과마다 처음 한 번) → 결과 상세 창
+  if(window.FFAW && FFAW.outro(t, ctNext)) return;   // 1119 — 학원제 시상식과 왕실 인사 17 (FFAW): 16 이 안 떴을 때 결승 우승 · 준우승 시상식 (대회마다 한 번 · 16 이 뜨면 FFER.outro 를 감싸 16 끝 → 17) → 결과 상세 창
   ctNext();
 }
 
@@ -20179,6 +20272,7 @@ function render(){
   if(window.FQRS) FQRS.after();   // 1112 — 학원제 예선 결과 이야기 12 (FQRS) — 장면 중에 다시 열었으면 그 장면부터 (S.fqrs)
   if(window.FFRS) FFRS.after();   // 1114 — 학원제 본선 결과 이야기 14 (FFRS) — 탈락 장면 중에 다시 열었으면 그 장면부터 (S.ffrs)
   if(window.FFER) FFER.after();   // 1117 — 학원제 결승 결과 이야기 16 (FFER) — 장면 중에 다시 열었으면 그 장면부터 (S.ffer)
+  if(window.FFAW) FFAW.after();   // 1119 — 학원제 시상식과 왕실 인사 17 (FFAW) — 장면 중에 다시 열었으면 그 장면부터 (S.ffaw · 16 이 남았으면 16 이 먼저)
   if(window.QOL25) QOL25.after();   // 1025 둘째 (QOL25) — 게임을 처음 띄울 때 양옆 삽화를 학원 직업에서 고른다 (한 번)
   if(window.NWST) NWST.after();   // 1025 — 2년차 신입생 첫 등교 09b (NWST) — 장면 중에 나갔다가 다시 열면 그 단락부터 (S.nwst)
   if(window.WRST) WRST.after();   // 1025 — 첫 겨울 · 신입생 모집 준비 08c (WRST) — 장면 중에 나갔다가 다시 열면 그 단락부터 (S.wrst)
@@ -42904,11 +42998,12 @@ const SCEN_LIST = [
   {k: "ffen", n: "13", t: "문 너머의 아홉 명", bundle: true},                 // 1113 — 첫 학원제 본선 입장 (FFEN — 본선 첫 경기 전 — 본 장면만)
   {k: "ffrs", n: "14", t: "아홉 명의 다음 경기", bundle: true},               // 1114 — 학원제 본선 결과 (FFRS — 16강 · 8강 · 4강 승리 · 탈락 — 본 장면만)
   {k: "ffbf", n: "15", t: "아홉 명이 이기고 싶은 이유", bundle: true},         // 1114 — 학원제 결승 직전 (FFBF — 결승 첫 경기 전 — 본 장면만)
-  {k: "ffer", n: "16", t: "아홉 명이 돌아온 자리", bundle: true}              // 1117 — 학원제 결승 결과 (FFER — 우승 · 준우승 — 본 장면만)
+  {k: "ffer", n: "16", t: "아홉 명이 돌아온 자리", bundle: true},             // 1117 — 학원제 결승 결과 (FFER — 우승 · 준우승 — 본 장면만)
+  {k: "ffaw", n: "17", t: "시상식과 왕실 인사", bundle: true}              // 1119 — 학원제 시상식 (FFAW — 우승 · 준우승 시상식 — 본 장면만)
 ];
 const SCEN_T = {title: "시나리오", none: "아직 다시 볼 시나리오가 없다.", close: "닫기"};
 const SCEN_JOBS = ["paladin", "darkpriest", "wizard"];
-function scenApi(k){ const a = k === "prst" ? window.PRST : k === "fst" ? window.FST : k === "rvst" ? window.RVST : k === "rqst" ? window.RQST : k === "xpst" ? window.XPST : k === "fris" ? window.FRIS : k === "rost" ? window.RSTO : k === "smst" ? window.SMST : k === "spst" ? window.SPST : k === "ctst" ? window.CTST : k === "rkst" ? window.RKST : k === "shvs" ? window.SHVS : k === "wrst" ? window.WRST : k === "rgst" ? window.RGST : k === "nwst" ? window.NWST : k === "fqst" ? window.FQST : k === "fqrs" ? window.FQRS : k === "ffen" ? window.FFEN : k === "ffrs" ? window.FFRS : k === "ffbf" ? window.FFBF : k === "ffer" ? window.FFER : null; return a && typeof a.replay === "function" ? a : null; }
+function scenApi(k){ const a = k === "prst" ? window.PRST : k === "fst" ? window.FST : k === "rvst" ? window.RVST : k === "rqst" ? window.RQST : k === "xpst" ? window.XPST : k === "fris" ? window.FRIS : k === "rost" ? window.RSTO : k === "smst" ? window.SMST : k === "spst" ? window.SPST : k === "ctst" ? window.CTST : k === "rkst" ? window.RKST : k === "shvs" ? window.SHVS : k === "wrst" ? window.WRST : k === "rgst" ? window.RGST : k === "nwst" ? window.NWST : k === "fqst" ? window.FQST : k === "fqrs" ? window.FQRS : k === "ffen" ? window.FFEN : k === "ffrs" ? window.FFRS : k === "ffbf" ? window.FFBF : k === "ffer" ? window.FFER : k === "ffaw" ? window.FFAW : null; return a && typeof a.replay === "function" ? a : null; }
 /* 처음 끝냈는가 — 장면이 끝난 때 (요약 · 팝업이 남아 있어도) · 04 묶음은 한 장면이라도 보면 */
 function scenDone(k){
   if(!S) return false;
@@ -42933,6 +43028,7 @@ function scenDone(k){
   if(k === "ffrs") return !!(window.FFRS && FFRS.anySeen());               // 1114 — 14 묶음도
   if(k === "ffbf") return !!(window.FFBF && FFBF.anySeen());               // 1114 — 15 묶음도
   if(k === "ffer") return !!(window.FFER && FFER.anySeen());               // 1117 — 16 묶음도
+  if(k === "ffaw") return !!(window.FFAW && FFAW.anySeen());               // 1119 — 17 묶음도
   return false;
 }
 /* 배우 — 02 · 03 은 이야기에 든 학생 id · 04 는 XPST 가 처음 장면 때 적어 둔 셋(그때 이름) · 01 은 첫 시간표처럼 직업으로 (암흑 사제는 개교 멤버 dp1 먼저) */
@@ -51240,6 +51336,1122 @@ window.FFER = {outro: frOutro, after: frAfter, replay: frReplay, preview: frPrev
   trio: FR_TRIO, gen: FR_GEN, expl: FR_EXPL, pl: FR_PL, dedup: FR_DEDUP, close: FR_CLOSE, cdedup: FR_CDEDUP, y3: FR_Y3, pers: FR_PERS, codes: FR_CODES, scenes: FR_SCENES, T: FR_T, Q: FR_Q, JUN: FR_JUN};
 })();
 /* FFER_END */
+/* FFAW_START — 학원제 시상식과 왕실 인사 17 '시상식과 왕실 인사' + 공용판 '다른 구성의 시상식' (1119 목업 · apply_ffaw.py · mockups/festival-awards-story)
+   대본 scenario-17-festival-awards-draft.md (초안 v1 · 3학년 셋 · 2학년 셋 · 1학년 셋) · scenario-17-festival-awards-common-draft.md (공용판 · 초안 v1) ·
+   기준 festival-nine-students-rules.md · story-dialogue-rules.md · story-canon-timeline.md. 사용자 1119: '17 시나리오 목업' —
+     ① 배경은 본선 결승장 그림(쿼터뷰 final)을 흐리게 ② 시상(FA17W08 · FA17S08)은 연출 자막만 (트로피 · 상장 그림 없음)
+     ③ 차례 — 결승 결과(16) → 장면 전환(어두워졌다 밝아지며 '시상식' 자막) → 시상식(17) → 결과 상세 창 (결과 상세 창은 17 뒤로 미룬다) · 16 을 이미 봤거나 16 이 안 뜨면(아홉이 아니면 등) 17 바로
+     ④ 왕실 셋(국왕 · 대신 · 장군)은 왼쪽에 (중계 · 해설 자리처럼 — CASTROW 왼쪽 무리)
+   · 장면 둘 — 학원제 본선(LADDER.final) 결승 전체 결과가 확정된 뒤 (세트 · 16강 · 8강 · 4강 탈락에는 열지 않는다 — FFER.result 그대로):
+       win 우승 — A 이름이 불리기 전 → B1 우승 시상 → C 왕실 인사 → D 단상 아래
+       lose 준우승 — A → B2 준우승 시상 → C → D
+       대회마다 한 번 (세이브 S.ffaw.seen[연도] = 결과 · 학원제는 해마다 한 번 — 대본 '대회 회차 + 확정 최종 결과별 1회')
+   · 자리 — finishLadder 끝(정산 · 우승 상품 · 저장 · 안내 화면 정보 뒤 · 결과 상세 창 전):
+       16 이 뜨면 — FFER.outro 를 감싸 16 이 끝난 뒤(끝 콜백) 17 → 결과 상세 창. 16 이 시작할 때 17 무대를 16 아래에 까맣게 깔아 둬 사이에 게임 화면이 비치지 않는다
+       16 이 안 뜨면 — 고리 한 줄(FFER.outro 다음) FFAW.outro(t, ctNext) 로 17 바로 → 결과 상세 창
+       정산 · 보상은 finishLadder 가 이미 했다 (17 은 보여 주기만 · 새 보상 없음) → 결과 상세 창을 미뤄도 보상 중복 · 누락 없음
+   · 전용 · 공용 — 결승 확정 명단(FFER.roster — 세 팀 ∪ 결승 경기 출전자)의 서로 다른 정확히 아홉에 개교 셋 P/W/D(3학년) · 2학년 셋 · 1학년 셋이면 전용판 (FQST.trioCast)
+       아홉이 아니면 장면 없이 원래 흐름 (본 것으로 적지 않는다)
+       배역 차례 — 16 결과(S.ffer.gv[last]) → 15 결승 직전 → 지난 17 → 14 마지막 → 13 입장 → 12 진출 → 11 입장 → 11 안내 차례(S.fqst.roles) → 명부 차례
+       공용판 Q1 ~ Q9 — 같은 차례의 이전 공용판 Q 를 그대로 (이번 명단에 있는 사람만) · 빠진 Q 만 새 id · 이전이 전용판이면 그 아홉을 먼저
+       졸업 전 명부 — 결승은 가을 끝 정산 뒤 3학년이 졸업한다(graduateAll) → 16 처럼 FQST.rec 를 감싸 본선이 끝날 때 학생을 잡아 두고 배역을 정할 때만 잠깐 더한다
+   · 경험 (대본 '장군에게 답하는 경험 문장') — 대표 W · P (공용판 Q2 · Q1) 각자 (v2 · 전용판은 대표 문장 AW_EXPR — 3학년 · 3년 준비 · 마지막 학원제 / 공용판은 AW_EXP + 성격표 E · F):
+       E 이번 학원제 예선 또는 본선 · 결승 실제 출전 있음 (결승만 못 뛰어도 예선 · 앞선 본선에서 뛰었으면 E · 시내 · 광역은 세지 않는다)
+       B 실제 출전 없음이 완전한 기록으로 확인 (이번 예선 기록 · 이번 본선 모든 경기 출전자 기록이 있고 기록 시작 since ≤ 올해)
+       U 그 밖 (불명)
+       장군 응답 — 두 답 모두 E · 두 답 모두 B · 그 밖(혼합 · U 포함)
+   · 학원명 — FA1713 '{acad}입니다.' 는 지금 표시명 (S.acadName) · 비었으면 FA1712 ~ 14 를 대본 대체문으로 · 호명 자막도 학원명 없이
+   · 표정 — 대본(결과별 성격표) · 줄마다 장면 분위기 (AW_MOOD): 우승 bright(대본 그대로) · 준우승 hush(웃는 표정 · default · 없는 표정 → sad — 14 · 16 과 같은 규칙 · 서 있는 학생도 같이)
+       왕실 셋은 기본 초상 하나뿐 (학생 표정 키를 쓰지 않는다 · assets/royal/king · minister · general-512.png)
+   · 무대 — 본선 결승장(쿼터뷰 final)을 흐리게 (준우승은 한 단계 어둡게 · 단상 아래 D 는 더 흐리게) · 관중 소리는 낮게 · 초상 줄(CASTROW — 왕실 셋은 왼쪽 무리 · 셋은 처음부터 · 말하는 학생은 오른쪽 끝)
+       v2 (1119 둘째 · 사용자 '대표 세 명이 단상에 서는 구조') — 단상(A · B · C)에는 마스터 + 대표 셋(전용판 P · W · D / 공용판 Q1 · Q2 · Q3) + 왕실 셋만 ·
+         나머지 여섯은 단상 아래(D — FA1731 아홉 명이 모인다)에서 합류해 한마디씩 · 장군 질문(FA1715)은 대표 W · P 가 답한다 (응답표는 그 둘의 실제 학원제 출전 기록)
+       FA1707 호명 — 대표 셋을 비춘다 · 자막 '학원제 우승(준우승) · 학원명 / 대표 세 명이 단상에 오르고, 나머지 여섯은 아래에서 지켜본다'
+       FA17W08 · FA17S08 시상 — 연출 자막만 · 대표 셋을 비춘다 (상의 형태 · 수량 · 금액은 말하지 않는다)
+       FA1724 — 대표 셋이 인사 → 왕실 셋이 왼쪽으로 물러난다 (단상을 내려온다) · FA1731 단상 아래 — 여섯이 차례로 선다 · FA1730 — 아홉 명을 함께 비추며 닫는다
+   · 처음 보는 진짜 흐름에는 건너뛰기가 없다. 다시 보기(모래시계 17 묶음)와 미리 보기에만 오른쪽 위 건너뛰기.
+   · 장면 중에 다시 열면 그 장면부터 (S.ffaw.pend · render 끝 FFAW.after — 16 이 아직 남았으면 16 이 먼저) — 정산 · 보상은 다시 하지 않는다 · 결과 상세 창은 다시 띄우지 않는다 (12 · 14 · 16 과 같다)
+   · 예전 세이브 — S.ffaw 가 없으면 처음 쓸 때 만든다 (지난 대회는 다시 열지 않는다 · 이번 대회부터)
+   · 자동화(navigator.webdriver)에서는 띄우지 않는다 — 시험은 window.__ffawForce = true */
+(() => {
+const AW_ID = "festival-awards-v1";
+const AW_JOBS = ["paladin", "wizard", "darkpriest"];                           // P · W · D
+const AW_PWD = {P: "paladin", W: "wizard", D: "darkpriest"};
+const AW_JUN = ["J1", "J2", "J3", "N1", "N2", "N3"];
+const AW_Q = ["Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "Q9"];
+const AW_ROY = ["king", "minister", "general"];                                // 왕실 셋 (왼쪽 무리 · 들어온 차례)
+const AW_ROY_IMG = {king: "assets/royal/king-512.png", minister: "assets/royal/minister-512.png", general: "assets/royal/general-512.png"};
+const AW_GMAP = {P: "Q1", W: "Q2", D: "Q3", J1: "Q4", N1: "Q5", J2: "Q6", N2: "Q7", J3: "Q8", N3: "Q9"};   // 공용판 배역 대응
+const AW_LK = window.HS_LANG === "en" ? 1.6 : 1;
+const AW_CPS = 32 * AW_LK;
+const AW_QUIET = /[\s….‥]/;
+const AW_SCENES = ["win", "lose"];
+const AW_T = {skip: "건너뛰기", master: "마스터", king: "국왕", minister: "대신", general: "장군", first: "시상식", title: "시상식과 왕실 인사",
+  cap: "시상식", sub: "학원제 결승", sc: {win: "우승 시상식", lose: "준우승 시상식"},
+  call: {win: "학원제 우승", lose: "학원제 준우승"},                    // 1120 — 아랫줄 자막(대표 세 명 …)은 뺐다: 국왕 · 대표 대사가 이미 말한다
+  award: {win: "학원제 우승 시상", lose: "학원제 준우승 시상"},
+  /* 1120 — awardSub(마스터와 대표 세 명이 …) 뺌 */};
+/* 1120 — 공용판 줄 바꿈 짝 (한국어 글자 바꾸기는 번역판에서 안 먹어서 줄 단위로 · 두 칸 다 번역된다) */
+const AW_GEN_SUB = [
+  ["…선배들, 수고하셨어요.", "…다들, 수고하셨어요."],
+  ["그래도 선배들 인사는 멋있었잖아요.", "그래도 다들 인사는 멋있었잖아요."],
+  ["멋있었어요, 선배들.", "다들, 멋있었어요."],
+  ["선배들 인사, 끝까지 봤어요.", "다들 인사, 끝까지 봤어요."],
+  ["선배들, 끝까지 멋있었어요.", "다들, 끝까지 멋있었어요."],
+  ["선배들, 정말 멋있었어요.", "다들, 정말 멋있었어요."],
+  ["수고 많으셨어요, 선배들.", "다들, 수고 많으셨어요."],
+  ["수고하셨어요, 선배들.", "다들, 수고하셨어요."]];
+const AW_PERS = ["intro", "hot", "stone", "dilig", "tsun", "lively", "boast", "plain", "genius"];
+const AW_CODES = ["E", "B", "U"];
+
+/* 대본 v2 (1119 둘째 — 사용자 '대표 세 명이 단상에 서는 구조'): 단상(A · B1/B2 · C)에는 마스터 + 대표 셋(전용판 P · W · D / 공용판 Q1 · Q2 · Q3) + 왕실 셋(왼쪽)만.
+   나머지 여섯(J1 ~ N3 / Q4 ~ Q9)은 단상 아래(D)에서 아홉 명이 모일 때 합류해 한마디씩.
+   who P · W · D · J1 ~ N3 · master · king · minister · general · fx(연출) / p 성격표 열 · e 경험 답 열(공용판) · rep 대표 경험 답(전용판 — W · P) · resp 장군 응답(두 답한 사람) ·
+   rw 결과별 [표정, 대사] · na 학원명이 비었을 때 대체문 · cap 연출 자막(call 호명 · award 시상) · reps 대표 셋을 비춘다 · all 아홉 명을 함께 (아직 안 선 학생은 선다) ·
+   bow 왕실 셋이 물러난다 · below 단상 아래 · g 공용판 교체 (p · e · q1 · face/t · rw) · ms 연출 쉼 */
+const AW_A = [
+  {id: "FA1701", who: "fx", reps: 1, ms: 1100},
+  {id: "FA1704", who: "P", face: "flustered", t: "인사하는 순서를 다시 생각하고 있었어요. 아래에 있는 아이들 몫까지 잘해야 하니까요.", g: {p: "A"}},
+  {id: "FA1705", who: "W", face: "default", t: "들어갈 때는 셋이 같이 들어가면 되지이. 혼자 먼저 가지 말고.", g: {face: "default", t: "이름이 불리면 같이 들어가면 되겠죠."}},
+  {id: "FA1708", who: "D", face: "default", t: "…아래에서 다들 보고 있겠네요.", g: {face: "default", t: "아래에서 다들 보고 있겠네요."}},
+  {id: "FA1706", who: "master", t: "응. 이름이 불리면 함께 가자. 인사는 내가 먼저 할게. 아래에서 보는 아이들 몫까지."},
+  {id: "FA1707", who: "fx", cap: "call", reps: 1, ms: 1900}
+];
+const AW_B = {
+  win: [
+    {id: "FA17W01", who: "king", t: "우승을 축하하네. 학원장과 대표들, 단상 아래의 학생들까지 모두 수고했어."},
+    {id: "FA17W02", who: "master", t: "감사합니다, 폐하. 학생들과 함께 인사드리게 되어 기쁩니다."},
+    {id: "FA17W03", who: "P", face: "smile", t: "감사합니다, 폐하. 저희 셋은 3년 동안 이 대회를 준비했어요.", g: {q1: "w3"}},
+    {id: "FA17W04", who: "P", face: "joy", t: "후배들과 여기까지 와서… 정말 기쁩니다.", g: {q1: "w4"}},
+    {id: "FA17W05", who: "W", face: "joy", t: "마지막 학원제를 우승으로 끝내서어… 정말 기뻐요, 폐하.", g: {p: "C"}},
+    {id: "FA17W06", who: "D", face: "smile", t: "…아래에서 함께 뛰어 준 아이들 덕분입니다.", g: {p: "D"}},
+    {id: "FA17W07", who: "king", t: "그래. 함께 온 얼굴들을 잘 보아 두게. 단상 아래 얼굴들까지. 오늘을 이야기할 때마다 떠오를 테니."},
+    {id: "FA17W08", who: "fx", cap: "award", reps: 1, ms: 2300}
+  ],
+  lose: [
+    {id: "FA17S01", who: "king", t: "준우승을 축하하네. 결승까지 온 그대들의 자리를 오늘 정식으로 기리고자 하네."},
+    {id: "FA17S02", who: "master", t: "감사합니다, 폐하."},
+    {id: "FA17S03", who: "P", face: "sad", t: "감사합니다. …아직은 조금 아쉽습니다.", g: {face: "sad", t: "감사합니다, 폐하. …아직 아쉬운 마음이 남아 있습니다."}},
+    {id: "FA17S04", who: "king", t: "그렇겠지. 이기고 싶어 온 자리일 테니. 지금 억지로 웃을 필요는 없네."},
+    {id: "FA17S05", who: "W", face: "sad", t: "마지막이니까아… 이기고 돌아가고 싶었어요.", g: {p: "C"}},
+    {id: "FA17S06", who: "D", face: "default", t: "…말씀 감사합니다. 아래 아이들에게도 전하겠습니다.", g: {p: "D"}},
+    {id: "FA17S07", who: "king", t: "마음이 가라앉을 때까지 기다려도 좋아. 오늘 여기까지 온 일은 그동안에도 사라지지 않으니."},
+    {id: "FA17S08", who: "fx", cap: "award", reps: 1, ms: 2300}
+  ]
+};
+const AW_C = [
+  {id: "FA1710", who: "minister", t: "역시 폐하께서는 학생들의 마음까지 헤아리십니다. 오늘의 말씀을 오래 간직해야겠군요."},
+  {id: "FA1711", who: "fx", lit: ["minister"], ms: 900},
+  {id: "FA1712", who: "minister", t: "학원 이름을 다시 한번 들려주시겠습니까? 학생들을 길러 내는 곳이라면 저도 기억해 두어야지요.", na: "앞으로도 학생들을 잘 이끌어 주십시오."},
+  {id: "FA1713", who: "master", t: "{acad}입니다.", na: "네. 함께 준비해 가겠습니다."},
+  {id: "FA1714", who: "minister", t: "그렇군요. 기억해 두겠습니다.", na: "기대하겠습니다."},
+  {id: "FA1715", who: "general", t: "대표들에게 하나 묻고 싶군. 이번 대회를 준비하고 기다리면서 가장 어려웠던 것은 무엇이었나?"},
+  {id: "FA1716", who: "W", rep: "W", g: {e: "J", p: "E"}},
+  {id: "FA1717", who: "P", rep: "P", g: {e: "N", p: "F"}},
+  {id: "FA1718", who: "general", resp: ["W", "P"]},
+  {id: "FA1719", who: "D", face: "default", t: "…당장 고칠 말을 정하지 않아도 되는 건가요?", g: {face: "default", t: "지금 바로 답을 정리하지 못해도 괜찮겠습니까?"}},
+  {id: "FA1720", who: "general", t: "모르는 것을 안다고 대답할 필요는 없지. 다음에 연습할 때 하나씩 확인하면 되네."},
+  {id: "FA1721", who: "D", rw: {w: ["smile", "네. 생각해 보겠습니다."], l: ["default", "네. 생각해 보겠습니다."]}},
+  {id: "FA1722", who: "king", t: "오늘은 충분히 수고했네. 학원장도 대표들도, 아래의 학생들도 돌아가 쉬게."},
+  {id: "FA1723", who: "master", t: "감사합니다, 폐하."},
+  {id: "FA1724", who: "fx", reps: 1, bow: 1, ms: 1500}
+];
+const AW_D = [
+  {id: "FA1731", who: "fx", all: 1, below: 1, ms: 900},
+  {id: "FA1725", who: "W", rw: {w: ["tired", "이제 정말 물 좀 마시자아. 인사할 때까지 숨 참고 있었어."], l: ["default", "잠깐 조용한 데 가자아. 물도 마시고."]},
+    g: {rw: {w: ["tired", "인사까지 마치니 힘이 풀리네요. 물 좀 마실까요?"], l: ["default", "잠깐 조용한 곳에서 쉬고 싶어요."]}}},
+  {id: "FA1726", who: "J1", p: "G"},
+  {id: "FA1727", who: "N1", p: "H"},
+  {id: "FA1732", who: "J2", p: "C2"},
+  {id: "FA1733", who: "N2", p: "D2"},
+  {id: "FA1734", who: "J3", p: "I"},
+  {id: "FA1735", who: "N3", p: "J"},
+  {id: "FA1728", who: "P", rw: {w: ["smile", "네. 다 같이 가요."], l: ["default", "…네. 같이 있어요."]}, g: {rw: {w: ["smile", "네. 같이 가요."], l: ["default", "네. 함께 있어요."]}}},
+  {id: "FA1729", who: "master", t: "그래. 먼저 쉴 곳으로 가자."},
+  {id: "FA1730", who: "fx", all: 1, ms: 1300}
+];
+/* 성격표 A · E · F — [우승 표정, 준우승 표정, 대사] (공용판만 — A Q1 왕실 앞 긴장 · E Q2 · F Q1 장군에게) */
+const AW_PL = {
+  A: {intro: ["flustered", "default", "폐하 앞에 서려니… 긴장되네요."], hot: ["surprised", "default", "경기 때랑은 또 다른 긴장이네요."], stone: ["default", "default", "이제 우리 차례군요."],
+      dilig: ["flustered", "default", "인사할 말을 다시 생각하고 있었어요."], tsun: ["flustered", "default", "…조금 긴장되기는 하네요."], lively: ["surprised", "default", "이렇게 가까이서 뵙게 되네요."],
+      boast: ["flustered", "default", "여기서는 말이 쉽게 안 나오네요."], plain: ["default", "default", "인사드리려니 떨리네요."], genius: ["default", "default", "경기 때와는 다른 준비가 필요하네요."]},
+  E: {intro: ["flustered", "default", "아직 정확히 설명하기는 어렵습니다."], hot: ["motivated", "default", "다음 연습에서도 확인하고 싶습니다."], stone: ["default", "default", "정리해 보겠습니다."],
+      dilig: ["default", "default", "연습할 때 다시 확인하겠습니다."], tsun: ["default", "default", "…아직 쉬운 답은 모르겠습니다."], lively: ["smile", "default", "동료들과도 이야기해 보고 싶습니다."],
+      boast: ["flustered", "default", "당장 멋진 답은 못 하겠습니다."], plain: ["default", "default", "조금 더 생각해 보겠습니다."], genius: ["default", "default", "지금 단정하기보다 확인해 보고 싶습니다."]},
+  F: {intro: ["default", "default", "조금 더 생각해 보겠습니다."], hot: ["motivated", "default", "하나씩 해 보겠습니다."], stone: ["default", "default", "기억해 두겠습니다."],
+      dilig: ["smile", "default", "배운 걸 정리해 보겠습니다."], tsun: ["default", "default", "더 생각해 보겠습니다."], lively: ["smile", "default", "저도 같이 생각해 보겠습니다."],
+      boast: ["default", "default", "제대로 생각해서 답하고 싶습니다."], plain: ["smile", "default", "말씀 감사합니다."], genius: ["default", "default", "연습에서 하나씩 살펴보겠습니다."]}
+};
+/* 성격표 — 결과별 {w: [표정, 대사], l: [표정, 대사]}
+   C · D 공용판 대표 Q2 · Q3 시상 소감(폐하께) / G J1 · H N1 · C2 J2 · D2 N2 · I J3 · J N3 — 단상 아래에서 아홉 명이 모일 때 (v2 — 단상에 서지 않은 여섯) */
+const AW_PR = {
+  C: {intro: {w: ["smile", "함께 여기 서서… 기쁩니다."], l: ["sad", "아직 마음이 잘 정리되지 않습니다."]}, hot: {w: ["motivated", "함께 우승해서 정말 기쁩니다!"], l: ["sad", "끝까지 이기고 싶었습니다."]},
+      stone: {w: ["smile", "함께 준비한 보람이 있습니다."], l: ["sad", "아쉬움이 남습니다."]}, dilig: {w: ["smile", "함께 준비했던 시간이 생각납니다."], l: ["sad", "준비한 걸 더 잘해내고 싶었습니다."]},
+      tsun: {w: ["flustered", "…생각했던 것보다 더 기쁩니다."], l: ["sad", "바로 기뻐하기는 어렵습니다."]}, lively: {w: ["joy", "다 같이 기뻐할 수 있어서 좋습니다!"], l: ["sad", "웃으면서 인사드리고 싶었는데…"]},
+      boast: {w: ["heroic-confidence", "함께 이 자리에 선 게 자랑스럽습니다."], l: ["sad", "우승하고 싶었습니다. 정말로요."]}, plain: {w: ["smile", "함께 우승해서 기쁩니다."], l: ["sad", "아직 아쉽습니다."]},
+      genius: {w: ["surprised", "예상했던 것보다 훨씬 기쁩니다."], l: ["sad", "머리로는 알지만 마음은 아직 어렵습니다."]}},
+  D: {intro: {w: ["flustered", "저도 정말 기쁩니다, 폐하."], l: ["default", "…말씀 감사합니다."]}, hot: {w: ["joy", "오늘을 잊지 않겠습니다!"], l: ["default", "말씀 감사합니다, 폐하."]},
+      stone: {w: ["smile", "기쁩니다. 감사합니다."], l: ["default", "들어 주셔서 감사합니다."]}, dilig: {w: ["smile", "말씀 감사합니다, 폐하."], l: ["default", "말씀을 기억하겠습니다."]},
+      tsun: {w: ["smile", "함께 올라와서 좋습니다."], l: ["default", "…기다려 주셔서 감사합니다."]}, lively: {w: ["smile", "오늘 이야기를 오래 할 것 같습니다!"], l: ["sad", "저도 아직은 아쉽습니다."]},
+      boast: {w: ["smile", "감사합니다. 정말 기쁩니다."], l: ["default", "말씀 감사합니다."]}, plain: {w: ["smile", "감사합니다, 폐하."], l: ["default", "…감사합니다."]},
+      genius: {w: ["smile", "함께 준비한 게 떠오릅니다."], l: ["default", "말씀 감사합니다, 폐하."]}},
+  G: {intro: {w: ["flustered", "보는 것만으로도… 긴장됐어요."], l: ["default", "잠깐 조용히 있고 싶어요."]}, hot: {w: ["tired", "후우! 보는 쪽도 긴장되네요!"], l: ["sad", "아직은 조금 힘드네요."]},
+      stone: {w: ["tired", "잠깐 쉬겠습니다."], l: ["default", "쉴 곳으로 가죠."]}, dilig: {w: ["smile", "인사 순서까지 잘 봐 뒀어요."], l: ["default", "이야기는 조금 뒤에 할게요."]},
+      tsun: {w: ["flustered", "…조금 긴장되기는 했네요."], l: ["default", "지금은 그냥 쉬고 싶어요."]}, lively: {w: ["joy", "오늘은 할 얘기가 정말 많네요!"], l: ["sad", "지금은 조용히 있고 싶네요."]},
+      boast: {w: ["flustered", "멀리서 뵙는데도 말이 안 나오더라고요."], l: ["default", "조금만 쉬고 싶어요."]}, plain: {w: ["smile", "이제 마음이 좀 놓여요."], l: ["default", "잠깐 앉고 싶네요."]},
+      genius: {w: ["tired", "보는 쪽도 다른 종류로 긴장되네요."], l: ["default", "생각할 건 나중에 정리할게요."]}},
+  H: {intro: {w: ["smile", "저도요. 같이 쉬어요."], l: ["default", "같이 가도 되죠?"]}, hot: {w: ["smile", "물부터 마셔요!"], l: ["default", "옆에 있을게요."]},
+      stone: {w: ["smile", "같이 가요."], l: ["default", "네. 같이요."]}, dilig: {w: ["smile", "이제 조금 쉬어요."], l: ["default", "네. 지금은 쉬어요."]},
+      tsun: {w: ["pout", "괜찮았어요. 이제 쉬어요."], l: ["default", "같이 가요."]}, lively: {w: ["smile", "쉬면서 얘기해요!"], l: ["default", "저도 같이 있을게요."]},
+      boast: {w: ["smile", "그래도 선배들 인사는 멋있었잖아요."], l: ["default", "네. 함께 쉬어요."]}, plain: {w: ["smile", "다 같이 쉬어요."], l: ["default", "같이 가요."]},
+      genius: {w: ["smile", "이제 머리도 쉬게 해요."], l: ["default", "지금은 같이 쉬어요."]}},
+  C2: {intro: {w: ["smile", "아래에서 봐도… 정말 기뻤어요."], l: ["sad", "아직 마음이 잘 정리되지 않아요."]}, hot: {w: ["motivated", "다 같이 우승해서 정말 기뻐요!"], l: ["sad", "끝까지 이기고 싶었어요."]},
+      stone: {w: ["smile", "함께 준비한 보람이 있네요."], l: ["sad", "아쉬움이 남네요."]}, dilig: {w: ["smile", "함께 준비했던 시간이 생각나요."], l: ["sad", "준비한 걸 더 잘해내고 싶었어요."]},
+      tsun: {w: ["flustered", "…생각했던 것보다 더 기쁘네요."], l: ["sad", "바로 기뻐하기는 어려워요."]}, lively: {w: ["joy", "다 같이 기뻐할 수 있어서 좋아요!"], l: ["sad", "웃으면서 맞이하고 싶었는데…"]},
+      boast: {w: ["heroic-confidence", "우리 학원 이름이 불린 게 자랑스러워요."], l: ["sad", "우승하고 싶었어요. 정말로요."]}, plain: {w: ["smile", "함께 우승해서 기뻐요."], l: ["sad", "아직 아쉬워요."]},
+      genius: {w: ["surprised", "예상했던 것보다 훨씬 기쁘네요."], l: ["sad", "머리로는 알지만 마음은 아직 어려워요."]}},
+  D2: {intro: {w: ["flustered", "저도 정말 기뻐요."], l: ["default", "…선배들, 수고하셨어요."]}, hot: {w: ["joy", "오늘을 잊지 않을 거예요!"], l: ["default", "선배들, 끝까지 멋있었어요."]},
+      stone: {w: ["smile", "기쁩니다. 수고하셨어요."], l: ["default", "단상에서 잘 서 계셨어요."]}, dilig: {w: ["smile", "선배들 인사, 끝까지 봤어요."], l: ["default", "오늘 들은 말을 기억할게요."]},
+      tsun: {w: ["smile", "같이 여기까지 와서 좋네요."], l: ["default", "…기다리고 있었어요."]}, lively: {w: ["smile", "오늘 이야기를 오래 할 것 같아요!"], l: ["sad", "저도 아직은 아쉬워요."]},
+      boast: {w: ["smile", "선배들, 정말 멋있었어요."], l: ["default", "수고하셨어요, 선배들."]}, plain: {w: ["smile", "수고하셨어요."], l: ["default", "…수고하셨어요."]},
+      genius: {w: ["smile", "함께 준비한 게 떠오르네요."], l: ["default", "단상 위 말씀, 잘 들었어요."]}},
+  I: {intro: {w: ["smile", "아래에서 지켜보는데도 떨렸어요."], l: ["default", "아래에서 보면서 마음이 복잡했어요."]}, hot: {w: ["motivated", "다음엔 저도 저 자리에 서 보고 싶어요!"], l: ["default", "다음엔 꼭 우승 자리에 서고 싶어요."]},
+      stone: {w: ["default", "잘 지켜봤습니다."], l: ["default", "끝까지 지켜봤습니다."]}, dilig: {w: ["smile", "단상에서의 인사, 잘 봐 뒀어요."], l: ["default", "단상 위 말씀, 적어 둘게요."]},
+      tsun: {w: ["flustered", "…아래에서도 손에 땀이 났어요."], l: ["default", "…괜히 저까지 숨을 참았네요."]}, lively: {w: ["joy", "아래에서도 박수 엄청 쳤어요!"], l: ["default", "아래에서 계속 응원하고 있었어요."]},
+      boast: {w: ["heroic-confidence", "다음엔 제가 저 위에 설 차례예요."], l: ["default", "다음엔 더 잘해 보일게요."]}, plain: {w: ["smile", "멋있었어요, 선배들."], l: ["default", "수고 많으셨어요, 선배들."]},
+      genius: {w: ["default", "장군님 질문, 저도 생각해 봤어요."], l: ["default", "장군님 질문, 저도 계속 생각했어요."]}},
+  J: {intro: {w: ["smile", "저도 같이 기뻐해도 되죠?"], l: ["default", "저도 옆에 있을게요."]}, hot: {w: ["joy", "저도 정말 기뻐요!"], l: ["default", "저도 같이 아쉬워요."]},
+      stone: {w: ["smile", "다들 수고했어요."], l: ["default", "다들 수고했어요."]}, dilig: {w: ["smile", "오늘은 다 같이 기뻐해요."], l: ["default", "정리는 내일 같이 해요."]},
+      tsun: {w: ["pout", "…다 같이 모이니까 좋네요."], l: ["default", "그래도 다 같이 모였네요."]}, lively: {w: ["smile", "다 같이 모였다!"], l: ["default", "다 같이 있어서 다행이에요."]},
+      boast: {w: ["smile", "우리 학원, 오늘 최고였어요."], l: ["default", "그래도 결승까지 왔잖아요."]}, plain: {w: ["smile", "이제 마음이 놓여요."], l: ["default", "같이 쉬어요."]},
+      genius: {w: ["smile", "오늘은 생각도 쉬게 해요."], l: ["default", "생각은 나중에 해요."]}}
+};
+/* 공용판 Q1 — FA17W03 · W04 (개인 출전 · 전원 3학년 · 3년 준비를 말하지 않는다 · v2 W04 는 바로 뒤 Q2 성격표 C 와 겹치지 않게 다시 씀) [표정, 대사] */
+const AW_Q1 = {
+  w3: {intro: ["flustered", "감사합니다, 폐하."], hot: ["motivated", "감사합니다, 폐하!"], stone: ["default", "감사합니다, 폐하."], dilig: ["smile", "감사합니다, 폐하."], tsun: ["default", "감사합니다, 폐하."],
+       lively: ["joy", "감사합니다, 폐하!"], boast: ["heroic-confidence", "감사합니다, 폐하."], plain: ["smile", "감사합니다, 폐하."], genius: ["default", "감사합니다, 폐하."]},
+  w4: {intro: ["smile", "다 같이 여기까지 와서… 기쁩니다."], hot: ["joy", "모두와 함께라서 더 기쁩니다!"], stone: ["smile", "다 같이 해낸 결과라 더 좋습니다."], dilig: ["smile", "준비한 날들이 하나씩 떠오릅니다."],
+       tsun: ["flustered", "…이렇게까지 기쁠 줄은 몰랐습니다."], lively: ["smile", "다들 얼굴이 환해서 더 기쁩니다!"], boast: ["smile", "학원 이름이 불렸을 때, 정말 자랑스러웠습니다."], plain: ["smile", "다 같이 이 자리에 와서 기쁩니다."],
+       genius: ["surprised", "생각했던 것보다 훨씬 벅찹니다."]}
+};
+/* 장군에게 답하는 경험 문장 — 공용판 {코드: [J 열(Q2), N 열(Q1)]} (학년 · 3년 준비 · 마지막 학원제를 말하지 않는다) */
+const AW_EXP = {
+  E: ["준비할 때와 달리 직접 들어가니 긴장을 다스리는 게 어려웠습니다.", "직접 들어가 보니, 준비한 걸 떠올리면서도 긴장이 됐습니다."],
+  B: ["제 차례가 올지 모르는 동안 준비를 유지하는 게 어려웠습니다.", "차례를 기다리면서 자꾸 제 준비를 다시 확인하게 됐습니다."],
+  U: ["준비를 마쳤다고 생각해도 계속 확인하고 싶었습니다.", "잘하고 싶은 마음이 커서 쉽게 마음이 놓이지 않았습니다."]
+};
+/* 전용판 대표 경험 답 (v2 — W · P · 3학년 · 3년 준비 · 마지막 학원제) — {코드: 문장} · 뒤에 고정 꼬리 [우승 표정, 준우승 표정, 대사] */
+const AW_EXPR = {
+  W: {E: "마지막 학원제라고 생각하니까아, 직접 나설 때 긴장을 다스리는 게 제일 어려웠어요.",
+      B: "마지막 학원제인데 제 차례가 올지 몰라서어, 준비를 계속 붙잡고 있는 게 어려웠어요.",
+      U: "준비는 다 했다고 생각해도오, 마지막이라 자꾸 다시 확인하고 싶었어요.",
+      tail: ["default", "default", "지금도 딱 잘라 말하기는 어렵지만요오."]},
+  P: {E: "3년 동안 준비했는데도, 마지막이라는 생각에 직접 들어가니 긴장이 됐습니다.",
+      B: "3년을 준비하고도 차례를 기다리는 동안, 제 준비를 자꾸 다시 확인하게 됐습니다.",
+      U: "마지막 학원제라 잘하고 싶은 마음이 커서, 쉽게 마음이 놓이지 않았습니다.",
+      tail: ["smile", "default", "그래도 끝까지 함께 준비한 건 후회하지 않습니다."]}
+};
+const AW_RESP = {
+  E: "직접 나섰을 때의 긴장이 남았군. 다음 연습에서는 가장 먼저 할 일을 하나 정해 보게.",
+  B: "기다리는 동안에도 준비를 놓지 않으려 했군. 쉬는 때와 다시 준비할 때를 학원장과 정해 보면 좋겠네.",
+  M: "각자 어려웠던 지점이 다르군. 그걸 서로 이야기하는 것부터 시작하면 되겠네."
+};
+
+/* 줄마다 장면 분위기 — 대본 표정 글자는 그대로 두고 그릴 때만 바꾼다 (awMood · 14 FS_MOODS · 16 FR_MOODS 와 같은 방식 · 대본 끝 '표정 분위기 메모' — README)
+   bright 우승 장면 모든 줄 — 대본 그대로 (없는 표정은 smile 그림 · tired 는 그림이 있는 직업만)
+   hush 준우승 장면 모든 줄 — 웃는 표정(default · smile · joy · heroic-confidence)과 그 직업에 없는 표정 → sad (flustered · surprised · pout · motivated · sad 는 그대로). 말하는 학생 · 서 있는 학생 모두 (fx 줄도)
+   왕실 셋은 표정이 하나뿐 (분위기를 타지 않는다) */
+const AW_ALL = {win: AW_A.concat(AW_B.win, AW_C, AW_D), lose: AW_A.concat(AW_B.lose, AW_C, AW_D)};
+const AW_MOODS = {bright: AW_ALL.win.map(c => "win:" + c.id).join(" "), hush: AW_ALL.lose.map(c => "lose:" + c.id).join(" ")};
+const AW_MOOD = {};
+Object.keys(AW_MOODS).forEach(m => AW_MOODS[m].split(" ").forEach(id => { AW_MOOD[id] = m; }));
+
+const R = {on: false, sess: 0, i: -1, typing: null, wait: null, root: null, sc: "", win: true, list: [], cast: {}, v: "trio", preview: false, live: false, ending: false, done: null, amb: null, cur: null,
+  row: window.CASTROW ? CASTROW.make() : null, pin: [], mood: "bright", face: {}, pendT: false, keep: null, prep: false, prepT: 0, acad: ""};
+const xq = s => R.root ? R.root.querySelector(s) : null;
+const rsleep = ms => new Promise(r => setTimeout(r, ms));
+const cRM = () => typeof rRM === "function" ? rRM() : !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+function awErr(e){ if(typeof errPush === "function") errPush("ffaw", e.message, e.stack); }
+
+/* ── 무대 ── */
+function awBuild(){
+  if(R.root) return;
+  const r = document.createElement("div");
+  r.id = "ffawRoot"; r.className = "fst rvst rgst fqst ffaw";
+  r.innerHTML = `<div class="rv-bg"><div class="rv-img"></div><div class="rv-vig"></div></div><div class="fst-hit"></div>
+    <button type="button" class="rv-skip" hidden>${esc(AW_T.skip)}</button>
+    <div class="fst-cast">${AW_ROY.map(k => `<div class="fst-bust roy" data-who="${k}" hidden><img alt="" draggable="false" src="${AW_ROY_IMG[k]}"></div>`).join("")}${AW_JOBS.map(k => `<div class="fst-bust" data-who="${k}" hidden><img alt="" draggable="false"></div>`).join("")}</div>
+    <div class="aw-cap"><b></b><i></i></div>
+    <div class="fst-talk"><div class="fst-nm"><i></i><span></span></div><div class="fst-tx"></div><div class="fst-nx">▼</div></div>
+    <div class="fst-think"><div class="fst-tx"></div><div class="fst-nx">▼</div></div>
+    <div class="rv-black"><div class="rv-card"><i hidden></i><b></b></div></div>`;
+  document.body.appendChild(r);
+  R.root = r;
+  const hit = r.querySelector(".fst-hit");
+  hit.addEventListener("click", e => { e.preventDefault(); e.stopPropagation(); awAdvance(); });
+  hit.addEventListener("wheel", e => e.preventDefault(), {passive: false});
+  hit.addEventListener("touchmove", e => e.preventDefault(), {passive: false});
+  r.querySelector(".rv-skip").addEventListener("click", e => { e.stopPropagation(); awEnd("skip"); });
+}
+function awTeardown(){ awAmb(false); if(R.root) R.root.remove(); R.root = null; R.prep = false; }
+/* 16 이 시작할 때 17 무대를 16 아래에 까맣게 깔아 둔다 (16 이 사라질 때 게임 화면이 비치지 않게 — 장면 전환은 까만 데서 '시상식' 자막 → 밝아진다) */
+function awPrep(){
+  if(R.on || R.live) return;
+  awBuild();
+  const bk = xq(".rv-black"), bg = xq(".rv-bg");
+  R.root.classList.add("on", "prep"); R.root.style.opacity = "";
+  bk.getAnimations().forEach(a => a.cancel()); bk.style.opacity = 1; bg.style.opacity = 0;
+  const cd = xq(".rv-card"); if(cd) cd.style.opacity = 0;
+  R.prep = true;
+}
+document.addEventListener("keydown", e => {
+  if(!R.root || !R.on) return;
+  if(e.key === " " || e.key === "Enter"){ e.preventDefault(); e.stopPropagation(); awAdvance(); }
+}, true);
+addEventListener("resize", () => { if(R.on && R.root){ awFit(); awLayout(true); } });
+function awFade(el, to, ms){
+  return new Promise(res => {
+    if(!el){ res(); return; }
+    const from = +getComputedStyle(el).opacity;
+    el.getAnimations().forEach(a => a.cancel());
+    el.style.opacity = to;
+    if(from === +to){ res(); return; }
+    if(cRM()) ms = Math.min(ms, 140);
+    const a = el.animate([{opacity: from}, {opacity: to}], {duration: Math.max(1, ms), easing: "ease"});
+    a.onfinish = a.oncancel = () => res();
+  });
+}
+function awBox(kind){ const a = xq(".fst-talk"), b = xq(".fst-think"); if(a) a.classList.toggle("show", kind === "talk"); if(b) b.classList.toggle("show", kind === "think"); }
+function awMark(on){ R.root && R.root.querySelectorAll(".fst-nx").forEach(e => e.classList.toggle("on", on)); }
+function awIsStu(who){ return !!AW_PWD[who] || AW_JUN.indexOf(who) >= 0 || AW_Q.indexOf(who) >= 0; }
+function awIsRoy(who){ return AW_ROY.indexOf(who) >= 0; }
+function awStu(who){ return R.cast[who] || null; }
+function awJob(who){ const st = awStu(who); return st ? st.job : (AW_PWD[who] || ""); }
+function awLive(id){ return id == null ? null : (S.students || []).find(s => s && s.id === id) || null; }
+/* 졸업 전 명부 — 16 과 같은 방식 (FQST.rec 를 감싸 본선이 끝날 때 학생을 잡아 둔다 · 배역을 정할 때만 잠깐 명부에 더한다 — 세이브 · 명부는 그대로) */
+function awWithKeep(fn){
+  const K = R.keep; if(!K || !S || !Array.isArray(S.students)) return fn();
+  const cur = S.students, add = K.list.filter(s => s && !cur.some(x => x && x.id === s.id));
+  if(!add.length) return fn();
+  S.students = cur.concat(add);
+  try{ return fn(); } finally { S.students = cur; }
+}
+if(window.FQST && typeof FQST.rec === "function" && !FQST.rec.__ffaw){
+  const rec0 = FQST.rec;
+  const rec2 = function(t){ try{ R.keep = (t && t.kind === "ladder" && t.step === "final") ? {list: (S.students || []).slice()} : null; }catch(e){ R.keep = null; } return rec0.apply(this, arguments); };
+  rec2.__ffaw = 1; if(rec0.__ffer) rec2.__ffer = rec0.__ffer; if(rec0.__ffen) rec2.__ffen = rec0.__ffen;
+  FQST.rec = rec2;
+}
+function awAcad(){ const n = (S && typeof S.acadName === "string") ? S.acadName.trim() : ""; return n; }
+function awName2(who){
+  if(who === "master") return AW_T.master;
+  if(awIsRoy(who)) return AW_T[who];
+  const st = awStu(who); if(!st) return "";
+  const live = awLive(st.id);
+  return live && typeof dn === "function" ? dn(live) : (st.name || "");
+}
+function awPlate(who){
+  const nm = xq(".fst-nm"), sp = nm.querySelector("span"), tk = xq(".fst-talk");
+  let col = "#ffd36a";
+  if(who === "king") col = "#e3b7f2";
+  else if(who === "minister") col = "#d8c08a";
+  else if(who === "general") col = "#a9c8ec";
+  else if(who !== "master"){ const role = JOBS[awJob(who)] && JOBS[awJob(who)].role; col = role === "tank" ? "#8cc4f0" : role === "heal" ? "#86d6a4" : "#f2957d"; }
+  sp.textContent = awName2(who);
+  nm.style.setProperty("--rc", col);
+  tk.classList.toggle("mst", who === "master");
+  tk.classList.toggle("roy", awIsRoy(who));
+  tk.classList.remove("cst"); tk.classList.remove("anl");
+}
+function awLine(c){
+  let t = c.t || "";
+  if(t.indexOf("{acad}") >= 0) t = t.split("{acad}").join(R.acad || awAcad());
+  const st = awIsStu(c.who) ? awLive((awStu(c.who) || {}).id) : null;
+  return st && typeof masterQ === "function" ? masterQ(t, st) : t;
+}
+function awType(el, text, voice, sess){
+  return new Promise(res => {
+    if(R.typing) R.typing();
+    const ch = [...String(text || "")]; let n = 0, tm = 0;
+    const done = () => { clearTimeout(tm); if(R.typing === done) R.typing = null; if(el) el.textContent = text; res(); };
+    if(!el || !ch.length){ if(el) el.textContent = ""; res(); return; }
+    const step = () => {
+      if(sess !== R.sess){ if(R.typing === done) R.typing = null; res(); return; }
+      n++; el.textContent = ch.slice(0, n).join("");
+      if(voice && !AW_QUIET.test(ch[n - 1]) && typeof cwBlip === "function") cwBlip(voice);
+      if(n >= ch.length){ done(); return; }
+      let d = 1000 / AW_CPS;
+      if(ch[n - 1] === "…" && ch[n] !== "…") d += 300;
+      tm = setTimeout(step, d);
+    };
+    el.textContent = ""; R.typing = done;
+    tm = setTimeout(step, 1000 / AW_CPS);
+  });
+}
+function awWaitClick(){ return new Promise(r => { R.wait = r; awMark(true); }); }
+function awAdvance(){
+  if(!R.on || R.ending) return;
+  if(R.typing){ R.typing(); return; }
+  if(R.wait){ const r = R.wait; R.wait = null; awMark(false); r(); }
+}
+
+/* ── 관중 소리 — 시상식장 너머로 낮게 (준우승은 더 낮게) ── */
+function awSnd(k){ const A = window.TCOM && TCOM.asset && TCOM.asset.crowd, p = A && A[k]; if(!p) return null; return window.TCOM && typeof TCOM.src === "function" ? TCOM.src(p) : p; }
+function awGain(){ try{ return typeof sfxGain === "function" ? sfxGain() : 1; }catch(e){ return 1; } }
+function awAmbFade(a, to, ms, end){
+  if(!a) return;
+  clearInterval(a._fs); const v0 = a.volume, t0 = Date.now();
+  a._fs = setInterval(() => { const k = Math.min(1, (Date.now() - t0) / Math.max(1, ms)); try{ a.volume = Math.max(0, Math.min(1, v0 + (to - v0) * k)); }catch(e){} if(k >= 1){ clearInterval(a._fs); if(end) end(); } }, 30);
+}
+function awAmb(on){
+  const a = R.amb;
+  if(a){ R.amb = null; awAmbFade(a, 0, 400, () => { try{ a.pause(); }catch(e){} }); }
+  if(!on || window.__ffawMute) return;
+  const src = awSnd("amb"), g = awGain(); if(!src || g <= 0) return;
+  try{ const b = new Audio(src); b.loop = true; b.volume = 0; R.amb = b; b._v = R.win ? .1 : .05; const p = b.play(); if(p && p.catch) p.catch(() => {}); awAmbFade(b, Math.min(1, g * b._v), 900); }catch(e){}
+}
+function awAmbLow(){ const a = R.amb; if(a) awAmbFade(a, Math.min(1, awGain() * (a._v || .1) * .5), 700); }   // 단상 아래 — 더 낮게
+
+/* ── 배경 — 본선 결승장(쿼터뷰 final) ── */
+const AW_IMG = {};
+function awImg(src, then){
+  if(!src) return null;
+  let o = AW_IMG[src];
+  if(o && o.w) return o;
+  if(!o){ o = AW_IMG[src] = {w: 0, h: 0, cb: []}; const im = new Image(); im.decoding = "async"; im.onload = () => { o.w = im.naturalWidth; o.h = im.naturalHeight; const cb = o.cb; o.cb = []; cb.forEach(f => f()); }; im.src = src; }
+  if(then) o.cb.push(then);
+  return null;
+}
+function awView(){
+  const Q = typeof TQ_MAPS !== "undefined" ? TQ_MAPS : {};
+  const m = Q.final || Q.regional || Q.city;
+  return m ? {src: "assets/battle-fields/quarter/" + m.src, z: 1.3, f: [m.mx / 1536, .26]} : {src: "", z: 1, f: [.5, .5]};
+}
+function awFit(){
+  const img = xq(".rv-img"); if(!img) return;
+  const V = awView(), W = R.root.clientWidth || innerWidth, H = R.root.clientHeight || innerHeight;
+  if(img.dataset.src !== V.src){ img.style.backgroundImage = V.src ? `url("${V.src}")` : "none"; img.dataset.src = V.src; }
+  const sz = awImg(V.src, () => { if(R.root && awView().src === V.src) awFit(); });
+  if(!sz){ img.style.backgroundSize = "cover"; img.style.backgroundPosition = `${V.f[0] * 100}% ${V.f[1] * 100}%`; return; }
+  const s = Math.max(W / sz.w, H / sz.h) * V.z, bw = sz.w * s, bh = sz.h * s;
+  const x = Math.min(0, Math.max(W - bw, W * .5 - V.f[0] * bw)), y = Math.min(0, Math.max(H - bh, H * .44 - V.f[1] * bh));
+  img.style.backgroundSize = `${bw.toFixed(1)}px ${bh.toFixed(1)}px`;
+  img.style.backgroundPosition = `${x.toFixed(1)}px ${y.toFixed(1)}px`;
+}
+
+/* ── 연출 자막 — 호명(FA1707) · 시상(FA17W08 · FA17S08) ── */
+function awCapText(kind){
+  const sc = R.win ? "win" : "lose", acad = R.acad;
+  if(kind === "call") return [AW_T.call[sc] + (acad ? " · " + acad : ""), ""];
+  if(kind === "award") return [AW_T.award[sc], ""];
+  return ["", ""];
+}
+async function awCap(kind, ms, sess){
+  const el = xq(".aw-cap"); if(!el) return;
+  const [b, i] = awCapText(kind);
+  el.querySelector("b").textContent = b; el.querySelector("i").textContent = i; el.querySelector("i").hidden = !i;
+  el.classList.add("show");
+  await awFade(el, 1, 360); if(sess !== R.sess) return;
+  await rsleep(cRM() ? 500 : ms); if(sess !== R.sess) return;
+  await awFade(el, 0, 420);
+  el.classList.remove("show");
+}
+
+/* ── 초상화 — 왕실 셋(왼쪽) · 셋 · 말하는 학생(한 사람에 초상 하나 · CASTROW 줄) ── */
+function awBust(k){ return xq(`.fst-bust[data-who="${k}"]`); }
+const AW_GLAD = ["default", "smile", "joy", "heroic-confidence"];
+const AW_SWAP = {hush: {to: "sad", glad: AW_GLAD}};                     // 14 FS_SWAP · 16 FR_SWAP 와 같은 규칙 (준우승 — 웃음 없이)
+function awMood(job, f, mood){
+  const W = AW_SWAP[mood === undefined ? R.mood : mood]; if(!W) return f;
+  const SET = window.RGST && RGST.face, set = SET && SET[job];
+  return (!f || W.glad.indexOf(f) >= 0 || !(set && set[f])) ? W.to : f;
+}
+function awStuSrc(job, f, mood){
+  f = awMood(job, f, mood);
+  const SET = window.RGST && RGST.face, set = SET && SET[job];
+  if(f && f !== "default" && set && set[f]) return set[f];
+  if(f && f !== "default" && set && set.smile && f !== "smile") return set.smile;
+  if(f === "smile" && set && set.smile) return set.smile;
+  return (typeof FACE_IMG !== "undefined" && FACE_IMG[job]) || (set && set.smile) || "";
+}
+function awFace(k, who, f){
+  if(awIsRoy(k)) return;                                                      // 왕실 셋 — 기본 초상 하나 (학생 표정 키 없음)
+  const b = awBust(k); if(!b) return;
+  R.face[k] = {who, f: f || "default"};
+  const im = b.querySelector("img"), src = awStuSrc(awJob(who || k), f || "default");
+  if(src && im.getAttribute("src") !== src) im.src = src;
+}
+function awRefresh(){ Object.keys(R.face).forEach(k => { const x = R.face[k]; awFace(k, x.who, x.f); }); }
+function awSetMood(m){
+  m = m || "bright"; if(R.mood === m) return;
+  R.mood = m;
+  if(R.root) R.root.classList.toggle("hush", m === "hush");
+  awRefresh();
+}
+function awKeys(){ return R.v === "trio" ? ["P", "W", "D"].concat(AW_JUN) : AW_Q; }
+function awBk(who){ return AW_PWD[who] || who; }                              // 초상 열쇠 (셋은 직업 · 그 밖은 대본 열쇠)
+const AW_REPS = {trio: ["P", "W", "D"], gen: ["Q1", "Q2", "Q3"]};                // 대표 셋 (v2 — 단상에는 마스터 + 대표 셋 + 왕실 셋만)
+function awReps(){ return AW_REPS[R.v === "gen" ? "gen" : "trio"].filter(k => R.cast[k]); }
+function awOnStage(){ return awReps().map(k => { const bk = awBk(k); if(!AW_PWD[k]) awJr(k); if(!R.face[bk]) awFace(bk, k, awFirstFace(k)); return bk; }); }
+function awAll(){ return R.root ? [...R.root.querySelectorAll(".fst-bust")].map(e => e.dataset.who) : []; }
+function awLit(list){
+  awAll().forEach(k => { const e = awBust(k); if(e) e.classList.toggle("on", !!(list && list.indexOf(k) >= 0)); });
+  if(R.row){ if(list) list.forEach(k => CASTROW.speak(R.row, k)); awLayout(false); }
+}
+function awLayout(snap){
+  if(R.row){ CASTROW.place(R.row, awBust, R.root && R.root.querySelector(".fst-cast"), awAll().filter(k => { const e = awBust(k); return e && e.classList.contains("on"); }), snap); return; }
+  const vis = awAll().filter(k => { const e = awBust(k); return e && !e.hidden; }), mid = (vis.length - 1) / 2;
+  vis.forEach((k, j) => { const e = awBust(k); e.style.left = `calc(50% + var(--fst-step) * ${(j - mid).toFixed(2)} - var(--fst-bust) / 2)`; });
+}
+function awEnter(list, fast){
+  list.forEach((k, n) => {
+    const e = awBust(k); if(!e || !e.hidden) return;
+    e.hidden = false;
+    if(R.row) CASTROW.add(R.row, k, awIsRoy(k) ? "left" : "right");          // 왕실 셋은 왼쪽 무리 (중계 · 해설 자리처럼) · 학생은 오른쪽 끝
+    const kf = cRM() ? [{opacity: 0}, {opacity: 1}] : fast ? [{transform: "translateX(-70px)", opacity: 0}, {transform: "none", opacity: 1}] : [{transform: "translateY(60px)", opacity: 0}, {opacity: 1, offset: .6}, {transform: "none", opacity: 1}];
+    e.animate(kf, {duration: cRM() ? 200 : fast ? 260 : 380, delay: cRM() || fast ? 0 : n * 90, easing: "cubic-bezier(.2,.85,.3,1.2)", fill: "backwards"});
+  });
+  awPrune(list);
+}
+function awPrune(keep){                                                        // 줄이 넘치면 후배 · 공용판 학생 가운데 가장 오래 말 안 한 사람부터 (왕실 셋은 그대로 · 처음부터 선 셋은 그래도 넘칠 때만)
+  if(!R.row) return;
+  const box = R.root && R.root.querySelector(".fst-cast"), e0 = keep.map(awBust).find(e => e && !e.hidden) || awAll().map(awBust).find(e => e && !e.hidden);
+  if(!e0) return;
+  CASTROW.prune(R.row, box ? box.clientWidth : 0, e0.offsetWidth, k => awIsRoy(k) ? 0 : R.pin.indexOf(k) < 0 ? 1 : 2, keep).forEach(k => awDown(k));
+}
+function awJr(who){
+  let e = awBust(who); if(e || !R.root) return e;
+  const box = R.root.querySelector(".fst-cast"); if(!box) return null;
+  e = document.createElement("div"); e.className = "fst-bust jr"; e.dataset.who = who; e.hidden = true;
+  e.innerHTML = `<img alt="" draggable="false">`;
+  box.appendChild(e);
+  return e;
+}
+async function awSpeaker(who){
+  if(!who) return;
+  const bk = awBk(who), e = AW_PWD[who] || awIsRoy(who) ? awBust(bk) : awJr(who); if(!e) return;
+  if(awIsStu(who) && !AW_PWD[who]) R.cur = who;
+  if(!e.hidden) return;
+  awEnter([bk], false);
+  awLayout(R.row ? [bk] : false);
+}
+function awDown(k){
+  const e = awBust(k); if(!e || e.hidden) return;
+  const a = e.animate([{opacity: 1}, {opacity: 0, transform: "translateY(40px)"}], {duration: cRM() ? 120 : 260, easing: "ease-in"});
+  a.onfinish = a.oncancel = () => { e.hidden = true; e.style.zIndex = ""; };
+}
+/* 아홉 명이 함께 선다 — 아직 안 선 학생이 차례로 (호명 · 시상 · 인사 · 마무리) */
+async function awStandAll(sess){
+  for(const k of awKeys().filter(k => R.cast[k])){
+    if(sess !== R.sess) return;
+    const bk = awBk(k), e = AW_PWD[k] ? awBust(bk) : awJr(k);
+    if(!e || !e.hidden) continue;
+    if(!R.face[bk]) awFace(bk, k, awFirstFace(k));
+    awEnter([bk], false); awLayout([bk]);
+    await rsleep(cRM() ? 60 : 160);
+  }
+}
+function awFirstFace(k){ const c = R.list.find(x => x.who === k && x.face); return (c && c.face) || "default"; }
+/* 왕실 셋이 물러난다 (FA1724 — 단상을 내려온다) */
+async function awBow(sess){
+  for(const k of AW_ROY.slice().reverse()){
+    const e = awBust(k); if(!e || e.hidden) continue;
+    if(R.row) CASTROW.drop(R.row, k);
+    const a = e.animate([{opacity: 1}, {opacity: 0, transform: "translateX(-60px)"}], {duration: cRM() ? 120 : 320, easing: "ease-in"});
+    a.onfinish = a.oncancel = () => { e.hidden = true; e.style.zIndex = ""; };
+  }
+  await rsleep(cRM() ? 140 : 360); if(sess !== R.sess) return;
+  awLayout(false);
+}
+
+/* ── 세이브 · 켜짐 ── */
+function awOn(){ return !!S && !((navigator.webdriver && !window.__ffawForce) || window.__ffawOff); }
+function awS(){
+  if(!S) return null;
+  if(!S.ffaw || typeof S.ffaw !== "object") S.ffaw = {id: AW_ID, seen: {}, done: {}, gv: {}, last: null, pend: null};   // 예전 세이브 — 처음 쓸 때 (지난 대회는 다시 열지 않는다)
+  const X = S.ffaw; X.seen = X.seen || {}; X.done = X.done || {}; X.gv = X.gv || {};
+  return X;
+}
+
+/* ── 경험 — 이번 학원제 (E · B · U) ── */
+function awPersOf(st){ const p = st && st.pers; return AW_PERS.indexOf(p) >= 0 ? p : "plain"; }
+/* P — 이번 본선 기록(FFER.played — 결승 세트 합집합 ids · 16강 · 8강 · 4강 before · known) + 모든 경기에 출전자 기록이 있는가 */
+function awPlayed(t){
+  const P = window.FFER && typeof FFER.played === "function" ? FFER.played(t) : {ids: [], before: [], known: false};
+  const res = (t && t.results) || [];
+  return Object.assign({}, P, {all: res.length > 0 && res.every(x => x && Array.isArray(x.myIds) && x.myIds.length > 0)});
+}
+function awCode(id, P){
+  const H = S && S.tourHist, L = (H && H.list) || [], y = S.year | 0;
+  const thisY = L.filter(e => e && (e.y | 0) === y && (e.step === "qual" || e.step === "final"));
+  if((P && (P.ids.indexOf(id) >= 0 || P.before.indexOf(id) >= 0)) || thisY.some(e => (e.ids || []).indexOf(id) >= 0)) return "E";   // 이번 예선 · 본선 · 결승 실제 출전
+  const qual = thisY.some(e => e.step === "qual" && (e.ids || []).length > 0);  // 이번 예선 출전자 기록이 있다
+  const full = !!(H && (H.since | 0) <= y && qual && P && P.known && P.all);   // 기록이 완전하다 — 미출전 확인
+  return full ? "B" : "U";
+}
+function awSnap(st, code){ return st ? {id: st.id, name: st.name, job: st.job, pers: awPersOf(st), uniq: st.uniq || null, year: st.year | 0, code: code || "U"} : null; }
+
+/* ── 배역 — 앞선 장면에서 물려받는다 (16 → 15 → 지난 17 → 14 → 13 → 12 → 11) ── */
+function awPrevG(){
+  const out = [];
+  const F = S && S.ffer; if(F && F.last && F.gv && F.gv[F.last]) out.push(F.gv[F.last]);
+  const B = S && S.ffbf && S.ffbf.gv && S.ffbf.gv.before; if(B) out.push(B);
+  const X = S && S.ffaw; if(X && X.last && X.gv && X.gv[X.last]) out.push(X.gv[X.last]);   // 지난해 시상식
+  const Y = S && S.ffrs; if(Y && Y.last && Y.gv && Y.gv[Y.last]) out.push(Y.gv[Y.last]);
+  const E = S && S.ffen && S.ffen.gv && S.ffen.gv.entry; if(E) out.push(E);
+  const W = S && S.fqrs && S.fqrs.gv && S.fqrs.gv.win; if(W) out.push(W);
+  const Q = S && S.fqst && S.fqst.gv && S.fqst.gv.entry; if(Q) out.push(Q);
+  return out.filter(G => G && G.cast);
+}
+function awPrefer(){
+  const ids = G => ({J: ["J1", "J2", "J3"].map(k => G.cast[k] && G.cast[k].id).filter(x => x != null), N: ["N1", "N2", "N3"].map(k => G.cast[k] && G.cast[k].id).filter(x => x != null)});
+  const G = awPrevG().find(g => g.v === "trio");
+  if(G) return ids(G);
+  return (S && S.fqst && S.fqst.roles) || null;
+}
+function awPrev(){
+  const G = awPrevG()[0]; if(!G) return null;
+  if(G.v === "gen") return {v: "gen", ids: AW_Q.map(k => G.cast[k] ? G.cast[k].id : null)};
+  return {v: "trio", ids: ["P", "W", "D"].concat(AW_JUN).map(k => G.cast[k] ? G.cast[k].id : null)};
+}
+function awGenIds(nine){
+  const P = awPrev(), slots = Array(9).fill(null);
+  if(P && P.v === "gen") P.ids.forEach((id, i) => { if(id != null && nine.indexOf(id) >= 0) slots[i] = id; });
+  const lead = P && P.v === "trio" ? P.ids.filter(id => id != null && nine.indexOf(id) >= 0 && slots.indexOf(id) < 0) : [];
+  const rest = FQST.order(nine.filter(id => slots.indexOf(id) < 0 && lead.indexOf(id) < 0));
+  const fill = lead.concat(rest);
+  for(let i = 0; i < 9; i++) if(slots[i] == null) slots[i] = fill.shift();
+  return slots;
+}
+function awCast(t){
+  if(!window.FQST || !window.FFER || !t) return null;
+  const nine = FFER.roster(t); if(nine.length !== 9) return null;
+  const P = awPlayed(t);
+  let v = "trio", ids = null;
+  const tc = FQST.trioCast(nine, awPrefer());
+  if(tc) ids = ["P", "W", "D"].concat(AW_JUN).map(k => tc[k] && tc[k].id);
+  else { v = "gen"; ids = awGenIds(nine); }
+  if(ids.some(id => id == null || !awLive(id))) return null;
+  const keys = v === "trio" ? ["P", "W", "D"].concat(AW_JUN) : AW_Q, cast = {};
+  keys.forEach((k, i) => { cast[k] = awSnap(awLive(ids[i]), awCode(ids[i], P)); });
+  return {v, cast};
+}
+
+/* ── 대사 ── */
+function awCodeOf(st){ return st && AW_CODES.indexOf(st.code) >= 0 ? st.code : "U"; }
+function awRespKey(a, b){ const x = awCodeOf(a), y = awCodeOf(b); return x === "E" && y === "E" ? "E" : x === "B" && y === "B" ? "B" : "M"; }
+/* 한 줄 — c 대본 줄 · v 전용/공용 · cast · win (공용판은 배역 열쇠를 Q 로 바꾸고 교체 행을 쓴다) */
+function awOne(c, v, cast, win){
+  const g = v === "gen" && c.g ? c.g : null;
+  const who = v === "gen" && AW_GMAP[c.who] ? AW_GMAP[c.who] : c.who;
+  const o = Object.assign({}, c, {who}); delete o.g;
+  const wl = win ? "w" : "l";
+  if(awIsStu(who)){
+    const st = cast[who]; if(!st) return null;
+    const p = awPersOf(st), x = Object.assign({}, c, g || {});
+    let face = x.face || "", t = x.t || "";
+    if(x.rw){ face = x.rw[wl][0]; t = x.rw[wl][1]; }
+    if(x.q1){ const cell = AW_Q1[x.q1][p] || AW_Q1[x.q1].plain; face = cell[0]; t = cell[1]; }
+    if(x.rep && !x.p){                                                        // 전용판 대표 경험 답 (W · P — 그 대표의 실제 학원제 출전 기록)
+      const E = AW_EXPR[x.rep]; face = win ? E.tail[0] : E.tail[1]; t = E[awCodeOf(st)] + " " + E.tail[2];
+    }
+    if(x.p){
+      const parts = [];
+      if(x.e){ const row = AW_EXP[awCodeOf(st)]; parts.push(row[x.e === "J" ? 0 : 1]); }
+      if(AW_PL[x.p]){
+        const cell = AW_PL[x.p][p] || AW_PL[x.p].plain; face = win ? cell[0] : cell[1];
+        parts.push(cell[2]);
+      } else { const cell = (AW_PR[x.p][p] || AW_PR[x.p].plain)[wl]; face = cell[0]; parts.push(cell[1]); }
+      t = parts.join(" ");
+    }
+    if(v === "gen") AW_GEN_SUB.forEach(q => { if(t.indexOf(q[0]) >= 0) t = t.split(q[0]).join(q[1]); });   // 공용판 — 대표에게 학년을 주지 않는다 ('선배들' → '다들' · 1120 줄 단위 짝 — 번역판도 같이 바뀐다)
+    o.face = face || "default"; o.t = t;
+    delete o.p; delete o.e; delete o.rw; delete o.q1; delete o.rep;
+    return o;
+  }
+  if(c.resp){
+    const ks = v === "gen" ? c.resp.map(k => AW_GMAP[k]) : c.resp;
+    o.t = AW_RESP[awRespKey(cast[ks[0]], cast[ks[1]])]; o.rk = awRespKey(cast[ks[0]], cast[ks[1]]);
+    delete o.resp;
+  }
+  return o;
+}
+function awList(sc, v, cast, acad){
+  if(AW_SCENES.indexOf(sc) < 0) return [];
+  const win = sc === "win", out = [], name = acad === undefined ? awAcad() : (acad || "");
+  AW_ALL[sc].forEach(c => {
+    const x = awOne(c, v === "gen" ? "gen" : "trio", cast || {}, win); if(!x) return;
+    if(!name && x.na){ x.t = x.na; x.noacad = 1; }                             // 학원명이 비었다 — FA1712 ~ 14 대체문
+    delete x.na;
+    out.push(x);
+  });
+  return out;
+}
+
+/* ── 장면 ── */
+function awReset(o){
+  awBuild();
+  R.sc = o.sc; R.win = o.sc === "win"; R.preview = !!o.preview; R.v = o.v === "gen" ? "gen" : "trio";
+  R.cast = Object.assign({}, o.cast || {});
+  R.acad = awAcad();
+  R.list = awList(R.sc, R.v, R.cast, R.acad);
+  R.on = true; R.ending = false; R.sess++; R.i = -1; R.typing = null; R.wait = null; R.cur = null; R.face = {};
+  R.mood = R.win ? "bright" : "hush";
+  R.root.classList.toggle("lose", !R.win); R.root.classList.toggle("hush", !R.win); R.root.classList.remove("below");
+  const sk = xq(".rv-skip"); if(sk){ sk.hidden = !R.preview; sk.disabled = false; }
+  awBox(null); awMark(false); awLit(null);
+  if(R.row) CASTROW.reset(R.row);
+  R.root.querySelectorAll(".fst-bust.jr").forEach(e => e.remove());
+  AW_ROY.concat(AW_JOBS).forEach(k => { const e = awBust(k); if(!e) return; e.getAnimations().forEach(a => a.cancel()); e.hidden = true; e.style.zIndex = ""; e.style.opacity = ""; });
+  ["P", "W", "D"].forEach(k => { if(R.cast[k]) awFace(AW_PWD[k], k, awFirstFace(k)); });
+  R.root.classList.toggle("gen", R.v === "gen");
+  const cp = xq(".aw-cap"); if(cp){ cp.classList.remove("show"); cp.style.opacity = 0; }
+}
+async function awScene(o){
+  const pre = R.prep && R.root;
+  awReset(o);
+  const root = R.root, sess = R.sess;
+  root.classList.add("on"); root.classList.remove("prep"); root.style.opacity = "";
+  const bk = xq(".rv-black"), bg = xq(".rv-bg"), card = xq(".rv-card");
+  if(!pre){ bk.style.opacity = 0; bg.style.opacity = 0; await awFade(bk, 1, 360); if(sess !== R.sess) return false; }
+  R.prep = false;
+  /* 장면 전환 — 까만 데서 '시상식' 자막 → 밝아진다 */
+  bg.style.opacity = 1;
+  awFit();
+  awAmb(true);
+  const ci = card.querySelector("i"); ci.hidden = false; ci.textContent = AW_T.sub;
+  card.querySelector("b").textContent = AW_T.cap;
+  card.style.opacity = 0;
+  await awFade(card, 1, 300); if(sess !== R.sess) return false;
+  await rsleep(cRM() ? 500 : 1200); if(sess !== R.sess) return false;
+  await awFade(card, 0, 260); if(sess !== R.sess) return false;
+  await awFade(bk, 0, 700); if(sess !== R.sess) return false;
+  R.pin = awOnStage().slice();
+  awEnter(AW_ROY.slice(), true); awEnter(awOnStage()); awLayout(true);
+  await rsleep(cRM() ? 100 : 480); if(sess !== R.sess) return false;
+  return new Promise(res => { R.done = res; awRun(0); });
+}
+async function awRun(i){
+  const sess = R.sess, c = R.list[i];
+  if(!R.on || R.ending) return;
+  if(!c){ awEnd("done"); return; }
+  R.i = i;
+  awSetMood(AW_MOOD[R.sc + ":" + c.id]);
+  if(c.below && R.root && !R.root.classList.contains("below")){ R.root.classList.add("below"); awAmbLow(); }
+  if(c.who === "fx"){
+    awBox(null); awMark(false);
+    if(c.all){ await awStandAll(sess); if(sess !== R.sess) return; }
+    const lit = c.lit ? c.lit.slice() : c.all ? awKeys().filter(k => R.cast[k]).map(awBk) : c.reps ? awReps().map(awBk) : null;
+    awLit(lit);
+    if(c.cap){ await awCap(c.cap, c.ms || 1600, sess); if(sess !== R.sess) return; }
+    else { await rsleep(cRM() ? 160 : (c.ms || 500)); if(sess !== R.sess) return; }
+    if(c.bow){ awLit(null); await awBow(sess); if(sess !== R.sess) return; }
+    awRun(i + 1); return;
+  }
+  const stu = awIsStu(c.who), roy = awIsRoy(c.who), pwd = AW_PWD[c.who];
+  if(stu){ if(!pwd){ awJr(c.who); awFace(c.who, c.who, c.face); } await awSpeaker(c.who); if(sess !== R.sess) return; }
+  if(roy){ await awSpeaker(c.who); if(sess !== R.sess) return; }
+  const bk = pwd ? pwd : (stu || roy) ? c.who : null;
+  if(bk){
+    if(stu && c.face) awFace(bk, c.who, c.face);
+    awLit([bk]);
+  } else awLit(null);
+  awPlate(c.who); awBox("talk");
+  const ln = awLine(c), tkb = xq(".fst-talk"); if(tkb) tkb.classList.toggle("long", [...ln].length > 46);
+  await awType(xq(".fst-talk .fst-tx"), ln, c.who === "master" || roy ? "csl_mst" : "csl_stu", sess);
+  if(sess !== R.sess) return;
+  await awWaitClick(); if(sess !== R.sess) return;
+  awRun(i + 1);
+}
+async function awEnd(how){
+  if(!R.on || R.ending) return;
+  R.ending = true; R.sess++; R.wait = null; R.typing = null;
+  const sk = xq(".rv-skip"); if(sk) sk.disabled = true;
+  if(!R.preview){                                                              // 끝까지 (또는 건너뛰기) — 본 것으로 (대회 한 번)
+    const X = awS();
+    if(X){ const P = X.pend; const y = P && P.sc === R.sc ? P.y : (S.year | 0); X.seen[String(y)] = R.sc; X.done[R.sc] = 1; if(P && P.sc === R.sc) X.pend = null; try{ save(); }catch(e){} }
+  }
+  awAmb(false);
+  await awFade(xq(".rv-black"), 1, how === "skip" ? 260 : 600);
+  if(R.root) R.root.classList.remove("on");
+  await awFade(R.root, 0, 320);
+  awTeardown(); R.on = false; R.ending = false; R.mood = "bright";
+  const d = R.done; R.done = null; if(d) d(true);
+}
+function awGo(o, again){
+  R.live = true;
+  awScene(o).catch(e => { awErr(e); awTeardown(); R.on = false; })
+    .then(() => { R.live = false; try{ again && again(); }catch(e){ awErr(e); } });
+}
+
+/* ── 고리 — 결승 전체 결과가 확정되면 (finishLadder 끝 · 정산 · 저장 뒤 · 결과 상세 창 전) ── */
+/* 계획 — 이번 대회를 아직 안 봤고 아홉이면 배역을 정해 적어 둔다 (pend — 장면 중에 끄면 다음에 그 장면부터) · 졸업 전 명부로 */
+function awPlan(t){
+  const K = R.keep; R.keep = null;
+  if(!S || !awOn() || !window.FFER) return null;
+  const sc = FFER.result(t); if(!sc) return null;
+  const X = awS(), y = S.year | 0; if(!X || X.seen[String(y)]) return null;
+  if(X.pend && X.pend.y === y) return null;
+  R.keep = K;
+  const C = awWithKeep(() => awCast(t)); R.keep = null;
+  if(!C) return null;                                                          // 아홉이 아니면 장면 없이 (본 것으로 적지 않는다)
+  X.gv[sc] = {v: C.v, cast: C.cast, y};
+  X.last = sc;
+  X.pend = {sc, y};
+  try{ save(); }catch(e){}
+  return {sc, v: C.v, cast: C.cast};
+}
+function awPlay(P, next){
+  if(!P || R.on || R.ending || R.live){ awTeardown(); return false; }
+  awGo({sc: P.sc, v: P.v, cast: P.cast}, () => { try{ next && next(); }catch(e){ awErr(e); } });
+  return true;
+}
+/* 16 이 안 떴을 때 — 고리 한 줄 (FFER.outro 다음): 17 바로 → 결과 상세 창 */
+function awOutro(t, next){
+  if(!S || !awOn() || R.on || R.ending || R.live){ R.keep = null; return false; }
+  const P = awPlan(t); if(!P) return false;
+  return awPlay(P, next);
+}
+/* 16 이 뜰 때 — FFER.outro 를 감싼다: 16 끝 → 17 → 결과 상세 창 (16 이 시작할 때 17 무대를 그 아래 까맣게 깔아 둔다) */
+if(window.FFER && typeof FFER.outro === "function" && !FFER.outro.__ffaw){
+  const o0 = FFER.outro;
+  const o2 = function(t, next){
+    let plan = null;
+    const r = o0.call(this, t, () => { if(plan && awPlay(plan, next)) return; awTeardown(); try{ next && next(); }catch(e){ awErr(e); } });
+    if(r){ try{ plan = awPlan(t); if(plan) awPrep(); }catch(e){ awErr(e); plan = null; } }
+    return r;
+  };
+  o2.__ffaw = 1;
+  FFER.outro = o2;
+}
+/* ── 고리 2 — render 끝: 장면 중에 다시 열었으면 (한가할 때 · 16 이 남았으면 16 이 먼저) 그 장면부터 (결과 상세 창은 다시 띄우지 않는다) ── */
+function awAfter(){
+  if(!S || !awOn() || !Array.isArray(S.students) || !S.students.length) return;
+  const X = awS(); if(!X || !X.pend || R.on || R.live || R.pendT) return;
+  const F = window.FFER && FFER.state;
+  if((S.ffer && S.ffer.pend) || (F && (F.on || F.live))){                    // 16 이 먼저 (끝나면 render → 여기) · 16 이 시작하면 17 무대를 그 아래 까맣게
+    if(F && F.on && !R.prep) awPrep();
+    else if(!R.prepT){ R.prepT = setTimeout(() => { R.prepT = 0; const F2 = window.FFER && FFER.state; if(F2 && F2.on && S && S.ffaw && S.ffaw.pend && !R.on && !R.live && !R.prep) awPrep(); }, 80); }
+    return;
+  }
+  const idle = () => {
+    const mr = document.getElementById("modalRoot");
+    return !(UI.wrun || UI.battle || UI.tour || UI.pendingTour || (UI.ceremonies || []).length || (mr && mr.innerHTML.trim()) || document.getElementById("bootLoader")
+      || (typeof OP !== "undefined" && OP) || (typeof BELT !== "undefined" && BELT.on) || (window.FST && FST.state && FST.state.on)
+      || ["RVST", "RQST", "XPST", "FRIS", "FLST", "RSTO", "SMST", "SPST", "CTST", "RKST", "SHVS", "RGST", "FQST", "FQRS", "FFEN", "FFRS", "FFBF", "FFER"].some(k => window[k] && window[k].state && (window[k].state.on || window[k].state.live))
+      || document.documentElement.classList.contains("modal-open"));
+  };
+  if(!idle() && !R.prep) return;
+  R.pendT = true;
+  setTimeout(() => {
+    R.pendT = false;
+    const Y = S && S.ffaw, P = Y && Y.pend;
+    if(!P || R.on || R.live){ if(!P) awTeardown(); return; }
+    if(!idle() && !R.prep) return;
+    const G = Y.gv && Y.gv[P.sc];
+    if(!G || !G.cast || AW_SCENES.indexOf(P.sc) < 0 || Y.seen[String(P.y)]){ Y.pend = null; awTeardown(); try{ save(); }catch(e){} return; }
+    awGo({sc: P.sc, v: G.v, cast: G.cast}, () => { try{ render(); }catch(e){} });
+  }, 0);
+}
+
+/* ── 다시 보기 (SCEN 17 묶음) · 미리 보기 (목업) — 세이브를 건드리지 않고 오른쪽 위 건너뛰기 ── */
+function awReplay(sc, actors, opt){
+  if(R.on || R.ending || R.live || AW_SCENES.indexOf(sc) < 0) return false;
+  const X = S && S.ffaw, G = opt || (X && X.gv && X.gv[sc]) || null;
+  if(!G || !G.cast) return false;
+  if(R.prep) awTeardown();
+  awGo({sc, v: G.v, cast: G.cast, preview: true}, () => { try{ render(); }catch(e){} });
+  return true;
+}
+function awPreview(sc, opt){ return awReplay(sc || "win", null, opt); }
+function awReplayList(){
+  const X = S && S.ffaw; if(!X || !X.done) return [];
+  const items = AW_SCENES.filter(k => X.done[k] && X.gv && X.gv[k]).map(k => ({k, t: AW_T.sc[k]}));
+  return items.length ? [{n: AW_T.first, items}] : [];
+}
+function awAnySeen(){ const X = S && S.ffaw; return !!(X && X.done && X.gv && AW_SCENES.some(k => X.done[k] && X.gv[k])); }
+function awResetAll(){ R.sess++; R.on = false; R.ending = false; R.live = false; R.pendT = false; R.preview = false; R.typing = null; R.wait = null; R.mood = "bright"; awTeardown(); }
+window.FFAW = {outro: awOutro, after: awAfter, replay: awReplay, preview: awPreview, replayList: awReplayList, anySeen: awAnySeen, plan: awPlan, prep: awPrep,
+  cast: awCast, list: awList, code: awCode, played: awPlayed, respKey: awRespKey, mood: awMood, moods: AW_MOOD, src: awStuSrc, glad: AW_GLAD, reset: awResetAll, end: awEnd, advance: awAdvance, state: R, s: awS,
+  all: AW_ALL, pl: AW_PL, pr: AW_PR, q1: AW_Q1, exp: AW_EXP, expr: AW_EXPR, reps: AW_REPS, resp: AW_RESP, pers: AW_PERS, codes: AW_CODES, scenes: AW_SCENES, T: AW_T, Q: AW_Q, JUN: AW_JUN, ROY: AW_ROY, roy: AW_ROY_IMG, gmap: AW_GMAP};
+})();
+/* FFAW_END */
+/* WKGR_START — 경과 보고 골드 · 이번 주 성장 (1120 목업 · apply_wkgr.py · mockups/weekly-growth)
+   사용자 1120: '경과보고에서 골드는 우측 상단에 표시해놓고 변동되는 부분을 매 스케쥴 진행할 때 마다 실시간으로 차감/증강되는 형식으로 보여주고
+     이번 주 자금 상황 표시하는 창에서는 골드를 보여주기보다는 각 학생들이 해당 주간 얼마나 성장했는지 한눈에 보여주고싶은데' ·
+     '이자 상환은 있는 경우에만 이자 상환 및 자금 정보를 성장창 아래 남기도록'.
+   ① 골드 칸 — 경과 보고 창 머리 오른쪽 끝. 장면(요일 오전 · 오후)이 바뀔 때마다 그 장면까지 쓴 돈 · 번 돈만큼 숫자가 굴러가고 '−150 G' 가 떠올랐다 사라진다.
+      · 장면마다 그때의 골드를 적어 둔다 (reportRecord 를 감싼다 — 기록 g · 셈은 그대로). 재생할 장면 하나 = 같은 요일 · 같은 오전/오후 기록의 마지막 g.
+      · 시작 값은 주 시작 자금(g0) — 식단은 주를 시작할 때 한 번에 내므로 첫 장면 전에 '식단 −60 G' 로 먼저 뺀다.
+      · 이전 장면 · 요일 단추로 되돌아가면 숫자만 그 장면 값으로 (뜨는 글 없음). 원정 뒤 이어 보기는 이어 보는 장면 바로 앞 값에서.
+      · 주 끝(성장 창이 뜰 때) — 유지비 · 이자 상환 · 예금 이자 · 그 밖(원정 수입 · 구매 등 남은 차이)을 차례로 → 주 완료 후 자금(fin.g1).
+   ② 이번 주 자금 상황 창 → '이번 주 성장' 창 (finPopupShow 를 바꾼다 — 열리는 때 · 확인 · 대회로 · 지침 무시 경고는 그대로).
+      학생마다 한 칸 (1120 둘째 고침 — 사용자 '전투력/경험치/컨디션 변화는 어짜피 보여질테니 … 각 능력치가 기존 몇에서 몇으로'):
+      얼굴 · 이름 · 직업 · 레벨(오르면 Lv.3 → 4 + 레벨 업) · 멘탈리티 여섯 칸 '적극성 23 → E24'(오른 칸 초록 · 내린 칸 붉게 · 그대로인 칸은 흐리게 지금 값).
+      멘탈리티가 많이 오른 차례 · 칸이 하나씩 드러나며 멘탈리티 상승 소리. 1등은 금테 + '가장 많이 성장'. 이번 주에 새로 온 학생은 넣지 않는다 (주 시작 명단 snap).
+      한 쪽에 여덟 명(두 열 × 네 줄 · 1120 다섯째) — 넘으면 쪽 넘기기 · 창 높이에 맞춘다(창 크기를 바꾸면 다시) — 넘치면 학생 칸만 스크롤 · 칸이 좁으면(컨테이너 340 아래) 능력치 이름 위 · 값 아래.
+   ③ 자금 정보 — 이자 상환이 있을 때만(계절 마지막 주) 성장 창 아래에 작게: 주 시작 자금 · 훈련 · 식단 · (의뢰 · 유지비) · 이자 상환 · 주 완료 후 자금. 없으면 자금 줄은 없다. */
+(function(){
+  "use strict";
+  const WK_T = {eyebrow: "경과 보고", title: "이번 주 성장", aria: "이번 주 성장", best: "가장 많이 성장", lvUp: "레벨 업", exp: "경험치", cond: "컨디션", pow: "전투력",
+    none: "변화 없음", inj: "부상", prev: "이전 학생", next: "다음 학생", gold: "보유 자금", fund: "자금 정보", g0: "주 시작 자금", train: "훈련 비용", diet: "식단 비용", job: "의뢰 보수", upkeep: "유지비",
+    interest: "이자 상환", depInt: "예금 이자", other: "원정 · 기타", g1: "주 완료 후 자금", ok: "확인", tour: "대회로", defy: "! 행동 지침을 무시한 학생이 발생했습니다.",
+    fDiet: "식단", fUpkeep: "유지비", fInterest: "이자 상환", fDep: "예금 이자", fOther: "기타", fJob: "의뢰 보수", fTrain: "훈련 비용", fExped: "원정"};
+  const WK_PER = 8;                                                // 한 쪽에 학생 여덟 (두 열 × 네 줄 · 1120 다섯째) — 넘으면 쪽 넘기기
+  const ST = {r: null, g0: 0, show: 0, tgt: 0, raf: 0, last: -1, mo: null, tick: 0, endT: []};
+
+  /* ── ① 장면마다 그때의 골드 ── */
+  const rec0 = reportRecord;
+  reportRecord = function(){
+    const R = UI.wrun, n0 = R && R.scenes ? R.scenes.length : 0;
+    const out = rec0.apply(this, arguments);
+    if(R && R.scenes) for(let i = n0; i < R.scenes.length; i++) R.scenes[i].g = S.gold;
+    return out;
+  };
+  const wr0 = weekReport;
+  weekReport = function(R, part){
+    ST.g0 = R ? R.g0 : S.gold; ST.diet = R ? (R.diet || 0) : 0;
+    return wr0.apply(this, arguments);
+  };
+  const sr0 = showReport;
+  showReport = function(r){
+    wkStop();
+    ST.r = r; ST.last = -1;
+    const out = sr0.apply(this, arguments);
+    wkMount();
+    return out;
+  };
+
+  function sg(v){ return (v > 0 ? "+" : v < 0 ? "−" : "") + fmt(Math.abs(v)) + " G"; }
+  function scenesOf(){ return ST.r && typeof reportScenesForPlayback === "function" ? reportScenesForPlayback(ST.r.scenes || []) : []; }
+  /* 재생 장면 하나의 골드 — 같은 요일 · 같은 때(오전 · 원정 / 오후)의 기록 중 마지막 g */
+  function gOf(s){
+    const all = (ST.r && ST.r.scenes) || [], pm = s.phase === "pm";
+    let g = null;
+    all.forEach(x => { if(x.day === s.day && (x.phase === "pm") === pm && typeof x.g === "number") g = x.g; });
+    return g;
+  }
+  function wkMount(){
+    const h = document.querySelector("#modalRoot .modal .panel-h");
+    if(!h || !document.getElementById("drStage") || h.querySelector(".wk-gold")) return;
+    h.classList.add("wk-head");
+    const el = document.createElement("div");
+    el.className = "wk-gold"; el.setAttribute("aria-label", WK_T.gold);
+    el.innerHTML = `<span class="wk-coin" aria-hidden="true"></span><b class="num">0 G</b><span class="wk-fly" aria-hidden="true"></span>`;
+    h.appendChild(el);
+    const sc = scenesOf(), st = ST.r && ST.r.startDay | 0;
+    let v0 = ST.g0, first = 0;
+    if(st){ const i = sc.findIndex(x => x.day >= st); first = i < 0 ? 0 : i; }
+    if(first > 0){ const g = gOf(sc[first - 1]); if(g !== null) v0 = g; }
+    ST.show = ST.tgt = v0; wkPaint();
+    const watch = document.getElementById("drActivity");
+    if(watch){ ST.mo = new MutationObserver(wkScene); ST.mo.observe(watch, {childList: true, characterData: true, subtree: true}); }
+    if(!(first > 0) && ST.diet){                                    // 식단 먼저 (0.35초) → 첫 장면 (0.6초 뒤)
+      ST.tick = setTimeout(() => { ST.tick = 0; wkTo(ST.tgt - ST.diet, [[WK_T.fDiet, -ST.diet]]); ST.endT.push(setTimeout(wkScene, 650)); }, 350);
+    } else ST.endT.push(setTimeout(wkScene, 300));
+  }
+  function wkScene(){
+    const P = UI._reportPlayer; if(!P) return;
+    const i = P.index; if(i === ST.last) return;
+    const sc = scenesOf(), s = sc[i]; if(!s) return;
+    const g = gOf(s); if(g === null){ ST.last = i; return; }
+    const fwd = ST.last < 0 || i === ST.last + 1;
+    ST.last = i;
+    if(!fwd){ wkTo(g, null, true); return; }
+    let base = ST.tgt;                                              // 앞 장면까지의 값 (식단을 아직 안 뺐으면 빼고 셈한다)
+    if(ST.tick){ clearTimeout(ST.tick); ST.tick = 0; base -= ST.diet; wkFloat([[WK_T.fDiet, -ST.diet]]); }
+    const d = g - base;
+    if(!d){ wkTo(g, null, true); return; }
+    const lab = s.phase === "exped" ? WK_T.fExped : s.phase === "pm" ? (d > 0 ? WK_T.fJob : WK_T.fTrain) : d > 0 ? WK_T.fOther : WK_T.fTrain;   // 오후 + 는 의뢰 보수 (재생 장면이 개인 훈련이어도 그 오후 의뢰 기록의 돈)
+    wkTo(g, [[lab, d]]);
+  }
+  function wkPaint(){
+    const b = document.querySelector("#modalRoot .wk-gold b"); if(!b) return;
+    b.textContent = fmt(Math.round(ST.show)) + " G";
+    b.parentElement.classList.toggle("neg", ST.show < 0);
+  }
+  function wkTo(v, fl, quiet){
+    ST.tgt = v;
+    if(fl) wkFloat(fl);
+    cancelAnimationFrame(ST.raf);
+    const from = ST.show, t0 = performance.now(), dur = quiet || matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 520;
+    const step = t => {
+      const k = dur ? Math.min(1, (t - t0) / dur) : 1;
+      ST.show = from + (v - from) * (1 - Math.pow(1 - k, 3)); wkPaint();
+      if(k < 1) ST.raf = requestAnimationFrame(step); else { ST.show = v; wkPaint(); }
+    };
+    ST.raf = requestAnimationFrame(step);
+    const el = document.querySelector("#modalRoot .wk-gold");
+    if(el && fl && !quiet){ el.classList.remove("hit-up", "hit-dn"); void el.offsetWidth; el.classList.add(fl.reduce((a, x) => a + x[1], 0) < 0 ? "hit-dn" : "hit-up"); }
+  }
+  function wkFloat(list){
+    const box = document.querySelector("#modalRoot .wk-gold .wk-fly"); if(!box) return;
+    list.filter(x => x[1]).forEach(([n, d], k) => {
+      const e = document.createElement("span");
+      e.className = "wk-d " + (d < 0 ? "dn" : "up");
+      e.style.animationDelay = (k * 160) + "ms";
+      e.textContent = n + " " + sg(d);
+      box.appendChild(e);
+      setTimeout(() => e.remove(), 1700 + k * 160);
+    });
+  }
+  function wkStop(){
+    if(ST.mo){ ST.mo.disconnect(); ST.mo = null; }
+    if(ST.tick){ clearTimeout(ST.tick); ST.tick = 0; }
+    ST.endT.forEach(clearTimeout); ST.endT = [];
+    cancelAnimationFrame(ST.raf);
+  }
+  /* 주 끝 — 장면 뒤에 남은 돈 (유지비 · 이자 · 예금 이자 · 그 밖) */
+  function wkEnd(fin){
+    if(!document.querySelector("#modalRoot .wk-gold")) return 0;
+    const sc = scenesOf(), lastG = sc.length ? gOf(sc[sc.length - 1]) : null;
+    if(ST.tick){ clearTimeout(ST.tick); ST.tick = 0; }
+    let cur = lastG !== null ? lastG : ST.g0 - ST.diet;
+    const L = [];
+    if(fin.upkeep) L.push([WK_T.fUpkeep, -fin.upkeep]);
+    if(fin.interest) L.push([WK_T.fInterest, -fin.interest]);
+    if(fin.depInt) L.push([WK_T.fDep, fin.depInt]);
+    const rest = fin.g1 - cur - L.reduce((a, x) => a + x[1], 0);
+    if(rest) L.push([WK_T.fOther, rest]);
+    if(ST.mo){ ST.mo.disconnect(); ST.mo = null; }
+    if(Math.round(ST.tgt) !== Math.round(cur)) wkTo(cur, null, true);
+    L.forEach((x, k) => { ST.endT.push(setTimeout(() => { cur += x[1]; wkTo(cur, [x]); }, 200 + k * 650)); });
+    if(!L.length) wkTo(fin.g1, null, true);
+    return L.length ? 200 + L.length * 650 + 500 : 0;                  // 성장 창은 골드 칸의 주 끝 정산을 다 보여 준 뒤에 (창이 골드 칸을 가린다)
+  }
+
+  /* ── ② 이번 주 성장 창 ── */
+  function rowsOf(){
+    const snap = (ST.r && ST.r.snap) || [];
+    return snap.map(o => {
+      const c = S.students.find(x => x.id === o.id); if(!c) return null;
+      const st = MENTAL.filter(m => !m.fixed && m.k !== "pot").map(m => { const a = Math.round(o.ment[m.k]), b = Math.round(c.ment[m.k]); return {k: m.k, n: m.n, a, b, d: b - a}; });
+      return {c, o, st, dLv: c.level - o.level, up: st.reduce((t, x) => t + Math.max(0, x.d), 0), net: st.reduce((t, x) => t + x.d, 0)};
+    }).filter(Boolean).sort((a, b) => b.up - a.up || b.net - a.net || b.dLv - a.dLv);
+  }
+  /* 1120 둘째 — 사용자 '전투력 · 경험치 · 컨디션 변화는 어짜피 보여질테니 … 각 능력치가 기존 몇에서 몇으로 바뀌었는지': 멘탈리티 여섯 칸 — 등급 + 값 (경과 보고 장면 카드와 같은 꼴)
+     오른 칸 'D 25 → D 27 +2' · 내린 칸 붉게 · 그대로인 칸은 흐리게 지금 값만 */
+  function statHtml(x){
+    const g = v => typeof mentalGradeHTML === "function" ? mentalGradeHTML(v) : "";
+    if(!x.d) return `<span class="wk-stat same" title="${esc(x.n)} ${x.b}"><span class="wk-sn">${esc(x.n)}</span><span class="wk-sv">${g(x.b)}${x.b}</span></span>`;
+    return `<span class="wk-stat ${x.d > 0 ? "up" : "dn"}" title="${esc(x.n)} ${x.a} → ${x.b} (${x.d > 0 ? "+" : "−"}${Math.abs(x.d)})"><span class="wk-sn">${esc(x.n)}</span><span class="wk-sv"><span class="wk-from">${x.a}</span><i>→</i><b>${g(x.b)}${x.b}</b></span></span>`;
+  }
+  /* 1120 다섯째 — 사용자 '최소 3명, 최대 15명, 4줄 2열, 캐릭터 프로필은 좌측에 크게 … 컨디션 상태 또는 부상, 학생들 사이 상대적 성장치에 따라 표정을 변화':
+     칸 왼쪽에 큰 얼굴 · 오른쪽 위 줄 이름 · 직업 · 레벨 … 컨디션(오른쪽 끝) · 아래 두 줄 멘탈리티 (팀워크 · 적극성 · 침착성 / 정신력 · 지구력 · 천재성).
+     표정(학생 표정 그림 RGST.face — 16직업 모두 smile · joy · sad · surprised · pout · motivated · heroic-confidence · flustered) — 먼저 맞는 것:
+       부상 → sad · 컨디션 39 이하 → flustered(개교 셋은 tired · 1120 여섯째) · 이번 주 가장 많이 성장(1등 · 금테만 — 글은 뺐다 1120 일곱째) → heroic-confidence · 레벨 업 → surprised ·
+       성장 순위(멘탈리티 오른 합 · 학생들 사이) 위 3분의 1 → joy(컨디션 40 ~ 69 면 motivated · 1120 여섯째) · 가운데 → smile · 아래 3분의 1 → 오른 게 있으면 기본 · 하나도 안 올랐으면 pout */
+  /* 1120 여섯째 — 사용자 '둘 다 넣어서': 개교 셋(팔라딘 · 마법사 · 암흑 사제 — RGST.castIds · uniq dp1 · wz1)은 컨디션 39 이하면 전용 '지침'(tired) ·
+     컨디션 40 ~ 69 인데 성장 순위 위 3분의 1 이면 '의욕'(motivated — 지쳐도 해낸 주) */
+  function wkFounder(c){
+    if(c.uniq === "dp1" || c.uniq === "wz1") return true;
+    const T = window.RGST && typeof RGST.castIds === "function" ? RGST.castIds() : null;
+    return !!(T && [T.paladin, T.wizard, T.darkpriest].indexOf(c.id) >= 0);
+  }
+  function wkMood(x, rank, n, best){
+    const c = x.c, cd = Math.round(c.cond);
+    if(typeof isInjured === "function" && isInjured(c)) return "sad";
+    if(cd <= 39) return wkFounder(c) && wkFaceOf(c.job, "tired") ? "tired" : "flustered";
+    if(x === best) return "heroic-confidence";
+    if(x.dLv > 0) return "surprised";
+    const t = n > 1 ? rank / (n - 1) : 0;
+    if(t < 1 / 3) return cd <= 69 ? "motivated" : "joy";
+    if(t < 2 / 3) return "smile";
+    return x.up > 0 ? "" : "pout";
+  }
+  /* 표정 그림 — 10 블록(RGST.face) 먼저 · 거기 없는 개교 셋 전용 표정(팔라딘 · 암흑 사제 tired 등)은 02 · 09 블록 표(RVST · RKST.face) */
+  function wkFaceOf(job, mood){
+    for(const A of [window.RGST, window.RKST, window.RVST]){ const F = A && A.face && A.face[job]; if(F && F[mood]) return F[mood]; }
+    return "";
+  }
+  function wkFaceSrc(job, mood){
+    const F = window.RGST && RGST.face && RGST.face[job];
+    return (mood && wkFaceOf(job, mood)) || (typeof FACE_IMG !== "undefined" && FACE_IMG[job]) || (F && F.smile) || "";
+  }
+  function cardHtml(x, i, best, n){
+    const c = x.c, mood = wkMood(x, i, n, best), img = wkFaceSrc(c.job, mood);
+    const nm = typeof dn === "function" ? dn(c) : c.name, inj = typeof isInjured === "function" && isInjured(c);
+    const cd = Math.round(c.cond), ck = cd <= 39 ? "critical" : cd <= 69 ? "tired" : "healthy";
+    return `<div class="wk-st${x === best ? " best" : ""}" data-wk="${i}" data-pg="${Math.floor(i / WK_PER)}" data-mood="${mood || "default"}">
+      <span class="wk-face">${img ? `<img src="${img}" alt="" draggable="false">` : ""}</span>
+      <div class="wk-main">
+        <div class="wk-top"><b class="wk-nm">${esc(nm)}</b><span class="wk-role">${roleTag(c.job)}</span>
+          <span class="wk-lv">${x.dLv > 0 ? `Lv.${x.o.level} → <b>${c.level}</b> <em>${WK_T.lvUp}</em>` : `Lv.${c.level}`}</span>
+          <span class="wk-cond ${ck}">${inj ? `<em class="wk-inj">${WK_T.inj}</em>` : ""}${WK_T.cond} <b>${cd}</b></span></div>
+        <div class="wk-stats">${x.st.map(statHtml).join("")}</div>
+      </div></div>`;
+  }
+  function fundHtml(fin){
+    if(!(fin.interest > 0)) return "";
+    const L = [[WK_T.g0, fin.g0, 1], [WK_T.train, -fin.train], [WK_T.diet, -(fin.diet || 0)]];
+    if(fin.jobOn || fin.job) L.push([WK_T.job, fin.job]);
+    if(fin.upkeep) L.push([WK_T.upkeep, -fin.upkeep]);
+    L.push([WK_T.interest, -fin.interest]);
+    if(fin.depInt) L.push([WK_T.depInt, fin.depInt]);
+    if(fin.other) L.push([WK_T.other, fin.other]);
+    return `<div class="wk-fund" data-wk="fund"><div class="wk-fund-h">${WK_T.fund}</div><div class="wk-fund-rows">${L.map(([n, v, base]) =>
+      `<span class="${n === WK_T.interest ? "it" : ""}">${esc(n)} <b class="${base ? "" : v > 0 ? "up" : v < 0 ? "dn" : "zero"}">${base ? fmt(v) + " G" : sg(v)}</b></span>`).join("")}
+      <span class="end">${WK_T.g1} <b>${fmt(fin.g1)} G</b></span></div></div>`;
+  }
+  finPopupShow = function(){
+    if(window.MTREE) MTREE.repFlush();
+    const fin = UI._fin;
+    if(!fin || UI._finShown) return;
+    const box = document.querySelector("#modalRoot .modal");
+    if(!box) return;
+    UI._finShown = true;
+    if(UI._drPause) UI._drPause();
+    const w = wkEnd(fin), wait = matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : w;
+    if(wait){ ST.endT.push(setTimeout(() => wkOpen(fin, box), wait)); return; }
+    wkOpen(fin, box);
+  };
+  function wkOpen(fin, box){
+    if(!box.isConnected || UI._fin !== fin) return;
+    const rows = rowsOf(), best = rows.find(x => x.up > 0) || null, pages = Math.max(1, Math.ceil(rows.length / WK_PER));
+    const el = document.createElement("div");
+    el.className = "job-intro fin-pop wk-pop";
+    el.innerHTML = `<div class="ji-card fin-card wk-card" role="dialog" aria-modal="true" aria-label="${WK_T.aria}">
+      <div class="fin-head wk-h"><div><div class="eyebrow">${WK_T.eyebrow}</div><h3>${WK_T.title}</h3></div>
+        ${pages > 1 ? `<div class="wk-pager"><button type="button" class="btn sm" data-wkp="-1" aria-label="${WK_T.prev}">‹</button><span class="wk-pgn"></span><button type="button" class="btn sm" data-wkp="1" aria-label="${WK_T.next}">›</button></div>` : ""}</div>
+      <div class="wk-grid">${rows.map((x, i) => cardHtml(x, i, best, rows.length)).join("")}</div>
+      ${fundHtml(fin)}
+      ${fin.defy ? `<p class="fin-defy" role="alert">${WK_T.defy}</p>` : ""}
+      <div class="ji-btn"><button class="btn primary" id="finOk" disabled>${UI.pendingTour ? WK_T.tour : WK_T.ok}</button></div></div>`;
+    box.appendChild(el);
+    const fit = () => { const card = el.querySelector(".wk-card"); if(!card || !el.isConnected){ removeEventListener("resize", fit); return; }   // 확대(zoom · 화면 배율) 안에서도 창 높이에 맞춘다 — 넘치면 학생 칸만 스크롤 · 창 크기를 바꾸면 다시
+      card.style.maxHeight = ""; const k = card.getBoundingClientRect().width / (card.offsetWidth || 1) || 1;
+      card.style.maxHeight = Math.max(240, (innerHeight - 24) / k) + "px"; };
+    const ok = el.querySelector("#finOk"), reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let pg = 0, done = false;
+    const show = p => {                                                  // 쪽 넘기기 — 처음 드러남이 끝난 뒤에는 그 쪽 칸을 바로 보인다
+      pg = Math.max(0, Math.min(pages - 1, p));
+      el.querySelectorAll(".wk-st").forEach(e => { const on = +e.dataset.pg === pg; e.hidden = !on; if(on && done) e.classList.add("on"); });
+      const n = el.querySelector(".wk-pgn"); if(n) n.textContent = `${pg + 1} / ${pages}`;
+      el.querySelectorAll("[data-wkp]").forEach(b => { b.disabled = +b.dataset.wkp < 0 ? pg === 0 : pg === pages - 1; });
+      fit();
+    };
+    el.querySelectorAll("[data-wkp]").forEach(b => b.onclick = () => { if(!done) return; show(pg + +b.dataset.wkp); });
+    show(0); addEventListener("resize", fit);
+    const items = [...el.querySelectorAll('.wk-st[data-pg="0"]'), ...el.querySelectorAll(".wk-fund")];
+    let i = 0;
+    const step = () => {
+      if(!el.isConnected) return;
+      const it = items[i];
+      if(it){
+        it.classList.add("on");
+        if(sfxGain() > 0 && it.classList.contains("wk-st")){ const a = new Audio(REPORT_STATUP); a.volume = sfxGain(); a.play().catch(() => {}); }
+      }
+      i++;
+      if(i < items.length) setTimeout(step, reduced ? 80 : 300);
+      else { done = true; show(pg); const dw = el.querySelector(".fin-defy"); if(dw) dw.classList.add("on"); ok.disabled = false; ok.focus(); }
+    };
+    setTimeout(step, 250);
+    ok.onclick = () => { wkStop(); reportDone(); };
+  }
+
+  window.WKGR = {state: ST, rows: rowsOf, gOf, scenes: scenesOf, T: WK_T};
+})();
+/* WKGR_END */
 /* WRST_START — 첫 겨울 · 신입생 모집 준비 08c '빈자리에 앉을 아이들' (1025 목업 · apply_wrst.py · mockups/winter-recruit) ─ 대본 scenario-08c-first-winter-recruitment-draft.md (초안 v1 · WR01 ~ 42).
    사용자 1025: '그다음 08c 목업' · 물음 · 답: '장면이 끝난 뒤, 스카우트 화면으로 가서, 마스터가 스카우트 화면의 기능을 보고 설명하는 목업도 만들자, 이전 학원 명부 설명하던 것 처럼' ·
      개교 셋이 없는 학원은 '마스터 독백만'.

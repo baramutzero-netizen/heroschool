@@ -2258,5 +2258,15 @@
  "타격감": "Hit Impact",
  "맞는 순간 화면이 맞은 쪽으로 툭 흔들리고, 아주 잠깐 멈추고, 맞은 쪽이 밀렸다 돌아오고, 바닥에 흔적이 남는다. 기기에서 움직임 줄이기를 켜면 꺼진다.": "On each hit the screen jolts toward the blow, freezes for an instant, the target is knocked back and springs back, and marks are left on the ground. Turned off when your device's reduce-motion setting is on.",
  "끔": "Off",
- "약하게": "Light"
+ "약하게": "Light",
+ "_wkgr (1120 — 경과 보고 골드 칸 · 이번 주 성장 창 · wkgr_block — 창 제목 · 쪽 넘기기 · 골드 칸에 뜨는 식단 · 기타)": "",
+ "이번 주 성장": "This Week's Growth",
+ "가장 많이 성장": "Most Improved",
+ "변화 없음": "No change",
+ "이전 학생": "Previous students",
+ "다음 학생": "Next students",
+ "보유 자금": "Funds",
+ "자금 정보": "Funds",
+ "식단": "Meals",
+ "기타": "Other"
 }
