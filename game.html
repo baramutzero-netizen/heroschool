@@ -34744,6 +34744,8 @@ document.addEventListener("keydown", e => {
   if(e.key !== "Escape" || !JP.open) return;
   const mr = document.getElementById("modalRoot");
   if(mr && mr.firstElementChild) return;                 // 위에 뜬 게임 팝업이 먼저 닫힌다
+  const rb = document.getElementById("rbHost");
+  if(rb && rb.style.display === "block") return;         // 1121 — 설정 창에서 학생 명부 책을 열면 책이 위 → 책의 Esc 가 먼저 (전에는 아래 숨은 설정 창이 먼저 닫혀 책이 두 번째 Esc 에 닫혔다)
   if(window.TIPWIN) try{ TIPWIN.hide(); }catch(x){}
   e.preventDefault(); e.stopPropagation(); jpClose();
 }, true);
