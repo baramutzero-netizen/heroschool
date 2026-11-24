@@ -1,0 +1,15 @@
+"AppBuild"
+{
+	"AppID" "5670460"
+	"Desc" "My Hero's Academy Demo (Electron) - year 2 winter end"
+
+	"ContentRoot" "..\dist-demo\win-unpacked\"
+	"BuildOutput" ".\output\"
+	"SetLive" ""
+	"Preview" "0"
+
+	"Depots"
+	{
+		"5670461" "depot_build_demo.vdf"
+	}
+}

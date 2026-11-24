@@ -59,6 +59,33 @@ npm run dist:demo:zip   → dist-demo/HeroSchool-0.1.0-win-x64.zip
 - 체험판을 만든 뒤 정식판을 빌드할 때는 그냥 `npm run dist` — 준비 단계가 원래 heroschool.html 을 다시 복사한다. 결과 폴더가 달라(`dist/` · `dist-demo/`) 섞이지 않는다.
 - 끝 주차를 바꾸려면 `tools/prepare.mjs` 의 `DEMO_END` · `DEMO_TEXT` 와 game.html `demoEndShow` 글 · 번역 표(ui.json)를 같이.
 
+## 스팀 체험판 (Steamworks 데모 앱)
+
+1124 — 스팀 데모 빌드. 빌드는 STOVE 체험판과 같다 (`npm run dist:demo` → `dist-demo/win-unpacked/` · 2년차 겨울 6주를 마치면 끝). Steamworks SDK 는 붙이지 않는다
+(플레이 시간 · 소유 확인은 스팀 클라이언트가 실행한 프로세스로 잡는다 — 업적 · 클라우드 저장을 쓸 때만 SDK 가 필요하다).
+
+```
+python wrap.py          (저장소 맨 위 — heroschool.html 최신으로)
+cd desktop
+npm run dist:demo       → dist-demo/win-unpacked/
+steam\upload_demo.bat 스팀계정이름     (steamcmd 가 비밀번호 · Steam Guard 를 직접 묻는다)
+```
+
+- `steam/app_build_demo.vdf` · `steam/depot_build_demo.vdf` — **데모 앱 ID · 데모 depot ID**(본편 ID 아님)를 `DEMO_APPID` · `DEMO_DEPOTID` 자리에 (1124 — 데모 앱 5670460 · depot 5670461 을 넣었다).
+  `SetLive` 는 비워 둔다 → 올린 뒤 Steamworks '빌드' 화면에서 `default` 브랜치로 직접 라이브. 로그 · 캐시는 `steam/output/` (git 제외).
+- steamcmd: https://developer.valvesoftware.com/wiki/SteamCMD 의 Windows zip — 처음 실행할 때 스스로 업데이트한다. 계정은 Steamworks 에서 '앱 빌드 편집 · 라이브' 권한이 있는 계정.
+- **실행 옵션의 실행 파일은 `HeroSchool.exe`(실행기)** — 본체 `HeroSchoolGame.exe` 를 바로 켜면 main.js 가 실행기로 다시 켜고 자기는 끝나서(`--hs-relaunch`)
+  스팀이 '게임 끝'으로 볼 수 있다. 실행기는 본체가 끝날 때까지 기다리므로 스팀 플레이 시간이 제대로 잡힌다.
+- 저장은 `%APPDATA%\HeroSchool` (정식판 · STOVE 판과 같은 곳) — 스팀 클라우드는 쓰지 않는다.
+
+남은 체크리스트
+
+| 항목 | 할 일 |
+|---|---|
+| At Least One Build Configured | 위 업로드 → 앱 관리 'SteamPipe → 빌드'에서 올린 빌드를 `default` 브랜치로 '라이브로 설정' (Preview 를 1 로 두면 올라가지 않는다) |
+| Played Through Steam for 5 Minutes | 계정 라이브러리에 데모가 있어야 한다 (Steamworks '키 요청'으로 개발자 키를 받아 등록하거나, 앱 소유자 계정은 그대로 보인다) → 스팀에서 설치 · 실행 · 5분 넘게 켜 둔다. 반영까지 몇 시간 걸릴 수 있다 |
+| Common Redistributables | Electron 은 VC++ 런타임 · DirectX · .NET 이 필요 없다 (전부 exe 안에 들어 있다). 앱 관리 '설치 → 재배포 가능 패키지'에서 **아무것도 고르지 않은 채 저장** — 이 화면을 한 번 저장하면 체크된다 |
+
 ## 화면
 
 | | |
