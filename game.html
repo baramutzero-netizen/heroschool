@@ -1288,6 +1288,7 @@ html body #btnTut.tutbtn{border:0!important;box-shadow:none!important;background
 .gradroll{position:relative;height:min(62vh,600px);overflow:hidden;margin-top:12px;
   -webkit-mask-image:linear-gradient(to bottom,transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(to bottom,transparent,#000 7%,#000 93%,transparent)}
 .gr-track{position:absolute;left:0;right:0;top:0;will-change:transform;padding:0 4px}
+.gradroll.end{-webkit-mask-image:linear-gradient(to bottom,transparent,#000 7%);mask-image:linear-gradient(to bottom,transparent,#000 7%)}   /* 1125 — 끝까지 내려와 멈추면 아래 페이드를 끈다 (사용자 '하단 버튼이 좀 어둡게 보인다') */
 /* 1124 — 졸업식 창에 세로 스크롤이 생기지 않게 (사용자 '증서 우측에 스크롤이 존재하는데 굳이 필요한가?'): 스텝롤이 스스로 흐르니 창은 넘치지 않게 —
    창을 세로 줄로 놓고 스텝롤 칸만 남는 높이에 맞춰 줄어든다 (제목 · 단추는 그대로) */
 .modal:has(#gradRoll){display:flex;flex-direction:column;overflow:hidden}
@@ -2406,6 +2407,9 @@ html body .skwrap .skfit .skstage .sk-life .al-x{margin-left:4px;color:#8a5e1c;f
 .grst .gr-bk img{width:100%;height:100%;object-fit:contain;image-rendering:pixelated;display:block}
 .grst .gr-bk.on{filter:brightness(.95) saturate(1);transform:translateY(-3px)}
 @media (max-width:700px){.grst .gr-back{bottom:calc(var(--fst-talk-h, 130px) + 24vh)}.grst .gr-bk{width:min(13vw, 64px)}}
+/* 1125 — 끝: 흰색으로 덮었다가(.gr-white · 장면 안) 의식이 뜬 뒤 걷힌다(.gr-white-out · 화면 맨 위) */
+.grst .gr-white{position:absolute;inset:0;z-index:60;background:#fff;opacity:0;pointer-events:none}
+.gr-white-out{position:fixed;inset:0;z-index:2147483000;background:#fff;pointer-events:none}
 /* GRST_CSS_END */
 /* DPMEM_CSS_START — 원래 암흑 사제 유대 '기억의 조각' + 독백 (1124 목업 · apply_dpmem.py) ─ 오프닝(.opening · .op-talk) 그대로 쓰고 더한 것만 */
 .dpmem-host .opening.dpmem{z-index:930}
@@ -36466,7 +36470,7 @@ function gradCertHtml(g, c){
 }
 /* 1125 — 스태프 롤 (첫 졸업식 — 증서가 다 흐른 뒤 이어서). 이름은 번역하지 않는다 */
 const GRAD_CRED_ROLES = [["Director", "Baramut"], ["Scenario", "Baramut"], ["Character Concept Design", "Baramut"]];
-const GRAD_CRED_THANKS = [/*no-i18n*/"Tentarc", /*no-i18n*/"Kein", /*no-i18n*/"할랑", /*no-i18n*/"늑대야", /*no-i18n*/"와룡몬", /*no-i18n*/"에네빌", /*no-i18n*/"그리프", /*no-i18n*/"썩은초콜릿", /*no-i18n*/"키안시아", /*no-i18n*/"무래기", /*no-i18n*/"aple", /*no-i18n*/"수면마취제", /*no-i18n*/"모루", /*no-i18n*/"Badbeans", /*no-i18n*/"투네이션 2군 일동"];
+const GRAD_CRED_THANKS = [/*no-i18n*/"Tentarc", /*no-i18n*/"Kein", /*no-i18n*/"할랑", /*no-i18n*/"늑대야", /*no-i18n*/"와룡몬", /*no-i18n*/"에네빌", /*no-i18n*/"그리프", /*no-i18n*/"썩은초콜릿", /*no-i18n*/"키안시아", /*no-i18n*/"무래기", /*no-i18n*/"aple", /*no-i18n*/"수면마취제", /*no-i18n*/"모루", /*no-i18n*/"코로돈", /*no-i18n*/"MOMO", /*no-i18n*/"루일", /*no-i18n*/"팤씨", /*no-i18n*/"투네이션 2군 일동", /*no-i18n*/"Badbeans"];
 function gradCreditsHtml(){
   return `<div class="gr-cred">
     ${GRAD_CRED_ROLES.map(([r, n])=> `<div class="cr-blk"><div class="cr-role">${esc(r)}</div><div class="cr-name">${esc(n)}</div></div>`).join("")}
@@ -36510,7 +36514,7 @@ function gradRollStart(){
   const endY = ()=> view.clientHeight - track.scrollHeight;
   const place = ()=>{ track.style.transform = `translateY(${Math.round(R.y)}px)`; };
   const ctl = (show)=>{ ["#grSpeed","#grSkip"].forEach(q=>{ const b=$(q); if(b) b.style.display = show? "" : "none"; }); };
-  const finish = ()=>{ R.done = true; R.y = endY(); place(); ctl(false); };
+  const finish = ()=>{ R.done = true; R.y = endY(); place(); ctl(false); view.classList.add("end"); };
   const step = (now)=>{
     if(!document.body.contains(track)) return;
     if(R.done) return;
@@ -36519,7 +36523,7 @@ function gradRollStart(){
     if(R.y <= endY()){ finish(); return; }
     place(); requestAnimationFrame(step);
   };
-  const replay = ()=>{ R.y = view.clientHeight; R.speed = 1; R.done = false; R.last = performance.now();
+  const replay = ()=>{ view.classList.remove("end"); R.y = view.clientHeight; R.speed = 1; R.done = false; R.last = performance.now();
     const sp=$("#grSpeed"); if(sp) sp.textContent = "▶ ×1"; ctl(true); place(); requestAnimationFrame(step); };
   place();
   const sp = $("#grSpeed"); if(sp) sp.onclick = ()=>{ R.speed = R.speed>=4 ? 1 : R.speed*2; sp.textContent = `▶ ×${R.speed}`; };
@@ -55724,7 +55728,9 @@ const GR_T = {skip: "건너뛰기", master: "마스터", first: "이름을 부�
 const GR_PERS = ["intro", "hot", "stone", "dilig", "tsun", "lively", "boast", "plain", "genius"];
 
 /* 대본 — who P · W · D · G · master · fx / face · t · p (공용판 성격표 call · thanks) · {P} {W} {D} {G} = 그 학생 이름 ·
-   fx: all 앞줄 모두 · lit 비출 사람 · back 뒷줄 비출 사람(all = 모두) · hop 증서를 받는 사람 · snd paper · clap · ms 쉼 */
+   fx: all 앞줄 모두 · lit 비출 사람 · back 뒷줄 비출 사람(all = 모두) · hop 증서를 받는 사람 · snd paper · clap · ms 쉼
+   1125 — mood: 앞줄 모두의 표정(sad 떨림 · motivated 고개를 든다 · joy 활짝 — 조금씩 시차) · white: 흰색으로 사라지고 흰빛이 걷히며 증서 스텝롤 ·
+          t1: 졸업생이 한 명일 때의 마스터 대사 ('너희가' → '네가') */
 const GR_TRIO = [
   {id: "GR2301", who: "fx", all: 1, back: [], snd: "paper", ms: 1400},
   {id: "GR2302", who: "master", t: "{P}."},
@@ -55756,7 +55762,12 @@ const GR_TRIO = [
   {id: "GR2322", who: "fx", lit: ["D"], hop: "D", snd: "paper", ms: 1200},
   {id: "GR2323", who: "D", face: "smile", t: "거기 제 자리였어요?"},
   {id: "GR2324", who: "W", face: "smile", t: "지금부터어. 얼른 와."},
-  {id: "GR2325", who: "fx", all: 1, back: "all", snd: "clap", ms: 2400}
+  {id: "GR2325", who: "fx", all: 1, back: "all", snd: "clap", ms: 2400},
+  {id: "GR2326", who: "master", t: "함께해 줘서 고맙다. 너희가 내 학생이었다는 게 참 자랑스럽구나. 앞으로도 그럴 거야."},
+  {id: "GR2327", who: "fx", all: 1, back: "all", mood: "sad", ms: 2100},          // 1125 — 눈썹 끝이 처지고 입술이 잠깐 떨린다
+  {id: "GR2328", who: "fx", all: 1, back: "all", mood: "motivated", ms: 1900},    //        고개를 들고 마스터를 곧게 — 결의
+  {id: "GR2329", who: "fx", all: 1, back: "all", mood: "joy", ms: 2300},          //        마침내 활짝 웃는다
+  {id: "GR2330", who: "fx", white: 1}                                             //        인물 · 배경이 함께 흰색으로 → 흰빛이 걷히며 증서 스텝롤
 ];
 const GR_GEN = [
   {id: "GC2301", who: "fx", all: 1, snd: "paper", ms: 1200},
@@ -55766,7 +55777,12 @@ const GR_GEN = [
   {id: "GC2305", who: "master", t: "졸업 축하한다."},
   {id: "GC2306", who: "G", p: "thanks"},
   {id: "GC2307", who: "fx", lit: ["G"], hop: "G", snd: "paper", ms: 900},
-  {id: "GC2308", who: "fx", lit: ["G"], snd: "clap", ms: 1900}
+  {id: "GC2307a", who: "fx", lit: ["G"], snd: "clap", ms: 1900},
+  {id: "GC2308", who: "master", t: "함께해 줘서 고맙다. 너희가 내 학생이었다는 게 참 자랑스럽구나. 앞으로도 그럴 거야.", t1: "함께해 줘서 고맙다. 네가 내 학생이었다는 게 참 자랑스럽구나. 앞으로도 그럴 거야."},
+  {id: "GC2309", who: "fx", lit: ["G"], mood: "sad", ms: 2100},
+  {id: "GC2310", who: "fx", lit: ["G"], mood: "motivated", ms: 1900},
+  {id: "GC2311", who: "fx", lit: ["G"], mood: "joy", ms: 2300},
+  {id: "GC2312", who: "fx", white: 1}
 ];
 /* 공용판 성격표 — call 호명 응답 · thanks 답례 [표정, 대사] · intro · hot · tsun · boast 는 1124 성격 말투 */
 const GR_PRG = {
@@ -55847,6 +55863,7 @@ function grPlate(who){
 function grLine(c){
   let t = c.t || "";
   if(c.who === "master"){
+    if(c.t1 && R.solo) t = c.t1;                                                   // 1125 — 졸업생이 한 명이면 '네가'
     const m = /^\{([PWDG])\}\.$/.exec(t);
     if(m){ const n = grNameOf(grStu(m[1])); t = n ? n + "." : GR_T.come; }              // 이름을 알 수 없으면 '앞으로 나와 주겠니?'
     return t;
@@ -56002,6 +56019,29 @@ function grHop(who){
   img.animate([{transform: "translateY(0)"}, {transform: "translateY(-22px)", offset: .35}, {transform: "translateY(0)", offset: .7}, {transform: "translateY(-5px)", offset: .85}, {transform: "translateY(0)"}], {duration: 720, easing: "ease-out"});
 }
 
+/* 1125 — 표정 박자 (앞줄 모두 · 조금씩 시차): sad 떨림 · motivated 고개를 든다 · joy 활짝 (작게 뛴다) */
+function grMood(m, sess){
+  grKeys().filter(k => R.cast[k]).forEach((k, n) => setTimeout(() => {
+    if(sess !== R.sess) return;
+    const bk = grBk(k), e = grBust(bk); if(!e || e.hidden) return;
+    grFace(bk, k, m);
+    if(cRM()) return;
+    const img = e.querySelector("img") || e;
+    if(m === "sad") img.animate([{transform: "translate(0,0)"}, {transform: "translate(-1.5px,1px)"}, {transform: "translate(1.5px,0)"}, {transform: "translate(-1px,1px)"}, {transform: "translate(0,0)"}], {duration: 260, iterations: 3, easing: "linear"});
+    else if(m === "motivated") img.animate([{transform: "translateY(4px)"}, {transform: "translateY(-6px)", offset: .6}, {transform: "translateY(0)"}], {duration: 700, easing: "ease-out"});
+    else if(m === "joy") img.animate([{transform: "translateY(0)"}, {transform: "translateY(-12px)", offset: .4}, {transform: "translateY(0)"}], {duration: 560, easing: "ease-out"});
+  }, n * 220));
+}
+/* 흰 화면 — 인물 · 배경을 함께 흰색으로 덮고 한 박자 (끝나면 grEnd('white') 가 흰빛을 걷으며 스텝롤로) */
+async function grWhite(sess){
+  grBox(null); grMark(false);
+  let w = xq(".gr-white"); if(!w){ w = document.createElement("div"); w.className = "gr-white"; R.root.appendChild(w); }
+  w.style.opacity = 0;
+  await grFade(w, 1, cRM() ? 300 : 2000); if(sess !== R.sess) return false;
+  await rsleep(cRM() ? 200 : 700);
+  return sess === R.sess;
+}
+
 /* ── 세이브 · 켜짐 ── */
 function grOn(){ return !!S && !((navigator.webdriver && !window.__grstForce) || window.__grstOff); }
 function grS(){
@@ -56052,7 +56092,7 @@ function grList(sc, v, cast){
 function grReset(o){
   grBuild();
   R.sc = o.sc; R.preview = !!o.preview; R.v = o.v === "gen" ? "gen" : "trio";
-  R.cast = Object.assign({}, o.cast || {});
+  R.cast = Object.assign({}, o.cast || {}); R.solo = !!o.solo;
   R.list = grList(R.sc, R.v, R.cast);
   R.on = true; R.ending = false; R.sess++; R.i = -1; R.typing = null; R.wait = null; R.cur = null; R.face = {};
   const sk = xq(".rv-skip"); if(sk){ sk.hidden = !R.preview; sk.disabled = false; }
@@ -56098,6 +56138,8 @@ async function grRun(i){
     grLit(lit);
     if(c.snd) grSnd(c.snd);
     if(c.hop) setTimeout(() => { if(sess === R.sess) grHop(c.hop); }, 220);
+    if(c.mood) grMood(c.mood, sess);
+    if(c.white){ if(await grWhite(sess)) grEnd("white"); return; }
     await rsleep(cRM() ? 160 : (c.ms || 600)); if(sess !== R.sess) return;
     grRun(i + 1); return;
   }
@@ -56124,7 +56166,16 @@ async function grEnd(how){
   const sk = xq(".rv-skip"); if(sk) sk.disabled = true;
   if(!R.preview){                                                              // 끝까지 (또는 건너뛰기) — 본 것으로 (졸업식 한 번)
     const X = grS();
-    if(X){ const y = R.y != null ? R.y : (S.year | 0); X.seen[String(y)] = R.sc; X.done[R.sc] = 1; X.gv[R.sc] = {v: R.v, cast: R.cast, y}; X.last = R.sc; try{ save(); }catch(e){} }
+    if(X){ const y = R.y != null ? R.y : (S.year | 0); X.seen[String(y)] = R.sc; X.done[R.sc] = 1; X.gv[R.sc] = {v: R.v, cast: R.cast, y, solo: R.solo}; X.last = R.sc; try{ save(); }catch(e){} }
+  }
+  if(how === "white"){                                                            // 1125 — 흰빛이 걷히며 기존 증서 스텝롤
+    const w = document.createElement("div"); w.className = "gr-white-out"; document.body.appendChild(w);
+    grTeardown(); R.on = false; R.ending = false;
+    const d = R.done; R.done = null; if(d) d(true);
+    await rsleep(140);
+    await grFade(w, 0, cRM() ? 300 : 1300);
+    w.remove();
+    return;
   }
   await grFade(xq(".rv-black"), 1, how === "skip" ? 260 : 700);
   if(R.root) R.root.classList.remove("on");
@@ -56145,7 +56196,7 @@ function grPlay(c){
   const X = grS(); if(!X || X.seen[String(C.y)]) return false;                    // 졸업식마다 한 번
   c.grst = 1;
   try{ audOver("ending"); }catch(e){}
-  grGo({sc: C.sc, v: C.v, cast: C.cast, y: C.y}, () => { (UI.ceremonies = UI.ceremonies || []).unshift(c); try{ showCeremony(); }catch(e){ grErr(e); } });
+  grGo({sc: C.sc, v: C.v, cast: C.cast, y: C.y, solo: (c.list || []).filter(Boolean).length === 1}, () => { (UI.ceremonies = UI.ceremonies || []).unshift(c); try{ showCeremony(); }catch(e){ grErr(e); } });
   return true;
 }
 
@@ -56154,7 +56205,7 @@ function grReplay(sc, actors, opt){
   if(R.on || R.ending || R.live || GR_SCENES.indexOf(sc) < 0) return false;
   const X = S && S.grst, G = opt || (X && X.gv && X.gv[sc]) || null;
   if(!G || !G.cast) return false;
-  grGo({sc, v: G.v || sc, cast: G.cast, preview: true}, () => { try{ render(); }catch(e){} });
+  grGo({sc, v: G.v || sc, cast: G.cast, preview: true, solo: !!G.solo}, () => { try{ render(); }catch(e){} });
   return true;
 }
 function grPreview(c){ const C = grCastOf(c); return C ? grReplay(C.sc, null, C) : false; }

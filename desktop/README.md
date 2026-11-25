@@ -86,6 +86,22 @@ steam\upload_demo.bat 스팀계정이름     (steamcmd 가 비밀번호 · Steam
 | Played Through Steam for 5 Minutes | 계정 라이브러리에 데모가 있어야 한다 (Steamworks '키 요청'으로 개발자 키를 받아 등록하거나, 앱 소유자 계정은 그대로 보인다) → 스팀에서 설치 · 실행 · 5분 넘게 켜 둔다. 반영까지 몇 시간 걸릴 수 있다 |
 | Common Redistributables | Electron 은 VC++ 런타임 · DirectX · .NET 이 필요 없다 (전부 exe 안에 들어 있다). 앱 관리 '설치 → 재배포 가능 패키지'에서 **아무것도 고르지 않은 채 저장** — 이 화면을 한 번 저장하면 체크된다 |
 
+## 스팀 본편 (Steamworks 본편 앱)
+
+1125 — 본편 앱 **5658660** "My Hero's Academy" · depot **5658661**. 빌드는 정식판 (`npm run dist` → `dist/win-unpacked/` · 끝 주차 없음). 데모와 같이 Steamworks SDK 는 붙이지 않는다.
+
+```
+python wrap.py          (저장소 맨 위 — heroschool.html 최신으로)
+cd desktop
+npm run dist            → dist/win-unpacked/
+steam\upload_main.bat 스팀계정이름     (steamcmd 가 비밀번호 · Steam Guard 를 직접 묻는다)
+```
+
+- `steam/app_build_main.vdf` · `steam/depot_build_main.vdf` — 본편 앱 ID · depot ID. 나머지는 데모 vdf 와 같다 (`SetLive` 비움 → Steamworks '빌드' 화면에서 `default` 로 직접 라이브).
+- `upload_main.bat` 은 올리기 전에 `dist/win-unpacked/resources/app.asar` 안이 정식판(`const DEMO_END = null;`)인지 본다 — 체험판을 만든 채로 돌리면 멈춘다.
+- 실행 옵션 · 재배포 가능 패키지 · 저장 위치는 데모와 같다 (실행 파일 `HeroSchool.exe`).
+- 남은 체크리스트: 가격 제안 · 게시 (패키지 화면 'Propose Pricing' — $9.99) · 빌드 라이브 · 스팀으로 5분 플레이.
+
 ## 화면
 
 | | |
