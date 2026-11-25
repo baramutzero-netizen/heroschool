@@ -2442,6 +2442,25 @@ html body .skwrap .skfit .skstage .sk-life .al-x{margin-left:4px;color:#8a5e1c;f
 .dpts .ts-ember.on{opacity:1;transform:scale(1);animation:tsEmber 1.6s ease-in-out infinite}
 @keyframes tsEmber{0%,100%{box-shadow:0 0 18px 4px rgba(110,30,150,.4)}50%{box-shadow:0 0 30px 10px rgba(140,40,190,.6)}}
 @media (prefers-reduced-motion: reduce){.dpts .ts-ember.on{animation:none}}
+/* 1125 — 6화 최종: 칠흑(void) · 칠흑 속 반짝임(spark) · 작은 빛(wisp — 아버지 warm) · 빛의 파동(wave) · 눈꺼풀(lid — 감았던 눈이 뜨인다) */
+.dpts.void .rv-bg{visibility:hidden}
+.dpts.void{background:#000}
+.dpts.void .ts-dim{opacity:0}
+.dpts .ts-spark{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 1.2s ease;
+  background-image:radial-gradient(1.5px 1.5px at 12% 22%,#fff,transparent),radial-gradient(1px 1px at 28% 64%,#cfe6ff,transparent),radial-gradient(2px 2px at 47% 31%,#fff6d8,transparent),
+    radial-gradient(1px 1px at 63% 72%,#fff,transparent),radial-gradient(1.5px 1.5px at 78% 18%,#d9c8ff,transparent),radial-gradient(1px 1px at 88% 52%,#fff,transparent),
+    radial-gradient(1.5px 1.5px at 36% 84%,#ffe9c2,transparent),radial-gradient(1px 1px at 55% 9%,#fff,transparent),radial-gradient(2px 2px at 8% 76%,#cfe6ff,transparent)}
+.dpts.spark .ts-spark{opacity:1;animation:tsSpark 2.4s ease-in-out infinite}
+@keyframes tsSpark{0%,100%{opacity:.35}50%{opacity:1}}
+.dpts .ts-wisp{position:absolute;left:50%;top:38%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;pointer-events:none;opacity:0;transform:scale(.2);transition:opacity 1.4s ease,transform 1.4s ease}
+.dpts .ts-wisp.on{opacity:1;transform:scale(1);animation:tsWisp 3.2s ease-in-out infinite}
+.dpts .ts-wisp.warm{background:radial-gradient(circle,#fffbe8 0%,#ffe6a8 30%,rgba(255,196,110,.5) 55%,rgba(255,170,80,0) 72%);box-shadow:0 0 40px 16px rgba(255,200,120,.35)}
+@keyframes tsWisp{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1.12) translateY(-6px)}}
+.dpts .ts-wave{position:absolute;left:50%;top:46%;width:70vmin;height:70vmin;border-radius:50%;pointer-events:none;opacity:0;transform:translate(-50%,-50%);
+  background:radial-gradient(circle,rgba(255,255,255,0) 40%,rgba(230,240,255,.95) 52%,rgba(190,210,255,.4) 60%,rgba(255,255,255,0) 70%)}
+.dpts .ts-lid{position:absolute;left:0;right:0;height:51%;background:#000;opacity:0;pointer-events:none}
+.dpts .ts-lid.t{top:0}.dpts .ts-lid.b{bottom:0}
+@media (prefers-reduced-motion: reduce){.dpts.spark .ts-spark,.dpts .ts-wisp.on{animation:none}}
 /* DPTS_CSS_END */
 /* WKGR_CSS_START — 경과 보고 골드 칸 · 이번 주 성장 창 (1120 목업 · apply_wkgr.py · wkgr_block.js) */
 #modalRoot .panel-h.wk-head{display:flex;align-items:center;gap:14px}
@@ -6988,6 +7007,22 @@ html.ffop-on #modalRoot .modal[data-bt]{cursor:pointer}
   .op-talk.ffop-talk{animation-duration:.01s!important;animation-delay:0s!important}
   .ffop-cap{transition-duration:.2s}
 }
+/* 1125 — 6화 최종: 배경 칠흑(ffop-dark) · 미끼 빛 색(ffop-lure-red · blue) · 마나 이터 본모습(ffop-reveal — 새 그림 전 자리: 어둡고 크게) · 흘러가는 빛(.ffop-drain) · 긴 한 줄 · 떨림 · ??? 이름표 */
+html.ffop-dark #modalRoot .modal{--btf:none!important;background:#000!important}
+html.ffop-dark #modalRoot .modal .btscroll,html.ffop-dark #modalRoot .modal .bwrap,html.ffop-dark #modalRoot .modal .bf-stage{background:#000!important;background-image:none!important}
+html.ffop-dark #modalRoot .tq-map>img{visibility:hidden}html.ffop-dark #modalRoot .tq-map{background:#000}
+html.ffop-dark #modalRoot .modal .bf-stage::before,html.ffop-dark #modalRoot .modal .bf-stage::after{opacity:0!important}
+html.ffop-lure-red #modalRoot .bf-unit[data-uid="B0"] :is(canvas,img){filter:hue-rotate(150deg) saturate(2.2) drop-shadow(0 0 14px #ff3a3a);transition:filter .6s ease}
+html.ffop-lure-blue #modalRoot .bf-unit[data-uid="B0"] :is(canvas,img){filter:drop-shadow(0 0 14px #8fd0ff);transition:filter .6s ease}
+html.ffop-reveal #modalRoot .bf-unit[data-uid="B0"] :is(canvas,img){filter:brightness(.42) contrast(1.6) saturate(.35) hue-rotate(200deg) drop-shadow(0 0 18px rgba(120,40,200,.8));transform:scale(1.45);transform-origin:50% 80%;transition:filter 1s ease,transform 1s ease}
+.ffop-drain{position:fixed;inset:0;pointer-events:none;z-index:97}
+.ffop-drain i{position:fixed;border-radius:50%;background:radial-gradient(circle,#fff 0%,#ffe9a8 45%,rgba(255,210,120,0) 72%);box-shadow:0 0 8px 2px rgba(255,220,140,.7)}
+.ffop-drain.out{opacity:0;transition:opacity .3s}
+.op-talk.ffop-talk.brk .op-text{word-break:break-all;overflow-wrap:anywhere}
+.op-talk.ffop-talk.shake .op-text{animation:ffShake .12s linear infinite}
+@keyframes ffShake{0%{transform:translate(0,0)}25%{transform:translate(1px,-1px)}50%{transform:translate(-1px,1px)}75%{transform:translate(1px,1px)}100%{transform:translate(0,0)}}
+.op-talk .op-name.voice{color:#ff5a5a;--rc:#ff5a5a}.op-talk .op-name.eater{color:#c98cff;--rc:#c98cff}
+@media (prefers-reduced-motion: reduce){.op-talk.ffop-talk.shake .op-text{animation:none}}
 /* FFOP_CSS_END */
 /* STICON_CSS_START — 상태 효과 아이콘 (1026 목업 · apply_sticon.py — 1027 셋째 게임에 넣음) ─ 칩 = 도트 아이콘 한 장(.sti-sym) + (고르면) 덧그리는 단색 테두리(::after)
    1027 — 아이콘 v5 (status-icons-v5 · 24px): 그림마다 바탕 · 1px 단색 테두리(#C4AC78)가 그림 안에 있다 — 사용자 '이제부터 + - 쓰지 않고 + - 에 따라서 개별적인 아이콘' ·
@@ -21191,7 +21226,7 @@ const FF_UNITS = [
   {uid: "B1", side: "B", job: "wizard", key: "wiz", row: "back", lv: 30, hp: 1450, pers: "plain", ult: "중력 반전"},
   {uid: "B2", side: "B", job: "priest", key: "pr", row: "back", lv: 29, hp: 1250, pers: "plain", ult: "부활의 기도"}           // 대사 없음
 ];
-const FF_FROM = {sword: "검투사", archer: "궁수", priest: "신성 사제", rogue: "암살자", timemage: "시마도사", spellsword: "마법검사"};
+const FF_FROM = {sword: "검투사", archer: "궁수", priest: "신성 사제", rogue: "암살자", timemage: "시마도사", spellsword: "마법검사", paladin: "성기사", darkpriest: "암흑 사제", wizard: "마법사"};
 SPR_X_IMG.master = HS_A["spr_x_img/master.png"];   // 마스터 시트 (data: — 빌드(split_assets)가 학생 시트처럼 HS_A 스크립트로 뺀다: 이 줄 머리가 SPR_X_IMG 라야 file:// 에서도 getImageData 가 막히지 않는다)
 const FF_SPR = {"meta":[[{"rect":[0,0,256,256],"duration":180},{"rect":[256,0,256,256],"duration":180},{"rect":[512,0,256,256],"duration":180},{"rect":[768,0,256,256],"duration":180}],[{"rect":[0,256,256,256],"duration":100},{"rect":[256,256,256,256],"duration":100},{"rect":[512,256,256,256],"duration":100},{"rect":[768,256,256,256],"duration":100}],[{"rect":[0,512,256,256],"duration":100},{"rect":[256,512,256,256],"duration":100},{"rect":[512,512,256,256],"duration":100},{"rect":[768,512,256,256],"duration":100}],[{"rect":[0,0,256,256],"duration":180},{"rect":[256,0,256,256],"duration":180},{"rect":[512,0,256,256],"duration":180},{"rect":[768,0,256,256],"duration":180}],[{"rect":[0,0,256,256],"duration":180},{"rect":[256,0,256,256],"duration":180},{"rect":[512,0,256,256],"duration":180},{"rect":[768,0,256,256],"duration":180}],[{"rect":[0,0,256,256],"duration":220},{"rect":[256,0,256,256],"duration":220},{"rect":[512,0,256,256],"duration":220},{"rect":[768,0,256,256],"duration":220}],[{"rect":[0,0,256,256],"duration":200},{"rect":[256,0,256,256],"duration":200},{"rect":[512,0,256,256],"duration":200},{"rect":[768,0,256,256],"duration":200}],[{"rect":[0,0,256,256],"duration":220},{"rect":[256,0,256,256],"duration":220},{"rect":[512,0,256,256],"duration":220},{"rect":[768,0,256,256],"duration":220}],[{"rect":[0,0,256,256],"duration":180},{"rect":[256,0,256,256],"duration":180},{"rect":[512,0,256,256],"duration":180},{"rect":[768,0,256,256],"duration":180}],[{"rect":[0,0,256,256],"duration":400},{"rect":[256,0,256,256],"duration":400},{"rect":[512,0,256,256],"duration":400},{"rect":[768,0,256,256],"duration":400}],[{"rect":[0,0,256,256],"duration":300},{"rect":[256,0,256,256],"duration":300},{"rect":[512,0,256,256],"duration":300},{"rect":[768,0,256,256],"duration":300}]]};   // apply_ffop.py — 마스터 전투 도트 v2 {src: 시트(4 × 11 · 칸 256 — 학생 도트와 같은 모양), meta: SPR_META 모양} (1026 둘째 — 사용자 tools/master-battle-v2-remake: 숨쉬기 네 장 · 공격 한 장 · 무지갯빛 검풍)
 /* 대본 — 차례대로. {c: [...]} 는 다음 행동 앞에 멈추고 보일 것 · 행동은 a(누가) · sk(기술 id — 마스터는 다른 직업 것 · from 그 직업) ·
@@ -21330,7 +21365,7 @@ function ffChips(f){
 
 /* ── 대본 → 전투 기록 (runBattle 의 장과 같은 모양) ── */
 function ffBuild(){
-  const U = ffUnits().map((u, k) => ({...u, name: ffName(u.key), maxHp: u.hp, sh: 0, gauge: 0, atb: .15 + k * .12, alive: true, dd: 0, dh: 0, dt: 0, fx: []}));
+  const U = ffUnits().map((u, k) => ({...u, name: ffName(u.key), maxHp: u.hp, hp: u.hp0 != null ? u.hp0 : u.hp, sh: 0, gauge: 0, atb: .15 + k * .12, alive: true, dd: 0, dh: 0, dt: 0, fx: []}));
   const by = id => U.find(u => u.uid === id);
   const F = [];
   let pend = null;
@@ -21357,7 +21392,7 @@ function ffBuild(){
     acts++;
     U.forEach(u => { if(u.alive && u !== a) u.atb = Math.min(.92, u.atb + .22 + ((u.uid.charCodeAt(1) + acts) % 3) * .07); });
     a.atb = 1;
-    if(st.ult){ a.gauge = 100; push(`<b>${esc(a.name)}</b> — 필살 게이지 개방`, "ult", a.uid); }
+    if(st.ult){ a.gauge = 100; const pp = pend; pend = null; push(`<b>${esc(a.name)}</b> — 필살 게이지 개방`, "ult", a.uid); pend = pp; }   // 1125 — 앞 대사는 기술 장에 (같은 유닛이 잇달아 행동하면 개방 줄이 앞 차례에 묻혀 대사가 건너뛰어졌다)
     const from = st.from ? FF_FROM[st.from] : "", skn = st.name || sk.name;          // 1124 — name: 기술 이름 바꾸기 (pack)
     const label = `<b>${esc(a.name)}</b> — ${from ? `〔${esc(from)}〕 ` : ""}${esc(skn)}`;
     const tg = [...new Set([...(st.hit || []), ...(st.absorb || []), ...(st.sh || []), ...(st.heal || []), ...(st.st || [])].map(x => x[0]).concat(st.miss || []))].filter(id => by(id).alive);
@@ -21442,8 +21477,9 @@ async function ffTalk(c){
   const src = job ? ffFace(job, c.f) : "";
   face.hidden = !src; if(src) img.src = src;
   nm.textContent = c.who === "master" ? (c.think ? FF_T.think : ffName("master")) : ffName(c.who);   // 1124 — pack 이면 그 이름표
-  nm.className = "op-name" + (c.who === "master" ? " you" : c.who === "pal" ? " pal" : c.who === "wiz" ? " wiz" : c.who === "goddess" ? " goddess" : " ffdp");
+  nm.className = "op-name" + (c.who === "master" ? " you" : c.who === "pal" ? " pal" : c.who === "wiz" ? " wiz" : c.who === "goddess" ? (document.documentElement.classList.contains("ffop-reveal") ? " eater" : " goddess") : c.who === "voice" ? " voice" : " ffdp");
   box.classList.toggle("think", !!c.think);
+  box.classList.toggle("brk", !!c.brk); box.classList.toggle("shake", !!c.shake);   // 1125 — 긴 한 줄(띄어쓰기 없이) · 떨림
   box.classList.remove("done"); box.hidden = false; tx.textContent = "";
   const line = ffTx(c.t), chars = [...line];
   let n = 0, full = false;
@@ -21468,6 +21504,7 @@ async function ffSayCue(c){
 const FF_ICON_FIRST = ["sw_b", "ar_1", "pr_1", "ro_2", "tm_u", "ss_1", "ro_u", "sw_u"];   // 이 장면에서 빌린 기술부터
 function ffIcons(n){
   const A = typeof SKILL_ICON_ART !== "undefined" ? SKILL_ICON_ART : {};
+  if(FF.pack && FF.pack.icons && FF.pack.icons.length){ const L = [...new Set(FF.pack.icons)].filter(k => A[k]); if(L.length) return L.slice(0, n).map(k => A[k]); }   // 1125 — 이번 회차에 간파로 터득한 기술(S.skillPool)
   const job = /^(ar|bd|dp|dr|en|fm|gn|mo|nj|pa|pr|ro|ss|sw|tm|wz)_[b12u]$/;
   const h = k => { let x = 7; for(const c of k) x = (x * 31 + c.charCodeAt(0)) >>> 0; return x; };
   const rest = Object.keys(A).filter(k => job.test(k) && FF_ICON_FIRST.indexOf(k) < 0).sort((a, b) => h(a) - h(b));
@@ -21516,10 +21553,41 @@ async function ffCut(){
   wrap.classList.add("out"); setTimeout(() => wrap.remove(), 320);
   return ok && ffWait(200);
 }
+/* 1125 — 6화 여신: 미끼 빛의 색(red · blue) · 신뢰의 빛이 여신에게서 마스터에게로 흘러간다(drain) · 본모습이 드러난다(reveal) */
+async function ffFx(c){
+  const H = document.documentElement, st = ffStage();
+  if(c.v === "red" || c.v === "blue"){ H.classList.remove("ffop-lure-red", "ffop-lure-blue"); H.classList.add("ffop-lure-" + c.v); return ffWait(500); }
+  if(c.v === "reveal"){
+    H.classList.remove("ffop-lure-red", "ffop-lure-blue"); H.classList.add("ffop-reveal");
+    const el = st && st.querySelector('.bf-unit[data-uid="B0"]');
+    if(el) el.animate([{transform: "translate(0,0)"}, {transform: "translate(-6px,3px)"}, {transform: "translate(5px,-4px)"}, {transform: "translate(-3px,2px)"}, {transform: "translate(0,0)"}], {duration: 600, iterations: 2});
+    try{ sfxPlay("op_rift"); }catch(e){}
+    return ffClickWait(1600);
+  }
+  if(c.v === "drain"){
+    const from = st && st.querySelector('.bf-unit[data-uid="B0"]'), to = st && (st.querySelector('.bf-unit[data-uid="A1"]') || st.querySelector('.bf-unit[data-uid="A0"]'));
+    if(!from || !to) return ffWait(400);
+    const RM = typeof rRM === "function" ? rRM() : false, a = from.getBoundingClientRect(), b = to.getBoundingClientRect();
+    const ax = a.left + a.width / 2, ay = a.top + a.height * .45, bx = b.left + b.width / 2, by = b.top + b.height * .45, T = RM ? 900 : 2600;
+    const wrap = document.createElement("div"); wrap.className = "ffop-cut ffop-drain"; wrap.setAttribute("aria-hidden", "true"); document.body.appendChild(wrap);
+    for(let q = 0; q < (RM ? 6 : 34); q++){
+      const i = document.createElement("i"), d = (q * 53 % 100) / 100, sz = 5 + (q * 7 % 7), jx = ((q * 37 % 60) - 30), jy = ((q * 23 % 50) - 25);
+      i.style.cssText = `left:${ax}px;top:${ay}px;width:${sz}px;height:${sz}px`; wrap.appendChild(i);
+      i.animate([{opacity: 0, transform: `translate(${jx}px,${jy}px) scale(.4)`}, {opacity: 1, offset: .15}, {opacity: 1, offset: .8, transform: `translate(${(bx - ax) * .9 + jx * .3}px,${(by - ay) * .9 - 30 + jy * .3}px) scale(1)`}, {opacity: 0, transform: `translate(${bx - ax}px,${by - ay}px) scale(.3)`}],
+        {duration: T * .6, delay: d * T * .4, easing: "cubic-bezier(.4,0,.6,1)", fill: "both"});
+    }
+    try{ sfxPlay("heal"); }catch(e){}
+    const ok = await ffClickWait(T + 200);
+    wrap.classList.add("out"); setTimeout(() => wrap.remove(), 320);
+    return ok && ffWait(150);
+  }
+  return ffWait(300);
+}
 async function ffRun(list){
   for(const c of list){
     if(!ffLive()) return false;
-    const ok = c.k === "cap" ? await ffCap(c) : c.k === "talk" ? await ffTalk(c) : c.k === "say" ? await ffSayCue(c) : c.k === "cut" ? await ffCut() : await ffWait(c.ms || 500);
+    if(c.k === "bgm"){ try{ audOver(c.v === "_none" ? BGM_NONE : (BGM[c.v] ? c.v : (window.DPTS && DPTS.bgmStand && DPTS.bgmStand[c.v]) || BGM_NONE)); }catch(e){} continue; }   // 1125 — 곡 바꾸기
+    const ok = c.k === "cap" ? await ffCap(c) : c.k === "talk" ? await ffTalk(c) : c.k === "say" ? await ffSayCue(c) : c.k === "cut" ? await ffCut() : c.k === "fx" ? await ffFx(c) : await ffWait(c.ms || 500);
     if(!ok) return false;
   }
   return ffLive();
@@ -21581,6 +21649,8 @@ function ffStart(cont, o){
   if(typeof openBattle !== "function" || typeof JOBS === "undefined") return false;
   FF.on = true; FF.dead = false; FF.cont = cont; FF.gone = new Set(); FF.endDone = false; FF.busy = null; FF.adv = null; FF.cueN = 0;
   FF.pack = o.pack || null;                                                      // 1124 — 다른 장면 (pack)
+  document.documentElement.classList.toggle("ffop-dark", !!(FF.pack && FF.pack.dark));   // 1125 — 배경 칠흑
+  document.documentElement.classList.toggle("ffop-reveal", !!(FF.pack && FF.pack.reveal));   // 1125 — 마나 이터 본모습 (셋 · 마스터 혼자)
   if(FF.pack){ FF.names = Object.assign({}, FF.pack.names || {}); FF.acad = FF.pack.acad || {A: "", B: ""}; if(FF.pack.mon) try{ FF.pack.mon(); }catch(e){} }
   else {
   FF.names = {dp: freshName("darkpriest"), pal: freshName("paladin"), wiz: freshName("wizard"), ar: freshName("archer"), pr: freshName("priest")};
@@ -21660,7 +21730,7 @@ function ffDone(skip){
   FF.on = false; FF.dead = true; FF.adv = null; FF.res = null;
   clearTimeout(FF.typer); ffAmbStop();
   document.removeEventListener("keydown", ffKey, true);
-  document.documentElement.classList.remove("ffop-on");
+  document.documentElement.classList.remove("ffop-on", "ffop-dark", "ffop-reveal", "ffop-lure-red", "ffop-lure-blue");
   $("#modalRoot").removeEventListener("click", ffTap);
   ["ffopTalk"].forEach(id => document.getElementById(id)?.remove()); document.querySelectorAll(".ffop-cut").forEach(e => e.remove());
   document.getElementById("ffopSkip")?.remove();
@@ -34605,7 +34675,7 @@ function bgTarget(){
   if(q >= F.length) return null;
   TRE.bg.fs = fs; TRE.bg.q = q; return TRE.bg;
 }
-function bgWant(){ return !TRE.bg.shown && !TRE.old && !(treS() && treS().bguide) && !(window.FFOP && FFOP.state.dead); }
+function bgWant(){ return !TRE.bg.shown && !TRE.old && !(treS() && treS().bguide) && !(window.FFOP && (FFOP.state.dead || FFOP.state.pack)); }   // 1125 — 다른 장면(pack · 두 번의 여름 사이 6화 전투)에서는 안 뜬다
 function bgUnit(){
   const R = FFOP.state.res, F = R.frames[TRE.bg.fs], k = FFOP.units.findIndex(u => u.uid === F.actor);
   const nm = (R.names && R.names[k] && R.names[k].name) || "", job = FFOP.units[k].job, SKL = JOBS[job].skills;
@@ -56036,12 +56106,12 @@ window.GRST = {play: grPlay, replay: grReplay, preview: grPreview, replayList: g
         예전 오프닝(openingPlay)의 236년 그대로 — 서걱 · 핏방울 → 마왕 '죽이세요.' … '물러물러…' → 시공(opVoid — 휘몰아치는 글 · 1124 마왕 쪽 글 '나는 웃으며…' · '같이 가요, 선배...' — DM_OPTX) → 작은 푸른 빛에서 끊는다 (여신 대사 없음)
         이번에는 글을 잡음으로 가리지 않는다 · 팔라딘 · 마법사 이름은 지금의 개교 멤버 이름
    · 2. 그날 밤 — 암흑 사제의 독백 (생각 · 지금의 초상) — 몇 번이고 돌아가 선배를 가장 나쁜 끝으로 밀었지만 바라던 끝이 아니었다 · 올곧은 마음이 가슴을 흔든다
-   · (1124 사용자 둘째) 신뢰 3 · 5 막간 — 첫 번째 삶의 암흑 사제 (생각 · 지금의 초상). 3 '닿지 못하는 선배 · 붉은 여신의 빛 ??? 힘이 필요한가?' ·
+   · (1124 사용자 둘째) 신뢰 3 · 5 막간 — 첫 번째 삶의 암흑 사제 (생각 · 지금의 초상). 3 '닿지 못하는 선배 · 붉은 빛 ‘이 빛은……?’ ??? 힘이 필요한가?' ·
      5 '선배가 졸업한 뒤 원정 · 선혈의 마왕 · 머릿속 목소리 — 선배 탓 · 복수'. 3 → 5 → 7 차례로 · 한 주에 하나 (S.dpmem.ch · wk) · 7 을 이미 봤으면 3 · 5 는 띄우지 않는다
    · 처음 보는 진짜 흐름에는 건너뛰기가 없다 · 미리 보기에만 · 자동화(navigator.webdriver)에서는 띄우지 않는다 — 시험은 window.__dpmemForce = true */
 (() => {
 const DM_ID = "darkpriest-memory-v1";
-const DM_T = {cap: "기억의 조각", night: "그날 밤", think: "(생각)", voice: "???", skip: "건너뛰기 ▸", aria: "기억의 조각"};
+const DM_T = {cap: "기억의 조각", night: "그날 밤", voice: "???", skip: "건너뛰기 ▸", aria: "기억의 조각"};
 /* 2. 독백 — t 한 줄씩 · ms 쉼(줄 앞) · face 지금 초상 표정 */
 const DM_MONO = [
   {t: "시간 회귀.", face: "default", ms: 700},                                   // 1124 사용자 — '……몇 번이었을까' 앞에 회귀 설명 독백
@@ -56070,8 +56140,7 @@ const DM_PAST = {
     {t: "그 손이 고마운데, 그 손이 싫다. 아무리 애써도 나는 그저, 뒤따라가는 후배라서.", face: "sad"},
     {t: "나는 대체, 무엇을 위해—", face: "sad", ms: 400},
     {fx: "wisp", hold: 1800},
-    {t: "……빛?", face: "default", ms: 200},
-    {t: "여신님의 빛…… 일 텐데.", face: "default"},
+    {t: "……이 빛은……?", face: "default", ms: 200},
     {t: "어째서, 붉은 거지.", face: "default"},
     {who: "voice", t: "……힘이 필요한가?", ms: 900},
     {t: "나는 그 빛에서, 눈을 뗄 수 없었다.", face: "default", ms: 600}]},
@@ -56167,7 +56236,7 @@ async function dmCard(root, text, ms, live){
   c.classList.remove("on"); await dsleep(450);
   return live();
 }
-/* 독백 한 줄 — 오프닝 대화창 · 지금의 암흑 사제 초상 · 이름 '<이름> (생각)' */
+/* 독백 한 줄 — 오프닝 대화창 · 지금의 암흑 사제 초상 · 이름 '<이름>' (1124 사용자 — '(생각)' 꼬리표 없이) */
 function dmThink(tok, L, d){
   return new Promise(res => {
     const box = $("#opTalk"), face = $("#opFace"), nm = $("#opName"), tx = $("#opText");
@@ -56176,7 +56245,7 @@ function dmThink(tok, L, d){
     const src = (L.face && L.face !== "default" && SET && SET[L.face]) || (typeof FACE_IMG !== "undefined" && FACE_IMG.darkpriest) || (SET && SET.smile) || "";
     face.hidden = vo; face.className = "op-face dm-now";
     if(!vo && src && im.getAttribute("src") !== src) im.src = src;
-    nm.className = vo ? "op-name dm-voice" : "op-name dm-think"; nm.textContent = vo ? DM_T.voice : `${d ? (typeof dn === "function" ? dn(d) : d.name) : "암흑 사제"} ${DM_T.think}`;
+    nm.className = vo ? "op-name dm-voice" : "op-name dm-think"; nm.textContent = vo ? DM_T.voice : (d ? (typeof dn === "function" ? dn(d) : d.name) : "암흑 사제");
     tx.className = vo ? "op-text dm-voice" : "op-text dm-think"; tx.textContent = "";
     box.classList.remove("done", "auto", "goddess");
     if(box.hidden){ box.hidden = false; box.animate([{opacity: 0, transform: "translateX(-50%) translateY(12px)"}, {opacity: 1, transform: "translateX(-50%)"}], {duration: 380, easing: "ease-out"}); }
@@ -56498,8 +56567,8 @@ const TS_E4 = [
   {id: "TS0404", who: "D", face: "default", sum: 1, t: "‘마왕’이라는 이름을 한 사람만 쓴 게 아니라는 건, 추측한 게 아니에요."},
   {id: "TS0405", who: "D", face: "default", sum: 0, t: "여기 ‘마왕’이라고 써 볼게요. 마스터는 이걸 한 사람의 이름으로 읽으세요? 저는 칭호로 읽어요."},
   {id: "TS0406", who: "master", t: "누구한테 들었니?"},
-  {id: "TS0407", who: "D", trAt: 5, tr: {hi: ["sad", "제가 그 이름으로 불린 적이 있어요. ……오늘은 여기까지만 물어봐 주세요."], lo: ["default", "들은 얘기라고 적지는 말아 주세요. 제가 어디서 알았는지는 제가 말씀드릴게요."]}},
-  {id: "TS0408", who: "master", t: "그래. 이건 원정 기록에 옮기지 않을게."},
+  {id: "TS0407", who: "D", trAt: 5, tr: {hi: ["sad", "제가…… 예전에 왕립 도서관의 고서에서 확인한 내용이에요. ……오늘은 여기까지만 물어봐 주세요."], lo: ["default", "들은 얘기라고 적지는 말아 주세요. 제가 어디서 알았는지는 제가 말씀드릴게요."]}},
+  {id: "TS0408", who: "master", t: "그래…… 피곤해 보이는구나. 좀 앉아서 쉬렴."},
   {id: "TS0408b", who: "D", face: "default", t: "……오늘은 여기 앉아도 돼요?"},
   {id: "TS0408c", who: "master", t: "그러라고 비워 둔 자리야. 차 새로 내올게. 앉아 있어."},
   {id: "TS0409", who: "fx", dim: 1, ember: "on", lit: ["D"], ms: 1300},
@@ -56523,14 +56592,23 @@ const TS_E5 = [
   {id: "TS0502", who: "D", face: "default", t: "제가 가져온 걸 그냥 드세요?"},
   {id: "TS0503", who: "master", t: "같이 마시자고 따라 놓은 거 아니었어?"},
   {id: "TS0504", who: "D", face: "default", t: "……그 잔, 이리 주세요. 제가 먼저 마실게요."},
+  {id: "TS0504a", who: "master", t: "……왜 네가 먼저 마셔?"},
   {id: "TS0504b", who: "D", face: "cold-empty", t: "……보세요. 아무 일도 없죠."},
+  {id: "TS0504c", who: "D", face: "cold-empty", t: "제가 드리는 건, 이렇게 의심 없이 받아 드시네요."},
   {id: "TS0505", who: "D", face: "cold-empty", t: "아버님도 누가 드리는 거면 의심부터 하시진 않았죠."},
   {id: "TS0506", who: "master", t: "……네가 아버지를 언제 봤어?"},
-  {id: "TS0507", who: "D", face: "cold-empty", t: "친구분은 돈을 훔치지 않았어요."},
+  {id: "TS0506b", who: "D", face: "cold-empty", t: "……하아. 이제 이런 연극은 질렸어."},
+  {id: "TS0506c", who: "D", face: "cold-empty", t: "착한 후배인 척, 차 따르는 학생인 척. 그만할게요."},
+  {id: "TS0506d", who: "master", t: "……갑자기 무슨 소리야."},
+  {id: "TS0506e", who: "master", t: "아버지를…… 아버지 친구분을…… 알아?"},
+  {id: "TS0506f", who: "D", face: "cold-empty", t: "알아요. 마스터보다 더 잘."},
+  {id: "TS0507", who: "D", face: "cold-empty", t: "그분은 돈을 훔치지 않았어요."},
   {id: "TS0507b", who: "D", face: "cold-empty", t: "그분을 없앤 것도, 장부를 그렇게 꾸민 것도 저예요."},
+  {id: "TS0507d", who: "master", t: "그 사람이 사라지고 아버지가 빚을 다 떠안으셨어. 아버지는 끝까지 그 사람을 믿으셨는데."},
+  {id: "TS0507e", who: "D", face: "cold-empty", t: "알아요. 그래서 그렇게 한 거예요."},
   {id: "TS0507c", who: "D", face: "cold-empty", t: "마스터가 이 학원으로 돌아와 무너지는 걸 보려고요."},
-  {id: "TS0508", who: "master", t: "그럼 아버지가 앓으신 것도 네가 아는 일이야?"},
-  {id: "TS0510", who: "D", face: "sad", t: "네."},
+  {id: "TS0508", who: "master", t: "……그럼 아버지가 앓으신 것도 네가 아는 일이야?"},
+  {id: "TS0510", who: "D", face: "sad", t: "……네."},
   {id: "TS0511", who: "master", t: "왜 날 안 봐. 나를 봐. 넌 내가 어떻게 됐으면 좋겠어?"},
   {id: "TS0512", who: "D", face: "sad", t: "돌아오기 전엔 그 대답을 한 번도 망설인 적 없었어요."},
   {id: "TS0512b", who: "D", face: "sad", t: "지금은…… 마스터가 저한테 그걸 물으시는 게 싫어요."},
@@ -56540,35 +56618,57 @@ const TS_E5 = [
   {id: "TS0516", who: "master", t: "갈게. 어디든."}
 ];
 /* 6화 '마지막 한 사람' — 장면 조각 (전투 사이) · who goddess = 여신(초상 없이 이름표) · P W = 개교 팔라딘 · 마법사 */
-const TS_E6I = [                                                                  // 1124 — 대사만으로 (행동 서술 없이)
-  {id: "TS0601", who: "fx", eve: 1, lit: ["D"], ms: 1000},
+const TS_E6I = [                                                                  // 1125 최종 대본 — 해 질 무렵의 빈 연습장
+  {id: "TS0601", who: "fx", eve: 1, lit: ["D"], bgm: "ts_dusk", ms: 1000},
   {id: "TS0602", who: "D", face: "default", t: "와 주셨네요. 해 질 무렵의 연습장엔 아무도 안 와요."},
   {id: "TS0603", who: "master", t: "여기를 고른 이유가 있어?"},
-  {id: "TS0604", who: "D", face: "default", t: "우리가 처음 대회 연습을 한 데가 여기였어요. 끝내기엔 여기가 맞는 것 같아서요."},
-  {id: "TS0605", who: "D", face: "cold-empty", t: "검 드세요, 마스터. 오늘은 대련이에요. ……봐주지 않을 거예요."}
+  {id: "TS0604", who: "D", face: "smile", t: "우리가 처음 대회 연습을 한 데가 여기였어요. 마스터가 허수아비 목을 세 번이나 날려 먹은 데요."},
+  {id: "TS0604b", who: "master", t: "……그건 허수아비가 약했던 거야."},
+  {id: "TS0604c", who: "D", face: "smile", t: "후훗. 그날도 그렇게 말씀하셨어요. 똑같이. 한 글자도 안 틀리고."},
+  {id: "TS0604d", who: "master", t: "……한 글자도?"},
+  {id: "TS0604e", who: "D", face: "default", t: "저는 그 말을 여러 번 들었거든요. 마스터는 한 번 하신 말이지만요."},
+  {id: "TS0604f", who: "D", face: "sad", t: "몇 번째인지 세는 건 그만뒀어요. 봄이 올 때마다 숫자가 하나씩 늘어나는 게, 어느 순간부터 무서워져서."},
+  {id: "TS0604g", who: "master", t: "지난번에 끝까지 듣겠다고 했지. 그 얘기야?"},
+  {id: "TS0604h", who: "D", face: "cold-empty", t: "네. 그리고 오늘로 끝낼 얘기예요."},
+  {id: "TS0605", who: "D", face: "cold-empty", t: "검 드세요, 마스터. 오늘은 대련이에요. ……봐주지 않을 거예요."},
+  {id: "TS0605b", who: "D", face: "cold-empty", t: "제가 이기면, 마스터는 여기서 끝나요."},
+  {id: "TS0605c", who: "D", face: "sad", t: "마스터가 이기면…… 그땐 저를 끝내 주세요."},
+  {id: "TS0605d", who: "master", t: "……그런 대련이면, 안 받아."},
+  {id: "TS0605e", who: "D", face: "cold-empty", t: "받으실 거예요. 안 받으시면, 제가 먼저 칠 테니까."}
 ];
 const TS_E6R = [                                                                  // A · B 공통 — 회귀
-  {id: "TS0690", who: "fx", night: 1, snd: "op_rewind", lit: [], ms: 1500},
+  {id: "TS0690", who: "fx", night: 1, snd: "op_rewind", bgm: "_none", lit: [], ms: 1500},
   {id: "TS0690b", who: "D", think: 1, t: "시간이 거꾸로 감긴다. 생명의 불씨가 꺼진 그 순간부터."},
+  {id: "TS0690d", who: "voice", t: "……또 한 번."},
   {id: "TS0690c", who: "D", think: 1, t: "……또, 그 봄으로."},
   {id: "TS0691", who: "fx", card: ["", "231년 봄"], ms: 300}
 ];
-const TS_E6S = [                                                                  // C — 깡! · 팔라딘 방패 · 마법사 불길 · 회상 · 모토
-  {id: "TS0661", who: "fx", snd: "pr_sword", eve: 1, enter: "P", lit: ["P"], ms: 1200},
+const TS_E6S = [                                                                  // C — 셋 · 배경 칠흑 (1125 사용자 원고)
+  {id: "TS0660", who: "fx", void: 1, bgm: "ts_eater", lit: [], ms: 500},
+  {id: "TS0661", who: "fx", snd: "pr_sword", enter: "P", lit: ["P"], ms: 1200},   // 방패가 막는 소리 (ElevenLabs 새 소리 자리)
   {id: "TS0661b", who: "P", face: "motivated", t: "받아 냈다……! 늦지 않았어요!"},
   {id: "TS0662", who: "P", face: "motivated", t: "마스터! {D}, 괜찮아요?"},
   {id: "TS0663", who: "goddess", t: "방해가……!"},
-  {id: "TS0664", who: "fx", snd: "pr_sword", enter: "W", lit: ["W"], ms: 900},  // 옆에서 불길이 들어온다
+  {id: "TS0664", who: "fx", snd: "magic", enter: "W", lit: ["W"], ms: 900},       // 화염이 화르륵 (ElevenLabs 새 소리 자리)
   {id: "TS0665", who: "goddess", t: "크윽! ……불길이?"},
   {id: "TS0666", who: "W", face: "surprised", t: "마력이 여기로 막 몰려들길래 와 봤더니…… 엄청난 일이 벌어지고 있네에."},
+  {id: "TS0666b", who: "W", face: "default", t: "근데 저거, 여신님 맞아? 빛 뒤에 뭐가 있어. 엄청 크고…… 엄청 못생긴 거."},
+  {id: "TS0666c", who: "goddess", t: "……"},
+  {id: "TS0666d", who: "W", face: "default", t: "어디선가 본 적이 있는데……"},
+  {id: "TS0666e", who: "fx", snd: "fs_glint", glint: "W", face: ["W", "glasses"], lit: ["W"], ms: 800},   // 안경 차킹
+  {id: "TS0666f", who: "W", face: "glasses", t: "아! 마나 이터! 마나로 쓰는 주문을 매개로 기생해서 힘을 빨아먹는 전설적인 기생수! 예전에 고서에서 그림으로 본 적이 있어!"},
+  {id: "TS0666g", who: "W", face: "sleepy-cat", t: "그런데 왜 여기에 있는 거지?"},
   {id: "TS0667", who: "P", face: "default", t: "{D}, 일어설 수 있겠어요?"},
   {id: "TS0668", who: "D", face: "sad", t: "……전 배신자예요. 마왕이라고요."},
   {id: "TS0669", who: "P", face: "surprised", t: "……마왕."},
+  {id: "TS0669b", who: "eater", t: "그래, 그 녀석은 최악의 마왕이라고. 그런 녀석은 둔기로 내려쳐서 바로 끝장내야 해!"},
+  {id: "TS0669c", who: "P", face: "motivated", t: "조용히 하세요!"},
+  {id: "TS0669d", who: "eater", t: "힉?!"},
   {id: "TS0670", who: "P", face: "heroic-confidence", t: "그런 건 아무래도 상관없어요. 제가 지금 손 내민 사람은 {D}, 바로 당신이에요. 이 손, 안 거둘 거예요."},
   {id: "TS0671", who: "P", face: "default", t: "그날 우리 셋이 뭘 하기로 했는지 잊었어요?"},
   {id: "TS0671b", who: "W", face: "default", t: "마스터가 와이번 잡겠다고 혼자 무리하다 앓아누웠던 날 말이야."},
   {id: "TS0671c", who: "P", face: "default", t: "마을 짐 나르는 일을 받아 왔을 때, {D}가 그랬잖아요."},
-  {id: "TS0672", who: "fx", flash: "on", lit: ["D"], ms: 300},
+  {id: "TS0672", who: "fx", flash: "on", bgm: "rq_env", lit: ["D"], ms: 300},
   {id: "TS0673", who: "D", face: "smile", t: "……그런 일이라면, 셋이 나눠서 하면 되겠네요."},
   {id: "TS0674", who: "fx", flash: "off", lit: ["P", "W", "D"], ms: 400},
   {id: "TS0674b", who: "W", face: "smile", t: "잡일 보수 300G. 셋이 모아서 편지랑 같이 마스터 책상에 두고 왔지."},
@@ -56581,15 +56681,115 @@ const TS_E6S = [                                                                
   {id: "TS0680", who: "D", face: "heroic-confidence", t: "서로의 신호를 놓치지 않기."},
   {id: "TS0681", who: "P", face: "joy", t: "약속이에요. 아자아자, 파이팅!"}
 ];
-const TS_E6F = [                                                                  // C 끝 — 다음 날
-  {id: "TS0695", who: "fx", card: ["", "다음 날"], day: 1, ms: 300},
+const TS_E6X = [                                                                  // C — 마나 이터의 반격 (전투 화면에서 나와 칠흑 · 반짝임)
+  {id: "TS06X0", who: "fx", void: 1, spark: 1, bgm: "_none", enter: "P", lit: [], ms: 300},
+  {id: "TS06X0b", who: "fx", enter: "W", lit: ["P", "W", "D"], ms: 1200},
+  {id: "TS06X1", who: "eater", t: "안 돼…… 봄이, 내 봄이 끊겨……! 주문이 풀려 가……!!!"},
+  {id: "TS06X2", who: "eater", t: "이놈들!"},
+  {id: "TS06X3", who: "fx", wave: 1, snd: "op_rift", lit: ["P", "W", "D"], ms: 1100},
+  {id: "TS06X4", who: "all", t: "아악!"},
+  {id: "TS06X5", who: "fx", leave: "P", lit: [], ms: 200},
+  {id: "TS06X5b", who: "fx", leave: "W", ms: 200},
+  {id: "TS06X5c", who: "fx", leave: "D", ms: 700},
+  {id: "TS06X6", who: "eater", t: "잘도 해 줬지만, 여기까지다……"},
+  {id: "TS06X7", who: "master", t: "……멈춰."},
+  {id: "TS06X8", who: "master", t: "내 학생들에게는 더 이상 손 하나 못 댄다."},
+  {id: "TS06X9", who: "eater", t: "죽어 가던 시체가……!"}
+];
+const TS_E6V = [                                                                  // C — 생과 사의 경계 · 아버지 (초상 없이 — 작은 빛 · 1125 사용자)
+  {id: "TS06V0", who: "fx", void: 1, spark: 0, bgm: "_none", lit: [], ms: 1600},
+  {id: "TS06V1", who: "master", think: 1, t: "……조용하다."},
+  {id: "TS06V2", who: "master", think: 1, t: "아프지도 않고, 무겁지도 않다. 검도 없다. 손에 아무것도 없다."},
+  {id: "TS06V3", who: "master", think: 1, t: "이게 끝이라면…… 생각보다 나쁘지 않네."},
+  {id: "TS06V4", who: "fx", wisp: "warm", bgm: "opFather", ms: 1400},
+  {id: "TS06V5", who: "father", nm: "???", t: "나쁘지 않긴. 신발도 안 벗고 남의 집에 들어오는 놈이 어디 있어."},
+  {id: "TS06V6", who: "master", t: "……아버지?"},
+  {id: "TS06V7", who: "father", t: "오냐. 꼴이 그게 뭐냐. 학원장이란 녀석이 넝마를 걸치고."},
+  {id: "TS06V8", who: "master", t: "아버지…… 아버지, 나……"},
+  {id: "TS06V9", who: "father", t: "울지 마라. 여기는 눈물이 안 마른다. 한번 울기 시작하면 끝이 없어."},
+  {id: "TS06V10", who: "master", t: "할 말이 너무 많아. 학원 다시 열었어. 간판도 다시 걸었어. 애들이…… 애들이 들어왔어."},
+  {id: "TS06V11", who: "father", t: "안다. 여기선 다 보여. 나보다 출석부를 잘 챙기더구나. 나는 맨날 잃어버렸는데."},
+  {id: "TS06V12", who: "master", t: "……그리고, 그 아이."},
+  {id: "TS06V13", who: "father", t: "찻잔 얘기냐."},
+  {id: "TS06V14", who: "master", t: "……알고 있었어?"},
+  {id: "TS06V15", who: "father", t: "여기선 다 보인다고 했잖냐. 그 아이가 몇 번이나 봄을 다시 살았는지도. 그때마다 어떤 얼굴로 차를 따랐는지도."},
+  {id: "TS06V16", who: "master", t: "난 그 아이를 용서한다고 말 못 했어. 그런데 그 아이를 지켰어. 아버지를 그렇게 만든 아이를."},
+  {id: "TS06V17", who: "master", t: "……나, 잘한 거야?"},
+  {id: "TS06V18", who: "father", t: "그걸 나한테 묻는 거냐."},
+  {id: "TS06V19", who: "father", t: "미워하지 말라고는 안 하마. 그건 네 몫이야. 평생 들고 가도 된다."},
+  {id: "TS06V20", who: "father", t: "다만 그 아이를 네 손으로 지킨 거. 그게 내 아들이다."},
+  {id: "TS06V21", who: "master", t: "……아버지는 용사였잖아. 다들 그렇게 불렀잖아."},
+  {id: "TS06V22", who: "father", t: "하하! 용사라. 그거 칭호 받는 날 비가 와서 행렬이 엉망이었다."},
+  {id: "TS06V23", who: "father", t: "용사는 마왕을 베는 사람이 아니야. 그건 그냥 검 잘 쓰는 사람이지."},
+  {id: "TS06V24", who: "father", t: "용사는, 등 뒤에 선 놈을 한 번도 안 돌아보고도 믿어 주는 사람이다. 그 놈이 칼을 들고 있어도."},
+  {id: "TS06V25", who: "master", t: "……그건 바보잖아."},
+  {id: "TS06V26", who: "father", t: "그래. 바보지. 우리 집안이 원래 그렇다. 너도 방금 그 바보짓 하고 여기 온 거고."},
+  {id: "TS06V27", who: "master", t: "……하하."},
+  {id: "TS06V28", who: "father", t: "자, 이제 가라."},
+  {id: "TS06V29", who: "master", t: "조금만 더 있을게. 조금만."},
+  {id: "TS06V30", who: "father", t: "안 돼. 여기 오래 있으면 출석 미달이다. 학원장이 결석하면 애들한테 뭐라고 할 거냐."},
+  {id: "TS06V31", who: "father", t: "저기, 들리지? 누가 우는 소리. 저 아이는 아직 미안하다는 말도 못 했어. 그거 듣고 와라."},
+  {id: "TS06V32", who: "father", t: "대회는 꼭 나가고. 이번엔 기권하지 마라. 아버지는 이제 안 쓰러지니까."},
+  {id: "TS06V33", who: "master", t: "……아버지."},
+  {id: "TS06V34", who: "father", t: "가라, 마스터. ……하하, 이제 네가 그 이름이구나. 잘 어울린다."},
+  {id: "TS06V35", who: "fx", wisp: "off", bgm: "_none", ms: 1600}
+];
+const TS_E6W = [                                                                  // C — 다시 연습장 (눈을 감은 채 목소리만 → 눈이 뜨인다)
+  {id: "TS06W0", who: "fx", void: 1, lit: [], ms: 900},
+  {id: "TS06W1", who: "P", vo: 1, t: "마스터! 정신 차려요!"},
+  {id: "TS06W2", who: "W", vo: 1, t: "숨이…… 이미……"},
+  {id: "TS06W3", who: "D", vo: 1, t: "안 돼요! 제발…… 살아 줘……"},
+  {id: "TS06W4", who: "D", vo: 1, t: "아직 미안하다고도 못 했는데, 이러면 저는……!"},
+  {id: "TS06W5", who: "D", vo: 1, t: "흑…… 흐흐흑……"},
+  {id: "TS06W6", who: "fx", eye: 1, void: 0, eve: 1, face: ["D", "sad"], ms: 1800},
+  {id: "TS06W7", who: "master", t: "……무겁다."},
+  {id: "TS06W8", who: "P", face: "surprised", t: "어…… 숨이 다시…… 마스터! 다행이다!"},
+  {id: "TS06W9", who: "W", face: "sleepy-cat", t: "……뭐야, 살아 있었어? 나 방금 추도사 반쯤 생각해 놨는데에. 아깝다."},
+  {id: "TS06W10", who: "W", face: "sad", t: "……다음엔 죽기 전에 미리 말해 줘. 울 준비라도 하게."},
+  {id: "TS06W11", who: "D", face: "sad", t: "……이번엔, 아무도 안 잃었네요."},
+  {id: "TS06W12", who: "master", t: "……내일 연습은 쉰다."},
+  {id: "TS06W13", who: "W", face: "smile", t: "쉬자고 하면 들어 주기. 마스터도 약속한 거다아."}
+];
+const TS_E6F = [                                                                  // C 끝 — 다음 날 · 여운
+  {id: "TS0695", who: "fx", card: ["", "다음 날"], day: 1, bgm: "ts_morning", ms: 300},
+  {id: "TS0695b", who: "D", think: 1, t: "……눈을 떴다. 창밖이 시끄럽다."},
+  {id: "TS0695c", who: "D", think: 1, t: "매미 소리. ……봄에는, 매미가 울지 않는데."},
+  {id: "TS0695d", who: "D", face: "default", t: "……마스터. 일어나 계세요?"},
+  {id: "TS0695e", who: "master", t: "일어났어. 일정표 보고 있었어."},
   {id: "TS0696", who: "master", t: "일정표가 그대로야. 3년차 여름."},
   {id: "TS0697", who: "D", face: "default", t: "……돌아가지 않았네요. 오늘이, 그대로 내일이 됐어요."},
+  {id: "TS0697b", who: "D", face: "smile", t: "눈을 떴는데 봄이 아니었어요. 처음이에요, 이런 아침."},
+  {id: "TS0697c", who: "D", face: "sad", t: "이상해요. 무서워요. 내일 무슨 일이 일어날지, 하나도 모르겠어요."},
+  {id: "TS0697d", who: "master", t: "원래 다들 그렇게 살아."},
+  {id: "TS0697e", who: "D", face: "surprised", t: "……다들, 이렇게 무서운 걸 매일 하면서 살았어요?"},
+  {id: "TS0697f", who: "master", t: "응. 그래서 차도 마시고, 연습도 하고, 같이 밥도 먹고 그러는 거야."},
+  {id: "TS0697g", who: "D", face: "default", t: "……마스터. 몇 번 죽었는지, 안 물어보세요?"},
+  {id: "TS0697h", who: "master", t: "안 물어."},
+  {id: "TS0697i", who: "master", t: "대신 오늘 몇 번 웃었는지는 세 볼까. 그건 세다가 그만둬도 되니까."},
+  {id: "TS0697j", who: "D", face: "smile", t: "……후훗. 지금 한 번이에요."},
   {id: "TS0698", who: "D", face: "default", t: "아버님 친구분 일은…… 제 이름으로 바로잡을게요. 그분이 훔치지 않았다는 거, 제가 적어 둘게요."},
+  {id: "TS0698b", who: "D", face: "sad", t: "아버님 일도요. 언젠가 제 입으로 전부 말씀드릴게요. 아버님 무덤 앞에서."},
   {id: "TS0699", who: "master", t: "같이 가자. 이번엔 끝까지 들을게."},
-  {id: "TS0699b", who: "D", face: "smile", t: "……네. 그리고 어제 쉰다고 하신 건 오늘이에요, 마스터."}
+  {id: "TS0699c", who: "D", face: "default", t: "이거…… 돌려드릴게요. 학원 열쇠."},
+  {id: "TS0699d", who: "master", t: "그건 네 거야. 내일 아침에도 누가 문을 열어야 하잖아."},
+  {id: "TS0699e", who: "D", face: "surprised", t: "……내일 아침."},
+  {id: "TS0699f", who: "fx", snd: "fs_door", enter: "P", lit: ["P"], ms: 600},
+  {id: "TS0699g", who: "P", face: "joy", t: "마스터! {D}! 아침 드셨어요? 오늘 쉬는 날이니까 다 같이 마을에……!"},
+  {id: "TS0699h", who: "fx", enter: "W", lit: ["W"], ms: 500},
+  {id: "TS0699i", who: "W", face: "sleepy-cat", t: "나는 잘 거야아. 어제 평생 쓸 마력 다 썼어."},
+  {id: "TS0699j", who: "W", face: "glasses", t: "아, 그래도 마나 이터 얘기는 적어 둬야겠다. 고서 그림이 틀렸거든. 실물이 훨씬 못생겼어."},
+  {id: "TS0699k", who: "P", face: "smile", t: "{D}, 같이 가요. 혼자 앞서가지 않기, 기억하죠?"},
+  {id: "TS0699l", who: "D", face: "smile", t: "……네. 쉬자고 하면 들어 주기도."},
+  {id: "TS0699b", who: "D", face: "smile", t: "그리고 어제 쉰다고 하신 건 오늘이에요, 마스터."},
+  {id: "TS0699m", who: "master", t: "……기억하고 있었어."},
+  {id: "TS0699n", who: "fx", lit: [], ms: 600},
+  {id: "TS0699o", who: "D", think: 1, t: "봄은 다시 올 것이다."},
+  {id: "TS0699p", who: "D", think: 1, t: "여름 다음에, 가을 다음에, 겨울 다음에. 이번엔 순서대로."},
+  {id: "TS0699q", who: "D", think: 1, t: "……그게 이렇게 눈부신 일인 줄, 몰랐다."}
 ];
-const TS_ALL = {e1: TS_E1, e2: TS_E2, e3: TS_E3, e4: TS_E4, e5: TS_E5, e6i: TS_E6I, e6r: TS_E6R, e6s: TS_E6S, e6f: TS_E6F};
+/* 1125 — 6화 곡 자리 (BGM 큐시트: tools/tutorial-story/scenario-darkpriest-ep6-final-draft.md) · 새로 뽑을 곡이 들어오기 전엔 있는 곡으로 */
+const TS_BGM_STAND = {ts_dusk: "rq_alone", ts_eater: "ex_d4_boss", ts_eater_battle: "ex_d4_boss", ts_morning: "summer"};
+const TS_ALL = {e1: TS_E1, e2: TS_E2, e3: TS_E3, e4: TS_E4, e5: TS_E5, e6i: TS_E6I, e6r: TS_E6R, e6s: TS_E6S, e6x: TS_E6X, e6v: TS_E6V, e6w: TS_E6W, e6f: TS_E6F};
 /* 6화 전투 — FFOP pack (대본: c 대사 · a 행동 · end 끝 대사) · {D} 는 짤 때 이름으로 */
 const TS_GODDESS = {idle: "assets/ts_goddess/idle.png?v=219349ee", atk: "assets/ts_goddess/atk.png?v=86b62e20"};
 function tsMon(){                                                                // 여신 — 빛 덩어리 도트를 마물 그림으로 (장면 동안 · 다시 불러도 같다)
@@ -56602,11 +56802,18 @@ function tsB(d){ return {
   duel: [
     {c: [
       {k: "talk", who: "dp", f: "cold-empty", t: "한 번은 선배라고 불렀고, 한 번은 마스터라고 불렀어요. 어느 쪽이든 저보다 강했죠."},
-      {k: "talk", who: "dp", f: "cold-empty", t: "마왕이 되고도 못 이겼어요. 그래서 시간을 돌렸는데…… 이번엔 왜 검을 안 드세요?"},
+      {k: "talk", who: "dp", f: "cold-empty", t: "마왕이 되고도 못 이겼어요. 성 하나를 태우고, 강 하나를 붉게 물들이고도요."},
+      {k: "talk", who: "dp", f: "cold-empty", t: "그래서 시간을 돌렸어요. 이번엔 처음부터 옆에 서서, 등 뒤에서, 제일 아픈 데를 찌르려고."},
+      {k: "talk", who: "dp", f: "sad", t: "그런데…… 이번엔 왜 검을 안 드세요?"},
       {k: "talk", who: "master", t: "네가 부른 데로 왔어. 마저 듣겠다고 했잖아."},
       {k: "talk", who: "master", t: "그러니까 검은 여기 내려 둘게. 듣는 데는 필요 없으니까."}
     ]},
-    {a: "A0", sk: "sw_b", from: "sword", name: "검을 내린다", st: [["A0", "무장 해제", "d"]], shout: "……"}
+    {a: "A0", sk: "sw_b", from: "sword", name: "검을 내린다", st: [["A0", "무장 해제", "d"]], shout: "……"},
+    {c: [
+      {k: "talk", who: "dp", f: "surprised", t: "……검 드시라고 했잖아요!"},
+      {k: "talk", who: "dp", f: "sad", t: "왜 매번, 제가 바라는 대로는 안 해 주세요? 미워하게도, 이기게도 안 해 주고!"},
+      {k: "talk", who: "master", t: "네가 바라는 게 뭔지, 아직 네 입으로 못 들었어."}
+    ]}
   ],
   ins: [{c: [
     {k: "talk", who: "dp", f: "cold-empty", t: "보이시죠? 어디서 힘이 모이는지."},
@@ -56614,44 +56821,92 @@ function tsB(d){ return {
     {k: "talk", who: "dp", f: "sad", t: "……그런데 왜 아직 거기 서 계세요?"}
   ]}],
   A: [
-    {c: [{k: "talk", who: "dp", f: "cold-empty", t: "제가 안 할 거라고 믿으시는군요."}, {k: "talk", who: "master", t: "……아니."}]},
+    {c: [{k: "talk", who: "dp", f: "cold-empty", t: "제가 안 할 거라고 믿으시는군요."}, {k: "talk", who: "master", t: "……믿는다고 말할 만큼, 내가 널 알지 못했나 봐."}, {k: "talk", who: "dp", f: "cold-empty", t: "그럼 끝까지 모르시면 돼요."}]},
     {a: "B0", sk: "dp_u", ult: true, hit: [["A0", 3200, "crit"]]},
-    {end: [{k: "wait", ms: 1800}, {k: "talk", who: "dp", f: "surprised", t: "……마스터?"}, {k: "wait", ms: 1200}, {k: "talk", who: "dp", f: "sad", t: "아버님이 오래 아프셨던 것도…… 제가 먹인 독 때문이에요."}, {k: "wait", ms: 1600}, {k: "talk", who: "dp", f: "sad", t: "……이제야 말했는데. 들을 사람이 없네요."}]}
+    {end: [{k: "wait", ms: 1800}, {k: "talk", who: "dp", f: "surprised", t: "……마스터?"}, {k: "wait", ms: 1200}, {k: "talk", who: "dp", f: "sad", t: "……왜 안 막으셨어요."}, {k: "talk", who: "dp", f: "sad", t: "막았어야죠. 늘 그랬잖아요. 늘 저보다 한 발 빨랐잖아요……!"}, {k: "talk", who: "dp", f: "sad", t: "아버님이 오래 아프셨던 것도…… 제가 먹인 독 때문이에요."}, {k: "wait", ms: 1600}, {k: "talk", who: "dp", f: "sad", t: "……이제야 말했는데. 들을 사람이 없네요."}]}
   ],
   conf: [{c: [
+    {k: "talk", who: "dp", f: "sad", t: "……지팡이가 안 올라가요."},
+    {k: "talk", who: "dp", f: "sad", t: "몇 번이나 했던 일인데. 눈 감고도 하던 일인데."},
+    {k: "talk", who: "dp", f: "cold-empty", t: "웃기죠. 마왕이, 검도 안 든 사람 하나를 못 쳐요."},
+    {k: "talk", who: "dp", f: "sad", t: "……그럼, 마스터가 하세요."},
     {k: "talk", who: "dp", f: "sad", t: "……죽이세요."},
     {k: "wait", ms: 1600},
     {k: "talk", who: "dp", f: "sad", t: "아버님께 독을 먹였어요. 천천히, 오래 아프시도록."},
-    {k: "talk", who: "dp", f: "sad", t: "마스터가 곁에서 지켜보시도록. 제가 그렇게 했어요."}
+    {k: "talk", who: "dp", f: "sad", t: "마스터가 곁에서 지켜보시도록. 제가 그렇게 했어요."},
+    {k: "talk", who: "dp", f: "cold-empty", t: "찻잔에 한 방울씩. 그 차를 따르던 손으로, 지난봄엔 마스터 잔도 따랐고요."},
+    {k: "talk", who: "dp", f: "cold-empty", t: "이제 이유가 생겼죠? 검 드세요."}
   ]}],
   B: [
     {c: [{k: "talk", who: "master", t: "아버지는…… 내가 대회를 포기해서 미안하다고 하셨어. 마지막까지, 나한테."}, {k: "talk", who: "master", t: "그런 아버지를…… 너는……!"}]},
     {a: "A0", sk: "sw_u", from: "sword", ult: true, hit: [["B0", 2600, "crit"]], shout: "……!"},
-    {end: [{k: "wait", ms: 1400}, {k: "talk", who: "dp", f: "sad", t: "이건 제 속죄예요……"}, {k: "talk", who: "master", t: "그 말로 끝내지 마."}, {k: "talk", who: "master", t: "피가 안 멈춰……. 눈 감지 마, {D}."}, {k: "talk", who: "master", t: "내일도 와. 와서 나한테 다시 말해."}]}
+    {end: [{k: "wait", ms: 1400}, {k: "talk", who: "dp", f: "sad", t: "……이번엔, 마스터 손으로 끝나서 다행이에요."}, {k: "talk", who: "dp", f: "sad", t: "이건 제 속죄예요……"}, {k: "talk", who: "master", t: "그 말로 끝내지 마."}, {k: "talk", who: "master", t: "피가 안 멈춰……. 눈 감지 마, {D}."}, {k: "talk", who: "master", t: "내일도 와. 와서 나한테 다시 말해."}, {k: "talk", who: "dp", f: "sad", t: "……내일은, 또 봄이에요."}]}
   ],
   C: [
     {c: [
-      {k: "talk", who: "master", t: "그럴 수 없어. 너는 내 학생이야."},
+      {k: "talk", who: "master", t: "……용서한다는 말은 못 해. 아마 오래 못 할 거야."},
+      {k: "talk", who: "master", t: "그래도 너를 벨 수는 없어. 너는 내 학생이야."},
       {k: "talk", who: "dp", f: "surprised", t: "……제가 방금 뭐라고 했는지 들으셨어요?"},
-      {k: "talk", who: "master", t: "들었어. 아버지가 얼마나 아팠는지도 내가 알아. 그리고 이 년 넘게 네가 누구 옆에 서 있었는지도 알아."},
+      {k: "talk", who: "master", t: "들었어. 아버지가 얼마나 아팠는지도 내가 알아. 내가 옆에서 다 봤으니까."},
+      {k: "talk", who: "master", t: "그리고 이 년 넘게 네가 누구 옆에 서 있었는지도 알아."},
       {k: "talk", who: "master", t: "애들이랑 그 대회 한 번 나가겠다고 여기서 몇 번을 다시 일어났잖아. 그걸 지켜본 것도 나야."},
-      {k: "talk", who: "dp", f: "sad", t: "웃기지도 않네요…… 선배. ‘마스터’…… 아니, 마스터. 이제 다 시시해졌어요. 그렇게까지 이기고 싶었는데."},
-      {k: "talk", who: "master", t: "그건 나도 마찬가지야. 내일 연습은 나올 거지? 가을 대회 준비해야 하잖아."}
+      {k: "talk", who: "dp", f: "surprised", t: "그건 연기였어요! 전부, 마스터 등을 찌르려고……!"},
+      {k: "talk", who: "master", t: "연기로 무릎이 그렇게까지 까지진 않아."},
+      {k: "talk", who: "dp", f: "sad", t: "……웃기지도 않네요, 선배. ……아니, 마스터."},
+      {k: "talk", who: "dp", f: "sad", t: "그렇게까지 이기고 싶었는데. 그렇게까지 미워하고 싶었는데. 이제 다 시시해졌어요."},
+      {k: "talk", who: "master", t: "시시해도 돼. 내일 연습은 나올 거지? 가을 대회 준비해야 하잖아."}
     ]},
     {a: "A0", sk: "sw_b", from: "sword", name: "칼끝이 땅에 닿는다", st: [["B0", "무릎 꿇음", "d"]], shout: "……"},
-    {c: [{k: "talk", who: "dp", f: "sad", t: "……다리에 힘이 안 들어가요. 이상하네요. 진 것도 아닌데."}]}
+    {c: [{k: "talk", who: "dp", f: "sad", t: "……다리에 힘이 안 들어가요. 이상하네요. 진 것도 아닌데."}, {k: "talk", who: "dp", f: "sad", t: "……왜, 눈물이 나지."}, {k: "talk", who: "dp", f: "smile", t: "……나갈게요. 내일도."}]}
   ],
   god: [
     {c: [
+      {k: "bgm", v: "opGoddess"},
       {k: "talk", who: "master", t: "……이 소리. 여신의 축복을 열 때랑 같아."},
       {k: "talk", who: "dp", f: "surprised", t: "빛이…… 저쪽에 내려앉아요. 우리 편이 아니라."},
-      {k: "talk", who: "goddess", t: "선을 택한 이여. 악을 처단하세요. 용사는 마왕을 처단해야 합니다."},
+      {k: "talk", who: "goddess", t: "선을 택한 이여."},
+      {k: "talk", who: "dp", f: "cold-empty", t: "……저 빛, 알아요."},
+      {k: "talk", who: "dp", f: "cold-empty", t: "그때는 붉었어요. 231년 겨울, 아무도 없는 연습장에서. 힘이 필요하냐고 묻던 빛."},
+      {k: "talk", who: "master", t: "나한테는…… 늘 푸른 빛이었어. 애들 마음이 열릴 때마다 내려오던."},
+      {k: "talk", who: "goddess", t: "악을 처단하세요. 용사는 마왕을 처단해야 합니다."},
       {k: "talk", who: "goddess", t: "지금 당신 눈앞에 있는 것이 마왕입니다."},
+      {k: "talk", who: "goddess", t: "당신 아버지를 죽인 자. 당신을 몇 번이고 죽인 자."},
+      {k: "talk", who: "master", t: "……몇 번이고?"},
+      {k: "talk", who: "goddess", t: "기억하지 못하죠. 그래서 당신은 늘 깨끗했어요. 아무것도 남지 않는, 깨끗한 그릇."},
+      {k: "talk", who: "dp", f: "surprised", t: "그만해!"},
+      {k: "fx", v: "red"},
+      {k: "talk", who: "voice", t: "……힘이 필요한가?"},
+      {k: "talk", who: "dp", f: "sad", t: "……그 목소리로 말하지 마."},
+      {k: "talk", who: "voice", t: "필요하잖아. 지금도. 그 손이 떨리는 걸 보면."},
+      {k: "talk", who: "voice", t: "시간을 되감는 법을 가르쳐 준 게 누구였지? 그자를 미워하라고, 밤마다 귀에 속삭여 준 건?"},
+      {k: "talk", who: "dp", f: "surprised", t: "……당신이었구나. 머릿속 그 목소리. 전부, 당신이었어."},
+      {k: "fx", v: "blue"},
+      {k: "talk", who: "goddess", t: "저는 그저 원하는 걸 줬을 뿐이에요. 당신에겐 힘을. 저 사람에겐 축복을."},
+      {k: "talk", who: "master", t: "그 축복…… 애들 마음이 열릴 때만 왔어."},
+      {k: "talk", who: "master", t: "애들이 웃을 때. 애들이 나를 믿어 줄 때만."},
+      {k: "talk", who: "goddess", t: "그러니 제 축복이죠."},
+      {k: "talk", who: "master", t: "아니. 그건 처음부터 애들 거였어."},
+      {k: "talk", who: "master", t: "넌 그걸 받아서, 포장만 바꿔서 나한테 건넸을 뿐이야."},
+      {k: "talk", who: "goddess", t: "……용사여. 마왕을 처단하세요."},
       {k: "talk", who: "master", t: "내 눈앞에 누가 있는지 알아. 내 영웅이었고 용사였던 아버지는 절대 그런 결말을 원하지 않아!"},
       {k: "talk", who: "master", t: "이 아이는 내 학생이고…… 내 학생은 내가 지킨다!"}
     ]},
     {a: "A0", sk: "pr_1", from: "priest", name: "여신의 눈물 → 신뢰의 결정", heal: [["A1", 1800]], shout: "……!"},
-    {c: [{k: "talk", who: "dp", f: "surprised", t: "이건……"}, {k: "talk", who: "dp", f: "surprised", t: "따뜻해요. ……여신의 눈물이 여신한테 가지 않고, 저한테 와요."}, {k: "talk", who: "master", t: "눈물이 아니야. 이건 이제…… 너희가 준 신뢰야."}, {k: "talk", who: "goddess", t: "그러면 내가 직접 쓰러뜨려 주마!"}]},
+    {c: [
+      {k: "talk", who: "dp", f: "surprised", t: "따뜻해요…… 신비한 느낌…… 여신한테 가지 않고, 저한테 와요."},
+      {k: "talk", who: "master", t: "이건…… 너희가 준 신뢰야."},
+      {k: "talk", who: "master", t: "처음부터 여신의 힘이 아니었어. 애들이 준 거였어."},
+      {k: "talk", who: "master", t: "아니, 나와 학생들 사이의 유대감이다."},
+      {k: "talk", who: "goddess", t: "……돌려줘."},
+      {k: "talk", who: "goddess", t: "그건 내 거야. 내가 모은 거야. 수십, 수백 번의 봄을 지나며, 한 방울씩!"},
+      {k: "talk", who: "goddess", t: "아아…… 흘러 나간다. 어째서……?"},
+      {k: "fx", v: "drain"},
+      {k: "bgm", v: "ts_eater"},
+      {k: "fx", v: "reveal"},
+      {k: "talk", who: "goddess", t: "아아…… 보지 마! 보지 마아아아아아!"},
+      {k: "talk", who: "goddess", brk: 1, shake: 1, t: "추악해추악해추악해추악해추악해추악해추악해추악해추악해추악해추악해추악해추악해추악해추악해추악해추악해추악해추악해추악해추악해추악해추악해"},
+      {k: "talk", who: "goddess", t: "겨우 추악한 모습을 감출 수 있을 만큼 모았는데…… 네 이놈……!"}
+    ]},
     {a: "B0", sk: "pa_u", name: "심판의 빛", ult: true, hit: [["A0", 3600, "crit"]]},
     {end: [
       {k: "wait", ms: 1200},
@@ -56659,30 +56914,54 @@ function tsB(d){ return {
       {k: "talk", who: "dp", f: "surprised", t: "마스터!!"},
       {k: "talk", who: "goddess", t: "그 앞을 비키세요."},
       {k: "talk", who: "master", t: "……못 비켜."},
-      {k: "talk", who: "goddess", t: "어느 쪽이 죽든 마왕의 힘은 시간을 되감습니다. 그때 일어나는 반작용…… 그 힘을 내놓으세요!"}
+      {k: "talk", who: "goddess", t: "어느 쪽이 죽든 시간은 되감겨요. 되감길 때마다 넘쳐흐르는 그 힘…… 그건 내 몫이에요."},
+      {k: "talk", who: "goddess", t: "몇 번의 봄을 먹었는지, 저 아이는 세다가 그만뒀죠. 저는 하나도 안 빼고 기억해요. 전부 맛있었으니까."},
+      {k: "talk", who: "goddess", t: "내놓으세요!"},
+      {k: "talk", who: "dp", f: "surprised", t: "……당신이었어. 아…… 아…… 내가 무슨 짓을……"},
+      {k: "talk", who: "dp", f: "sad", t: "선배를 미워하게 만든 것도. 아버님 찻잔에 손이 가게 만든 것도……!"},
+      {k: "talk", who: "goddess", t: "손을 움직인 건 당신이에요. 저는 빛을 비췄을 뿐."},
+      {k: "talk", who: "dp", f: "cold-empty", t: "……알아. 그러니까 이번엔, 내 손으로 끝낼 거야."},
+      {k: "talk", who: "goddess", t: "시간을 돌리고 둘 다 제대로 교육시켜야겠어. 다시는 반항하지 못하게."},
+      {k: "talk", who: "dp", f: "sad", t: "……크윽."},
+      {k: "talk", who: "goddess", t: "죽어라!"}
     ]}
   ],
   fin: [
+    {c: [{k: "talk", who: "goddess", t: "귀엽기도 하지. 셋이 모여 봤자 용사도 아닌 것들이!"}]},
     {a: "B0", sk: "pa_1", name: "빛의 장막", sh: [["B0", 2400]]},
     {a: "A0", sk: "pa_b", hit: [["B0", 320]], absorb: [["B0", 320]]},
     {a: "A1", sk: "wz_1", hit: [["B0", 420]], absorb: [["B0", 420]]},
     {a: "A2", sk: "dp_1", hit: [["B0", 300]], absorb: [["B0", 300]]},
-    {c: [{k: "talk", who: "pal", f: "motivated", t: "안 뚫려요……! 공격이 빨려 들어가요!"}, {k: "talk", who: "pal", f: "motivated", t: "한 번 더……!"}, {k: "talk", who: "wiz", f: "tired", t: "잠깐, 나 좀 쉬고."}]},
+    {c: [{k: "talk", who: "pal", f: "surprised", t: "안 뚫려요……! 공격이 빨려 들어가요!"}, {k: "talk", who: "goddess", t: "맛있어. 너희 힘도, 너희 마음도. 전부 마나가 되어 내게로 와."}, {k: "talk", who: "pal", f: "motivated", t: "한 번 더……!"}, {k: "talk", who: "wiz", f: "tired", t: "잠깐, 나 좀 쉬고."}]},
     {a: "A0", sk: "pa_1", sh: [["A0", 700], ["A1", 700], ["A2", 700]], say: "다들 방패 안으로!"},
     {a: "B0", sk: "pr_u", name: "거두는 빛", ult: true, hit: [["A0", 420], ["A1", 420], ["A2", 420]], absorb: [["A0", 420], ["A1", 420], ["A2", 420]]},
+    {c: [{k: "talk", who: "dp", f: "cold-empty", t: "빛 뒤에 숨는 거, 이제 다 보여."}]},
     {sig: 1},
     {a: "A0", sk: "pa_u", ult: true, sh: [["A0", 900]], st: [["A0", "성역", "b"]], say: "막을게요!"},
     {a: "A1", sk: "wz_u", ult: true, hit: [["B0", 2600, "crit"]], shout: "……한 번에!"},
     {a: "A2", sk: "dp_u", ult: true, name: "되감기 끊기", hit: [["B0", 2600, "crit"]], shout: "……끝이에요."},
-    {end: [
-      {k: "wait", ms: 1800},
-      {k: "talk", who: "dp", f: "sad", t: "……숨, 쉬고 계세요. 다행이다……."},
-      {k: "talk", who: "master", t: "……내일 연습은 쉰다."},
-      {k: "talk", who: "wiz", f: "smile", t: "쉬자고 하면 들어 주기. 마스터도 약속한 거다아."}
-    ]}
+    {end: [{k: "wait", ms: 1600}]}
   ],
   sigIns: [{c: [{k: "talk", who: "pal", f: "default", t: "먼저 모았다가……."}, {k: "talk", who: "wiz", f: "smile", t: "한 번에."}]}],
-  sig: [{c: [{k: "talk", who: "dp", f: "heroic-confidence", t: "……빛이 한 점으로 좁아져요. 지금이에요."}]}]
+  sig: [{c: [{k: "talk", who: "dp", f: "heroic-confidence", t: "……저 빛이 한 점으로 좁아져요. 저것만 끊으면 돼요. 지금이에요."}]}],
+  /* 마스터 혼자 — 마나 이터의 반격 (1125 사용자) · 간파로 터득한 기술(S.skillPool)에 있는 것만 · 필살기 둘은 늘 */
+  last: o => [
+    {a: "B0", sk: "pr_u", name: "거두는 빛", hit: [["A0", 380]]},
+    {c: [{k: "talk", who: "goddess", t: "쓰러져! 쓰러지라고!"}]},
+    {a: "B0", sk: "pa_u", name: "심판의 빛", ult: true, hit: [["A0", 420, "crit"]]},
+    {c: [{k: "talk", who: "goddess", t: "……왜 안 쓰러지는 거야?"}, {k: "talk", who: "master", think: 1, t: "몸으로 안 되면 정신으로. 정신으로 안 되면 의지로."}, {k: "talk", who: "master", think: 1, t: "──쌓아 온 건, 전부 쓴다."}]},
+    {hero: ["A0"]}
+  ].concat(o.pa_2 ? [{a: "A0", sk: "pa_2", from: "paladin", heal: [["A0", 900]], shout: "비켜라, ‘치유의 빛’!"}, {c: [{k: "talk", who: "goddess", t: "잔재주를!"}]}] : [])
+   .concat(o.dp_1 ? [{a: "A0", sk: "dp_1", from: "darkpriest", hit: [["B0", 620]], heal: [["A0", 400]], shout: "뚫고 간다, ‘흡혈 의식’!"}] : [])
+   .concat([{a: "B0", sk: "pa_b", name: "빛의 촉수", miss: ["A0"]}])
+   .concat(o.wz_2 ? [{a: "A0", sk: "wz_2", from: "wizard", st: [["B0", "서리 결계", "d"]], shout: "느려져라, ‘서리 결계’!"}, {c: [{k: "talk", who: "goddess", t: "멈…… ㅊ……"}]}] : [])
+   .concat([
+    {c: [{k: "cut"}, {k: "talk", who: "master", t: "아직 내 턴은……"}, {k: "say", u: "A0", t: "끝나지 않았어!", ms: 1800}]},
+    {a: "A0", sk: "wz_u", from: "wizard", ult: true, hit: [["B0", 2400, "crit"]], shout: "‘중력 반전’!"},
+    {c: [{k: "talk", who: "goddess", t: "네 이놈……!"}, {k: "talk", who: "master", t: "끝이다."}]},
+    {a: "A0", sk: "dp_u", from: "darkpriest", ult: true, hit: [["B0", 3600, "crit"]], shout: "‘어둠의 성찬’!"},
+    {end: [{k: "wait", ms: 1800}]}
+  ])
 }; }
 
 const R = {on: false, sess: 0, i: -1, typing: null, wait: null, root: null, ep: "", list: [], cast: {}, preview: false, live: false, ending: false, done: null, face: {}, y: null, rec: "none", recs: [], tr: 0, gt: 0, sum: 0, ins: 0};
@@ -56701,6 +56980,7 @@ function tsBuild(){
     <div class="fst-cast"><div class="fst-bust" data-who="darkpriest" hidden><img alt="" draggable="false"><i class="ts-ember"></i></div><div class="fst-bust jr" data-who="N" hidden><img alt="" draggable="false"></div><div class="fst-bust" data-who="paladin" hidden><img alt="" draggable="false"></div><div class="fst-bust" data-who="wizard" hidden><img alt="" draggable="false"></div></div>
     <div class="fst-talk"><div class="fst-nm"><i></i><span></span></div><div class="fst-tx"></div><div class="fst-nx">▼</div></div>
     <div class="fst-think"><div class="fst-tx"></div><div class="fst-nx">▼</div></div>
+    <i class="ts-spark" aria-hidden="true"></i><i class="ts-wisp" aria-hidden="true"></i><i class="ts-wave" aria-hidden="true"></i><i class="ts-lid t" aria-hidden="true"></i><i class="ts-lid b" aria-hidden="true"></i>
     <div class="rv-black"><div class="rv-card"><i hidden></i><b></b></div></div>`;
   document.body.appendChild(r);
   R.root = r;
@@ -56732,13 +57012,19 @@ function tsFade(el, to, ms){
 function tsBox(kind){ const a = xq(".fst-talk"), b = xq(".fst-think"); if(a) a.classList.toggle("show", kind === "talk"); if(b) b.classList.toggle("show", kind === "think"); }
 function tsMark(on){ R.root && R.root.querySelectorAll(".fst-nx").forEach(e => e.classList.toggle("on", on)); }
 function tsStu(who){ return R.cast[who] || null; }
-function tsName(who){ if(who === "master") return TS_T.master; if(who === "goddess") return "여신"; const st = tsStu(who); if(!st) return ""; const live = (S.students || []).find(s => s && s.id === st.id); return live && typeof dn === "function" ? dn(live) : st.name || ""; }
-function tsPlate(who){
+function tsName(who){ if(who === "master") return TS_T.master; if(who === "goddess") return "여신"; if(who === "voice") return "???"; if(who === "father") return "아버지"; if(who === "eater") return "마나 이터";
+  if(who === "all") return ["P", "W", "D"].map(tsName).filter(Boolean).join(" · ");
+  const st = tsStu(who); if(!st) return ""; const live = (S.students || []).find(s => s && s.id === st.id); return live && typeof dn === "function" ? dn(live) : st.name || ""; }
+function tsPlate(who, c){
   const nm = xq(".fst-nm"), sp = nm.querySelector("span"), tk = xq(".fst-talk");
   let col = "#ffd36a";
   if(who === "goddess") col = "#bfe0ff";
+  else if(who === "voice") col = "#ff5a5a";
+  else if(who === "father") col = "#ffe6a8";
+  else if(who === "eater") col = "#c98cff";
+  else if(who === "all") col = "#f2957d";
   else if(who !== "master"){ const st = tsStu(who), role = st && JOBS[st.job] && JOBS[st.job].role; col = role === "tank" ? "#8cc4f0" : role === "heal" ? "#86d6a4" : "#f2957d"; }
-  sp.textContent = tsName(who);
+  sp.textContent = (c && c.nm) || tsName(who);
   nm.style.setProperty("--rc", col);
   tk.classList.toggle("mst", who === "master");
   tk.classList.remove("cst", "anl", "roy");
@@ -56748,7 +57034,7 @@ function tsLine(c){
   let t = c.t || "";
   if(c.rec){ const r = TS_REC[R.rec] || TS_REC.none; t = r[c.rec] || ""; }
   t = t.replace(/\{D\}/g, (tsStu("D") && tsStu("D").name) || "");
-  if(c.who === "master" || c.who === "goddess") return t;
+  if(["master", "goddess", "voice", "father", "eater", "all"].indexOf(c.who) >= 0) return t;
   const st = tsStu(c.who), live = st && (S.students || []).find(s => s && s.id === st.id);
   return live && typeof masterQ === "function" ? masterQ(t, live) : t;
 }
@@ -56925,10 +57211,11 @@ function tsDue6(){
 }
 function tsDue(){ return tsDue1() || tsDue2() || tsDue3() || tsDue4() || tsDue5() || tsDue6(); }
 /* 6화 — 장면 조각 → 전투 → … 차례로 (FFOP pack) · 끝나면 본 것으로 (A · B · C) */
-function tsSeg(ep, F, cap, then){ tsGo({ep, cast: F.cast, tr: F.tr, ins: F.ins, preview: F.preview, seg: true, cap, noD: ep === "e6r" || ep === "e6f"}, then); }
+function tsSeg(ep, F, cap, then){ tsGo({ep, cast: F.cast, tr: F.tr, ins: F.ins, preview: F.preview, seg: true, cap, noD: ["e6r", "e6f", "e6v", "e6w"].indexOf(ep) >= 0}, then); }
 function tsFight(F, kind, then){
   if(!window.FFOP || typeof FFOP.start !== "function"){ then(); return; }
-  const d = F.cast.D, B = tsB(d), dn0 = d.name, nm = {dp: dn0, pal: F.cast.P.name, wiz: F.cast.W.name, goddess: "여신"};
+  const d = F.cast.D, B = tsB(d), dn0 = d.name, nm = {dp: dn0, pal: F.cast.P.name, wiz: F.cast.W.name, goddess: kind === "fin" || kind === "last" ? "마나 이터" : "여신", voice: "???"};
+  let dark = kind !== "duel", icons = null;                                          // 1125 — 여신 · 셋 · 마스터 혼자: 배경 칠흑
   const fix = L => JSON.parse(JSON.stringify(L).replace(/\{D\}/g, dn0));
   let units, script, field = "dummy", bgm = "opDemon", win = "", victory = false;
   if(kind === "duel"){
@@ -56948,11 +57235,19 @@ function tsFight(F, kind, then){
              {uid: "A2", side: "A", job: "darkpriest", key: "dp", row: "back", lv: 32, hp: 2400, pers: d.pers || "genius", ult: ""},
              {uid: "B0", side: "B", job: "mon_goddess", key: "goddess", row: "front", lv: 60, hp: 5200, pers: "stone", ult: ""}];
     script = []; B.fin.forEach(st => { if(st.sig) script = script.concat(F.ins ? B.sigIns : B.sig); else script.push(st); });
-    bgm = "festFinal"; win = "A"; victory = true;
+    bgm = TS_BGM_STAND.ts_eater_battle; win = "A"; victory = true;
+  }
+  if(kind === "last"){                                                            // 1125 — 마스터 혼자 대 마나 이터 · 프롤로그(231 결승) 곡
+    const pool = (S && Array.isArray(S.skillPool) ? S.skillPool : []).map(e => e && e.skillId).filter(Boolean), has = k => F.preview && window.__dptsAllSkills ? true : pool.indexOf(k) >= 0;
+    units = [{uid: "A0", side: "A", job: "master", key: "master", row: "front", lv: 34, hp: 3200, hp0: 1500, pers: "stone", ult: ""},
+             {uid: "B0", side: "B", job: "mon_goddess", key: "goddess", row: "front", lv: 60, hp: 6200, hp0: 5600, pers: "stone", ult: ""}];
+    script = B.last({pa_2: has("pa_2"), dp_1: has("dp_1"), wz_2: has("wz_2")}); bgm = "festFinal"; win = "A"; victory = true;
+    icons = pool.length ? pool : null;
   }
   units[0].hp = units[0].hp;
-  const pack = {units, script: fix(script), names: nm, jobs: {dp: "darkpriest", pal: "paladin", wiz: "wizard"}, teamA: kind === "fin" ? "개교 셋" : "마스터", teamB: kind === "duel" ? dn0 : "여신",
-    winner: win, endLine: "—", head: TS_T.ep.e6, field, bgm, victory, defeat: false, jingle: kind !== "duel", plate: TS_T.master, noSkip: !F.preview, mon: tsMon, caps: []};
+  const pack = {units, script: fix(script), names: nm, jobs: {dp: "darkpriest", pal: "paladin", wiz: "wizard"}, teamA: kind === "fin" ? "개교 셋" : "마스터", teamB: kind === "duel" ? dn0 : kind === "god" ? "여신" : "마나 이터",
+    winner: win, endLine: "—", head: TS_T.ep.e6, field, bgm, victory, defeat: false, jingle: kind !== "duel", plate: TS_T.master, noSkip: !F.preview, mon: tsMon, caps: [], dark, icons,
+    reveal: kind === "fin" || kind === "last"};
   R.live = true;
   const ok = FFOP.start(() => { R.live = true; try{ const mr = document.getElementById("modalRoot"); if(mr) mr.replaceChildren(); modalLockSync(); }catch(e){} then(); }, {pack});   // pack 끝 — 남은 검은 막을 치운다
   if(!ok){ R.live = false; then(); }
@@ -57004,7 +57299,7 @@ function tsLoop(end, F){
   if(!(window.FST && FST.start(afterStart))) afterStart();
   return true;
 }
-function tsGo6(F, again){
+function tsGo6(F, again, from){                                                 // from — 목업 · 시험: C 흐름 중간부터 (god · fin · x · last · v · w · f)
   R.live = true;
   const end = tsEnd6(F.tr | 0);
   const gone = () => { try{ if(JOBS.mon_goddess && JOBS.mon_goddess.dpts){ delete JOBS.mon_goddess; delete MON_IMG.mon_goddess; } }catch(e){} };   // 장면 동안만 등록한 여신을 치운다
@@ -57014,10 +57309,13 @@ function tsGo6(F, again){
     if(F.preview){ try{ again && again(); }catch(e){ tsErr(e); } return; }
     let ok = false; try{ ok = tsLoop(how, F); }catch(e){ tsErr(e); }
     if(!ok){ const X = tsS(); if(X){ X.seen.e6 = how; try{ save(); }catch(e){} } try{ again && again(); }catch(e){ tsErr(e); } } };
+  if(from){ const W = () => tsSeg("e6f", F, ["", ""], () => fin("C")), V = () => tsSeg("e6w", F, ["", ""], W), L = () => tsSeg("e6v", F, ["", ""], V), X = () => tsFight(F, "last", L), Y = () => tsSeg("e6x", F, ["", ""], X);
+    ({god: () => tsFight(F, "god", () => tsSeg("e6s", F, ["", ""], () => tsFight(F, "fin", Y))), fin: () => tsFight(F, "fin", Y), x: Y, last: X, v: L, w: V, f: W}[from] || Y)(); return; }
   tsSeg("e6i", F, null, () => {
     tsFight(F, "duel", () => {
       if(end !== "C"){ tsSeg("e6r", F, ["", ""], () => loop(end)); return; }      // A · B — 회귀 연출 → 231년 봄 재시작 (tsLoop)
-      tsFight(F, "god", () => tsSeg("e6s", F, ["", ""], () => tsFight(F, "fin", () => tsSeg("e6f", F, ["", ""], () => fin("C")))));
+      tsFight(F, "god", () => tsSeg("e6s", F, ["", ""], () => tsFight(F, "fin", () => tsSeg("e6x", F, ["", ""], () => tsFight(F, "last",
+        () => tsSeg("e6v", F, ["", ""], () => tsSeg("e6w", F, ["", ""], () => tsSeg("e6f", F, ["", ""], () => fin("C")))))))));   // 1125 — 반격 · 마스터 혼자 · 아버지 · 다시 연습장 · 다음 날
     });
   });
 }
@@ -57049,7 +57347,8 @@ function tsReset(o){
   R.on = true; R.ending = false; R.sess++; R.i = -1; R.typing = null; R.wait = null; R.face = {};
   const sk = xq(".rv-skip"); if(sk){ sk.hidden = !R.preview || R.seg; sk.disabled = false; }
   tsBox(null); tsMark(false); tsLit(null); tsEmber(false);
-  R.root.classList.remove("dim", "eve", "night", "flash"); R.flashBg = false;
+  R.root.classList.remove("dim", "eve", "night", "flash", "void", "spark"); R.flashBg = false;
+  { const w = xq(".ts-wisp"); if(w) w.className = "ts-wisp"; }
   ["D", "N", "P", "W"].forEach(k => { const e = tsBust(k); if(e){ e.hidden = true; e.style.opacity = ""; } });
   if(R.cast.D){ tsFace("D", "default"); }
   if(R.cast.N){ tsFace("N", "smile"); }
@@ -57089,7 +57388,20 @@ async function tsRun(i){
     if(c.leave) tsLeave(c.leave);
     if(c.dim) R.root.classList.add("dim");
     if(c.eve) R.root.classList.add("eve");
-    if(c.day) R.root.classList.remove("eve", "night", "dim");                     // 1124 — 다음 날 아침 (낮으로)
+    if(c.day) R.root.classList.remove("eve", "night", "dim", "void");             // 1124 — 다음 날 아침 (낮으로)
+    if(c.bgm){ try{ audOver(c.bgm === "_none" ? BGM_NONE : (BGM[c.bgm] ? c.bgm : (TS_BGM_STAND[c.bgm] || BGM_NONE))); }catch(e){} }   // 1125 — 곡 바꾸기 (새 곡 자리는 TS_BGM_STAND)
+    if(c.void != null) R.root.classList.toggle("void", !!c.void);                // 1125 — 칠흑
+    if(c.spark != null) R.root.classList.toggle("spark", !!c.spark);             // 칠흑 속 반짝임
+    if(c.wisp){ const w = xq(".ts-wisp"); if(w){ w.className = "ts-wisp" + (c.wisp === "off" ? "" : " on " + c.wisp); } }   // 작은 빛 (아버지 — warm)
+    if(c.wave){ const w = xq(".ts-wave"); if(w) w.animate([{opacity: 0, transform: "translate(-50%,-50%) scale(.1)"}, {opacity: 1, offset: .25}, {opacity: 0, transform: "translate(-50%,-50%) scale(3)"}], {duration: cRM() ? 300 : 1000, easing: "ease-out"}); R.root.animate([{transform: "translate(0,0)"}, {transform: "translate(-8px,4px)"}, {transform: "translate(6px,-5px)"}, {transform: "translate(0,0)"}], {duration: cRM() ? 1 : 420}); }
+    if(c.glint){ const e = tsBust(c.glint); if(e) e.animate([{filter: "brightness(1)"}, {filter: "brightness(1.8) drop-shadow(0 0 10px #fff)", offset: .3}, {filter: "brightness(1)"}], {duration: 600}); }
+    if(c.face){ const [k, f] = c.face; if(tsBust(k)) tsFace(k, f); }
+    if(c.eye){                                                                    // 감았던 눈이 뜨인다 — 위아래 눈꺼풀이 열린다
+      ["P", "W", "D"].forEach(k => { const e = tsBust(k); if(e && e.hidden && tsStu(k)){ e.hidden = false; } }); tsPlace(); tsLit(["P", "W", "D"]);
+      const T = cRM() ? 300 : 1700, t = xq(".ts-lid.t"), b = xq(".ts-lid.b");
+      [[t, "-100%"], [b, "100%"]].forEach(([el, y]) => { if(!el) return; el.style.opacity = 1; el.animate([{transform: "translateY(0)"}, {transform: "translateY(0)", offset: .2}, {transform: `translateY(${y === "-100%" ? "-30%" : "30%"})`, offset: .45}, {transform: "translateY(0)", offset: .6}, {transform: `translateY(${y})`}], {duration: T, easing: "ease-in-out", fill: "forwards"}); });
+      setTimeout(() => { [t, b].forEach(el => { if(el){ el.getAnimations().forEach(a => a.cancel()); el.style.opacity = 0; } }); }, T + 50);
+    }
     if(c.card){ if(!await tsMidCard(c.card[0], String(c.card[1] || "").replace(/\{D\}/g, tsName("D")), sess)) return; if(c.night){ R.root.classList.remove("eve"); R.root.classList.add("night"); } await tsFade(xq(".rv-black"), c.id === R.list[R.list.length - 1].id ? 1 : 0, 700); if(sess !== R.sess) return; }
     else if(c.night){ R.root.classList.remove("eve"); R.root.classList.add("night"); }
     if(c.snd){ try{ sfxPlay(c.snd); }catch(e){} }
@@ -57099,7 +57411,10 @@ async function tsRun(i){
     await rsleep(cRM() ? 160 : (c.ms || 600)); if(sess !== R.sess) return;
     tsRun(i + 1); return;
   }
-  if(c.who === "P" && !tsStu("P").bust) tsLit([]);
+  if(c.vo) tsLit([]);                                                             // 1125 — 목소리만 (눈을 감은 마스터)
+  else if(c.who === "all") tsLit(["P", "W", "D"]);
+  else if(c.who === "voice" || c.who === "father" || c.who === "eater") tsLit([]);
+  else if(c.who === "P" && !tsStu("P").bust) tsLit([]);
   else if(c.who === "D" || c.who === "N" || c.who === "P" || c.who === "W"){ const e = tsBust(c.who); if(e && e.hidden) tsEnter(c.who); if(c.face) tsFace(c.who, c.face); tsLit([c.who]); }
   else if(c.who === "goddess") tsLit([]);
   else if(c.who !== "P") tsLit(R.root.classList.contains("dim") || R.ep !== "e1" ? ["D"] : []);
@@ -57107,7 +57422,7 @@ async function tsRun(i){
     tsBox("think"); tsPers(null);
     await tsType(xq(".fst-think .fst-tx"), tsLine(c), null, sess);
   } else {
-    tsPlate(c.who); tsPers(c); tsBox("talk");
+    tsPlate(c.who, c); tsPers(c); tsBox("talk");
     await tsType(xq(".fst-talk .fst-tx"), tsLine(c), c.who === "master" ? "csl_mst" : "csl_stu", sess);
   }
   if(sess !== R.sess) return;
@@ -57167,7 +57482,7 @@ function tsPreview(ep, opt){
 function tsReplayList(){ const X = S && S.dpts; if(!X) return []; const items = TS_EPS.filter(k => X.seen[k] && X.gv[k]).map(k => ({k, t: TS_T.ep[k]})); return items.length ? [{n: TS_T.first, items}] : []; }
 function tsReplay(ep){ const X = S && S.dpts, G = X && X.gv && X.gv[ep]; if(!G) return false; return tsPreview(ep, {cast: G.cast, rec: G.rec, recs: G.recs, tr: G.tr, gt: G.gt, sum: G.sum, ins: G.ins}); }
 function tsAnySeen(){ const X = S && S.dpts; return !!(X && TS_EPS.some(k => X.seen[k])); }
-window.DPTS = {after: tsAfter, preview: tsPreview, replay: tsReplay, replayList: tsReplayList, anySeen: tsAnySeen, due1: tsDue1, due2: tsDue2, due3: tsDue3, due4: tsDue4, due5: tsDue5, due6: tsDue6, end6: tsEnd6, go6: tsGo6, loop: tsLoop, due: tsDue, rec: tsRec, state: R, all: TS_ALL, pr: TS_PR, recs: TS_REC, T: TS_T, s: tsS};
+window.DPTS = {bgmStand: TS_BGM_STAND, after: tsAfter, preview: tsPreview, replay: tsReplay, replayList: tsReplayList, anySeen: tsAnySeen, due1: tsDue1, due2: tsDue2, due3: tsDue3, due4: tsDue4, due5: tsDue5, due6: tsDue6, end6: tsEnd6, go6: tsGo6, loop: tsLoop, due: tsDue, rec: tsRec, state: R, all: TS_ALL, pr: TS_PR, recs: TS_REC, T: TS_T, s: tsS};
 })();
 /* DPTS_END */
 /* WKGR_START — 경과 보고 골드 · 이번 주 성장 (1120 목업 · apply_wkgr.py · mockups/weekly-growth)
