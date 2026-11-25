@@ -1841,7 +1841,7 @@ html[lang="ja"] .crec-bub,html[lang^="zh"] .crec-bub{word-break:normal}   /* 일
 /* TRIP_CSS_START — 스카우트 출장 카드 · 여러 날 카드 (1121 · 목업) */
 /* 두루마리 — 두 칸 사이 이틀 고리 (pixelfx ui/trip-link · 48 × 32 29장 한 줄 · 12fps 2.4초 · 2배로) */
 html body .skwrap .skfit .skstage .trip-link{position:absolute;z-index:3;width:96px;height:64px;pointer-events:none;
-  background:url("assets/svar/trip-link.png?v=07d62f53") 0 0 / 2784px 64px no-repeat;image-rendering:pixelated;animation:tripLink 2.4167s steps(29) infinite}
+  background:url("assets/svar/trip-link.png?v=ae8b58bd") 0 0 / 2784px 64px no-repeat;image-rendering:pixelated;animation:tripLink 2.4167s steps(29) infinite}
 @keyframes tripLink{to{background-position:-2784px 0}}
 @media (prefers-reduced-motion: reduce){html body .skwrap .skfit .skstage .trip-link{animation:none;background-position:-480px 0}}
 /* 둘째 칸 카드는 조금 흐리게 — 한 장이 두 칸에 걸쳐 있다 */
@@ -67446,7 +67446,7 @@ function preloadStart(){
 }
 /* SVAR_START — 일과 변주 공용 (1122 · apply_svar.py 가 만든다 — 손으로 고치지 않는다) — 그림 경로 · 시트 정보 */
 (function(){
-const D = "assets/svar/", V = "07d62f53", M = {"rank/flush-in":{"cols":3,"fps":20,"h":164,"n":23,"w":552},"rank/flush-loop":{"cols":3,"fps":12,"h":164,"n":24,"w":552},"rank/four-in":{"cols":3,"fps":20,"h":164,"n":23,"w":552},"rank/four-loop":{"cols":3,"fps":12,"h":164,"n":24,"w":552},"rank/full-in":{"cols":3,"fps":20,"h":164,"n":23,"w":552},"rank/full-loop":{"cols":3,"fps":12,"h":164,"n":24,"w":552},"rank/pair2-in":{"cols":3,"fps":20,"h":164,"n":23,"w":552},"rank/pair2-loop":{"cols":3,"fps":12,"h":164,"n":24,"w":552},"rank/straight-in":{"cols":3,"fps":20,"h":164,"n":23,"w":552},"rank/straight-loop":{"cols":3,"fps":12,"h":164,"n":24,"w":552},"wx/sky-fog":{"cols":8,"fps":12,"h":108,"n":48,"w":100},"wx/sky-rain":{"cols":8,"fps":12,"h":108,"n":48,"w":100},"wx/sky-rainbow":{"cols":8,"fps":12,"h":108,"n":48,"w":100},"wx/sky-snow":{"cols":8,"fps":12,"h":108,"n":48,"w":100},"wx/sky-sun":{"cols":8,"fps":12,"h":108,"n":48,"w":100},"wx/sky-wind":{"cols":8,"fps":12,"h":108,"n":48,"w":100},"wx/stamp-fog-0":{"cols":5,"fps":12,"h":28,"n":24,"w":28},"wx/stamp-fog-1":{"cols":5,"fps":12,"h":28,"n":24,"w":28},"wx/stamp-rain-0":{"cols":5,"fps":12,"h":28,"n":24,"w":28},"wx/stamp-rain-1":{"cols":5,"fps":12,"h":28,"n":24,"w":28},"wx/stamp-rainbow-0":{"cols":5,"fps":12,"h":28,"n":24,"w":28},"wx/stamp-rainbow-1":{"cols":5,"fps":12,"h":28,"n":24,"w":28},"wx/stamp-snow-0":{"cols":5,"fps":12,"h":28,"n":24,"w":28},"wx/stamp-snow-1":{"cols":5,"fps":12,"h":28,"n":24,"w":28},"wx/stamp-sun-0":{"cols":5,"fps":12,"h":28,"n":24,"w":28},"wx/stamp-sun-1":{"cols":5,"fps":12,"h":28,"n":24,"w":28},"wx/stamp-wind-0":{"cols":5,"fps":12,"h":28,"n":24,"w":28},"wx/stamp-wind-1":{"cols":5,"fps":12,"h":28,"n":24,"w":28}};
+const D = "assets/svar/", V = "ae8b58bd", M = {"rank/flush-in":{"cols":3,"fps":20,"h":164,"n":23,"w":552},"rank/flush-loop":{"cols":3,"fps":12,"h":164,"n":24,"w":552},"rank/four-in":{"cols":3,"fps":20,"h":164,"n":23,"w":552},"rank/four-loop":{"cols":3,"fps":12,"h":164,"n":24,"w":552},"rank/full-in":{"cols":3,"fps":20,"h":164,"n":23,"w":552},"rank/full-loop":{"cols":3,"fps":12,"h":164,"n":24,"w":552},"rank/pair2-in":{"cols":3,"fps":20,"h":164,"n":23,"w":552},"rank/pair2-loop":{"cols":3,"fps":12,"h":164,"n":24,"w":552},"rank/straight-in":{"cols":3,"fps":20,"h":164,"n":23,"w":552},"rank/straight-loop":{"cols":3,"fps":12,"h":164,"n":24,"w":552},"wx/sky-fog":{"cols":8,"fps":12,"h":108,"n":48,"w":100},"wx/sky-rain":{"cols":8,"fps":12,"h":108,"n":48,"w":100},"wx/sky-rainbow":{"cols":8,"fps":12,"h":108,"n":48,"w":100},"wx/sky-snow":{"cols":8,"fps":12,"h":108,"n":48,"w":100},"wx/sky-sun":{"cols":8,"fps":12,"h":108,"n":48,"w":100},"wx/sky-wind":{"cols":8,"fps":12,"h":108,"n":48,"w":100},"wx/stamp-fog-0":{"cols":5,"fps":12,"h":28,"n":24,"w":28},"wx/stamp-fog-1":{"cols":5,"fps":12,"h":28,"n":24,"w":28},"wx/stamp-rain-0":{"cols":5,"fps":12,"h":28,"n":24,"w":28},"wx/stamp-rain-1":{"cols":5,"fps":12,"h":28,"n":24,"w":28},"wx/stamp-rainbow-0":{"cols":5,"fps":12,"h":28,"n":24,"w":28},"wx/stamp-rainbow-1":{"cols":5,"fps":12,"h":28,"n":24,"w":28},"wx/stamp-snow-0":{"cols":5,"fps":12,"h":28,"n":24,"w":28},"wx/stamp-snow-1":{"cols":5,"fps":12,"h":28,"n":24,"w":28},"wx/stamp-sun-0":{"cols":5,"fps":12,"h":28,"n":24,"w":28},"wx/stamp-sun-1":{"cols":5,"fps":12,"h":28,"n":24,"w":28},"wx/stamp-wind-0":{"cols":5,"fps":12,"h":28,"n":24,"w":28},"wx/stamp-wind-1":{"cols":5,"fps":12,"h":28,"n":24,"w":28}};
 window.SVA = p => D + p + "?v=" + V;   // 그림 경로 (assets/svar/…)
 window.SVM = id => M[id] || null;        // 시트 정보 {fps, n, cols, w, h} — fetch 없이
 })();
@@ -67673,7 +67673,7 @@ window.TRIP = {state: TRIP, id: TRIP_ID, ok: tripOk, untouched, reroll, purge, i
 (function(){
 const COLS = ["green", "red", "blue", "sky", "gold"];
 const HR = {
-  flush:  {n: "플러시",     o: 5, d: "다섯 칸이 모두 같은 색 — 체인이 가장 크게 이어진다", e: "체인 최대"},
+  flush:  {n: "플러시",     o: 5, d: "다섯 칸이 모두 같은 색 — 이번 주 체인 효과가 두 배", e: "체인 2배", chain: 2},   // 1125 사용자 '체인 2배'
   four:   {n: "포카드",     o: 4, d: "같은 색 넷 + 하나 — 다른 한 장의 날, 끝에 전원 컨디션 +4", e: "쉬는 날 컨디션 +4", cond: 4},
   full:   {n: "풀하우스",   o: 3, d: "같은 색 셋 + 둘 — 주 끝에 전원 팀워크 소량", e: "주 끝 팀워크 ▲", gains: {team: .3}},
   straight: {n: "스트레이트", o: 2, d: "다섯 색이 모두 다르다 — 주 끝에 전원 모든 멘탈리티 소량", e: "주 끝 멘탈리티 ▲", gains: {team: .12, aggr: .12, calm: .12, will: .12, stam: .12, genius: .12}},
@@ -67743,7 +67743,7 @@ weekRunEnd = function(){
       if(H.gains){ const g = {}; for(const k in H.gains) g[k] = H.gains[k] * part; bonusTrain(g); }
       const cond = H.cond ? Math.round(H.cond * part) : 0;
       if(cond) (S.students || []).forEach(st=> setCond(st, st.cond + cond));
-      const what = h.k === "flush" ? "다섯 날이 한 줄로 이어졌다." : h.k === "full" ? "두 패가 손발을 맞췄다 — 전원 팀워크가 올랐다."
+      const what = h.k === "flush" ? "다섯 날이 한 줄로 이어졌다 — 체인 효과가 두 배로 붙었다." : h.k === "full" ? "두 패가 손발을 맞췄다 — 전원 팀워크가 올랐다."
         : h.k === "straight" ? "고르게 다진 한 주 — 전원 멘탈리티가 고루 올랐다." : `전원 컨디션 +${cond}.`;
       dlog(`<b>족보 · ${H.n}</b> — ${what}${part < 1 ? ` (훈련한 날 ${went}일만큼)` : ""}`, h.k === "flush" ? "note" : "good");
     }
@@ -67828,7 +67828,9 @@ render = function(){
   return r;
 };
 
-window.HANDRANK = {state: ST, rankOf, judge, HR, COLS, player: P, replay(){ P.key = null; render(); }};
+/* 1125 — 체인 배율 (deck_block 의 chainOf 가 부른다): 다섯 칸이 플러시면 HR.flush.chain 배 */
+function chainX(list){ if(!ST.on) return 1; const h = rankOf(list); return h && h.k === "flush" ? HR.flush.chain : 1; }
+window.HANDRANK = {state: ST, rankOf, judge, HR, COLS, player: P, chainX, replay(){ P.key = null; render(); }};
 })();
 /* HANDRANK_END */
 /* WEATHER_START — 날씨 색 칸 (1121 · 목업 mockups/schedule-variety · 기획 PLAN.md §3-3)
@@ -68279,7 +68281,8 @@ chainOf = function(list, i){                                            // 전�
   let cur = ok(list[i]); if(!cur.length) return 0;
   let n = 0;
   for(let k = i - 1; k >= 0; k--){ const p = list[k] ? ok(list[k]) : []; if(p.some(x => cur.includes(x))){ n++; cur = p; } else break; }
-  return Math.min(n, CHAIN_MAX) * CHAIN_STEP;
+  const v = Math.min(n, CHAIN_MAX) * CHAIN_STEP;
+  return v && window.HANDRANK && HANDRANK.chainX ? v * HANDRANK.chainX(list) : v;   // 1125 — 족보 플러시면 체인 효과 2배 (rank_block)
 };
 /* 카드 그림 — 두 색 대각선 반반 (오른쪽 아래 삼각이 둘째 색) */
 const _skCard = skCard;
