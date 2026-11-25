@@ -718,6 +718,7 @@ html[data-ui-concept="journal"] .npcname{color:#8a6a45}
 .dr-stage{width:100%;margin-inline:auto;aspect-ratio:3 / 1;position:relative;isolation:isolate;background:#d7cee6;border-radius:10px;overflow:hidden;border:1px solid #b9aec7;container-type:inline-size}
 .dr-room{position:absolute;width:104.166667%;height:312.5%;left:-2.083333%;top:var(--crop-top,-73.4375%);object-fit:fill;max-width:none;user-select:none;pointer-events:none}
 .dr-stage[data-facility="beach"] .dr-room{width:100%;height:100%;left:0;top:0;object-fit:cover}
+.dr-stage[data-facility="snowyard"] .dr-room{object-fit:cover;object-position:center bottom}
 .dr-top{position:absolute;top:18px;left:18px;right:18px;display:flex;align-items:flex-start;justify-content:space-between;z-index:90;pointer-events:none;gap:8px}
 .dr-top>div{padding:11px 15px;border-radius:12px;background:#fff9eeef;box-shadow:0 3px 18px #32263d20;backdrop-filter:blur(5px);color:#534734}.dr-eyebrow{font-size:10px;letter-spacing:.16em;color:#957543}.dr-top h3{font-size:24px;margin:3px 0 5px;color:#3e3046;line-height:1.2}.dr-top #drActivity{font-size:11px}.dr-chain{border-radius:20px;background:#926b21;color:#fff6d1;padding:7px 13px;font-size:12px;font-weight:700;box-shadow:0 2px 12px #493d2730}
 .dr-bottom{position:absolute;bottom:12px;left:14px;right:14px;z-index:90;display:flex;justify-content:space-between;gap:8px;color:#5a4a61;font-size:11px;pointer-events:none}.dr-bottom span{border-radius:14px;padding:5px 9px;background:#fffaf1dc}
@@ -7523,10 +7524,10 @@ function monAtkPose(el, on){
    아니라 시계에서 가져오기 때문에 DOM 을 통째로 다시 그려도 튀지 않는다.
    머리색은 팔레트 치환 — 원본 아틀라스에서 머리 계열 색만 갈아끼운 사본을
    (직업 × 색) 단위로 만들어 캐시한다. 그림은 한 장만 있으면 된다. */
-const SPR_M = {"idle": 0, "attack": 1, "hit": 2, "down": 3, "win": 4, "weed": 5, "scrub": 6, "dust": 7, "carry": 8, "meditate": 9, "read": 10};
-const SPR_MS = [180, 100, 100, 180, 180, 220, 200, 220, 180, 400, 300];
+const SPR_M = {"idle": 0, "attack": 1, "hit": 2, "down": 3, "win": 4, "weed": 5, "scrub": 6, "dust": 7, "carry": 8, "meditate": 9, "read": 10, "run": 11, "snowthrow": 12, "snowroll": 13};
+const SPR_MS = [180, 100, 100, 180, 180, 220, 200, 220, 180, 400, 300, 120, 180, 220];
 const SPR_PLAYBACK_RATE = 0.7; // 70% 속도: 모션 길이는 약 1.43배
-const SPR_LOOP = [1,0,0,0,1,1,1,1,1,1,1];
+const SPR_LOOP = [1,0,0,0,1,1,1,1,1,1,1,1,1,1];
 /* 모션별로 쓰는 장 (0929) — 쓰러짐은 1~3번째 장만 (멈춰 있을 때는 3번째), 음식 나르기는 재생 없이 4번째 장 한 장 */
 const SPR_USE = {3:[0,1,2], 8:[3]};
 function sprUse(j, m){
@@ -12969,7 +12970,13 @@ const REPORT_STATUP = "assets/report_statup.mp3?v=f37807b5";
 const REPORT_RECOVERY = "assets/report_recovery.mp3?v=b9ccada2";
 
 // Work animation selection is presentation-only and never consumes game RNG.
+const REPORT_CARD_MOTION = {sbeach:"run", basic:"run", ssnow:"snowthrow", sman:"snowroll"};
 function reportWorkMotion(scene, student, index){
+  if(scene.phase==="am" && !scene.job && student.state!=="rest" && student.state!=="failed"){
+    const motion=REPORT_CARD_MOTION[scene.trainingId];
+    if(motion && sprN(student.job,SPR_M[motion])) return motion;
+    if(scene.facility==="snowyard") return motion==="snowthrow" ? "attack" : "idle";
+  }
   if(!["paladin","priest","spellsword","gunner","ninja","forcemage","monk","archer","wizard","darkpriest","bard","enchanter","rogue","druid","timemage","sword"].includes(student.job) || student.state==="rest" || student.state==="failed") return null;
   if(scene.job==="inn" || scene.job==="tavern") return ["dust","dust","carry","carry","scrub","scrub"][index%6];
   if(scene.job){
@@ -13031,6 +13038,8 @@ const REPORT_JOB_LAYOUTS = {
   tavern:{crop:0, scale:1400, capacity:6, face:"LRRLRL", slots:[[29.8,33.1],[89.6,45.5],[50.6,62.7],[57.3,42.9],[17.4,82.2],[83,77]]}
 };
 const REPORT_JOB_LAYOUT = REPORT_JOB_LAYOUTS.farm;   // 목록에 없는 의뢰가 생기면 이 배치를 쓴다
+REPORT_PX.snowyard="assets/field_img/winter.webp";
+REPORT_LAYOUTS.snowyard=REPORT_LAYOUTS.arena;
 const reportPx = s => REPORT_PX[s.job || s.facility] || null;   // 1021 — 도트 배경 (보이는 곳만 자른 그림 · 없으면 예전 그림)
 const reportRoom = s => reportPx(s) || s.job && REPORT_JOB_MAPS[s.job] || REPORT_ROOMS[s.facility];
 /* 그림 상자 (무대 %) — 방 그림(정사각형)은 무대 폭의 104.17% 가 기준, 3:1 그림(수련관 · 해수욕장 · 의뢰)은 무대에 꼭 맞는 크기가 기준 */
@@ -13071,7 +13080,10 @@ function reportScenesForPlayback(records){
     const choose=list=>list.slice().sort((a,b)=>b.students.length-a.students.length)[0];
     const am=morning.find(s=>s.phase==="exped") || choose(morning.filter(s=>s.students.some(x=>x.state!=="rest"))) || choose(morning);
     const pm=afternoon.find(s=>s.jobIntro) || choose(afternoon);
-    if(am)out.push(am);
+    if(am){
+      const snowyard=am.phase==="am" && !am.job && am.facility==="library" && ["ssnow","sman"].includes(am.trainingId);
+      out.push(snowyard ? {...am,facility:"snowyard"} : am);
+    }
     if(pm)out.push(pm);
   });
   return out;
@@ -13184,8 +13196,8 @@ function reportSceneBind(records, opt){
     const source=reportRoom(s);
     if($("#drRoom").getAttribute("src")!==source)$("#drRoom").src=source;
     $("#drRoom").classList.toggle("px", !!reportPx(s));
-    const facilityName=s.job?jobDef(s.job).n:s.facility==="beach"?"해수욕장":FACILITIES[s.facility]?.n||"학원";
-    $("#drRoom").alt=s.facility==="beach"?"여름 해수욕장 모래사장":`${facilityName} 실내`;
+    const facilityName=s.job?jobDef(s.job).n:s.facility==="beach"?"해수욕장":s.facility==="snowyard"?"겨울 학원 마당":FACILITIES[s.facility]?.n||"학원";
+    $("#drRoom").alt=s.facility==="beach"?"여름 해수욕장 모래사장":s.facility==="snowyard"?facilityName:`${facilityName} 실내`;
     $("#drStage").dataset.phase=s.phase;
     $("#drStage").dataset.facility=s.facility;
     $("#drStage").dataset.job=s.job || "";
@@ -40032,7 +40044,13 @@ const MOOD_LABELS = [
   {min:55, n:"차분함"},   {min:45, n:"평온함"},   {min:31, n:"불안함"},
   {min:21, n:"초조함"},   {min:11, n:"불만"},     {min:0,  n:"짜증남"}
 ];
-function moodLabel(v){ return (MOOD_LABELS.find(x=> v>=x.min) || MOOD_LABELS[MOOD_LABELS.length-1]).n; }
+/* 1126 — 전력 차로 기분이 깎였을 때(평온 아래)는 강한 상대 · 약한 상대에 따라 다른 말 (사용자) */
+const MOOD_LABELS_HI = [{min:31, n:"긴장함"}, {min:21, n:"초조함"}, {min:11, n:"위축됨"}, {min:0, n:"겁먹음"}];      // 상대가 훨씬 강하다
+const MOOD_LABELS_LO = [{min:31, n:"느슨함"}, {min:21, n:"방심함"}, {min:11, n:"시큰둥함"}, {min:0, n:"지루해함"}];  // 상대가 훨씬 약하다
+function moodLabel(v, side){
+  const L = (v < 45 && side) ? (side === "hi" ? MOOD_LABELS_HI : MOOD_LABELS_LO) : MOOD_LABELS;
+  return (L.find(x=> v>=x.min) || L[L.length-1]).n;
+}
 function moodTone(v){ return v>=MOOD_GOOD ? "ok" : (v<=MOOD_BAD ? "bad" : ""); }
 function moodStatMul(v){
   if(v==null) return 1;
@@ -40049,13 +40067,21 @@ function foePowerSeenP(tier){
   const need = FOE_INFO_NEED[clamp(tier,0,PORTAL_TIER)];
   return clamp(1 - (need - (S.master.info||0)) * .2, 0, 1);
 }
-/* 기본치 50 · 컨디션 70 기준 ±(+20/-30) · 상대 전력 비교 ±40 */
+/* 기본치 50 · 컨디션 70 기준 ±(+20/-30) · 상대 전력 비교 ±15
+   1126 — 컨디션이 주가 되도록 (사용자): 전력이 같으면 +15, 위든 아래든 차이가 날수록 줄어 1.5배 차이에서 -15 */
+const MOOD_POW = 15;
+function moodPow(myP, foeP){
+  const hi = Math.max(1, myP, foeP);
+  return MOOD_POW - clamp(Math.abs(foeP-myP)/hi*3, 0, 1) * MOOD_POW*2;
+}
+/* 전력 차로 깎였으면 어느 쪽인지 — hi 상대가 강함 · lo 상대가 약함 · "" 깎이지 않음 */
+function moodSide(myP, foeP){ return moodPow(myP, foeP) < 0 ? (foeP > myP ? "hi" : "lo") : ""; }
+function moodSideOf(L){ return L ? moodSide(L.myP||0, L.foeP||0) : ""; }
 function baseMood(st, myP, foeP){
   let v = MOOD_BASE;
   const c = st.cond;
   v += (c>=COND_HI) ? (c-COND_HI)/(100-COND_HI)*20 : -((COND_HI-c)/COND_HI)*30;
-  const hi = Math.max(1, myP, foeP);
-  v += clamp((foeP-myP)/hi*3, -1, 1) * 40;   // 전력 1.5배 차이에서 ±40
+  v += moodPow(myP, foeP);
   return Math.round(clamp(v, 0, 100));
 }
 const SPEECH_TYPE = {
@@ -40233,7 +40259,7 @@ function lockerHtml(L, my){
       return `<div class="lkcard">
         <div class="lkn">${dnH(st)}</div>
         <div class="lkp">${persTag(st)}${roleTag(st.job)}</div>
-        <div class="lkm ${tone}">${moodLabel(v)}<span class="num">${v}</span></div>
+        <div class="lkm ${tone}">${moodLabel(v, moodSideOf(L))}<span class="num">${v}</span></div>
         <div class="lkb"><i class="${tone}" style="width:${v}%"></i></div>
         <div class="lkf">${v>=MOOD_GOOD? `체력·공격력·방어력·속도 <b style="color:var(--ok)">+${Math.round(MOOD_STAT*100)}%</b>`
           : v<=MOOD_BAD? `체력·공격력·방어력·속도 <b style="color:var(--bad)">-${Math.round(MOOD_STAT*100)}%</b>` : "보정 없음"}</div>
@@ -40436,9 +40462,10 @@ function lkwFxPlace(el, T){
 function lkwPlate(i, v, anim){
   const T = LKW.team[i], p = lkwq(`.lkw-plate[data-i="${i}"]`); if(!T || !p) return;
   const tone = moodTone(v), ml = p.querySelector(".ml"), mv = p.querySelector(".mv"), bar = p.querySelector(".bar i");
-  ml.textContent = moodLabel(v); ml.className = "ml " + tone; mv.className = "mv num " + tone;
+  const side = moodSideOf(LKW.ctx && LKW.ctx.L);
+  ml.textContent = moodLabel(v, side); ml.className = "ml " + tone; mv.className = "mv num " + tone;
   bar.className = tone; bar.style.width = clamp(v, 0, 100) + "%";
-  p.title = `${T.st.name} · ${personaOf(T.st).n} — ${moodLabel(v)} ${v}`;
+  p.title = `${T.st.name} · ${personaOf(T.st).n} — ${moodLabel(v, side)} ${v}`;
   if(!anim || LKW.instant){ mv.textContent = v; return; }
   const from = +mv.textContent || 0, run = LKW.run, n = 8;
   for(let k = 1; k <= n; k++) lkwLater(run, k * 60, ()=>{ mv.textContent = Math.round(from + (v - from) * k / n); });
