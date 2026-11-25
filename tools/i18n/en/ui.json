@@ -2451,5 +2451,6 @@
  "추천 프리셋 '{0}' — {1}: {2}": "Preset '{0}' — {1}: {2}",
  "끼울 유물이 없다": "No relics to equip",
  "(IIFE)|방어": "Defense",
- "(IIFE)|훈련": "Training"
+ "(IIFE)|훈련": "Training",
+ "타 직업의 공명 유물 제외": "Exclude other classes' resonance relics"
 }
