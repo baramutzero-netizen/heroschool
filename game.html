@@ -1294,6 +1294,17 @@ html body #btnTut.tutbtn{border:0!important;box-shadow:none!important;background
 .modal:has(#gradRoll) > *{flex:0 0 auto}
 .modal:has(#gradRoll) > .gradroll{flex:0 1 min(62vh,600px);height:auto;min-height:160px}
 .gr-head,.gr-end{text-align:center;padding:40px 10px}
+/* 1125 — 첫 졸업식 스태프 롤 */
+.gr-cred{text-align:center;padding:90px 10px 40px}
+.gr-cred .cr-blk{margin:0 0 76px}
+.gr-cred .cr-role{color:var(--brass);font-size:13px;letter-spacing:.08em;margin-bottom:10px}
+.gr-cred .cr-name{font-family:"Gowun Batang","Nanum Myeongjo",serif;font-size:24px;font-weight:700;letter-spacing:.03em;line-height:1.35}
+.gr-cred .cr-name.sm{font-size:18px;font-weight:400;line-height:1.75}
+.gr-cred .cr-you{margin:130px 0 30px}
+.gr-cred + .gr-end{padding:14px 10px 10px}   /* 1125 — 스태프 롤 뒤 끝 블록은 위아래 여백을 좁혀 'and You' 가 끝 화면 아래쪽에 오게 */
+.gr-cred .cr-thx{color:var(--muted);font-size:14px;margin-top:8px}
+.gr-cred .cr-last{margin:0 0 8px}   /* 1125 사용자 '마지막 화면에 and You 가 좀 더 아래로' — 끝 세 덩이 간격을 좁힌다 */
+.gr-cred .cr-last .cr-thx{font-family:"Gowun Batang","Nanum Myeongjo",serif;font-size:19px;color:var(--text)}
 .gr-h1{font-family:"Gowun Batang","Nanum Myeongjo",serif;font-size:26px;font-weight:700;letter-spacing:.04em;margin-top:6px}
 .gr-h2{color:var(--muted);font-size:13px;margin-top:6px}
 .gr-gift{font-size:12.5px;color:var(--brass);line-height:1.7;word-break:keep-all}
@@ -20221,6 +20232,7 @@ function graduateAll(){
     }
   }
   const cer = {type:"grad", year:S.year, list:[], fame:0, gold:0, logs:[], gifts:[]};
+  if(!S.credSeen && !(S.graduates||[]).length){ cer.cred = true; S.credSeen = true; }   // 1125 — 첫 졸업식에만 증서 뒤로 스태프 롤 (사용자)
   const usedReason = {};
   gr.forEach(st=>{
     const {c,sc} = careerFor(st);
@@ -36452,6 +36464,17 @@ function gradCertHtml(g, c){
     <div class="gc-sign"><div>${yrName(c.year)} 2월</div><div>마스터</div>${stampSvg(S.acadName)}</div>
   </div>`;
 }
+/* 1125 — 스태프 롤 (첫 졸업식 — 증서가 다 흐른 뒤 이어서). 이름은 번역하지 않는다 */
+const GRAD_CRED_ROLES = [["Director", "Baramut"], ["Scenario", "Baramut"], ["Character Concept Design", "Baramut"]];
+const GRAD_CRED_THANKS = [/*no-i18n*/"Tentarc", /*no-i18n*/"Kein", /*no-i18n*/"할랑", /*no-i18n*/"늑대야", /*no-i18n*/"와룡몬", /*no-i18n*/"에네빌", /*no-i18n*/"그리프", /*no-i18n*/"썩은초콜릿", /*no-i18n*/"키안시아", /*no-i18n*/"무래기", /*no-i18n*/"aple", /*no-i18n*/"수면마취제", /*no-i18n*/"모루", /*no-i18n*/"Badbeans", /*no-i18n*/"투네이션 2군 일동"];
+function gradCreditsHtml(){
+  return `<div class="gr-cred">
+    ${GRAD_CRED_ROLES.map(([r, n])=> `<div class="cr-blk"><div class="cr-role">${esc(r)}</div><div class="cr-name">${esc(n)}</div></div>`).join("")}
+    <div class="cr-blk"><div class="cr-role">Special Thanks</div>${GRAD_CRED_THANKS.map(n=> `<div class="cr-name sm">${esc(n)}</div>`).join("")}</div>
+    <div class="cr-blk cr-you"><div class="cr-name">and You</div><div class="cr-thx">플레이해 주셔서 감사합니다</div></div>
+    <div class="cr-blk cr-last"><div class="cr-thx">용사들의 이야기는 계속됩니다.</div></div>
+  </div>`;
+}
 function gradCeremony(c){
   const list = c.list || [];
   return `<div class="cerhead">
@@ -36464,6 +36487,7 @@ function gradCeremony(c){
         <div class="gr-head"><div class="eyebrow">${esc(S.acadName||"학원")}</div><div class="gr-h1">제 ${c.year}회 졸업식</div>
           <div class="gr-h2">${list.length}명의 졸업생</div></div>
         ${list.map(g=> gradCertHtml(g, c)).join("")}
+        ${c.cred ? gradCreditsHtml() : ""}
         <div class="gr-end">
           <div class="gr-h1">졸업을 축하합니다</div>
           <div class="gr-h2" style="font-size:14px;margin-top:8px">졸업생들의 여정은 이제부터 시작입니다</div>
