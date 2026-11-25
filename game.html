@@ -7940,7 +7940,7 @@ const JOBS = {
     base:{hp:1280,atk:88,def:98,spd:92,crit:.05,critDmg:1.5,acc:.95,eva:.05,skAcc:.92,skRes:.18,ultGain:1.05,leech:.02},
     grow:{hp:70,atk:4.4,def:5.6,spd:2.0},
     skills:[
-      {id:"pa_b",fx:"slash",el:"holy",kind:"basic",name:"성스러운 일격",type:"dmg",target:"enemy_front",power:.95,proc:1,dur:0,txt:"철퇴로 심판한다"},
+      {id:"pa_b",fx:"slash",el:"holy",kind:"basic",name:"성스러운 일격",type:"dmg",target:"enemy_front",power:.95,proc:1,dur:0,healDef:.35,txt:"철퇴로 심판하고, 방어력에 비례해 가장 위험한 아군을 회복시킨다"},
       {id:"pa_1",fx:"aura",el:"holy",name:"수호의 맹세",type:"shield",target:"ally_low2",power:.5,proc:.22,dur:2,scale:"def",txt:"위험한 아군 2인에게 방어력 기반 보호막"},
       {id:"pa_2",fx:"heal",el:"heal",name:"치유의 빛",type:"heal",target:"ally_low",power:.62,proc:.18,dur:0,txt:"가장 위험한 아군을 치유"},
       {id:"pa_u",fx:"aura",el:"holy",kind:"ult",name:"성역 선포",type:"ult_guard",target:"ally_all",power:.5,proc:1,dur:3,txt:"성역을 펼쳐 전체 회복·보호막·방어 강화"}
@@ -7950,7 +7950,7 @@ const JOBS = {
     base:{hp:1380,atk:102,def:106,spd:88,crit:.07,critDmg:1.5,acc:.95,eva:.05,skAcc:.88,skRes:.2,ultGain:1.0,leech:.02},
     grow:{hp:76,atk:5.0,def:5.8,spd:1.8},
     skills:[
-      {id:"sw_b",fx:"slash",el:"phys",kind:"basic",name:"베기",type:"dmg",target:"enemy_front",power:1.02,proc:1,dur:0,txt:"기본에 충실한 종베기"},
+      {id:"sw_b",fx:"slash",el:"phys",kind:"basic",name:"베기",type:"dmg",target:"enemy_front",power:1.02,proc:1,dur:0,stackSelf:{n:"투지",stat:"def",v:.06,max:3,t:2},txt:"맞힐 때마다 2턴 동안 방어력이 6% 오른다 (최대 3중첩)"},
       {id:"sw_1",fx:"aura",el:"debuff",name:"도발",type:"taunt",target:"enemy_rand",power:.15,proc:.2,dur:2,noDur:true,txt:"한 명을 걸고 넘어져 시선을 끈다 — 침착성 저하"},
       {id:"sw_2",fx:"aura",el:"buff",name:"철벽 자세",type:"buff",target:"self",power:.30,pow2:.15,stat2:"atk",proc:.2,dur:2,stat:"def",txt:"자세를 굳혀 방어와 공격을 함께 올린다"},   // 1002: 방어 +42% · 공격 +21% → +30% · +15%
       {id:"sw_u",fx:"slash",el:"phys",kind:"ult",name:"대지 가르기",type:"ult_aoe",target:"enemy_all",power:1.7,proc:1,dur:0,noBreak:true,shieldSelf:1,shieldDef:1,txt:"땅을 가르며 적 전체에 피해 · 입힌 만큼 + 방어력만큼 자신에게 보호막"}   // 1002: 방어 붕괴(2턴) 뺐다
@@ -7990,7 +7990,7 @@ const JOBS = {
     base:{hp:960,atk:80,def:58,spd:96,crit:.06,critDmg:1.5,acc:.95,eva:.07,skAcc:1.0,skRes:.22,ultGain:1.1,leech:0},
     grow:{hp:48,atk:4.6,def:3.0,spd:2.2},
     skills:[
-      {id:"pr_b",fx:"burst",el:"holy",kind:"basic",name:"신성 파동",type:"dmg",target:"enemy_rand",power:.74,proc:1,dur:0,txt:"정화의 빛을 쏜다"},
+      {id:"pr_b",fx:"burst",el:"holy",kind:"basic",name:"신성 파동",type:"dmg",target:"enemy_rand",power:.74,proc:1,dur:0,healHp:.04,txt:"정화의 빛을 쏘고, 최대 체력의 4%만큼 가장 위험한 아군을 회복시킨다"},
       {id:"pr_1",fx:"heal",el:"heal",name:"대치유",type:"heal",target:"ally_low",power:1.05,proc:.3,dur:0,cleanse:1,txt:"아군 한 명을 크게 회복하고 디버프 1개를 지운다"},
       {id:"pr_2",fx:"aura",el:"holy",name:"축복",type:"buff",target:"ally_all",power:.22,pow2:.22,stat2:"def",proc:.18,dur:3,stat:"atk",txt:"아군 전체 공격·방어 상승"},
       {id:"pr_u",fx:"heal",el:"holy",kind:"ult",name:"부활의 기도",type:"ult_heal",target:"ally_all",power:1.2,proc:1,dur:0,revive:true,txt:"전체 대회복·디버프 해제 · 쓰러진 아군을 일으킨다 (1인 1회)"}
@@ -8000,7 +8000,7 @@ const JOBS = {
     base:{hp:900,atk:86,def:55,spd:114,crit:.08,critDmg:1.55,acc:.95,eva:.1,skAcc:.96,skRes:.24,ultGain:1.3,leech:0},
     grow:{hp:46,atk:4.8,def:2.8,spd:3.4},
     skills:[
-      {id:"tm_b",fx:"burst",el:"arcane",kind:"basic",name:"시간 파편",type:"dmg",target:"enemy_rand",power:.82,proc:1,dur:0,txt:"어긋난 시간의 조각을 던진다"},
+      {id:"tm_b",fx:"burst",el:"arcane",kind:"basic",name:"시간 파편",type:"dmg",target:"enemy_rand",power:.82,proc:1,dur:0,atbSteal:.1,txt:"맞힌 적의 행동 게이지 10%를 빼앗는다"},
       {id:"tm_1",fx:"aura",el:"buff",name:"가속",type:"haste",target:"ally_other",power:.35,proc:.24,dur:3,stat:"spd",txt:"아군의 행동 게이지를 밀어준다"},
       {id:"tm_2",fx:"aura",el:"debuff",name:"지연",type:"slow",target:"enemy_rand",power:.3,proc:.2,dur:3,stat:"spd",txt:"적의 행동 게이지를 되돌린다"},
       {id:"tm_u",fx:"aura",el:"arcane",kind:"ult",name:"시간 정지",type:"ult_time",target:"enemy_all",power:1.0,proc:1,dur:0,txt:"적 전체 행동 초기화, 아군 필살 게이지 충전"}
@@ -8010,7 +8010,7 @@ const JOBS = {
     base:{hp:880,atk:148,def:48,spd:98,crit:.12,critDmg:1.75,acc:.97,eva:.06,skAcc:.95,skRes:.15,ultGain:1.05,leech:0},
     grow:{hp:42,atk:8.4,def:2.4,spd:2.4},
     skills:[
-      {id:"wz_b",fx:"burst",el:"arcane",kind:"basic",name:"마력탄",type:"dmg",target:"enemy_rand",power:.98,proc:1,dur:0,txt:"응축한 마력을 쏘아 보낸다"},
+      {id:"wz_b",fx:"burst",el:"arcane",kind:"basic",name:"마력탄",type:"dmg",target:"enemy_all",power:1.2,proc:1,dur:0,split:true,txt:"적 전체에 흩뿌린다 · 위력과 적이 얻는 필살 게이지는 맞은 적의 수로 나뉜다"},
       {id:"wz_1",fx:"burst",el:"fire",name:"화염 폭발",type:"dmg_aoe",target:"enemy_all",power:.9,proc:.22,dur:0,txt:"적 전체를 불길로 덮는다"},
       {id:"wz_2",fx:"aura",el:"frost",name:"서리 결계",type:"debuff",target:"enemy_all",power:.25,proc:.18,dur:2,stat:"spd",txt:"적 전체의 속도를 25% 떨어뜨린다"},
       {id:"wz_u",fx:"burst",el:"arcane",kind:"ult",name:"중력 반전",type:"ult_aoe",target:"enemy_all",power:2.2,proc:1,dur:2,txt:"중력을 뒤집는 마력으로 적 전체를 압도한다"}
@@ -8020,7 +8020,7 @@ const JOBS = {
     base:{hp:1220,atk:100,def:88,spd:94,crit:.08,critDmg:1.55,acc:.95,eva:.07,skAcc:.92,skRes:.2,ultGain:1.0,leech:.05},
     grow:{hp:66,atk:5.4,def:5.0,spd:2.2},
     skills:[
-      {id:"dr_b",fx:"slash",el:"poison",kind:"basic",name:"가시 채찍",type:"dmg",target:"enemy_front",power:.96,proc:1,dur:0,txt:"덩굴을 휘둘러 후려친다"},
+      {id:"dr_b",fx:"slash",el:"poison",kind:"basic",name:"가시 채찍",type:"dmg",target:"enemy_front",power:.96,proc:1,dur:0,poisonStack:{n:"가시 독",v:.1,max:3,t:3},txt:"맞힌 적에게 3턴 동안 약한 독을 남긴다 (최대 3중첩)"},
       {id:"dr_1",fx:"heal",el:"heal",name:"재생의 씨앗",type:"regen",target:"ally_low",power:.03,proc:.2,dur:2,txt:"상처 위에 생명을 틔운다 — 대상이 자기 차례마다 최대 체력의 3.9%를 회복한다"},
       {id:"dr_2",fx:"aura",el:"buff",name:"야수화",type:"buff",target:"self",power:.3,pow2:.1,stat2:"spd",regen:.06,proc:.2,dur:3,stat:"def",txt:"야수의 몸으로 바뀐다 — 방어·속도 상승, 차례마다 최대 체력의 7.8% 회복"},
       {id:"dr_u",fx:"burst",el:"poison",kind:"ult",name:"대자연의 진노",type:"ult_aoe",target:"enemy_all",power:1.8,proc:1,dur:2,heal:.3,txt:"전체 피해와 방어 저하 · 회복"}
@@ -8030,7 +8030,7 @@ const JOBS = {
     base:{hp:1020,atk:138,def:70,spd:96,crit:.14,critDmg:1.7,acc:.96,eva:.07,skAcc:.9,skRes:.18,ultGain:1.1,leech:.04},
     grow:{hp:54,atk:7.6,def:3.6,spd:2.4},
     skills:[
-      {id:"fm_b",fx:"blunt",el:"arcane",kind:"basic",name:"마력 강타",type:"dmg",target:"enemy_front",power:1.04,proc:1,dur:0,txt:"마력을 두른 주먹을 꽂는다"},
+      {id:"fm_b",fx:"blunt",el:"arcane",kind:"basic",name:"마력 강타",type:"dmg",target:"enemy_front",power:1.2,proc:1,dur:0,txt:"마력을 두른 주먹을 꽂는다"},
       {id:"fm_1",fx:"burst",el:"arcane",name:"파쇄격",type:"dmg",target:"enemy_low",power:1.55,proc:.2,dur:0,pierce:.2,txt:"무너지는 적을 짓누른다"},
       {id:"fm_2",fx:"aura",el:"arcane",name:"마력 과충전",type:"charge",target:"self",power:.3,proc:.15,dur:0,ultGive:30,txt:"마력을 끌어모아 봉인을 앞당긴다 — 필살 게이지 +30"},
       {id:"fm_u",fx:"aura",el:"arcane",kind:"ult",name:"봉인 해제",type:"ult_unseal",target:"self",power:.1,unseal:.1,atbGive:.3,proc:1,dur:2,txt:"자신의 모든 능력 상승 · 단일 대상 공격 기술 전체화"}
@@ -8040,7 +8040,7 @@ const JOBS = {
     base:{hp:930,atk:84,def:58,spd:106,crit:.07,critDmg:1.5,acc:.95,eva:.09,skAcc:.98,skRes:.22,ultGain:1.2,leech:0},
     grow:{hp:46,atk:4.6,def:3.0,spd:3.0},
     skills:[
-      {id:"en_b",fx:"burst",el:"arcane",kind:"basic",name:"각인 사격",type:"dmg",target:"enemy_rand",power:.82,proc:1,dur:0,txt:"새긴 문자를 튕겨 보낸다"},
+      {id:"en_b",fx:"burst",el:"arcane",kind:"basic",name:"각인 사격",type:"dmg",target:"enemy_rand",power:.82,proc:1,dur:0,debuffHit:{n:"각인 균열",stat:"def",v:.1,t:2},txt:"맞힌 적의 방어력을 2턴 동안 10% 낮춘다"},
       {id:"en_1",fx:"aura",el:"buff",name:"무기 각인",type:"buff",target:"ally_all",power:.4,pow2:.5,stat2:"critDmg",proc:.22,dur:3,stat:"crit",txt:"아군 전체의 치명타·치명 피해를 끌어올린다"},
       {id:"en_2",fx:"aura",el:"debuff",name:"마력 봉인",type:"debuff",target:"enemy_all",power:.16,proc:.2,dur:2,stat:"atk",txt:"적 전체의 공격력을 봉인한다"},
       {id:"en_u",fx:"aura",el:"holy",kind:"ult",name:"총원 각인",type:"ult_bless",target:"ally_all",power:1.0,proc:1,dur:3,txt:"아군 전체에 공격·속도를 새긴다"}
@@ -8050,7 +8050,7 @@ const JOBS = {
     base:{hp:980,atk:104,def:66,spd:98,crit:.1,critDmg:1.6,acc:.98,eva:.07,skAcc:.98,skRes:.2,ultGain:1.1,leech:.1},
     grow:{hp:55,atk:5.8,def:3.5,spd:2.4},
     skills:[
-      {id:"dp_b",fx:"burst",el:"dark",kind:"basic",name:"어둠의 손길",type:"dmg",target:"enemy_rand",power:1.0,proc:1,dur:0,txt:"생기를 훑어 간다"},
+      {id:"dp_b",fx:"burst",el:"dark",kind:"basic",name:"어둠의 손길",type:"dmg",target:"enemy_rand",power:1.0,proc:1,dur:0,healDmg:.3,txt:"생기를 훑어, 준 피해의 30%만큼 가장 위험한 아군을 회복시킨다"},
       {id:"dp_1",fx:"heal",el:"dark",name:"흡혈 의식",type:"drain",target:"enemy_low",power:1.15,proc:.24,dur:0,drain:1.0,txt:"뺏은 만큼 위험한 아군을 회복시킨다"},
       {id:"dp_2",fx:"aura",el:"dark",name:"저주",type:"dot",target:"enemy_all",power:.32,proc:.2,dur:3,drainDot:true,txt:"적 전체를 갉아먹고, 갉아낸 만큼 아군 전체를 회복시킨다"},
       {id:"dp_u",fx:"burst",el:"dark",kind:"ult",name:"어둠의 성찬",type:"ult_drain",target:"enemy_all",power:1.5,proc:1,dur:0,drain:.5,txt:"적 전체에서 빨아낸 생기를 아군에게 돌린다"}
@@ -8060,7 +8060,7 @@ const JOBS = {
     base:{hp:855,atk:82,def:60,spd:110,crit:.08,critDmg:1.5,acc:.95,eva:.11,skAcc:.99,skRes:.24,ultGain:1.25,leech:0},
     grow:{hp:48,atk:4.4,def:3.1,spd:3.2},
     skills:[
-      {id:"bd_b",fx:"burst",el:"arcane",kind:"basic",name:"현 튕기기",type:"dmg",target:"enemy_rand",power:.8,proc:1,dur:0,txt:"날카로운 한 음을 튕겨 보낸다"},
+      {id:"bd_b",fx:"burst",el:"arcane",kind:"basic",name:"현 튕기기",type:"dmg",target:"enemy_rand",power:.8,proc:1,dur:0,atbAllies:{n:2,v:.08},txt:"무작위 아군 둘의 행동 게이지를 8% 밀어준다"},
       {id:"bd_1",fx:"aura",el:"buff",name:"진군가",type:"haste",target:"ally_all",power:.2,proc:.2,dur:2,txt:"박자를 올려 아군 전체를 재촉한다"},
       {id:"bd_2",fx:"aura",el:"debuff",name:"불협화음",type:"debuff",target:"enemy_all",power:.18,proc:.22,dur:3,stat:"acc",txt:"음을 어긋뜨려 적의 명중을 흐린다"},
       {id:"bd_u",fx:"aura",el:"holy",kind:"ult",name:"승전의 합주",type:"ult_bless",target:"ally_all",power:1.0,atkMul:.22,spdMul:.28,ultGive:22,proc:1,dur:3,txt:"곡을 끝까지 몰아 아군 전체의 공격·속도와 필살을 끌어올린다"}
@@ -8070,7 +8070,7 @@ const JOBS = {
     base:{hp:1050,atk:118,def:66,spd:120,crit:.13,critDmg:1.65,acc:.96,eva:.08,skAcc:.95,skRes:.18,ultGain:1.2,leech:.02},
     grow:{hp:52,atk:7.2,def:3.4,spd:2.6},
     skills:[
-      {id:"ss_b",fx:"slash",el:"arcane",kind:"basic",name:"마검 베기",type:"dmg",target:"enemy_front",power:1.0,proc:1,dur:0,txt:"주문을 얇게 두른 칼날"},
+      {id:"ss_b",fx:"slash",el:"arcane",kind:"basic",name:"마검 베기",type:"dmg",target:"enemy_front",power:1.0,proc:1,dur:0,stackSelf:{n:"마검 공명",stat:"atk",v:.05,max:3,t:2},txt:"맞힐 때마다 2턴 동안 공격력이 5% 오른다 (최대 3중첩)"},
       {id:"ss_1",fx:"slash",el:"arcane",name:"삼연격",type:"dmg_multi",target:"enemy_rand",power:.62,proc:.24,dur:0,hits:3,txt:"한 호흡에 세 번 벤다"},
       {id:"ss_2",fx:"aura",el:"arcane",name:"마검 각성",type:"buff",target:"self",power:.3,proc:.3,dur:3,stat:"atk",atbSelf:.3,txt:"칼날의 주문을 끌어올린다 · 자신의 행동 게이지 30% 회복"},
       {id:"ss_u",fx:"slash",el:"arcane",kind:"ult",name:"천검 난무",type:"ult_aoe",target:"enemy_all",power:1.6,proc:1,dur:0,txt:"검기를 흩뿌려 전장을 가른다"}
@@ -11574,7 +11574,7 @@ function runBattle(teamA, teamB, opt){
     const lee = eff(src,"leech");
     let leeched = 0;
     if(lee>0 && dmg>0){ const hb=src.hp; src.hp = Math.min(src.maxHp, src.hp + Math.round(dmg*lee)); leeched = src.hp-hb; recHeal(src, leeched); }
-    if(!o.noUlt) tgt.ult = clamp(tgt.ult + ULT_HIT*eff(tgt,"ultGain"),0,100);
+    if(!o.noUlt) tgt.ult = clamp(tgt.ult + ULT_HIT*eff(tgt,"ultGain")/(o.ultDiv||1),0,100);   // 1125 — ultDiv: 위력을 나눈 전체 공격은 게이지도 나눈다
     const pop = [];
     if(absorbed) pop.push({u:tgt.uid, v:absorbed, k:"absorb"});
     if(dmg>0 || !absorbed) pop.push({u:tgt.uid, v:dmg, k:crit?"crit":"dmg"});
@@ -11637,6 +11637,49 @@ function runBattle(teamA, teamB, opt){
     t.mir = Math.min(mirCap(), (t.mir|0)+1); mirSync(t);
     push(`<b>${epiH(t.name)}</b> 물그림자 ${t.mir}겹`,"",t.uid);
   }
+  /* 1125 — 기본 공격 개편: 맞힌 적에게 붙는 효과 (atbSteal · poisonStack · debuffHit) */
+  function basicOnHit(u, t, sk){
+    if(sk.atbSteal && t.alive){
+      const g = Math.min(t.atb, 1000*sk.atbSteal); t.atb -= g; u.atb = Math.min(999, u.atb + g);
+      push(`<b>${epiH(t.name)}</b>의 행동 게이지 ${Math.round(sk.atbSteal*100)}%를 빼앗는다`,"",u.uid);
+    }
+    if(sk.poisonStack && t.alive){
+      const P = sk.poisonStack, ex = t.fx.find(f=> f.name===P.n && f.kind==="dot"), n = Math.min(P.max, ((ex && ex.stk)|0) + 1);
+      t.fx = t.fx.filter(f=> f !== ex);
+      t.fx.push({name:P.n, kind:"dot", turns:P.t+1, val:eff(u,"atk")*P.v*n, stat:null, src:u.uid, stk:n});
+      { const Pp = t.pas; if(Pp && Pp.atbOnDebuff && t.alive) t.atb = Math.min(999, t.atb + 1000*Pp.atbOnDebuff); }
+      push(`<b>${epiH(t.name)}</b> ${esc(P.n)} ${n}중첩 (${P.t}턴)`,"",u.uid);
+    }
+    if(sk.debuffHit && t.alive){
+      const D = sk.debuffHit;
+      addFx(t, {name:D.n, kind:"d", turns:D.t+1, stat:D.stat, mode:"mul", val:-D.v});
+      push(`<b>${epiH(t.name)}</b> ${esc(D.n)} — 방어력 ${Math.round(D.v*100)}% 저하 (${D.t}턴)`,"",u.uid);
+    }
+  }
+  /* 1125 — 기본 공격 개편: 공격 뒤 효과 (healDef · healHp · healDmg · stackSelf · atbAllies). k — 기술 강화 배율 */
+  function basicAfter(u, sk, allies, dSum, hits, k){
+    const healLow = h=>{
+      const low = aliveOf(allies).slice().sort((a,b)=> a.hp/a.maxHp - b.hp/b.maxHp)[0];
+      if(!low || h<=0) return;
+      const ab = Math.min(low.maxHp-low.hp, Math.round(h)); low.hp += ab; recHeal(u, ab);
+      push(`<b>${epiH(low.name)}</b> 회복 ${fmtHp(ab)}`,"heal",u.uid,null,[{u:low.uid,v:ab,k:"heal"}]);
+    };
+    if(sk.healDef) healLow(eff(u,"def")*sk.healDef*k*healMulOf(u)*BAL_HEAL);
+    if(sk.healHp)  healLow(u.maxHp*sk.healHp*k*healMulOf(u)*BAL_HEAL);
+    if(sk.healDmg && dSum>0) healLow(dSum*sk.healDmg*healMulOf(u));
+    if(sk.stackSelf && hits>0 && u.alive){
+      const S = sk.stackSelf, ex = u.fx.find(f=> f.name===S.n && f.kind==="b"), n = Math.min(S.max, ((ex && ex.stk)|0) + 1);
+      u.fx = u.fx.filter(f=> f !== ex);
+      u.fx.push({name:S.n, kind:"b", turns:S.t+1, stat:S.stat, mode:"mul", val:S.v*n, stk:n});
+      push(`<b>${epiH(u.name)}</b> ${esc(S.n)} ${n}중첩 — ${S.stat==="def"?"방어력":"공격력"} +${Math.round(S.v*n*100)}% (${S.t}턴)`,"heal",u.uid);
+    }
+    if(sk.atbAllies){
+      const A0 = sk.atbAllies, pool = aliveOf(allies).filter(a=> a.uid!==u.uid), got = [];
+      for(let i=0; i<A0.n && pool.length; i++) got.push(pool.splice(ri(0,pool.length-1),1)[0]);
+      got.forEach(a=>{ a.atb = Math.min(999, a.atb + 1000*A0.v); });
+      if(got.length) push(`${got.map(a=> `<b>${epiH(a.name)}</b>`).join(" · ")} 행동 게이지 +${Math.round(A0.v*100)}%`,"heal",u.uid);
+    }
+  }
   function resolve(u, sk, foes, allies, isUlt){
     const p = skPow(u, sk) * (sk.kind==="basic" ? 1 : consOf(u).skill);
     const dur = skDur(u, sk);
@@ -11650,10 +11693,15 @@ function runBattle(teamA, teamB, opt){
     if(PT_MISS) frames[frames.length-1].tmiss = 1;   // 1025 — 대회 중계 A10 (대상 선택 실패 · TCOM)
     const actionFx = frames[frames.length-1].fx;
     switch(sk.type){
-      case "dmg": { tg.forEach(t=>{ if(!t.alive) return;
-          dealDamage(u,t,p,sk);
+      case "dmg": {
+        const nT = tg.filter(t=> t.alive).length || 1, pD = sk.split ? p/nT : p, oD = sk.split ? {...sk, ultDiv:nT} : sk;   // 1125 — split: 위력 · 게이지를 대상 수로 나눈다
+        let dSum = 0, hits = 0;
+        tg.forEach(t=>{ if(!t.alive) return;
+          const dd = dealDamage(u,t,pD,oD); dSum += dd; if(dd>0) hits++;
           if(sk.atbCut && t.alive){ t.atb = Math.max(0, t.atb - 1000*sk.atbCut);
-            push(`<b>${epiH(t.name)}</b> 행동 게이지 -${Math.round(sk.atbCut*100)}%`,"",u.uid); } });
+            push(`<b>${epiH(t.name)}</b> 행동 게이지 -${Math.round(sk.atbCut*100)}%`,"",u.uid); }
+          if(dd>0) basicOnHit(u, t, sk); });
+        basicAfter(u, sk, allies, dSum, hits, p/(sk.power||1));
         break; }
       case "dmg_multi":
         actionFx.shots = [];
