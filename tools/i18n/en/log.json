@@ -480,5 +480,14 @@
  "원정 — <b>{0}</b> {1}.{2} 경험 {3}{4}{5}{6} · 유물 {7}개{8}{9}{10}{11}": "Expedition — <b>{0}</b>: {1}.{2} EXP {3}{4}{5}{6} · {7} {7|relic|relics}{8}{9}{10}{11}",
  "_scuq (1025 — 학원에 같은 직업은 하나 · apply_scuq · scout_block — 드래프트 홀 '재학 중' · 같은 직업 후보는 다른 학원으로)": "",
  "{0}의 입학 소식에 같은 직업({1}) 후보 {2}명이 다른 학원으로 발길을 돌렸다 — {3}.": "Hearing that {0} will enroll, {2} {2|candidate|candidates} of the same class ({1}) turned to other academies — {3}.",
- "재학 중인 직업이라 다음 겨울 후보로 나오지 않는다.": "That class is still enrolled, so it won't appear next winter."
+ "재학 중인 직업이라 다음 겨울 후보로 나오지 않는다.": "That class is still enrolled, so it won't appear next winter.",
+ "<b>{0}</b> — {1} {2}주 · {3}등급. {4} 보수 <b>{5} G/일</b>": "<b>{0}</b> — {1}: {2} {2|week|weeks} · Rank {3}. {4} Pay <b>{5} G/day</b>",
+ "<b>그뉵이용 난입!</b> — 사냥터에 분홍 드래곤 슬라임이 뛰어들었다. {0}{1} 맞서 싸웠다.": "<b>A Musclime crashes in!</b> — A pink dragon slime charged onto the hunting grounds. {0} stood their ground and fought.",
+ "· 유물 {0}": "· Relic {0}",
+ "그뉵이용을 쓰러뜨렸다! 사냥꾼의 사례 <b>+{0} G</b>{1}": "The Musclime is down! The hunter's thanks <b>+{0} G</b>{1}",
+ "그뉵이용에게 밀려 사냥터에서 물러났다 — 싸운 학생 컨디션 <b>-{0}</b>": "Pushed back by the Musclime, they withdrew from the hunting grounds — fighters' Condition <b>-{0}</b>",
+ "{0}요일 사냥터 — 그뉵이용 난입!": "{0} · Hunting Grounds — A Musclime crashes in!",
+ "사냥터로": "Back to the hunt",
+ "그뉵이용과 맞선다!": "Face the Musclime!",
+ "{0} {1} {2}주 · 사냥터 · {3}{4} 그뉵이용에게서 얻었다": "{0} {1} Week {2} · Hunting Grounds · taken from a Musclime by {3}"
 }
